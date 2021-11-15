@@ -29,9 +29,9 @@
 // Begin.
 global $config;
 
-require_once 'include/functions_users.php';
-require_once 'include/functions_groups.php';
-require_once 'include/functions_io.php';
+require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_groups.php';
+require_once $config['homedir'].'/include/functions_io.php';
 
 // Parse parameters.
 $send_mes     = (bool) get_parameter('send_mes', false);
@@ -82,6 +82,10 @@ $buttons['create_message'] = [
 ];
 
 // Header.
+if (is_metaconsole() === true) {
+    enterprise_hook('open_meta_frame');
+}
+
 ui_print_standard_header(
     __('Compose message'),
     'images/email_mc.png',
@@ -400,3 +404,6 @@ html_print_div(
 
 echo '</form>';
 echo $jsOutput;
+if (is_metaconsole() === true) {
+    enterprise_hook('close_meta_frame');
+}

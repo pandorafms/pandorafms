@@ -986,12 +986,11 @@ if ($create_alert || $update_alert) {
     echo html_print_select(get_priorities(), 'priority', $priority, '', '', '0', false, false, false);
     echo '</td></tr>';
 
-    // Alert type (e-mail, event etc.)
-    echo '<tr><td class="datos">'.__('Alert commands').'</td><td class="datos">';
-
+    // Alert type (e-mail, event etc.).
+    echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
     html_print_select_from_sql(
         'SELECT id, name
-        FROM talert_commands
+        FROM talert_actions
         ORDER BY name',
         'alert_type',
         $alert_type,
@@ -1481,7 +1480,7 @@ $(document).ready (function () {
             value: "1"
         });
         values.push ({
-            name: "id",
+            name: "id_action",
             value: this.value
         });
         values.push ({

@@ -91,7 +91,7 @@ if (is_ajax()) {
 
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
-        $recursion = (get_parameter_switch('recursion', 'false') === 'true');
+        $recursion = filter_var(get_parameter_switch('recursion', 'false'), FILTER_VALIDATE_BOOLEAN);
         $id_os = get_parameter('id_os', '');
         $agent_name = get_parameter('name', '');
 
@@ -765,7 +765,7 @@ if (is_ajax()) {
 
             $result = [];
             foreach ($last_modules_set as $module_name => $module_data) {
-                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true);
+                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true, false, '...');
 
                 $module_data_processed = array_map(
                     function ($item) {
@@ -801,7 +801,7 @@ if (is_ajax()) {
                 }
             } else {
                 $sql = sprintf(
-                    'SELECT DISTINCT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+                    'SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
 					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 					%s WHERE %s AND t1.delete_pending = 0
 					AND t1.id_agente IN ('.implode(',', $idAgents).')
@@ -863,10 +863,12 @@ if (is_ajax()) {
                         io_safe_output($nameModule['nombre']),
                         'module_medium',
                         false,
-                        true
+                        true,
+                        false,
+                        '...'
                     );
                 } else {
-                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true, false, '...');
                 }
             }
         }
@@ -886,6 +888,8 @@ if (is_ajax()) {
         $status_modulo = (int) get_parameter('status_module', -1);
 
         $tags = (array) get_parameter('tags', []);
+
+        $safe_name = (bool) get_parameter('safe_name', false);
 
         // Filter.
         $filter = [];
@@ -1024,6 +1028,9 @@ if (is_ajax()) {
 
         foreach ($agent_modules as $key => $module) {
             $agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
+            if ($safe_name == true) {
+                $agent_modules[$key]['safe_name'] = $module['nombre'];
+            }
         }
 
         $get_order_json = (bool) get_parameter('get_order_json', false);
@@ -1526,6 +1533,11 @@ if ($url_route_analyzer) {
     }
 }
 
+$ncm_tab = enterprise_hook('networkconfigmanager_console_tab');
+if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+    $ncm_tab = '';
+}
+
 // GIS tab.
 $gistab = [];
 if ($config['activate_gis']) {
@@ -1763,6 +1775,7 @@ $onheader = [
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
     'sap_view'           => $saptab,
+    'ncm_view'           => $ncm_tab,
     'external_tools'     => $external_tools,
 ];
 
@@ -1934,6 +1947,10 @@ switch ($tab) {
             $tab_name = 'SAP View';
     break;
 
+    case 'ncm':
+        $tab_name = 'Network configuration';
+    break;
+
     case 'external_tools':
         $tab_name = 'External Tools';
     break;
@@ -2060,6 +2077,10 @@ switch ($tab) {
 
     case 'sap_view':
         include 'general/sap_view.php';
+    break;
+
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente, false]);
     break;
 
     case 'external_tools':

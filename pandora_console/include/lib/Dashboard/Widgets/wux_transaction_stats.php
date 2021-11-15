@@ -270,7 +270,7 @@ class WuxStatsWidget extends Widget
             'label'     => __('Wux transaction'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
+                'fields'         => [],
                 'name'           => 'transactionId',
                 'selected'       => $values['transactionId'],
                 'return'         => true,
@@ -326,6 +326,7 @@ class WuxStatsWidget extends Widget
     {
         global $config;
 
+        $server_id = ($this->values['node'] ?? '0');
         $id_agent = $this->values['agentId'];
         $transaction = $this->values['transactionId'];
         $view_all_stats = $this->values['allStats'];
@@ -340,6 +341,7 @@ class WuxStatsWidget extends Widget
                     false
                 ),
                 'page'           => 'enterprise/include/ajax/wux_transaction.ajax',
+                'server_id'      => $server_id,
                 'id_agent'       => $id_agent,
                 'transaction'    => $transaction,
                 'view_all_stats' => $view_all_stats,

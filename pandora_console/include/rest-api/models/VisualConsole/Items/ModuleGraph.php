@@ -327,6 +327,10 @@ final class ModuleGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
 
+        if ($height == 0) {
+            $height = 15;
+        }
+
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
@@ -612,6 +616,9 @@ final class ModuleGraph extends Item
 
             // Custom graph.
             $fields = self::getListCustomGraph();
+            $selected_custom_graph = (\is_metaconsole() === true)
+                ? $values['customGraphId'].'|'.$values['metaconsoleId']
+                : $values['customGraphId'];
             $inputs[] = [
                 'id'        => 'MGcustomGraph',
                 'hidden'    => $hiddenCustom,
@@ -620,7 +627,7 @@ final class ModuleGraph extends Item
                     'type'          => 'select',
                     'fields'        => $fields,
                     'name'          => 'customGraphId',
-                    'selected'      => $values['customGraphId'],
+                    'selected'      => $selected_custom_graph,
                     'return'        => true,
                     'nothing'       => __('None'),
                     'nothing_value' => 0,

@@ -685,7 +685,8 @@ $(document).ready (function () {
             "get_agent_modules_json" : 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
-            "privilege" : "AW"
+            "privilege" : "AW",
+            "safe_name": 1
         };
         
         if (this.value != '0')
@@ -712,7 +713,7 @@ $(document).ready (function () {
                 jQuery.each (data, function (id, value) {
                     option = $("<option></option>")
                         .attr("value", value["nombre"])
-                        .html(value["nombre"]);
+                        .html(value["safe_name"]);
                     $("#module_name").append (option);
                 });
                 hideSpinner();

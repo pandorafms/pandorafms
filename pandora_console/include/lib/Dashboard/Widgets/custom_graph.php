@@ -354,6 +354,7 @@ class CustomGraphWidget extends Widget
                 'value'         => $values['period'],
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
+                'style_icon'    => 'flex-grow: 0',
             ],
         ];
 

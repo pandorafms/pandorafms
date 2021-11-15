@@ -367,6 +367,8 @@ class TopNEventByGroupWidget extends Widget
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
 
+        $event_table = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+
         if (empty($this->values['groupId']) === true) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
@@ -388,12 +390,13 @@ class TopNEventByGroupWidget extends Widget
             if ($all_group === false) {
                 $sql = sprintf(
                     'SELECT id_agente, COUNT(*) AS count
-                    FROM tevento
+                    FROM %s
                     WHERE utimestamp >= %d
                         AND id_grupo IN (%s)
                     GROUP BY id_agente
                     ORDER BY count DESC
                     LIMIT %d',
+                    $event_table,
                     $timestamp,
                     implode(',', $this->values['groupId']),
                     $this->values['amountShow']
@@ -401,11 +404,12 @@ class TopNEventByGroupWidget extends Widget
             } else {
                 $sql = sprintf(
                     'SELECT id_agente, COUNT(*) AS count
-                    FROM tevento
+                    FROM %s
                     WHERE utimestamp >= %d
                     GROUP BY id_agente
                     ORDER BY count DESC
                     LIMIT %d',
+                    $event_table,
                     $timestamp,
                     $this->values['amountShow']
                 );
@@ -428,9 +432,18 @@ class TopNEventByGroupWidget extends Widget
                     if ($row['id_agente'] == 0) {
                         $name = __('System');
                     } else {
-                        $name = io_safe_output(
-                            agents_get_alias($row['id_agente'])
-                        );
+                        if (is_metaconsole() === true) {
+                            $name = (string) db_get_value(
+                                'alias',
+                                'tmetaconsole_agent',
+                                'id_tagente',
+                                (int) $row['id_agente']
+                            );
+                        } else {
+                            $name = io_safe_output(
+                                agents_get_alias($row['id_agente'])
+                            );
+                        }
                     }
 
                     $name .= ' ('.$row['count'].')';

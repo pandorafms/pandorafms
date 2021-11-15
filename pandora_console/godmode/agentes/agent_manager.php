@@ -349,7 +349,14 @@ if (isset($groups[$grupo]) || $new_agent) {
 }
 
 $table_primary_group .= '<div class="label_select_child_icons"><span id="group_preview">';
-$table_primary_group .= ui_print_group_icon($grupo, true);
+if ($id_agente === 0) {
+    $hidden  = 'display: none;';
+} else {
+    $hidden = '';
+}
+
+$table_primary_group .= ui_print_group_icon($grupo, true, 'groups_small', $hidden);
+
 $table_primary_group .= '</span></div></div></div>';
 
 $table_interval = '<div class="label_select"><p class="input_label">'.__('Interval').'</p>';
@@ -1246,6 +1253,9 @@ ui_require_jquery_file('bgiframe');
         });
 
         $("select#id_os").pandoraSelectOS ();
+        $('select#grupo').pandoraSelectGroupIcon ();
+
+        
 
         var checked = $("#checkbox-cascade_protection").is(":checked");
         if (checked) {

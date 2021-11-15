@@ -571,7 +571,7 @@ $table_remote->data['integria_test'] = $row;
 // Print.
 echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
-html_print_image('images/integria_logo.png');
+html_print_image('images/integria_logo.svg');
 echo '</a>';
 echo '<br />';
 echo '<div clsas="integria_title">';

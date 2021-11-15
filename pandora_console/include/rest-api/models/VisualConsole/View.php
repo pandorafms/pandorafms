@@ -356,10 +356,15 @@ class View extends \HTML
 
             case MODULE_GRAPH:
                 $data['backgroundType'] = \get_parameter('backgroundType');
+                $type = \get_parameter('choosetype');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['customGraphId'] = \get_parameter('customGraphId');
+                if ($type === 'module') {
+                    $data['customGraphId'] = 0;
+                }
+
                 $data['graphType'] = \get_parameter('graphType');
                 $data['showLegend'] = \get_parameter_switch('showLegend');
                 $data['period'] = \get_parameter('period');
@@ -520,6 +525,19 @@ class View extends \HTML
                 if ($itemId === 0) {
                     $data['height'] = 150;
                     $data['width'] = 300;
+                }
+            break;
+
+            case BASIC_CHART:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['period'] = \get_parameter('period');
+                $data['moduleNameColor'] = \get_parameter('moduleNameColor');
+                if ($itemId === 0) {
+                    $data['height'] = 110;
+                    $data['width'] = 375;
                 }
             break;
 

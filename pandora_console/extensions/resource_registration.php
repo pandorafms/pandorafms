@@ -1081,12 +1081,18 @@ function resource_registration_extension_main()
     }
 
     if (is_management_allowed() === false) {
+        if (is_metaconsole() === false) {
+            $url = '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=advanced/policymanager'
+            ).'">'.__('metaconsole').'</a>';
+        } else {
+            $url = __('any node');
+        }
+
         ui_print_warning_message(
             __(
                 'This node is configured with centralized mode. Go to %s to create a policy.',
-                '<a target="_blank" href="'.ui_get_meta_url(
-                    'index.php?sec=advanced&sec2=advanced/policymanager'
-                ).'">'.__('metaconsole').'</a>'
+                $url
             )
         );
 
@@ -1094,7 +1100,7 @@ function resource_registration_extension_main()
     }
 
     echo '<div class=notify>';
-    echo __('This extension makes registering resource templates easier.').' '.__('Here you can upload a resource template in .ptr format.').' '.__('Please refer to our documentation for more information on how to obtain and use %s resources.', get_product_name()).' '.'<br> <br>'.__("You can get more resurces in our <a href='http://pandorafms.com/Library/Library/'>Public Resource Library</a>");
+    echo __('This extension makes registering resource templates easier.').' '.__('Here you can upload a resource template in .ptr format.').' '.__('Please refer to our documentation for more information on how to obtain and use %s resources.', get_product_name()).' '.'<br> <br>'.__('You can get more resurces in our <a href="http://pandorafms.com/Library/Library/">Public Resource Library</a>');
     echo '</div>';
 
     echo '<br /><br />';

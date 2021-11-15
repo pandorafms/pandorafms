@@ -666,6 +666,7 @@ class Client
             $target = __('console update %d', $request['version']);
         }
 
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
         curl_setopt(
             $ch,
             CURLOPT_PROGRESSFUNCTION,
@@ -941,7 +942,7 @@ class Client
             $queries = preg_split("/(;\n)|(;\n\r)/", $sql);
             foreach ($queries as $query) {
                 if (empty($query) !== true) {
-                    if (preg_match('/^\s*LOAD\s+(.*)$/i', $query, $matches) > 0) {
+                    if (preg_match('/^\s*SOURCE\s+(.*)$/i', $query, $matches) > 0) {
                         $filepath = dirname($mr_file).'/'.$matches[1];
                         if (file_exists($filepath) === true) {
                             $query = file_get_contents($filepath);
@@ -1269,12 +1270,13 @@ class Client
         }
 
         $content = file_get_contents($delete_files_txt);
-        $files = explode('\n', $content);
+        $files = explode("\n", $content);
         $processed = [];
         foreach ($files as $file) {
             $file = trim(str_replace("\0", '', $this->productPath.'/'.$file));
             if (file_exists($file) === true
                 && is_file($delete_files_txt) === true
+                && is_dir($file) === false
             ) {
                 unlink($file);
                 $processed[$file] = 'removed';
@@ -1342,14 +1344,14 @@ class Client
             function ($errno, $errstr) {
                 throw new \Exception($errstr, $errno);
             },
-            E_ERROR
+            (E_ALL ^ E_NOTICE)
         );
 
         register_shutdown_function(
             function () {
                 $error = error_get_last();
                 if (null !== $error
-                    && $error['type'] === E_ERROR
+                    && $error['type'] === (E_ALL ^ E_NOTICE)
                 ) {
                     echo __('Failed to analyze package: %s', $error['message']);
                 }
@@ -1434,7 +1436,7 @@ class Client
             function ($errno, $errstr) {
                 throw new \Exception($errstr, $errno);
             },
-            E_ERROR
+            (E_ALL ^ E_NOTICE)
         );
 
         if ($package === null) {
@@ -1673,7 +1675,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->productPath.'/extras/mr/'.$mr,
+                            $extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

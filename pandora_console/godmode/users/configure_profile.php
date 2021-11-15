@@ -1,17 +1,28 @@
 <?php
+/**
+ * * Configure profiles.
+ *
+ * @category   Profiles
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Global variables
+// Global variables.
 global $config;
 
 check_login();
@@ -32,7 +43,7 @@ enterprise_include_once('meta/include/functions_users_meta.php');
 $tab = get_parameter('tab', 'profile');
 $pure = get_parameter('pure', 0);
 
-// Header
+// Header.
 if (!is_metaconsole()) {
     $buttons = [
         'user'    => [
@@ -79,46 +90,46 @@ if (!is_metaconsole()) {
 $new_profile = (bool) get_parameter('new_profile');
 $id_profile = (int) get_parameter('id');
 
-// Edit profile
+// Edit profile.
 if ($id_profile || $new_profile) {
     if ($new_profile) {
-        // Name
+        // Name.
         $name = '';
 
-        // Agents
+        // Agents.
         $agent_view = 0;
         $agent_edit = 0;
         $agent_disable = 0;
 
-        // Alerts
+        // Alerts.
         $alert_edit = 0;
         $alert_management = 0;
 
-        // Users
+        // Users.
         $user_management = 0;
 
-        // DB
+        // DB.
         $db_management = 0;
 
-        // Pandora
+        // Pandora.
         $pandora_management = 0;
 
-        // Events
+        // Events.
         $event_view = 0;
         $event_edit = 0;
         $event_management = 0;
 
-        // Reports
+        // Reports.
         $report_view = 0;
         $report_edit = 0;
         $report_management = 0;
 
-        // Network maps
+        // Network maps.
         $map_view = 0;
         $map_edit = 0;
         $map_management = 0;
 
-        // Visual console
+        // Visual console.
         $vconsole_view = 0;
         $vconsole_edit = 0;
         $vconsole_management = 0;
@@ -145,43 +156,43 @@ if ($id_profile || $new_profile) {
             exit;
         }
 
-        // Name
+        // Name.
         $name = $profile['name'];
 
-        // Agents
+        // Agents.
         $agent_view = (bool) $profile['agent_view'];
         $agent_edit = (bool) $profile['agent_edit'];
         $agent_disable = (bool) $profile['agent_disable'];
 
-        // Alerts
+        // Alerts.
         $alert_edit = (bool) $profile['alert_edit'];
         $alert_management = (bool) $profile['alert_management'];
 
-        // Users
+        // Users.
         $user_management = (bool) $profile['user_management'];
 
-        // DB
+        // DB.
         $db_management = (bool) $profile['db_management'];
 
-        // Pandora
+        // Pandora.
         $pandora_management = (bool) $profile['pandora_management'];
 
-        // Events
+        // Events.
         $event_view = (bool) $profile['event_view'];
         $event_edit = (bool) $profile['event_edit'];
         $event_management = (bool) $profile['event_management'];
 
-        // Reports
+        // Reports.
         $report_view = (bool) $profile['report_view'];
         $report_edit = (bool) $profile['report_edit'];
         $report_management = (bool) $profile['report_management'];
 
-        // Network maps
+        // Network maps.
         $map_view = (bool) $profile['map_view'];
         $map_edit = (bool) $profile['map_edit'];
         $map_management = (bool) $profile['map_management'];
 
-        // Visual console
+        // Visual console.
         $vconsole_view = (bool) $profile['vconsole_view'];
         $vconsole_edit = (bool) $profile['vconsole_edit'];
         $vconsole_management = (bool) $profile['vconsole_management'];
@@ -249,14 +260,14 @@ if ($id_profile || $new_profile) {
     $table->style[0] = 'font-weight: bold';
     $table->data = [];
 
-    // Name
+    // Name.
     $row = [];
     $row['name'] = __('Profile name');
     $row['input'] = html_print_input_text('name', $name, '', 30, 60, true);
     $table->data['name'] = $row;
     $table->data[] = '<hr>';
 
-    // Agents
+    // Agents.
     $row = [];
     $row['name'] = __('View agents');
     $row['input'] = html_print_checkbox('agent_view', 1, $agent_view, true);
@@ -271,7 +282,7 @@ if ($id_profile || $new_profile) {
     $table->data['AW'] = $row;
     $table->data[] = '<hr>';
 
-    // Alerts
+    // Alerts.
     $row = [];
     $row['name'] = __('Edit alerts');
     $row['input'] = html_print_checkbox('alert_edit', 1, $alert_edit, true);
@@ -282,7 +293,7 @@ if ($id_profile || $new_profile) {
     $table->data['LM'] = $row;
     $table->data[] = '<hr>';
 
-    // Events
+    // Events.
     $row = [];
     $row['name'] = __('View events');
     $row['input'] = html_print_checkbox('event_view', 1, $event_view, true);
@@ -297,7 +308,7 @@ if ($id_profile || $new_profile) {
     $table->data['EM'] = $row;
     $table->data[] = '<hr>';
 
-    // Reports
+    // Reports.
     $row = [];
     $row['name'] = __('View reports');
     $row['input'] = html_print_checkbox('report_view', 1, $report_view, true);
@@ -312,7 +323,7 @@ if ($id_profile || $new_profile) {
     $table->data['RM'] = $row;
     $table->data[] = '<hr>';
 
-    // Network maps
+    // Network maps.
     $row = [];
     $row['name'] = __('View network maps');
     $row['input'] = html_print_checkbox('map_view', 1, $map_view, true);
@@ -327,7 +338,7 @@ if ($id_profile || $new_profile) {
     $table->data['MM'] = $row;
     $table->data[] = '<hr>';
 
-    // Visual console
+    // Visual console.
     $row = [];
     $row['name'] = __('View visual console');
     $row['input'] = html_print_checkbox('vconsole_view', 1, $vconsole_view, true);
@@ -347,7 +358,7 @@ if ($id_profile || $new_profile) {
         $disable_option = '';
     }
 
-    // NCM
+    // NCM.
     $row = [];
     $row['name'] = __('View NCM data');
     $row['input'] = html_print_checkbox('network_config_view', 1, $network_config_view, true);
@@ -362,21 +373,21 @@ if ($id_profile || $new_profile) {
     $table->data['VM'] = $row;
     $table->data[] = '<hr>';
 
-    // Users
+    // Users.
     $row = [];
     $row['name'] = __('Manage users');
     $row['input'] = html_print_checkbox('user_management', 1, $user_management, true, false, $disable_option);
     $table->data['UM'] = $row;
     $table->data[] = '<hr>';
 
-    // DB
+    // DB.
     $row = [];
     $row['name'] = __('Manage database');
     $row['input'] = html_print_checkbox('db_management', 1, $db_management, true, false, $disable_option);
     $table->data['DM'] = $row;
     $table->data[] = '<hr>';
 
-    // Pandora
+    // Pandora.
     $row = [];
     $row['name'] = __('%s management', get_product_name());
     $row['input'] = html_print_checkbox('pandora_management', 1, $pandora_management, true, false, $disable_option);

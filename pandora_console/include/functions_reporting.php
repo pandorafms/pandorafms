@@ -13669,7 +13669,7 @@ function reporting_label_macro($item, $label)
     if (preg_match('/_agentgroup_/', $label)) {
         $label = str_replace(
             '_agentgroup_',
-            $item['agent_group'],
+            groups_get_name($item['agent_group']),
             $label
         );
     }

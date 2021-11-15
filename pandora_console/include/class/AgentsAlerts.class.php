@@ -831,6 +831,7 @@ class AgentsAlerts extends HTML
             'arguments'      => [
                 'type'       => 'button',
                 'return'     => true,
+                'label'      => '',
                 'name'       => 'pure',
                 'attributes' => 'class="full_screen_button '.$screenSwitchClass.'" title="'.$screenSwitchTitle.'"',
             ],

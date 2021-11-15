@@ -362,15 +362,15 @@ if ($id_profile || $new_profile) {
     $row = [];
     $row['name'] = __('View NCM data');
     $row['input'] = html_print_checkbox('network_config_view', 1, $network_config_view, true);
-    $table->data['VR'] = $row;
+    $table->data['NR'] = $row;
     $row = [];
     $row['name'] = __('Operate NCM');
     $row['input'] = html_print_checkbox('network_config_edit', 1, $network_config_edit, true, false, 'autoclick_profile_users(\'network_config_edit\', \'network_config_view\', \'false\')');
-    $table->data['VW'] = $row;
+    $table->data['NW'] = $row;
     $row = [];
     $row['name'] = __('Manage NCM');
     $row['input'] = html_print_checkbox('network_config_management', 1, $network_config_management, true, false, 'autoclick_profile_users(\'network_config_management\', \'network_config_view\', \'network_config_edit\')');
-    $table->data['VM'] = $row;
+    $table->data['NM'] = $row;
     $table->data[] = '<hr>';
 
     // Users.

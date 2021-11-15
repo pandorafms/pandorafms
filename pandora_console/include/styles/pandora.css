@@ -813,6 +813,9 @@ select:-internal-list-box {
   padding: 0.2em;
   box-shadow: 0 0 10px -5px #d1d1d1;
 }
+.button-soft-border.icon {
+  width: 1.5em;
+}
 .button-soft-border:hover {
   box-shadow: 0 0 10px 0px #d1d1d1;
 }

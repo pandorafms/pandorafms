@@ -2748,7 +2748,8 @@ function ui_print_module_status(
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
-    $output .= '" title="'.$title.'"></div>';
+    $output .= ' forced_title" data-title="'.$title.'" title="';
+    $output .= $title.'" data-use_title_for_force_title="1"></div>';
 
     if ($return === false) {
         echo $output;

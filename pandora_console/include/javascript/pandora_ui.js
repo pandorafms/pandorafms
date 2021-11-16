@@ -483,6 +483,7 @@ function confirmDialog(settings) {
   $("#confirm_" + randomStr);
   $("#confirm_" + randomStr)
     .dialog({
+      open: settings.open,
       title: settings.title,
       close: false,
       width: settings.size,

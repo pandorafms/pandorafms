@@ -91,7 +91,7 @@ if (is_ajax()) {
 
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
-        $recursion = (get_parameter_switch('recursion', 'false') === 'true');
+        $recursion = filter_var(get_parameter_switch('recursion', 'false'), FILTER_VALIDATE_BOOLEAN);
         $id_os = get_parameter('id_os', '');
         $agent_name = get_parameter('name', '');
 
@@ -801,7 +801,7 @@ if (is_ajax()) {
                 }
             } else {
                 $sql = sprintf(
-                    'SELECT DISTINCT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+                    'SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
 					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 					%s WHERE %s AND t1.delete_pending = 0
 					AND t1.id_agente IN ('.implode(',', $idAgents).')

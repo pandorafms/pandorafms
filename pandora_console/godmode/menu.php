@@ -462,9 +462,9 @@ if (is_array($config['extensions'])) {
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['refr'] = 0;
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['icon'] = $extmenu['icon'];
                             if ($extmenu['name'] == 'Cron jobs') {
-                                $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = 'extensions';
+                                $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = $extmenu['fatherId'];
                             } else {
-                                $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = 'gextensions';
+                                $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = $extmenu['fatherId'];
                             }
 
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['extension'] = true;
@@ -525,8 +525,8 @@ $menu_godmode['links']['sub'] = $sub;
 // Update Manager
 if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) {
     $menu_godmode['messages']['text'] = __('Update manager');
-    $menu_godmode['messages']['sec2'] = '';
     $menu_godmode['messages']['id'] = 'god-um_messages';
+    $menu_godmode['messages']['sec2'] = 'godmode/update_manager/update_manager';
 
     $sub = [];
     $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
@@ -543,7 +543,6 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
 // Module library.
 if (check_acl($config['id_user'], 0, 'AR')) {
     $menu_godmode['gmodule_library']['text'] = __('Module library');
-    $menu_godmode['gmodule_library']['sec2'] = 'godmode/module_library/module_library_view';
     $menu_godmode['gmodule_library']['id'] = 'god-module_library';
 
     $sub = [];

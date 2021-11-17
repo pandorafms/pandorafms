@@ -893,7 +893,7 @@ class Events
             '
 			<script type="text/javascript">
 				function openDetails(id_event) {
-					$.mobile.showPageLoadingMsg();
+                    $.mobile.loading("show");
 					
 					postvars = {};
 					postvars["action"] = "ajax";
@@ -952,24 +952,24 @@ class Events
 									}
 									else {
 										//The event is validated.
-										$("#validate_button").hide();
+                                        $("#validate_button").hide();
 									}
 									$("#validate_button_loading").hide();
 									$("#validate_button_fail").hide();
 									$("#validate_button_correct").hide();
 									
-									$.mobile.hidePageLoadingMsg();
+                                    $.mobile.loading( "hide" );
 									
 									$("#detail_event_dialog_hook").click();
 								}
 								else {
-									$.mobile.hidePageLoadingMsg();
+                                    $.mobile.loading( "hide" );
 									$("#detail_event_dialog_error_hook").click();
 								}
 							},
 						error:
 							function (jqXHR, textStatus, errorThrown) {
-								$.mobile.hidePageLoadingMsg();
+                                $.mobile.loading( "hide" );
 								$("#detail_event_dialog_error_hook").click();
 							}
 						});

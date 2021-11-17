@@ -60,7 +60,7 @@ if (check_acl($config['id_user'], 0, 'AR')
 
     // Add to menu.
     $menu_godmode['discovery']['text'] = __('Discovery');
-    $menu_godmode['discovery']['sec2'] = 'godmode/servers/discovery';
+    $menu_godmode['discovery']['sec2'] = '';
     $menu_godmode['discovery']['id'] = 'god-discovery';
     $menu_godmode['discovery']['sub'] = $sub;
 }

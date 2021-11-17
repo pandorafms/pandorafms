@@ -653,13 +653,6 @@ function menu_get_sec_pages($sec, $menu_hash=false)
                 }
             }
 
-            // If this value has various parameters, we only get the first.
-            $k = explode('&', $k);
-            $k = $k[0];
-            if (is_array($v['text']) === true) {
-                $v['text'] = $v['text'][0];
-            }
-
             $sec2_array[$k] = $v['text'];
         }
     }
@@ -755,12 +748,6 @@ function menu_pepare_acl_select_data($pages, $sec)
         'gmodules'   => 'godmode/modules/manage_network_templates',
         'geventos'   => 'godmode/events/events&amp;section=filter',
         'gsetup'     => 'godmode/setup/setup&section=general',
-        'messages'   => [
-            'godmode/update_manager/update_manager&tab=online',
-            'godmode/update_manager/update_manager&tab=offline',
-            'godmode/update_manager/update_manager&tab=setup',
-        ],
-
     ];
 
     foreach ($exclude_pages as $exclude_sec => $sec2) {

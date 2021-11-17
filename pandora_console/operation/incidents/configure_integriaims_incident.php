@@ -319,7 +319,7 @@ $table->data[3][0] .= '<div class="label_select_parent">'.html_print_select(
     'resolution',
     $input_value_resolution,
     '',
-    __('Select'),
+    '',
     1,
     true,
     false,

@@ -34,7 +34,7 @@ $product_name = get_product_name(); ?>
     <script type="text/javascript">
         if (typeof $ != "function") {
             // Dynamically include jquery if not added to this page.
-            document.write('<script type="text/javascript" src="<?php echo $asset('resources/javascript/jquery-3.3.1.min.js'); ?>"></'+'script>');
+            document.write('<script type="text/javascript" src="<?php echo $asset('resources/javascript/jquery.current.js'); ?>"></'+'script>');
             document.write('<script type="text/javascript" src="<?php echo $asset('resources/javascript/jquery-ui.min.js'); ?>"></'+'script>');
         }
     </script>

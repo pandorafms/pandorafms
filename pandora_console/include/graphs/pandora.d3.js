@@ -98,6 +98,32 @@ function chordDiagram(recipient, elements, matrix, width) {
               })
               .transition()
               .style("opacity", opacity);
+
+            if (event.type == "mouseover") {
+              const chords = chord.chords();
+              let aux = 0;
+              $.each(chords, function(key, value) {
+                console.log(aux);
+                if (aux < 5) {
+                  if (
+                    (value.source.index == i && value.target.subindex == i) ||
+                    (value.source.subindex == i && value.target.index == i)
+                  ) {
+                    if (
+                      $("#tooltip").is(":hidden") ||
+                      $("#tooltip").length == 0
+                    ) {
+                      show_tooltip(value);
+                    } else {
+                      add_tooltip(value);
+                      aux++;
+                    }
+                  }
+                }
+              });
+            } else {
+              hide_tooltip();
+            }
           };
         };
 
@@ -122,7 +148,8 @@ function chordDiagram(recipient, elements, matrix, width) {
           .style("stroke", fill)
           .attr("d", arc)
           .on("mouseover", fade(0.1))
-          .on("mouseout", fade(1));
+          .on("mouseout", fade(1))
+          .on("mousemove", move_tooltip);
 
         g.append("svg:text")
           .each(function(d) {
@@ -256,6 +283,25 @@ function chordDiagram(recipient, elements, matrix, width) {
               "top: " +
               y +
               "px;"
+          );
+        }
+
+        function add_tooltip(d) {
+          $("#tooltip").append(
+            "</br>" +
+              elements[d.source.index] +
+              " → " +
+              elements[d.target.index] +
+              ": <b>" +
+              valueToBytes(d.source.value) +
+              "</b>" +
+              "<br>" +
+              elements[d.target.index] +
+              " → " +
+              elements[d.source.index] +
+              ": <b>" +
+              valueToBytes(d.target.value) +
+              "</b>"
           );
         }
 
@@ -2784,7 +2830,7 @@ function donutNarrowGraph(
       arc = d3.svg
         .arc()
         .outerRadius(radius)
-        .innerRadius(radius - radius / 2.5);
+        .innerRadius(radius - radius / 6);
 
       svg = donutbody
         .append("svg")

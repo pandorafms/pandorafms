@@ -665,7 +665,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
         $types['sql_graph_hbar'] = [
             'optgroup' => __('Graphs'),
-            'name'     => __('SQL horizonal bar graph'),
+            'name'     => __('SQL horizontal bar graph'),
         ];
     }
 
@@ -685,6 +685,13 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Graphs'),
         'name'     => __('Module Histogram graph'),
     ];
+
+    if ($config['enterprise_installed'] && is_metaconsole() === false) {
+        $types['IPAM_network'] = [
+            'optgroup' => __('IPAM'),
+            'name'     => __('IPAM networks'),
+        ];
+    }
 
     $types['SLA'] = [
         'optgroup' => __('SLA'),
@@ -723,15 +730,15 @@ function reports_get_report_types($template=false, $not_editor=false)
 
     $types['avg_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Avg. Value'),
+        'name'     => __('Avg. value'),
     ];
     $types['max_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Max. Value'),
+        'name'     => __('Max. value'),
     ];
     $types['min_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Min. Value'),
+        'name'     => __('Min. value'),
     ];
     $types['monitor_report'] = [
         'optgroup' => __('Modules'),
@@ -756,10 +763,6 @@ function reports_get_report_types($template=false, $not_editor=false)
     $types['last_value'] = [
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
-    ];
-    $types['histogram_data'] = [
-        'optgroup' => __('Modules'),
-        'name'     => __('Histogram'),
     ];
 
     $types['general'] = [

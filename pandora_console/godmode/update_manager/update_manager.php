@@ -37,12 +37,10 @@ $buttons['setup'] = [
     'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options'), 'class' => 'invert_filter']).'</a>',
 ];
 
-if (enterprise_installed()) {
-    $buttons['offline'] = [
-        'active' => ($tab == 'offline') ? true : false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
-    ];
-}
+$buttons['offline'] = [
+    'active' => ($tab == 'offline') ? true : false,
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
+];
 
 $buttons['online'] = [
     'active' => ($tab == 'online') ? true : false,
@@ -60,6 +58,7 @@ switch ($tab) {
     break;
 
     case 'online':
+    default:
         $title = __('Update manager » Online');
     break;
 }

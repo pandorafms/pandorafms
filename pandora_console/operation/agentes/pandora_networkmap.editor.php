@@ -66,10 +66,7 @@ if ($new_networkmap) {
 $disabled_generation_method_select = false;
 $disabled_source = false;
 if ($edit_networkmap) {
-    if (enterprise_installed()) {
-        $disabled_generation_method_select = true;
-    }
-
+    $disabled_generation_method_select = true;
     $disabled_source = true;
 
     $values = db_get_row('tmap', 'id', $id);

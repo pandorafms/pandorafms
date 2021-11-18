@@ -182,6 +182,7 @@ if (isset($id)) {
             $snmp3_privacy_pass = io_output_password(
                 $component['custom_string_2']
             );
+            unset($tcp_send);
             $snmp3_security_level = $component['custom_string_3'];
         } else if ($type >= MODULE_TYPE_REMOTE_CMD && $type <= MODULE_TYPE_REMOTE_CMD_INC) {
             $command_text = $component['tcp_send'];

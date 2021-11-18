@@ -32,6 +32,8 @@ class TreeOS extends Tree
             'tco.icon_name AS iconHTML',
         ];
         $this->L1inner = 'INNER JOIN tconfig_os tco ON tco.id_os = x2.g';
+        $this->L1innerInside = 'INNER JOIN tagente_modulo tam 
+                                    ON ta.id_agente = tam.id_agente';
         $this->L1orderByFinal = 'tco.name';
 
         $this->L2condition = 'AND ta.id_os = '.$this->rootID;

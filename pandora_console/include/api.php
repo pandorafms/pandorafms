@@ -105,19 +105,19 @@ if ($info == 'version') {
 
 if (empty($apiPassword) === true
     || (empty($apiPassword) === false && $api_password === $apiPassword)
-    && (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
-    || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true)
 ) {
-    // Allow internal direct node -> metaconsole connection
-    // or node -> own console connection.
-    $config['__internal_call'] = true;
-    $config['id_usuario'] = 'admin';
-    // Compat.
-    $config['id_user'] = 'admin';
-    $correctLogin = true;
-} else if ((bool) isInACL($ipOrigin) === true) {
-    // External access.
-    if (empty($apiPassword) === true || (empty($apiPassword) === false && $api_password === $apiPassword)) {
+    if (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
+        || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true
+    ) {
+        // Allow internal direct node -> metaconsole connection
+        // or node -> own console connection.
+        $config['__internal_call'] = true;
+        $config['id_usuario'] = 'admin';
+        // Compat.
+        $config['id_user'] = 'admin';
+        $correctLogin = true;
+    } else if ((bool) isInACL($ipOrigin) === true) {
+        // External access.
         $user_in_db = process_user_login($user, $password, true);
         if ($user_in_db !== false) {
             $config['id_usuario'] = $user_in_db;
@@ -138,10 +138,10 @@ if (empty($apiPassword) === true
             $no_login_msg = 'Incorrect user credentials';
         }
     } else {
-        $no_login_msg = 'Incorrect given API password';
+        $no_login_msg = 'IP '.$ipOrigin.' is not in ACL list';
     }
 } else {
-    $no_login_msg = 'IP '.$ipOrigin.' is not in ACL list';
+    $no_login_msg = 'Incorrect given API password';
 }
 
 if ($correctLogin) {

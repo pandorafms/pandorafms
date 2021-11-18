@@ -30,7 +30,7 @@ using namespace Pandora_Modules;
  * @param host Host to be pinged.
  */
 Pandora_Module_Ping::Pandora_Module_Ping (string name, string host, string count, string timeout, string advanced_options)
-					 : Pandora_Module_Exec (name, "ping -n " + count + " -w " + timeout + " " + advanced_options + " " + host) {
+					 : Pandora_Module_Exec (name, "ping -n " + count + " -w " + timeout + " " + advanced_options + " " + host + " | find \"TTL=\"") {
 	this->proc = 1;
 	this->setKind (module_ping_str);
 }

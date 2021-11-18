@@ -416,11 +416,14 @@ ul li {
 }
 
 .menu_full_classic .title_menu_classic {
-  display: flex;
+  display: flex !important;
+}
+.menu_icon_collapsed {
+  background-position: 50% 50%;
 }
 
 .menu_full_collapsed .title_menu_collapsed {
-  display: none;
+  display: none !important;
 }
 
 .button_classic {
@@ -473,16 +476,4 @@ ul li {
 
 .header_table_collapsed {
   padding-left: 80px; /* 60 + 35 */
-}
-
-.title_menu_classic {
-  display: flex;
-}
-
-.title_menu_collapsed {
-  display: none;
-}
-
-.menu_icon_collapsed {
-  background-position: 50% 50%;
 }

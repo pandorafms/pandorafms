@@ -69,9 +69,9 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     // Module name
     if ($module['disabled']) {
-        $cellName = '<em>'.ui_print_truncate_text(io_safe_output($module['nombre']), GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;').ui_print_help_tip(__('Disabled'), true).'<em>';
+        $cellName = '<em>'.ui_print_truncate_text($module['nombre'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;').ui_print_help_tip(__('Disabled'), true).'<em>';
     } else {
-        $cellName = ui_print_truncate_text(io_safe_output($module['nombre']), GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;');
+        $cellName = ui_print_truncate_text($module['nombre'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;');
     }
 
     $row = [];
@@ -596,7 +596,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $hashdata = md5($hashdata);
         $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
 
-        if ($grants_on_node) {
+        if ($grants_on_node && (bool) $user_access_node !== false) {
             $cellName .= '<a href="'.$url.'">'.'<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
         } else {
             $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
@@ -817,7 +817,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $events_graph .= graph_graphic_agentevents(
         $id_agente,
         '340px;margin:0',
-        45,
+        '130px',
         SECONDS_1DAY,
         '',
         true,

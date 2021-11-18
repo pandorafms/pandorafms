@@ -423,7 +423,7 @@ if ($show_update_action_menu) {
     );
 
     $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
-    $data .= '<table class="databox_color w100p">';
+    $data .= '<table class="databox_color w100p bg_color222">';
         $data .= html_print_input_hidden(
             'update_action',
             1,

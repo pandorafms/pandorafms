@@ -231,8 +231,8 @@ if (isset($_GET['server'])) {
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {
-    var id_server = <?php echo $id_server; ?>;
-    var server_type = <?php echo $row['server_type']; ?>;
+    var id_server = '<?php echo $id_server; ?>';
+    var server_type = '<?php echo $row['server_type']; ?>';
     $("#check_exec_server img").on("click", function () {
         $("#check_exec_server img").attr("src", "images/spinner.gif");
 

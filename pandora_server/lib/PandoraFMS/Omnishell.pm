@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use File::Copy;
+use File::Basename qw(dirname basename);
 use Scalar::Util qw(looks_like_number);
 use lib '/usr/lib/perl5';
 use PandoraFMS::PluginTools qw/init read_configuration read_file empty trim/;

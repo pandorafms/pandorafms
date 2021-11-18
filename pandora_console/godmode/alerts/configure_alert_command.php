@@ -105,6 +105,7 @@ if ($update_command) {
             $alert['command'] = $command;
             $alert['description'] = $description;
             $alert['id_group'] = $id_group;
+            $alert['fields_hidden'] = io_json_mb_encode($fields_hidden);
         }
     }
 
@@ -158,12 +159,18 @@ if (empty($fields_hidden) === false) {
 $is_management_allowed = is_management_allowed();
 
 if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_command&pure=0&id='.$id
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All alert commands information is read only. Go to %s to manage it.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_command&pure=0&id='.$id
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

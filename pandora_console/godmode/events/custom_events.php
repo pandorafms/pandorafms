@@ -95,6 +95,7 @@ $fields_available['id_evento'] = __('Event Id');
 $fields_available['evento'] = __('Event Name');
 $fields_available['id_agente'] = __('Agent ID');
 $fields_available['agent_name'] = __('Agent Name');
+$fields_available['direccion'] = __('Agent IP');
 $fields_available['id_usuario'] = __('User');
 $fields_available['id_grupo'] = __('Group');
 $fields_available['estado'] = __('Status');

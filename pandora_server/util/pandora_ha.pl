@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 ###############################################################################
-# Pandora FMS Database HA
+# Pandora FMS Daemon Watchdog
 ###############################################################################
 # Copyright (c) 2018-2021 Artica Soluciones Tecnologicas S.L
 ###############################################################################
@@ -49,11 +49,14 @@ my $Running = 0;
 ########################################################################
 # Print the given message with a preceding timestamp.
 ########################################################################
-sub log_message($$$) {
-  my ($conf, $source, $message) = @_;
+sub log_message($$$;$) {
+  my ($conf, $source, $message, $verbosity_level) = @_;
+
+  my $level = $verbosity_level;
+  $level = 5 unless defined($level);
 
   if (ref($conf) eq "HASH") {
-    logger($conf, 'HA (' . $source . ') ' . "$message", 5);
+    logger($conf, 'HA (' . $source . ') ' . "$message", $level);
   }
   
   if ($source eq '') {
@@ -105,7 +108,7 @@ sub ha_daemonize($) {
 sub ha_init_pandora($) {
   my $conf = shift;
   
-  log_message($conf, '', "\nPandora FMS Database HA Tool " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
+  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
   
   getopts('dp:', \%Opts);
 
@@ -171,8 +174,9 @@ sub ha_keep_pandora_running($$) {
     'SELECT count(*) AS "delayed"
      FROM  tserver
      WHERE ((status = -1) OR ( (unix_timestamp() - unix_timestamp(keepalive)) > (server_keepalive+1) AND status != 0 ))
-       AND server_type != ? AND name = ?',
+       AND server_type NOT IN (?, ?) AND name = ?',
     PandoraFMS::Tools::SATELLITESERVER,
+    PandoraFMS::Tools::MFSERVER,
     $conf->{'servername'}
   );
 
@@ -402,19 +406,6 @@ END {
   stop();
 }
 
-###############################################################################
-# Aux. get module id
-###############################################################################
-my %module_id;
-sub __get_module_id {
-  my ($dbh, $module_type) = @_;
-
-  if (!defined($module_id{$module_type})) {
-    $module_id{$module_type} = get_module_id($dbh, $module_type);
-  }
-
-  return $module_id{$module_type}
-}
 
 $SIG{INT} = \&stop;
 $SIG{TERM} = \&stop;

@@ -433,7 +433,10 @@ switch ($activeTab) {
                 $idsElements = db_get_all_rows_filter(
                     'tlayout_data',
                     ['id_layout' => $idVisualConsole],
-                    ['id']
+                    [
+                        'id',
+                        'type',
+                    ]
                 );
 
                 if ($idsElements === false) {
@@ -449,18 +452,33 @@ switch ($activeTab) {
                     $values['height'] = get_parameter('height_'.$id, 0);
                     $values['pos_x'] = get_parameter('left_'.$id, 0);
                     $values['pos_y'] = get_parameter('top_'.$id, 0);
-                    $type = db_get_value('type', 'tlayout_data', 'id', $id);
-                    switch ($type) {
-                        case MODULE_GRAPH:
+                    switch ($idElement['type']) {
+                        case NETWORK_LINK:
+                        case LINE_ITEM:
+                        continue 2;
+
+                        break;
+
                         case SIMPLE_VALUE_MAX:
                         case SIMPLE_VALUE_MIN:
                         case SIMPLE_VALUE_AVG:
                             $values['period'] = get_parameter('period_'.$id, 0);
                         break;
 
+                        case MODULE_GRAPH:
+                            $values['period'] = get_parameter('period_'.$id, 0);
+                            unset($values['image']);
+                        break;
+
                         case GROUP_ITEM:
                             $values['id_group'] = get_parameter('group_'.$id, 0);
-                            $values['show_statistics'] = get_parameter('show_statistics', 0);
+                        break;
+
+                        case CIRCULAR_PROGRESS_BAR:
+                        case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                        case PERCENTILE_BUBBLE:
+                        case PERCENTILE_BAR:
+                            unset($values['height']);
                         break;
                     }
 

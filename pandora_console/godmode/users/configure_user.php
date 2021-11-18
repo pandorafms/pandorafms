@@ -140,7 +140,9 @@ if (is_ajax()) {
 
 
         $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
-        if ($has_profile == false) {
+        $user_is_global_admin = users_is_admin($id2);
+
+        if ($has_profile === false && $user_is_global_admin === false) {
             $result = delete_user($id2);
 
             if ($result) {
@@ -721,6 +723,7 @@ if ($update_user) {
         );
     }
 
+
     if ($values['strict_acl']) {
         $count_groups = 0;
         $count_tags = 0;
@@ -991,7 +994,7 @@ $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line email_icon_input invert_filter',
+        'class'       => 'input input_line email_icon_input',
         'placeholder' => __('E-mail'),
     ],
     true
@@ -1226,7 +1229,10 @@ $session_time .= html_print_input_text(
     'class="input_line_small"'
 ).'</div>';
 
-$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
+
+$user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
+
+$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')');
 if ($event_filter_data === false) {
     $event_filter_data = [];
 }
@@ -1317,6 +1323,8 @@ if (isset($double_authentication)) {
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
 
+    $access_node = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
+
     $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
     $metaconsole_agents_manager .= html_print_checkbox_switch(
         'metaconsole_agents_manager',
@@ -1338,7 +1346,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox(
         'metaconsole_access_node',
         1,
-        $user_info['metaconsole_access_node'],
+        $access_node,
         true
     ).'</div>';
 }
@@ -1538,6 +1546,7 @@ $(document).ready (function () {
     var img_delete = '<?php echo $delete_image; ?>';
     var id_user = '<?php echo io_safe_output($id); ?>';
     var is_metaconsole = '<?php echo $meta; ?>';
+    var user_is_global_admin = '<?php echo users_is_admin($id); ?>';
     var data = [];
 
     $('input:image[name="add"]').click(function (e) {
@@ -1582,7 +1591,7 @@ $(document).ready (function () {
     $('input:image[name="del"]').click(function (e) {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
-        if ((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) {
+        if (((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) && user_is_global_admin !== '1') {
             if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
                 return;
             }
@@ -1604,8 +1613,11 @@ $(document).ready (function () {
             success: function (data) {
                 row.remove();
                 var rows = $("#table_profiles tr").length;
-                if ((is_metaconsole === '1' && rows <= 3) || (is_metaconsole === '' && rows <= 2)) {
+
+                if (is_metaconsole === '' && rows <= 2 && user_is_global_admin !== '1') {
                     window.location.replace("<?php echo ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0', false, false, false); ?>");
+                } else if (is_metaconsole === '1' && rows <= 3 && user_is_global_admin !== '1') {
+                    window.location.replace("<?php echo ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup', false, false, true); ?>");
                 }
             }
         });
@@ -1744,7 +1756,6 @@ function show_double_auth_info () {
     var $dialogContainer = $("div#dialog-double_auth-container");
 
     $dialogContainer.html($loadingSpinner);
-console.log(userID);
     // Load the info page
     var request = $.ajax({
         url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -1909,7 +1920,6 @@ function show_double_auth_deactivation () {
                 
             },
             success: function(data, textStatus, xhr) {
-                console.log(data);
                 if (data === -1) {
                     $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
                 }

@@ -648,14 +648,9 @@ function menu_get_sec_pages($sec, $menu_hash=false)
         foreach ($menu[$sec]['sub'] as $k => $v) {
             // Avoid special cases of standalone windows.
             if (preg_match('/^javascript:/', $k) || preg_match('/\.php/', $k)) {
-                continue;
-            }
-
-            // If this value has various parameters, we only get the first.
-            $k = explode('&', $k);
-            $k = $k[0];
-            if (is_array($v['text']) === true) {
-                $v['text'] = $v['text'][0];
+                if ($sec !== 'links') {
+                    continue;
+                }
             }
 
             $sec2_array[$k] = $v['text'];
@@ -688,6 +683,7 @@ function menu_get_sec2_pages($sec, $sec2, $menu_hash=false)
     }
 
     $sec3_array = [];
+    $sec2 = io_safe_output($sec2);
 
     if (isset($menu[$sec]['sub']) && isset($menu[$sec]['sub'][$sec2]['sub2'])) {
         // Get the sec2 of the subsections.
@@ -712,10 +708,6 @@ function menu_sec2_in_sec($sec, $sec2)
 {
     $sec2_array = menu_get_sec_pages($sec);
 
-    // If this value has various parameters, we only get the first.
-    $sec2 = explode('&', $sec2);
-    $sec2 = $sec2[0];
-
     if ($sec2_array != null && in_array($sec2, array_keys($sec2_array))) {
         return true;
     }
@@ -727,10 +719,6 @@ function menu_sec2_in_sec($sec, $sec2)
 function menu_sec3_in_sec2($sec, $sec2, $sec3)
 {
     $sec3_array = menu_get_sec2_pages($sec, $sec2, $menu_hash = false);
-
-    // If this value has various parameters, we only get the first.
-    $sec3 = explode('&', $sec3);
-    $sec3 = $sec3[0];
 
     if ($sec3_array != null && in_array($sec3, array_keys($sec3_array))) {
         return true;
@@ -760,12 +748,6 @@ function menu_pepare_acl_select_data($pages, $sec)
         'gmodules'   => 'godmode/modules/manage_network_templates',
         'geventos'   => 'godmode/events/events&amp;section=filter',
         'gsetup'     => 'godmode/setup/setup&section=general',
-        'messages'   => [
-            'godmode/update_manager/update_manager&tab=online',
-            'godmode/update_manager/update_manager&tab=offline',
-            'godmode/update_manager/update_manager&tab=setup',
-        ],
-
     ];
 
     foreach ($exclude_pages as $exclude_sec => $sec2) {

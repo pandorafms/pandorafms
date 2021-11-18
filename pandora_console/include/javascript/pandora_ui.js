@@ -329,7 +329,20 @@ function load_modal(settings) {
                 } else {
                   settings.ajax_callback(data);
                 }
+              } else {
+                generalShowMsg(data, null);
               }
+
+              AJAX_RUNNING = 0;
+            },
+            error: function(response) {
+              generalShowMsg(
+                {
+                  title: "Failed",
+                  text: response.responseText
+                },
+                null
+              );
               AJAX_RUNNING = 0;
             }
           });
@@ -543,9 +556,26 @@ function confirmDialog(settings) {
  */
 // eslint-disable-next-line no-unused-vars
 function generalShowMsg(data, idMsg) {
-  var title = data.title[data.error];
-  var text = data.text[data.error];
-  var failed = !data.error;
+  var title = "Response";
+  var text = data;
+  var failed = false;
+
+  if (typeof data == "object") {
+    title = data.title || "Response";
+    text = data.text || data.error || data.result;
+    failed = failed || data.error;
+  }
+
+  if (failed) text = data.error;
+
+  if (idMsg == null) {
+    idMsg = uniqId();
+  }
+
+  if ($("#" + idMsg).length === 0) {
+    $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+    $("#" + idMsg).empty();
+  }
 
   $("#" + idMsg).empty();
   $("#" + idMsg).html(text);

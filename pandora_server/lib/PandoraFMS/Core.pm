@@ -1092,6 +1092,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
 	my ($field11, $field12, $field13, $field14, $field15, $field16, $field17, $field18, $field19, $field20);
 
+			# Check for empty alert fields and assign command field.
+		my $index = 1;
+		my @command_fields = split(/,|\[|\]/, $action->{'fields_values'});
+		foreach my $field (@command_fields) {
+		unless (defined($action->{'field'.$index}) && $action->{'field'.$index} ne "") {
+					$action->{'field'.$index}  = defined($field) ? $field : "" ;
+		}
+	}
+
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
 		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne ""  ? $action->{'field1'}  : $alert->{'field1'};
@@ -1138,6 +1147,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
+		
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined

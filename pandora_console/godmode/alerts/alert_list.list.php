@@ -1163,9 +1163,8 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                         background: "black"
                     },
                     open: function() {
-                        $("#action_select_ajax, #action_select_ajax").select2({
-                            tags: true,
-                            dropdownParent: $("#update_action-div")
+                        $("#action_select_ajax").select2({
+                            dropdownParent: $('#update_action-')
                         });
                     },
                     width: 500,
@@ -1174,7 +1173,6 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                 .show ();
         }
     });
-    
 }
 
 /* ]]> */

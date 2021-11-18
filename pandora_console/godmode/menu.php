@@ -526,7 +526,7 @@ $menu_godmode['links']['sub'] = $sub;
 if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) {
     $menu_godmode['messages']['text'] = __('Update manager');
     $menu_godmode['messages']['id'] = 'god-um_messages';
-    $menu_godmode['messages']['sec2'] = 'godmode/update_manager/update_manager';
+    $menu_godmode['messages']['sec2'] = '';
 
     $sub = [];
     $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');

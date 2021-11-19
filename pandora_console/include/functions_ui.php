@@ -3591,18 +3591,86 @@ function ui_print_datatable(array $parameters)
     // Order.
     $err_msg = '<div id="error-'.$table_id.'"></div>';
     $output = $err_msg.$filter.$extra.$table.$js;
+    if (is_ajax() === false) {
+        ui_require_css_file('datatables.min', 'include/styles/js/');
+        ui_require_css_file('tables');
+        if (is_metaconsole()) {
+            ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+        }
 
-    ui_require_css_file('datatables.min', 'include/styles/js/');
-    ui_require_css_file('tables');
-    if (is_metaconsole()) {
-        ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+        ui_require_javascript_file('datatables.min');
+        ui_require_javascript_file('buttons.dataTables.min');
+        ui_require_javascript_file('dataTables.buttons.min');
+        ui_require_javascript_file('buttons.html5.min');
+        ui_require_javascript_file('buttons.print.min');
+    } else {
+        // Load tables.css.
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/tables.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+        if (is_metaconsole() === true) {
+            // Load tables_meta.css.
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                ENTERPRISE_DIR.'/include/styles/tables_meta.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        }
+
+        // Load datatables.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/datatables.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.dataTables.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.dataTables.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load dataTables.buttons.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/dataTables.buttons.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.html5.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.html5.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.print.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.print.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
     }
-
-    ui_require_javascript_file('datatables.min');
-    ui_require_javascript_file('buttons.dataTables.min');
-    ui_require_javascript_file('dataTables.buttons.min');
-    ui_require_javascript_file('buttons.html5.min');
-    ui_require_javascript_file('buttons.print.min');
 
     if (isset($parameters['return']) && $parameters['return'] == true) {
         // Compat.

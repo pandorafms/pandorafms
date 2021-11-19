@@ -25,4 +25,6 @@ UPDATE `talert_special_days` set `day_code` = 7 WHERE `same_day` = 'sunday';
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
 ALTER TABLE `talert_special_days` ADD FOREIGN KEY (`id_calendar`) REFERENCES `talert_calendar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `tagent_repository` ADD COLUMN `deployment_timeout` INT UNSIGNED DEFAULT 600 AFTER `path`;
+
 COMMIT;

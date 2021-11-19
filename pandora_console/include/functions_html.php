@@ -728,7 +728,8 @@ function html_print_select(
     $simple_multiple_options=false,
     $required=false,
     $truncate_size=false,
-    $select2_enable=true
+    $select2_enable=true,
+    $multiple_select2=false
 ) {
     $output = "\n";
 
@@ -900,7 +901,8 @@ function html_print_select(
         $select2 = 'select2_dark.min';
     }
 
-    if ($multiple === false && $select2_enable === true) {
+    // Note that multiple_select2 is introduced as a workaround to overcome the pointless limitation of preventing "multiple" select inputs from using select2 library without affecting the existing calls to this function.
+    if ($multiple === false && $select2_enable === true || $multiple_select2 === true) {
         if (is_ajax()) {
             $output .= '<script src="';
             $output .= ui_get_full_url(

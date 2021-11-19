@@ -427,11 +427,18 @@ if (check_acl($config['id_user'], 0, 'ER')
     <script type="text/javascript">
     function openSoundEventWindow() {
         url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
+        // devicePixelRatio knows how much zoom browser applied.
+        var windowScale = parseFloat(window.devicePixelRatio);
+        var defaultWidth = 600;
+        var defaultHeight = 450;
+        // If the scale is 1, no zoom has been applied.
+        var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
+        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
         
         window.open(
             url,
             '<?php __('Sound Alerts'); ?>',
-            'width=600, height=450, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no'
+            'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
         );
     }
     </script>
@@ -545,7 +552,7 @@ if (is_array($config['extensions'])) {
             if (array_key_exists('fatherId', $extension_menu)) {
                 // Check that extension father ID exists previously on the menu.
                 if ((strlen($extension_menu['fatherId']) > 0)) {
-                    if (array_key_exists('subfatherId', $extension_menu)) {
+                    if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
                         if ((strlen($extension_menu['subfatherId']) > 0)) {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = $extension_menu['name'];

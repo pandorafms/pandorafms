@@ -3042,7 +3042,7 @@ input.search_input {
   background-color: #f2f6f7;
   padding: 0px;
   margin: 0;
-  width: 300px;
+  width: 150px;
   height: 30px;
   margin-left: 2px;
   padding-left: 15px;
@@ -6204,9 +6204,8 @@ div.graph div.legend table {
 
 .sound_events {
   background-color: #494949;
-  max-width: 550px;
-  max-height: 400px;
-  margin-top: 40px;
+  margin: 40px 2em 0;
+  min-height: auto;
 }
 
 .w16px {

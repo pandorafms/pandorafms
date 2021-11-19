@@ -600,7 +600,7 @@ class Tree
 
         if (is_metaconsole()) {
             $module['serverID'] = $this->serverID;
-            $module['serverName'] = $this->serverName;
+            $module['serverName'] = empty($this->serverName) === false ? $this->serverName : servers_get_name($this->serverID);
         } else {
             $module['serverName'] = false;
             $module['serverID'] = false;
@@ -895,9 +895,15 @@ class Tree
     protected function processAgents(&$agents, $server=false)
     {
         if (!empty($agents)) {
+            $agents_aux = [];
             foreach ($agents as $iterator => $agent) {
                 $this->processAgent($agents[$iterator], $server);
+                if ($agents[$iterator]['counters']['total'] !== '0') {
+                    $agents_aux[] = $agents[$iterator];
+                }
             }
+
+            $agents = $agents_aux;
         }
     }
 
@@ -950,10 +956,9 @@ class Tree
         $module_status_inner = '';
         $module_search_inner = '';
         $module_search_filter = '';
+
         if (!empty($this->filter['searchModule'])) {
             $module_search_inner = '
-                INNER JOIN tagente_modulo tam
-                    ON ta.id_agente = tam.id_agente
                 INNER JOIN tagente_estado tae
                     ON tae.id_agente_modulo = tam.id_agente_modulo';
             $module_search_filter = "AND tam.disabled = 0

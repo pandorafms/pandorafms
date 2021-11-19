@@ -3505,7 +3505,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     <tr id="sla_template"   class="datos">
                         <td colspan="6">
                         <?php
-                        echo __('Please save the SLA for start to add items in this list.');
+                        echo __('Please save the item before adding entries to this list.');
                         ?>
                         </td>
                     </tr>

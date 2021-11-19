@@ -1232,6 +1232,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`user_comment` text NOT NULL,
 	`id_source_event` int(10)  NULL default 0,
 	`server_id` int(10) NOT NULL default 0,
+	`time_from` TIME NULL,
+	`time_to` TIME NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3848,6 +3850,7 @@ CREATE TABLE `tagent_repository` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
+  `deployment_timeout` INT UNSIGNED DEFAULT 600,
   `uploaded_by` VARCHAR(100) DEFAULT '',
   `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,

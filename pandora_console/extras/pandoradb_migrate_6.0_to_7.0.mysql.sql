@@ -1524,6 +1524,8 @@ ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
 ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
+ALTER TABLE `tevent_filter` ADD COLUMN `time_from` TIME NULL;
+ALTER TABLE `tevent_filter` ADD COLUMN `time_to` TIME NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
@@ -2681,6 +2683,7 @@ CREATE TABLE `tagent_repository` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
+  `deployment_timeout` INT UNSIGNED DEFAULT 600,
   `uploaded_by` VARCHAR(100) DEFAULT '',
   `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,

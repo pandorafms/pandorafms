@@ -29,8 +29,6 @@
 // Button for display full screen mode.
 global $config;
 
-
-
 $queryFull = [
     'dashboardId' => $dashboardId,
     'refr'        => $refr,
@@ -141,10 +139,11 @@ $publiclink['text'] .= html_print_image(
 );
 $publiclink['text'] .= '</a>';
 
+// Check if it is a public dashboard.
+$public_dashboard_hash = get_parameter('hash', false);
+
 // Refresh selector time dashboards.
-if (isset($config['public_dashboard']) === true
-    && (bool) $config['public_dashboard'] === true
-) {
+if ($public_dashboard_hash !== false) {
     $urlRefresh = $publicUrl;
 } else {
     $queryRefresh = [

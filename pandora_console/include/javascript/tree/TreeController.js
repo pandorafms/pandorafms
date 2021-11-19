@@ -1242,9 +1242,8 @@ var TreeController = {
           }
 
           if (
-            (typeof element.searchChildren != "undefined" &&
-              element.searchChildren) ||
-            element.disabled == true
+            typeof element.searchChildren != "undefined" &&
+            element.searchChildren
           ) {
             if (
               element.rootType == "group_edition" &&

@@ -4109,7 +4109,7 @@ UPDATE `tlanguage` SET `name` = 'Deutsch' WHERE `id_language` = 'de';
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
     `name` varchar(255) UNIQUE,
-	`icon` VARCHAR(255) DEFAULT '',
+    `icon` VARCHAR(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

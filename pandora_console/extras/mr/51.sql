@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+ALTER TABLE tagente_modulo MODIFY debug_content TEXT;
+
 CREATE TABLE IF NOT EXISTS `talert_calendar` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL default '',

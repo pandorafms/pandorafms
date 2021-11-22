@@ -688,7 +688,7 @@ foreach ($simple_alerts as $alert) {
         $data[3] .= '</tr>';
     }
 
-    $data[3] .= '<div id="update_action-div" class="invisible left">';
+    $data[3] .= '<div id="update_action-div" class="invisible">';
     $data[3] .= '</div>';
     $data[3] .= '</table>';
     // Is possible manage actions if have LW permissions in the agent group of the alert module
@@ -1163,18 +1163,18 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                         background: "black"
                     },
                     open: function() {
-                        $("#action_select_ajax, #action_select_ajax").select2({
+                        $('#update_action-div').css('overflow', 'hidden'); 
+                        $("#action_select, #action_select_ajax").select2({
                             tags: true,
-                            dropdownParent: $("#update_action-div")
+                            dropdownParent: $('#update_action-')
                         });
                     },
-                    width: 500,
-                    height: 300
+                    width: 455,
+                    height: 370
                 })
                 .show ();
         }
     });
-    
 }
 
 /* ]]> */

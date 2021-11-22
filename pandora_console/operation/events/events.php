@@ -479,7 +479,7 @@ if ($load_filter_id === 0) {
 
 // Do not load the user filter if we come from the 24h event graph.
 $from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
-if ($loaded_filter !== false && $from_event_graph != 1) {
+if ($loaded_filter !== false && $from_event_graph != 1 && !isset($fb64)) {
     $filter = events_get_event_filter($loaded_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];

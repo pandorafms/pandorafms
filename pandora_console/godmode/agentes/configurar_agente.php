@@ -485,6 +485,13 @@ if ($id_agente) {
         $collectiontab = '';
     }
 
+    // NetworkConfigManager tab.
+    $ncm_tab = enterprise_hook('networkconfigmanager_tab');
+
+    if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+        $ncm_tab = '';
+    }
+
     // Group tab.
     $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image(
         'images/group.png',
@@ -616,6 +623,7 @@ if ($id_agente) {
                 'main'                 => $maintab,
                 'remote_configuration' => $remote_configuration_tab,
                 'module'               => $moduletab,
+                'ncm'                  => $ncm_tab,
                 'alert'                => $alerttab,
                 'template'             => $templatetab,
                 'inventory'            => $inventorytab,
@@ -631,6 +639,7 @@ if ($id_agente) {
                 'separator'    => '',
                 'main'         => $maintab,
                 'module'       => $moduletab,
+                'ncm'          => $ncm_tab,
                 'alert'        => $alerttab,
                 'template'     => $templatetab,
                 'inventory'    => $inventorytab,
@@ -697,6 +706,11 @@ if ($id_agente) {
         case 'collection':
             $tab_description = '- '.__('Collection');
             $tab_name = 'Collection';
+        break;
+
+        case 'ncm':
+            $tab_description = '- '.__('Network config manager');
+            $tab_name = 'Network config manager';
         break;
 
         case 'inventory':
@@ -2095,7 +2109,7 @@ if ($delete_module) {
         exit;
     }
 
-    // Also call base function to delete modules madafakas de los cojones.
+    // Also call base function to delete modules.
     modules_delete_agent_module($id_borrar_modulo);
 
     // Check for errors.
@@ -2313,6 +2327,10 @@ switch ($tab) {
         include 'agent_incidents.php';
     break;
 
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente]);
+    break;
+
     case 'remote_configuration':
         enterprise_include('godmode/agentes/agent_disk_conf_editor.php');
     break;
@@ -2368,7 +2386,7 @@ switch ($tab) {
             
             var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>';
             
-            if('<?php echo html_entity_decode(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() &&
+            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() &&
              '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>' == 19){
                 
                 event.preventDefault();
@@ -2402,7 +2420,7 @@ switch ($tab) {
             
             var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter('id_agent_module')); ?>';
             
-            if('<?php echo html_entity_decode(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() && (
+            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() && (
                 module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
                     
                     event.preventDefault();

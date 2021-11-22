@@ -169,6 +169,11 @@ function pandoraFlotPieCustom(
   var label_conf;
   var show_legend = true;
 
+  // Set default value if not come like a number.
+  if (isNaN(width) === true) {
+    width = 451;
+  }
+
   if (width <= 450) {
     show_legend = false;
     label_conf = {
@@ -221,6 +226,9 @@ function pandoraFlotPieCustom(
   ) {
     conf_pie.series.pie.label = { show: false };
   }
+
+  // Avoid issues with 0 width values.
+  $("#" + graph_id).width(width);
 
   var plot = $.plot($("#" + graph_id), data, conf_pie);
   if (no_data == data.length) {
@@ -1006,6 +1014,7 @@ function pandoraFlotArea(
   var force_integer = 0;
   var divisor = params.divisor;
   var maximum_y_axis = params.maximum_y_axis;
+  var basic_chart = params.basic_chart;
 
   if (typeof divisor === "undefined") {
     divisor = 1000;
@@ -2010,11 +2019,8 @@ function pandoraFlotArea(
     grid: {
       hoverable: true,
       clickable: true,
-      borderWidth: 1,
       borderColor: "#C1C1C1",
-      backgroundColor: background_color,
-      color: grid_color,
-      autoHighlight: true
+      color: grid_color
     },
     xaxis: {
       min: min_x,
@@ -2053,6 +2059,16 @@ function pandoraFlotArea(
       labelFormatter: lFormatter
     }
   };
+
+  if (basic_chart === true) {
+    options.grid.borderWidth = 0;
+    options.grid.backgroundColor = "rgba(255,255,255,0)";
+    options.grid.autoHighlight = false;
+    options.xaxis.show = false;
+    options.xaxis.tickLength = 0;
+    options.yaxis.show = false;
+    options.yaxis.tickLength = 0;
+  }
 
   if (typeof maximum_y_axis !== "undefined" && maximum_y_axis != 0) {
     options.yaxis.max = maximum_y_axis;

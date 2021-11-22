@@ -219,34 +219,15 @@ if ($filemanager) {
 
         $id_plugin = (int) get_parameter('id_plugin', 0);
 
-        // Add custom directories here
+        // Add custom directories here.
         $fallback_directory = 'attachment/plugin';
-
-        $directory = (string) get_parameter('directory', $fallback_directory);
-        $directory = str_replace('\\', '/', $directory);
-
-        // A miminal security check to avoid directory traversal
-        if (preg_match('/\.\./', $directory)) {
+        // Get directory.
+        $directory = (string) get_parameter('directory');
+        if (empty($directory) === true) {
             $directory = $fallback_directory;
-        }
-
-        if (preg_match('/^\//', $directory)) {
-            $directory = $fallback_directory;
-        }
-
-        if (preg_match('/^manager/', $directory)) {
-            $directory = $fallback_directory;
-        }
-
-        $banned_directories['include'] = true;
-        $banned_directories['godmode'] = true;
-        $banned_directories['operation'] = true;
-        $banned_directories['reporting'] = true;
-        $banned_directories['general'] = true;
-        $banned_directories[ENTERPRISE_DIR] = true;
-
-        if (isset($banned_directories[$directory])) {
-            $directory = $fallback_directory;
+        } else {
+            $directory = str_replace('\\', '/', $directory);
+            $directory = filemanager_safe_directory($directory, $fallback_directory);
         }
 
         $real_directory = realpath($config['homedir'].'/'.$directory);
@@ -263,12 +244,12 @@ if ($filemanager) {
 
         $default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
 
-        if ($upload_file_or_zip) {
-            upload_file($upload_file_or_zip, $default_real_directory);
+        if ($upload_file_or_zip === true) {
+            upload_file($upload_file_or_zip, $default_real_directory, $real_directory);
         }
 
-        if ($create_text_file) {
-            create_text_file($default_real_directory);
+        if ($create_text_file === true) {
+            create_text_file($default_real_directory, $real_directory);
         }
 
         filemanager_file_explorer(

@@ -55,6 +55,10 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['server_uniq
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/files_repo/'.$file;
             break;
 
+            case 'godmode/servers/plugin':
+                $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/plugin/'.$file;
+            break;
+
             case $main_collections:
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/collection/'.$file;
             break;

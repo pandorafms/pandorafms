@@ -2295,17 +2295,19 @@ function modules_get_agentmodule_data(
     $search_in_history_db = db_search_in_history_db($datelimit);
 
     switch ($module['id_tipo_modulo']) {
-        // generic_data_string
+            // Generic_data_string.
         case 3:
-            // remote_tcp_string
+            // Remote_tcp_string.
         case 10:
-            // remote_snmp_string
+            // Remote_snmp_string.
         case 17:
-            // async_string
+            // Async_string.
         case 36:
-            // remote_cmd_string
+            // Remote_cmd_string.
         case 23:
-            // Free search is a json with value and exact modifier
+            // Web content string.
+        case 33:
+            // Free search is a json with value and exact modifier.
             $freesearch = json_decode($freesearch, true);
             $freesearch_sql = '';
             if (isset($freesearch['value']) && !empty($freesearch['value'])) {
@@ -3846,13 +3848,28 @@ function modules_get_state_condition($state, $prefix='tae')
 
 function modules_get_min_max_data($id_agent_module, $time_init=0)
 {
-    $table = modules_get_table_data($id_agent_module);
-    $data = db_get_all_rows_sql(
-        'SELECT min(datos) as min, max(datos) as max
-		FROM '.$table.'
-		WHERE id_agente_modulo = '.$id_agent_module.'
-			AND utimestamp >= '.$time_init
+    // Find the minimum and maximun value defined.
+    $sql = sprintf(
+        'SELECT `min`, `max` FROM %s 
+        WHERE id_agente_modulo = %d',
+        'tagente_modulo',
+        $id_agent_module
     );
+    $min_max = \db_get_row_sql($sql);
+
+    if ($min_max['min'] !== '0' || $min_max['max'] !== '0') {
+        $data[0]['min'] = $min_max['min'];
+        $data[0]['max'] = $min_max['max'];
+    } else {
+        // Search limits of the last two days.
+        $table = modules_get_table_data($id_agent_module);
+        $data = db_get_all_rows_sql(
+            'SELECT min(datos) as min, max(datos) as max
+            FROM '.$table.'
+            WHERE id_agente_modulo = '.$id_agent_module.'
+                AND utimestamp >= '.$time_init
+        );
+    }
 
     return $data;
 }

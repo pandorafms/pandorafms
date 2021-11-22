@@ -178,7 +178,8 @@ class DiscoveryTaskList extends HTML
                             'attributes' => 'class="sub cancel"',
                             'return'     => true,
                         ],
-                    ],[
+                    ],
+                    [
                         'class'     => 'action-buttons rule-builder-actions',
                         'arguments' => [
                             'name'       => 'refresh',
@@ -961,7 +962,10 @@ class DiscoveryTaskList extends HTML
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/lightbulb_off.png',
                                 true,
-                                ['title' => __('enable task')]
+                                [
+                                    'title' => __('enable task'),
+                                    'class' => 'filter_none',
+                                ]
                             ).'</a>';
                         } else if ($task['disabled'] == 0) {
                             $data[9] .= '<a href="'.ui_get_full_url(
@@ -1652,9 +1656,9 @@ class DiscoveryTaskList extends HTML
         $license = enterprise_hook('license_get_info');
 
         if (is_array($license) === true
-            && $n_agents > ($license['limit'] - $license['count'])
+            && $n_agents > ($license['limit'] - $license['count_enabled'])
         ) {
-            $limit = ($license['limit'] - $license['count']);
+            $limit = ($license['limit'] - $license['count_enabled']);
             echo json_encode(
                 [
                     'error' => __(

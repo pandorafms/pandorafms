@@ -129,7 +129,7 @@ switch ($sortField) {
             break;
 
             default:
-                // Not possible.
+                // Nothing to do.
             break;
         }
     break;
@@ -153,7 +153,7 @@ switch ($sortField) {
             break;
 
             default:
-                // Not possible.
+                // Nothing to do.
             break;
         }
     break;
@@ -177,7 +177,7 @@ switch ($sortField) {
             break;
 
             default:
-                // Not possible.
+                // Nothing to do.
             break;
         }
     break;
@@ -395,14 +395,20 @@ $table->data[0][4] = html_print_submit_button(
 );
 
 $is_management_allowed = true;
-if (is_management_allowed() === false) {
+if (is_metaconsole() === false && is_management_allowed() === false) {
     $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All users information is read only. Go to %s to manage it.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure=0'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }
@@ -585,11 +591,11 @@ foreach ($info as $user_id => $user_info) {
     $cont++;
 
     // Manual pagination due the complicated process of the ACL data.
-    if ($cont <= $offset) {
+    if ($cont <= $offset && $search !== true) {
         continue;
     }
 
-    if ($cont > ($limit + $offset)) {
+    if ($cont > ($limit + $offset) && $search !== true) {
         break;
     }
 
@@ -710,10 +716,12 @@ foreach ($info as $user_id => $user_info) {
                     $toDoString = __('Disable');
                     $toDoAction = '1';
                     $toDoImage  = 'images/lightbulb.png';
+                    $toDoClass  = '';
                 } else {
                     $toDoString = __('Enable');
                     $toDoAction = '0';
                     $toDoImage  = 'images/lightbulb_off.png';
+                    $toDoClass  = 'filter_none';
                 }
 
                 $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
@@ -736,7 +744,7 @@ foreach ($info as $user_id => $user_info) {
                     [
                         'data-title'                     => $toDoString,
                         'data-use_title_for_force_title' => '1',
-                        'class'                          => 'forced_title no-padding',
+                        'class'                          => 'forced_title no-padding '.$toDoClass,
                     ]
                 );
                 $data[6] .= '</form>';
@@ -820,6 +828,9 @@ foreach ($info as $user_id => $user_info) {
                 $data[6] .= '';
                 // Delete button not in this mode.
             }
+        } else {
+            $data[6] .= '';
+            // Delete button not in this mode.
         }
     }
 

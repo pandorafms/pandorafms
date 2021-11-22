@@ -133,7 +133,7 @@ final class DBMaintainer
     public function __construct(array $params)
     {
         $this->user = $params['user'];
-        $this->pass = $params['pass'];
+        $this->pass = io_output_password($params['pass']);
         $this->host = $params['host'];
         $this->port = $params['port'];
         $this->name = $params['name'];
@@ -721,6 +721,7 @@ final class DBMaintainer
                         $umc->updateMR($path);
                     } catch (\Exception $e) {
                         // TODO: Send an event to notify errors.
+                        $this->lastError = $e->getMessage();
                         $return = false;
                     }
                 } else {

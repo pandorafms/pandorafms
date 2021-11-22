@@ -396,9 +396,20 @@ class ModuleValueWidget extends Widget
         $output .= '<div class="container-icon">';
         // Div value.
         $output .= '<div style="flex: 0 1 '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
-        $output .= remove_right_zeros(
-            number_format($data_module, $config['graph_precision'])
-        );
+
+        if (is_numeric($data_module) === true) {
+            $dataDatos = remove_right_zeros(
+                number_format(
+                    $data_module,
+                    $config['graph_precision']
+                )
+            );
+        } else {
+            $dataDatos = trim($data_module);
+        }
+
+        $output .= $dataDatos;
+
         $output .= '</div>';
 
         if (empty($label) === false) {

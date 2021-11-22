@@ -181,3 +181,12 @@ a#qr_code_agent_view {
 #safe_mode_module {
   margin-top: 0.6em;
 }
+
+.no-borders {
+  border: 0 !important;
+}
+
+.no-borders .white_table_graph_header {
+  border: 0;
+  padding-left: 0;
+}

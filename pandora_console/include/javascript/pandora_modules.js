@@ -1327,12 +1327,23 @@ function filterByText(selectbox, textbox, textNoData) {
 function manageComponentFields(action, type) {
   var fieldLines = $("tr[id*=network_component-" + type + "]").length;
   var protocol = $("#module_protocol").val();
+  let textForAdd = "";
+
   if (action === "add") {
     let lineNumber = fieldLines + 1;
-    let textForAdd =
-      type === "oid-list-pluginRow-snmpRow"
-        ? "_oid_" + lineNumber + "_"
-        : lineNumber;
+
+    switch (type) {
+      case "oid-list-pluginRow-snmpRow":
+        textForAdd = "_oid_" + lineNumber + "_";
+        break;
+
+      case "oid-list-wmiRow":
+        textForAdd = "_field_wmi_" + lineNumber + "_";
+        break;
+
+      default:
+        textForAdd = lineNumber;
+    }
 
     $("#network_component-manage-" + type).before(
       $("#network_component-" + type + "-row-1")

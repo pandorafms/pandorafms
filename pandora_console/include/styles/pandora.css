@@ -1,11 +1,9 @@
 /**
  *
  * Name: Default theme
+ * Pandora Stylesheet
  *
- * Extension to manage a list of gateways and the node address where they should
- * point to.
- *
- * @category   Extensions
+ * @category   Stylesheet
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -690,6 +688,12 @@ select:-internal-list-box {
   align-items: baseline;
 }
 
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .flex-row-vcenter {
   display: flex;
   flex-direction: row;
@@ -747,6 +751,12 @@ select:-internal-list-box {
 }
 .padding-right-2-imp {
   padding-right: 2em !important;
+}
+.padding-left-2 {
+  padding-left: 2em;
+}
+.padding-left-2-imp {
+  padding-left: 2em !important;
 }
 .margin-soft {
   margin: 0.3em 1em;
@@ -953,7 +963,7 @@ input.sub {
   border-radius: 5px;
   background-color: #fff;
   background-repeat: no-repeat;
-  background-position: 92% 10px;
+  background-position: 92% 13px;
   color: #000;
   padding-bottom: 10px;
   padding-top: 10px;
@@ -4969,7 +4979,6 @@ input:checked + .p-slider:before {
 
 #file_table_modal {
   display: flex;
-  justify-content: space-between;
   margin-bottom: 40px;
 }
 
@@ -5564,7 +5573,7 @@ div#bullets_modules div {
 
 /* Agent details in agent view */
 div#status_pie path {
-  stroke-width: 8px;
+  stroke-width: 0px;
 }
 div#status_pie {
   margin-bottom: 2em;
@@ -5817,10 +5826,30 @@ div#status_pie {
   margin-bottom: 30px;
 }
 
+#table_services_dashboard {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-rows: 1fr;
+  margin-bottom: 30px;
+}
+
+.services_table {
+  width: 97%;
+}
+
 .table_services_item_link {
   font-size: 16px;
   display: grid;
   min-height: 80px;
+  box-sizing: border-box;
+  padding: 10px 10px 10px 0;
+}
+
+.table_services_item_link_dashboard {
+  font-size: 16px;
+  display: grid;
+  min-height: 50px;
   box-sizing: border-box;
   padding: 10px 10px 10px 0;
 }
@@ -6548,7 +6577,7 @@ div.graph div.legend table {
 */
 
 .pdd_0px {
-  padding: 0px;
+  padding: 0px !important;
 }
 .pdd_4px {
   padding: 4px;
@@ -6652,6 +6681,9 @@ div.graph div.legend table {
 }
 .pdd_r_30px {
   padding-right: 30px;
+}
+.pdd_r_35px {
+  padding-right: 35px;
 }
 .pdd_r_40px {
   padding-right: 40px;
@@ -6784,6 +6816,9 @@ div.graph div.legend table {
 }
 .pdd_t_10px {
   padding-top: 10px;
+}
+.pdd_t_15px {
+  padding-top: 15px;
 }
 .pdd_t_20px {
   padding-top: 20px;
@@ -7065,6 +7100,9 @@ div.graph div.legend table {
   max-height: 50px;
 }
 
+.mx_height150px {
+  max-height: 150px !important;
+}
 /*
 * HEIGHT PX
 */
@@ -7208,7 +7246,7 @@ div.graph div.legend table {
 }
 
 .bg_82B92E {
-  background-color: #82b92e;
+  background-color: #82b92e !important;
 }
 
 .bg_B2B2B2 {
@@ -7233,13 +7271,13 @@ div.graph div.legend table {
   background-color: #eee;
 }
 .bg_ffd {
-  background-color: #ffd036;
+  background-color: #ffd036 !important;
 }
 .bg_ff5 {
-  background-color: #ff5653;
+  background-color: #ff5653 !important;
 }
 .bg_ff9 {
-  background-color: #ff9e39;
+  background-color: #ff9e39 !important;
 }
 .bg_lightgray {
   background-color: lightgray;
@@ -7859,9 +7897,10 @@ div.graph div.legend table {
 }
 
 .model_log_viewer {
-  position: absolute;
-  bottom: 5px;
-  right: 0;
+  margin-top: 5px;
+  float: right;
+  margin-bottom: 0px;
+  margin-right: 0px;
 }
 
 .container_left_class {
@@ -8302,4 +8341,10 @@ div.stat-win-spinner img {
 }
 .line_height_12pt {
   line-height: 12pt;
+}
+.line_height_0pt {
+  line-height: 10pt !important;
+}
+#license_error_msg_dialog {
+  min-height: 350px !important;
 }

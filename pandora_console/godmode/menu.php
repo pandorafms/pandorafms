@@ -175,6 +175,10 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     enterprise_hook('agents_submenu');
 }
 
+if (check_acl($config['id_user'], 0, 'NW')) {
+    enterprise_hook('agents_ncm_submenu');
+}
+
 if (check_acl($config['id_user'], 0, 'AW')) {
     $sub['gmassive']['text'] = __('Bulk operations');
     $sub['gmassive']['id'] = 'Bulk operations';
@@ -525,10 +529,8 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $menu_godmode['messages']['id'] = 'god-um_messages';
 
     $sub = [];
-    if ($config['enterprise_installed']) {
-        $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
-        $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
-    }
+    $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
+    $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
 
     $sub['godmode/update_manager/update_manager&tab=online']['text'] = __('Update Manager online');
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';

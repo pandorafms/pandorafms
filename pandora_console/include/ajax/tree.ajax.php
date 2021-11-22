@@ -40,6 +40,7 @@ if (is_ajax() === true) {
     include_once $config['homedir'].'/include/class/TreeGroup.class.php';
     include_once $config['homedir'].'/include/class/TreeService.class.php';
     include_once $config['homedir'].'/include/class/TreeGroupEdition.class.php';
+    enterprise_include_once('include/class/TreeIPAMSupernet.class.php');
     enterprise_include_once('include/class/TreePolicies.class.php');
     enterprise_include_once('include/class/TreeGroupMeta.class.php');
     include_once $config['homedir'].'/include/functions_reporting.php';
@@ -187,6 +188,18 @@ if (is_ajax() === true) {
                     $childrenMethod,
                     $access,
                     $metaID
+                );
+            break;
+
+            case 'IPAM_supernets':
+                $tree = new TreeIPAMSupernet(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
                 );
             break;
 

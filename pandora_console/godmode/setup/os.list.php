@@ -40,12 +40,18 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 $is_management_allowed = true;
 if (is_management_allowed() === false) {
     $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=list&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All OS definitions are read only. Go to %s to manage them.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=list&pure=0'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

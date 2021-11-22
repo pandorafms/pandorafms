@@ -12,7 +12,6 @@ function parse_alert_command(command, classs) {
     // Only render values different from ''
     var field = "_field" + nfield + "_";
     var regex = new RegExp(field, "gi");
-    console.log($(this).val());
     if ($(this).val() == "") {
       if (
         classs == "fields_recovery" &&

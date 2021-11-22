@@ -443,6 +443,13 @@ $data[1] = html_print_input_text_extended(
     $largeClassDisabledBecauseInPolicy,
     true
 );
+$data[1] .= ui_print_help_tip(
+    __(
+        'Please use single quotation marks when necessary. '."\n".'
+If double quotation marks are needed, please escape them with a backslash (\&quot;)'
+    ),
+    true
+);
 $table_simple->colspan['row-cmd-row-1'][1] = 3;
 push_table_simple($data, 'row-cmd-row-1');
 
@@ -577,12 +584,7 @@ $(document).ready (function () {
     $('#text-ip_target').keyup(function() {
         $('#text-target_ip').val($(this).val());
     });
-    $('#text-target_ip').keyup(function() {
-        $('#text-ip_target').val($(this).val());
-    });
-    $('#text-community').keyup(function() {
-        $('#text-snmp_community').val($(this).val());
-    });
+
     $('#text-snmp_community').keyup(function() {
         $('#text-community').val($(this).val());
     });
@@ -591,61 +593,25 @@ $(document).ready (function () {
         // Display or collapse the SNMP browser's v3 options
         checkSNMPVersion ();
     });
-    $('#snmp_browser_version').change(function() {
-        $('#snmp_version').val($(this).val());
-
-        // Display or collapse the SNMP v3 options in the main window
-        if ($(this).val() == "3") {
-            $("#simple-field_snmpv3_row1").attr("style", "");
-            $("#simple-field_snmpv3_row2").attr("style", "");
-            $("#simple-field_snmpv3_row3").attr("style", "");
-            $("input[name=active_snmp_v3]").val(1);
-            $("input[name=snmp_community]").attr("disabled", true);
-        }
-        else {
-            $("#simple-field_snmpv3_row1").css("display", "none");
-            $("#simple-field_snmpv3_row2").css("display", "none");
-            $("#simple-field_snmpv3_row3").css("display", "none");
-            $("input[name=active_snmp_v3]").val(0);
-            $("input[name=snmp_community]").removeAttr('disabled');
-        }
-    });
     $('#snmp3_auth_user').keyup(function() {
         $('#snmp3_browser_auth_user').val($(this).val());
-    });
-    $('#snmp3_browser_auth_user').keyup(function() {
-        $('#snmp3_auth_user').val($(this).val());
     });
     $('#snmp3_security_level').change(function() {
         $('#snmp3_browser_security_level').val($(this).val());
     });
-    $('#snmp3_browser_security_level').change(function() {
-        $('#snmp3_security_level').val($(this).val());
-    });
     $('#snmp3_auth_method').change(function() {
         $('#snmp3_browser_auth_method').val($(this).val());
-    });
-    $('#snmp3_browser_auth_method').change(function() {
-        $('#snmp3_auth_method').val($(this).val());
     });
     $('#snmp3_auth_pass').keyup(function() {
         $('#snmp3_browser_auth_pass').val($(this).val());
     });
-    $('#snmp3_browser_auth_pass').keyup(function() {
-        $('#snmp3_auth_pass').val($(this).val());
-    });
     $('#snmp3_privacy_method').change(function() {
         $('#snmp3_browser_privacy_method').val($(this).val());
-    });
-    $('#snmp3_browser_privacy_method').change(function() {
-        $('#snmp3_privacy_method').val($(this).val());
     });
     $('#snmp3_privacy_pass').keyup(function() {
         $('#snmp3_browser_privacy_pass').val($(this).val());
     });
-    $('#snmp3_browser_privacy_pass').keyup(function() {
-        $('#snmp3_privacy_pass').val($(this).val());
-    });
+
     var custom_ip_target = "<?php echo $custom_ip_target; ?>";
     if(custom_ip_target == ''){
         $("#text-custom_ip_target").hide();

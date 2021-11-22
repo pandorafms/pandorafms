@@ -662,7 +662,7 @@ function messages_get_url($message_id)
 
     // Return URL stored if is set in database.
     if (isset($messages['url'])) {
-        return $messages['url'];
+        return str_replace('__url__', ui_get_full_url('/'), $messages['url']);
     }
 
     // Return the message direction.

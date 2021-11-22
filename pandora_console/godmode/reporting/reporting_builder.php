@@ -1251,16 +1251,7 @@ switch ($action) {
                 array_push($table->data, $data);
             }
 
-            if ($columnview) {
-                $count = 0;
-                foreach ($table->data as $datos) {
-                    if (!isset($datos[9])) {
-                        $table->data[$count][9] = '';
-                    }
 
-                    $count++;
-                }
-            }
 
             html_print_table($table);
             ui_pagination(
@@ -1759,6 +1750,9 @@ switch ($action) {
                                 $values['time_in_ok_status'] = get_parameter(
                                     'time_in_ok_status'
                                 );
+                                $values['time_in_warning_status'] = get_parameter(
+                                    'time_in_warning_status'
+                                );
                                 $values['time_in_unknown_status'] = get_parameter(
                                     'time_in_unknown_status'
                                 );
@@ -1776,6 +1770,9 @@ switch ($action) {
                                 );
                                 $values['checks_in_ok_status'] = get_parameter(
                                     'checks_in_ok_status'
+                                );
+                                $values['checks_in_warning_status'] = get_parameter(
+                                    'checks_in_warning_status'
                                 );
                                 $values['unknown_checks'] = get_parameter(
                                     'unknown_checks'
@@ -1829,6 +1826,13 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $good_format = true;
+                            break;
+
+                            case 'IPAM_network':
+                                $values['ipam_network_filter'] = get_parameter('network_filter');
+                                $values['ipam_alive_ips'] = get_parameter('alive_ip');
+                                $values['ipam_ip_not_assigned_to_agent'] = get_parameter('agent_not_assigned_to_ip');
                                 $good_format = true;
                             break;
 
@@ -1895,6 +1899,10 @@ switch ($action) {
                             'time_in_ok_status',
                             0
                         );
+                        $values['time_in_warning_status'] = get_parameter(
+                            'time_in_warning_status',
+                            0
+                        );
                         $values['time_in_unknown_status'] = get_parameter(
                             'time_in_unknown_status',
                             0
@@ -1917,6 +1925,10 @@ switch ($action) {
                         );
                         $values['checks_in_ok_status'] = get_parameter(
                             'checks_in_ok_status',
+                            0
+                        );
+                        $values['checks_in_warning_status'] = get_parameter(
+                            'checks_in_warning_status',
                             0
                         );
                         $values['unknown_checks'] = get_parameter(
@@ -2185,7 +2197,6 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
-                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2219,6 +2230,7 @@ switch ($action) {
                                 $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
                                 $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_custom_fields'] = get_parameter('agent_custom_fields');
                                 $es['agent_status_filter'] = get_parameter('agent_status_filter');
                                 $es['agent_version_filter'] = get_parameter('agent_version_filter');
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
@@ -2226,6 +2238,14 @@ switch ($action) {
                                 $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
 
                                 $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'IPAM_network':
+                                $es['network_filter'] = get_parameter('network_filter');
+                                $es['alive_ip'] = get_parameter('alive_ip');
+                                $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+
+                                // $values['external_source'] = json_encode($es);
                             break;
 
                             default:
@@ -2535,6 +2555,10 @@ switch ($action) {
                             );
                         }
 
+                        $values['ipam_network_filter'] = get_parameter('network_filter', 0);
+                        $values['ipam_alive_ips'] = get_parameter('alive_ip', 0);
+                        $values['ipam_ip_not_assigned_to_agent'] = get_parameter('agent_not_assigned_to_ip', 0);
+
                         $values['only_display_wrong'] = (int) get_parameter(
                             'checkbox_only_display_wrong',
                             0
@@ -2559,6 +2583,10 @@ switch ($action) {
                             'time_in_ok_status',
                             0
                         );
+                        $values['time_in_warning_status'] = get_parameter(
+                            'time_in_warning_status',
+                            0
+                        );
                         $values['time_in_unknown_status'] = get_parameter(
                             'time_in_unknown_status',
                             0
@@ -2581,6 +2609,10 @@ switch ($action) {
                         );
                         $values['checks_in_ok_status'] = get_parameter(
                             'checks_in_ok_status',
+                            0
+                        );
+                        $values['checks_in_warning_status'] = get_parameter(
+                            'checks_in_warning_status',
                             0
                         );
                         $values['unknown_checks'] = get_parameter(
@@ -2824,7 +2856,6 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
-                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2858,6 +2889,7 @@ switch ($action) {
                                 $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
                                 $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_custom_fields'] = get_parameter('agent_custom_fields');
                                 $es['agent_status_filter'] = get_parameter('agent_status_filter');
                                 $es['agent_version_filter'] = get_parameter('agent_version_filter');
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
@@ -2865,6 +2897,12 @@ switch ($action) {
                                 $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
 
                                 $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'IPAM_network':
+                                $es['network_filter'] = get_parameter('network_filter');
+                                $es['alive_ip'] = get_parameter('alive_ip');
+                                $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
                             break;
 
                             default:
@@ -3370,7 +3408,7 @@ $buttons['view'] = [
 $buttons[$activeTab]['active'] = true;
 
 if ($idReport != 0) {
-    $textReportName = $reportName;
+    $textReportName = (empty($reportName) === false) ? $reportName : $report['name'];
 } else {
     $temp = $buttons['main'];
     $buttons = null;

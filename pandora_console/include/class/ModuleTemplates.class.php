@@ -837,8 +837,11 @@ class ModuleTemplates extends HTML
 
         $penInfo = db_get_all_rows_filter('tnetwork_profile_pen', ['id_np' => $this->id_np]);
         $penList = [];
-        foreach ($penInfo as $pen) {
-            $penList[] = $pen['pen'];
+        // Handle if list of PEN does not exist or is empty.
+        if ($penInfo !== false) {
+            foreach ($penInfo as $pen) {
+                $penList[] = $pen['pen'];
+            }
         }
 
         $this->pen = implode(',', $penList);

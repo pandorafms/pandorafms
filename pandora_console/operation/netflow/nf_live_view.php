@@ -352,12 +352,12 @@ if (is_metaconsole()) {
         $filter_type = 0;
     }
 
-    echo "<tr class='filter_save invisible'>";
+    echo "<tr class='filter_save' style='display: none;'>";
 
     echo "<td colspan='6'>".ui_print_error_message('Define a name for the filter and click on Save as new filter again', '', true).'</td>';
 
     echo '</tr>';
-    echo "<tr class='filter_save invisible'>";
+    echo "<tr class='filter_save' style='display: none;'>";
 
     echo '<td><span id="filter_name_color"><b>'.__('Name').'</b></span></td>';
     echo "<td colspan='2'>".html_print_input_text(
@@ -373,7 +373,7 @@ if (is_metaconsole()) {
     echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'AR', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
     echo '</tr>';
 
-    $advanced_toggle = '<table class="w100p">';
+    $advanced_toggle = '<table style="width:100%">';
 
     $advanced_toggle .= '<tr>';
     if ($netflow_disable_custom_lvfilters) {
@@ -381,7 +381,7 @@ if (is_metaconsole()) {
         $advanced_toggle .= '<td></td>';
     } else {
         $advanced_toggle .= '<td><b>'.__('Filter').'</b></td>';
-        $advanced_toggle .= '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'class="mrgn_right_40px"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'class="mrgn_right_40px"', true).'</td>';
+        $advanced_toggle .= '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
     }
 
 
@@ -403,7 +403,7 @@ if (is_metaconsole()) {
         $advanced_toggle .= '<td></td>';
         $advanced_toggle .= '<td></td>';
     } else {
-        $advanced_toggle .= "<td class='bolder'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
         $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 40, 80, true).'</td>';
     }
 
@@ -411,7 +411,7 @@ if (is_metaconsole()) {
         $advanced_toggle .= '<td></td>';
         $advanced_toggle .= '<td></td>';
     } else {
-        $advanced_toggle .= "<td class='bolder'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
         $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_src', $filter['ip_src'], false, 40, 80, true).'</td>';
     }
 
@@ -422,7 +422,7 @@ if (is_metaconsole()) {
         $advanced_toggle .= '<td></td>';
         $advanced_toggle .= '<td></td>';
     } else {
-        $advanced_toggle .= "<td class='bolder'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
         $advanced_toggle .= '<td colspan="2">'.html_print_input_text('dst_port', $filter['dst_port'], false, 40, 80, true).'</td>';
     }
 
@@ -430,19 +430,19 @@ if (is_metaconsole()) {
         $advanced_toggle .= '<td></td>';
         $advanced_toggle .= '<td></td>';
     } else {
-        $advanced_toggle .= "<td class='bolder'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
         $advanced_toggle .= '<td colspan="2">'.html_print_input_text('src_port', $filter['src_port'], false, 40, 80, true).'</td>';
     }
 
     $advanced_toggle .= '</tr>';
 
-    $advanced_toggle .= "<tr class='filter_advance invisible'>";
+    $advanced_toggle .= "<tr class='filter_advance' style='display: none;'>";
     if ($netflow_disable_custom_lvfilters) {
         $advanced_toggle .= '<td></td>';
         $advanced_toggle .= '<td></td>';
     } else {
         $advanced_toggle .= '<td>'.ui_print_help_icon('pcap_filter', true).'</td>';
-        $advanced_toggle .= "<td colspan='5'>".html_print_textarea('advanced_filter', 4, 40, $filter['advanced_filter'], "class='min-height-0px w90p'", true).'</td>';
+        $advanced_toggle .= "<td colspan='5'>".html_print_textarea('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true).'</td>';
     }
 
     $advanced_toggle .= '</tr>';
@@ -490,14 +490,14 @@ if (is_metaconsole()) {
     echo '</td></tr>';
     echo '</table>';
 
-    echo "<table width='100%' class='min-height-0px right'><tr><td>";
+    echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
 
     echo html_print_submit_button(__('Draw'), 'draw_button', false, 'class="sub upd"', true);
 
     if (!$netflow_disable_custom_lvfilters) {
         if (check_acl($config['id_user'], 0, 'AW')) {
-            html_print_submit_button(__('Save as new filter'), 'save_button', false, ' class="sub upd mrgn_lft_5px" onClick="return defineFilterName();"');
-            html_print_submit_button(__('Update current filter'), 'update_button', false, 'class="sub upd mrgn_lft_5px"');
+            html_print_submit_button(__('Save as new filter'), 'save_button', false, 'style="margin-left: 5px;" class="sub upd" onClick="return defineFilterName();"');
+            html_print_submit_button(__('Update current filter'), 'update_button', false, 'style="margin-left: 5px;" class="sub upd"');
         }
     }
 
@@ -670,11 +670,12 @@ if (is_metaconsole()) {
                         // Check right filter type
                         $("#radiobtn0002").attr("checked", "checked");
                     }
-                });
-            
+                }
             // Get filter values from DB
             <?php
-            if (! defined('METACONSOLE')) {
+            echo ');';
+
+            if (is_metaconsole() === false) {
                 echo 'jQuery.post ("ajax.php",';
             } else {
                 echo 'jQuery.post ("'.$config['homeurl'].'../../ajax.php",';
@@ -701,8 +702,8 @@ if (is_metaconsole()) {
                         if (i == 'aggregate')
                             $("#aggregate").val(val);
                     });
-                },
-                "json");
+                }
+<?php echo ', "json");'; ?>
 
             // Shows update filter button
             $("#submit-update_button").show();

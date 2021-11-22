@@ -735,7 +735,7 @@ function grafico_modulo_sparse($params)
         $params['backgroundColor'] = 'white';
     }
 
-    if (isset($params['only_image']) === true) {
+    if (isset($params['only_image']) === true && $params['vconsole'] !== true) {
         $params['backgroundColor'] = 'transparent';
     }
 
@@ -829,7 +829,15 @@ function grafico_modulo_sparse($params)
         $params['stacked'] = 0;
     }
 
-    $font_size = $config['font_size'];
+    if (isset($params['graph_font_size']) === true) {
+        $font_size = $params['graph_font_size'];
+    } else {
+        $font_size = $config['font_size'];
+    }
+
+    if (isset($params['basic_chart']) === false) {
+        $params['basic_chart'] = false;
+    }
 
     // If is metaconsole set 10pt size value.
     if (is_metaconsole()) {
@@ -1412,20 +1420,20 @@ function graphic_combined_module(
         $labels  = [];
         $modules = [];
         foreach ($sources as $source) {
-            $id_agent = agents_get_module_id(
-                $source['id_agent_module']
-            );
-
-            if (!$id_agent) {
-                continue;
-            }
-
             if (is_metaconsole() === true) {
                 metaconsole_restore_db();
                 $server = metaconsole_get_connection_by_id($source['id_server']);
                 if (metaconsole_connect($server) != NOERR) {
                     continue;
                 }
+            }
+
+            $id_agent = agents_get_module_id(
+                $source['id_agent_module']
+            );
+
+            if (!$id_agent) {
+                continue;
             }
 
             $modulepush = [
@@ -1566,11 +1574,17 @@ function graphic_combined_module(
             $date_array['final_date'] = $params['date'];
             $date_array['start_date'] = ($params['date'] - $params['period']);
 
+            $server_name = metaconsole_get_server_by_id($modules[0]['server']);
+
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
                     $module_list[0],
                     $params['period'],
-                    $params_combined['projection']
+                    $params_combined['projection'],
+                    false,
+                    false,
+                    false,
+                    $server_name
                 );
             }
 
@@ -3751,7 +3765,7 @@ function graph_custom_sql_graph(
                         0,
                         floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
                     );
-                    $label .= '...';
+                    $label .= '...<br>';
                     $label .= substr(
                         $first_label,
                         floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)
@@ -4804,7 +4818,11 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
         $water_mark,
         $config['fontpath'],
         $config['font_size'],
-        $ttl
+        $ttl,
+        false,
+        '',
+        false,
+        6
     );
 }
 
@@ -4829,7 +4847,7 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 700, true);
+    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
 }
 
 

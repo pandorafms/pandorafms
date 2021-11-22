@@ -666,12 +666,6 @@ function print_table(
                 time()
             );
 
-            // Get last data timestamp.
-            $timestamps_array = array_merge(
-                array_column(ifInOctets, 'utimestamp'),
-                array_column(ifOutOctets, 'utimestamp')
-            );
-
             if ($sec === 'view') {
                 $table_data[$loop_index]['if_agent_name'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent_interfaces['agent_id'].'">'.$agent_interfaces['agent_alias'].'</a>';
             }
@@ -683,12 +677,7 @@ function print_table(
             $table_data[$loop_index]['if_out_octets'] = ($ifOutOctets['datos'] === null) ? __('N/A') : $ifOutOctets['datos'];
             $table_data[$loop_index]['if_usage_module_data_in'] = ($usage_module_data_in['datos'] === null) ? __('N/A') : $usage_module_data_in['datos'];
             $table_data[$loop_index]['if_usage_module_data_out'] = ($usage_module_data_out['datos'] === null) ? __('N/A') : $usage_module_data_out['datos'];
-            $table_data[$loop_index]['if_last_data'] = human_time_comparation(
-                max(
-                    $ifInOctets['utimestamp'],
-                    $ifOutOctets['utimestamp']
-                )
-            );
+            $table_data[$loop_index]['if_last_data'] = human_time_comparation($agent_interfaces['last_contact']);
 
             $loop_index++;
         }

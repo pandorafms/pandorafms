@@ -27,9 +27,9 @@
  */
 
 // Begin.
-require_once 'include/functions_messages.php';
-
 global $config;
+
+require_once $config['homedir'].'/include/functions_messages.php';
 
 $delete_msg = get_parameter('delete_message', 0);
 $multiple_delete = get_parameter('multiple_delete', 0);
@@ -68,6 +68,10 @@ $buttons['create_message'] = [
 ];
 
 if (is_ajax() === false) {
+    if (is_metaconsole() === true) {
+        enterprise_hook('open_meta_frame');
+    }
+
     // Header.
     ui_print_standard_header(
         $tabSelectedMessage,
@@ -300,6 +304,10 @@ echo "<div class='float-right'>";
         html_print_submit_button(__('Create message'), 'create', false, 'class="sub next mrgn_right_5px"');
     echo '</form>';
 echo '</div>';
+
+if (is_ajax() !== true && is_metaconsole() === true) {
+    enterprise_hook('close_meta_frame');
+}
 ?>
 
 <script type="text/javascript">

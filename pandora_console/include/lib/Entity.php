@@ -37,6 +37,13 @@ abstract class Entity
 {
 
     /**
+     * Load from DB or new one.
+     *
+     * @var boolean
+     */
+    protected $existsInDB;
+
+    /**
      * Entity fields (from table).
      *
      * @var array
@@ -88,6 +95,7 @@ abstract class Entity
             $obj->{$k}($v);
         }
 
+        $obj->existsInDB = true;
         return $obj;
     }
 
@@ -98,13 +106,15 @@ abstract class Entity
      * @param string      $table            Table.
      * @param array|null  $filters          Filters, for instance ['id' => $id].
      * @param string|null $enterprise_class Enterprise class name.
+     * @param boolean     $cache            Use cache or not.
      *
      * @throws \Exception On error.
      */
     public function __construct(
         string $table,
         ?array $filters=null,
-        ?string $enterprise_class=null
+        ?string $enterprise_class=null,
+        bool $cache=true
     ) {
         if (empty($table) === true) {
             throw new \Exception(
@@ -116,7 +126,14 @@ abstract class Entity
 
         if (is_array($filters) === true) {
             // New one.
-            $data = \db_get_row_filter($this->table, $filters);
+            $data = \db_get_row_filter(
+                $this->table,
+                $filters,
+                false,
+                'AND',
+                false,
+                $cache
+            );
 
             if ($data === false) {
                 throw new \Exception(
@@ -128,6 +145,9 @@ abstract class Entity
             foreach ($data as $k => $v) {
                 $this->fields[$k] = $v;
             }
+
+            // Mark as existing object.
+            $this->existsInDB = true;
         } else {
             // Empty one.
             $data = \db_get_all_rows_sql(
@@ -140,6 +160,9 @@ abstract class Entity
             foreach ($data as $row) {
                 $this->fields[$row['Field']] = null;
             }
+
+            // Mark as virtual object.
+            $this->existsInDB = false;
         }
 
         if (\enterprise_installed() === true
@@ -153,6 +176,17 @@ abstract class Entity
     /**
      * Dynamically call methods in this object.
      *
+     * To dynamically switch between community methods and prioritize
+     * enterprise ones, define method visibility as 'protected' in both
+     * classes.
+     *
+     * For instance, in following situation:
+     *  protected PandoraFMS\Agent::test()
+     *  protected PandoraFMS\Enterprise\Agent::test()
+     *
+     * If enterprise is available, then PandoraFMS\Enterprise\Agent::test()
+     * will be executed, community method otherwise.
+     *
      * @param string $methodName Name of target method or attribute.
      * @param array  $params     Arguments for target method.
      *
@@ -161,41 +195,38 @@ abstract class Entity
      */
     public function __call(string $methodName, ?array $params=null)
     {
-        // Prioritize written methods over dynamic ones.
-        if (method_exists($this, $methodName) === true) {
-            return call_user_func_array(
-                $this->{$methodName},
-                $params
-            );
-        }
-
         // Enterprise capabilities.
+        // Prioritize enterprise written methods over dynamic fields.
         if (\enterprise_installed() === true
             && $this->enterprise !== null
             && method_exists($this->enterprise, $methodName) === true
         ) {
-            return call_user_func_array(
-                [
-                    $this->enterprise,
-                    $methodName,
-                ],
-                $params
+            return $this->enterprise->$methodName(...$params);
+        }
+
+        if (method_exists($this, $methodName) === false) {
+            if (array_key_exists($methodName, $this->fields) === true) {
+                if (empty($params) === true) {
+                    return $this->fields[$methodName];
+                } else {
+                    $this->fields[$methodName] = $params[0];
+                }
+
+                return null;
+            }
+
+            throw new \Exception(
+                get_class($this).' error, method '.$methodName.' does not exist'
             );
         }
 
-        if (array_key_exists($methodName, $this->fields) === true) {
-            if (empty($params) === true) {
-                return $this->fields[$methodName];
-            } else {
-                $this->fields[$methodName] = $params[0];
-            }
-
-            return null;
-        }
-
-        throw new \Exception(
-            get_class($this).' error, method '.$methodName.' does not exist'
-        );
+        // Do not return nor throw exceptions after this point, allow php
+        // default __call behaviour to continue working with object method
+        // defined.
+        // If you're receiving NULL as result of the method invocation, ensure
+        // it is not private, take in mind this method will mask any access
+        // level error or notification since it is public and has limited access
+        // to the object (public|protected).
     }
 
 

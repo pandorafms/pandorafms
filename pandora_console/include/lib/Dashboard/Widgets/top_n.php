@@ -240,6 +240,7 @@ class TopNWidget extends Widget
                 'value'         => $values['period'],
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
+                'style_icon'    => 'flex-grow: 0',
             ],
         ];
 
@@ -414,10 +415,32 @@ class TopNWidget extends Widget
             $quantity
         );
 
-        $modules = @db_get_all_rows_sql(
-            $sql,
-            $search_in_history_db
-        );
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+
+            $modules = [];
+
+            foreach ($servers as $server) {
+                if (metaconsole_connect(null, $server['id']) !== NOERR) {
+                    continue;
+                }
+
+                $modules = array_merge(
+                    $modules,
+                    @db_get_all_rows_sql(
+                        $sql,
+                        $search_in_history_db
+                    )
+                );
+
+                metaconsole_restore_db();
+            }
+        } else {
+            $modules = @db_get_all_rows_sql(
+                $sql,
+                $search_in_history_db
+            );
+        }
 
         if (empty($modules) === true) {
             $output .= '<div class="container-center">';

@@ -264,7 +264,19 @@ function show_configuration_wizard() {
                 background: "black"
             },
         closeOnEscape: false,
-        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+        open: function(event, ui) { 
+            $(".ui-dialog-titlebar-close").hide();
+            if ($.ui && $.ui.dialog && $.ui.dialog.prototype._allowInteraction) {
+                    var ui_dialog_interaction = $.ui.dialog.prototype._allowInteraction;
+                    $.ui.dialog.prototype._allowInteraction = function(e) {
+                    if ($(e.target).closest('.select2-dropdown').length) return true;
+                        return ui_dialog_interaction.apply(this, arguments);
+                    };
+            }
+        },
+        _allowInteraction: function (event) {
+            return !!$(event.target).is(".select2-input") || this._super(event);
+        }             
     });
 
     default_language_displayed = $("#language").val();

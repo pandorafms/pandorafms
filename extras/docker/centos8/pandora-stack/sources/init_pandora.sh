@@ -149,6 +149,7 @@ EOF_INDEX
 	sed -i -e "s/^max_execution_time.*/max_execution_time = 0/g" /etc/php.ini
 	sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 800M/g" /etc/php.ini
 	sed -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.ini
+	sed -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
 
  	echo "- Setting Public URL: $PUBLICURL"
  	q=$(mysql -u$DBUSER -p$DBPASS $DBNAME -h$DBHOST -sNe "select token from tconfig;" | grep public_url)

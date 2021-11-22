@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE tagente_modulo MODIFY debug_content TEXT;
+
+COMMIT;

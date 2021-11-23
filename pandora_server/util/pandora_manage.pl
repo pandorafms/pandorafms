@@ -510,8 +510,12 @@ sub cli_create_snmp_trap ($$) {
 sub pandora_create_user ($$$$$) {
 	my ($dbh, $name, $password, $is_admin, $comments) = @_;
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
+		exit;
+	}
 
-return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
+	return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
                          VALUES (?, ?, ?, ?, ?)', safe_input($name), safe_input($name), $password, safe_input($comments), $is_admin);
 }
 
@@ -521,18 +525,23 @@ return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, pas
 sub pandora_delete_user ($$) {
 my ($dbh, $name) = @_;
 
-# Delete user profiles
-db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario = ?', $name);
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete a user go to metaconsole. \n\n";
+		exit;
+	}
 
-# Delete the user
-my $return = db_do ($dbh, 'DELETE FROM tusuario WHERE id_user = ?', $name);
+	# Delete user profiles
+	db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario = ?', $name);
 
-if($return eq '0E0') {
-	return -1;
-}
-else {
-	return 0;
-}
+	# Delete the user
+	my $return = db_do ($dbh, 'DELETE FROM tusuario WHERE id_user = ?', $name);
+
+	if($return eq '0E0') {
+		return -1;
+	}
+	else {
+		return 0;
+	}
 }
 
 ##########################################################################
@@ -749,7 +758,12 @@ sub pandora_validate_event_id ($$$) {
 ##########################################################################
 sub pandora_update_user_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-	
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To update a user go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $user_id = db_process_update($dbh, 'tusuario', $parameters, {$where_column => $where_value});
 	return $user_id;
 }
@@ -6144,6 +6158,11 @@ sub cli_disable_double_auth () {
 sub cli_user_enable () {
 	my $user_id = @ARGV[2];
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To enable a user go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $user_disabled = get_user_disabled ($dbh, $user_id);
 	
 	exist_check($user_disabled,'user',$user_id);
@@ -6168,6 +6187,11 @@ sub cli_user_enable () {
 ###############################################################################
 sub cli_user_disable () {
 	my $user_id = @ARGV[2];
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To disable a user go to metaconsole. \n\n";
+		exit;
+	}
 
 	my $user_disabled = get_user_disabled ($dbh, $user_id);
 	

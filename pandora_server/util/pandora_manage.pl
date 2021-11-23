@@ -353,6 +353,11 @@ sub pandora_disable_group ($$$) {
 	my @agents_bd = [];
 	my $result = 0;
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To disable a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	if ($group == 0){
 		# Extract all the names of the pandora agents if it is for all = 0.
 		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
@@ -389,6 +394,11 @@ sub pandora_enable_group ($$$) {
 
 	my @agents_bd = [];
 	my $result = 0;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To enable a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	if ($group == 0){
 		# Extract all the names of the pandora agents if it is for all = 0.
@@ -5850,7 +5860,12 @@ sub cli_get_planned_downtimes_items() {
 
 sub cli_create_group() {
 	my ($group_name,$parent_group_name,$icon,$description) = @ARGV[2..5];
-		
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $group_id = get_group_id($dbh,$group_name);
 	non_exist_check($group_id, 'group name', $group_name);
 	
@@ -5922,6 +5937,11 @@ sub cli_create_group() {
 sub cli_delete_group() {
 	my ($group_name) = @ARGV[2];
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
@@ -5945,6 +5965,11 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To update a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 

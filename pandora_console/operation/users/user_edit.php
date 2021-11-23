@@ -452,7 +452,7 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 
 
 $autorefresh_list_out = [];
-if (is_metaconsole() === false || is_centrallised() === true) {
+if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';

@@ -341,6 +341,7 @@ if (isset($groups[$grupo]) || $new_agent) {
             'selected'       => $grupo,
             'return'         => true,
             'required'       => true,
+            'privilege'      => 'AW',
         ]
     );
 } else {

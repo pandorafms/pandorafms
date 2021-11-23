@@ -281,7 +281,31 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver provisioningserver migrationserver);
+our @ServerTypes = qw (
+	dataserver
+	networkserver
+	snmpconsole
+	reconserver
+	pluginserver
+	predictionserver
+	wmiserver
+	exportserver
+	inventoryserver
+	webserver
+	eventserver
+	icmpserver
+	snmpserver
+	satelliteserver
+	transactionalserver
+	mfserver
+	syncserver
+	wuxserver
+	syslogserver
+	provisioningserver
+	migrationserver
+	alertserver
+	correlationserver
+);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -507,15 +531,16 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
 		# '0001' means every year.
 		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
-		my $special_day = get_db_value ($dbh, 'SELECT same_day FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'});
-		
+		my $special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
+
 		if (!defined($special_day)) {
-			$special_day = '';
+			$special_day = 0;
 		}
-		
-		if ($special_day ne '') {
-			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $special_day . ")", 10);
-			return $status if ($alert->{$special_day} != 1);
+
+		my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
+		if ($special_day != 0) {
+			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $weeks[$special_day] . ")", 10);
+			return $status if (!defined($alert->{$weeks[$special_day]}) || $alert->{$weeks[$special_day]} == 0);
 		}
 		else {
 			logger ($pa_config, $date . " is *NOT* a special day for " . $alert->{'name'}, 10);
@@ -639,7 +664,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			]
 		);
 
-		return $status unless (defined ($rc) && $rc == 1);
+		return $status unless !PandoraFMS::Tools::is_empty($rc) && $rc == 1;
 	}
 	
 	# Check min and max alert limits
@@ -709,7 +734,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 
 		# Generate an event
 		if ($table eq 'tevent_alert') {
-			pandora_event ($pa_config, "Alert ceased (" .
+			pandora_event ($pa_config, "Correlated alert ceased (" .
 				safe_output($alert->{'name'}) . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
 				"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
@@ -738,7 +763,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
 			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
 		} else {
-			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
 		}
 		return;
 	}
@@ -774,7 +799,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		# Update alert status
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
-		
+
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
@@ -840,7 +865,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 		if ($alert_mode == RECOVERED_ALERT) {
 			# Avoid the use of alias bigger than 30 characters.
 			@actions = get_db_rows ($dbh,
-				'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+				'SELECT taa.name as action_name, taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
 					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
 					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
 				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
@@ -854,7 +879,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			# Avoid the use of alias bigger than 30 characters.
 			if ($forced_alert){
 				@actions = get_db_rows ($dbh, 
-					'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+					'SELECT taa.name as action_name, taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
 						tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
 						tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
 					FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
@@ -865,7 +890,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 	
 			} else {		
 				@actions = get_db_rows ($dbh, 
-					'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+					'SELECT taa.name as action_name, taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
 						tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
 						tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
 					FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
@@ -881,7 +906,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 
 		# Get default action
 		if ($#actions < 0) {
-			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
 						WHERE talert_actions.id = ?
 						AND talert_actions.id_alert_command = talert_commands.id',
 						$alert->{'id_alert_action'});
@@ -890,7 +916,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 	# Event alert
 	else {
 		if ($alert_mode == RECOVERED_ALERT) {
-			@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tevent_alert_action, talert_actions, talert_commands
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
@@ -898,7 +925,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 						OR ? >= fires_min)',
 						$alert->{'id'}, $alert->{'times_fired'});
 		} else {
-			@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tevent_alert_action, talert_actions, talert_commands
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
@@ -910,7 +938,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 
 		# Get default action
 		if ($#actions < 0) {
-			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
 						WHERE talert_actions.id = ?
 						AND talert_actions.id_alert_command = talert_commands.id',
 						$alert->{'id_alert_action'});
@@ -926,6 +955,13 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 		}
 		return;
 	}
+
+	# Additional execution information for the console.
+	my $custom_data = {
+		'actions'	=> [],
+		'forced'	=> $forced_alert ? 1 : 0,
+		'recovered'	=> $alert_mode == RECOVERED_ALERT ? 1 : 0
+	};
 
 	# Critical_instructions, warning_instructions, unknown_instructions
 	my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
@@ -953,6 +989,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			}
 			
 			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
+			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
 		} else {
 			if (defined ($module)) {
 				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
@@ -971,7 +1008,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			$text = "Correlated alert $text";
 			pandora_event (
 				$pa_config,
-				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
+				"$text (" . safe_output($alert->{'name'}) . ") ",
 				(defined ($agent) ? $agent->{'id_grupo'} : 0),
 				# id agent.
 				0,
@@ -989,7 +1026,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 				'',
 				$critical_instructions,
 				$warning_instructions,
-				$unknown_instructions
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
 			);
 		} else {
 			pandora_event (
@@ -1010,7 +1048,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 				'',
 				$critical_instructions,
 				$warning_instructions,
-				$unknown_instructions
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
 			);
 		}
 	}
@@ -1053,6 +1092,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
 	my ($field11, $field12, $field13, $field14, $field15, $field16, $field17, $field18, $field19, $field20);
+
+			# Check for empty alert fields and assign command field.
+		my $index = 1;
+		my @command_fields = split(/,|\[|\]/, $action->{'fields_values'});
+		foreach my $field (@command_fields) {
+		unless (defined($action->{'field'.$index}) && $action->{'field'.$index} ne "") {
+					$action->{'field'.$index}  = defined($field) ? $field : "" ;
+		}
+	}
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
@@ -1100,6 +1148,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
+		
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
@@ -1291,7 +1340,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				_all_address_ => undef,
-				'_address_\d+_' => undef,
+				'_addressn_\d+_' => undef,
 				_secondarygroups_ => undef,
 				 );
 	
@@ -4208,19 +4257,43 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			}
 			
 			# Execute alert
-			my $action = get_db_single_row ($dbh, 'SELECT *
+			my $action = get_db_single_row ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
 							FROM talert_actions, talert_commands
 							WHERE talert_actions.id_alert_command = talert_commands.id
 							AND talert_actions.id = ?', $alert->{'id_alert'});
 
 			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_type. " " . $trap_custom_oid;
 
+			# Additional execution information for the console.
+			my $custom_data = {
+				'actions'	=> [],
+			};
+
 			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp, \%macros) if (defined ($action));
+			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
 			if ($action->{'id_alert_command'} != 3 && $alert->{'disable_event'} == 0){
-				pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
-					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
+				pandora_event (
+					$pa_config,
+					"SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
+					0,
+					0,
+					$alert->{'priority'},
+					0,
+					0,
+					'alert_fired',
+					0,
+					$dbh,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					p_encode_json($pa_config, $custom_data));
 		   }
 
 			# Update alert status
@@ -4236,7 +4309,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					$alert->{'id_as'});
 					
 			foreach my $other_alert (@more_actions_snmp) {
-				my $other_action = get_db_single_row ($dbh, 'SELECT *
+				my $other_action = get_db_single_row ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
 					FROM talert_actions, talert_commands
 					WHERE talert_actions.id_alert_command = talert_commands.id
 					AND talert_actions.id = ?', $other_alert->{'alert_type'});
@@ -4276,12 +4349,36 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					'disable_event' => $alert->{'disable_event'}
 				);
 
+				# Additional execution information for the console.
+				my $custom_data = {
+					'actions'	=> [],
+				};
+
 				pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert_action, 1, $other_action, undef, $dbh, $timestamp, \%macros) if (defined ($other_action));
+				push(@{$custom_data->{'actions'}}, safe_output($other_action->{'action_name'}));
 					
 				# Generate an event, ONLY if our alert action is different from generate an event.
 				if ($other_action->{'id_alert_command'} != 3 && $alert->{'disable_event'} == 0){
-					pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
-						0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
+					pandora_event (
+						$pa_config,
+						"SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
+						0,
+						0,
+						$alert->{'priority'},
+						0,
+						0,
+						'alert_fired',
+						0,
+						$dbh,
+						undef,
+						undef,
+						undef,
+						undef,
+						undef,
+						undef,
+						undef,
+						undef,
+						p_encode_json($pa_config, $custom_data));
 				}
 
 				# Update alert status
@@ -4419,16 +4516,12 @@ sub on_demand_macro($$$$$$;$) {
 		}
 		$field_value .= "</pre>";
 		return(defined($field_value)) ? $field_value : '';
-	} elsif ($macro =~ /_address_(\d+)_/) {
+	} elsif ($macro =~ /_addressn_(\d+)_/) {
 		return '' unless defined ($module);
 		my $field_number = $1 - 1;
-		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ? ORDER BY ip ASC', $module->{'id_agente'});
 		
 		my $field_value = $rows[$field_number]->{'ip'};
-		if($field_value == ''){
-			$field_value = 'Ip not defined';
-		}
-		
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;

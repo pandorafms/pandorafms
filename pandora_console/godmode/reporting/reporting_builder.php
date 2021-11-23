@@ -1970,9 +1970,11 @@ switch ($action) {
                         );
                         $values['id_group'] = get_parameter('combo_group');
 
-                        $values['server_name'] = get_parameter(
-                            'combo_server'
-                        );
+                        if ($values['server_name'] == '') {
+                            $values['server_name'] = get_parameter(
+                                'combo_server'
+                            );
+                        }
 
                         if ((($values['type'] == 'custom_graph')
                             || ($values['type'] == 'automatic_custom_graph'))

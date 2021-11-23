@@ -1042,39 +1042,19 @@ class AgentWizard extends HTML
                 $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
             } else {
                 $this->interfacesx64 = false;
-                $oidExplore = '1.3.6.1.2.1.2.2.1.2';
+                $oidExplore = '.1.3.6.1.2.1.2.2.1.2';
             }
-
-            // Explore interface names.
-            $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
-            $receivedOid = $this->snmpWalkValues(
-                $oidExplore,
-                false,
-                true
-            );
         } else {
             // Get the device PEN.
             $oidExplore = '.1.3.6.1.2.1.1.2.0';
         }
 
-        // Doc Interfaces de red.
+        // Explore general or interfaces
         $receivedOid = $this->snmpWalkValues(
             $oidExplore,
             false,
             false
         );
-
-        if (empty($receivedOid) || preg_grep('/no.*object/i', $receivedOid)) {
-            $this->interfacesx64 = false;
-
-            $oidExplore = '1.3.6.1.2.1.2.2.1.2';
-            // Doc Interfaces de red.
-            $receivedOid = $this->snmpWalkValues(
-                $oidExplore,
-                false,
-                true
-            );
-        }
 
         // The snmpwalk return information.
         if (empty($receivedOid) === false) {
@@ -2443,17 +2423,20 @@ class AgentWizard extends HTML
             }
 
             // Get current value.
-            if (in_array(
-                $moduleData['module_type'],
-                [
-                    MODULE_TYPE_REMOTE_SNMP,
-                    MODULE_TYPE_REMOTE_SNMP_INC,
-                    MODULE_TYPE_REMOTE_SNMP_STRING,
-                    MODULE_TYPE_REMOTE_SNMP_PROC,
-                ]
-            ) === true
+            if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE
+                || in_array(
+                    $moduleData['module_type'],
+                    [
+                        MODULE_TYPE_REMOTE_SNMP,
+                        MODULE_TYPE_REMOTE_SNMP_INC,
+                        MODULE_TYPE_REMOTE_SNMP_STRING,
+                        MODULE_TYPE_REMOTE_SNMP_PROC,
+                    ]
+                ) === true
             ) {
-                $currentValue = $this->snmpGetValue($moduleData['value']);
+                if (isset($moduleData['value']) === true) {
+                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                }
             }
 
             // It unit of measure have data, attach to current value.
@@ -2613,17 +2596,20 @@ class AgentWizard extends HTML
                 // Get current value.
                 $currentValue = '';
 
-                if (in_array(
-                    $moduleData['module_type'],
-                    [
-                        MODULE_TYPE_REMOTE_SNMP,
-                        MODULE_TYPE_REMOTE_SNMP_INC,
-                        MODULE_TYPE_REMOTE_SNMP_STRING,
-                        MODULE_TYPE_REMOTE_SNMP_PROC,
-                    ]
-                ) === true
+                if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE
+                    || in_array(
+                        $moduleData['module_type'],
+                        [
+                            MODULE_TYPE_REMOTE_SNMP,
+                            MODULE_TYPE_REMOTE_SNMP_INC,
+                            MODULE_TYPE_REMOTE_SNMP_STRING,
+                            MODULE_TYPE_REMOTE_SNMP_PROC,
+                        ]
+                    ) === true
                 ) {
-                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                    if (isset($moduleData['value']) === true) {
+                        $currentValue = $this->snmpGetValue($moduleData['value']);
+                    }
                 }
 
                 // Format current value with thousands and decimals.
@@ -3481,7 +3467,7 @@ class AgentWizard extends HTML
                 } else {
                     preg_match('/\.\d+$/', $key, $index);
                     $tmp = explode(': ', $oid_unit);
-                    $output[$index[0]] = ($tmp[1] ?? '');
+                    $output[$index[0]] = str_replace('"', '', ($tmp[1] ?? ''));
                 }
             }
         }

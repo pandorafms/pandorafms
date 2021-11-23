@@ -728,7 +728,8 @@ function html_print_select(
     $simple_multiple_options=false,
     $required=false,
     $truncate_size=false,
-    $select2_enable=true
+    $select2_enable=true,
+    $multiple_select2=false
 ) {
     $output = "\n";
 
@@ -900,7 +901,8 @@ function html_print_select(
         $select2 = 'select2_dark.min';
     }
 
-    if ($multiple === false && $select2_enable === true) {
+    // Note that multiple_select2 is introduced as a workaround to overcome the pointless limitation of preventing "multiple" select inputs from using select2 library without affecting the existing calls to this function.
+    if ($multiple === false && $select2_enable === true || $multiple_select2 === true) {
         if (is_ajax()) {
             $output .= '<script src="';
             $output .= ui_get_full_url(
@@ -2521,7 +2523,8 @@ function html_print_input_text(
     $formTo='',
     $onKeyUp='',
     $disabled=false,
-    $list=''
+    $list='',
+    $placeholder=null
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2564,6 +2567,10 @@ function html_print_input_text(
 
     if ($list != '') {
         $attr['list'] = $list;
+    }
+
+    if ($list !== null) {
+        $attr['placeholder'] = $placeholder;
     }
 
     return html_print_input_text_extended(
@@ -4025,15 +4032,19 @@ function html_print_input_file($name, $return=false, $options=false)
 
     if ($options) {
         if (isset($options['size'])) {
-            $output .= 'size="'.$options['size'].'"';
+            $output .= ' size="'.$options['size'].'"';
         }
 
         if (isset($options['disabled'])) {
-            $output .= 'disabled="disabled"';
+            $output .= ' disabled="disabled"';
         }
 
         if (isset($options['class'])) {
-            $output .= 'class="'.$options['class'].'"';
+            $output .= ' class="'.$options['class'].'"';
+        }
+
+        if (isset($options['required'])) {
+            $output .= ' required';
         }
     }
 
@@ -4548,7 +4559,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['form']) === true) ? $data['form'] : ''),
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['list']) === true) ? $data['list'] : '')
+                ((isset($data['list']) === true) ? $data['list'] : ''),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : '')
             );
         break;
 

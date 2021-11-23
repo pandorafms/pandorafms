@@ -58,7 +58,8 @@ input.sub,
 button.sub,
 .bg_general,
 .show_result_interpreter,
-div#rules::after table.agent_info_table thead > tr:first-child th,
+div#rules::after,
+table.agent_info_table thead > tr:first-child th,
 table.agent_info_table tr {
   background-color: #222 !important;
   color: #fff !important;
@@ -1202,11 +1203,14 @@ a.pandora_pagination,
 .bg_ccc {
   background-color: #50505050 !important;
 }
-
 .filter_none {
   filter: brightness(0) contrast(50%) !important;
 }
 
 input[type="image"] {
+  background-color: transparent !important;
+}
+
+.databox_color {
   background-color: transparent !important;
 }

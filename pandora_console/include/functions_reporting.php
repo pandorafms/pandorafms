@@ -2702,7 +2702,7 @@ function reporting_agent_module($report, $content)
     foreach ($modules as $modul_id) {
         $modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
         $modules_by_name[$cont]['id'] = $modul_id;
-        $cont ++;
+        $cont++;
     }
 
     if ($modules_by_name == false || $agents == false) {
@@ -8700,8 +8700,8 @@ function reporting_increment($report, $content)
         $return['data']['message'] = __('The monitor have no data in this range of dates or monitor type is not numeric');
         $return['data']['error'] = true;
     } else if (is_numeric($old_data) && is_numeric($last_data)) {
-        $return['data']['old'] = $old_data;
-        $return['data']['now'] = $last_data;
+        $return['data']['old'] = round(floatval($old_data), $config['graph_precision']);
+        $return['data']['now'] = round(floatval($last_data), $config['graph_precision']);
         $increment = ($old_data - $last_data);
 
         if ($increment < 0) {
@@ -10813,11 +10813,11 @@ function reporting_get_stats_agents_monitors($data)
     if ($mobile) {
         $urls = [];
         $urls['total_agents'] = 'index.php?page=agents';
-        $urls['monitor_checks'] = 'index.php?page=modules';
+        $urls['monitor_total'] = 'index.php?page=modules';
     } else {
         $urls = [];
         $urls['total_agents'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60';
-        $urls['monitor_checks'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
+        $urls['monitor_total'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
     }
 
     // Agents and modules table
@@ -10839,8 +10839,8 @@ function reporting_get_stats_agents_monitors($data)
     }
 
     $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
-    $tdata[4] = $data['monitor_checks'] <= 0 ? '-' : $data['monitor_checks'];
-    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_checks'].'">'.$tdata[4].'</a>';
+    $tdata[4] = $data['monitor_total'] <= 0 ? '-' : $data['monitor_total'];
+    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_total'].'">'.$tdata[4].'</a>';
 
     /*
         Hello there! :)
@@ -10848,7 +10848,7 @@ function reporting_get_stats_agents_monitors($data)
         You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
     */
     if ($data['total_agents']) {
-        if (($data['monitor_checks'] / $data['total_agents'] > 100) && !enterprise_installed()) {
+        if (($data['monitor_total'] / $data['total_agents'] > 100) && !enterprise_installed()) {
             $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         }
     }
@@ -13669,7 +13669,7 @@ function reporting_label_macro($item, $label)
     if (preg_match('/_agentgroup_/', $label)) {
         $label = str_replace(
             '_agentgroup_',
-            $item['agent_group'],
+            groups_get_name($item['agent_group']),
             $label
         );
     }
@@ -14153,31 +14153,31 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NOT_INIT;
                     // NOT INIT.
                     $time_not_init = ($time_not_init + ($tend - $tstart));
-                    $data_not_init ++;
+                    $data_not_init++;
                 } else if ($tacum_data === null) {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_UNKNOWN;
                     // UNKNOWN.
                     $time_unknown = ($time_unknown + ($tend - $tstart));
-                    $data_unknown ++;
+                    $data_unknown++;
                 } else if (( (isset($min_value_critical) || isset($max_value_critical)) && ($modules_is_string === false) && ($sla_check_value_critical == true) )
                     || ( isset($max_value_critical) && ($modules_is_string === true) && $string_check_value_critical )
                 ) {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
                     // CRITICAL.
                     $time_critical = ($time_critical + ($tend - $tstart));
-                    $data_critical ++;
+                    $data_critical++;
                 } else if (( (isset($min_value_warning) || isset($max_value_warning)) && ($modules_is_string === false) && ($sla_check_value_warning == true) )
                     || ( isset($max_value_warning) && ($modules_is_string === true) && $sla_check_value_warning )
                 ) {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_WARNING;
                     // WARNING.
                     $time_warning = ($time_warning + ($tend - $tstart));
-                    $data_warning ++;
+                    $data_warning++;
                 } else {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NORMAL;
                     // OK.
                     $time_ok = ($time_ok + ($tend - $tstart));
-                    $data_ok ++;
+                    $data_ok++;
                 }
 
                 $array_graph[$data_total]['utimestamp'] = ($tend - $tstart);

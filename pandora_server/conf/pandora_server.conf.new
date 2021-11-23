@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.757
+# Version 7.0NG.758
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -478,6 +478,14 @@ export_threads 1
 
 eventserver 0
 
+# Enable (1) or disable (0) Pandora FMS Correlation Server (PANDORA FMS ENTERPRISE ONLY).
+
+correlationserver 0
+
+# Time in seconds to re-evaluate correlation alerts pool (PANDORA FMS ENTERPRISE ONLY).
+
+correlation_threshold 30
+
 # Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
@@ -686,6 +694,15 @@ syslog_max 65535
 
 # Address
 # sync_address
+
+# Network manager configuration server (PANDORA FMS ENTERPRISE ONLY).
+#ncmserver 1
+
+# Threads for NCM server (PANDORA FMS ENTERPRISE ONLY).
+ncmserver_threads 1
+
+# NCM utility to avoid Net::SSH::Expect issues in multi-threaded environments.
+ncm_ssh_utility /usr/share/pandora_server/util/ncm_ssh_extension
 
 # Pandora FMS Daemon Watchdog execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30

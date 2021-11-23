@@ -93,37 +93,46 @@ class Groups
                 $url_modules = 'index.php?page=modules&group=%s&status=%s';
 
         foreach ($this->groups as $group) {
-            // Calculate entire row color
+            // Calculate entire row color.
             if ($group['_monitors_alerts_fired_'] > 0) {
                 $color_class = 'group_view_alrm';
+                $color = ' #f7931e';
                 $status_image = ui_print_status_image('agent_alertsfired_ball.png', '', true);
             } else if ($group['_monitors_critical_'] > 0) {
                 $color_class = 'group_view_crit';
+                $color = ' #f85858';
                 $status_image = ui_print_status_image('agent_critical_ball.png', '', true);
             } else if ($group['_monitors_warning_'] > 0) {
                 $color_class = 'group_view_warn';
+                $color = '#ffea59';
                 $status_image = ui_print_status_image('agent_warning_ball.png', '', true);
             } else if ($group['_monitors_ok_'] > 0) {
                 $color_class = 'group_view_ok';
+                $color = '#6eb432';
                 $status_image = ui_print_status_image('agent_ok_ball.png', '', true);
             } else if (($group['_monitors_unknown_'] > 0) || ($group['_agents_unknown_'] > 0)) {
                 $color_class = 'group_view_unk';
+                $color = '#999999';
                 $status_image = ui_print_status_image('agent_no_monitors_ball.png', '', true);
             } else {
                 $color_class = '';
+                $color = '';
                 $status_image = ui_print_status_image('agent_no_data_ball.png', '', true);
             }
 
-            $group['icon'] = ($group['icon'] == '') ? 'world' : $group['icon'];
+            $group['_iconImg_'] = ($group['_iconImg_'] == '') ? 'world.png' : $group['_iconImg_'];
             $ui->contentAddHtml(
                 '
 						<style type="text/css">
 							.ui-icon-group_'.$count.' {
-								background: url("../images/groups_small/'.$group['icon'].'.png") no-repeat scroll 0 0 #F3F3F3 !important;
-								width: 24px;
-								height: 24px;
-								margin-top: -12px !important;
-							}
+                                background-color: '.$color.' !important;
+                            }
+                            
+                            .ui-icon-group_'.$count.':after {
+                                background-color = #333 !important;
+                                background: url("../images/groups_small/'.$group['_iconImg_'].'") no-repeat scroll 0 0 #F3F3F3 !important;
+                                background-size: 22px 22px !important;
+                            }
 						</style>
 						'
             );

@@ -48,7 +48,7 @@ if ($id_graph !== 0) {
     }
 }
 
-// Delete module SQL code
+// Delete module SQL code.
 if ($delete_graph) {
     if (check_acl($config['id_user'], 0, 'AW')) {
         $res = db_process_sql_delete('tgraph_source', ['id_graph' => $id_graph]);
@@ -239,7 +239,7 @@ if ($view_graph) {
             ]
         ).'</a>';
 
-        // In full screen, the manage options are not available
+        // In full screen, the manage options are not available.
         $options = [
             'view'   => $options['view'],
             'screen' => $options['screen'],
@@ -276,6 +276,12 @@ if ($view_graph) {
         'percentil' => $percentil,
         'fullscale' => $fullscale,
     ];
+
+    if ($stacked === CUSTOM_GRAPH_AREA || $stacked === CUSTOM_GRAPH_STACKED_AREA) {
+        $params['type_graph'] = 'area';
+    } else if ($stacked === CUSTOM_GRAPH_LINE || $stacked === CUSTOM_GRAPH_STACKED_LINE) {
+        $params['type_graph'] = 'line';
+    }
 
     $params_combined = [
         'stacked'  => $stacked,

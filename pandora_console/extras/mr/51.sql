@@ -3,7 +3,7 @@ START TRANSACTION;
 CREATE TABLE IF NOT EXISTS `tncm_queue` (
 	`id` SERIAL,
     `id_agent` INT(10) UNSIGNED NOT NULL,
-    `id_script` INT(10) UNSIGNED NOT NULL,
+    `id_script` BIGINT(20) UNSIGNED NOT NULL,
 	`utimestamp` INT UNSIGNED NOT NULL,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE

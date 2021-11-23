@@ -4196,6 +4196,27 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------------------------------------------------
+-- Table `tncm_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_queue` (
+	`id` SERIAL,
+    `id_agent` INT(10) UNSIGNED NOT NULL,
+    `id_script` INT(10) UNSIGNED NOT NULL,
+	`utimestamp` INT UNSIGNED NOT NULL,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_snippet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_snippet` (
+    `id` SERIAL,
+    `name` TEXT,
+	`content` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tncm_vendor` VALUES
     (1,'Cisco'),

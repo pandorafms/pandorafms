@@ -177,13 +177,8 @@ function servers_get_performance()
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND tagente.id_agente = tagente_estado.id_agente
 				AND tagente_modulo.disabled = 0
+                		AND tagente_modulo.id_modulo <> 0
 				AND delete_pending = 0
-				AND (utimestamp > 0
-                    OR (id_tipo_modulo = 100
-                        OR (id_tipo_modulo > 21
-                        AND id_tipo_modulo < 23)
-                    )
-                )
 				AND tagente.disabled = 0
 			GROUP BY tagente_modulo.id_modulo'
         );

@@ -161,6 +161,7 @@ function load_modal(settings) {
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+      id: settings.modal.cancel_button_id,
       text: settings.modal.cancel,
       click: function() {
         if (settings.oncancel != undefined) {
@@ -362,6 +363,7 @@ function load_modal(settings) {
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       text: settings.modal.ok,
+      id: settings.modal.ok_button_id,
       click: function() {
         if (
           settings.onsubmit != undefined &&

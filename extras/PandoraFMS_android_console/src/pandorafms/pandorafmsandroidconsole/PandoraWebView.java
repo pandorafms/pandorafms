@@ -88,7 +88,7 @@ public class PandoraWebView extends Activity {
 				//Check the first load the page for to hide a toast with the
 				//connection message
 				
-				//Close the CustomToast (I love this hack, fuck javalovers and yours patterns.).
+				//Close the CustomToast.
 				if (ConnectionCustomToast.activity != null)
 					ConnectionCustomToast.activity.finish();
 			}

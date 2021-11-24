@@ -359,7 +359,7 @@ final class Group extends Item
                 }
             } else {
                 // Get the status img src.
-                $status = \groups_get_status($groupId);
+                $status = \groups_get_status($groupId, true);
             }
 
             $imagePath = \visual_map_get_image_status_element($data, $status);

@@ -3426,7 +3426,7 @@ function visual_map_get_status_element($layoutData)
             break;
 
             case GROUP_ITEM:
-                $group_status = groups_get_status($layoutData['id_group']);
+                $group_status = groups_get_status($layoutData['id_group'], true);
 
                 switch ($group_status) {
                     case AGENT_STATUS_ALERT_FIRED:

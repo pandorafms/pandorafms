@@ -688,7 +688,7 @@ foreach ($simple_alerts as $alert) {
         $data[3] .= '</tr>';
     }
 
-    $data[3] .= '<div id="update_action-div" class="invisible">';
+    $data[3] .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
     $data[3] .= '</div>';
     $data[3] .= '</table>';
     // Is possible manage actions if have LW permissions in the agent group of the alert module
@@ -706,9 +706,9 @@ foreach ($simple_alerts as $alert) {
             $actions = alerts_get_alert_actions_filter(true, 'id_group IN ('.$filter_groups.')');
         }
 
-        $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible left">';
-            $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post">';
-                $data[3] .= '<table class="databox_color w100p bg_color222">';
+        $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible">';
+            $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" style="height:85%;">';
+                $data[3] .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
                     $data[3] .= html_print_input_hidden('add_action', 1, true);
                     $data[3] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
 
@@ -1127,13 +1127,14 @@ function show_add_action(id_alert) {
                 background: "black"
             },
             open: function() {
+                $(`#add_action-div-${id_alert}`).css('overflow', 'hidden');
                 $("#action_select, #action_select").select2({
                     tags: true,
                     dropdownParent: $("#add_action-div-" + id_alert)
                 });
             },
-            width: 500,
-            height: 300
+            width: 455,
+            height: 500
         })
         .show ();
 }
@@ -1151,8 +1152,8 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
         type: 'POST',
         url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
         success: function (data) {
-            $("#update_action-div").html (data);
-            $("#update_action-div").hide ()
+            $(`#update_action-div-${alert_id}`).html (data);
+            $(`#update_action-div-${alert_id}`).hide ()
                 .dialog ({
                     resizable: true,
                     draggable: true,
@@ -1163,14 +1164,14 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                         background: "black"
                     },
                     open: function() {
-                        $('#update_action-div').css('overflow', 'hidden'); 
-                        $("#action_select, #action_select_ajax").select2({
+                        $(`#update_action-div-${alert_id}`).css('overflow', 'hidden');
+                        $(`#action_select_ajax-${alert_id}`).select2({
                             tags: true,
-                            dropdownParent: $('#update_action-')
+                            dropdownParent: $(`#update_action-div-${alert_id}`)
                         });
                     },
                     width: 455,
-                    height: 370
+                    height: 500
                 })
                 .show ();
         }

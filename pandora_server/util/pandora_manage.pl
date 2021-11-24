@@ -1002,7 +1002,7 @@ sub pandora_get_calendar_id ($$) {
 sub pandora_get_same_day_id ($$) {
 	my ($dbh, $same_day) = @_;
 
-	my %weeks = ('monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8);
+	my $weeks = { 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8 };
 
 	return defined ($weeks->{$same_day}) ? $weeks->{$same_day} : -1;
 }

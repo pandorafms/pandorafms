@@ -225,7 +225,7 @@ if ($searchUsers) {
 
             $user_groups = users_get_groups(
                 $user['id_user'],
-                'AR',
+                false,
                 $user_can_manage_all
             );
 
@@ -236,7 +236,6 @@ if ($searchUsers) {
                 && $config['id_user'] != $user['id_user']
                 || (users_is_admin($config['id_user']) === false
                 && users_is_admin($user['id_user']) === true)
-                || $config['id_user'] === $user['id_user']
             ) {
                 unset($users[$key]);
             } else {

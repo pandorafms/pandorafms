@@ -110,7 +110,7 @@
 
 /* --- Sidebar --- */
 .sidebar_library {
-  min-width: 360px;
+  width: 240px;
   margin-left: 50px;
   border-left: 1px solid #d0d0d0;
   padding: 0px 0px 0px 30px;
@@ -151,7 +151,7 @@
 #category_result,
 #search_result {
   display: grid;
-  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(175px, 1fr));
   grid-gap: 20px;
 }
 

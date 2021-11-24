@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.758.1 Build 211123";
+my $version = "7.0NG.758.1 Build 211124";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1004,7 +1004,7 @@ sub pandora_get_same_day_id ($$) {
 
 	my %weeks = ('monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8);
 
-	return defined ($weeks{$same_day}) ? $weeks{$same_day} : -1;
+	return defined ($weeks->{$same_day}) ? $weeks->{$same_day} : -1;
 }
 
 ##########################################################################

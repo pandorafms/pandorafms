@@ -4032,15 +4032,19 @@ function html_print_input_file($name, $return=false, $options=false)
 
     if ($options) {
         if (isset($options['size'])) {
-            $output .= 'size="'.$options['size'].'"';
+            $output .= ' size="'.$options['size'].'"';
         }
 
         if (isset($options['disabled'])) {
-            $output .= 'disabled="disabled"';
+            $output .= ' disabled="disabled"';
         }
 
         if (isset($options['class'])) {
-            $output .= 'class="'.$options['class'].'"';
+            $output .= ' class="'.$options['class'].'"';
+        }
+
+        if (isset($options['required'])) {
+            $output .= ' required';
         }
     }
 

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.758 Build 211118";
+my $version = "7.0NG.758.1 Build 211124";
 
 # save program name for logging
 my $progname = basename($0);
@@ -179,7 +179,7 @@ sub help_screen{
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
 	help_screen_line('--validate_alert', '<template_name> <agent_id> <module_id> [<use_alias>]', 'Validate alert given angent, module and alert');
-	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
+	help_screen_line('--create_special_day', "<special_day> <calendar_name> <same_day> <description> <group>", 'Create special day');
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
 	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name> [<use_alias>]', "Create a new data \n\t  module from a local component");
@@ -954,6 +954,31 @@ sub pandora_get_special_day_id ($$) {
 	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE ${RDBMS_QUOTE}date${RDBMS_QUOTE} = ?", $special_day);
 
 	return defined ($special_day_id) ? $special_day_id : -1;
+}
+
+
+##########################################################################
+## SUB pandora_get_calendar_id(id)
+## Return calendar id, given "calendar_name"
+##########################################################################
+sub pandora_get_calendar_id ($$) {
+	my ($dbh, $calendar_name) = @_;
+
+	my $calendar_id = get_db_value ($dbh, "SELECT id FROM talert_calendar WHERE ${RDBMS_QUOTE}name${RDBMS_QUOTE} = ?", $calendar_name);
+
+	return defined ($calendar_id) ? $calendar_id : -1;
+}
+
+##########################################################################
+## SUB pandora_get_same_day_id(id)
+## Return same day id, given "same_day"
+##########################################################################
+sub pandora_get_same_day_id ($$) {
+	my ($dbh, $same_day) = @_;
+
+	my $weeks = { 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8};
+
+	return defined ($weeks->{$same_day}) ? $weeks->{$same_day} : -1;
 }
 
 ##########################################################################
@@ -6413,12 +6438,16 @@ sub pandora_get_network_component_id($$) {
 ##############################################################################
 
 sub cli_create_special_day() {
-	my ($special_day, $same_day, $description, $group_name) = @ARGV[2..5];
+	my ($special_day, $calendar_name, $same_day, $description, $group_name) = @ARGV[2..5];
+	my $calendar_name_exists = pandora_get_calendar_id ($dbh, $calendar_name);
+	my $same_day_exists = pandora_get_same_day_id ($dbh, $same_day);
 	my $special_day_exists = pandora_get_special_day_id ($dbh, $special_day);
 	non_exist_check($special_day_exists,'special day',$special_day);
+	non_exist_check($calendar_name_exists,'calendar name',$calendar_name);
+	non_exist_check($same_day_exists,'same day',$same_day);
 
 	my $group_id = 0;
-	
+
 	# If group name is not defined, we assign group All (0)
 	if(defined($group_name)) {
 		$group_id = get_group_id($dbh, decode('UTF-8', $group_name));
@@ -6434,19 +6463,21 @@ sub cli_create_special_day() {
 		help_screen ();
 		exit 1;
 	}
-	if ($same_day !~ /monday|tuesday|wednesday|thursday|friday|saturday|sunday/) {
+
+	if ($same_day !~ /monday|tuesday|wednesday|thursday|friday|saturday|sunday|holiday/) {
 		print_log "[ERROR] '$same_day' is invalid day.\n\n";
 		$param = '--create_special_day';
 		help_screen ();
 		exit 1;
 	}
-	
+
 	my %parameters;
-	
+
 	$parameters{"${RDBMS_QUOTE}date${RDBMS_QUOTE}"} = $special_day;
 	$parameters{'same_day'} = $same_day;
 	$parameters{'description'} = decode('UTF-8', $description);
 	$parameters{'id_group'} = $group_id;
+	$parameters{'calendar_name'} = $calendar_name;
 
 	pandora_create_special_day_from_hash ($conf, \%parameters, $dbh);
 }

@@ -376,11 +376,11 @@ function menu_print_menu(&$menu)
                     if (isset($sub2['title'])) {
                         $sub_title = $sub2['title'];
                     } else {
-                        $sub_title = '';
+                        $sub_title = $sub2['text'];
                     }
 
                     $submenu2_list .= '<li class="'.$class.'"  >';
-                    $submenu2_list .= '<a href="'.$link.'"><div class="'.$sub_tree_class.'" title="'.$sub2['text'].'" >'.$sub2['text'].'</div></a></li>';
+                    $submenu2_list .= '<a href="'.$link.'"><div class="'.$sub_tree_class.'" title="'.$sub_title.'" >'.$sub2['text'].'</div></a></li>';
                     $sub_title = '';
                 }
 

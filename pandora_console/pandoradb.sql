@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_threshold` int(4) default 0,
 	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
-	`debug_content` varchar(200),
+	`debug_content` TEXT,
 	`percentage_critical` tinyint(1) unsigned default '0',
 	`percentage_warning` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
@@ -573,15 +573,30 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `talert_calendar`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_calendar` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	`id_group` INT(10) NOT NULL DEFAULT 0,
+	`description` text,
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `talert_special_days`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_special_days` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`id_calendar` int(10) unsigned NOT NULL DEFAULT 1,
 	`id_group` INT(10) NOT NULL DEFAULT 0,
 	`date` date NOT NULL DEFAULT '1970-01-01',
-	`same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
+	`day_code` tinyint(2) NOT NULL,
 	`description` text,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_calendar`) REFERENCES talert_calendar(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
@@ -3858,6 +3873,7 @@ CREATE TABLE `tagent_repository` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
+  `deployment_timeout` INT UNSIGNED DEFAULT 600,
   `uploaded_by` VARCHAR(100) DEFAULT '',
   `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,

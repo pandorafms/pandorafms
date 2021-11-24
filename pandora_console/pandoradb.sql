@@ -4124,6 +4124,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_template` bigint(20) unsigned,
     `execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
+    `cron_interval` varchar(100) default '',
+    `event_on_change` int unsigned default null,
     `last_error` text,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4150,12 +4152,13 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
 -- Table `tncm_queue`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_queue` (
-	`id` SERIAL,
+    `id` SERIAL,
     `id_agent` INT(10) UNSIGNED NOT NULL,
     `id_script` BIGINT(20) UNSIGNED NOT NULL,
-	`utimestamp` INT UNSIGNED NOT NULL,
+    `utimestamp` INT UNSIGNED NOT NULL,
+    `scheduled` INT UNSIGNED DEFAULT NULL,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -4164,6 +4167,6 @@ CREATE TABLE IF NOT EXISTS `tncm_queue` (
 CREATE TABLE IF NOT EXISTS `tncm_snippet` (
     `id` SERIAL,
     `name` TEXT,
-	`content` TEXT,
+    `content` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

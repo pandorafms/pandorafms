@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `tncm_queue` (
     `id_agent` INT(10) UNSIGNED NOT NULL,
     `id_script` BIGINT(20) UNSIGNED NOT NULL,
 	`utimestamp` INT UNSIGNED NOT NULL,
+	`scheduled` INT UNSIGNED DEFAULT NULL,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -24,6 +25,9 @@ CREATE TABLE IF NOT EXISTS `talert_calendar` (
 	PRIMARY KEY (`id`),
 	UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tncm_agent` ADD COLUMN `cron_interval` varchar(100) default '' AFTER `execute`;
+ALTER TABLE `tncm_agent` ADD COLUMN `event_on_change` int unsigned default null AFTER `cron_interval`;
 
 ALTER TABLE `talert_special_days` ADD COLUMN `id_calendar` int(10) unsigned NOT NULL DEFAULT 1;
 ALTER TABLE `talert_special_days` ADD COLUMN `day_code` tinyint(2) unsigned NOT NULL DEFAULT 0;

@@ -679,7 +679,7 @@ function agents_get_agents(
     // Add the group filter to
     $where = db_format_array_where_clause_sql($filter, 'AND', '('.$where_secondary.') AND ');
     if ($where == '' && $where_secondary != '') {
-        $where = $where_secondary;
+        $where = '('.$where_secondary.')';
     }
 
     $where_nogroup = db_format_array_where_clause_sql(
@@ -1179,6 +1179,10 @@ function agents_get_group_agents(
                 $filter['disabled'] = (int) $search['disabled'];
                 unset($search['disabled']);
             }
+        }
+
+        if (isset($search['all_agents'])) {
+            unset($search['all_agents']);
         }
 
         if (isset($search['string']) === true) {

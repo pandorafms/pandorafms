@@ -422,8 +422,8 @@ if ($show_update_action_menu) {
         $id_action
     );
 
-    $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
-    $data .= '<table class="databox_color w100p bg_color222">';
+    $data .= '<form id="update_action-'.$alert['id'].'" method="post" style="height:85%;">';
+    $data .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
             1,

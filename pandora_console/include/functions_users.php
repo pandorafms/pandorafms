@@ -301,6 +301,7 @@ function users_get_groups(
     $search=''
 ) {
     static $group_cache = [];
+
     $filter = '';
 
     // Added users_group_cache to avoid unnecessary proccess on massive calls...
@@ -341,13 +342,6 @@ function users_get_groups(
         else {
             $query  = 'SELECT * FROM tgrupo ORDER BY nombre';
             $raw_groups = db_get_all_rows_sql($query);
-
-            if (empty($search) === false) {
-                $filter = sprintf(
-                    ' AND lower(tgrupo.nombre) like lower("%%%s%%")',
-                    $search
-                );
-            }
 
             $query = sprintf(
                 "SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags, tusuario_perfil.no_hierarchy FROM tgrupo, tusuario_perfil, tperfil
@@ -449,6 +443,16 @@ function users_get_groups(
         } else {
             $user_groups[$group[$keys_field]] = $group['nombre'];
         }
+    }
+
+    // Search filter.
+    if (empty($search) === false) {
+        $user_groups = array_filter(
+            $user_groups,
+            function ($group) use ($search) {
+                return (bool) preg_match('/'.$search.'/i', $group['nombre']);
+            }
+        );
     }
 
     $users_group_cache[$users_group_cache_key] = $user_groups;

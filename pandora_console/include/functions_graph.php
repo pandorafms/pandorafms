@@ -2050,7 +2050,7 @@ function graphic_combined_module(
                 $width,
                 $height,
                 $color,
-                $module_name_list,
+                [],
                 $long_index,
                 ui_get_full_url(
                     'images/image_problem_area_small.png',

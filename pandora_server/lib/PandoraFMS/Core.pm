@@ -531,15 +531,16 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
 		# '0001' means every year.
 		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
-		my $special_day = get_db_value ($dbh, 'SELECT same_day FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'});
-		
+		my $special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
+
 		if (!defined($special_day)) {
-			$special_day = '';
+			$special_day = 0;
 		}
-		
-		if ($special_day ne '') {
-			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $special_day . ")", 10);
-			return $status if ($alert->{$special_day} != 1);
+
+		my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
+		if ($special_day != 0) {
+			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $weeks[$special_day] . ")", 10);
+			return $status if (!defined($alert->{$weeks[$special_day]}) || $alert->{$weeks[$special_day]} == 0);
 		}
 		else {
 			logger ($pa_config, $date . " is *NOT* a special day for " . $alert->{'name'}, 10);
@@ -1092,6 +1093,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
 	my ($field11, $field12, $field13, $field14, $field15, $field16, $field17, $field18, $field19, $field20);
 
+			# Check for empty alert fields and assign command field.
+		my $index = 1;
+		my @command_fields = split(/,|\[|\]/, $action->{'fields_values'});
+		foreach my $field (@command_fields) {
+		unless (defined($action->{'field'.$index}) && $action->{'field'.$index} ne "") {
+					$action->{'field'.$index}  = defined($field) ? $field : "" ;
+		}
+	}
+
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
 		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne ""  ? $action->{'field1'}  : $alert->{'field1'};
@@ -1138,6 +1148,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
+		
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
@@ -1329,7 +1340,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				_all_address_ => undef,
-				'_address_\d+_' => undef,
+				'_addressn_\d+_' => undef,
 				_secondarygroups_ => undef,
 				 );
 	
@@ -4505,16 +4516,12 @@ sub on_demand_macro($$$$$$;$) {
 		}
 		$field_value .= "</pre>";
 		return(defined($field_value)) ? $field_value : '';
-	} elsif ($macro =~ /_address_(\d+)_/) {
+	} elsif ($macro =~ /_addressn_(\d+)_/) {
 		return '' unless defined ($module);
 		my $field_number = $1 - 1;
-		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ? ORDER BY ip ASC', $module->{'id_agente'});
 		
 		my $field_value = $rows[$field_number]->{'ip'};
-		if($field_value == ''){
-			$field_value = 'Ip not defined';
-		}
-		
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;

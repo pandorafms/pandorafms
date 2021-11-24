@@ -1574,7 +1574,9 @@ function graphic_combined_module(
             $date_array['final_date'] = $params['date'];
             $date_array['start_date'] = ($params['date'] - $params['period']);
 
-            $server_name = metaconsole_get_server_by_id($modules[0]['server']);
+            if (is_metaconsole()) {
+                $server_name = metaconsole_get_server_by_id($modules[0]['server']);
+            }
 
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(

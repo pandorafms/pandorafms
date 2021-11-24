@@ -391,6 +391,8 @@ $data[1] .= html_print_input_text('str_warning', $str_warning, '', 5, 1024, true
 // Warning inverse values.
 $data[1] .= '<br /><em>'.__('Inverse interval').'</em>&nbsp;';
 $data[1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true);
+$data[1] .= '<br /><em>'.__('Percentage').'</em>&nbsp;';
+$data[1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true);
 
 $data[2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 $table->colspan['warning-svg-row'][2] = 2;
@@ -427,6 +429,9 @@ $data[1] .= html_print_input_text('str_critical', $str_critical, '', 5, 1024, tr
 // Critical inverse values.
 $data[1] .= '<br /><em>'.__('Inverse interval').'</em>&nbsp;';
 $data[1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
+$data[1] .= '<br /><em>'.__('Percentage').'</em>&nbsp;';
+$data[1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true);
+
 
 push_table_row($data, 'critical-row');
 

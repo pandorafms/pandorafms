@@ -267,6 +267,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	`debug_content` varchar(200),
+	`percentage_critical` tinyint(1) unsigned default '0',
+	`percentage_warning` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -982,6 +984,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`scan_filters` text NOT NULL,
 	`query_filters` text NOT NULL,
 	`enabled` tinyint(1) UNSIGNED DEFAULT 1,
+	`percentage_critical` tinyint(1) unsigned default '0',
+	`percentage_warning` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2420,6 +2424,8 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`percentage_critical` tinyint(1) UNSIGNED DEFAULT 0,
+	`percentage_warning` tinyint(1) UNSIGNED DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_network_component_group`) REFERENCES tnetwork_component_group(`id_sg`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -2500,6 +2506,8 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
 	`cps` int NOT NULL DEFAULT 0,
+	`percentage_warning` tinyint(1) UNSIGNED DEFAULT 0,
+	`percentage_critical` tinyint(1) UNSIGNED DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	KEY `main_idx` (`id_policy`),
 	UNIQUE (`id_policy`, `name`)

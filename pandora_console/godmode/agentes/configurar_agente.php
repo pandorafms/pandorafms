@@ -1541,6 +1541,8 @@ if ($update_module || $create_module) {
     $unknown_instructions = (string) get_parameter('unknown_instructions');
     $critical_inverse = (int) get_parameter('critical_inverse');
     $warning_inverse = (int) get_parameter('warning_inverse');
+    $percentage_critical = (int) get_parameter('percentage_critical');
+    $percentage_warning = (int) get_parameter('percentage_warning');
 
     $id_category = (int) get_parameter('id_category');
 
@@ -1694,6 +1696,8 @@ if ($update_module) {
         'unknown_instructions'  => $unknown_instructions,
         'critical_inverse'      => $critical_inverse,
         'warning_inverse'       => $warning_inverse,
+        'percentage_critical'   => $percentage_critical,
+        'percentage_warning'    => $percentage_warning,
         'cron_interval'         => $cron_interval,
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
@@ -1900,6 +1904,8 @@ if ($create_module) {
         'unknown_instructions'  => $unknown_instructions,
         'critical_inverse'      => $critical_inverse,
         'warning_inverse'       => $warning_inverse,
+        'percentage_critical'   => $percentage_critical,
+        'percentage_warning'    => $percentage_warning,
         'cron_interval'         => $cron_interval,
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),

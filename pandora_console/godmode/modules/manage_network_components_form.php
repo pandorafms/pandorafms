@@ -93,6 +93,8 @@ if ($create_network_from_module) {
     $unknown_instructions = $data_module['unknown_instructions'];
     $critical_inverse = $data_module['critical_inverse'];
     $warning_inverse = $data_module['warning_inverse'];
+    $percentage_critical = $data_module['percentage_critical'];
+    $percentage_warning = $data_module['percentage_warning'];
     $id_category = $data_module['id_category'];
     $ff_event_normal = $data_module['min_ff_event_normal'];
     $ff_event_warning = $data_module['min_ff_event_warning'];
@@ -150,7 +152,9 @@ if (isset($id)) {
         $warning_instructions    = $component['warning_instructions'];
         $unknown_instructions    = $component['unknown_instructions'];
         $critical_inverse        = $component['critical_inverse'];
+        $percentage_critical     = $component['percentage_critical'];
         $warning_inverse         = $component['warning_inverse'];
+        $percentage_warning     = $component['percentage_warning'];
         $id_category             = $component['id_category'];
         $tags                    = $component['tags'];
         $ff_event_normal         = $component['min_ff_event_normal'];
@@ -233,6 +237,8 @@ if (isset($id)) {
         $unknown_instructions = '';
         $critical_inverse = 0;
         $warning_inverse = 0;
+        $percentage_critical = 0;
+        $percentage_warning = 0;
         $id_category = 0;
         $tags = '';
         $ff_event_normal = 0;

@@ -188,6 +188,10 @@ $table->data[4][1] .= html_print_input_text(
 $table->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[4][1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true);
 
+$table->data[4][1] .= '<div id="percentage_warning"><em>'.__('Percentage').'</em>';
+$table->data[4][1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true);
+$table->data[4][1] .= '</div>';
+
 $table->data[4][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 $table->colspan[4][2] = 2;
 $table->rowspan[4][2] = 3;
@@ -222,6 +226,11 @@ $table->data[5][1] .= html_print_input_text(
 ).'</span>';
 $table->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[5][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
+
+$table->data[5][1] .= '<div id="percentage_critical"><em>'.__('Percentage').'</em>';
+$table->data[5][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true);
+$table->data[5][1] .= '</div>';
+
 
 $table->data[6][0] = __('FF threshold');
 $table->colspan[6][1] = 3;
@@ -518,6 +527,9 @@ $next_row++;
                 $('#string_warning').hide();
                 $('#minmax_critical').show();
                 $('#minmax_warning').show();
+                $('#percentage_warning').show();
+                $('#percentage_critical').show();
+                
             }
             else {
                 // String types
@@ -525,6 +537,8 @@ $next_row++;
                 $('#string_warning').show();
                 $('#minmax_critical').hide();
                 $('#minmax_warning').hide();
+                $('#percentage_warning').hide();
+                $('#percentage_critical').hide();
             }
         });
         

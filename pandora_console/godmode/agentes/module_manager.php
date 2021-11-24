@@ -704,6 +704,8 @@ if ((bool) $checked === true) {
             'quiet',
             'critical_inverse',
             'warning_inverse',
+            'percentage_critical',
+            'percentage_warning',
             'id_policy_module',
         ]
     );

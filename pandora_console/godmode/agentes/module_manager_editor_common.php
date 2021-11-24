@@ -459,6 +459,12 @@ if (modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][1] .= '<br /><em>'.__('Inverse interval').'</em>';
     $table_simple->data[2][1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true, $disabledBecauseInPolicy);
 
+if (modules_is_string_type($id_module_type) === false) {
+    $table_simple->data[2][1] .= '<div id="percentage_warning"><em>'.__('Percentage').'</em>';
+    $table_simple->data[2][1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true, $disabledBecauseInPolicy);
+    $table_simple->data[2][1] .= '</div>';
+}
+
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
@@ -511,6 +517,12 @@ if (modules_is_string_type($id_module_type) || $edit) {
 
 $table_simple->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[3][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
+
+if (modules_is_string_type($id_module_type) === false) {
+    $table_simple->data[3][1] .= '<div id="percentage_critical" /><em>'.__('Percentage').'</em>';
+    $table_simple->data[3][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true, $disabledBecauseInPolicy);
+    $table_simple->data[3][1] .= '</div>';
+}
 
 $table_simple->data[4][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
@@ -1551,6 +1563,8 @@ $(document).ready (function () {
             $('#minmax_critical').show();
             $('#minmax_warning').show();
             $('#svg_dinamic').show();
+            $('#percentage_warning').show();
+            $('#percentage_critical').show();
         }
         else {
             // String types
@@ -1559,6 +1573,8 @@ $(document).ready (function () {
             $('#minmax_critical').hide();
             $('#minmax_warning').hide();
             $('#svg_dinamic').hide();
+            $('#percentage_warning').hide();
+            $('#percentage_critical').hide();
         }
 
         if (type_name_selected.match(/async/) == null) {

@@ -132,10 +132,8 @@ if ($get_comments === true) {
                 sprintf(
                     'SELECT `user_comment`
                     FROM `tevento`
-                    WHERE `id_agente` = "%d" AND `data` = "%d" AND `estado` = "%d"',
-                    $event['id_agente'],
-                    $event['data'],
-                    $event['estado']
+                    WHERE `evento` = "%s"',
+                    io_safe_output($event['evento'])
                 )
             );
         } else {

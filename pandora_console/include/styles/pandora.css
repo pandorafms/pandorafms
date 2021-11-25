@@ -8359,6 +8359,8 @@ div.stat-win-spinner img {
   .select2-selection--multiple
   .select2-selection__rendered {
   padding: 5px 10px 10px !important;
+  max-height: 120px;
+  overflow: auto !important;
 }
 
 .select2-container--default

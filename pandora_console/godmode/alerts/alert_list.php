@@ -270,7 +270,8 @@ if ($add_action) {
 }
 
 if ($update_action) {
-    $id_action = (int) get_parameter('action_select_ajax');
+    $alert_id = (int) get_parameter('alert_id');
+    $id_action = (int) get_parameter('action_select_ajax-'.$alert_id);
     $id_module_action = (int) get_parameter('id_module_action_ajax');
     $fires_min = (int) get_parameter('fires_min_ajax');
     $fires_max = (int) get_parameter('fires_max_ajax');

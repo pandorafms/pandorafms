@@ -2839,17 +2839,68 @@ function alerts_get_agent_modules(
 }
 
 
+function alerts_get_actions_names($actions, $reduce=false)
+{
+    if (empty($actions) === true) {
+        return [];
+    }
+
+    $where = '';
+    if (is_array($actions) === true) {
+        $where = sprintf(
+            'id IN (%s)',
+            implode(',', $actions)
+        );
+    } else {
+        $where = sprintf(' id = %d', $actions);
+    }
+
+    $sqltest = sprintf(
+        'SELECT id, `name`
+        FROM talert_actions
+        WHERE %s',
+        $where
+    );
+
+    $result = db_get_all_rows_sql($sqltest);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    if ($reduce === true) {
+        $result = array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $result;
+}
+
+
 function alerts_get_alert_fired($filters=[], $groupsBy=[])
 {
+    global $config;
+
+    $filter_date = '';
+    if (isset($filters['period']) === true && empty($filters['period']) === false) {
+        $filter_date = sprintf('AND utimestamp > %d', (time() - $filters['period']));
+    }
+
     $filter_group = '';
-    if (isset($filters['group']) === true) {
+    if (isset($filters['group']) === true && empty($filters['group']) === false) {
         $filter_group = sprintf('AND id_grupo = %d', $filters['group']);
     }
 
     $filter_agents = '';
     if (isset($filters['agents']) === true) {
         $filter_agents = sprintf(
-            'AND id_agente IN ("%s")',
+            'AND id_agente IN (%s)',
             implode(',', $filters['agents'])
         );
     }
@@ -2857,55 +2908,110 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
     $filter_modules = '';
     if (isset($filters['modules']) === true) {
         $filter_modules = sprintf(
-            'AND id_agentmodule IN ("%s")',
+            'AND id_agentmodule IN (%s)',
             implode(',', $filters['modules'])
         );
     }
 
-    $filter_actions = '';
-    if (isset($filters['actions']) === true) {
-        $filter_actions = '';
-    }
-
     $filter_templates = '';
     if (isset($filters['templates']) === true) {
-        $filter_templates = '';
+        $filter_templates = sprintf(
+            'AND id_alert_am IN (%s)',
+            implode(',', $filters['templates'])
+        );
     }
 
-    $filter_period = '';
-    if (isset($filters['period']) === true) {
-        $filter_period = '';
+    $filter_actions = '';
+    $fields_actions = [];
+    if (isset($filters['actions']) === true) {
+        $actions_names = alerts_get_actions_names($filters['actions'], true);
+        $filter_actions .= 'AND ( ';
+        $first = true;
+        foreach ($actions_names as $name_action) {
+            if ($first === false) {
+                $filter_actions .= ' OR ';
+            }
+
+            $filter_actions .= sprintf(
+                "JSON_CONTAINS(custom_data, '\"%s\"', '\$.actions')",
+                io_safe_output($name_action)
+            );
+
+            $fields_actions[$name_action] = sprintf(
+                "SUM(JSON_CONTAINS(custom_data, '\"%s\"', '\$.actions')) as '%s'",
+                io_safe_output($name_action),
+                io_safe_output($name_action)
+            );
+
+            $first = false;
+        }
+
+        $filter_actions .= ' ) ';
     }
 
-    $group_by = '';
+    $group_array = [];
+    $fields = ['COUNT(tevento.id_evento) as fired'];
     if (isset($groupsBy['group_by']) === true) {
-        switch ($groupsBy['group_by']) {
-            case 'module':
-                $group_by = sprintf('GROUP BY id_agentmodule');
-            break;
+        foreach ($groupsBy['group_by'] as $groupBy) {
+            switch ($groupBy) {
+                case 'module':
+                    $fields[] = 'id_agentmodule';
+                    $group_array[] = 'id_agentmodule';
+                break;
 
-            case 'action':
-                $group_by = sprintf('GROUP BY 1');
-            break;
+                case 'action':
+                    if (is_array($fields_actions) === true
+                        && empty($fields_actions) === false
+                    ) {
+                        foreach ($fields_actions as $name => $field) {
+                            $fields[] = $field;
+                            $group_array[] = '"'.$name.'"';
+                        }
+                    }
+                break;
 
-            case 'template':
-                $group_by = sprintf('GROUP BY id_alert_am');
-            break;
+                case 'template':
+                    $fields[] = 'talert_template_modules.id_alert_template as id_template';
+                    $group_array[] = 'talert_template_modules.id_alert_template';
+                break;
 
-            case 'agent':
-                $group_by = sprintf('GROUP BY id_agente');
-            break;
+                case 'agent':
+                    $fields[] = 'id_agente as id_agent';
+                    $group_array[] = 'id_agente';
+                break;
 
-            default:
-                // Nothing.
-            break;
+                case 'group':
+                    $fields[] = 'id_grupo as id_group';
+                    $group_array[] = 'id_grupo';
+                break;
+
+                default:
+                    // Nothing.
+                break;
+            }
         }
     }
 
-    // TODO: group by periods $groupsBy['lapse'].
+    if (isset($groupsBy['lapse']) === true) {
+        $fields[] = sprintf(
+            'ROUND((CEILING(UNIX_TIMESTAMP(`timestamp`) / %d) * %d)) AS period',
+            (int) $groupsBy['lapse'],
+            (int) $groupsBy['lapse']
+        );
+        $group_array[] = 'period';
+    }
+
+    $group_by = '';
+    if (is_array($group_array) === true && empty($group_array) === false) {
+        $group_by = sprintf(' GROUP BY %s', implode(", \n", $group_array));
+    }
+
     $query = sprintf(
-        'SELECT id_agente, id_grupo, id_agentmodule, count(*) as fired
+        'SELECT
+            %s
         FROM tevento
+        INNER JOIN talert_template_modules
+            ON talert_template_modules.id = tevento.id_alert_am
         WHERE custom_data != ""
             AND event_type="alert_fired"
             %s
@@ -2914,23 +3020,23 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
             %s
             %s
             %s
-            AND (
-                JSON_CONTAINS(custom_data, "Mail to Admin", "$.actions") = 1
-                OR JSON_CONTAINS(custom_data, "Restart agent", "$.actions") = 1
-            )
             %s',
+        implode(", \n", $fields),
+        $filter_date,
         $filter_group,
         $filter_agents,
         $filter_modules,
         $filter_actions,
         $filter_templates,
-        $filter_period,
         $group_by
     );
 
-    hd($query, '', true);
+    $data = db_get_all_rows_sql($query);
 
-    $alert_fired = db_get_all_rows_sql($query);
+    // TODO :XXx
+    hd($data);
 
-    hd($alert_fired);
+    foreach ($data as $key => $value) {
+        hd(date('y-m-d h:i:s', $value['period']));
+    }
 }

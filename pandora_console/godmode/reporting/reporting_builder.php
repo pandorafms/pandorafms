@@ -1699,7 +1699,7 @@ switch ($action) {
                                 $alert_templates_to_report = get_parameter('alert_templates');
                                 $alert_actions_to_report = get_parameter('alert_actions');
                                 $show_summary = get_parameter('show_summary', 0);
-                                $group_by = get_parameter('group_by', 0);
+                                $group_by = get_parameter('group_by');
 
                                 $es['module'] = get_same_modules(
                                     $agents_to_report,
@@ -2475,7 +2475,7 @@ switch ($action) {
                                 $alert_templates_to_report = get_parameter('alert_templates');
                                 $alert_actions_to_report = get_parameter('alert_actions');
                                 $show_summary = get_parameter('show_summary', 0);
-                                $group_by = get_parameter('group_by', 0);
+                                $group_by = get_parameter('group_by');
 
                                 $es['module'] = get_same_modules(
                                     $agents_to_report,

@@ -3286,11 +3286,17 @@ $class = 'databox filters';
                 ];
                 html_print_select(
                     $valuesGroupBy,
-                    'group_by',
+                    'group_by[]',
                     $group_by,
                     '',
-                    __('None'),
-                    '0',
+                    '',
+                    0,
+                    false,
+                    true,
+                    false,
+                    '',
+                    false,
+                    'min-width: 500px; max-height: 100px',
                     false,
                     false,
                     false,
@@ -3299,8 +3305,9 @@ $class = 'databox filters';
                     false,
                     false,
                     false,
-                    false,
-                    ''
+                    true,
+                    true,
+                    true
                 );
                 ?>
             </td>
@@ -4575,9 +4582,9 @@ $(document).ready (function () {
             jQuery.post ("ajax.php",
                 {"page" : "operation/agentes/ver_agente",
                     "get_modules_group_json" : 1,
+                    "selection" : $("#selection_agent_module").val(),
                     "id_module_group" : $("#combo_modulegroup").val(),
-                    "id_agents" : $("#id_agents2").val(),
-                    "selection" : $("#selection_agent_module").val()
+                    "id_agents" : $("#id_agents2").val()
                 },
                 function (data, status) {
                     $("#module").html('');

@@ -2689,7 +2689,7 @@ function reporting_alert_report_actions($report, $content)
 
     $period = $content['period'];
     $id_group = $content['id_group'];
-    $modules = $es['modules'];
+    $modules = $es['module'];
     $agents = $es['id_agents'];
     $templates = $es['templates'];
     $actions = $es['actions'];

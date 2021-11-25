@@ -343,6 +343,23 @@ sub update_conf_txt ($$$$) {
 	return $result;
 }
 
+###############################################################################
+###############################################################################
+# PRINT HELP AND CHECK ERRORS FUNCTIONS
+###############################################################################
+###############################################################################
+
+###############################################################################
+# log wrapper
+###############################################################################
+sub print_log ($) {
+	my ($msg) = @_;
+
+	print $msg;					# show message
+
+	$msg =~ s/\n+$//;
+	logger( $conf, "($progname) $msg", 10);		# save to logging file
+}
 
 ###############################################################################
 # Disable a entire group
@@ -352,6 +369,11 @@ sub pandora_disable_group ($$$) {
 
 	my @agents_bd = [];
 	my $result = 0;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To disable a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	if ($group == 0){
 		# Extract all the names of the pandora agents if it is for all = 0.
@@ -389,6 +411,11 @@ sub pandora_enable_group ($$$) {
 
 	my @agents_bd = [];
 	my $result = 0;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To enable a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	if ($group == 0){
 		# Extract all the names of the pandora agents if it is for all = 0.
@@ -976,7 +1003,7 @@ sub pandora_get_calendar_id ($$) {
 sub pandora_get_same_day_id ($$) {
 	my ($dbh, $same_day) = @_;
 
-	my $weeks = { 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8};
+	my $weeks = { 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8 };
 
 	return defined ($weeks->{$same_day}) ? $weeks->{$same_day} : -1;
 }
@@ -996,25 +1023,6 @@ sub pandora_delete_special_day ($$) {
 	else {
 		return 0;
 	}
-}
-
-
-###############################################################################
-###############################################################################
-# PRINT HELP AND CHECK ERRORS FUNCTIONS
-###############################################################################
-###############################################################################
-
-###############################################################################
-# log wrapper
-###############################################################################
-sub print_log ($) {
-	my ($msg) = @_;
-
-	print $msg;					# show message
-
-	$msg =~ s/\n+$//;
-	logger( $conf, "($progname) $msg", 10);		# save to logging file
 }
 
 ###############################################################################
@@ -5523,7 +5531,7 @@ sub cli_get_agents() {
 	
 	my $head_print = 0;
 
-	use Data::Dumper;
+	# use Data::Dumper;
 
 
 	foreach my $agent (@agents) {
@@ -5850,7 +5858,12 @@ sub cli_get_planned_downtimes_items() {
 
 sub cli_create_group() {
 	my ($group_name,$parent_group_name,$icon,$description) = @ARGV[2..5];
-		
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $group_id = get_group_id($dbh,$group_name);
 	non_exist_check($group_id, 'group name', $group_name);
 	
@@ -5922,6 +5935,11 @@ sub cli_create_group() {
 sub cli_delete_group() {
 	my ($group_name) = @ARGV[2];
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
@@ -5945,6 +5963,11 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To update a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 

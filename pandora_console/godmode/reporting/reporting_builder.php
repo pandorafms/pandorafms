@@ -1725,8 +1725,6 @@ switch ($action) {
                                 $es['show_summary'] = $show_summary;
                                 $es['group_by'] = $group_by;
 
-                                hd($es);
-
                                 $values['external_source'] = json_encode($es);
 
                                 $values['period'] = get_parameter('period');
@@ -2517,9 +2515,6 @@ switch ($action) {
                                 $es['actions'] = $alert_actions_to_report;
                                 $es['show_summary'] = $show_summary;
                                 $es['group_by'] = $group_by;
-
-
-                                hd($es);
 
                                 $values['external_source'] = json_encode($es);
 

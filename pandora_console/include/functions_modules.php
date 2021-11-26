@@ -1436,6 +1436,45 @@ function modules_get_agentmodule_name($id_agente_modulo)
 
 
 /**
+ * Get the module names of an agent module.
+ *
+ * @param array $array_ids Agents module ids.
+ *
+ * @return array Id => name.
+ */
+function modules_get_agentmodule_name_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    $sql = sprintf(
+        'SELECT id_agente_modulo as id, nombre as `name`
+        FROM tagente_modulo
+        WHERE id_agente_modulo IN (%s)',
+        implode(',', $array_ids)
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    $result = array_reduce(
+        $result,
+        function ($carry, $item) {
+            $carry[$item['id']] = $item['name'];
+            return $carry;
+        },
+        []
+    );
+
+    return $result;
+}
+
+
+/**
  * Get the module descripcion of an agent module.
  *
  * @param integer $id_agente_modulo Agent module id.
@@ -3471,10 +3510,11 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 
 function get_same_modules($agents, $modules)
 {
+    $name_modules = modules_get_agentmodule_name_array(array_values($modules));
     $modules_to_report = [];
     if ($modules != '') {
         foreach ($modules as $m) {
-            $module_name = modules_get_agentmodule_name($m);
+            $module_name = $name_modules[$m];
             foreach ($agents as $a) {
                 $module_in_agent = db_get_value_filter(
                     'id_agente_modulo',

@@ -753,10 +753,6 @@ switch ($action) {
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
 
-                    hd($es);
-
-                    hd(base64_decode($es['id_agents']));
-
                     // Decode agents and modules.
                     $id_agents = json_decode(
                         io_safe_output(base64_decode($es['id_agents'])),
@@ -4878,8 +4874,6 @@ $(document).ready (function () {
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
-                console.log(agents_multiple);
-                console.log(modules_multiple);
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
                 $('#id_agents2').val('');

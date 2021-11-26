@@ -4586,8 +4586,8 @@ $(document).ready (function () {
                     $("#checkbox-module-check-all").prop('checked', false);
                     jQuery.each (data, function (id, value) {
                         option = $("<option></option>")
-                            .attr ("value", value["id_agente_modulo"])
-                            .html (value["nombre"]);
+                            .attr ("value", id)
+                            .html (value);
                         $("#module").append (option);
                     });
                 },
@@ -4609,11 +4609,12 @@ $(document).ready (function () {
                     $("#module").html('');
                     // Check module all.
                     $("#checkbox-module-check-all").prop('checked', false);
+                    console.log(data);
                     if(data){
                         jQuery.each (data, function (id, value) {
                             option = $("<option></option>")
-                                .attr ("value", value["id_agente_modulo"])
-                                .html (value["nombre"]);
+                                .attr ("value", id)
+                                .html (value);
                             $("#module").append (option);
                         });
                     }
@@ -4639,8 +4640,8 @@ $(document).ready (function () {
                     if(data){
                         jQuery.each (data, function (id, value) {
                             option = $("<option></option>")
-                                .attr ("value", value["id_agente_modulo"])
-                                .html (value["nombre"]);
+                                .attr ("value", id)
+                                .html (value);
                             $("#module").append (option);
                         });
                     }

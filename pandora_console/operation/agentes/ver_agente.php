@@ -310,7 +310,8 @@ if (is_ajax()) {
 
             echo json_encode($modules);
         } else {
-            select_modules_for_agent_group($id_group, $id_agents, $selection, false);
+            $modules = select_modules_for_agent_group($id_group, $id_agents, $selection, false);
+            echo json_encode($modules);
         }
     }
 

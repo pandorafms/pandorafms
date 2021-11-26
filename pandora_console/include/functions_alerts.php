@@ -2921,8 +2921,6 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
         );
     }
 
-    hd($filters['templates']);
-
     $filter_templates = '';
     if (isset($filters['templates']) === true
         && empty($filters['templates']) === false

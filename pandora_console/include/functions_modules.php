@@ -3519,9 +3519,6 @@ function get_same_modules($agents, $modules)
         implode(',', array_values($agents))
     );
 
-    hd('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-    hd($sql);
-
     $all = db_get_all_rows_sql($sql);
 
     if ($all === false) {

@@ -128,11 +128,13 @@ if ($get_comments === true) {
     } else {
         // Consider if the event is grouped.
         if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
+            $eventTable = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
             $eventsGrouped = db_get_all_rows_sql(
                 sprintf(
                     'SELECT `user_comment`
-                    FROM `tevento`
+                    FROM `%s`
                     WHERE `evento` = "%s"',
+                    $eventTable,
                     io_safe_output($event['evento'])
                 )
             );
@@ -140,7 +142,7 @@ if ($get_comments === true) {
             $events = events_get_event(
                 $event['id_evento'],
                 false,
-                $meta,
+                is_metaconsole(),
                 $history
             );
 

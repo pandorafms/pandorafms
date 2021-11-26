@@ -1876,6 +1876,31 @@ $(document).ready (function () {
             }    
         }
     });
+
+    $('#warning_inverse').change(function() {
+            if($(this).val() == 1) {
+                $("#percentage_warning").val('0').change()
+            }
+        });
+
+        $('#critical_inverse').change(function() {
+            if($(this).val() == 1) {
+                $("#percentage_critical").val('0').change();
+            }
+        });
+
+        $('#percentage_warning').change(function() {
+            if($(this).val() == 1) {
+                $("#warning_inverse").val('0').change()
+            }
+        });
+
+        $('#percentage_critical').change(function() {
+            if($(this).val() == 1) {
+                $("#critical_inverse").val('0').change()
+            }
+        });
+        
     
 });
 

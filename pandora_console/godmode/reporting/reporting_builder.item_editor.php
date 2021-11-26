@@ -752,16 +752,23 @@ switch ($action) {
                     hd('1');
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
-                    $id_agents = $es['id_agents'];
+
+                    hd($es);
+
+                    hd(base64_decode($es['id_agents']));
+
+                    // Decode agents and modules.
+                    $id_agents = json_decode(
+                        io_safe_output(base64_decode($es['id_agents'])),
+                        true
+                    );
+                    $module = json_decode(
+                        io_safe_output(base64_decode($es['module'])),
+                        true
+                    );
 
                     $selection_a_m = get_parameter('selection');
                     $recursion = $item['recursion'];
-
-                    if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
-                        $module = '';
-                    } else {
-                        $module = $es['module'];
-                    }
 
                     $group = $item['id_group'];
                     $modulegroup = $item['id_module_group'];
@@ -1725,6 +1732,11 @@ $class = 'databox filters';
                     true,
                     true
                 );
+
+                html_print_input_hidden(
+                    'id_agents2-multiple-text',
+                    json_encode($agents_select)
+                );
                 ?>
             </td>
         </tr>
@@ -1813,6 +1825,11 @@ $class = 'databox filters';
                     true,
                     true,
                     true
+                );
+
+                html_print_input_hidden(
+                    'module-multiple-text',
+                    json_encode($agents_select)
                 );
                 ?>
             </td>
@@ -4712,6 +4729,14 @@ $(document).ready (function () {
         }
 
         switch (type){
+            case 'alert_report_actions':
+                var agents_multiple = $('#id_agents2').val();
+                var modules_multiple = $('#module').val();
+                $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
+                $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
+                $('#id_agents2').val('');
+                $('#module').val('');
+                break;
             case 'alert_report_module':
             case 'alert_report_agent':
             case 'event_report_agent':
@@ -4850,6 +4875,16 @@ $(document).ready (function () {
                 return false;
         }
         switch (type){
+            case 'alert_report_actions':
+                var agents_multiple = $('#id_agents2').val();
+                var modules_multiple = $('#module').val();
+                console.log(agents_multiple);
+                console.log(modules_multiple);
+                $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
+                $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
+                $('#id_agents2').val('');
+                $('#module').val('');
+                break;
             case 'alert_report_module':
             case 'alert_report_agent':
             case 'event_report_agent':

@@ -1693,23 +1693,39 @@ switch ($action) {
                             break;
 
                             case 'alert_report_actions':
-                                hd('3');
-                                $agents_to_report = get_parameter('id_agents2');
-                                $modules_to_report = get_parameter('module', '');
                                 $alert_templates_to_report = get_parameter('alert_templates');
                                 $alert_actions_to_report = get_parameter('alert_actions');
                                 $show_summary = get_parameter('show_summary', 0);
                                 $group_by = get_parameter('group_by');
+                                hd('3');
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
+                                );
 
                                 $es['module'] = get_same_modules(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
-                                $es['id_agents'] = $agents_to_report;
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+
                                 $es['templates'] = $alert_templates_to_report;
                                 $es['actions'] = $alert_actions_to_report;
                                 $es['show_summary'] = $show_summary;
                                 $es['group_by'] = $group_by;
+
+                                hd($es);
 
                                 $values['external_source'] = json_encode($es);
 
@@ -2470,22 +2486,40 @@ switch ($action) {
 
                             case 'alert_report_actions':
                                 hd('2');
-                                $agents_to_report = get_parameter('id_agents2');
-                                $modules_to_report = get_parameter('module', '');
                                 $alert_templates_to_report = get_parameter('alert_templates');
                                 $alert_actions_to_report = get_parameter('alert_actions');
                                 $show_summary = get_parameter('show_summary', 0);
                                 $group_by = get_parameter('group_by');
 
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
+                                );
+
                                 $es['module'] = get_same_modules(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
-                                $es['id_agents'] = $agents_to_report;
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+
                                 $es['templates'] = $alert_templates_to_report;
                                 $es['actions'] = $alert_actions_to_report;
                                 $es['show_summary'] = $show_summary;
                                 $es['group_by'] = $group_by;
+
+
+                                hd($es);
 
                                 $values['external_source'] = json_encode($es);
 

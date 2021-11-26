@@ -2888,17 +2888,23 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
     global $config;
 
     $filter_date = '';
-    if (isset($filters['period']) === true && empty($filters['period']) === false) {
+    if (isset($filters['period']) === true
+        && empty($filters['period']) === false
+    ) {
         $filter_date = sprintf('AND utimestamp > %d', (time() - $filters['period']));
     }
 
     $filter_group = '';
-    if (isset($filters['group']) === true && empty($filters['group']) === false) {
+    if (isset($filters['group']) === true
+        && empty($filters['group']) === false
+    ) {
         $filter_group = sprintf('AND id_grupo = %d', $filters['group']);
     }
 
     $filter_agents = '';
-    if (isset($filters['agents']) === true) {
+    if (isset($filters['agents']) === true
+        && empty($filters['agents']) === false
+    ) {
         $filter_agents = sprintf(
             'AND id_agente IN (%s)',
             implode(',', $filters['agents'])
@@ -2906,15 +2912,21 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
     }
 
     $filter_modules = '';
-    if (isset($filters['modules']) === true) {
+    if (isset($filters['modules']) === true
+        && empty($filters['modules']) === false
+    ) {
         $filter_modules = sprintf(
             'AND id_agentmodule IN (%s)',
             implode(',', $filters['modules'])
         );
     }
 
+    hd($filters['templates']);
+
     $filter_templates = '';
-    if (isset($filters['templates']) === true) {
+    if (isset($filters['templates']) === true
+        && empty($filters['templates']) === false
+    ) {
         $filter_templates = sprintf(
             'AND id_alert_am IN (%s)',
             implode(',', $filters['templates'])
@@ -2923,7 +2935,9 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
 
     $filter_actions = '';
     $fields_actions = [];
-    if (isset($filters['actions']) === true) {
+    if (isset($filters['actions']) === true
+        && empty($filters['actions']) === false
+    ) {
         $actions_names = alerts_get_actions_names($filters['actions'], true);
         $filter_actions .= 'AND ( ';
         $first = true;
@@ -2951,7 +2965,9 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
 
     $group_array = [];
     $fields = ['COUNT(tevento.id_evento) as fired'];
-    if (isset($groupsBy['group_by']) === true) {
+    if (isset($groupsBy['group_by']) === true
+        && empty($filters['group_by']) === false
+    ) {
         foreach ($groupsBy['group_by'] as $groupBy) {
             switch ($groupBy) {
                 case 'module':
@@ -2992,7 +3008,9 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
         }
     }
 
-    if (isset($groupsBy['lapse']) === true) {
+    if (isset($groupsBy['lapse']) === true
+        && empty($filters['lapse']) === false
+    ) {
         $fields[] = sprintf(
             'ROUND((CEILING(UNIX_TIMESTAMP(`timestamp`) / %d) * %d)) AS period',
             (int) $groupsBy['lapse'],
@@ -3037,6 +3055,8 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
     hd($data);
 
     foreach ($data as $key => $value) {
-        hd(date('y-m-d h:i:s', $value['period']));
+        if (isset($value['period']) === true) {
+            hd(date('y-m-d h:i:s', $value['period']));
+        }
     }
 }

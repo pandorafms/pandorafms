@@ -3511,30 +3511,39 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 function get_same_modules($agents, $modules)
 {
     $name_modules = modules_get_agentmodule_name_array(array_values($modules));
-    $modules_to_report = [];
-    if ($modules != '') {
-        foreach ($modules as $m) {
-            $module_name = $name_modules[$m];
-            foreach ($agents as $a) {
-                $module_in_agent = db_get_value_filter(
-                    'id_agente_modulo',
-                    'tagente_modulo',
-                    [
-                        'id_agente' => $a,
-                        'nombre'    => $module_name,
-                    ]
-                );
-                if ($module_in_agent) {
-                    $modules_to_report[] = $module_in_agent;
-                }
-            }
-        }
+
+    $sql = sprintf(
+        'SELECT id_agente_modulo as id
+        FROM tagente_modulo
+        WHERE id_agente IN (%s)',
+        implode(',', array_values($agents))
+    );
+
+    hd('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    hd($sql);
+
+    $all = db_get_all_rows_sql($sql);
+
+    if ($all === false) {
+        $all = [];
     }
 
-    $modules_to_report = array_merge($modules_to_report, $modules);
+    $all = array_reduce(
+        $all,
+        function ($carry, $item) use ($name_modules) {
+            if (isset($name_modules[$item['id']]) === true) {
+                $carry[$item['id']] = $item['id'];
+            }
+
+            return $carry;
+        },
+        []
+    );
+
+    $modules_to_report = array_merge($all, $modules);
     $modules_to_report = array_unique($modules_to_report);
 
-    return $modules_to_report;
+    return $all;
 }
 
 

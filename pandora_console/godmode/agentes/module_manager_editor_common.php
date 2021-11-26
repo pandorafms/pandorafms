@@ -456,8 +456,9 @@ if (modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-    $table_simple->data[2][1] .= '<br /><em>'.__('Inverse interval').'</em>';
-    $table_simple->data[2][1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true, $disabledBecauseInPolicy);
+$table_simple->data[2][1] .= '<div id="warning_inverse"><em>'.__('Inverse interval').'</em>';
+$table_simple->data[2][1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true, $disabledBecauseInPolicy);
+$table_simple->data[2][1] .= '</div>';
 
 if (modules_is_string_type($id_module_type) === false) {
     $table_simple->data[2][1] .= '<div id="percentage_warning"><em>'.__('Percentage').'</em>';
@@ -515,8 +516,10 @@ if (modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-$table_simple->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table_simple->data[3][1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>';
 $table_simple->data[3][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
+$table_simple->data[3][1] .= '</div>';
+
 
 if (modules_is_string_type($id_module_type) === false) {
     $table_simple->data[3][1] .= '<div id="percentage_critical" /><em>'.__('Percentage').'</em>';
@@ -1644,11 +1647,64 @@ $(document).ready (function () {
             $('#text-max_critical').val(0);
         }
     });
+
+    if ($('#checkbox-warning_inverse').prop('checked') === true) {
+        $('#percentage_warning').hide();
+    }
+
+    if ($('#checkbox-critical_inverse').prop('checked') === true) {
+        $('#percentage_critical').hide();
+    }
+
+    if ($('#checkbox-percentage_warning').prop('checked') === true) {
+        $('#warning_inverse').hide();
+    }
+
+    if ($('#checkbox-percentage_critical').prop('checked') === true) {
+        $('#critical_inverse').hide();
+    }
+
     $('#checkbox-warning_inverse').change (function() {
         paint_graph_values();
-    });
+        if ($('#checkbox-warning_inverse').prop('checked') === true){
+            $('#checkbox-percentage_warning').prop('checked', false);
+            $('#percentage_warning').hide();
+        } else {
+            $('#percentage_warning').show();
+        }
+    }); 
+
     $('#checkbox-critical_inverse').change (function() {
         paint_graph_values();
+
+        if ($('#checkbox-critical_inverse').prop('checked') === true){
+            $('#checkbox-percentage_critical').prop('checked', false);
+            $('#percentage_critical').hide();
+        } else {
+            $('#percentage_critical').show();
+        }
+    });
+
+    $('#checkbox-percentage_warning').change (function() {
+        paint_graph_values();
+        if ($('#checkbox-percentage_warning').prop('checked') === true){
+            $('#checkbox-warning_inverse').prop('checked', false);
+            $('#warning_inverse').hide();
+        } else {
+            $('#warning_inverse').show();
+        }
+    });
+
+    $('#checkbox-percentage_critical').change (function() {
+        paint_graph_values();
+        if ($('#checkbox-percentage_critical').prop('checked') === true){
+            $('#checkbox-critical_inverse').prop('checked', false);
+            $('#critical_inverse').hide();
+        }
+            else {
+            $('#critical_inverse').show();
+        }
+            
     });
 
 });
@@ -1931,6 +1987,43 @@ function paint_graph_values(){
     //messages error
     var message_error_warning = '<?php echo __('Please introduce a maximum warning higher than the minimun warning'); ?>';
     var message_error_critical = '<?php echo __('Please introduce a maximum critical higher than the minimun critical'); ?>';
+    var message_error_percentage = '<?php echo __('Please introduce a positive percentage value'); ?>';
+
+
+    //Percentage selector
+    var percentage_w = $('#checkbox-percentage_warning').prop('checked');
+    var percentage_c = $('#checkbox-percentage_critical').prop('checked');
+
+    if(percentage_w == true || percentage_c == true) {
+        d3.select("#svg_dinamic rect").remove();
+        //create svg
+        var svg = d3.select("#svg_dinamic");
+        svg.selectAll("g").remove();
+        if (percentage_w === true) {
+            if(max_w < 0 || min_w < 0) {
+                paint_graph_status(0,0,0,0,0,0,1,0,legend_normal,legend_warning,legend_critical,message_error_percentage,message_error_percentage);
+            } else {
+                $("#text-max_warning").removeClass("input_error");
+                $("#text-min_warning").removeClass("input_error");
+            }
+            
+        }
+
+        if(percentage_c === true) {
+            if(max_c < 0 || min_c < 0) {
+                paint_graph_status(0,0,0,0,0,0,0,1,legend_normal,legend_warning,legend_critical,message_error_percentage,message_error_percentage);
+            } else {
+                $("#text-min-critical").removeClass("input_error");
+                $("#text-max_critical").removeClass("input_error");
+
+            }
+            } 
+
+        return;
+
+    } else {
+        $('#svg_dinamic').show();
+    }
     
     //if haven't error
     if(max_w == 0 || max_w > min_w){

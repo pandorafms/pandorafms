@@ -829,6 +829,60 @@ $(document).ready (function () {
     });
 
     $("#snmp_version" ).trigger("change");
+
+    if ($('#checkbox-warning_inverse').prop('checked') === true) {
+    $('#percentage_warning').hide();
+    }
+
+    if ($('#checkbox-critical_inverse').prop('checked') === true) {
+        $('#percentage_critical').hide();
+    }
+
+    if ($('#checkbox-percentage_warning').prop('checked') === true) {
+        $('#warning_inverse').hide();
+    }
+
+    if ($('#checkbox-percentage_critical').prop('checked') === true) {
+        $('#critical_inverse').hide();
+    }
+
+    $('#checkbox-warning_inverse').change (function() {
+        if ($('#checkbox-warning_inverse').prop('checked') === true){
+            $('#checkbox-percentage_warning').prop('checked', false);
+            $('#percentage_warning').hide();
+        } else {
+            $('#percentage_warning').show();
+        }
+    }); 
+
+    $('#checkbox-critical_inverse').change (function() {
+        if ($('#checkbox-critical_inverse').prop('checked') === true){
+            $('#checkbox-percentage_critical').prop('checked', false);
+            $('#percentage_critical').hide();
+        } else {
+            $('#percentage_critical').show();
+        }
+    });
+
+    $('#checkbox-percentage_warning').change (function() {
+        if ($('#checkbox-percentage_warning').prop('checked') === true){
+            $('#checkbox-warning_inverse').prop('checked', false);
+            $('#warning_inverse').hide();
+        } else {
+            $('#warning_inverse').show();
+        }
+    });
+
+    $('#checkbox-percentage_critical').change (function() {
+        if ($('#checkbox-percentage_critical').prop('checked') === true){
+            $('#checkbox-critical_inverse').prop('checked', false);
+            $('#critical_inverse').hide();
+        }
+            else {
+            $('#critical_inverse').show();
+        }   
+    });
+
 });
 
 <?php

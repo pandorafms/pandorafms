@@ -4105,7 +4105,7 @@ class AgentWizard extends HTML
                             $module['inv_warning'],
                             true,
                             false,
-                            '',
+                            'change_control(this, \''.$uniqueId.'\')',
                             false,
                             'form="form-create-modules"'
                         ),
@@ -4122,7 +4122,7 @@ class AgentWizard extends HTML
                             $module['perc_warning'],
                             true,
                             false,
-                            '',
+                            'change_control(this, \''.$uniqueId.'\')',
                             false,
                             'form="form-create-modules"'
                         ),
@@ -4184,12 +4184,12 @@ class AgentWizard extends HTML
                         'class'   => 'wizard-column-levels-check',
                         'style'   => 'margin-top: 0.3em;',
                         'content' => html_print_checkbox(
-                            'module-critical_inv_'.$uniqueId,
+                            'module-critical-inv-'.$uniqueId,
                             $module['inv_critical'],
                             $module['inv_critical'],
                             true,
                             false,
-                            '',
+                            'change_control(this, \''.$uniqueId.'\')',
                             false,
                             'form="form-create-modules"'
                         ),
@@ -4207,7 +4207,7 @@ class AgentWizard extends HTML
                             $module['perc_critical'],
                             true,
                             false,
-                            '',
+                            'change_control(this,\''.$uniqueId.'\')',
                             false,
                             'form="form-create-modules"'
                         ),
@@ -5920,6 +5920,29 @@ class AgentWizard extends HTML
                     size: 750,
                     maxHeight: 500
                 });
+
+            }
+
+            function change_control(checkbox, uniqueId) {
+                var checkbox_name = $(checkbox).attr('name');
+
+                if($(checkbox).prop('checked', true)) {
+                   if(checkbox_name.match(/warning-inv/gm) !== null) {
+                        $('#checkbox-module-warning-perc-'+uniqueId).prop('checked', false);
+                   }
+
+                   if(checkbox_name.match(/critical-inv/gm) !== null) {
+                        $('#checkbox-module-critical-perc-'+uniqueId).prop('checked', false);
+                    }
+
+                    if(checkbox_name.match(/warning-perc/gm) !== null) {
+                        $('#checkbox-module-warning-inv-'+uniqueId).prop('checked', false);
+                    }
+
+                    if(checkbox_name.match(/critical-perc/gm) !== null) {
+                        $('#checkbox-module-critical-inv-'+uniqueId).prop('checked', false);
+                    }
+                }
 
             }
         </script>

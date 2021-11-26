@@ -1768,43 +1768,38 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Modules'); ?></td>
             <td>
                 <?php
-                if (empty($id_agents) || $id_agents == null || $id_agents === 0) {
-                    $all_modules = '';
+                if (empty($id_agents) === true) {
+                    $all_modules = [];
                 } else {
                     $all_modules = db_get_all_rows_sql(
                         sprintf(
-                            'SELECT distinct(nombre), id_agente_modulo
+                            'SELECT nombre as `name`,
+                                id_agente_modulo as id
                             FROM tagente_modulo
                             WHERE id_agente IN (%s)',
                             implode(',', array_values($id_agents))
                         )
                     );
+
+                    $all_modules = array_reduce(
+                        $all_modules,
+                        function ($carry, $item) {
+                            $carry[$item['id']] = $item['name'];
+                            return $carry;
+                        },
+                        []
+                    );
+
+                    $all_modules = array_unique($all_modules);
                 }
 
-                if (empty($all_modules) === 1 || $all_modules == -1) {
-                    $all_modules = [];
-                }
-
-                $modules_select = [];
-                $all_modules_structured = [];
-                if (is_array($idAgentModule) === true
-                    || is_object($idAgentModule) === true
-                ) {
-                    foreach ($all_modules as $key => $a) {
-                        foreach ($idAgentModule as $id) {
-                            if ((int) $a['id_agente_modulo'] === (int) $id) {
-                                $modules_select[$a['id_agente_modulo']] = $a['id_agente_modulo'];
-                            }
-                        }
-                    }
-                }
-
-                foreach ($all_modules as $a) {
-                    $all_modules_structured[$a['id_agente_modulo']] = $a['nombre'];
-                }
+                $modules_select = get_same_modules(
+                    array_values($id_agents),
+                    array_values($idAgentModule)
+                );
 
                 html_print_select(
-                    $all_modules_structured,
+                    $all_modules,
                     'module[]',
                     $modules_select,
                     $script = '',

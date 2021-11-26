@@ -1772,18 +1772,24 @@ $class = 'databox filters';
                     $all_modules = '';
                 } else {
                     $all_modules = db_get_all_rows_sql(
-                        'SELECT DISTINCT nombre, id_agente_modulo FROM
-							tagente_modulo WHERE id_agente IN ('.implode(',', array_values($id_agents)).')'
+                        sprintf(
+                            'SELECT nombre, id_agente_modulo
+                            FROM tagente_modulo
+                            WHERE id_agente IN (%s)',
+                            implode(',', array_values($id_agents))
+                        )
                     );
                 }
 
-                if ((empty($all_modules)) || $all_modules == -1) {
+                if (empty($all_modules) === 1 || $all_modules == -1) {
                     $all_modules = [];
                 }
 
                 $modules_select = [];
                 $all_modules_structured = [];
-                if (is_array($idAgentModule) || is_object($idAgentModule)) {
+                if (is_array($idAgentModule) === true
+                    || is_object($idAgentModule) === true
+                ) {
                     foreach ($all_modules as $key => $a) {
                         foreach ($idAgentModule as $id) {
                             if ((int) $a['id_agente_modulo'] === (int) $id) {

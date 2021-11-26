@@ -4170,3 +4170,16 @@ CREATE TABLE IF NOT EXISTS `tncm_snippet` (
     `content` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_firmware`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_firmware` (
+    `id` SERIAL,
+    `name` text,
+    `shortname` text,
+    `vendor` bigint(20) unsigned,
+    `models` text,
+    `path` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

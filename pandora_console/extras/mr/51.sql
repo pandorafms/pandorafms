@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS `tncm_snippet` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `tncm_firmware` (
+    `id` SERIAL,
+    `name` text,
+    `shortname` text,
+    `vendor` bigint(20) unsigned,
+    `models` text,
+    `path` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `talert_calendar` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL default '',

@@ -568,7 +568,10 @@ function generalShowMsg(data, idMsg) {
     failed = failed || data.error;
   }
 
-  if (failed) text = data.error;
+  if (failed) {
+    title = "Error";
+    text = data.error;
+  }
 
   if (idMsg == null) {
     idMsg = uniqId();
@@ -595,6 +598,7 @@ function generalShowMsg(data, idMsg) {
         class:
           "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
         text: "OK",
+        id: "general_message_ok",
         click: function(e) {
           if (!failed) {
             $(".ui-dialog-content").dialog("close");

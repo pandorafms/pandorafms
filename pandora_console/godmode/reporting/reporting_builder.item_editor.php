@@ -1773,7 +1773,7 @@ $class = 'databox filters';
                 } else {
                     $all_modules = db_get_all_rows_sql(
                         sprintf(
-                            'SELECT nombre, id_agente_modulo
+                            'SELECT distinct(nombre), id_agente_modulo
                             FROM tagente_modulo
                             WHERE id_agente IN (%s)',
                             implode(',', array_values($id_agents))

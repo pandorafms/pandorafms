@@ -829,6 +829,10 @@ switch ($action) {
                     $select_by_group = $es['select_by_group'];
                 break;
 
+                case 'ncm':
+                    $idAgent = $item['id_agent'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -6319,6 +6323,11 @@ function chooseType() {
             } else {
                 $("#row_profiles_group").hide(); 
             }
+            break;
+
+        case 'ncm':
+            $("#row_agent").show();
+            break;
             
     }
 

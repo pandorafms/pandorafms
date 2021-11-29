@@ -911,6 +911,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
+    $types['ncm'] = [
+        'optgroup' => __('NCM'),
+        'name'     => __('Network configuration changes'),
+    ];
+
     return $types;
 }
 

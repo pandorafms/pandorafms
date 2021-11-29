@@ -34,6 +34,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
 $pure = get_parameter('pure', 0);
+$agent_id = get_parameter('agent_id', 0);
 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
@@ -74,6 +75,11 @@ $params['input_name'] = 'agent_name';
 $params['value'] = $agentName;
 $params['size'] = 24;
 $params['metaconsole_enabled'] = false;
+$params['use_hidden_input_idagent'] = true;
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
+$params['hidden_input_idagent_name'] = 'agent_id';
+$params['hidden_input_idagent_value'] = $agent_id;
 
 $form_filter .= ui_print_agent_autocomplete_input($params);
 
@@ -234,7 +240,7 @@ if ($searchFlag) {
 $id_agents = array_keys($agents);
 
 $total = agents_get_alerts_simple(
-    $id_agents,
+    (empty($agent_id) === false) ? ['0' => $agent_id] : $id_agents,
     false,
     false,
     $where,
@@ -412,7 +418,7 @@ if ($id_agente) {
 
 $offset = (int) get_parameter('offset');
 $simple_alerts = agents_get_alerts_simple(
-    $id_agents,
+    (empty($agent_id) === false) ? ['0' => $agent_id] : $id_agents,
     false,
     [
         'offset' => $offset,

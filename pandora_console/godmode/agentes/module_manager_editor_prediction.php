@@ -38,7 +38,7 @@ if ($row !== false && is_array($row)) {
 
     switch ($prediction_module) {
         case MODULE_PREDICTION_SERVICE:
-            $is_service = true;
+            $selected = 'service_selected';
             $custom_integer_2 = 0;
         break;
 
@@ -61,9 +61,9 @@ if ($row !== false && is_array($row)) {
 
 
             if (isset($first_op[1]) && $first_op[1] == 'avg') {
-                $is_synthetic_avg = true;
+                $selected = 'synthetic_selected';
             } else {
-                $is_synthetic = true;
+                $selected = 'synthetic_avg_selected';
             }
 
             $custom_integer_1 = 0;
@@ -97,7 +97,7 @@ $data[0] = __('Source module');
 $data[0] .= ui_print_help_icon('prediction_source_module', true);
 $data[1] = '';
 // Services and Synthetic are an Enterprise feature.
-$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$is_service, $is_synthetic, $is_synthetic_avg]);
+$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$selected]);
 if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
     $data[1] = $module_service_synthetic_selector;
 
@@ -214,10 +214,7 @@ unset($table_advanced->data[3]);
         enterprise_hook(
             'setup_services_synth',
             [
-                $is_service,
-                $is_synthetic,
-                $is_synthetic_avg,
-                $is_netflow,
+                $type,
                 $ops,
             ]
         );

@@ -1650,6 +1650,45 @@ function agents_get_name($id_agent, $case='none')
 
 
 /**
+ * Get the agents names of an agent.
+ *
+ * @param array $array_ids Agents ids.
+ *
+ * @return array Id => name.
+ */
+function agents_get_alias_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    $sql = sprintf(
+        'SELECT id_agente as id, alias as `name`
+        FROM tagente
+        WHERE id_agente IN (%s)',
+        implode(',', $array_ids)
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    $result = array_reduce(
+        $result,
+        function ($carry, $item) {
+            $carry[$item['id']] = $item['name'];
+            return $carry;
+        },
+        []
+    );
+
+    return $result;
+}
+
+
+/**
  * Get alias of an agent (cached function).
  *
  * @param integer $id_agent Agent id.

@@ -2670,6 +2670,8 @@ function reporting_alert_report_actions($report, $content)
     global $config;
     $return = [];
 
+    hd('4');
+
     $return['type'] = 'alert_report_actions';
     if (empty($content['name']) === true) {
         $content['name'] = __('Alert actions');
@@ -2699,19 +2701,40 @@ function reporting_alert_report_actions($report, $content)
 
     $filters = [
         'group'     => $id_group,
-        'agents'    => $agents,
-        'modules'   => $modules,
+        'agents'    => json_decode(
+            io_safe_output(base64_decode($agents)),
+            true
+        ),
+        'modules'   => json_decode(
+            io_safe_output(base64_decode($modules)),
+            true
+        ),
         'templates' => $templates,
         'actions'   => $actions,
         'period'    => $period,
     ];
 
-    $goupsBy = [
+    $groupsBy = [
         'group_by' => $group_by,
         'lapse'    => $lapse,
     ];
 
-    alerts_get_alert_fired($filters, $goupsBy);
+    $return['filters'] = $filters;
+    $return['groupsBy'] = $groupsBy;
+
+    $return['data']['data'] = alerts_get_alert_fired(
+        $filters,
+        $groupsBy,
+        false
+    );
+
+    if ((bool) $show_summary === true) {
+        $return['data']['summary'] = alerts_get_alert_fired(
+            $filters,
+            $groupsBy,
+            true
+        );
+    }
 
     return reporting_check_structure_content($return);
 }

@@ -3513,7 +3513,8 @@ function get_same_modules($agents, $modules)
     $name_modules = modules_get_agentmodule_name_array(array_values($modules));
 
     $sql = sprintf(
-        'SELECT id_agente_modulo as id
+        'SELECT id_agente_modulo as id,
+            nombre as `name`
         FROM tagente_modulo
         WHERE id_agente IN (%s)',
         implode(',', array_values($agents))
@@ -3528,7 +3529,7 @@ function get_same_modules($agents, $modules)
     $all = array_reduce(
         $all,
         function ($carry, $item) use ($name_modules) {
-            if (isset($name_modules[$item['id']]) === true) {
+            if (array_search($item['name'], $name_modules)) {
                 $carry[$item['id']] = $item['id'];
             }
 

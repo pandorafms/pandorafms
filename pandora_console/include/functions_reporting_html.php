@@ -2735,7 +2735,59 @@ function reporting_html_group_configuration($table, $item, $pdf=0)
 
 function reporting_html_alert_report_actions($table, $item, $pdf=0)
 {
-    hd($item);
+    hd(6);
+
+    $data = $item['data'];
+    $filters = $item['filters'];
+    $groupsBy = $item['groupsBy'];
+
+    $output = '';
+
+    if (isset($data['data']) === true
+        && empty($data['data']) === false
+    ) {
+        if (isset($groupsBy['lapse']) === true
+            && empty($groupsBy['lapse']) === false
+        ) {
+        }
+
+        foreach ($data['data'] as $period => $data_array) {
+            $output .= get_alert_table($data_array);
+        }
+    } else {
+        // TODO: SMS FAIL.
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['alert_report_action']['cell'] = 3;
+        $table->cellstyle['alert_report_action']['cell'] = 'text-align: center;';
+        $table->data['alert_report_action']['cell'] = $output;
+    } else {
+        return $output;
+    }
+
+}
+
+
+function get_alert_table($data)
+{
+    $table = new StdCLass();
+    $table->width = '100%';
+    $table->data = [];
+    $table->head = [];
+    $head = array_shift($data);
+    hd($head);
+    foreach (array_reverse(array_keys($head)) as $name) {
+        $table->head[$name] = $name;
+    }
+
+    foreach ($data as $key => $params) {
+        foreach (array_reverse($params) as $name => $value) {
+            $table->data[$key][$name] = $value;
+        }
+    }
+
+    return html_print_table($table, true);
 }
 
 

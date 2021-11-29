@@ -1770,6 +1770,7 @@ $class = 'databox filters';
                 <?php
                 if (empty($id_agents) === true) {
                     $all_modules = [];
+                    $modules_select = [];
                 } else {
                     $all_modules = db_get_all_rows_sql(
                         sprintf(
@@ -1791,12 +1792,12 @@ $class = 'databox filters';
                     );
 
                     $all_modules = array_unique($all_modules);
-                }
 
-                $modules_select = get_same_modules(
-                    array_values($id_agents),
-                    array_values($idAgentModule)
-                );
+                    $modules_select = get_same_modules(
+                        array_values($id_agents),
+                        array_values($idAgentModule)
+                    );
+                }
 
                 html_print_select(
                     $all_modules,
@@ -1858,6 +1859,15 @@ $class = 'databox filters';
                         ]
                     );
                 }
+
+                $alert_templates = array_reduce(
+                    $alert_templates,
+                    function ($carry, $item) {
+                        $carry[$item['id']] = $item['name'];
+                        return $carry;
+                    },
+                    []
+                );
 
                 html_print_select(
                     $alert_templates,
@@ -3293,34 +3303,33 @@ $class = 'databox filters';
             <td>
                 <?php
                 $valuesGroupBy = [
-                    'agent'    => 'Agent',
-                    'module'   => 'Module',
-                    'action'   => 'Action',
-                    'template' => 'Template',
+                    'agent'    => __('Agent'),
+                    'module'   => __('Module'),
+                    'group'    => __('Group'),
+                    'template' => __('Template'),
                 ];
+
                 html_print_select(
                     $valuesGroupBy,
-                    'group_by[]',
+                    'group_by',
                     $group_by,
                     '',
-                    '',
+                    __('None'),
                     0,
                     false,
-                    true,
+                    false,
                     false,
                     '',
-                    false,
-                    'min-width: 500px; max-height: 100px',
-                    false,
-                    false,
                     false,
                     '',
                     false,
                     false,
                     false,
+                    '',
                     false,
-                    true,
-                    true,
+                    false,
+                    false,
+                    false,
                     true
                 );
                 ?>

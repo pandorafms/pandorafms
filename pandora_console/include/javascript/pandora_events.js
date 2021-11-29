@@ -576,7 +576,6 @@ function event_comment(current_event) {
     return;
   }
 
-  var event_id = event.id_evento;
   var comment = $("#textarea_comment").val();
   var meta = 0;
   if ($("#hidden-meta").val() != undefined) {
@@ -596,7 +595,11 @@ function event_comment(current_event) {
   var params = [];
   params.push("page=include/ajax/events");
   params.push("add_comment=1");
-  params.push("event_id=" + event_id);
+  if (event.event_rep > 0) {
+    params.push("event_id=" + event.max_id_evento);
+  } else {
+    params.push("event_id=" + event.id_evento);
+  }
   params.push("comment=" + comment);
   params.push("meta=" + meta);
   params.push("history=" + history);

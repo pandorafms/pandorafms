@@ -1225,25 +1225,18 @@ if ($dialogue_event_response) {
     }
 }
 
-if ($add_comment) {
-    $aviability_comment = true;
-    $comment = get_parameter('comment');
+if ($add_comment === true) {
+    $comment = (string) get_parameter('comment');
+    $eventId = (int) get_parameter('event_id');
+
+    // Safe comments for hacks.
     if (preg_match('/script/i', io_safe_output($comment))) {
-        $aviability_comment = false;
         $return = false;
-    }
-
-    $event_id = get_parameter('event_id');
-
-    if ($aviability_comment !== false) {
-        $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
-    }
-
-    if ($return) {
-        echo 'comment_ok';
     } else {
-        echo 'comment_error';
+        $return = events_comment($eventId, $comment, 'Added comment', $meta, $history);
     }
+
+    echo ($return === true) ? 'comment_ok' : 'comment_error';
 
     return;
 }

@@ -128,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-            $version = '7.0NG.758';
-            $build = '211105';
+            $version = '7.0NG.758.1';
+            $build = '211129';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -993,8 +993,14 @@ function install_step4()
 
                     $step5 = mysqli_query(
                         $connection,
-                        "CREATE USER pandora@$host IDENTIFIED BY '".$random_password."'"
+                        "CREATE USER IF NOT EXISTS pandora@$host"
                     );
+
+                    mysqli_query(
+                        $connection,
+                        "SET PASSWORD FOR 'pandora'@'".$host."' = '".$random_password."'"
+                    );
+
                     $step5 |= mysqli_query(
                         $connection,
                         "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host"

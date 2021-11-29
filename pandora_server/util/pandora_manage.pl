@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.758.1 Build 211123";
+my $version = "7.0NG.758.1 Build 211129";
 
 # save program name for logging
 my $progname = basename($0);
@@ -343,6 +343,23 @@ sub update_conf_txt ($$$$) {
 	return $result;
 }
 
+###############################################################################
+###############################################################################
+# PRINT HELP AND CHECK ERRORS FUNCTIONS
+###############################################################################
+###############################################################################
+
+###############################################################################
+# log wrapper
+###############################################################################
+sub print_log ($) {
+	my ($msg) = @_;
+
+	print $msg;					# show message
+
+	$msg =~ s/\n+$//;
+	logger( $conf, "($progname) $msg", 10);		# save to logging file
+}
 
 ###############################################################################
 # Disable a entire group
@@ -352,6 +369,11 @@ sub pandora_disable_group ($$$) {
 
 	my @agents_bd = [];
 	my $result = 0;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To disable a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	if ($group == 0){
 		# Extract all the names of the pandora agents if it is for all = 0.
@@ -389,6 +411,11 @@ sub pandora_enable_group ($$$) {
 
 	my @agents_bd = [];
 	my $result = 0;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To enable a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	if ($group == 0){
 		# Extract all the names of the pandora agents if it is for all = 0.
@@ -510,8 +537,12 @@ sub cli_create_snmp_trap ($$) {
 sub pandora_create_user ($$$$$) {
 	my ($dbh, $name, $password, $is_admin, $comments) = @_;
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
+		exit;
+	}
 
-return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
+	return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
                          VALUES (?, ?, ?, ?, ?)', safe_input($name), safe_input($name), $password, safe_input($comments), $is_admin);
 }
 
@@ -521,18 +552,23 @@ return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, pas
 sub pandora_delete_user ($$) {
 my ($dbh, $name) = @_;
 
-# Delete user profiles
-db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario = ?', $name);
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete a user go to metaconsole. \n\n";
+		exit;
+	}
 
-# Delete the user
-my $return = db_do ($dbh, 'DELETE FROM tusuario WHERE id_user = ?', $name);
+	# Delete user profiles
+	db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario = ?', $name);
 
-if($return eq '0E0') {
-	return -1;
-}
-else {
-	return 0;
-}
+	# Delete the user
+	my $return = db_do ($dbh, 'DELETE FROM tusuario WHERE id_user = ?', $name);
+
+	if($return eq '0E0') {
+		return -1;
+	}
+	else {
+		return 0;
+	}
 }
 
 ##########################################################################
@@ -749,7 +785,7 @@ sub pandora_validate_event_id ($$$) {
 ##########################################################################
 sub pandora_update_user_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-	
+
 	my $user_id = db_process_update($dbh, 'tusuario', $parameters, {$where_column => $where_value});
 	return $user_id;
 }
@@ -976,9 +1012,9 @@ sub pandora_get_calendar_id ($$) {
 sub pandora_get_same_day_id ($$) {
 	my ($dbh, $same_day) = @_;
 
-	my $weeks = { 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8};
+	my $weeks = { 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6, 'sunday' => 7, 'holiday' => 8 };
 
-	return defined ($weeks{$same_day}) ? $weeks{$same_day} : -1;
+	return defined ($weeks->{$same_day}) ? $weeks->{$same_day} : -1;
 }
 
 ##########################################################################
@@ -996,25 +1032,6 @@ sub pandora_delete_special_day ($$) {
 	else {
 		return 0;
 	}
-}
-
-
-###############################################################################
-###############################################################################
-# PRINT HELP AND CHECK ERRORS FUNCTIONS
-###############################################################################
-###############################################################################
-
-###############################################################################
-# log wrapper
-###############################################################################
-sub print_log ($) {
-	my ($msg) = @_;
-
-	print $msg;					# show message
-
-	$msg =~ s/\n+$//;
-	logger( $conf, "($progname) $msg", 10);		# save to logging file
 }
 
 ###############################################################################
@@ -3037,10 +3054,15 @@ sub cli_create_user() {
 
 sub cli_user_update() {
 	my ($user_id,$field,$new_value) = @ARGV[2..4];
-	
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To update a user go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $user_exists = get_user_exists ($dbh, $user_id);
 	exist_check($user_exists,'user',$user_id);
-	
+
 	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin') {
 		# Fields admited, no changes
 	}
@@ -5523,7 +5545,7 @@ sub cli_get_agents() {
 	
 	my $head_print = 0;
 
-	use Data::Dumper;
+	# use Data::Dumper;
 
 
 	foreach my $agent (@agents) {
@@ -5850,7 +5872,12 @@ sub cli_get_planned_downtimes_items() {
 
 sub cli_create_group() {
 	my ($group_name,$parent_group_name,$icon,$description) = @ARGV[2..5];
-		
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $group_id = get_group_id($dbh,$group_name);
 	non_exist_check($group_id, 'group name', $group_name);
 	
@@ -5922,6 +5949,11 @@ sub cli_create_group() {
 sub cli_delete_group() {
 	my ($group_name) = @ARGV[2];
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete a group go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
@@ -5945,6 +5977,11 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To update a group go to metaconsole. \n\n";
+		exit;
+	}
 
 	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 
@@ -6144,6 +6181,11 @@ sub cli_disable_double_auth () {
 sub cli_user_enable () {
 	my $user_id = @ARGV[2];
 
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To enable a user go to metaconsole. \n\n";
+		exit;
+	}
+
 	my $user_disabled = get_user_disabled ($dbh, $user_id);
 	
 	exist_check($user_disabled,'user',$user_id);
@@ -6168,6 +6210,11 @@ sub cli_user_enable () {
 ###############################################################################
 sub cli_user_disable () {
 	my $user_id = @ARGV[2];
+
+	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To disable a user go to metaconsole. \n\n";
+		exit;
+	}
 
 	my $user_disabled = get_user_disabled ($dbh, $user_id);
 	

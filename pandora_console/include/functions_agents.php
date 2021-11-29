@@ -421,12 +421,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         INNER JOIN tagente_modulo t2
             ON talert_template_modules.id_agent_module = t2.id_agente_modulo
         INNER JOIN tagente t3
-            ON t2.id_agente = t3.id_agente
+            ON t2.id_agente = t3.id_agente %s
         %s
         INNER JOIN talert_templates t4
             ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s',
         $selectText,
+        ($id_agent !== false && is_array($id_agent)) ? 'AND t3.id_agente IN ('.implode(',', $id_agent).')' : '',
         $secondary_join,
         $subQuery,
         $where,
@@ -434,39 +435,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         $orderbyText
     );
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " LIMIT $offset, $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-            $alerts = db_get_all_rows_sql($sql);
-        break;
-
-        case 'postgresql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " OFFSET $offset LIMIT $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-
-            $alerts = db_get_all_rows_sql($sql);
-
-        break;
-
-        case 'oracle':
-            $set = [];
-            if (isset($offset) && isset($limit)) {
-                $set['limit'] = $limit;
-                $set['offset'] = $offset;
-            }
-
-            $alerts = oracle_recode_query($sql, $set, 'AND', false);
-        break;
+    $limit_sql = '';
+    if (isset($offset) && isset($limit)) {
+        $limit_sql = " LIMIT $offset, $limit ";
     }
+
+    $sql = sprintf('%s %s', $sql, $limit_sql);
+    $alerts = db_get_all_rows_sql($sql);
 
     if ($alerts === false) {
         return [];

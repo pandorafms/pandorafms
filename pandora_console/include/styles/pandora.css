@@ -3321,13 +3321,6 @@ td.empty_field {
   width: 96%;
 }
 
-#update_action-
-  > .select2-container--default
-  .select2-results
-  > .select2-results__options {
-  max-height: 125px !important;
-}
-
 /* Policies styles */
 
 table#policy_modules td * {

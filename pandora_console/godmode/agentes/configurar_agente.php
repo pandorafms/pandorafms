@@ -1078,8 +1078,11 @@ if ($update_agent) {
         // If IP is set for deletion, delete first.
         if ($action_delete_ip) {
             $delete_ip = get_parameter_post('address_list');
-
-            $direccion_agente = agents_delete_address($id_agente, $delete_ip);
+            if (empty($direccion_agente) === true) {
+                $direccideon_agente = agents_delete_address($id_agente, $delete_ip);
+            } else {
+                agents_delete_address($id_agente, $delete_ip);
+            }
         }
 
         $values = [

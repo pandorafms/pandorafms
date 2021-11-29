@@ -3942,6 +3942,16 @@ CREATE TABLE `tnode_relations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `tipam_network_location`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_network_location` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tipam_network`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tipam_network` (
@@ -4038,16 +4048,6 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------------------------------------------------
--- Table `tipam_network_location`
--- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tipam_network_location` (
-	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-	`name` varchar(100) NOT NULL default '',
-	PRIMARY KEY (`id`),
-	UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

@@ -3409,6 +3409,15 @@ class NetworkMap
             $output .= '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url(
                 'include/styles/tooltipster.bundle.min.css'
             ).'" />'."\n";
+            ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
+            $output .= '<script type="text/javascript" src="';
+            $output .= ui_get_full_url(
+                'include/javascript/jquery.contextMenu.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" charset="utf-8"></script>';
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
             $output .= 'class="border_1px_dd" style="';

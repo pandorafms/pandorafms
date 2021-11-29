@@ -3949,7 +3949,7 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`network` varchar(100) NOT NULL default '',
 	`name_network` varchar(255) default '',
 	`description` text NOT NULL,
-	`location` tinytext NOT NULL,
+	`location` int(10) unsigned NULL,
 	`id_recon_task` int(10) unsigned NOT NULL,
 	`scan_interval` tinyint(2) default 1,
 	`monitoring` tinyint(2) default 0,
@@ -3957,7 +3957,8 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -4037,6 +4038,16 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_network_location`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_network_location` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

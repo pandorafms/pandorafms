@@ -2937,7 +2937,6 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         );
     }
 
-    // TODO: ALL;
     $actions_names = alerts_get_actions_names($filters['actions'], true);
 
     $group_array = [];
@@ -2979,20 +2978,12 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         }
     }
 
-    if ($total === false) {
-        if (is_array($fields_actions) === true
-            && empty($fields_actions) === false
-        ) {
-            foreach ($fields_actions as $name => $field) {
-                $fields[] = $field;
-            }
+    if (is_array($fields_actions) === true
+        && empty($fields_actions) === false
+    ) {
+        foreach ($fields_actions as $name => $field) {
+            $fields[] = $field;
         }
-
-        $names_modules = modules_get_agentmodule_name_array(
-            array_values($filters['modules'])
-        );
-    } else {
-        $fields = ['COUNT(tevento.id_evento) as fired'];
     }
 
     $names_search = [];
@@ -3001,41 +2992,39 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             case 'module':
                 $fields[] = 'tevento.id_agentmodule as module';
                 $group_array[] = 'tevento.id_agentmodule';
-                $names_search = modules_get_agentmodule_name_array(
-                    array_values($filters['modules'])
-                );
-            break;
-
-            case 'action':
-                if (is_array($fields_actions) === true
-                    && empty($fields_actions) === false
-                ) {
-                    foreach ($fields_actions as $name => $field) {
-                        $fields[] = $field;
-                        $group_array[] = '"'.$name.'"';
-                    }
+                if ($total === false) {
+                    $names_search = modules_get_agentmodule_name_array(
+                        array_values($filters['modules'])
+                    );
                 }
             break;
 
             case 'template':
                 $fields[] = 'talert_template_modules.id_alert_template as template';
                 $group_array[] = 'talert_template_modules.id_alert_template';
-                $names_search = alerts_get_templates_name_array(
-                    array_values($filters['templates'])
-                );
+                if ($total === false) {
+                    $names_search = alerts_get_templates_name_array(
+                        array_values($filters['templates'])
+                    );
+                }
             break;
 
             case 'agent':
                 $fields[] = 'tevento.id_agente as agent';
                 $group_array[] = 'tevento.id_agente';
-                $names_search = agents_get_alias_array(
-                    array_values($filters['agents'])
-                );
+                if ($total === false) {
+                    $names_search = agents_get_alias_array(
+                        array_values($filters['agents'])
+                    );
+                }
             break;
 
             case 'group':
                 $fields[] = 'tevento.id_grupo as `group`';
                 $group_array[] = 'tevento.id_grupo';
+                if ($total === false) {
+                    $names_search = users_get_groups($config['user'], 'AR', false);
+                }
             break;
 
             default:
@@ -3044,13 +3033,17 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         }
     }
 
-    if (isset($groupsBy['lapse']) === true) {
-        $fields[] = sprintf(
-            'ROUND((CEILING(UNIX_TIMESTAMP(tevento.timestamp) / %d) * %d)) AS Period',
-            (int) $groupsBy['lapse'],
-            (int) $groupsBy['lapse']
-        );
-        $group_array[] = 'period';
+    if ($total === false) {
+        if (isset($groupsBy['lapse']) === true
+            && empty($groupsBy['lapse']) === false
+        ) {
+            $fields[] = sprintf(
+                'ROUND((CEILING(UNIX_TIMESTAMP(tevento.timestamp) / %d) * %d)) AS Period',
+                (int) $groupsBy['lapse'],
+                (int) $groupsBy['lapse']
+            );
+            $group_array[] = 'period';
+        }
     }
 
     $group_by = '';
@@ -3096,7 +3089,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             $data = array_reduce(
                 $data,
                 function ($carry, $item) use ($groupsBy) {
-                    $period = $item['Period'];
+                    $period = (isset($item['Period']) === true) ? $item['Period'] : 0;
                     $grby = $item[$groupsBy['group_by']];
                     unset($item['Period']);
                     unset($item[$groupsBy['group_by']]);
@@ -3106,23 +3099,61 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
                 []
             );
 
-            $first_element = array_shift($data);
-            $first_element = array_shift($first_element);
+            $intervals = [];
+            if (isset($groupsBy['lapse']) === true
+                && empty($groupsBy['lapse']) === false
+            ) {
+                $start_interval = round(
+                    (ceil(
+                        ((time() - $filters['period']) / (int) $groupsBy['lapse'])
+                    ) * (int) $groupsBy['lapse'])
+                );
+
+                for ($interval = $start_interval; $interval < time(); ($interval = $interval + (int) $groupsBy['lapse'])) {
+                    $intervals[] = $interval;
+                }
+            }
+
+            $first_element = reset($data);
+            $first_element = reset($first_element);
             $clone = [];
             foreach ($first_element as $key_clone => $value_clone) {
                 $clone[$key_clone] = 0;
             }
 
             $result = [];
-            foreach ($data as $period => $array_data) {
-                foreach ($names_search as $id => $name) {
-                    foreach ($array_data as $grby => $values) {
-                        if ($grby === $id) {
-                            $values[$groupsBy['group_by']] = $name;
-                            $result[$period][$id] = $values;
+            if (empty($intervals) === true) {
+                foreach ($data as $period => $array_data) {
+                    foreach ($names_search as $id => $name) {
+                        if (isset($array_data[$id]) === true) {
+                            $result[$period][$id] = $array_data[$id];
+                            $result[$period][$id][$groupsBy['group_by']] = $name;
                         } else {
                             $clone[$groupsBy['group_by']] = $name;
                             $result[$period][$id] = $clone;
+                        }
+                    }
+                }
+            } else {
+                foreach ($intervals as $key => $inter) {
+                    foreach ($data as $period => $array_data) {
+                        if ((int) $inter === (int) $period) {
+                            foreach ($names_search as $id => $name) {
+                                if (isset($array_data[$id]) === true) {
+                                    $result[$period][$id] = $array_data[$id];
+                                    $result[$period][$id][$groupsBy['group_by']] = $name;
+                                } else {
+                                    $result[$period][$id] = $clone;
+                                    $result[$period][$id][$groupsBy['group_by']] = $name;
+                                }
+                            }
+                        } else {
+                            if (isset($result[$inter]) === false) {
+                                foreach ($names_search as $id => $name) {
+                                    $result[$inter][$id] = $clone;
+                                    $result[$inter][$id][$groupsBy['group_by']] = $name;
+                                }
+                            }
                         }
                     }
                 }

@@ -185,6 +185,8 @@ $nothing_value = 0;
 
 $graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
 
+$valuesGroupBy = [0 => __('None')];
+
 switch ($action) {
     case 'new':
         $actionParameter = 'save';
@@ -776,6 +778,13 @@ switch ($action) {
                     $show_summary = $es['show_summary'];
 
                     $group_by = $es['group_by'];
+
+                    $valuesGroupBy = [
+                        'agent'    => __('Agent'),
+                        'module'   => __('Module'),
+                        'group'    => __('Group'),
+                        'template' => __('Template'),
+                    ];
 
                     $period = $item['period'];
 
@@ -3088,8 +3097,7 @@ $class = 'databox filters';
                 echo __('Time lapse intervals');
                 ui_print_help_tip(
                     __(
-                        'Lapses of time in which the period is divided to make more precise calculations
-'
+                        'Lapses of time in which the period is divided to make more precise calculations'
                     )
                 );
                 ?>
@@ -3100,7 +3108,7 @@ $class = 'databox filters';
                     'lapse',
                     $lapse,
                     '',
-                    '',
+                    __('None'),
                     '0',
                     10,
                     '',
@@ -3302,19 +3310,12 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                $valuesGroupBy = [
-                    'agent'    => __('Agent'),
-                    'module'   => __('Module'),
-                    'group'    => __('Group'),
-                    'template' => __('Template'),
-                ];
-
                 html_print_select(
                     $valuesGroupBy,
                     'group_by',
                     $group_by,
                     '',
-                    __('None'),
+                    '',
                     0,
                     false,
                     false,

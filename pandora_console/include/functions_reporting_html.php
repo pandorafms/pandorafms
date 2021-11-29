@@ -2746,14 +2746,24 @@ function reporting_html_alert_report_actions($table, $item, $pdf=0)
     if (isset($data['data']) === true
         && empty($data['data']) === false
     ) {
-        if (isset($groupsBy['lapse']) === true
-            && empty($groupsBy['lapse']) === false
-        ) {
-        }
-
+        // if (isset($groupsBy['lapse']) === true
+        // && empty($groupsBy['lapse']) === false
+        // ) {
+        //
+        // }
         foreach ($data['data'] as $period => $data_array) {
+            if (empty($period) === false) {
+                $output .= '<p>';
+                $output .= date('d-m-Y H:i:s', ($period - (int) $groupsBy['lapse']));
+                $output .= ' - ';
+                $output .= date('d-m-Y H:i:s', $period);
+                $output .= '</p>';
+            }
+
             $output .= get_alert_table($data_array);
         }
+
+        hd($data['summary']);
     } else {
         // TODO: SMS FAIL.
     }
@@ -2775,8 +2785,7 @@ function get_alert_table($data)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $head = array_shift($data);
-    hd($head);
+    $head = reset($data);
     foreach (array_reverse(array_keys($head)) as $name) {
         $table->head[$name] = $name;
     }

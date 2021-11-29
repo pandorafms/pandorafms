@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS `tncm_snippet` (
 
 CREATE TABLE IF NOT EXISTS `tncm_firmware` (
     `id` SERIAL,
-    `name` text,
-    `shortname` text,
+    `name` varchar(255),
+    `shortname` varchar(255) unique,
     `vendor` bigint(20) unsigned,
     `models` text,
     `path` text,

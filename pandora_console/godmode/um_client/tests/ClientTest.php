@@ -118,8 +118,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
 
         system('echo "file3" > '.$path.'3');
         file_put_contents($path.'extras/delete_files/delete_files.txt', "1\n");
-        system('echo -e "create table teta (id int);\n" >'.$path.'extras/mr/2.sql');
-        system('echo -e "create table teto (id int);\n" >>'.$path.'extras/mr/2.sql');
+        system('echo -e "create table toum1 (id int);\n" >'.$path.'extras/mr/2.sql');
+        system('echo -e "create table toum2 (id int);\n" >>'.$path.'extras/mr/2.sql');
         system('cd '.$path.' && zip '.$target.'/test_3.zip -r * >/dev/null');
         system('mv '.$target.'/test_3.zip '.$target.'/test_3.oum');
 
@@ -142,7 +142,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
 
         system('echo "file4" > '.$path.'4');
         file_put_contents($path.'extras/delete_files/delete_files.txt', "1\n");
-        system('echo -e "drop table teta;\n" >'.$path.'extras/mr/3.sql');
+        system('echo -e "drop table toum1;\n" >'.$path.'extras/mr/3.sql');
         system('cd '.$path.' && zip '.$target.'/test_4.zip -r * >/dev/null');
         system('mv '.$target.'/test_4.zip '.$target.'/test_4.oum');
 

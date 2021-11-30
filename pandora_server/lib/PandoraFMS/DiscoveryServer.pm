@@ -929,9 +929,9 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
 
     # 2. Verify Private Enterprise Number matches (PEN)
     if (defined($template->{'pen'})) {
-      my @penes = split(',', $template->{'pen'});
+      my @pens = split(',', $template->{'pen'});
 
-      next unless (is_in_array(\@penes, $self->get_pen($device)));
+      next unless (is_in_array(\@pens, $self->get_pen($device)));
     }
 
     # 3. Retrieve module list from target template.

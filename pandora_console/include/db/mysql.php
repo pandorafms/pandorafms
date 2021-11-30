@@ -760,7 +760,11 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
         if ($field[0] != '`') {
             // If the field is as <table>.<field>, don't scape.
             if (strstr($field, '.') === false) {
-                $field = '`'.$field.'`';
+                if (preg_match('/(UPPER|LOWER)(.+)/mi', $field)) {
+                    $field = preg_replace('/(UPPER|LOWER])\((.+)\)/mi', '$1(`$2`)', $field);
+                } else {
+                    $field = '`'.$field.'`';
+                }
             }
         }
 

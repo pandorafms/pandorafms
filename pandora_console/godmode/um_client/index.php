@@ -290,7 +290,7 @@ if (is_array($config) === true
         $config['history_db_host'],
         $config['history_db_name'],
         $config['history_db_user'],
-        $config['history_db_pass'],
+        io_output_password($config['history_db_pass']),
         $config['history_db_port']
     );
     ob_get_clean();

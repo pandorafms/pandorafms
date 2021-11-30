@@ -4748,11 +4748,6 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'alert_report_actions':
-                if ($("select#id_agents2>option:selected").val() == undefined) {
-                    dialog_message('#message_no_agent');
-                    return false;
-                }
-
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
@@ -4887,10 +4882,6 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'alert_report_actions':
-                if ($("select#id_agents2>option:selected").val() == undefined) {
-                    dialog_message('#message_no_agent');
-                    return false;
-                }
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));

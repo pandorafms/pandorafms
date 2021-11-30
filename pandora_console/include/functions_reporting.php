@@ -2740,15 +2740,35 @@ function reporting_alert_report_actions($report, $content)
 }
 
 
+/**
+ * Data report agent/module.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array Structure Content.
+ */
 function reporting_agent_module($report, $content)
 {
     global $config;
-    $agents_and_modules = json_decode($content['external_source'], true);
-    $agents = [];
-    $agents = $agents_and_modules['id_agents'];
-    $modules = $agents_and_modules['module'];
-    $id_group = $content['id_group'];
-    $id_module_group = $content['id_module_group'];
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $agents = json_decode(
+        io_safe_output(
+            base64_decode($external_source['id_agents'])
+        ),
+        true
+    );
+
+    $modules = json_decode(
+        io_safe_output(
+            base64_decode($external_source['module'])
+        ),
+        true
+    );
 
     $return['type'] = 'agent_module';
 
@@ -2782,7 +2802,9 @@ function reporting_agent_module($report, $content)
     $cont = 0;
 
     foreach ($modules as $modul_id) {
-        $modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
+        $modules_by_name[$cont]['name'] = io_safe_output(
+            modules_get_agentmodule_name($modul_id)
+        );
         $modules_by_name[$cont]['id'] = $modul_id;
         $cont++;
     }

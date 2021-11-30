@@ -1676,17 +1676,27 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
-                                $agents_to_report = get_parameter('id_agents2');
-                                $modules_to_report = get_parameter(
-                                    'module',
-                                    ''
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
                                 );
 
                                 $es['module'] = get_same_modules(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
-                                $es['id_agents'] = $agents_to_report;
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -2466,17 +2476,27 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
-                                $agents_to_report = get_parameter('id_agents2');
-                                $modules_to_report = get_parameter(
-                                    'module',
-                                    ''
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
                                 );
 
                                 $es['module'] = get_same_modules(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
-                                $es['id_agents'] = $agents_to_report;
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;

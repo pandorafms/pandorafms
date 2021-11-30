@@ -3508,8 +3508,20 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 }
 
 
+/**
+ * List all modules in agents selection.
+ *
+ * @param array $agents  Agents ids array.
+ * @param array $modules Modules ids array.
+ *
+ * @return array
+ */
 function get_same_modules($agents, $modules)
 {
+    if (is_array($agents) === false || empty($agents) === true) {
+        return [];
+    }
+
     $name_modules = modules_get_agentmodule_name_array(array_values($modules));
 
     $sql = sprintf(

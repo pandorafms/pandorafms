@@ -186,6 +186,12 @@ $nothing_value = 0;
 $graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
 
 $valuesGroupBy = [0 => __('None')];
+$valuesGroupByDefaultAlertActions = [
+    'agent'    => __('Agent'),
+    'module'   => __('Module'),
+    'group'    => __('Group'),
+    'template' => __('Template'),
+];
 
 switch ($action) {
     case 'new':
@@ -735,15 +741,19 @@ switch ($action) {
                 case 'agent_module':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
-                    $id_agents = $es['id_agents'];
+
+                    // Decode agents and modules.
+                    $id_agents = json_decode(
+                        io_safe_output(base64_decode($es['id_agents'])),
+                        true
+                    );
+                    $module = json_decode(
+                        io_safe_output(base64_decode($es['module'])),
+                        true
+                    );
+
                     $selection_a_m = get_parameter('selection');
                     $recursion = $item['recursion'];
-
-                    if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
-                        $module = '';
-                    } else {
-                        $module = $es['module'];
-                    }
 
                     $group = $item['id_group'];
                     $modulegroup = $item['id_module_group'];
@@ -4614,7 +4624,6 @@ $(document).ready (function () {
                     $("#module").html('');
                     // Check module all.
                     $("#checkbox-module-check-all").prop('checked', false);
-                    console.log(data);
                     if(data){
                         jQuery.each (data, function (id, value) {
                             option = $("<option></option>")
@@ -4737,7 +4746,13 @@ $(document).ready (function () {
         }
 
         switch (type){
+            case 'agent_module':
             case 'alert_report_actions':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
@@ -4769,12 +4784,6 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
-            case 'agent_module':
-                if ($("select#id_agents2>option:selected").val() == undefined) {
-                    dialog_message('#message_no_agent');
-                      return false;
-                      }
-                      break;
             case 'inventory':
             case 'inventory_changes':
                  if ($("select#id_agents>option:selected").val() == undefined) {
@@ -4819,18 +4828,11 @@ $(document).ready (function () {
             case 'sumatory':
             case 'historical_data':
             case 'increment':
-
                 if ($("#id_agent_module").val() == 0) {
                     dialog_message('#message_no_module');
                     return false;
                 }
                 break;
-            case 'agent_module':
-                if ($("select#module>option:selected").val() == undefined) {
-                    dialog_message('#message_no_module');
-                    return false;
-                    }
-                    break;
             case 'inventory':
             case 'inventory_changes':
                 if ($("select#inventory_modules>option:selected").val() == 0) {
@@ -4883,7 +4885,12 @@ $(document).ready (function () {
                 return false;
         }
         switch (type){
+            case 'agent_module':
             case 'alert_report_actions':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
@@ -4915,12 +4922,6 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
-            case 'agent_module':
-                if ($("select#id_agents2>option:selected").val() == undefined) {
-                    dialog_message('#message_no_agent');
-                    return false;
-                    }
-                    break;
             case 'inventory':
                 if ($("select#id_agents>option:selected").val() == undefined) {
                     dialog_message('#message_no_agent');
@@ -4960,18 +4961,11 @@ $(document).ready (function () {
             case 'sumatory':
             case 'historical_data':
             case 'increment':
-
                 if ($("#id_agent_module").val() == 0) {
                     dialog_message('#message_no_module');
                     return false;
                 }
                 break;
-            case 'agent_module':
-                if ($("select#module>option:selected").val() == undefined) {
-                    dialog_message('#message_no_module');
-                    return false;
-                }
-                    break;
             case 'inventory':
                 if ($("select#inventory_modules>option:selected").val() == 0) {
                     dialog_message('#message_no_module');
@@ -6171,6 +6165,19 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_show_summary").show();
             $("#row_group_by").show();
+            if('<?php echo $action; ?>' === 'new'){
+                $("#group_by").html('');
+                var dataDefault = '<?php echo json_encode($valuesGroupByDefaultAlertActions); ?>';
+                Object.entries(JSON.parse(dataDefault)).forEach(function (item) {
+                    option = $("<option></option>")
+                        .attr ("value", item[0])
+                        .html (item[1]);
+                    $("#group_by").append(option);
+                });
+
+                $("#lapse_select").attr('disabled', false);
+                $("#lapse_select").val(0).trigger('change');
+            }
             break;
 
         case 'event_report_group':

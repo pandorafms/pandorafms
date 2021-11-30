@@ -8378,3 +8378,9 @@ div.stat-win-spinner img {
   font-size: 1.2em;
   margin-right: 5px !important;
 }
+
+.h1-report-alert-actions {
+  text-transform: none;
+  text-align: left;
+  margin: 10px;
+}

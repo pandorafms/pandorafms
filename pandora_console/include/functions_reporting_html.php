@@ -2742,30 +2742,40 @@ function reporting_html_alert_report_actions($table, $item, $pdf=0)
     $groupsBy = $item['groupsBy'];
 
     $output = '';
-
     if (isset($data['data']) === true
         && empty($data['data']) === false
     ) {
-        // if (isset($groupsBy['lapse']) === true
-        // && empty($groupsBy['lapse']) === false
-        // ) {
-        //
-        // }
         foreach ($data['data'] as $period => $data_array) {
             if (empty($period) === false) {
-                $output .= '<p>';
-                $output .= date('d-m-Y H:i:s', ($period - (int) $groupsBy['lapse']));
-                $output .= ' - ';
-                $output .= date('d-m-Y H:i:s', $period);
-                $output .= '</p>';
+                $output .= '<h1 class="h1-report-alert-actions">';
+                $output .= __('From').' ';
+                $output .= date(
+                    'd-m-Y H:i:s',
+                    $period
+                );
+                $output .= ' '.__('to').' ';
+                $output .= date('d-m-Y H:i:s', ($period + (int) $groupsBy['lapse']));
+                $output .= '</h1>';
             }
 
             $output .= get_alert_table($data_array);
         }
 
-        hd($data['summary']);
+        if (isset($data['summary']) === true
+            && empty($data['summary']) === false
+        ) {
+            $output .= '<h1 class="h1-report-alert-actions">';
+            $output .= __('Total summary');
+            $output .= '</h1>';
+
+            $output .= get_alert_table($data['summary']);
+        }
     } else {
-        // TODO: SMS FAIL.
+        $output .= ui_print_empty_data(
+            __('No alerts fired'),
+            '',
+            true
+        );
     }
 
     if ($pdf === 0) {

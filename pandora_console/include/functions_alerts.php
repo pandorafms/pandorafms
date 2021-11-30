@@ -2992,39 +2992,31 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             case 'module':
                 $fields[] = 'tevento.id_agentmodule as module';
                 $group_array[] = 'tevento.id_agentmodule';
-                if ($total === false) {
-                    $names_search = modules_get_agentmodule_name_array(
-                        array_values($filters['modules'])
-                    );
-                }
+                $names_search = modules_get_agentmodule_name_array(
+                    array_values($filters['modules'])
+                );
             break;
 
             case 'template':
                 $fields[] = 'talert_template_modules.id_alert_template as template';
                 $group_array[] = 'talert_template_modules.id_alert_template';
-                if ($total === false) {
-                    $names_search = alerts_get_templates_name_array(
-                        array_values($filters['templates'])
-                    );
-                }
+                $names_search = alerts_get_templates_name_array(
+                    array_values($filters['templates'])
+                );
             break;
 
             case 'agent':
                 $fields[] = 'tevento.id_agente as agent';
                 $group_array[] = 'tevento.id_agente';
-                if ($total === false) {
-                    $names_search = agents_get_alias_array(
-                        array_values($filters['agents'])
-                    );
-                }
+                $names_search = agents_get_alias_array(
+                    array_values($filters['agents'])
+                );
             break;
 
             case 'group':
                 $fields[] = 'tevento.id_grupo as `group`';
                 $group_array[] = 'tevento.id_grupo';
-                if ($total === false) {
-                    $names_search = users_get_groups($config['user'], 'AR', false);
-                }
+                $names_search = users_get_groups($config['user'], 'AR', false);
             break;
 
             default:
@@ -3038,9 +3030,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             && empty($groupsBy['lapse']) === false
         ) {
             $fields[] = sprintf(
-                'ROUND((CEILING(UNIX_TIMESTAMP(tevento.timestamp) / %d) * %d)) AS Period',
-                (int) $groupsBy['lapse'],
-                (int) $groupsBy['lapse']
+                'tevento.utimestamp AS Period'
             );
             $group_array[] = 'period';
         }
@@ -3089,7 +3079,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             $data = array_reduce(
                 $data,
                 function ($carry, $item) use ($groupsBy) {
-                    $period = (isset($item['Period']) === true) ? $item['Period'] : 0;
+                    $period = (isset($item['Period']) === true) ? (int) $item['Period'] : 0;
                     $grby = $item[$groupsBy['group_by']];
                     unset($item['Period']);
                     unset($item[$groupsBy['group_by']]);
@@ -3103,14 +3093,10 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             if (isset($groupsBy['lapse']) === true
                 && empty($groupsBy['lapse']) === false
             ) {
-                $start_interval = round(
-                    (ceil(
-                        ((time() - $filters['period']) / (int) $groupsBy['lapse'])
-                    ) * (int) $groupsBy['lapse'])
-                );
-
-                for ($interval = $start_interval; $interval < time(); ($interval = $interval + (int) $groupsBy['lapse'])) {
-                    $intervals[] = $interval;
+                $tend = time();
+                $tstart = ($tend - (int) $filters['period']);
+                for ($current_time = $tstart; $current_time <= $tend; ($current_time += $groupsBy['lapse'])) {
+                    $intervals[] = (int) $current_time;
                 }
             }
 
@@ -3135,35 +3121,50 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
                     }
                 }
             } else {
-                foreach ($intervals as $key => $inter) {
+                $period_lapse = (int) $groupsBy['lapse'];
+                foreach ($intervals as $interval) {
+                    $start_interval = $interval;
+                    $end_interval = ($interval + $period_lapse);
+                    foreach ($names_search as $id => $name) {
+                        $result[$start_interval][$id] = $clone;
+                        $result[$start_interval][$id][$groupsBy['group_by']] = $name;
+                    }
+
                     foreach ($data as $period => $array_data) {
-                        if ((int) $inter === (int) $period) {
-                            foreach ($names_search as $id => $name) {
-                                if (isset($array_data[$id]) === true) {
-                                    $result[$period][$id] = $array_data[$id];
-                                    $result[$period][$id][$groupsBy['group_by']] = $name;
-                                } else {
-                                    $result[$period][$id] = $clone;
-                                    $result[$period][$id][$groupsBy['group_by']] = $name;
+                        $period_time = (int) $period;
+                        if ($start_interval < $period_time && $period_time <= $end_interval) {
+                            foreach ($array_data as $id_data => $value_data) {
+                                foreach ($value_data as $key_data => $v) {
+                                    if ($key_data !== $groupsBy['group_by']) {
+                                        if (isset($result[$start_interval][$id_data][$key_data])) {
+                                            $result[$start_interval][$id_data][$key_data] += $v;
+                                        } else {
+                                            $result[$start_interval][$id_data][$key_data] = $v;
+                                        }
+                                    }
                                 }
                             }
-                        } else {
-                            if (isset($result[$inter]) === false) {
-                                foreach ($names_search as $id => $name) {
-                                    $result[$inter][$id] = $clone;
-                                    $result[$inter][$id][$groupsBy['group_by']] = $name;
-                                }
-                            }
+
+                            unset($data[$period]);
                         }
                     }
                 }
             }
-
-            $data = $result;
         }
+    } else {
+        $total_values = [];
+        $result = [];
+        foreach ($data as $key => $array_data) {
+            foreach ($array_data as $key_value => $v) {
+                $total_values[$key_value] = ($total_values[$key_value] + $v);
+            }
+        }
+
+        $result['total'] = $total_values;
+        $result['total'][$groupsBy['group_by']] = __('Total');
     }
 
-    return $data;
+    return $result;
 }
 
 

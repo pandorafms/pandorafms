@@ -4252,3 +4252,5 @@ UPDATE `talert_special_days` set `day_code` = 7 WHERE `same_day` = 'sunday';
 
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
 ALTER TABLE `talert_special_days` ADD FOREIGN KEY (`id_calendar`) REFERENCES `talert_calendar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+UPDATE `tconfig` c1 JOIN (select count(*) as n FROM `tconfig` c2 WHERE (c2.`token` = "node_metaconsole" AND c2.`value` = 1) OR (c2.`token` = "centralized_management" AND c2.`value` = 1) ) v SET c1. `value` = 0 WHERE c1.token = "autocreate_remote_users" AND v.n = 2;

@@ -246,25 +246,27 @@ if ($view_graph) {
         ];
     }
 
-    // Header.
-    ui_print_standard_header(
-        $graph['name'],
-        'images/chart.png',
-        false,
-        '',
-        false,
-        $options,
-        [
+    if (!is_ajax()) {
+        // Header.
+        ui_print_standard_header(
+            $graph['name'],
+            'images/chart.png',
+            false,
+            '',
+            false,
+            $options,
             [
-                'link'  => '',
-                'label' => __('Reporting'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Custom graphs'),
-            ],
-        ]
-    );
+                [
+                    'link'  => '',
+                    'label' => __('Reporting'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Custom graphs'),
+                ],
+            ]
+        );
+    }
 
     $width = null;
     $height = null;
@@ -294,9 +296,21 @@ if ($view_graph) {
         $params_combined
     );
 
+    if (is_ajax()) {
+        echo $graph_return;
+        return;
+    }
+
     if ($graph_return) {
-        echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
+        echo "<table id='graph-container' class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
         echo '<tr><td>';
+        if (!is_ajax()) {
+            echo '<div id="spinner_loading" class="loading invisible">';
+            echo html_print_image('images/spinner.gif', true);
+            echo __('Loading').'&hellip;';
+            echo '</div>';
+        }
+
         if ($stacked == CUSTOM_GRAPH_VBARS) {
             echo '<div class="w100p height_600px">';
         }
@@ -372,7 +386,7 @@ if ($view_graph) {
     echo '</td>';
 
     echo "<td class='datos'>";
-    echo "<input type=submit value='".__('Refresh')."' class='sub upd'>";
+    echo "<input id='submit-refresh' type=submit value='".__('Refresh')."' class='sub upd'>";
     echo '</td>';
 
     echo '</tr>';
@@ -414,6 +428,38 @@ if ($view_graph) {
         }else{
             $("#thresholdDiv").hide();
         }
+
+        $("#submit-refresh").click(function(e){
+            e.preventDefault();
+            
+            var data = {
+                page: "operation/reporting/graph_viewer",
+                view_graph: 1,
+                id: '<?php echo $id_graph; ?>',
+                zoom: '<?php echo $zoom; ?>',
+                date: '<?php echo $date; ?>',
+                time: '<?php echo $time; ?>',
+                period: '<?php echo $period; ?>',
+                stacked: '<?php echo $stacked; ?>',
+                threshold: '<?php echo $check; ?>',
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "html",
+                data: data,
+                success: function (data) {
+                    // document.getElementById("graph-container").innerHTML = "";
+                    // document.getElementById("graph-container").innerHTML = data;
+                    $("#spinner_loading").show();
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.error("Fatal error")
+                }
+            });
+        });
 
 
     });

@@ -695,7 +695,9 @@ $(document).ready (function () {
                         }
                         else {
                             $("[name=field" + i + "_value]").val(old_value);
+                            $("[name=field" + i + "_value]").trigger('change');
                             $("[name=field" + i + "_recovery_value]").val(old_recovery_value);
+                            $("[name=field" + i + "_recovery_value]").trigger('change');
                         }
                     }
                     else {

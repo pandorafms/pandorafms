@@ -75,8 +75,8 @@ class RepoDisk extends Repo
         $this->files = [];
         while ($file_name = readdir($dh)) {
             // Files must contain a version number.
-            if (preg_match('/(\d+)\_x86_64.'.$this->extension.'$/', $file_name, $utimestamp) === 1
-                || preg_match('/(\d+)\.'.$this->extension.'$/', $file_name, $utimestamp) === 1
+            if (preg_match('/([\d\.]+?)\_x86_64.'.$this->extension.'$/', $file_name, $utimestamp) === 1
+                || preg_match('/([\d\.]+?)\.'.$this->extension.'$/', $file_name, $utimestamp) === 1
             ) {
                 // Add the file to the repository.
                 $this->files[$utimestamp[1]] = $file_name;

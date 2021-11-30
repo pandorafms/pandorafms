@@ -128,14 +128,23 @@ if ($get_comments === true) {
     } else {
         // Consider if the event is grouped.
         if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
+            // Evaluate if we are in metaconsole or not.
             $eventTable = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+            // Default grouped message filtering.
+            $whereGrouped = sprintf('`evento` = "%s"', io_safe_output($event['evento']));
+            // If id_agente is reported, filter the messages by them as well.
+            if ((int) $event['id_agente'] > 0) {
+                $whereGrouped .= sprintf(' AND `id_agente` = "%s"', $event['id_agente']);
+            }
+
+            // Get grouped comments.
             $eventsGrouped = db_get_all_rows_sql(
                 sprintf(
                     'SELECT `user_comment`
                     FROM `%s`
-                    WHERE `evento` = "%s"',
+                    WHERE %s',
                     $eventTable,
-                    io_safe_output($event['evento'])
+                    $whereGrouped
                 )
             );
         } else {

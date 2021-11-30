@@ -13,6 +13,18 @@ CREATE TABLE IF NOT EXISTS `talert_calendar` (
 
 INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
 
+CREATE TABLE IF NOT EXISTS `tipam_network_location` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
+UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
+ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;
+ALTER TABLE `tipam_network` ADD FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE;
+
 ALTER TABLE `talert_special_days` ADD COLUMN `id_calendar` int(10) unsigned NOT NULL DEFAULT 1;
 ALTER TABLE `talert_special_days` ADD COLUMN `day_code` tinyint(2) unsigned NOT NULL DEFAULT 0;
 

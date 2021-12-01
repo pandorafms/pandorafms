@@ -61,20 +61,29 @@ if ($row !== false && is_array($row)) {
 
 
             if (isset($first_op[1]) && $first_op[1] == 'avg') {
-                $selected = 'synthetic_selected';
-            } else {
                 $selected = 'synthetic_avg_selected';
+            } else {
+                $selected = 'synthetic_selected';
             }
 
             $custom_integer_1 = 0;
             $custom_integer_2 = 0;
         break;
 
+        case MODULE_PREDICTION_TRENDING:
+            $selected = 'module_selected';
+        case MODULE_PREDICTION_MODULE:
+            $selected = 'trending_selected';
+            $prediction_module = $custom_integer_1;
+        break;
+
         default:
+
             $prediction_module = $custom_integer_1;
         break;
     }
 } else {
+    $selected = 'module_selected';
     $custom_integer_1 = 0;
 }
 
@@ -135,7 +144,8 @@ $params['use_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
 $data[1] .= ui_print_agent_autocomplete_input($params);
 
-$data[1] .= html_print_label(__('Module'), 'prediction_module', true);
+$data[1] .= '<br />';
+$data[1] .= html_print_label(__('Module'), 'prediction_module', true).'<br />';
 if ($id_agente) {
     $sql = 'SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
@@ -156,6 +166,7 @@ if ($id_agente) {
     $data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
 
+$data[1] .= '<br />';
 $data[1] .= html_print_label(__('Period'), 'custom_integer_2', true).'<br/>';
 
 $periods[0] = __('Weekly');
@@ -187,7 +198,6 @@ if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
     $data[0] = '';
     $data[1] = $synthetic_module_form;
 
-    $table_simple->colspan['synthetic_module'][1] = 3;
     push_table_simple($data, 'synthetic_module');
 }
 
@@ -214,7 +224,8 @@ unset($table_advanced->data[3]);
         enterprise_hook(
             'setup_services_synth',
             [
-                $type,
+                $selected,
+                $is_netflow,
                 $ops,
             ]
         );

@@ -1788,7 +1788,7 @@ if ($update_module) {
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1931,7 +1931,7 @@ if ($create_module) {
         }
     }
 
-    if ($prediction_module == 3 && $serialize_ops == '') {
+    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC && $serialize_ops == '') {
         $id_agent_module = false;
     } else {
         $id_agent_module = modules_create_agent_module(
@@ -1972,7 +1972,7 @@ if ($create_module) {
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [

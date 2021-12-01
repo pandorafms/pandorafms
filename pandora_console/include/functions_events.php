@@ -25,6 +25,8 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -35,7 +37,7 @@ enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $id_source_event = get_parameter('id_source_event');
 }
 
@@ -5124,12 +5126,29 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
                 $comments_array[] = io_safe_output(json_decode($comm, true));
             }
 
+            // Plain comments. Can be improved.
+            $sortedCommentsArray = [];
+            foreach ($comments_array as $comm) {
+                foreach ($comm as $subComm) {
+                    $sortedCommentsArray[] = $subComm;
+                }
+            }
+
+            // Sorting the comments by utimestamp (newer is first).
             usort(
-                $comments_array,
+                $sortedCommentsArray,
                 function ($a, $b) {
-                    return ($a[(count($a) - 1)]['utimestamp'] < $b[(count($b) - 1)]['utimestamp']);
+                    if ($a['utimestamp'] == $b['utimestamp']) {
+                        return 0;
+                    }
+
+                    return ($a['utimestamp'] > $b['utimestamp']) ? -1 : 1;
                 }
             );
+
+            // Clean the unsorted comments and return it to the original array.
+            $comments_array = [];
+            $comments_array[] = $sortedCommentsArray;
         } else {
             $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
             // If comments are not stored in json, the format is old.
@@ -5137,12 +5156,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         }
 
         foreach ($comments_array as $comm) {
-            // Show the comments more recent first.
-            if (is_array($comm) === true) {
-                $comm = array_reverse($comm);
-            }
-
-            $comments_format = (empty($comm) === true ? 'old' : 'new');
+            $comments_format = (empty($comm) === true) ? 'old' : 'new';
 
             switch ($comments_format) {
                 case 'new':

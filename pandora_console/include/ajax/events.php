@@ -130,8 +130,12 @@ if ($get_comments === true) {
         if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
             // Evaluate if we are in metaconsole or not.
             $eventTable = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
-            // Default grouped message filtering.
-            $whereGrouped = sprintf('`evento` = "%s"', io_safe_output($event['evento']));
+            // Default grouped message filtering (evento and estado).
+            $whereGrouped = sprintf(
+                '`evento` = "%s" AND `estado` = "%s"',
+                io_safe_output($event['evento']),
+                $event['estado']
+            );
             // If id_agente is reported, filter the messages by them as well.
             if ((int) $event['id_agente'] > 0) {
                 $whereGrouped .= sprintf(' AND `id_agente` = "%s"', $event['id_agente']);

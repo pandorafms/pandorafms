@@ -1702,30 +1702,12 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
-                $all_agent_log = agents_get_agents(['id_grupo' => $group], ['id_agente', 'alias']);
-                foreach ($all_agent_log as $key => $value) {
-                    $agents2[$value['id_agente']] = $value['alias'];
-                }
-
-                if ((empty($agents2)) || $agents2 == -1) {
-                    $agents = [];
-                }
-
-                $agents_select = [];
-                if (is_array($id_agents) || is_object($id_agents)) {
-                    foreach ($id_agents as $id) {
-                        foreach ($agents2 as $key => $a) {
-                            if ($key == (int) $id) {
-                                $agents_select[$key] = $key;
-                            }
-                        }
-                    }
-                }
+                $all_agents = agents_get_agents_selected($group);
 
                 html_print_select(
-                    $agents2,
+                    $all_agents,
                     'id_agents2[]',
-                    $agents_select,
+                    $id_agents,
                     $script = '',
                     '',
                     0,
@@ -1789,39 +1771,20 @@ $class = 'databox filters';
                 <?php
                 if (empty($id_agents) === true) {
                     $all_modules = [];
-                    $modules_select = [];
+                    $idAgentModule = [];
                 } else {
-                    $all_modules = db_get_all_rows_sql(
-                        sprintf(
-                            'SELECT nombre as `name`,
-                                id_agente_modulo as id
-                            FROM tagente_modulo
-                            WHERE id_agente IN (%s)',
-                            implode(',', array_values($id_agents))
-                        )
-                    );
-
-                    $all_modules = array_reduce(
-                        $all_modules,
-                        function ($carry, $item) {
-                            $carry[$item['id']] = $item['name'];
-                            return $carry;
-                        },
-                        []
-                    );
-
-                    $all_modules = array_unique($all_modules);
-
-                    $modules_select = get_same_modules(
-                        array_values($id_agents),
-                        array_values($idAgentModule)
+                    $all_modules = get_modules_agents(
+                        $modulegroup,
+                        $id_agents,
+                        !$selection_a_m,
+                        true
                     );
                 }
 
                 html_print_select(
                     $all_modules,
                     'module[]',
-                    $modules_select,
+                    $idAgentModule,
                     $script = '',
                     '',
                     0,
@@ -1830,7 +1793,7 @@ $class = 'databox filters';
                     true,
                     '',
                     false,
-                    'min-width: 500px; max-height: 100px',
+                    'min-width: 500px; max-width: 500px; max-height: 100px',
                     false,
                     false,
                     false,
@@ -4593,7 +4556,8 @@ $(document).ready (function () {
                     "get_modules_group_json" : 1,
                     "id_module_group" : this.value,
                     "id_agents" : $("#id_agents2").val(),
-                    "selection" : $("#selection_agent_module").val()
+                    "selection" : $("#selection_agent_module").val(),
+                    "select_mode": 1
                 },
                 function (data, status) {
                     $("#module").html('');
@@ -4618,7 +4582,8 @@ $(document).ready (function () {
                     "get_modules_group_json" : 1,
                     "selection" : $("#selection_agent_module").val(),
                     "id_module_group" : $("#combo_modulegroup").val(),
-                    "id_agents" : $("#id_agents2").val()
+                    "id_agents" : $("#id_agents2").val(),
+                    "select_mode": 1
                 },
                 function (data, status) {
                     $("#module").html('');
@@ -4645,7 +4610,8 @@ $(document).ready (function () {
                     "get_modules_group_json" : 1,
                     "id_module_group" : $("#combo_modulegroup").val(),
                     "id_agents" : $("#id_agents2").val(),
-                    "selection" : $("#selection_agent_module").val()
+                    "selection" : $("#selection_agent_module").val(),
+                    "select_mode": 1
                 },
                 function (data, status) {
                     $("#module").html('');

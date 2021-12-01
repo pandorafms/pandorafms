@@ -1689,7 +1689,7 @@ switch ($action) {
                                     true
                                 );
 
-                                $es['module'] = get_same_modules(
+                                $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
@@ -1721,7 +1721,7 @@ switch ($action) {
                                     true
                                 );
 
-                                $es['module'] = get_same_modules(
+                                $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
@@ -2489,7 +2489,7 @@ switch ($action) {
                                     true
                                 );
 
-                                $es['module'] = get_same_modules(
+                                $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
@@ -2522,7 +2522,7 @@ switch ($action) {
                                     true
                                 );
 
-                                $es['module'] = get_same_modules(
+                                $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );

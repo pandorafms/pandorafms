@@ -192,127 +192,25 @@ if (is_ajax()) {
         return;
     }
 
-    if ($get_modules_group_json) {
+    if ($get_modules_group_json === true) {
         $id_group = (int) get_parameter('id_module_group', 0);
         $id_agents = get_parameter('id_agents', null);
         $selection = get_parameter('selection');
+        $select_mode = (bool) get_parameter('select_mode', 0);
 
         if ($id_agents === null) {
             echo '[]';
             return;
         }
 
-        if ((bool) is_metaconsole() === true) {
-            if (count($id_agents) > 0) {
-                $rows = db_get_all_rows_sql(
-                    sprintf(
-                        'SELECT `id_agente`, `id_tagente`, `id_tmetaconsole_setup`
-                        FROM `tmetaconsole_agent`
-                        WHERE `id_agente` IN (%s)',
-                        implode(',', $id_agents)
-                    )
-                );
-            } else {
-                $rows = [];
-            }
-
-            $agents = array_reduce(
-                $rows,
-                function ($carry, $item) {
-                    if ($carry[$item['id_tmetaconsole_setup']] === null) {
-                        $carry[$item['id_tmetaconsole_setup']] = [];
-                    }
-
-                    $carry[$item['id_tmetaconsole_setup']][] = $item['id_tagente'];
-                    return $carry;
-                },
-                []
-            );
-
-            $modules = [];
-
-            foreach ($agents as $tserver => $id_agents) {
-                if (metaconsole_connect(null, $tserver) == NOERR) {
-                    $modules[$tserver] = select_modules_for_agent_group(
-                        $id_group,
-                        $id_agents,
-                        $selection,
-                        false,
-                        false,
-                        true
-                    );
-
-                    metaconsole_restore_db();
-                }
-            }
-
-
-            if (!$selection) {
-                // Common modules.
-                $final_modules = [];
-                $nodes_consulted = count($modules);
-
-                foreach ($modules as $tserver => $mods) {
-                    foreach ($mods as $module) {
-                        if ($final_modules[$module['nombre']] === null) {
-                            $final_modules[$module['nombre']] = 0;
-                        }
-
-                        $final_modules[$module['nombre']]++;
-                    }
-                }
-
-                $modules = [];
-                foreach ($final_modules as $module_name => $occurrences) {
-                    if ($occurrences === $nodes_consulted) {
-                        // Module already present in ALL nodes.
-                        $modules[] = [
-                            'id_agente_modulo' => $module_name,
-                            'nombre'           => $module_name,
-                        ];
-                    }
-                }
-            } else {
-                // All modules.
-                $return = [];
-                $nodes = [];
-                foreach ($agents as $tserver => $id_agents) {
-                    try {
-                        $nodes[$tserver] = new Node($tserver);
-                    } catch (Exception $e) {
-                        hd($e);
-                    }
-
-                    $return = array_reduce(
-                        $modules[$tserver],
-                        function ($carry, $item) use ($tserver, $nodes) {
-                            $t = [];
-                            foreach ($item as $k => $v) {
-                                $t[$k] = $v;
-                            }
-
-                            $t['id_node'] = $tserver;
-                            if ($nodes[$tserver] !== null) {
-                                $t['nombre'] = io_safe_output(
-                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
-                                );
-                            }
-
-                            $carry[] = $t;
-                            return $carry;
-                        },
-                        $return
-                    );
-                }
-
-                $modules = $return;
-            }
-
-            echo json_encode($modules);
-        } else {
-            $modules = select_modules_for_agent_group($id_group, $id_agents, $selection, false);
-            echo json_encode($modules);
-        }
+        $modules = get_modules_agents(
+            $id_group,
+            $id_agents,
+            $selection,
+            $select_mode
+        );
+        echo json_encode($modules);
+        return;
     }
 
     if ($filter_modules_group_json) {

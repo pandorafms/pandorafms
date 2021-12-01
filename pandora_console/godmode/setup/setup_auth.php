@@ -60,6 +60,7 @@ if (is_ajax()) {
             $table->data['fallback_local_auth'] = $row;
 
             if (enterprise_installed()) {
+                $is_management_allowed = is_management_allowed();
                 // Autocreate remote users.
                 $row = [];
                 $row['name'] = __('Autocreate remote users');
@@ -67,7 +68,7 @@ if (is_ajax()) {
                     'autocreate_remote_users',
                     1,
                     $config['autocreate_remote_users'],
-                    false,
+                    (is_metaconsole() === false) ? !$is_management_allowed : false,
                     '',
                     '',
                     true

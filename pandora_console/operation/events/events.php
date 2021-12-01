@@ -102,6 +102,8 @@ $default_filter = [
 $fb64 = get_parameter('fb64', null);
 if (isset($fb64)) {
     $filter = json_decode(base64_decode($fb64), true);
+    $filter['tag_with'] = [];
+    $filter['tag_without'] = [];
 } else {
     $filter = get_parameter(
         'filter',

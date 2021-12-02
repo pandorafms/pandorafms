@@ -4525,20 +4525,21 @@ sub on_demand_macro($$$$$$;$) {
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;
-		
+
 		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
-		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
-		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $module_data = get_db_single_row ($dbh, 'SELECT id_tipo_modulo, unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $type_mod = $module_data->{'id_tipo_modulo'};
+		my $unit_mod = $module_data->{'unit'};
 
 		my $field_value = "";
 		if (defined($type_mod)
-			&& ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 )
+			&& ($type_mod eq 3 || $type_mod eq 10 || $type_mod eq 17 || $type_mod eq 23 || $type_mod eq 33 || $type_mod eq 36)
 		) {
-			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $id_mod);
 		}
 		else{
-			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
-			
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $id_mod);
+
 			my $data_precision = $pa_config->{'graph_precision'};
 			$field_value = sprintf("%.$data_precision" . "f", $field_value);
 			$field_value =~ s/0+$//;

@@ -14,6 +14,7 @@
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
 require_once 'include/functions_agents.php';
+ui_require_jquery_file('validate');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -71,9 +72,12 @@ if ($row !== false && is_array($row)) {
         break;
 
         case MODULE_PREDICTION_TRENDING:
-            $selected = 'module_selected';
-        case MODULE_PREDICTION_MODULE:
             $selected = 'trending_selected';
+            $prediction_module = $custom_integer_1;
+        break;
+
+        case MODULE_PREDICTION_MODULE:
+            $selected = 'module_selected';
             $prediction_module = $custom_integer_1;
         break;
 
@@ -200,6 +204,17 @@ if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
 
     push_table_simple($data, 'synthetic_module');
 }
+
+$trending_module_form = enterprise_hook('get_trending_module_form', [$custom_string_1]);
+if ($trending_module_form !== ENTERPRISE_NOT_HOOK) {
+    $data = [];
+    $data[0] = '';
+    $data[1] .= $trending_module_form;
+
+    push_table_simple($data, 'trending_module');
+}
+
+
 
 // Netflow modules are an Enterprise feature.
 $netflow_module_form = enterprise_hook('get_netflow_module_form', [$custom_integer_1]);

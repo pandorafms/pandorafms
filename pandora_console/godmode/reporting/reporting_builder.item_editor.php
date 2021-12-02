@@ -187,11 +187,13 @@ $graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type
 
 $valuesGroupBy = [0 => __('None')];
 $valuesGroupByDefaultAlertActions = [
-    'agent'    => __('Agent'),
-    'module'   => __('Module'),
-    'group'    => __('Group'),
-    'template' => __('Template'),
+    'agent'  => __('Agent'),
+    'module' => __('Module'),
+    'group'  => __('Group'),
 ];
+if (is_metaconsole() === false) {
+    $valuesGroupByDefaultAlertActions['template'] = __('Template');
+}
 
 switch ($action) {
     case 'new':
@@ -789,16 +791,21 @@ switch ($action) {
 
                     $group_by = $es['group_by'];
 
-                    $valuesGroupBy = [
-                        'agent'    => __('Agent'),
-                        'module'   => __('Module'),
-                        'group'    => __('Group'),
-                        'template' => __('Template'),
-                    ];
-
                     $period = $item['period'];
 
                     $lapse = $item['lapse'];
+
+                    // Set values.
+                    $valuesGroupBy = [
+                        'agent'  => __('Agent'),
+                        'module' => __('Module'),
+                        'group'  => __('Group'),
+                    ];
+
+                    if (is_metaconsole() === false) {
+                        $valuesGroupBy['template'] = __('Template');
+                    }
+
                     $lapse_calc = 1;
                 break;
 
@@ -5695,6 +5702,7 @@ function addGeneralRow() {
 }
 
 function chooseType() {
+    var meta = '<?php echo (is_metaconsole() === true) ? 1 : 0; ?>';
     type = $("#type").val();
     $("#row_description").hide();
     $("#row_label").hide();
@@ -6116,7 +6124,9 @@ function chooseType() {
             $("#select_agent_modules").show();
             $("#agents_modules_row").show();
             $("#modules_row").show();
-            $("#row_alert_templates").show();
+            if(meta == 0){
+                $("#row_alert_templates").show();
+            }
             $("#row_alert_actions").show();
             $("#row_period").show();
             $("#row_lapse").show();
@@ -6133,7 +6143,8 @@ function chooseType() {
                 });
 
                 $("#lapse_select").attr('disabled', false);
-                $("#lapse_select").val(0).trigger('change');
+                $("#lapse_select").val('0').trigger('change');
+                $("#hidden-lapse").val('0');
             }
             break;
 

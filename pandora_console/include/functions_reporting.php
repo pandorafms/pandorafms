@@ -2688,11 +2688,30 @@ function reporting_alert_report_actions($report, $content)
     $return['data'] = [];
 
     $es = json_decode($content['external_source'], true);
+    if (isset($report['id_template']) === true
+        && empty($resport['id_template']) === false
+    ) {
+        $modules = json_decode(
+            io_safe_output(base64_decode($es['module'])),
+            true
+        );
+        $agents = json_decode(
+            io_safe_output(base64_decode($es['id_agents'])),
+            true
+        );
+    } else {
+        if (is_metaconsole() === true) {
+            $server_id = metaconsole_get_id_server($content['server_name']);
+            $modules = [$server_id.'|'.$content['id_agent_module']];
+            $agents = [$server_id.'|'.$content['id_agent']];
+        } else {
+            $modules = [$content['id_agent_module']];
+            $agents = [$content['id_agent']];
+        }
+    }
 
     $period = $content['period'];
     $id_group = $content['id_group'];
-    $modules = $es['module'];
-    $agents = $es['id_agents'];
     $templates = $es['templates'];
     $actions = $es['actions'];
     $show_summary = $es['show_summary'];
@@ -2701,14 +2720,8 @@ function reporting_alert_report_actions($report, $content)
 
     $filters = [
         'group'     => $id_group,
-        'agents'    => json_decode(
-            io_safe_output(base64_decode($agents)),
-            true
-        ),
-        'modules'   => json_decode(
-            io_safe_output(base64_decode($modules)),
-            true
-        ),
+        'agents'    => $agents,
+        'modules'   => $modules,
         'templates' => $templates,
         'actions'   => $actions,
         'period'    => $period,

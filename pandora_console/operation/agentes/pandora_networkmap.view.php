@@ -480,7 +480,7 @@ if (is_ajax() === true) {
         $return = [];
         $return['correct'] = false;
 
-        // ACL for the network map
+        // ACL for the network map.
         $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
         $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
@@ -497,9 +497,7 @@ if (is_ajax() === true) {
 
         $return['correct'] = networkmap_delete_link(
             $networkmap_id,
-            $source_id,
             $source_module_id,
-            $target_id,
             $target_module_id,
             $id_link
         );

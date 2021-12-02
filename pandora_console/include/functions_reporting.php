@@ -2691,15 +2691,6 @@ function reporting_alert_report_actions($report, $content)
     if (isset($report['id_template']) === true
         && empty($resport['id_template']) === false
     ) {
-        $modules = json_decode(
-            io_safe_output(base64_decode($es['module'])),
-            true
-        );
-        $agents = json_decode(
-            io_safe_output(base64_decode($es['id_agents'])),
-            true
-        );
-    } else {
         if (is_metaconsole() === true) {
             $server_id = metaconsole_get_id_server($content['server_name']);
             $modules = [$server_id.'|'.$content['id_agent_module']];
@@ -2708,6 +2699,15 @@ function reporting_alert_report_actions($report, $content)
             $modules = [$content['id_agent_module']];
             $agents = [$content['id_agent']];
         }
+    } else {
+        $modules = json_decode(
+            io_safe_output(base64_decode($es['module'])),
+            true
+        );
+        $agents = json_decode(
+            io_safe_output(base64_decode($es['id_agents'])),
+            true
+        );
     }
 
     $period = $content['period'];

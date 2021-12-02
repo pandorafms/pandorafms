@@ -394,6 +394,7 @@ $data[1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true);
 $data[1] .= '</div>';
 
 $data[1] .= '<div id="percentage_warning"><em>'.__('Percentage').'</em>&nbsp;';
+$data[1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
 $data[1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true);
 $data[1] .= '</div>';
 
@@ -435,6 +436,7 @@ $data[1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
 $data[1] .= '</div>';
 
 $data[1] .= '<Ddiv id="percentage_critical"><em>'.__('Percentage').'</em>&nbsp;';
+$data[1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
 $data[1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true);
 $data[1] .= '</div>';
 

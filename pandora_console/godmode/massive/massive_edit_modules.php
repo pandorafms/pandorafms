@@ -616,6 +616,8 @@ $table->data['edit1'][1] = '<table width="100%">';
             $table->data['edit1'][1] .= '<tr>';
             $table->data['edit1'][1] .= '<td>';
             $table->data['edit1'][1] .= '<em>'.__('Percentage').'</em>';
+            $table->data['edit1'][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+
             $table->data['edit1'][1] .= '</td>';
             $table->data['edit1'][1] .= '<td align="right">';
             $table->data['edit1'][1] .= html_print_select(
@@ -706,6 +708,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             $table->data['edit1'][3] .= '<tr>';
             $table->data['edit1'][3] .= '<td>';
             $table->data['edit1'][3] .= '<em>'.__('Percentage').'</em>';
+            $table->data['edit1'][3] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
             $table->data['edit1'][3] .= '</td>';
             $table->data['edit1'][3] .= '<td align="right">';
             $table->data['edit1'][3] .= html_print_select(

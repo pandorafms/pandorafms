@@ -498,6 +498,9 @@ select:-internal-list-box {
 .mw300px {
   min-width: 300px;
 }
+.mw400px {
+  min-width: 400px;
+}
 .mw500px {
   min-width: 500px;
 }

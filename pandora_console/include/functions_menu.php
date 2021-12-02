@@ -503,14 +503,14 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_editor']['text'] = __('Manage graph templates');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_item_editor']['text'] = __('Graph template items');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
-
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
     if ($config['activate_gis']) {
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
     }
 
     $menu_extra['workspace']['sub']['operation/messages/message_edit']['text'] = __('Manage messages');
 
-    $menu_extra['gagente']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');
     $menu_extra['gagente']['sub']['godmode/groups/configure_modu_group']['text'] = __('Manage module groups');
     $menu_extra['gagente']['sub']['godmode/agentes/configure_field']['text'] = __('Manage custom field');
 
@@ -524,6 +524,9 @@ function menu_add_extras(&$menu)
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
 
+    $menu_extra['gusuarios']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');
+    $menu_extra['gusuarios']['sub']['godmode/tag/edit_tag']['text'] = __('Tags management');
+
     // Duplicate extensions as sec=extension to check it from url.
     foreach ($menu as $k => $m) {
         if (!isset($m['sub'])) {
@@ -532,7 +535,9 @@ function menu_add_extras(&$menu)
 
         foreach ($m['sub'] as $kk => $mm) {
             if (isset($mm['sec'])) {
-                $menu_extra[$mm['sec']]['sub'][$kk]['text'] = $mm['text'];
+                if (empty($menu[$mm['sec']]['sub'][$kk]['text']) === true) {
+                    $menu_extra[$mm['sec']]['sub'][$kk]['text'] = $mm['text'];
+                }
             }
         }
     }

@@ -3170,6 +3170,8 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         $group_by
     );
 
+    hd($query);
+
     $data = db_get_all_rows_sql($query);
 
     if ($data === false) {

@@ -3071,14 +3071,18 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             case 'module':
                 $fields[] = $table.'.id_agentmodule as module';
                 $group_array[] = $table.'.id_agentmodule';
-                $names_search = modules_get_agentmodule_name_array(
-                    array_values($filters['modules'])
-                );
+                if ($total === false) {
+                    $names_search = modules_get_agentmodule_name_array(
+                        array_values($filters['modules'])
+                    );
+                }
 
-                if (is_metaconsole() === true && $total === false) {
+                if (is_metaconsole() === true) {
                     $fields[] = $table.'.server_id as server';
                     $group_array[] = $table.'.server_id';
-                    $names_server = metaconsole_get_names();
+                    if ($total === false) {
+                        $names_server = metaconsole_get_names();
+                    }
                 }
             break;
 
@@ -3086,29 +3090,38 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
                 if (is_metaconsole() === false) {
                     $fields[] = 'talert_template_modules.id_alert_template as template';
                     $group_array[] = 'talert_template_modules.id_alert_template';
-                    $names_search = alerts_get_templates_name_array(
-                        array_values($filters['templates'])
-                    );
+                    if ($total === false) {
+                        $names_search = alerts_get_templates_name_array(
+                            array_values($filters['templates'])
+                        );
+                    }
                 }
             break;
 
             case 'agent':
                 $fields[] = $table.'.id_agente as agent';
                 $group_array[] = $table.'.id_agente';
-                $names_search = agents_get_alias_array(
-                    array_values($filters['agents'])
-                );
-                if (is_metaconsole() === true && $total === false) {
+                if ($total === false) {
+                    $names_search = agents_get_alias_array(
+                        array_values($filters['agents'])
+                    );
+                }
+
+                if (is_metaconsole() === true) {
                     $fields[] = $table.'.server_id as server';
                     $group_array[] = $table.'.server_id';
-                    $names_server = metaconsole_get_names();
+                    if ($total === false) {
+                        $names_server = metaconsole_get_names();
+                    }
                 }
             break;
 
             case 'group':
                 $fields[] = $table.'.id_grupo as `group`';
                 $group_array[] = $table.'.id_grupo';
-                $names_search = users_get_groups($config['user'], 'AR', false);
+                if ($total === false) {
+                    $names_search = users_get_groups($config['user'], 'AR', false);
+                }
             break;
 
             default:
@@ -3154,6 +3167,8 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             %s
             %s
             %s
+            %s
+            %s
             %s',
         implode(", \n", $fields),
         $table,
@@ -3161,8 +3176,8 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         $table,
         $filter_date,
         $filter_group,
-        // $filter_agents,
-        // $filter_modules,
+        $filter_agents,
+        $filter_modules,
         $filter_actions,
         $filter_templates,
         $group_by

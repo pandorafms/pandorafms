@@ -305,19 +305,23 @@ if ($view_graph) {
         echo "<table id='graph-container' class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
         echo '<tr><td>';
         if (!is_ajax()) {
-            echo '<div id="spinner_loading" class="loading invisible">';
-            echo html_print_image('images/spinner.gif', true);
+            echo '<div id="spinner_loading" class="loading invisible" style="display:flex;flex-direction:column-reverse;justify-content:center;align-items:center">';
+            echo html_print_image('images/spinner.gif', true, ['width' => '20px']);
             echo __('Loading').'&hellip;';
             echo '</div>';
         }
 
         if ($stacked == CUSTOM_GRAPH_VBARS) {
             echo '<div class="w100p height_600px">';
+            echo '<div id="div-container" class="w100p height_600px">';
+        } else {
+            echo '<div id="div-container">';
         }
 
         echo $graph_return;
+        echo '</div>';
         if ($stacked == CUSTOM_GRAPH_VBARS) {
-            echo '<div>';
+            echo '</div>';
         }
 
         echo '</td></tr></table>';
@@ -403,6 +407,7 @@ if ($view_graph) {
     <script language="javascript" type="text/javascript">
     
     $(document).ready (function () {
+        $("#spinner_loading").hide();
         $("#loading").slideUp ();
         $("#text-time").timepicker({
             showSecond: true,
@@ -431,7 +436,7 @@ if ($view_graph) {
 
         $("#submit-refresh").click(function(e){
             e.preventDefault();
-            
+            $("#spinner_loading").show();
             var data = {
                 page: "operation/reporting/graph_viewer",
                 view_graph: 1,
@@ -450,10 +455,9 @@ if ($view_graph) {
                 dataType: "html",
                 data: data,
                 success: function (data) {
-                    // document.getElementById("graph-container").innerHTML = "";
-                    // document.getElementById("graph-container").innerHTML = data;
-                    $("#spinner_loading").show();
-                    console.log(data);
+                    document.getElementById("div-container").innerHTML = "";
+                    $("#spinner_loading").hide();
+                    $("#div-container").append(data);
                 },
                 error: function (data) {
                     console.error("Fatal error")

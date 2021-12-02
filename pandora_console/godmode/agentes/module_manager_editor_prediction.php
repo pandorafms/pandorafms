@@ -14,6 +14,7 @@
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
 require_once 'include/functions_agents.php';
+ui_require_jquery_file('validate');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -38,7 +39,7 @@ if ($row !== false && is_array($row)) {
 
     switch ($prediction_module) {
         case MODULE_PREDICTION_SERVICE:
-            $is_service = true;
+            $selected = 'service_selected';
             $custom_integer_2 = 0;
         break;
 
@@ -61,20 +62,32 @@ if ($row !== false && is_array($row)) {
 
 
             if (isset($first_op[1]) && $first_op[1] == 'avg') {
-                $is_synthetic_avg = true;
+                $selected = 'synthetic_avg_selected';
             } else {
-                $is_synthetic = true;
+                $selected = 'synthetic_selected';
             }
 
             $custom_integer_1 = 0;
             $custom_integer_2 = 0;
         break;
 
+        case MODULE_PREDICTION_TRENDING:
+            $selected = 'trending_selected';
+            $prediction_module = $custom_integer_1;
+        break;
+
+        case MODULE_PREDICTION_MODULE:
+            $selected = 'module_selected';
+            $prediction_module = $custom_integer_1;
+        break;
+
         default:
+
             $prediction_module = $custom_integer_1;
         break;
     }
 } else {
+    $selected = 'module_selected';
     $custom_integer_1 = 0;
 }
 
@@ -97,7 +110,7 @@ $data[0] = __('Source module');
 $data[0] .= ui_print_help_icon('prediction_source_module', true);
 $data[1] = '';
 // Services and Synthetic are an Enterprise feature.
-$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$is_service, $is_synthetic, $is_synthetic_avg]);
+$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$selected]);
 if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
     $data[1] = $module_service_synthetic_selector;
 
@@ -135,7 +148,8 @@ $params['use_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
 $data[1] .= ui_print_agent_autocomplete_input($params);
 
-$data[1] .= html_print_label(__('Module'), 'prediction_module', true);
+$data[1] .= '<br />';
+$data[1] .= html_print_label(__('Module'), 'prediction_module', true).'<br />';
 if ($id_agente) {
     $sql = 'SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
@@ -156,6 +170,7 @@ if ($id_agente) {
     $data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
 
+$data[1] .= '<br />';
 $data[1] .= html_print_label(__('Period'), 'custom_integer_2', true).'<br/>';
 
 $periods[0] = __('Weekly');
@@ -187,9 +202,19 @@ if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
     $data[0] = '';
     $data[1] = $synthetic_module_form;
 
-    $table_simple->colspan['synthetic_module'][1] = 3;
     push_table_simple($data, 'synthetic_module');
 }
+
+$trending_module_form = enterprise_hook('get_trending_module_form', [$custom_string_1]);
+if ($trending_module_form !== ENTERPRISE_NOT_HOOK) {
+    $data = [];
+    $data[0] = '';
+    $data[1] .= $trending_module_form;
+
+    push_table_simple($data, 'trending_module');
+}
+
+
 
 // Netflow modules are an Enterprise feature.
 $netflow_module_form = enterprise_hook('get_netflow_module_form', [$custom_integer_1]);
@@ -214,9 +239,7 @@ unset($table_advanced->data[3]);
         enterprise_hook(
             'setup_services_synth',
             [
-                $is_service,
-                $is_synthetic,
-                $is_synthetic_avg,
+                $selected,
                 $is_netflow,
                 $ops,
             ]

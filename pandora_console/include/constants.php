@@ -368,12 +368,15 @@ define('MODULE_WUX', 8);
 define('MODULE_WIZARD', 9);
 
 // Type of Modules of Prediction.
+define('MODULE_PREDICTION_MODULE', 1);
 define('MODULE_PREDICTION_SERVICE', 2);
 define('MODULE_PREDICTION_SYNTHETIC', 3);
 define('MODULE_PREDICTION_NETFLOW', 4);
 define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
+define('MODULE_PREDICTION_TRENDING', 8);
+
 
 // Forced agent OS ID for cluster agents.
 define('CLUSTER_OS_ID', 100);

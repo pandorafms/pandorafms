@@ -2665,12 +2665,17 @@ function reporting_inventory($report, $content, $type)
 }
 
 
+/**
+ * Build data for report alert actions.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content.
+ *
+ * @return array Result data.
+ */
 function reporting_alert_report_actions($report, $content)
 {
-    global $config;
     $return = [];
-
-    hd('4');
 
     $return['type'] = 'alert_report_actions';
     if (empty($content['name']) === true) {
@@ -2717,14 +2722,17 @@ function reporting_alert_report_actions($report, $content)
     $show_summary = $es['show_summary'];
     $group_by = $es['group_by'];
     $lapse = $content['lapse'];
+    $only_data = $es['only_data'];
 
     $filters = [
-        'group'     => $id_group,
-        'agents'    => $agents,
-        'modules'   => $modules,
-        'templates' => $templates,
-        'actions'   => $actions,
-        'period'    => $period,
+        'group'        => $id_group,
+        'agents'       => $agents,
+        'modules'      => $modules,
+        'templates'    => $templates,
+        'actions'      => $actions,
+        'period'       => $period,
+        'show_summary' => (bool) $show_summary,
+        'only_data'    => (bool) $only_data,
     ];
 
     $groupsBy = [
@@ -2735,19 +2743,7 @@ function reporting_alert_report_actions($report, $content)
     $return['filters'] = $filters;
     $return['groupsBy'] = $groupsBy;
 
-    $return['data']['data'] = alerts_get_alert_fired(
-        $filters,
-        $groupsBy,
-        false
-    );
-
-    if ((bool) $show_summary === true) {
-        $return['data']['summary'] = alerts_get_alert_fired(
-            $filters,
-            $groupsBy,
-            true
-        );
-    }
+    $return['data'] = alerts_get_alert_fired($filters, $groupsBy);
 
     return reporting_check_structure_content($return);
 }

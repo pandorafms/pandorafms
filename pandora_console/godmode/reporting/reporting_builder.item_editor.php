@@ -136,10 +136,10 @@ $percentil = false;
 $time_compare_overlapped = false;
 
 // Added for events items.
-$show_summary_group    = false;
+$show_summary_group = false;
 $filter_event_severity = false;
-$filter_event_type     = false;
-$filter_event_status   = false;
+$filter_event_type = false;
+$filter_event_status = false;
 $event_graph_by_agent = false;
 $event_graph_by_user_validator = false;
 $event_graph_by_criticity = false;
@@ -174,6 +174,8 @@ $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
+
+$only_data = false;
 
 // Users.
 $id_users = [];
@@ -763,7 +765,6 @@ switch ($action) {
                 break;
 
                 case 'alert_report_actions':
-                    hd('1');
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
 
@@ -790,6 +791,8 @@ switch ($action) {
                     $show_summary = $es['show_summary'];
 
                     $group_by = $es['group_by'];
+
+                    $only_data = $es['only_data'];
 
                     $period = $item['period'];
 
@@ -2704,6 +2707,23 @@ $class = 'databox filters';
                     'show_summary_group',
                     true,
                     $show_summary_group
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_show_only_data" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Only data');
+            ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'only_data',
+                    true,
+                    $only_data
                 );
                 ?>
             </td>
@@ -5782,6 +5802,7 @@ function chooseType() {
     $("#select_agent_modules").hide();
     $("#modules_row").hide();
     $("#row_show_summary_group").hide();
+    $("#row_show_only_data").hide();
     $("#row_event_severity").hide();
     $("#row_event_type").hide();
     $("#row_event_status").hide();
@@ -6131,6 +6152,7 @@ function chooseType() {
             $("#row_period").show();
             $("#row_lapse").show();
             $("#row_show_summary").show();
+            $("#row_show_only_data").show();
             $("#row_group_by").show();
             if('<?php echo $action; ?>' === 'new'){
                 $("#group_by").html('');

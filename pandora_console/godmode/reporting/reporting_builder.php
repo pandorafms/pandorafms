@@ -1707,7 +1707,7 @@ switch ($action) {
                                 $alert_actions_to_report = get_parameter('alert_actions');
                                 $show_summary = get_parameter('show_summary', 0);
                                 $group_by = get_parameter('group_by');
-                                hd('3');
+                                $only_data = get_parameter('only_data', 0);
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 
@@ -1734,6 +1734,7 @@ switch ($action) {
                                 $es['actions'] = $alert_actions_to_report;
                                 $es['show_summary'] = $show_summary;
                                 $es['group_by'] = $group_by;
+                                $es['only_data'] = $only_data;
 
                                 $values['external_source'] = json_encode($es);
 
@@ -2503,11 +2504,11 @@ switch ($action) {
                             break;
 
                             case 'alert_report_actions':
-                                hd('2');
                                 $alert_templates_to_report = get_parameter('alert_templates');
                                 $alert_actions_to_report = get_parameter('alert_actions');
                                 $show_summary = get_parameter('show_summary', 0);
                                 $group_by = get_parameter('group_by');
+                                $only_data = get_parameter('only_data', 0);
 
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
@@ -2535,6 +2536,7 @@ switch ($action) {
                                 $es['actions'] = $alert_actions_to_report;
                                 $es['show_summary'] = $show_summary;
                                 $es['group_by'] = $group_by;
+                                $es['only_data'] = $only_data;
 
                                 $values['external_source'] = json_encode($es);
 

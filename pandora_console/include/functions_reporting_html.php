@@ -2733,12 +2733,18 @@ function reporting_html_group_configuration($table, $item, $pdf=0)
 }
 
 
+/**
+ * Html output report alert actions
+ *
+ * @param object  $table Table.
+ * @param array   $item  Data for draw report.
+ * @param integer $pdf   PDF output.
+ *
+ * @return string Html output.
+ */
 function reporting_html_alert_report_actions($table, $item, $pdf=0)
 {
-    hd(6);
-
     $data = $item['data'];
-    $filters = $item['filters'];
     $groupsBy = $item['groupsBy'];
 
     $output = '';
@@ -2795,14 +2801,19 @@ function get_alert_table($data)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
+    $table->headstyle = [];
+    $table->cellstyle = [];
+    $table->headstyle[0] = 'text-align:left;';
+
     $head = reset($data);
     foreach (array_reverse(array_keys($head)) as $name) {
-        $table->head[$name] = $name;
+        $table->head[] = $name;
     }
 
     foreach ($data as $key => $params) {
+        $table->cellstyle[$key][0] = 'text-align:left;';
         foreach (array_reverse($params) as $name => $value) {
-            $table->data[$key][$name] = $value;
+            $table->data[$key][] = $value;
         }
     }
 

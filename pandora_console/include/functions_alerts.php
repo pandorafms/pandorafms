@@ -2881,11 +2881,17 @@ function alerts_get_actions_names($actions, $reduce=false)
 }
 
 
-function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
+/**
+ * Alert fired.
+ *
+ * @param array $filters  Filters.
+ * @param array $groupsBy Groupby and lapse.
+ *
+ * @return array Result data.
+ */
+function alerts_get_alert_fired($filters=[], $groupsBy=[])
 {
     global $config;
-
-    hd(5);
 
     $table = 'tevento';
     if (is_metaconsole() === true) {
@@ -3012,6 +3018,9 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         }
     }
 
+    $total = (bool) $filters['show_summary'];
+    $only_data = (bool) $filters['only_data'];
+
     $actions_names = alerts_get_actions_names($filters['actions'], true);
 
     $group_array = [];
@@ -3071,18 +3080,14 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             case 'module':
                 $fields[] = $table.'.id_agentmodule as module';
                 $group_array[] = $table.'.id_agentmodule';
-                if ($total === false) {
-                    $names_search = modules_get_agentmodule_name_array(
-                        array_values($filters['modules'])
-                    );
-                }
+                $names_search = modules_get_agentmodule_name_array(
+                    array_values($filters['modules'])
+                );
 
                 if (is_metaconsole() === true) {
                     $fields[] = $table.'.server_id as server';
                     $group_array[] = $table.'.server_id';
-                    if ($total === false) {
-                        $names_server = metaconsole_get_names();
-                    }
+                    $names_server = metaconsole_get_names();
                 }
             break;
 
@@ -3090,38 +3095,30 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
                 if (is_metaconsole() === false) {
                     $fields[] = 'talert_template_modules.id_alert_template as template';
                     $group_array[] = 'talert_template_modules.id_alert_template';
-                    if ($total === false) {
-                        $names_search = alerts_get_templates_name_array(
-                            array_values($filters['templates'])
-                        );
-                    }
+                    $names_search = alerts_get_templates_name_array(
+                        array_values($filters['templates'])
+                    );
                 }
             break;
 
             case 'agent':
                 $fields[] = $table.'.id_agente as agent';
                 $group_array[] = $table.'.id_agente';
-                if ($total === false) {
-                    $names_search = agents_get_alias_array(
-                        array_values($filters['agents'])
-                    );
-                }
+                $names_search = agents_get_alias_array(
+                    array_values($filters['agents'])
+                );
 
                 if (is_metaconsole() === true) {
                     $fields[] = $table.'.server_id as server';
                     $group_array[] = $table.'.server_id';
-                    if ($total === false) {
-                        $names_server = metaconsole_get_names();
-                    }
+                    $names_server = metaconsole_get_names();
                 }
             break;
 
             case 'group':
                 $fields[] = $table.'.id_grupo as `group`';
                 $group_array[] = $table.'.id_grupo';
-                if ($total === false) {
-                    $names_search = users_get_groups($config['user'], 'AR', false);
-                }
+                $names_search = users_get_groups($config['user'], 'AR', false);
             break;
 
             default:
@@ -3130,16 +3127,14 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         }
     }
 
-    if ($total === false) {
-        if (isset($groupsBy['lapse']) === true
-            && empty($groupsBy['lapse']) === false
-        ) {
-            $fields[] = sprintf(
-                '%s.utimestamp AS Period',
-                $table
-            );
-            $group_array[] = 'period';
-        }
+    if (isset($groupsBy['lapse']) === true
+        && empty($groupsBy['lapse']) === false
+    ) {
+        $fields[] = sprintf(
+            '%s.utimestamp AS Period',
+            $table
+        );
+        $group_array[] = 'period';
     }
 
     $group_by = '';
@@ -3183,103 +3178,105 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         $group_by
     );
 
-    hd($query);
+    $data_query = db_get_all_rows_sql($query);
 
-    $data = db_get_all_rows_sql($query);
-
-    if ($data === false) {
-        $data = [];
+    if ($data_query === false) {
+        $data_query = [];
     }
 
-    if ($total === false) {
-        if (empty($data) === false) {
-            $data = array_reduce(
-                $data,
-                function ($carry, $item) use ($groupsBy) {
-                    $period = (isset($item['Period']) === true) ? (int) $item['Period'] : 0;
-                    if (is_metaconsole() === true
-                        && ($groupsBy['group_by'] === 'agent'
-                        || $groupsBy['group_by'] === 'module')
-                    ) {
-                        $grby = $item[$groupsBy['group_by']];
-                        $server = $item['server'];
-                        unset($item['Period']);
-                        unset($item[$groupsBy['group_by']]);
-                        unset($item['server']);
-                        $carry[$period][$server][$grby] = $item;
-                    } else {
-                        $grby = $item[$groupsBy['group_by']];
-                        unset($item['Period']);
-                        unset($item[$groupsBy['group_by']]);
-                        $carry[$period][$grby] = $item;
-                    }
-
-                    return $carry;
-                },
-                []
-            );
-
-            $intervals = [];
-            if (isset($groupsBy['lapse']) === true
-                && empty($groupsBy['lapse']) === false
-            ) {
-                $tend = time();
-                $tstart = ($tend - (int) $filters['period']);
-                for ($current_time = $tstart; $current_time < $tend; ($current_time += $groupsBy['lapse'])) {
-                    $intervals[] = (int) $current_time;
+    if (empty($data_query) === false) {
+        $data = array_reduce(
+            $data_query,
+            function ($carry, $item) use ($groupsBy) {
+                $period = (isset($item['Period']) === true) ? (int) $item['Period'] : 0;
+                if (is_metaconsole() === true
+                    && ($groupsBy['group_by'] === 'agent'
+                    || $groupsBy['group_by'] === 'module')
+                ) {
+                    $grby = $item[$groupsBy['group_by']];
+                    $server = $item['server'];
+                    unset($item['Period']);
+                    unset($item[$groupsBy['group_by']]);
+                    unset($item['server']);
+                    $carry[$period][$server][$grby] = $item;
+                } else {
+                    $grby = $item[$groupsBy['group_by']];
+                    unset($item['Period']);
+                    unset($item[$groupsBy['group_by']]);
+                    $carry[$period][$grby] = $item;
                 }
-            }
 
-            $first_element = reset($data);
-            $first_element = reset($first_element);
-            if (is_metaconsole() === true
-                && ($groupsBy['group_by'] === 'agent'
-                || $groupsBy['group_by'] === 'module')
-            ) {
-                    $first_element = reset($first_element);
-            }
+                return $carry;
+            },
+            []
+        );
 
-            $clone = [];
-            foreach ($first_element as $key_clone => $value_clone) {
-                $clone[$key_clone] = 0;
+        $intervals = [];
+        if (isset($groupsBy['lapse']) === true
+            && empty($groupsBy['lapse']) === false
+        ) {
+            $tend = time();
+            $tstart = ($tend - (int) $filters['period']);
+            for ($current_time = $tstart; $current_time < $tend; ($current_time += $groupsBy['lapse'])) {
+                $intervals[] = (int) $current_time;
             }
+        }
 
-            $result = [];
-            if (empty($intervals) === true) {
-                foreach ($data as $period => $array_data) {
-                    if (is_metaconsole() === true
-                        && ($groupsBy['group_by'] === 'agent'
-                        || $groupsBy['group_by'] === 'module')
-                    ) {
-                        foreach ($names_search as $server => $names) {
-                            foreach ($names as $id => $name) {
-                                if (isset($array_data[$server][$id]) === true) {
-                                    $result[$period][$server.'|'.$id] = $array_data[$server][$id];
-                                    $result[$period][$server.'|'.$id][$groupsBy['group_by']] = $name;
-                                } else {
+        $first_element = reset($data);
+        $first_element = reset($first_element);
+        if (is_metaconsole() === true
+            && ($groupsBy['group_by'] === 'agent'
+            || $groupsBy['group_by'] === 'module')
+        ) {
+                $first_element = reset($first_element);
+        }
+
+        $clone = [];
+        foreach ($first_element as $key_clone => $value_clone) {
+            $clone[$key_clone] = 0;
+        }
+
+        $result = [];
+        if (empty($intervals) === true) {
+            foreach ($data as $period => $array_data) {
+                if (is_metaconsole() === true
+                    && ($groupsBy['group_by'] === 'agent'
+                    || $groupsBy['group_by'] === 'module')
+                ) {
+                    foreach ($names_search as $server => $names) {
+                        foreach ($names as $id => $name) {
+                            if (isset($array_data[$server][$id]) === true) {
+                                $result[$period][$server.'|'.$id] = $array_data[$server][$id];
+                                $result[$period][$server.'|'.$id][$groupsBy['group_by']] = $name;
+                            } else {
+                                if ($only_data === false) {
                                     $clone[$groupsBy['group_by']] = $name;
                                     $result[$period][$server.'|'.$id] = $clone;
                                 }
                             }
                         }
-                    } else {
-                        foreach ($names_search as $id => $name) {
-                            if (isset($array_data[$id]) === true) {
-                                $result[$period][$id] = $array_data[$id];
-                                $result[$period][$id][$groupsBy['group_by']] = $name;
-                            } else {
+                    }
+                } else {
+                    foreach ($names_search as $id => $name) {
+                        if (isset($array_data[$id]) === true) {
+                            $result[$period][$id] = $array_data[$id];
+                            $result[$period][$id][$groupsBy['group_by']] = $name;
+                        } else {
+                            if ($only_data === false) {
                                 $clone[$groupsBy['group_by']] = $name;
                                 $result[$period][$id] = $clone;
                             }
                         }
                     }
                 }
-            } else {
-                $period_lapse = (int) $groupsBy['lapse'];
-                foreach ($intervals as $interval) {
-                    $start_interval = $interval;
-                    $end_interval = ($interval + $period_lapse);
+            }
+        } else {
+            $period_lapse = (int) $groupsBy['lapse'];
+            foreach ($intervals as $interval) {
+                $start_interval = $interval;
+                $end_interval = ($interval + $period_lapse);
 
+                if ($only_data === false) {
                     if (is_metaconsole() === true
                         && ($groupsBy['group_by'] === 'agent'
                         || $groupsBy['group_by'] === 'module')
@@ -3297,58 +3294,90 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
                             $result[$start_interval][$id][$groupsBy['group_by']] = $name;
                         }
                     }
-
+                } else {
                     foreach ($data as $period => $array_data) {
-                        $period_time = (int) $period;
-                        if ($start_interval < $period_time && $period_time <= $end_interval) {
-                            if (is_metaconsole() === true
-                                && ($groupsBy['group_by'] === 'agent'
-                                || $groupsBy['group_by'] === 'module')
-                            ) {
-                                foreach ($array_data as $server => $datas) {
-                                    foreach ($datas as $id_data => $value_data) {
-                                        foreach ($value_data as $key_data => $v) {
-                                            if ($key_data !== $groupsBy['group_by']) {
-                                                if (isset($result[$start_interval][$server.'|'.$id_data][$key_data])) {
-                                                    $result[$start_interval][$server.'|'.$id_data][$key_data] += $v;
-                                                } else {
-                                                    $result[$start_interval][$server.'|'.$id_data][$key_data] = $v;
-                                                }
-                                            }
-                                        }
-                                    }
+                        if (is_metaconsole() === true
+                            && ($groupsBy['group_by'] === 'agent'
+                            || $groupsBy['group_by'] === 'module')
+                        ) {
+                            foreach ($array_data as $server => $datas) {
+                                foreach ($datas as $id_data => $value_data) {
+                                    $name = $names_server[$server].' &raquo; '.$names_search[$server][$id_data];
+                                    $result[$start_interval][$server.'|'.$id_data] = $clone;
+                                    $result[$start_interval][$server.'|'.$id_data][$groupsBy['group_by']] = $name;
                                 }
-                            } else {
-                                foreach ($array_data as $id_data => $value_data) {
+                            }
+                        } else {
+                            foreach ($array_data as $id_data => $value_data) {
+                                $name = $names_search[$id_data];
+                                $result[$start_interval][$id_data] = $clone;
+                                $result[$start_interval][$id_data][$groupsBy['group_by']] = $name;
+                            }
+                        }
+                    }
+                }
+
+                foreach ($data as $period => $array_data) {
+                    $period_time = (int) $period;
+                    if ($start_interval < $period_time && $period_time <= $end_interval) {
+                        if (is_metaconsole() === true
+                            && ($groupsBy['group_by'] === 'agent'
+                            || $groupsBy['group_by'] === 'module')
+                        ) {
+                            foreach ($array_data as $server => $datas) {
+                                foreach ($datas as $id_data => $value_data) {
                                     foreach ($value_data as $key_data => $v) {
                                         if ($key_data !== $groupsBy['group_by']) {
-                                            if (isset($result[$start_interval][$id_data][$key_data])) {
-                                                $result[$start_interval][$id_data][$key_data] += $v;
+                                            if (isset($result[$start_interval][$server.'|'.$id_data][$key_data])) {
+                                                $result[$start_interval][$server.'|'.$id_data][$key_data] += $v;
                                             } else {
-                                                $result[$start_interval][$id_data][$key_data] = $v;
+                                                $result[$start_interval][$server.'|'.$id_data][$key_data] = $v;
                                             }
                                         }
                                     }
                                 }
                             }
-
-                            unset($data[$period]);
+                        } else {
+                            foreach ($array_data as $id_data => $value_data) {
+                                foreach ($value_data as $key_data => $v) {
+                                    if ($key_data !== $groupsBy['group_by']) {
+                                        if (isset($result[$start_interval][$id_data][$key_data])) {
+                                            $result[$start_interval][$id_data][$key_data] += $v;
+                                        } else {
+                                            $result[$start_interval][$id_data][$key_data] = $v;
+                                        }
+                                    }
+                                }
+                            }
                         }
+
+                        unset($data[$period]);
                     }
                 }
             }
         }
-    } else {
+    }
+
+    $result['data'] = $result;
+
+    if ($total === true) {
         $total_values = [];
-        $result = [];
-        foreach ($data as $key => $array_data) {
+        foreach ($data_query as $key => $array_data) {
             foreach ($array_data as $key_value => $v) {
                 $total_values[$key_value] = ($total_values[$key_value] + $v);
             }
         }
 
-        $result['total'] = $total_values;
-        $result['total'][$groupsBy['group_by']] = __('Total');
+        if (is_metaconsole() === true
+            && ($groupsBy['group_by'] === 'agent'
+            || $groupsBy['group_by'] === 'module')
+        ) {
+            unset($total_values['Period']);
+            unset($total_values['server']);
+        }
+
+        $result['summary']['total'] = $total_values;
+        $result['summary']['total'][$groupsBy['group_by']] = __('Total');
     }
 
     return $result;

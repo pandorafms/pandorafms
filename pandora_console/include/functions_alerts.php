@@ -3245,6 +3245,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
                 ) {
                     foreach ($names_search as $server => $names) {
                         foreach ($names as $id => $name) {
+                            $name = $names_server[$server].' &raquo; '.$name;
                             if (isset($array_data[$server][$id]) === true) {
                                 $result[$period][$server.'|'.$id] = $array_data[$server][$id];
                                 $result[$period][$server.'|'.$id][$groupsBy['group_by']] = $name;

@@ -3154,8 +3154,6 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
             %s
             %s
             %s
-            %s
-            %s
             %s',
         implode(", \n", $fields),
         $table,
@@ -3163,8 +3161,8 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[], $total=false)
         $table,
         $filter_date,
         $filter_group,
-        $filter_agents,
-        $filter_modules,
+        // $filter_agents,
+        // $filter_modules,
         $filter_actions,
         $filter_templates,
         $group_by

@@ -1822,6 +1822,7 @@ function db_process_sql_delete($table, $where, $where_join='AND')
 function db_process_sql_begin()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
         case 'postgresql':
@@ -1832,8 +1833,8 @@ function db_process_sql_begin()
 
         default:
         case 'mysql':
-            db_process_sql('SET AUTOCOMMIT = 0', 'affected_rows', '', false, null, false);
-            db_process_sql('START TRANSACTION', 'affected_rows', '', false, null, false);
+            db_process_sql('SET AUTOCOMMIT = 0', 'affected_rows', '', false, $null, false);
+            db_process_sql('START TRANSACTION', 'affected_rows', '', false, $null, false);
         break;
     }
 }
@@ -1845,6 +1846,7 @@ function db_process_sql_begin()
 function db_process_sql_commit()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
         case 'postgresql':
@@ -1855,8 +1857,8 @@ function db_process_sql_commit()
 
         default:
         case 'mysql':
-            db_process_sql('COMMIT', 'affected_rows', '', false, null, false);
-            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, null, false);
+            db_process_sql('COMMIT', 'affected_rows', '', false, $null, false);
+            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, $null, false);
         break;
     }
 }
@@ -1868,6 +1870,7 @@ function db_process_sql_commit()
 function db_process_sql_rollback()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
         case 'postgresql':
@@ -1878,8 +1881,8 @@ function db_process_sql_rollback()
 
         default:
         case 'mysql':
-            db_process_sql('ROLLBACK', 'affected_rows', '', false, null, false);
-            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, null, false);
+            db_process_sql('ROLLBACK', 'affected_rows', '', false, $null, false);
+            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, $null, false);
         break;
     }
 }

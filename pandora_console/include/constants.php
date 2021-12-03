@@ -368,7 +368,7 @@ define('MODULE_WUX', 8);
 define('MODULE_WIZARD', 9);
 
 // Type of Modules of Prediction.
-define('MODULE_PREDICTION_MODULE', 1);
+define('MODULE_PREDICTION_PLANNING', 1);
 define('MODULE_PREDICTION_SERVICE', 2);
 define('MODULE_PREDICTION_SYNTHETIC', 3);
 define('MODULE_PREDICTION_NETFLOW', 4);

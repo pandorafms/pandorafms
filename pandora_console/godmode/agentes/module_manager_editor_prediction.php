@@ -37,7 +37,7 @@ if ($row !== false && is_array($row)) {
     // Services are an Enterprise feature.
     $custom_integer_1 = $row['custom_integer_1'];
 
-    switch ($prediction_module) {
+    switch ((int) $prediction_module) {
         case MODULE_PREDICTION_SERVICE:
             $selected = 'service_selected';
             $custom_integer_2 = 0;
@@ -76,18 +76,19 @@ if ($row !== false && is_array($row)) {
             $prediction_module = $custom_integer_1;
         break;
 
-        case MODULE_PREDICTION_MODULE:
-            $selected = 'module_selected';
+        case MODULE_PREDICTION_PLANNING:
+            $selected = 'capacity_planning';
             $prediction_module = $custom_integer_1;
+            $estimation_interval = $custom_string_1;
+            $estimation_type = $custom_string_2;
         break;
 
         default:
-
             $prediction_module = $custom_integer_1;
         break;
     }
 } else {
-    $selected = 'module_selected';
+    $selected = 'capacity_planning';
     $custom_integer_1 = 0;
 }
 
@@ -157,14 +158,17 @@ if ($id_agente) {
 			AND history_data = 1
 			AND id_agente =  '.$id_agente_clean.'
 			AND id_agente_modulo  <> '.$id_agente_modulo;
-    $data[1] .= html_print_select_from_sql(
-        $sql,
-        'prediction_module',
-        $prediction_module,
-        false,
-        __('Select Module'),
-        0,
-        true
+
+    $data[1] .= html_print_input(
+        [
+            'type'          => 'select_from_sql',
+            'sql'           => $sql,
+            'name'          => 'prediction_module',
+            'selected'      => $prediction_module,
+            'nothing'       => __('Select Module'),
+            'nothing_value' => 0,
+            'return'        => true,
+        ]
     );
 } else {
     $data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
@@ -183,6 +187,41 @@ $data[1] .= '</div>';
 
 $table_simple->colspan['prediction_module'][1] = 3;
 push_table_simple($data, 'prediction_module');
+
+$data = [];
+$data[0] = '';
+
+$data[1] .= html_print_label(__('Future estimation'), 'estimation_interval', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'   => 'interval',
+        'return' => 'true',
+        'name'   => 'estimation_interval',
+        'value'  => $estimation_interval,
+    ],
+    'div',
+    false
+);
+
+$data[1] .= '<br />';
+$data[1] .= html_print_label(__('Calculation type'), 'estimation_type', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'     => 'select',
+        'return'   => 'true',
+        'name'     => 'estimation_type',
+        'class'    => 'w250px',
+        'fields'   => [
+            'estimation_absolute'    => __('Estimated absolute value'),
+            'estimation_calculation' => __('Calculation of days to reach limit'),
+        ],
+        'selected' => $estimation_type,
+    ],
+    'div',
+    false
+);
+
+push_table_simple($data, 'capacity_planning');
 
 // Services are an Enterprise feature.
 $selector_form = enterprise_hook('get_selector_form', [$custom_integer_1]);

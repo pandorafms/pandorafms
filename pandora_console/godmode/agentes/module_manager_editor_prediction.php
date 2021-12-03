@@ -126,16 +126,17 @@ $data[1] = '<div id="module_data" class="w50p float-left top-1em">';
 $data[1] .= html_print_label(__('Agent'), 'agent_name', true).'<br/>';
 
 // Get module and agent of the target prediction module
-if (!empty($prediction_module)) {
+if (empty($prediction_module) === false) {
     $id_agente_clean = modules_get_agentmodule_agent($prediction_module);
     $prediction_module_agent = modules_get_agentmodule_agent_name($prediction_module);
     $agent_name_clean = $prediction_module_agent;
+    $agent_alias = agents_get_alias($id_agente_clean);
 } else {
-    $id_agente_clean = $id_agente;
-    $agent_name_clean = $agent_name;
+    $id_agente_clean = 0;
+    $agent_name_clean = '';
+    $agent_alias = '';
 }
 
-$agent_alias = agents_get_alias($id_agente_clean);
 
 $params = [];
 $params['return'] = true;

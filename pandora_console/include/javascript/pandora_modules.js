@@ -105,6 +105,8 @@ function configure_modules_form() {
     $("#text-unit").attr("value", "");
     $("#checkbox-critical_inverse").attr("value", 0);
     $("#checkbox-warning_inverse").attr("value", 0);
+    $("#checkbox-percentage_warning").attr("value", 0);
+    $("#checkbox-percentage_critical").attr("value", 0);
     $("#checkbox-ff_type").attr("value", 0);
     $("#textarea_critical_instructions").attr("value", "");
     $("#textarea_warning_instructions").attr("value", "");
@@ -205,6 +207,16 @@ function configure_modules_form() {
           data["critical_inverse"]
         );
         $("#checkbox-warning_inverse").prop("uncheck", data["warning_inverse"]);
+
+        $("#checkbox-percentage_warning").prop(
+          "uncheck",
+          data["percentage_warning"]
+        );
+        $("#checkbox-percentage_critical").prop(
+          "uncheck",
+          data["percentage_critical"]
+        );
+
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {
@@ -464,6 +476,15 @@ function configure_modules_form() {
           data["critical_inverse"]
         );
         $("#checkbox-warning_inverse").prop("checked", data["warning_inverse"]);
+        $("#checkbox-percentage_warning").prop(
+          "uncheck",
+          data["percentage_warning"]
+        );
+        $("#checkbox-percentage_critical").prop(
+          "uncheck",
+          data["percentage_critical"]
+        );
+
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {

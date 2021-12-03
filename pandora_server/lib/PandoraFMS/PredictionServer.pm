@@ -224,6 +224,13 @@ sub exec_prediction_module ($$$$) {
 		return;
 	}
 
+	# Trend module.
+	if ($agent_module->{'prediction_module'} == 8) {
+		logger ($pa_config, "Executing trend module " . $agent_module->{'nombre'}, 10);
+		enterprise_hook ('exec_trend_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		return;
+	}
+
 	# Get a full hash for target agent_module record reference ($target_module)
 	my $target_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $agent_module->{'custom_integer_1'});
 	return unless defined $target_module;

@@ -1245,57 +1245,6 @@ function mysql_db_get_all_row_by_steps_sql($new=true, &$result, $sql=null)
 
 
 /**
- * Starts a database transaction.
- */
-function mysql_db_process_sql_begin()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 0');
-        mysqli_query($config['dbconnection'], 'START TRANSACTION');
-    } else {
-        mysql_query('SET AUTOCOMMIT = 0');
-        mysql_query('START TRANSACTION');
-    }
-}
-
-
-/**
- * Commits a database transaction.
- */
-function mysql_db_process_sql_commit()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'COMMIT');
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-    } else {
-        mysql_query('COMMIT');
-        mysql_query('SET AUTOCOMMIT = 1');
-    }
-}
-
-
-/**
- * Rollbacks a database transaction.
- */
-function mysql_db_process_sql_rollback()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'ROLLBACK ');
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-    } else {
-        mysql_query('ROLLBACK ');
-        mysql_query('SET AUTOCOMMIT = 1');
-    }
-}
-
-
-/**
  * Get last error.
  *
  * @return string Return the string error.

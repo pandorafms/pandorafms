@@ -8,7 +8,7 @@ ALTER TABLE `tlocal_component` ADD COLUMN `percentage_critical` tinyint(1) UNSIG
 ALTER TABLE `tlocal_component` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `percentage_critical` tinyint(1) UNSIGNED DEFAULT 0;
-
+ALTER TABLE `tsync_queue` ADD COLUMN `result` TEXT;
 ALTER TABLE tagente_modulo MODIFY debug_content TEXT;
 
 CREATE TABLE IF NOT EXISTS `talert_calendar` (

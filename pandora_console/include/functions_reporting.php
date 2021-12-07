@@ -2694,7 +2694,7 @@ function reporting_alert_report_actions($report, $content)
 
     $es = json_decode($content['external_source'], true);
     if (isset($report['id_template']) === true
-        && empty($resport['id_template']) === false
+        && empty($report['id_template']) === false
     ) {
         if (is_metaconsole() === true) {
             $server_id = metaconsole_get_id_server($content['server_name']);

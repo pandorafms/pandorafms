@@ -3373,10 +3373,10 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
             && ($groupsBy['group_by'] === 'agent'
             || $groupsBy['group_by'] === 'module')
         ) {
-            unset($total_values['Period']);
             unset($total_values['server']);
         }
 
+        unset($total_values['Period']);
         $result['summary']['total'] = $total_values;
         $result['summary']['total'][$groupsBy['group_by']] = __('Total');
     }

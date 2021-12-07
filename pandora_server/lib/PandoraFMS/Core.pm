@@ -1945,7 +1945,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Get new status
-	my $new_status = get_module_status ($processed_data, $module, $module_type);
+	my $new_status = get_module_status ($processed_data, $module, $module_type, $last_data_value);
 	my $last_status_change = $agent_status->{'last_status_change'};
 
 	# Set the last status change macro. Even if its value changes later, whe want the original value.
@@ -4525,20 +4525,21 @@ sub on_demand_macro($$$$$$;$) {
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;
-		
+
 		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
-		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
-		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $module_data = get_db_single_row ($dbh, 'SELECT id_tipo_modulo, unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $type_mod = $module_data->{'id_tipo_modulo'};
+		my $unit_mod = $module_data->{'unit'};
 
 		my $field_value = "";
 		if (defined($type_mod)
-			&& ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 )
+			&& ($type_mod eq 3 || $type_mod eq 10 || $type_mod eq 17 || $type_mod eq 23 || $type_mod eq 33 || $type_mod eq 36)
 		) {
-			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $id_mod);
 		}
 		else{
-			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
-			
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $id_mod);
+
 			my $data_precision = $pa_config->{'graph_precision'};
 			$field_value = sprintf("%.$data_precision" . "f", $field_value);
 			$field_value =~ s/0+$//;
@@ -4793,8 +4794,8 @@ sub log4x_get_severity_num($) {
 ##########################################################################
 # Returns the status of the module: 0 (NORMAL), 1 (CRITICAL), 2 (WARNING).
 ##########################################################################
-sub get_module_status ($$$) {
-	my ($data, $module, $module_type) = @_;
+sub get_module_status ($$$$) {
+	my ($data, $module, $module_type, $last_data_value) = @_;
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 	my ($critical_str, $warning_str) = ($module->{'str_critical'}, $module->{'str_warning'});
@@ -4811,6 +4812,42 @@ sub get_module_status ($$$) {
 	$critical_str = (defined ($critical_str) && valid_regex ($critical_str) == 1) ? safe_output($critical_str) : '';
 	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
+	# Adjust percentage max/min values.
+	if ($module->{'percentage_critical'} == 1) {
+		if ($critical_max != 0 && $critical_min != 0) {
+			$critical_max = $last_data_value * (1 +  $critical_max / 100.0);
+			$critical_min = $last_data_value * (1 -  $critical_min / 100.0);
+			$module->{'critical_inverse'} = 1;
+		}
+		elsif ($critical_min != 0) {
+			$critical_max = $last_data_value * (1 -  $critical_min / 100.0);
+			$critical_min = 0;
+			$module->{'critical_inverse'} = 0;
+		}
+		elsif ($critical_max != 0) {
+			$critical_min = $last_data_value * (1 +  $critical_max / 100.0);
+			$critical_max = 0;
+			$module->{'critical_inverse'} = 0;
+		}
+	}
+	if ($module->{'percentage_warning'} == 1) {
+		if ($warning_max != 0 && $warning_min != 0) {
+			$warning_max = $last_data_value * (1 +  $warning_max / 100.0);
+			$warning_min = $last_data_value * (1 -  $warning_min / 100.0);
+			$module->{'warning_inverse'} = 1;
+		}
+		elsif ($warning_min != 0) {
+			$warning_max = $last_data_value * (1 -  $warning_min / 100.0);
+			$warning_min = 0;
+			$module->{'warning_inverse'} = 0;
+		}
+		elsif ($warning_max != 0) {
+			$warning_min = $last_data_value * (1 +  $warning_max / 100.0);
+			$warning_max = 0;
+			$module->{'warning_inverse'} = 0;
+		}
+	}
+
 	if (($module_type =~ m/_proc$/ || $module_type =~ /web_analysis/) && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}

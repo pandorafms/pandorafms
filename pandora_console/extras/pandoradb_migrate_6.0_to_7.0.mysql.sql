@@ -3978,10 +3978,12 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
 	`id_site` bigint unsigned,
+	`vrf` int(10) unsigned,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
 	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
-	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_ip` (

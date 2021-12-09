@@ -48,6 +48,8 @@ ALTER TABLE `tipam_network` ADD COLUMN `id_site` bigint unsigned;
 ALTER TABLE `tipam_network` ADD CONSTRAINT FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE `tipam_supernet` ADD COLUMN `id_site` bigint unsigned;
 ALTER TABLE `tipam_supernet` ADD CONSTRAINT FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `tipam_network` ADD COLUMN `vrf` int(10) unsigned;
+ALTER TABLE `tipam_network` ADD CONSTRAINT FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
 UPDATE `talert_special_days` set `day_code` = 1 WHERE `same_day` = 'monday';

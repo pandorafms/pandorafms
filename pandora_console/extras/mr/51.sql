@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `tipam_sites` (
     `description` text,
     `parent` bigint unsigned null,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`.`id` ON UPDATE CASCADE ON DELETE SET NULL
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;

@@ -4052,6 +4052,15 @@ CREATE TABLE IF NOT EXISTS `tipam_network_location` (
 	UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
 UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
 ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;

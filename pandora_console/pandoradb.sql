@@ -3960,6 +3960,18 @@ CREATE TABLE IF NOT EXISTS `tipam_network_location` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `tipam_sites`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tipam_network`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tipam_network` (

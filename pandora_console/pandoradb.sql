@@ -3986,9 +3986,11 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
+	`id_site` bigint unsigned,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
-	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE
+	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -4055,7 +4057,9 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet` (
 	`address` varchar(250) NOT NULL,
 	`mask` varchar(250) NOT NULL,
 	`subneting_mask` varchar(250) default '',
-	PRIMARY KEY (`id`)
+	`id_site` bigint unsigned,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

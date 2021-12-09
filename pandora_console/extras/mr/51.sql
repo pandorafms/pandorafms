@@ -44,6 +44,11 @@ ALTER TABLE `talert_special_days` ADD COLUMN `day_code` tinyint(2) unsigned NOT 
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
 ALTER TABLE `talert_special_days` ADD FOREIGN KEY (`id_calendar`) REFERENCES `talert_calendar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `tipam_network` ADD COLUMN `id_site` bigint unsigned;
+ALTER TABLE `tipam_network` ADD CONSTRAINT FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `tipam_supernet` ADD COLUMN `id_site` bigint unsigned;
+ALTER TABLE `tipam_supernet` ADD CONSTRAINT FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
 INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
 UPDATE `talert_special_days` set `day_code` = 1 WHERE `same_day` = 'monday';
 UPDATE `talert_special_days` set `day_code` = 2 WHERE `same_day` = 'tuesday';

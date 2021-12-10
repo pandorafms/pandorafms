@@ -733,6 +733,63 @@ function agents_get_agents(
 }
 
 
+function agents_get_agents_selected($group)
+{
+    if (is_metaconsole() === true) {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_tagente',
+                'id_tmetaconsole_setup',
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            true
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    } else {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ]
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_agente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $all;
+}
+
+
 /**
  * Get all the alerts of an agent, simple and combined.
  *
@@ -1646,6 +1703,85 @@ function agents_get_name($id_agent, $case='none')
 
             break;
     }
+}
+
+
+/**
+ * Get the agents names of an agent.
+ *
+ * @param array $array_ids Agents ids.
+ *
+ * @return array Id => name.
+ */
+function agents_get_alias_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        $agents = array_reduce(
+            $array_ids,
+            function ($carry, $item) {
+                $explode = explode('|', $item);
+
+                $carry[$explode[0]][] = $explode[1];
+                return $carry;
+            }
+        );
+
+        $result = [];
+        foreach ($agents as $tserver => $id_agents) {
+            $sql = sprintf(
+                'SELECT id_tagente as id, alias as `name`
+                FROM tmetaconsole_agent
+                WHERE id_tagente IN (%s) AND id_tmetaconsole_setup = %d',
+                implode(',', $id_agents),
+                $tserver
+            );
+
+            $data_server = db_get_all_rows_sql($sql);
+
+            if ($data_server === false) {
+                $data_server = [];
+            }
+
+            $data_server = array_reduce(
+                $data_server,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+
+            $result[$tserver] = $data_server;
+        }
+    } else {
+        $sql = sprintf(
+            'SELECT id_agente as id, alias as `name`
+            FROM tagente
+            WHERE id_agente IN (%s)',
+            implode(',', $array_ids)
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        if ($result === false) {
+            $result = [];
+        }
+
+        $result = array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $result;
 }
 
 

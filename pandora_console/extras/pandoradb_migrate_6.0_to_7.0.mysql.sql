@@ -4102,6 +4102,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`operation` text,
 	`table` text,
 	`error` MEDIUMTEXT,
+	`result` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

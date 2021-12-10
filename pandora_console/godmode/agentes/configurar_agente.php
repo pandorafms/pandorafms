@@ -1606,8 +1606,12 @@ if ($update_module || $create_module) {
     }
 
     if ($prediction_module === MODULE_PREDICTION_PLANNING) {
-        $custom_string_1 = get_parameter('estimation_interval', '300');
         $custom_string_2 = get_parameter('estimation_type', 'estimation_calculation');
+        if ($custom_string_2 === 'estimation_calculation') {
+            $custom_string_1 = get_parameter('estimation_days', -1);
+        } else {
+            $custom_string_1 = get_parameter('estimation_interval', '300');
+        }
     }
 
     $active_snmp_v3 = get_parameter('active_snmp_v3');

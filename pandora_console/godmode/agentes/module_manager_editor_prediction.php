@@ -192,6 +192,7 @@ push_table_simple($data, 'prediction_module');
 $data = [];
 $data[0] = '';
 
+$data[1] .= '<div id="estimation_interval_row">';
 $data[1] .= html_print_label(__('Future estimation'), 'estimation_interval', true).'<br/>';
 $data[1] .= html_print_input(
     [
@@ -203,8 +204,23 @@ $data[1] .= html_print_input(
     'div',
     false
 );
+$data[1] .= '</div>';
 
-$data[1] .= '<br />';
+
+$data[1] .= '<div id="estimation_days_row">';
+$data[1] .= html_print_label(__('Limit value'), 'estimation_days', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'   => 'number',
+        'return' => 'true',
+        'id'     => 'estimation_days',
+        'name'   => 'estimation_days',
+        'value'  => $estimation_interval,
+    ]
+);
+$data[1] .= '</div>';
+
+
 $data[1] .= html_print_label(__('Calculation type'), 'estimation_type', true).'<br/>';
 $data[1] .= html_print_input(
     [

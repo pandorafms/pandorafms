@@ -1607,6 +1607,15 @@ if ($update_module || $create_module) {
         );
     }
 
+    if ($prediction_module === MODULE_PREDICTION_PLANNING) {
+        $custom_string_2 = get_parameter('estimation_type', 'estimation_calculation');
+        if ($custom_string_2 === 'estimation_calculation') {
+            $custom_string_1 = get_parameter('estimation_days', -1);
+        } else {
+            $custom_string_1 = get_parameter('estimation_interval', '300');
+        }
+    }
+
     $active_snmp_v3 = get_parameter('active_snmp_v3');
 
     /*
@@ -1792,7 +1801,7 @@ if ($update_module) {
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1937,7 +1946,7 @@ if ($create_module) {
         }
     }
 
-    if ($prediction_module == 3 && $serialize_ops == '') {
+    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC && $serialize_ops == '') {
         $id_agent_module = false;
     } else {
         $id_agent_module = modules_create_agent_module(
@@ -1978,7 +1987,7 @@ if ($create_module) {
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [

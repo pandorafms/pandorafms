@@ -192,6 +192,23 @@ push_table_simple($data, 'prediction_module');
 $data = [];
 $data[0] = '';
 
+$data[1] .= html_print_label(__('Calculation type'), 'estimation_type', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'     => 'select',
+        'return'   => 'true',
+        'name'     => 'estimation_type',
+        'class'    => 'w250px',
+        'fields'   => [
+            'estimation_absolute'    => __('Estimated absolute value'),
+            'estimation_calculation' => __('Calculation of days to reach limit'),
+        ],
+        'selected' => $estimation_type,
+    ],
+    'div',
+    false
+);
+
 $data[1] .= '<div id="estimation_interval_row">';
 $data[1] .= html_print_label(__('Future estimation'), 'estimation_interval', true).'<br/>';
 $data[1] .= html_print_input(
@@ -219,24 +236,6 @@ $data[1] .= html_print_input(
     ]
 );
 $data[1] .= '</div>';
-
-
-$data[1] .= html_print_label(__('Calculation type'), 'estimation_type', true).'<br/>';
-$data[1] .= html_print_input(
-    [
-        'type'     => 'select',
-        'return'   => 'true',
-        'name'     => 'estimation_type',
-        'class'    => 'w250px',
-        'fields'   => [
-            'estimation_absolute'    => __('Estimated absolute value'),
-            'estimation_calculation' => __('Calculation of days to reach limit'),
-        ],
-        'selected' => $estimation_type,
-    ],
-    'div',
-    false
-);
 
 push_table_simple($data, 'capacity_planning');
 

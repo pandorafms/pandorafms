@@ -286,6 +286,16 @@ sub exec_capacity_planning_module($$$$) {
 	if ($type eq 'estimation_absolute') {
 		# y = theta_0 + x * theta_1
 		$pred = $theta_0 + ($now + $target_value) * $theta_1;
+
+		# Clip predictions.
+		if ($target_module->{'max'} != $target_module->{'min'}) {
+			if ($pred < $target_module->{'min'}) {
+				$pred = $target_module->{'min'};
+			}
+			elsif ($pred > $target_module->{'max'}) {
+				$pred = $target_module->{'max'};
+			}
+		}
 	}
 	# Predict the date.
 	else {

@@ -15159,12 +15159,24 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
             }
 
             if ($element['type'] == 'AA') {
+                $id_agent = db_get_value_sql('SELECT id_agent FROM tcluster WHERE id = '.$element['id_cluster']);
+
+                $module_exists_sql = sprintf(
+                    'SELECT id_agente_modulo FROM tagente_modulo tam INNER JOIN tcluster_agent tca WHERE tam.id_agente=tca.id_agent AND tca.id_cluster=%d AND tam.nombre="%s"',
+                    $element['id_cluster'],
+                    $element['name']
+                );
+
+                $module_exists = db_process_sql($module_exists_sql);
+
+                if ($module_exists === false) {
+                    continue;
+                }
+
                 $tcluster_module = db_process_sql_insert('tcluster_item', ['name' => io_safe_input($element['name']), 'id_cluster' => $element['id_cluster'], 'critical_limit' => $element['critical_limit'], 'warning_limit' => $element['warning_limit']]);
 
-                $id_agent = db_process_sql('select id_agent from tcluster where id = '.$element['id_cluster']);
-
                 $id_parent_modulo = db_process_sql(
-                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "'.io_safe_input('Cluster status').'"'
+                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.' and nombre = "'.io_safe_input('Cluster status').'"'
                 );
 
                 $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
@@ -15179,7 +15191,7 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                     'nombre'            => io_safe_input($element['name']),
                     'id_modulo'         => 0,
                     'prediction_module' => 6,
-                    'id_agente'         => $id_agent[0]['id_agent'],
+                    'id_agente'         => $id_agent,
                     'parent_module_id'  => $id_parent_modulo[0]['id_agente_modulo'],
                     'custom_integer_1'  => $element['id_cluster'],
                     'custom_integer_2'  => $tcluster_module,
@@ -15203,15 +15215,27 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                     db_pandora_audit('Report management', 'Failed to assign AA item module to cluster '.$element['name']);
                 }
             } else if ($element['type'] == 'AP') {
-                $id_agent = db_process_sql('select id_agent from tcluster where id = '.$element['id_cluster']);
+                $id_agent = db_get_value_sql('SELECT id_agent FROM tcluster WHERE id = '.$element['id_cluster']);
 
-                $id_parent_modulo = db_process_sql(
-                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "'.io_safe_input('Cluster status').'"'
+                $module_exists_sql = sprintf(
+                    'SELECT id_agente_modulo FROM tagente_modulo tam INNER JOIN tcluster_agent tca WHERE tam.id_agente=tca.id_agent AND tca.id_cluster=%d AND tam.nombre="%s"',
+                    $element['id_cluster'],
+                    $element['name']
                 );
 
-                $tcluster_balanced_module = db_process_sql_insert('tcluster_item', ['name' => $element['name'], 'id_cluster' => $element['id_cluster'], 'item_type' => 'AP', 'is_critical' => $element['is_critical']]);
+                $module_exists = db_process_sql($module_exists_sql);
 
-                $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
+                if ($module_exists === false) {
+                    continue;
+                }
+
+                $id_parent_modulo = db_process_sql(
+                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.' and nombre = "'.io_safe_input('Cluster status').'"'
+                );
+
+                $tcluster_balanced_module = db_process_sql_insert('tcluster_item', ['name' => $element['name'], 'id_cluster' => $element['id_cluster'], 'critical_limit' => $element['critical_limit'], 'warning_limit' => $element['warning_limit']]);
+
+                $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval,ip_target,id_module_group from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
 
                 $get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
                 $get_module_description_value = $get_module_type[0]['descripcion'];
@@ -15220,33 +15244,28 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 $get_module_interval_value = $get_module_type[0]['module_interval'];
                 $get_module_type_nombre = db_process_sql('select nombre from ttipo_modulo where id_tipo = '.$get_module_type_value);
                 $get_module_type_nombre_value = $get_module_type_nombre[0]['nombre'];
-
-                if (strpos($get_module_type_nombre_value, 'inc') != false) {
-                    $get_module_type_value_normal = 4;
-                } else if (strpos($get_module_type_nombre_value, 'proc') != false) {
-                    $get_module_type_value_normal = 2;
-                } else if (strpos($get_module_type_nombre_value, 'data') != false) {
-                    $get_module_type_value_normal = 1;
-                } else if (strpos($get_module_type_nombre_value, 'string') != false) {
-                    $get_module_type_value_normal = 3;
-                } else {
-                    $get_module_type_value_normal = 1;
-                }
+                $get_module_ip_target = $get_module_type[0]['ip_target'];
+                $get_module_id_module_group = $get_module_type[0]['id_module_group'];
+                $get_module_id_flag = $get_module_type[0]['flag'];
+                $get_module_dynamic_two_tailed = $get_module_type[0]['dynamic_two_tailed'];
 
                 $values_module = [
                     'nombre'            => $element['name'],
-                    'id_modulo'         => 5,
+                    'id_modulo'         => 0,
                     'prediction_module' => 7,
-                    'id_agente'         => $id_agent[0]['id_agent'],
+                    'id_agente'         => $id_agent,
                     'parent_module_id'  => $id_parent_modulo[0]['id_agente_modulo'],
                     'custom_integer_1'  => $element['id_cluster'],
                     'custom_integer_2'  => $tcluster_balanced_module,
-                    'id_tipo_modulo'    => $get_module_type_value_normal,
+                    'id_tipo_modulo'    => 1,
                     'descripcion'       => $get_module_description_value,
                     'min_warning'       => $get_module_warning_value,
                     'min_critical'      => $get_module_critical_value,
                     'tcp_port'          => $element['is_critical'],
                     'module_interval'   => $get_module_interval_value,
+                    'ip_target'         => $get_module_ip_target,
+                    'tcp_port'          => 1,
+                    'id_module_group'   => $get_module_id_module_group,
                 ];
 
                 $id_module = modules_create_agent_module($values_module['id_agente'], $values_module['nombre'], $values_module, true);

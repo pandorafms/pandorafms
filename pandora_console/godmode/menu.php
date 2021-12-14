@@ -385,8 +385,8 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
 
     if (check_acl($config['id_user'], 0, 'PM')) {
         // Audit //meter en extensiones.
-        $sub['godmode/admin_access_logs']['text'] = __('System audit log');
-        $sub['godmode/admin_access_logs']['id'] = 'System audit log';
+        $sub['godmode/audit_log']['text'] = __('System audit log');
+        $sub['godmode/audit_log']['id'] = 'System audit log';
         $sub['godmode/setup/links']['text'] = __('Links');
         $sub['godmode/setup/links']['id'] = 'Links';
         $sub['tools/diagnostics']['text'] = __('Diagnostic info');

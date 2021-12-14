@@ -11,8 +11,11 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
+
+use PandoraFMS\Calendar;
+
 require_once $config['homedir'].'/include/functions_alerts.php';
 require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
@@ -288,7 +291,7 @@ function update_template($step)
         $friday = (bool) get_parameter('friday');
         $saturday = (bool) get_parameter('saturday');
         $sunday = (bool) get_parameter('sunday');
-        $special_day = (bool) get_parameter('special_day');
+        $special_day = (int) get_parameter('special_day');
         $time_from = (string) get_parameter('time_from');
         $time_from = date('H:i:00', strtotime($time_from));
         $time_to = (string) get_parameter('time_to');
@@ -418,7 +421,7 @@ $thursday = true;
 $friday = true;
 $saturday = true;
 $sunday = true;
-$special_day = false;
+$special_day = 0;
 $default_action = 0;
 $fields = [];
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
@@ -561,7 +564,7 @@ if ($id && ! $create_template) {
     $friday = (bool) $template['friday'];
     $saturday = (bool) $template['saturday'];
     $sunday = (bool) $template['sunday'];
-    $special_day = (bool) $template['special_day'];
+    $special_day = (int) $template['special_day'];
     $max_alerts = $template['max_alerts'];
     $min_alerts = $template['min_alerts'];
     $min_alerts_reset_counter = $template['min_alerts_reset_counter'];
@@ -671,11 +674,36 @@ if ($step == 2) {
     );
 
     $table->data[0][2] = __('Use special days list');
-    $table->data[0][3] = html_print_checkbox(
+    $data_special_days = Calendar::calendars(
+        // Fields.
+        [ '`talert_calendar`.*' ],
+        // Filter.
+        [],
+        // Count.
+        false,
+        // Offset.
+        null,
+        // Limit.
+        null,
+        // Order.
+        null,
+        // Sort field.
+        null,
+        // Reduce to a select.
+        true
+    );
+
+    $table->data[0][3] = html_print_select(
+        $data_special_days,
         'special_day',
-        1,
         $special_day,
+        '',
+        __('None'),
+        0,
         true,
+        false,
+        false,
+        '',
         (!$is_management_allowed | $disabled)
     );
 

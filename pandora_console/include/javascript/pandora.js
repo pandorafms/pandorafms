@@ -134,7 +134,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       $("input.module_types_excluded").each(function(index, el) {
         var module_type = parseInt($(el).val());
 
-        if (module_type !== NaN) module_types_excluded.push(module_type);
+        if (isNaN(module_type) == false)
+          module_types_excluded.push(module_type);
       });
     } catch (error) {}
   }

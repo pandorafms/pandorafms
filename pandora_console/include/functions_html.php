@@ -728,7 +728,9 @@ function html_print_select(
     $simple_multiple_options=false,
     $required=false,
     $truncate_size=false,
-    $select2_enable=true
+    $select2_enable=true,
+    $select2_multiple_enable=false,
+    $select2_multiple_enable_all=false
 ) {
     $output = "\n";
 
@@ -788,6 +790,12 @@ function html_print_select(
 
     if ($required) {
         $required = 'required';
+    }
+
+    if ($select2_multiple_enable === true
+        && $select2_multiple_enable_all === true
+    ) {
+        $output .= '<div class="flex-row-center">';
     }
 
     $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
@@ -889,6 +897,24 @@ function html_print_select(
     }
 
     $output .= '</select>';
+
+    if ($select2_multiple_enable === true
+        && $select2_multiple_enable_all === true
+    ) {
+        $output .= '<div class="margin-left-2 flex-column">';
+        $output .= '<span>'.__('All').'</span>';
+        $output .= html_print_checkbox_switch(
+            $id.'-check-all',
+            1,
+            false,
+            true,
+            $disabled,
+            'checkMultipleAll('.$id.')'
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     if ($modal && !enterprise_installed()) {
         $output .= "
 		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -900,7 +926,7 @@ function html_print_select(
         $select2 = 'select2_dark.min';
     }
 
-    if ($multiple === false && $select2_enable === true) {
+    if (($multiple === false || $select2_multiple_enable === true) && $select2_enable === true) {
         if (is_ajax()) {
             $output .= '<script src="';
             $output .= ui_get_full_url(
@@ -940,6 +966,32 @@ function html_print_select(
                     );
                 }
             });';
+        }
+
+        if ($select2_multiple_enable === true
+            && $select2_multiple_enable_all === true
+        ) {
+            $output .= '$("#'.$id.'").on("change", function(e) {
+                var checked = false;
+                if(e.target.length !== $("#'.$id.' > option:selected").length) {
+                    checked = false;
+                } else {
+                    checked = true;
+                }
+
+                $("#checkbox-'.$id.'-check-all").prop("checked", checked);
+            });';
+
+            $output .= '$("#'.$id.'").trigger("change");';
+
+            $output .= 'function checkMultipleAll(id){
+                if ($("#checkbox-"+id.id+"-check-all").is(":checked")) {
+                    $("#"+id.id+" > option").prop("selected", "selected");
+                    $("#"+id.id).trigger("change");
+                } else {
+                    $("#"+id.id).val(null).trigger("change");
+                }
+            }';
         }
 
         $output .= '</script>';
@@ -4030,15 +4082,23 @@ function html_print_input_file($name, $return=false, $options=false)
 
     if ($options) {
         if (isset($options['size'])) {
-            $output .= 'size="'.$options['size'].'"';
+            $output .= ' size="'.$options['size'].'"';
         }
 
         if (isset($options['disabled'])) {
-            $output .= 'disabled="disabled"';
+            $output .= ' disabled="disabled"';
         }
 
         if (isset($options['class'])) {
-            $output .= 'class="'.$options['class'].'"';
+            $output .= ' class="'.$options['class'].'"';
+        }
+
+        if (isset($options['required'])) {
+            $output .= ' required';
+        }
+
+        if (isset($options['onchange'])) {
+            $output .= ' onchange="'.$options['onchange'].'"';
         }
     }
 
@@ -4432,7 +4492,7 @@ function html_print_switch($attributes=[])
 
     $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch' style='".$attributes['style']."'>
+    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";

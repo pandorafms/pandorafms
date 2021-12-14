@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.758.1 Build 211124";
+my $version = "7.0NG.759 Build 211214";
 
 # Pandora server configuration
 my %conf;
@@ -1081,6 +1081,9 @@ sub pandoradb_main ($$$;$) {
 
 	# Metaconsole database cleanup.
 	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
+
+	# NCM cleanup.
+	enterprise_hook("ncm_database_cleanup", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

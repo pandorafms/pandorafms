@@ -161,6 +161,7 @@ function load_modal(settings) {
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+      id: settings.modal.cancel_button_id,
       text: settings.modal.cancel,
       click: function() {
         if (settings.oncancel != undefined) {
@@ -329,7 +330,20 @@ function load_modal(settings) {
                 } else {
                   settings.ajax_callback(data);
                 }
+              } else {
+                generalShowMsg(data, null);
               }
+
+              AJAX_RUNNING = 0;
+            },
+            error: function(response) {
+              generalShowMsg(
+                {
+                  title: "Failed",
+                  text: response.responseText
+                },
+                null
+              );
               AJAX_RUNNING = 0;
             }
           });
@@ -349,6 +363,7 @@ function load_modal(settings) {
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       text: settings.modal.ok,
+      id: settings.modal.ok_button_id,
       click: function() {
         if (
           settings.onsubmit != undefined &&
@@ -483,6 +498,7 @@ function confirmDialog(settings) {
   $("#confirm_" + randomStr);
   $("#confirm_" + randomStr)
     .dialog({
+      open: settings.open,
       title: settings.title,
       close: false,
       width: settings.size,
@@ -542,9 +558,29 @@ function confirmDialog(settings) {
  */
 // eslint-disable-next-line no-unused-vars
 function generalShowMsg(data, idMsg) {
-  var title = data.title[data.error];
-  var text = data.text[data.error];
-  var failed = !data.error;
+  var title = "Response";
+  var text = data;
+  var failed = false;
+
+  if (typeof data == "object") {
+    title = data.title || "Response";
+    text = data.text || data.error || data.result;
+    failed = failed || data.error;
+  }
+
+  if (failed) {
+    title = "Error";
+    text = data.error;
+  }
+
+  if (idMsg == null) {
+    idMsg = uniqId();
+  }
+
+  if ($("#" + idMsg).length === 0) {
+    $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+    $("#" + idMsg).empty();
+  }
 
   $("#" + idMsg).empty();
   $("#" + idMsg).html(text);
@@ -562,6 +598,7 @@ function generalShowMsg(data, idMsg) {
         class:
           "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
         text: "OK",
+        id: "general_message_ok",
         click: function(e) {
           if (!failed) {
             $(".ui-dialog-content").dialog("close");

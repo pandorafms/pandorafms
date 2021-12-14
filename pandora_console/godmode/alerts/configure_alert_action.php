@@ -237,7 +237,7 @@ $create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_saf
 
 $sql_exclude_command_id = '';
 
-if ($config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
+if (!is_metaconsole() && $config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
     $sql_exclude_command_id = ' AND id <> '.$create_ticket_command_id;
 }
 
@@ -597,6 +597,7 @@ $(document).ready (function () {
 
     $("#id_command").change (function () {
         values = Array ();
+        // No se envia el valor del commando.
         values.push({
             name: "page",
             value: "godmode/alerts/alert_commands"});

@@ -266,7 +266,9 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_threshold` int(4) default 0,
 	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
-	`debug_content` varchar(200),
+	`debug_content` TEXT,
+	`percentage_critical` tinyint(1) unsigned default '0',
+	`percentage_warning` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -571,15 +573,30 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `talert_calendar`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_calendar` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	`id_group` INT(10) NOT NULL DEFAULT 0,
+	`description` text,
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `talert_special_days`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_special_days` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`id_calendar` int(10) unsigned NOT NULL DEFAULT 1,
 	`id_group` INT(10) NOT NULL DEFAULT 0,
 	`date` date NOT NULL DEFAULT '1970-01-01',
-	`same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
+	`day_code` tinyint(2) NOT NULL,
 	`description` text,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_calendar`) REFERENCES talert_calendar(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
@@ -680,7 +697,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`evento` text NOT NULL,
 	`utimestamp` bigint(20) NOT NULL default '0',
-	`event_type` enum('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
+	`event_type` enum('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change', 'ncm') default 'unknown',
 	`id_agentmodule` int(10) NOT NULL default '0',
 	`id_alert_am` int(10) NOT NULL default '0',
 	`criticity` int(4) unsigned NOT NULL default '0',
@@ -982,6 +999,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`scan_filters` text NOT NULL,
 	`query_filters` text NOT NULL,
 	`enabled` tinyint(1) UNSIGNED DEFAULT 1,
+	`percentage_critical` tinyint(1) unsigned default '0',
+	`percentage_warning` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2420,6 +2439,8 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`percentage_critical` tinyint(1) UNSIGNED DEFAULT 0,
+	`percentage_warning` tinyint(1) UNSIGNED DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_network_component_group`) REFERENCES tnetwork_component_group(`id_sg`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -2500,6 +2521,8 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
 	`cps` int NOT NULL DEFAULT 0,
+	`percentage_warning` tinyint(1) UNSIGNED DEFAULT 0,
+	`percentage_critical` tinyint(1) UNSIGNED DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	KEY `main_idx` (`id_policy`),
 	UNIQUE (`id_policy`, `name`)
@@ -3850,6 +3873,7 @@ CREATE TABLE `tagent_repository` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
+  `deployment_timeout` INT UNSIGNED DEFAULT 600,
   `uploaded_by` VARCHAR(100) DEFAULT '',
   `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,
@@ -3926,6 +3950,28 @@ CREATE TABLE `tnode_relations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `tipam_network_location`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_network_location` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_sites`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tipam_network`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tipam_network` (
@@ -3933,15 +3979,20 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`network` varchar(100) NOT NULL default '',
 	`name_network` varchar(255) default '',
 	`description` text NOT NULL,
-	`location` tinytext NOT NULL,
+	`location` int(10) unsigned NULL,
 	`id_recon_task` int(10) unsigned NOT NULL,
 	`scan_interval` tinyint(2) default 1,
 	`monitoring` tinyint(2) default 0,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
+	`id_site` bigint unsigned,
+	`vrf` int(10) unsigned,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -4008,7 +4059,9 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet` (
 	`address` varchar(250) NOT NULL,
 	`mask` varchar(250) NOT NULL,
 	`subneting_mask` varchar(250) default '',
-	PRIMARY KEY (`id`)
+	`id_site` bigint unsigned,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -4034,6 +4087,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`operation` text,
 	`table` text,
 	`error` MEDIUMTEXT,
+	`result` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4043,6 +4097,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
     `name` varchar(255) UNIQUE,
+    `icon` varchar(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4107,6 +4162,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_template` bigint(20) unsigned,
     `execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
+    `cron_interval` varchar(100) default '',
+    `event_on_change` int unsigned default null,
     `last_error` text,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4127,4 +4184,40 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
     `status` int(4) NOT NULL default 5,
     `updated_at` bigint(20) NOT NULL default 0,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_queue` (
+    `id` SERIAL,
+    `id_agent` INT(10) UNSIGNED NOT NULL,
+    `id_script` BIGINT(20) UNSIGNED NOT NULL,
+    `utimestamp` INT UNSIGNED NOT NULL,
+    `scheduled` INT UNSIGNED DEFAULT NULL,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_snippet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_snippet` (
+    `id` SERIAL,
+    `name` TEXT,
+    `content` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_firmware`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_firmware` (
+    `id` SERIAL,
+    `name` varchar(255),
+    `shortname` varchar(255) unique,
+    `vendor` bigint(20) unsigned,
+    `models` text,
+    `path` text,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

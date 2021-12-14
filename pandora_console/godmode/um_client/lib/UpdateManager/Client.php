@@ -835,7 +835,7 @@ class Client
                 function ($carry, $item) {
                     $matches = [];
                     if (is_array($item) !== true
-                        && preg_match('/(\d+)\.tar/', $item, $matches) > 0
+                        && preg_match('/([\d\.\d]+?)\.tar/', $item, $matches) > 0
                     ) {
                         $carry[] = [
                             'version'     => $matches[1],

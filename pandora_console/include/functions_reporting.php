@@ -734,6 +734,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'alert_report_actions':
+                $report['contents'][] = reporting_alert_report_actions(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'agents_inventory':
                 $report['contents'][] = reporting_agents_inventory(
                     $report,
@@ -867,6 +874,14 @@ function reporting_make_reporting_data(
 
             case 'module_histogram_graph':
                 $report['contents'][] = reporting_module_histogram_graph(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
+            case 'ncm':
+                $report['contents'][] = reporting_ncm_config(
                     $report,
                     $content,
                     $pdf
@@ -2658,15 +2673,119 @@ function reporting_inventory($report, $content, $type)
 }
 
 
+/**
+ * Build data for report alert actions.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content.
+ *
+ * @return array Result data.
+ */
+function reporting_alert_report_actions($report, $content)
+{
+    $return = [];
+
+    $return['type'] = 'alert_report_actions';
+    if (empty($content['name']) === true) {
+        $content['name'] = __('Alert actions');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+
+    $return['subtitle'] = __('Actions');
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $return['data'] = [];
+
+    $es = json_decode($content['external_source'], true);
+    if (isset($report['id_template']) === true
+        && empty($report['id_template']) === false
+    ) {
+        if (is_metaconsole() === true) {
+            $server_id = metaconsole_get_id_server($content['server_name']);
+            $modules = [$server_id.'|'.$content['id_agent_module']];
+            $agents = [$server_id.'|'.$content['id_agent']];
+        } else {
+            $modules = [$content['id_agent_module']];
+            $agents = [$content['id_agent']];
+        }
+    } else {
+        $modules = json_decode(
+            io_safe_output(base64_decode($es['module'])),
+            true
+        );
+        $agents = json_decode(
+            io_safe_output(base64_decode($es['id_agents'])),
+            true
+        );
+    }
+
+    $period = $content['period'];
+    $id_group = $content['id_group'];
+    $templates = $es['templates'];
+    $actions = $es['actions'];
+    $show_summary = $es['show_summary'];
+    $group_by = $es['group_by'];
+    $lapse = $content['lapse'];
+    $only_data = $es['only_data'];
+
+    $filters = [
+        'group'        => $id_group,
+        'agents'       => $agents,
+        'modules'      => $modules,
+        'templates'    => $templates,
+        'actions'      => $actions,
+        'period'       => $period,
+        'show_summary' => (bool) $show_summary,
+        'only_data'    => (bool) $only_data,
+    ];
+
+    $groupsBy = [
+        'group_by' => $group_by,
+        'lapse'    => $lapse,
+    ];
+
+    $return['filters'] = $filters;
+    $return['groupsBy'] = $groupsBy;
+
+    $return['data'] = alerts_get_alert_fired($filters, $groupsBy);
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Data report agent/module.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array Structure Content.
+ */
 function reporting_agent_module($report, $content)
 {
     global $config;
-    $agents_and_modules = json_decode($content['external_source'], true);
-    $agents = [];
-    $agents = $agents_and_modules['id_agents'];
-    $modules = $agents_and_modules['module'];
-    $id_group = $content['id_group'];
-    $id_module_group = $content['id_module_group'];
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $agents = json_decode(
+        io_safe_output(
+            base64_decode($external_source['id_agents'])
+        ),
+        true
+    );
+
+    $modules = json_decode(
+        io_safe_output(
+            base64_decode($external_source['module'])
+        ),
+        true
+    );
 
     $return['type'] = 'agent_module';
 
@@ -2700,7 +2819,9 @@ function reporting_agent_module($report, $content)
     $cont = 0;
 
     foreach ($modules as $modul_id) {
-        $modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
+        $modules_by_name[$cont]['name'] = io_safe_output(
+            modules_get_agentmodule_name($modul_id)
+        );
         $modules_by_name[$cont]['id'] = $modul_id;
         $cont++;
     }
@@ -8700,8 +8821,8 @@ function reporting_increment($report, $content)
         $return['data']['message'] = __('The monitor have no data in this range of dates or monitor type is not numeric');
         $return['data']['error'] = true;
     } else if (is_numeric($old_data) && is_numeric($last_data)) {
-        $return['data']['old'] = $old_data;
-        $return['data']['now'] = $last_data;
+        $return['data']['old'] = round(floatval($old_data), $config['graph_precision']);
+        $return['data']['now'] = round(floatval($last_data), $config['graph_precision']);
         $increment = ($old_data - $last_data);
 
         if ($increment < 0) {
@@ -10813,11 +10934,11 @@ function reporting_get_stats_agents_monitors($data)
     if ($mobile) {
         $urls = [];
         $urls['total_agents'] = 'index.php?page=agents';
-        $urls['monitor_checks'] = 'index.php?page=modules';
+        $urls['monitor_total'] = 'index.php?page=modules';
     } else {
         $urls = [];
         $urls['total_agents'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60';
-        $urls['monitor_checks'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
+        $urls['monitor_total'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
     }
 
     // Agents and modules table
@@ -10839,8 +10960,8 @@ function reporting_get_stats_agents_monitors($data)
     }
 
     $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
-    $tdata[4] = $data['monitor_checks'] <= 0 ? '-' : $data['monitor_checks'];
-    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_checks'].'">'.$tdata[4].'</a>';
+    $tdata[4] = $data['monitor_total'] <= 0 ? '-' : $data['monitor_total'];
+    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_total'].'">'.$tdata[4].'</a>';
 
     /*
         Hello there! :)
@@ -10848,7 +10969,7 @@ function reporting_get_stats_agents_monitors($data)
         You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
     */
     if ($data['total_agents']) {
-        if (($data['monitor_checks'] / $data['total_agents'] > 100) && !enterprise_installed()) {
+        if (($data['monitor_total'] / $data['total_agents'] > 100) && !enterprise_installed()) {
             $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         }
     }
@@ -13669,7 +13790,7 @@ function reporting_label_macro($item, $label)
     if (preg_match('/_agentgroup_/', $label)) {
         $label = str_replace(
             '_agentgroup_',
-            $item['agent_group'],
+            groups_get_name($item['agent_group']),
             $label
         );
     }

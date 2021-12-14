@@ -152,8 +152,11 @@ class AuditLog extends HTML
                 );
             }
 
-            // Only in case of Metaconsole, format the frame.
-            open_meta_frame();
+            if (is_metaconsole() === true) {
+                // Only in case of Metaconsole, format the frame.
+                open_meta_frame();
+            }
+
             // Load datatables user interface.
             ui_print_datatable(
                 [
@@ -222,8 +225,11 @@ class AuditLog extends HTML
             echo $e->getMessage();
         }
 
-        // Close the frame.
-        close_meta_frame();
+        if (is_metaconsole() === true) {
+            // Close the frame.
+            close_meta_frame();
+        }
+
         // Load own javascript file.
         echo $this->loadJS();
 

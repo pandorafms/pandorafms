@@ -3459,6 +3459,11 @@ function ui_print_datatable(array $parameters)
         }
     }
 
+    $export_columns = '';
+    if ($parameters['csv_exclude_latest'] === true) {
+        $export_columns = ',columns: \'th:not(:last-child)\'';
+    }
+
     $js .= '
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
@@ -3489,8 +3494,7 @@ function ui_print_datatable(array $parameters)
                             order : "current",
                             page : "All",
                             search : "applied"
-                        },
-                        columns: [1,'.$columns.']
+                        }'.$export_columns.'
                     }
                 }
             ],

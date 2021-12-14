@@ -44,6 +44,13 @@ abstract class Entity
     protected $existsInDB;
 
     /**
+     * Fields to identify register.
+     *
+     * @var array
+     */
+    protected $primaryKeys;
+
+    /**
      * Entity fields (from table).
      *
      * @var array
@@ -126,6 +133,8 @@ abstract class Entity
 
         if (is_array($filters) === true) {
             // New one.
+            $this->primaryKeys = array_keys($filters);
+
             $data = \db_get_row_filter(
                 $this->table,
                 $filters,
@@ -292,8 +301,94 @@ abstract class Entity
      * Saves current object definition to database.
      *
      * @return boolean Success or not.
+     * @throws \Exception On error.
      */
-    public abstract function save();
+    public function save()
+    {
+        $updates = $this->fields;
+        // Clean null fields.
+        foreach ($updates as $k => $v) {
+            if ($v === null) {
+                unset($updates[$k]);
+            }
+        }
+
+        if ($this->existsInDB === true) {
+            // Update.
+            $where = [];
+
+            foreach ($this->primaryKeys as $key) {
+                $where[$key] = $this->fields[$key];
+            }
+
+            if (empty($where) === true) {
+                throw new \Exception(
+                    __METHOD__.' error: Cannot identify object'
+                );
+            }
+
+            $rs = \db_process_sql_update(
+                $this->table,
+                $updates,
+                $where
+            );
+
+            if ($rs === false) {
+                global $config;
+                throw new \Exception(
+                    __METHOD__.' error: '.$config['dbconnection']->error
+                );
+            }
+        } else {
+            // New register.
+            $rs = \db_process_sql_insert(
+                $this->table,
+                $updates
+            );
+
+            if ($rs === false) {
+                global $config;
+
+                throw new \Exception(
+                    __METHOD__.' error: '.$config['dbconnection']->error
+                );
+            }
+
+            $this->existsInDB = true;
+        }
+
+        return true;
+
+    }
+
+
+    /**
+     * Remove this entity.
+     *
+     * @return void
+     * @throws \Exception If no primary keys are defined.
+     */
+    public function delete()
+    {
+        if ($this->existsInDB === true) {
+            $where = [];
+
+            foreach ($this->primaryKeys as $key) {
+                $where[$key] = $this->fields[$key];
+            }
+
+            if (empty($where) === true) {
+                throw new \Exception(
+                    __METHOD__.' error: Cannot identify object on deletion'
+                );
+            }
+
+            \db_process_sql_delete(
+                $this->table,
+                $where
+            );
+        }
+    }
 
 
 }

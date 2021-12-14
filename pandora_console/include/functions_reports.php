@@ -834,12 +834,18 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Alerts'),
         'name'     => __('Agent alert report '),
     ];
+
     if (!$template) {
         $types['alert_report_group'] = [
             'optgroup' => __('Alerts'),
             'name'     => __('Group alert report'),
         ];
     }
+
+    $types['alert_report_actions'] = [
+        'optgroup' => __('Alerts'),
+        'name'     => __('Actions alert report '),
+    ];
 
     $types['event_report_module'] = [
         'optgroup' => __('Events'),

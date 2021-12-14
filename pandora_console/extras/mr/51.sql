@@ -8,7 +8,7 @@ ALTER TABLE `tlocal_component` ADD COLUMN `percentage_critical` tinyint(1) UNSIG
 ALTER TABLE `tlocal_component` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `percentage_critical` tinyint(1) UNSIGNED DEFAULT 0;
-
+ALTER TABLE `tsync_queue` ADD COLUMN `result` TEXT;
 ALTER TABLE tagente_modulo MODIFY debug_content TEXT;
 
 CREATE TABLE IF NOT EXISTS `tncm_queue` (
@@ -39,23 +39,30 @@ CREATE TABLE IF NOT EXISTS `tncm_firmware` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_calendar` (
-	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL default '',
-	`id_group` INT(10) NOT NULL DEFAULT 0,
-	`description` text,
-	PRIMARY KEY (`id`),
-	UNIQUE (`name`)
+    `id_group` INT(10) NOT NULL DEFAULT 0,
+    `description` text,
+    PRIMARY KEY (`id`),
+    UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_network_location` (
-	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-	`name` varchar(100) NOT NULL default '',
-	PRIMARY KEY (`id`),
-	UNIQUE (`name`)
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL default '',
+    PRIMARY KEY (`id`),
+    UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `tncm_agent` ADD COLUMN `cron_interval` varchar(100) default '' AFTER `execute`;
-ALTER TABLE `tncm_agent` ADD COLUMN `event_on_change` int unsigned default null AFTER `cron_interval`;
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;
 ALTER TABLE `tipam_network` ADD FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE;
 ALTER TABLE `tagent_repository` ADD COLUMN `deployment_timeout` INT UNSIGNED DEFAULT 600 AFTER `path`;
@@ -63,6 +70,15 @@ ALTER TABLE `talert_special_days` ADD COLUMN `id_calendar` int(10) unsigned NOT 
 ALTER TABLE `talert_special_days` ADD COLUMN `day_code` tinyint(2) unsigned NOT NULL DEFAULT 0;
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
 ALTER TABLE `talert_special_days` ADD FOREIGN KEY (`id_calendar`) REFERENCES `talert_calendar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `tipam_network` ADD COLUMN `id_site` bigint unsigned;
+ALTER TABLE `tipam_network` ADD CONSTRAINT FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `tipam_supernet` ADD COLUMN `id_site` bigint unsigned;
+ALTER TABLE `tipam_supernet` ADD CONSTRAINT FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `tipam_network` ADD COLUMN `vrf` int(10) unsigned;
+ALTER TABLE `tipam_network` ADD CONSTRAINT FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `tncm_agent` ADD COLUMN `cron_interval` varchar(100) default '' AFTER `execute`;
+ALTER TABLE `tncm_agent` ADD COLUMN `event_on_change` int unsigned default null AFTER `cron_interval`;
 ALTER TABLE `tncm_vendor` ADD COLUMN `icon` VARCHAR(255) DEFAULT '';
 ALTER TABLE `tevento` MODIFY COLUMN `event_type` ENUM('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change', 'ncm') DEFAULT 'unknown';
 

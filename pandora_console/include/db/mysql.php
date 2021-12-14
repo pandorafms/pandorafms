@@ -1296,57 +1296,6 @@ function mysql_db_get_all_row_by_steps_sql($new=true, &$result, $sql=null)
 
 
 /**
- * Starts a database transaction.
- */
-function mysql_db_process_sql_begin()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 0');
-        mysqli_query($config['dbconnection'], 'START TRANSACTION');
-    } else {
-        mysql_query('SET AUTOCOMMIT = 0');
-        mysql_query('START TRANSACTION');
-    }
-}
-
-
-/**
- * Commits a database transaction.
- */
-function mysql_db_process_sql_commit()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'COMMIT');
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-    } else {
-        mysql_query('COMMIT');
-        mysql_query('SET AUTOCOMMIT = 1');
-    }
-}
-
-
-/**
- * Rollbacks a database transaction.
- */
-function mysql_db_process_sql_rollback()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'ROLLBACK ');
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-    } else {
-        mysql_query('ROLLBACK ');
-        mysql_query('SET AUTOCOMMIT = 1');
-    }
-}
-
-
-/**
  * Get last error.
  *
  * @return string Return the string error.
@@ -1441,7 +1390,7 @@ function mysql_db_process_file($path, $handle_error=true)
         $query = '';
 
         // Begin the transaction
-        mysql_db_process_sql_begin();
+        db_process_sql_begin();
 
         foreach ($file_content as $sql_line) {
             if (trim($sql_line) != '' && strpos($sql_line, '--') === false) {
@@ -1456,7 +1405,7 @@ function mysql_db_process_file($path, $handle_error=true)
 
                     if (!$result = $query_result) {
                         // Error. Rollback the transaction
-                        mysql_db_process_sql_rollback();
+                        db_process_sql_rollback();
 
                         if ($config['mysqli']) {
                             $error_message = mysqli_error($config['dbconnection']);
@@ -1493,7 +1442,7 @@ function mysql_db_process_file($path, $handle_error=true)
         }
 
         // No errors. Commit the transaction
-        mysql_db_process_sql_commit();
+        db_process_sql_commit();
         return true;
     } else {
         return false;
@@ -1532,7 +1481,7 @@ function db_run_sql_file($location)
         $mysqli->query($config['dbconnection'], 'START TRANSACTION');
     } else {
         // Run commands
-        mysql_db_process_sql_begin();
+        db_process_sql_begin();
         // Begin transaction
     }
 
@@ -1558,7 +1507,7 @@ function db_run_sql_file($location)
             $mysqli->query($config['dbconnection'], 'COMMIT');
             $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
         } else {
-            mysql_db_process_sql_commit();
+            db_process_sql_commit();
             // Save results
         }
 
@@ -1568,7 +1517,7 @@ function db_run_sql_file($location)
             $mysqli->query($config['dbconnection'], 'ROLLBACK ');
             $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
         } else {
-            mysql_db_process_sql_rollback();
+            db_process_sql_rollback();
             // Undo results
         }
 

@@ -729,7 +729,8 @@ function html_print_select(
     $required=false,
     $truncate_size=false,
     $select2_enable=true,
-    $multiple_select2=false
+    $select2_multiple_enable=false,
+    $select2_multiple_enable_all=false
 ) {
     $output = "\n";
 
@@ -789,6 +790,12 @@ function html_print_select(
 
     if ($required) {
         $required = 'required';
+    }
+
+    if ($select2_multiple_enable === true
+        && $select2_multiple_enable_all === true
+    ) {
+        $output .= '<div class="flex-row-center">';
     }
 
     $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
@@ -890,6 +897,24 @@ function html_print_select(
     }
 
     $output .= '</select>';
+
+    if ($select2_multiple_enable === true
+        && $select2_multiple_enable_all === true
+    ) {
+        $output .= '<div class="margin-left-2 flex-column">';
+        $output .= '<span>'.__('All').'</span>';
+        $output .= html_print_checkbox_switch(
+            $id.'-check-all',
+            1,
+            false,
+            true,
+            $disabled,
+            'checkMultipleAll('.$id.')'
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     if ($modal && !enterprise_installed()) {
         $output .= "
 		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -901,8 +926,7 @@ function html_print_select(
         $select2 = 'select2_dark.min';
     }
 
-    // Note that multiple_select2 is introduced as a workaround to overcome the pointless limitation of preventing "multiple" select inputs from using select2 library without affecting the existing calls to this function.
-    if ($multiple === false && $select2_enable === true || $multiple_select2 === true) {
+    if (($multiple === false || $select2_multiple_enable === true) && $select2_enable === true) {
         if (is_ajax()) {
             $output .= '<script src="';
             $output .= ui_get_full_url(
@@ -942,6 +966,32 @@ function html_print_select(
                     );
                 }
             });';
+        }
+
+        if ($select2_multiple_enable === true
+            && $select2_multiple_enable_all === true
+        ) {
+            $output .= '$("#'.$id.'").on("change", function(e) {
+                var checked = false;
+                if(e.target.length !== $("#'.$id.' > option:selected").length) {
+                    checked = false;
+                } else {
+                    checked = true;
+                }
+
+                $("#checkbox-'.$id.'-check-all").prop("checked", checked);
+            });';
+
+            $output .= '$("#'.$id.'").trigger("change");';
+
+            $output .= 'function checkMultipleAll(id){
+                if ($("#checkbox-"+id.id+"-check-all").is(":checked")) {
+                    $("#"+id.id+" > option").prop("selected", "selected");
+                    $("#"+id.id).trigger("change");
+                } else {
+                    $("#"+id.id).val(null).trigger("change");
+                }
+            }';
         }
 
         $output .= '</script>';

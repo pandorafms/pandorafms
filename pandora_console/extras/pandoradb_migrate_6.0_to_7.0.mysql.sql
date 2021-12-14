@@ -3970,15 +3970,20 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`network` varchar(100) NOT NULL default '',
 	`name_network` varchar(255) default '',
 	`description` text NOT NULL,
-	`location` tinytext NOT NULL,
+	`location` int(10) unsigned NULL,
 	`id_recon_task` int(10) unsigned NOT NULL,
 	`scan_interval` tinyint(2) default 1,
 	`monitoring` tinyint(2) default 0,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
+	`id_site` bigint unsigned,
+	`vrf` int(10) unsigned,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_ip` (
@@ -4033,7 +4038,9 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet` (
 	`address` varchar(250) NOT NULL,
 	`mask` varchar(250) NOT NULL,
 	`subneting_mask` varchar(250) default '',
-	PRIMARY KEY (`id`)
+	`id_site` bigint unsigned,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
@@ -4052,10 +4059,16 @@ CREATE TABLE IF NOT EXISTS `tipam_network_location` (
 	UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
-UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
-ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;
-ALTER TABLE `tipam_network` ADD FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE;
 
 SET @insert_type = 3;
 SET @insert_name = 'IPAM Recon';
@@ -4089,6 +4102,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`operation` text,
 	`table` text,
 	`error` MEDIUMTEXT,
+	`result` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

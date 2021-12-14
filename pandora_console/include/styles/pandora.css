@@ -8385,3 +8385,13 @@ div.stat-win-spinner img {
   margin: 5px;
   font-size: 12px;
 }
+
+.stat_win_histogram {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 18%;
+}
+
+#stat-win-module-graph .stat_win_histogram div.nodata_container {
+  width: 100%;
+}

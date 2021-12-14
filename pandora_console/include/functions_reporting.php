@@ -14171,6 +14171,9 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if ($modules_is_string === false) {
         if ($agentmodule_info['max_critical'] == 0) {
             $max_value_critical = null;
+            if ((bool) $content['dinamic_proc'] === true) {
+                $max_value_critical = 0.01;
+            }
         } else {
             $max_value_critical = $agentmodule_info['max_critical'];
         }
@@ -14378,26 +14381,35 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $width_graph  = 100;
     $height_graph = 80;
-    $return['chart'] = flot_slicesbar_graph(
-        $array_result,
-        $time_total,
-        $width_graph,
-        $height_graph,
-        $legend,
-        $colors,
-        $config['fontpath'],
-        $config['round_corner'],
-        $homeurl,
-        '',
-        '',
-        false,
-        0,
-        [],
-        true,
-        $ttl,
-        $content['sizeForTicks'],
-        true
-    );
+    if (empty($array_result) === false) {
+        $return['chart'] = flot_slicesbar_graph(
+            $array_result,
+            $time_total,
+            $width_graph,
+            $height_graph,
+            $legend,
+            $colors,
+            $config['fontpath'],
+            $config['round_corner'],
+            $homeurl,
+            '',
+            '',
+            false,
+            0,
+            [],
+            true,
+            $ttl,
+            $content['sizeForTicks'],
+            true,
+            $report['datetime']
+        );
+    } else {
+        $return['chart'] = graph_nodata_image(
+            $width_graph,
+            $height_graph,
+            'area'
+        );
+    }
 
     if ($metaconsole_on) {
         // Restore db connection.

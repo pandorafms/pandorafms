@@ -1189,14 +1189,25 @@ if (check_login()) {
 
             $data[8] = ' ';
             if ($module['history_data'] == 1) {
+                $tresholds = true;
+                if (empty((float) $module['min_warning']) === true
+                    && empty((float) $module['max_warning']) === true
+                    && empty($module['warning_inverse']) === true
+                    && empty((float) $module['min_critical']) === true
+                    && empty((float) $module['max_critical']) === true
+                    && empty($module['critical_inverse']) === true
+                ) {
+                    $tresholds = false;
+                }
+
                 $nombre_tipo_modulo = modules_get_moduletype_name($module['id_tipo_modulo']);
                 $handle = 'stat'.$nombre_tipo_modulo.'_'.$module['id_agente_modulo'];
                 $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
                 $win_handle = dechex(crc32($module['id_agente_modulo'].$module['nombre']));
 
-                // Try to display the SNMP module realtime graph
+                // Try to display the SNMP module realtime graph.
                 $rt_button = get_module_realtime_link_graph($module);
-                if (!empty($rt_button)) {
+                if (empty($rt_button) === false) {
                     $data[8] = $rt_button.'&nbsp;&nbsp;';
                 }
 
@@ -1205,6 +1216,19 @@ if (check_login()) {
                     $draw_events = 1;
                 } else {
                     $draw_events = 0;
+                }
+
+                if ($tresholds === true || $graph_type === 'boolean') {
+                    $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."histogram=1', 'day_".$win_handle."', 800, 480)";
+                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image(
+                        'images/histograma.png',
+                        true,
+                        [
+                            'border' => '0',
+                            'alt'    => '',
+                            'class'  => 'invert_filter',
+                        ]
+                    ).'</a> &nbsp;&nbsp;';
                 }
 
                 $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 800, 480)";
@@ -1349,9 +1373,30 @@ if (check_login()) {
             metaconsole_connect($server);
         }
 
-        $output .= grafico_modulo_sparse($params);
-        echo $output;
+        if ($params['histogram'] === true) {
+            $params['id_agent_module'] = $params['agent_module_id'];
+            $params['dinamic_proc'] = 1;
 
+            $output .= '<div class="stat_win_histogram">';
+            if ($params['compare'] === 'separated') {
+                $graph = \reporting_module_histogram_graph(
+                    ['datetime' => ($params['begin_date'] - $params['period'])],
+                    $params
+                );
+                $output .= $graph['chart'];
+            }
+
+            $graph = \reporting_module_histogram_graph(
+                ['datetime' => $params['begin_date']],
+                $params
+            );
+            $output .= $graph['chart'];
+            $output .= '</div>';
+        } else {
+            $output .= grafico_modulo_sparse($params);
+        }
+
+        echo $output;
         if (is_metaconsole() === true && empty($server_id) === false) {
             metaconsole_restore_db();
         }

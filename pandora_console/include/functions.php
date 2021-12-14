@@ -1234,6 +1234,7 @@ function get_event_types($id_type=false)
     $types['system'] = __('System');
     $types['error'] = __('Error');
     $types['configuration_change'] = __('Configuration change');
+    $types['ncm'] = __('Network configuration manager');
 
     // This types are impersonated by the monitor 'x' types
     // $types['going_up_normal'] = __('Going Normal');

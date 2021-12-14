@@ -1082,6 +1082,9 @@ sub pandoradb_main ($$$;$) {
 	# Metaconsole database cleanup.
 	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
 
+	# NCM cleanup.
+	enterprise_hook("ncm_database_cleanup", [$dbh, $conf]);
+
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
 

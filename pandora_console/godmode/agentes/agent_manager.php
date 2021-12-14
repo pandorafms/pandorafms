@@ -103,10 +103,10 @@ if (is_ajax()) {
             } else {
                 $commons = array_intersect($out, $oid_snmp);
                 if ($get_common_modules) {
-                    // Common modules is selected (default)
+                    // Common modules is selected (default).
                     $out = $commons;
                 } else {
-                    // All modules is selected
+                    // All modules is selected.
                     $array1 = array_diff($out, $oid_snmp);
                     $array2 = array_diff($oid_snmp, $out);
                     $out = array_merge($commons, $array1, $array2);
@@ -135,12 +135,12 @@ if (is_ajax()) {
                 'agents_update_secondary_groups',
                 [
                     $id_agent,
-                    ($add_secondary_groups) ? $groups_to_add : [],
-                    ($remove_secondary_groups) ? $groups_to_add : [],
+                    (($add_secondary_groups) ? $groups_to_add : []),
+                    (($remove_secondary_groups) ? $groups_to_add : []),
                 ]
             );
             // Echo 0 in case of error. 0 Otherwise.
-            echo ($ret) ? 1 : 0;
+            echo ((bool) $ret === true) ? 1 : 0;
         }
     }
 

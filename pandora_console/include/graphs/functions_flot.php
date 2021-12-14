@@ -861,7 +861,7 @@ function flot_slicesbar_graph(
     $values2 = [];
     foreach ($data as $jsvar => $values) {
         $values2[] = implode($separator, $values);
-        $i ++;
+        $i++;
     }
 
     $values = implode($separator2, $values2);

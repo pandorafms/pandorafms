@@ -1516,7 +1516,8 @@ try {
         [
             'text'  => 'options',
             'class' => 'action_buttons w120px',
-        ],[
+        ],
+        [
             'text'  => 'm',
             'extra' => $checkbox_all,
             'class' => 'mw120px',
@@ -1559,7 +1560,8 @@ try {
             [
                 'text'  => 'options',
                 'class' => 'action_buttons mw120px',
-            ],[
+            ],
+            [
                 'text'  => 'm',
                 'extra' => $checkbox_all,
                 'class' => 'w20px no-text-imp',

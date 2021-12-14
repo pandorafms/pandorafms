@@ -3248,6 +3248,10 @@ function events_get_event_types($type_id)
             $type_desc = __('Not normal');
         break;
 
+        case 'ncm':
+            $type_desc = __('Network configuration manager');
+        break;
+
         default:
             if (isset($config['text_char_long'])) {
                 foreach ($diferent_types as $key => $type) {

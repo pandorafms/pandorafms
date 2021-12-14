@@ -4096,6 +4096,10 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['required'])) {
             $output .= ' required';
         }
+
+        if (isset($options['onchange'])) {
+            $output .= ' onchange="'.$options['onchange'].'"';
+        }
     }
 
     $output .= ' />';
@@ -4488,7 +4492,7 @@ function html_print_switch($attributes=[])
 
     $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch' style='".$attributes['style']."'>
+    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";

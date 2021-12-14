@@ -880,6 +880,14 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'ncm':
+                $report['contents'][] = reporting_ncm_config(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
             default:
                 // Default.
             break;

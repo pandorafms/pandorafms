@@ -2795,6 +2795,13 @@ function reporting_html_alert_report_actions($table, $item, $pdf=0)
 }
 
 
+/**
+ * Draw alert action table.
+ *
+ * @param array $data Data.
+ *
+ * @return string Html output.
+ */
 function get_alert_table($data)
 {
     $table = new StdCLass();
@@ -2807,7 +2814,7 @@ function get_alert_table($data)
 
     $head = reset($data);
     foreach (array_reverse(array_keys($head)) as $name) {
-        $table->head[] = $name;
+        $table->head[] = ucfirst($name);
     }
 
     foreach ($data as $key => $params) {

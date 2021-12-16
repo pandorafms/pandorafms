@@ -63,6 +63,10 @@ CREATE TABLE IF NOT EXISTS `tipam_sites` (
     FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
+INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
+UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
+
 ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;
 ALTER TABLE `tipam_network` ADD FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE;
 ALTER TABLE `tagent_repository` ADD COLUMN `deployment_timeout` INT UNSIGNED DEFAULT 600 AFTER `path`;
@@ -81,7 +85,6 @@ ALTER TABLE `tncm_agent` ADD COLUMN `event_on_change` int unsigned default null 
 ALTER TABLE `tncm_vendor` ADD COLUMN `icon` VARCHAR(255) DEFAULT '';
 ALTER TABLE `tevento` MODIFY COLUMN `event_type` ENUM('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change', 'ncm') DEFAULT 'unknown';
 
-INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
 UPDATE `talert_special_days` set `day_code` = 1 WHERE `same_day` = 'monday';
 UPDATE `talert_special_days` set `day_code` = 2 WHERE `same_day` = 'tuesday';
 UPDATE `talert_special_days` set `day_code` = 3 WHERE `same_day` = 'wednesday';
@@ -91,9 +94,6 @@ UPDATE `talert_special_days` set `day_code` = 6 WHERE `same_day` = 'saturday';
 UPDATE `talert_special_days` set `day_code` = 7 WHERE `same_day` = 'sunday';
 
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
-
-INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
-UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
 UPDATE `tconfig` c1 JOIN (select count(*) as n FROM `tconfig` c2 WHERE (c2.`token` = "node_metaconsole" AND c2.`value` = 1) OR (c2.`token` = "centralized_management" AND c2.`value` = 1) ) v SET c1. `value` = 0 WHERE c1.token = "autocreate_remote_users" AND v.n = 2;
 
 COMMIT;

@@ -5540,7 +5540,24 @@ sub pandora_process_policy_queue ($) {
 			}
 
 			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
+				my $policy_applied = enterprise_hook(
+					'pandora_apply_policy',
+					[
+						$dbh,
+						$pa_config,
+						$operation->{'id_policy'},
+						$operation->{'id_agent'},
+						$operation->{'id'},
+						$operation->{'operation'}
+					]
+				);
+
+				if($policy_applied == 0) {
+					sleep($pa_config->{'server_threshold'});
+					# Skip.
+					next;
+				}
+				
 			}
 			elsif($operation->{'operation'} eq 'delete') {
 				if($operation->{'id_agent'} == 0) {

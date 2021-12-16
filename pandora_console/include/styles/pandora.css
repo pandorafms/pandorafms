@@ -8430,3 +8430,18 @@ div.stat-win-spinner img {
   margin: 5px;
   font-size: 12px;
 }
+
+/*  err_msg_centralised */
+div#err_msg_centralised div {
+  margin-top: 1em;
+  font-size: 14px;
+}
+
+div#err_msg_centralised img {
+  width: 100px;
+  margin-right: 3em;
+}
+div#err_msg_centralised {
+  display: flex;
+  flex-direction: row;
+}

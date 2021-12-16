@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `tipam_sites` (
 
 INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
 INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
+UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
 
 ALTER TABLE `tipam_network` MODIFY `location` int(10) unsigned NULL;
 ALTER TABLE `tipam_network` ADD FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE;
@@ -93,8 +94,6 @@ UPDATE `talert_special_days` set `day_code` = 6 WHERE `same_day` = 'saturday';
 UPDATE `talert_special_days` set `day_code` = 7 WHERE `same_day` = 'sunday';
 
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
-
-UPDATE `tipam_network` INNER JOIN `tipam_network_location` ON tipam_network_location.name=tipam_network.location SET tipam_network.location=tipam_network_location.id;
 UPDATE `tconfig` c1 JOIN (select count(*) as n FROM `tconfig` c2 WHERE (c2.`token` = "node_metaconsole" AND c2.`value` = 1) OR (c2.`token` = "centralized_management" AND c2.`value` = 1) ) v SET c1. `value` = 0 WHERE c1.token = "autocreate_remote_users" AND v.n = 2;
 
 COMMIT;

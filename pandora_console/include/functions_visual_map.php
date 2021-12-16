@@ -2850,9 +2850,6 @@ function get_donut_module_data($id_module)
     foreach ($values as $val) {
         if ($index < $max_elements) {
             $data = explode(',', $val);
-            if ($data[1] == 0) {
-                $data[1] = __('No data');
-            }
 
             if ($no_data_to_show) {
                 $values_to_return[$index]['tag_name'] = $data[0];
@@ -2865,10 +2862,6 @@ function get_donut_module_data($id_module)
             $total += (int) $data[1];
             $index++;
         } else {
-            if ($data[1] == 0) {
-                $data[1] = __('No data');
-            }
-
             $data = explode(',', $val);
             $values_to_return[$index]['tag_name'] = __('Others').': '.$data[1];
             $values_to_return[$index]['color'] = $colors[$index];
@@ -2881,6 +2874,7 @@ function get_donut_module_data($id_module)
         $values_to_return[$ind]['percent'] = (($donut_data['value'] * 100) / $total);
     }
 
+    // sort array
     $new_values_to_return = [];
     while (!empty($values_to_return)) {
         $first = true;

@@ -8430,3 +8430,7 @@ div.stat-win-spinner img {
   margin: 5px;
   font-size: 12px;
 }
+
+.fc-col-header-cell-cushion {
+  color: #fff;
+}

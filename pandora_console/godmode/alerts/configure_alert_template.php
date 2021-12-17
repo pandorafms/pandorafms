@@ -673,7 +673,10 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[0][2] = __('Use special days list');
+    $table->colspan[0][1] = 3;
+    $table->data[0][1] = '<div id="calendar"></div>';
+
+    $table->data[1][0] = __('Use special days list');
     $data_special_days = Calendar::calendars(
         // Fields.
         [ '`talert_calendar`.*' ],
@@ -693,7 +696,7 @@ if ($step == 2) {
         true
     );
 
-    $table->data[0][3] = html_print_select(
+    $table->data[1][1] = html_print_select(
         $data_special_days,
         'special_day',
         $special_day,
@@ -707,8 +710,8 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[1][0] = __('Time from');
-    $table->data[1][1] = html_print_input_text(
+    $table->data[2][0] = __('Time from');
+    $table->data[2][1] = html_print_input_text(
         'time_from',
         $time_from,
         '',
@@ -727,8 +730,8 @@ if ($step == 2) {
         '',
         (!$is_management_allowed | $disabled)
     );
-    $table->data[1][2] = __('Time to');
-    $table->data[1][3] = html_print_input_text(
+    $table->data[2][2] = __('Time to');
+    $table->data[2][3] = html_print_input_text(
         'time_to',
         $time_to,
         '',
@@ -764,8 +767,8 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[3][0] = __('Min. number of alerts');
-    $table->data[3][1] = html_print_input_text(
+    $table->data[4][0] = __('Min. number of alerts');
+    $table->data[4][1] = html_print_input_text(
         'min_alerts',
         $min_alerts,
         '',
@@ -785,12 +788,12 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[3][2] = __('Reset counter for non-sustained alerts');
-    $table->data[3][2] .= ui_print_help_tip(
+    $table->data[4][2] = __('Reset counter for non-sustained alerts');
+    $table->data[4][2] .= ui_print_help_tip(
         __('Enable this option if you want the counter to be reset when the alert is not being fired consecutively, even if it\'s within the time threshold'),
         true
     );
-    $table->data[3][3] = html_print_checkbox(
+    $table->data[4][3] = html_print_checkbox(
         'min_alerts_reset_counter',
         1,
         $min_alerts_reset_counter,
@@ -801,8 +804,8 @@ if ($step == 2) {
         $create_template == 1 ? 'checked=checked' : ''
     );
 
-    $table->data[4][0] = __('Max. number of alerts');
-    $table->data[4][1] = html_print_input_text(
+    $table->data[5][0] = __('Max. number of alerts');
+    $table->data[5][1] = html_print_input_text(
         'max_alerts',
         $max_alerts,
         '',
@@ -822,8 +825,8 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[4][2] = __('Disable event');
-    $table->data[4][3] = html_print_checkbox(
+    $table->data[5][2] = __('Disable event');
+    $table->data[5][3] = html_print_checkbox(
         'disable_event',
         1,
         $disable_event,
@@ -831,7 +834,7 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[5][0] = __('Default action');
+    $table->data[6][0] = __('Default action');
     $usr_groups = implode(
         ',',
         array_keys(users_get_groups($config['id_user'], 'LM', true))
@@ -846,7 +849,7 @@ if ($step == 2) {
         $usr_groups
     );
 
-    $table->data[5][1] = html_print_select_from_sql(
+    $table->data[6][1] = html_print_select_from_sql(
         $sql_query,
         'default_action',
         $default_action,
@@ -861,13 +864,13 @@ if ($step == 2) {
         false,
         0
     );
-    $table->data[5][1] .= ui_print_help_tip(
+    $table->data[6][1] .= ui_print_help_tip(
         __('Unless they\'re left blank, the fields from the action will override those set on the template.'),
         true
     );
 
-    $table->data[6][0] = __('Condition type');
-    $table->data[6][1] = html_print_select(
+    $table->data[7][0] = __('Condition type');
+    $table->data[7][1] = html_print_select(
         alerts_get_alert_templates_types(),
         'type',
         $type,
@@ -880,15 +883,15 @@ if ($step == 2) {
         '',
         (!$is_management_allowed | $disabled)
     );
-    $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
-    $table->data[6][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
-    $table->data[6][1] .= html_print_label(
+    $table->data[7][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
+    $table->data[7][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
+    $table->data[7][1] .= html_print_label(
         __('Trigger when matches the value'),
         'checkbox-matches_value',
         true
     );
-    $table->data[6][1] .= '</span>';
-    $table->colspan[6][1] = 3;
+    $table->data[7][1] .= '</span>';
+    $table->colspan[7][1] = 3;
 
     $table->data['value'][0] = __('Value');
     $table->data['value'][1] = html_print_input_text(
@@ -1277,6 +1280,8 @@ ui_require_javascript_file('pandora_alerts');
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_css_file('main.min', 'include/javascript/fullcalendar/');
+ui_require_javascript_file('main.min', 'include/javascript/fullcalendar/');
 ?>
 
 <script type="text/javascript">
@@ -1542,6 +1547,117 @@ if ($step == 2) {
             $("#template-threshold-other_input").hide ();
         }
     });
+
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      height: 625,
+      headerToolbar: {
+        left: '',
+        center: '',
+        right: ''
+      },
+      dayHeaderFormat: { weekday: 'short' },
+      initialView: 'timeGridWeek',
+      navLinks: false,
+      selectable: true,
+      selectMirror: true,
+      slotDuration: '01:00:00',
+      slotLabelInterval: '02:00:00',
+      snapDuration: '00:05:00',
+      slotLabelFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12:false
+      },
+      slotMinTime: '00:00:00',
+      slotMaxTime: '24:00:00',
+      scrollTime: '00:00:00',
+      timeFormat: 'H:mm',
+      locale: 'en-GB',
+      firstDay: 1,
+      select: function(arg) {
+          //console.log(arg);
+        calendar.addEvent({
+          title: 'hummmm',
+          start: arg.start,
+          end: arg.end,
+        });
+        calendar.unselect()
+      },
+      eventDrop: function(event) {
+        event.revert();
+      },
+      eventClick: function(arg) {
+        console.log(arg);
+
+        var div = document.createElement('div');
+        var input = document.createElement('input');
+        input.setAttribute('type', 'time');
+        input.setAttribute('value', arg.end)
+
+
+          confirmDialog({
+            title: 'Eventoooooo',
+            message: 'ole',
+            onAccept: function() {
+                /*
+                $.ajax({
+                    method: "post",
+                    url: settings.url,
+                    data: {
+                    page: settings.page,
+                    method: "deleteActionAlert",
+                    id_alert: settings.id_alert,
+                    id_action: settings.id_action
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                    // Delete row table.
+                    $(
+                        "#li-al-" + settings.id_alert + "-act-" + settings.id_action
+                    ).remove();
+
+                    var num_row = $("#ul-al-" + settings.id_alert + " li").length;
+                    if (num_row === 0) {
+                        var emptyli =
+                        "<li id='emptyli-al-" +
+                        settings.id_alert +
+                        "'>" +
+                        settings.emptyli +
+                        "</li>";
+                        $("#ul-al-" + settings.id_alert).append(emptyli);
+                    }
+                    },
+                    error: function(error) {
+                    console.log(error);
+                    }
+                });
+                */
+            }
+        });
+
+
+        //arg.event.remove()
+      },
+      eventOverlap: function(stillEvent, movingEvent) {
+        return stillEvent.allDay && movingEvent.allDay;
+      },
+      selectOverlap: function(event) {
+        return event.rendering === 'background';
+      },
+      eventTimeFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12:false
+      },
+      eventColor: '#82b92e',
+      editable: true,
+      dayMaxEvents: false, // allow "more" link when too many events
+      events: []
+    });
+
+    calendar.render();
+
     <?php
 } else if ($step == 3) {
     ?>

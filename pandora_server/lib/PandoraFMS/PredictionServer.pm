@@ -26,7 +26,7 @@ use Thread::Semaphore;
 
 use IO::Socket::INET;
 use Net::Ping;
-use POSIX qw(strftime);
+use POSIX qw(floor strftime);
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -35,6 +35,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
+use PandoraFMS::Statistics::Regression;
 
 #For debug
 #use Data::Dumper;
@@ -224,134 +225,146 @@ sub exec_prediction_module ($$$$) {
 		return;
 	}
 
-	# Get a full hash for target agent_module record reference ($target_module)
-	my $target_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $agent_module->{'custom_integer_1'});
-	return unless defined $target_module;
-	
-	# Prediction mode explanation
-	#
-	# 0 is for target type of generic_proc. It compares latest data with current data. Needs to get
-	# data on a "middle" interval, so if interval is 300, get data to compare with 150  before 
-	# and 150 in the future. If current data is ABOVE or BELOW average +- typical_deviation 
-	# this is a BAD value (0), if not is ok (1) and written in target module as is.
-	# more interval configured for this module, more "margin" has to compare data.
-	#
-	# 1 is for target type of generic_data. It get's data in the future, using the interval given in
-	# module. It gets average from current timestamp to INTERVAL in the future and gets average
-	# value. Typical deviation is not used here. 
-	
-	# 0 proc, 1 data
-	my $prediction_mode = ($agent_module->{'id_tipo_modulo'} == 2) ? 0 : 1;
-	
-	# Initialize another global sub variables.
-	my $module_data = 0;    # 0 data for default
-	
-	# Get current timestamp
-	my $utimestamp = time ();
-	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-	
-	# Get different data from each week one month ago (4 values)
-	# $agent_module->{'module_interval'} uses a margin of interval to get average data from the past
-	my @week_data;
-	my @week_utimestamp;
-	
-	for (my $i=0; $i<4; $i++) {
-		$week_utimestamp[$i] = $utimestamp - (84600*7*($i+1));
-		# Adjust for proc prediction
-		if ($prediction_mode == 0) {
-			$week_utimestamp[$i] = $week_utimestamp[$i] - ($agent_module->{'module_interval'} / 2);
-		}
+	# Trend module.
+	if ($agent_module->{'prediction_module'} == 8) {
+		logger ($pa_config, "Executing trend module " . $agent_module->{'nombre'}, 10);
+		enterprise_hook ('exec_trend_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		return;
 	}
-	
-	# Let's calculate statistical average using past data
-	# n = total of real data values
-	my ($n, $average, $temp1) = (0, 0, 0);
-	for (my $i=0; $i < 4; $i++) {
-		my ($first_data, $last_data, $average_interval);
-		my $sum_data = 0;
-		
-		$temp1 = $week_utimestamp[$i] + $agent_module->{'module_interval'};
-		# Get data for week $i in the past
-		
-		$average_interval = get_db_value ($dbh, 'SELECT AVG(datos)
-			FROM tagente_datos
-			WHERE id_agente_modulo = ?
-				AND utimestamp > ?
-				AND utimestamp < ?', $target_module->{'id_agente_modulo'}, $week_utimestamp[$i], $temp1);
-		
-		# Need to get data outside interval because no data.
-		if (!(defined($average_interval)) || ($average_interval == 0)) {
-			$last_data = get_db_value ($dbh, 'SELECT datos
-				FROM tagente_datos
-				WHERE id_agente_modulo = ?
-					AND utimestamp > ?
-				LIMIT 1', $target_module->{'id_agente_modulo'}, $week_utimestamp[$i]);
-			next unless defined ($last_data);
-			$first_data = get_db_value ($dbh, 'SELECT datos
-				FROM tagente_datos
-				WHERE id_agente_modulo = ?
-					AND utimestamp < ?
-				LIMIT 1', $target_module->{'id_agente_modulo'}, $temp1);
-			next unless defined ($first_data);
-			$sum_data++ if ($last_data != 0);
-			$sum_data++ if ($first_data != 0);
-			$week_data[$i] = ($sum_data > 0) ? (($last_data + $first_data) / $sum_data) : 0;
-		}
-		else {
-			$week_data[$i] = $average_interval;
-		}
-		
-		# It's possible that one of the week_data[i] values was not valid (NULL)
-		# so recheck it and relay on n=0 for "no data" values set to 0 in result
-		# Calculate total ammount of valida data for each data sample
-		if ((is_numeric($week_data[$i])) && ($week_data[$i] > 0)) {
-			$n++;
-			# Average SUM
-			$average = $average + $week_data[$i];
-		}
+
+	# Capacity planning module.
+	exec_capacity_planning_module($pa_config, $agent_module, $server_id, $dbh);
+}
+
+########################################################################
+# Execute a capacity planning module.
+########################################################################
+sub exec_capacity_planning_module($$$$) {
+	my ($pa_config, $module, $server_id, $dbh) = @_;
+	my $pred;
+
+	# Retrieve the target module.
+	my $target_module = get_db_single_row($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $module->{'custom_integer_1'});
+	if (!defined($target_module)) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
 	}
-	
-	# Real average value
-	$average = ($n > 0) ? ($average / $n) : 0;
-	
-	# (PROC) Compare with current data
-	if ($prediction_mode == 0) {
-		# Calculate typical deviation
-		my $typical_deviation = 0;
-		for (my $i=0; $i< $n; $i++) {
-			if ((is_numeric($week_data[$i])) && ($week_data[$i] > 0)) {
-				$typical_deviation = $typical_deviation + (($week_data[$i] - $average)**2);
+
+	# Set the period.
+	my $period;
+
+	# Weekly.
+	if ($module->{'custom_integer_2'} == 0) {
+		$period = 604800;
+	}
+	# Monthly.
+	elsif ($module->{'custom_integer_2'} == 1) {
+		$period = 2678400;
+	}
+	# Daily.
+	else {
+		$period = 86400;
+	}
+
+	# Set other parameters.
+	my $now = time();
+	my $from = $now - $period;
+	my $type = $module->{'custom_string_2'};
+	my $target_value = $module->{'custom_string_1'};
+
+	# Fit a line of the form: y = theta_0 + x * theta_1
+	my ($theta_0, $theta_1);
+	eval {
+		($theta_0, $theta_1) = linear_regression($target_module, $from, $now, $dbh);
+	};
+	if (!defined($theta_0) || !defined($theta_1)) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+
+	# Predict the value.
+	if ($type eq 'estimation_absolute') {
+		# y = theta_0 + x * theta_1
+		$pred = $theta_0 + ($now + $target_value) * $theta_1;
+
+		# Clip predictions.
+		if ($target_module->{'max'} != $target_module->{'min'}) {
+			if ($pred < $target_module->{'min'}) {
+				$pred = $target_module->{'min'};
+			}
+			elsif ($pred > $target_module->{'max'}) {
+				$pred = $target_module->{'max'};
 			}
 		}
-		$typical_deviation = ($n > 1) ? sqrt ($typical_deviation / ($n-1)) : 0;
-		
-		my $current_value = get_db_value ($dbh, 'SELECT datos
-			FROM tagente_estado
-			WHERE id_agente_modulo = ?', $target_module->{'id_agente_modulo'});
-		if ( ($current_value > ($average - $typical_deviation)) && ($current_value < ($average + $typical_deviation)) ){
-			$module_data = 1; # OK !!
-		}
-		else {
-			$module_data = 0; # Out of predictions
-		}
 	}
+	# Predict the date.
 	else {
-		# Prediction based on data
-		$module_data = $average;
+		# Infinity.
+		if ($theta_1 == 0) {
+			$pred = -1;
+		} else {
+			# x = (y - theta_0) / theta_1
+			$pred = ($target_value - $theta_0) / $theta_1;
+
+			# Convert the prediction from a unix timestamp to days from now.
+			$pred = ($pred - $now) / 86400;
+
+			# We are not interested in past dates.
+			if ($pred < 0) {
+				$pred = -1;
+			}
+		}
 	}
 	
-	my %data = ("data" => $module_data);
-	pandora_process_module ($pa_config, \%data, '', $agent_module, '', $timestamp, $utimestamp, $server_id, $dbh);
+	# Update the module.
+	my %data = ("data" => $pred);
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+	pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
 	
-	my $agent_os_version = get_db_value ($dbh, 'SELECT os_version
-		FROM tagente
-		WHERE id_agente = ?', $agent_module->{'id_agente'});
-	
+	# Update the agent.
+	my $agent_os_version = get_db_value ($dbh, 'SELECT os_version FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 	if ($agent_os_version eq ''){
 		$agent_os_version = $pa_config->{'servername'}.'_Prediction';
 	}
-	
-	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, undef, undef, -1, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
+}
+
+########################################################################
+# Perform linear regression on the given module.
+########################################################################
+sub linear_regression($$$$) {
+	my ($module, $from, $to, $dbh) = @_;
+
+	# Should not happen.
+	return if ($module->{'module_interval'} < 1);
+
+	# Retrieve the data.
+	my @rows = get_db_rows($dbh, 'SELECT datos, utimestamp FROM tagente_datos WHERE id_agente_modulo = ? AND utimestamp > ? AND utimestamp < ? ORDER BY utimestamp ASC', $module->{'id_agente_modulo'}, $from, $to);
+	return if scalar(@rows) <= 0;
+
+	# Perform linear regression on the data.
+	my $reg = PandoraFMS::Statistics::Regression->new( "linear regression", ["const", "x"] );
+	my $prev_utimestamp = $from;
+	foreach my $row (@rows) {
+		my ($utimestamp, $data) = ($row->{'utimestamp'}, $row->{'datos'});
+
+		# Elapsed time.
+		my $elapsed = $utimestamp - $prev_utimestamp;
+		$elapsed = 1 unless $elapsed > 0;
+		$prev_utimestamp = $utimestamp;
+
+		# Number of points (Pandora compresses data!)
+		my $local_count = floor($elapsed / $module->{'module_interval'});
+		$local_count = 1 if $local_count <= 0;
+
+		# Add the points.
+		for (my $i = 0; $i < $local_count; $i++) {
+			$reg->include($data, [1.0, $utimestamp]);
+		}
+	}
+
+	return $reg->theta();
 }
 
 1;

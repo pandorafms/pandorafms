@@ -532,6 +532,8 @@ function network_components_create_module_from_network_component($id_network_com
             'min_ff_event',
             'critical_inverse',
             'warning_inverse',
+            'percentage_warning',
+            'percentage_critical',
             'module_critical_instructions',
             'module_warning_instructions',
             'module_unknown_instructions',

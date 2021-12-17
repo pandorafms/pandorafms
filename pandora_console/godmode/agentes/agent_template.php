@@ -96,6 +96,8 @@ if (isset($_POST['template_id'])) {
                 'str_critical'          => $row2['str_critical'],
                 'critical_inverse'      => $row2['critical_inverse'],
                 'warning_inverse'       => $row2['warning_inverse'],
+                'percentage_warning'    => $row2['percentage_warning'],
+                'percentage_critical'   => $row2['percentage_critical'],
                 'critical_instructions' => $row2['critical_instructions'],
                 'warning_instructions'  => $row2['warning_instructions'],
                 'unknown_instructions'  => $row2['unknown_instructions'],

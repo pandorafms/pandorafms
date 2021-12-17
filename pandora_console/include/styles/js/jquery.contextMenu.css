@@ -104,7 +104,7 @@
 .context-menu-item.icon {
   min-height: 18px;
   background-repeat: no-repeat;
-  background-position: 4px 2px;
+  background-position: 4px center;
 }
 .context-menu-item.icon-edit {
   background-image: url(../../../images/page_white_edit.png);
@@ -162,6 +162,9 @@
 }
 .context-menu-item.icon-interface_link_cancel {
   background-image: url(../../../images/link_abortar.png);
+}
+.context-menu-item.icon-show {
+  background-image: url(../../../images/eye_show.png);
 }
 
 /* vertically align inside labels */

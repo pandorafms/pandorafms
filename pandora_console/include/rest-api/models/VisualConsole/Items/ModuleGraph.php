@@ -327,6 +327,10 @@ final class ModuleGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
 
+        if ($height == 0) {
+            $height = 15;
+        }
+
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);

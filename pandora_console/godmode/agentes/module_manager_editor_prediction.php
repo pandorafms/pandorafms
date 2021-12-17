@@ -14,6 +14,7 @@
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
 require_once 'include/functions_agents.php';
+ui_require_jquery_file('validate');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -36,9 +37,9 @@ if ($row !== false && is_array($row)) {
     // Services are an Enterprise feature.
     $custom_integer_1 = $row['custom_integer_1'];
 
-    switch ($prediction_module) {
+    switch ((int) $prediction_module) {
         case MODULE_PREDICTION_SERVICE:
-            $is_service = true;
+            $selected = 'service_selected';
             $custom_integer_2 = 0;
         break;
 
@@ -61,13 +62,25 @@ if ($row !== false && is_array($row)) {
 
 
             if (isset($first_op[1]) && $first_op[1] == 'avg') {
-                $is_synthetic_avg = true;
+                $selected = 'synthetic_avg_selected';
             } else {
-                $is_synthetic = true;
+                $selected = 'synthetic_selected';
             }
 
             $custom_integer_1 = 0;
             $custom_integer_2 = 0;
+        break;
+
+        case MODULE_PREDICTION_TRENDING:
+            $selected = 'trending_selected';
+            $prediction_module = $custom_integer_1;
+        break;
+
+        case MODULE_PREDICTION_PLANNING:
+            $selected = 'capacity_planning';
+            $prediction_module = $custom_integer_1;
+            $estimation_interval = $custom_string_1;
+            $estimation_type = $custom_string_2;
         break;
 
         default:
@@ -75,6 +88,7 @@ if ($row !== false && is_array($row)) {
         break;
     }
 } else {
+    $selected = 'capacity_planning';
     $custom_integer_1 = 0;
 }
 
@@ -97,7 +111,7 @@ $data[0] = __('Source module');
 $data[0] .= ui_print_help_icon('prediction_source_module', true);
 $data[1] = '';
 // Services and Synthetic are an Enterprise feature.
-$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$is_service, $is_synthetic, $is_synthetic_avg]);
+$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$selected]);
 if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
     $data[1] = $module_service_synthetic_selector;
 
@@ -112,16 +126,17 @@ $data[1] = '<div id="module_data" class="w50p float-left top-1em">';
 $data[1] .= html_print_label(__('Agent'), 'agent_name', true).'<br/>';
 
 // Get module and agent of the target prediction module
-if (!empty($prediction_module)) {
+if (empty($prediction_module) === false) {
     $id_agente_clean = modules_get_agentmodule_agent($prediction_module);
     $prediction_module_agent = modules_get_agentmodule_agent_name($prediction_module);
     $agent_name_clean = $prediction_module_agent;
+    $agent_alias = agents_get_alias($id_agente_clean);
 } else {
-    $id_agente_clean = $id_agente;
-    $agent_name_clean = $agent_name;
+    $id_agente_clean = 0;
+    $agent_name_clean = '';
+    $agent_alias = '';
 }
 
-$agent_alias = agents_get_alias($id_agente_clean);
 
 $params = [];
 $params['return'] = true;
@@ -135,7 +150,8 @@ $params['use_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
 $data[1] .= ui_print_agent_autocomplete_input($params);
 
-$data[1] .= html_print_label(__('Module'), 'prediction_module', true);
+$data[1] .= '<br />';
+$data[1] .= html_print_label(__('Module'), 'prediction_module', true).'<br />';
 if ($id_agente) {
     $sql = 'SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
@@ -143,19 +159,23 @@ if ($id_agente) {
 			AND history_data = 1
 			AND id_agente =  '.$id_agente_clean.'
 			AND id_agente_modulo  <> '.$id_agente_modulo;
-    $data[1] .= html_print_select_from_sql(
-        $sql,
-        'prediction_module',
-        $prediction_module,
-        false,
-        __('Select Module'),
-        0,
-        true
+
+    $data[1] .= html_print_input(
+        [
+            'type'          => 'select_from_sql',
+            'sql'           => $sql,
+            'name'          => 'prediction_module',
+            'selected'      => $prediction_module,
+            'nothing'       => __('Select Module'),
+            'nothing_value' => 0,
+            'return'        => true,
+        ]
     );
 } else {
     $data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
 
+$data[1] .= '<br />';
 $data[1] .= html_print_label(__('Period'), 'custom_integer_2', true).'<br/>';
 
 $periods[0] = __('Weekly');
@@ -168,6 +188,56 @@ $data[1] .= '</div>';
 
 $table_simple->colspan['prediction_module'][1] = 3;
 push_table_simple($data, 'prediction_module');
+
+$data = [];
+$data[0] = '';
+
+$data[1] .= html_print_label(__('Calculation type'), 'estimation_type', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'     => 'select',
+        'return'   => 'true',
+        'name'     => 'estimation_type',
+        'class'    => 'w250px',
+        'fields'   => [
+            'estimation_absolute'    => __('Estimated absolute value'),
+            'estimation_calculation' => __('Calculation of days to reach limit'),
+        ],
+        'selected' => $estimation_type,
+    ],
+    'div',
+    false
+);
+
+$data[1] .= '<div id="estimation_interval_row">';
+$data[1] .= html_print_label(__('Future estimation'), 'estimation_interval', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'   => 'interval',
+        'return' => 'true',
+        'name'   => 'estimation_interval',
+        'value'  => $estimation_interval,
+    ],
+    'div',
+    false
+);
+$data[1] .= '</div>';
+
+
+$data[1] .= '<div id="estimation_days_row">';
+$data[1] .= html_print_label(__('Limit value'), 'estimation_days', true).'<br/>';
+$data[1] .= html_print_input(
+    [
+        'type'   => 'number',
+        'return' => 'true',
+        'id'     => 'estimation_days',
+        'name'   => 'estimation_days',
+        'value'  => $estimation_interval,
+    ]
+);
+$data[1] .= '</div>';
+
+push_table_simple($data, 'capacity_planning');
 
 // Services are an Enterprise feature.
 $selector_form = enterprise_hook('get_selector_form', [$custom_integer_1]);
@@ -187,9 +257,19 @@ if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
     $data[0] = '';
     $data[1] = $synthetic_module_form;
 
-    $table_simple->colspan['synthetic_module'][1] = 3;
     push_table_simple($data, 'synthetic_module');
 }
+
+$trending_module_form = enterprise_hook('get_trending_module_form', [$custom_string_1]);
+if ($trending_module_form !== ENTERPRISE_NOT_HOOK) {
+    $data = [];
+    $data[0] = '';
+    $data[1] .= $trending_module_form;
+
+    push_table_simple($data, 'trending_module');
+}
+
+
 
 // Netflow modules are an Enterprise feature.
 $netflow_module_form = enterprise_hook('get_netflow_module_form', [$custom_integer_1]);
@@ -214,9 +294,7 @@ unset($table_advanced->data[3]);
         enterprise_hook(
             'setup_services_synth',
             [
-                $is_service,
-                $is_synthetic,
-                $is_synthetic_avg,
+                $selected,
                 $is_netflow,
                 $ops,
             ]

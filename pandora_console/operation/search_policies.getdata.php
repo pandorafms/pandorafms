@@ -208,14 +208,7 @@ if ($searchpolicies === true) {
     $sql = "SELECT id, name, description, id_group, status
             FROM tpolicies 
             WHERE name LIKE '$stringSearchSQL'
-            AND 
-                (id_group IN ($id_user_groups_str)
-                OR 1 = (
-                    SELECT is_admin
-                    FROM tusuario
-                    WHERE id_user = 'admin'
-                )
-            )
+            AND id_group IN ($id_user_groups_str)
         ";
 }
 

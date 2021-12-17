@@ -421,12 +421,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         INNER JOIN tagente_modulo t2
             ON talert_template_modules.id_agent_module = t2.id_agente_modulo
         INNER JOIN tagente t3
-            ON t2.id_agente = t3.id_agente
+            ON t2.id_agente = t3.id_agente %s
         %s
         INNER JOIN talert_templates t4
             ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s',
         $selectText,
+        ($id_agent !== false && is_array($id_agent)) ? 'AND t3.id_agente IN ('.implode(',', $id_agent).')' : '',
         $secondary_join,
         $subQuery,
         $where,
@@ -434,39 +435,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         $orderbyText
     );
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " LIMIT $offset, $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-            $alerts = db_get_all_rows_sql($sql);
-        break;
-
-        case 'postgresql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " OFFSET $offset LIMIT $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-
-            $alerts = db_get_all_rows_sql($sql);
-
-        break;
-
-        case 'oracle':
-            $set = [];
-            if (isset($offset) && isset($limit)) {
-                $set['limit'] = $limit;
-                $set['offset'] = $offset;
-            }
-
-            $alerts = oracle_recode_query($sql, $set, 'AND', false);
-        break;
+    $limit_sql = '';
+    if (isset($offset) && isset($limit)) {
+        $limit_sql = " LIMIT $offset, $limit ";
     }
+
+    $sql = sprintf('%s %s', $sql, $limit_sql);
+    $alerts = db_get_all_rows_sql($sql);
 
     if ($alerts === false) {
         return [];
@@ -679,7 +654,7 @@ function agents_get_agents(
     // Add the group filter to
     $where = db_format_array_where_clause_sql($filter, 'AND', '('.$where_secondary.') AND ');
     if ($where == '' && $where_secondary != '') {
-        $where = $where_secondary;
+        $where = '('.$where_secondary.')';
     }
 
     $where_nogroup = db_format_array_where_clause_sql(
@@ -755,6 +730,63 @@ function agents_get_agents(
     }
 
     return $agents;
+}
+
+
+function agents_get_agents_selected($group)
+{
+    if (is_metaconsole() === true) {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_tagente',
+                'id_tmetaconsole_setup',
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            true
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    } else {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ]
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_agente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $all;
 }
 
 
@@ -1181,6 +1213,10 @@ function agents_get_group_agents(
             }
         }
 
+        if (isset($search['all_agents'])) {
+            unset($search['all_agents']);
+        }
+
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
             $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
@@ -1283,7 +1319,7 @@ function agents_get_group_agents(
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
             foreach ($search as $key => $value) {
-                $filter[] = $value;
+                $filter[$key] = $value;
             }
         }
     } else if ($filter !== true) {
@@ -1667,6 +1703,85 @@ function agents_get_name($id_agent, $case='none')
 
             break;
     }
+}
+
+
+/**
+ * Get the agents names of an agent.
+ *
+ * @param array $array_ids Agents ids.
+ *
+ * @return array Id => name.
+ */
+function agents_get_alias_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        $agents = array_reduce(
+            $array_ids,
+            function ($carry, $item) {
+                $explode = explode('|', $item);
+
+                $carry[$explode[0]][] = $explode[1];
+                return $carry;
+            }
+        );
+
+        $result = [];
+        foreach ($agents as $tserver => $id_agents) {
+            $sql = sprintf(
+                'SELECT id_tagente as id, alias as `name`
+                FROM tmetaconsole_agent
+                WHERE id_tagente IN (%s) AND id_tmetaconsole_setup = %d',
+                implode(',', $id_agents),
+                $tserver
+            );
+
+            $data_server = db_get_all_rows_sql($sql);
+
+            if ($data_server === false) {
+                $data_server = [];
+            }
+
+            $data_server = array_reduce(
+                $data_server,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+
+            $result[$tserver] = $data_server;
+        }
+    } else {
+        $sql = sprintf(
+            'SELECT id_agente as id, alias as `name`
+            FROM tagente
+            WHERE id_agente IN (%s)',
+            implode(',', $array_ids)
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        if ($result === false) {
+            $result = [];
+        }
+
+        $result = array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $result;
 }
 
 

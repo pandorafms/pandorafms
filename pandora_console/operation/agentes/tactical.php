@@ -98,6 +98,7 @@ $data['monitor_critical'] = (int) $all_data['_monitors_critical_'];
 $data['monitor_not_normal'] = (int) $all_data['_monitor_not_normal_'];
 $data['monitor_alerts'] = (int) $all_data['_monitors_alerts_'];
 $data['monitor_alerts_fired'] = (int) $all_data['_monitors_alerts_fired_'];
+$data['monitor_total'] = (int) $all_data['_monitor_total_'];
 
 $data['total_agents'] = (int) $all_data['_total_agents_'];
 

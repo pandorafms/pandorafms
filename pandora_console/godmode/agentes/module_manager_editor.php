@@ -99,6 +99,9 @@ if (is_ajax()) {
         $component['str_critical'] = io_safe_output($component['str_critical']);
         $component['warning_inverse'] = (bool) $component['warning_inverse'];
         $component['critical_inverse'] = (bool) $component['critical_inverse'];
+        $component['percentage_warning'] = (bool) $component['percentage_warning'];
+        $component['percentage_critical'] = (bool) $component['percentage_critical'];
+
 
         echo io_json_mb_encode($component);
         return;
@@ -328,6 +331,9 @@ if ($id_agent_module) {
 
     $critical_inverse = $module['critical_inverse'];
     $warning_inverse = $module['warning_inverse'];
+    $percentage_critical = $module['percentage_critical'];
+    $percentage_warning = $module['percentage_warning'];
+
 
     $id_category = $module['id_category'];
 
@@ -467,6 +473,8 @@ if ($id_agent_module) {
 
         $critical_inverse = '';
         $warning_inverse = '';
+        $percentage_critical = '';
+        $percentage_warning = '';
 
         $each_ff = 0;
         $ff_event_normal = '';

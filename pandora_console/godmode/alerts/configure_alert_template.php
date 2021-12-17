@@ -1591,10 +1591,17 @@ if ($step == 2) {
         console.log(arg);
 
         var div = document.createElement('div');
-        var input = document.createElement('input');
-        input.setAttribute('type', 'time');
-        input.setAttribute('value', arg.end)
 
+        var input_start = document.createElement('input');
+        input_start.setAttribute('type', 'time');
+        input_start.setAttribute('value', arg.start);
+
+        var input_end = document.createElement('input');
+        input_end.setAttribute('type', 'time');
+        input_end.setAttribute('value', arg.end);
+
+        div.append(input_start);
+        div.append(input_end);
 
           confirmDialog({
             title: 'Eventoooooo',

@@ -25,6 +25,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$DBROOTPASS" ] || DBROOTPASS=pandora
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
+[ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -526,6 +527,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/$VERSION/client64/lib
 export ORACLE_HOME=/usr/lib/oracle/$VERSION/client64
 EOF_ENV
 
+if [ "$SKIP_KERNEL_OPTIMIZATIONS" -eq '0' ] ; then
 # Kernel optimization
 cat >> /etc/sysctl.conf <<EO_KO
 # Pandora FMS Optimization
@@ -554,6 +556,7 @@ net.core.optmem_max = 81920
 EO_KO
 
 [ -d /dev/lxd/ ] || execute_cmd "sysctl --system" "Applying Kernel optimization"
+fi
 
 # Fix pandora_server.{log,error} permissions to allow Console check them
 chown pandora:apache /var/log/pandora
@@ -619,7 +622,7 @@ systemctl enable pandora_websocket_engine &>> "$LOGFILE"
 
 # Enable pandora ha service
 systemctl enable pandora_server --now &>> "$LOGFILE"
-execute_cmd "systemctl start pandora_server" "Starting Pandora FMS Server"
+execute_cmd "/etc/init.d/pandora_server start" "Starting Pandora FMS Server"
 
 # starting tentacle server
 systemctl enable tentacle_serverd &>> "$LOGFILE"

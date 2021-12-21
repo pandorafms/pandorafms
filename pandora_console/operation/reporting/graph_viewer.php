@@ -334,12 +334,12 @@ if ($view_graph) {
     }
 
     $period_label = human_time_description_raw($period);
-    echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
+    echo '<form method="POST" action="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph">';
     echo "<table class='databox filters w100p' cellpadding='4' cellspacing='4'>";
     echo '<tr>';
 
     echo '<td>';
-    echo '<b>'.__('Date').'</b>'.' ';
+    echo '<b>'.__('Date').'</b>';
     echo '</td>';
 
     echo '<td>';
@@ -396,16 +396,18 @@ if ($view_graph) {
     echo '</tr>';
     echo '</table>';
     echo '</form>';
+
     /*
         We must add javascript here. Otherwise, the date picker won't
-    work if the date is not correct because php is returning. */
+        work if the date is not correct because php is returning.
+    */
 
     ui_include_time_picker();
     ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
     ui_require_jquery_file('');
     ?>
     <script language="javascript" type="text/javascript">
-    
+
     $(document).ready (function () {
         $("#spinner_loading").hide();
         $("#loading").slideUp ();
@@ -419,9 +421,9 @@ if ($view_graph) {
             secondText: '<?php echo __('Second'); ?>',
             currentText: '<?php echo __('Now'); ?>',
             closeText: '<?php echo __('Close'); ?>'});
-        
+
         $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-        
+
         $("#text-date").datepicker({
             dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
             changeMonth: true,
@@ -434,19 +436,22 @@ if ($view_graph) {
             $("#thresholdDiv").hide();
         }
 
-        $("#submit-refresh").click(function(e){
+        $("#submit-refresh").click(function(e) {
             e.preventDefault();
             $("#spinner_loading").show();
             var data = {
                 page: "operation/reporting/graph_viewer",
                 view_graph: 1,
                 id: '<?php echo $id_graph; ?>',
-                zoom: '<?php echo $zoom; ?>',
-                date: '<?php echo $date; ?>',
-                time: '<?php echo $time; ?>',
-                period: '<?php echo $period; ?>',
-                stacked: '<?php echo $stacked; ?>',
-                threshold: '<?php echo $check; ?>',
+                zoom: $('#zoom').val(),
+                date: $('#text-date').val(),
+                time: $('#text-time').val(),
+                period: $('select[id^=period][id$=select]').val(),
+                stacked: $('#stacked').val(),
+            }
+
+            if (data['stacked'] == 4 && $('#checkbox-threshold').is(':checked')) {
+                data['threshold'] = 1;
             }
 
             $.ajax({
@@ -479,7 +484,7 @@ if ($view_graph) {
         }
     });
     </script>
-    
+
     <?php
     $datetime = strtotime($date.' '.$time);
     $report['datetime'] = $datetime;
@@ -492,7 +497,7 @@ if ($view_graph) {
     return;
 }
 
-// Header
+// Header.
 ui_print_page_header(__('Reporting').' &raquo;  '.__('Custom graph viewer'), 'images/op_reporting.png', false, '', false, '');
 
 

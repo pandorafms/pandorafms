@@ -539,6 +539,8 @@ $table->data[9][1] = html_print_input_text('map_default_altitude', $map_default_
 
 html_print_table($table);
 
+$user_groups = users_get_groups($config['user'], 'AR', false);
+
 echo '<h3>'.__('Layers').'</h3>';
 
 $table->width = '100%';
@@ -562,7 +564,7 @@ $table->data[1][1] = '<div id="form_layer" class="invisible">
 			</tr>
 			<tr>
 				<td>'.__('Show agents from group').':</td>
-				<td colspan="3">'.html_print_select_groups(false, $access, $display_all_group, 'layer_group_form', '-1', '', __('None'), '-1', true).'</td>
+                <td colspan="3">'.html_print_select($user_groups, 'layer_group_form', '-1', '', __('none'), '-1', true).'</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>
@@ -883,7 +885,7 @@ function setLayerEditorData (data) {
     var $layerFormIdInput = $("input#hidden-current_edit_layer_id");
     var $layerFormNameInput = $("input#text-layer_name_form");
     var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
-    var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
+    var $layerFormAgentsFromGroupSelect = $("#layer_group_form");
     var $layerFormAgentInput = $("input#text-agent_alias");
     var $layerFormAgentButton = $("input#button-add_agent");
     var $layerFormAgentsListItems = $("tr.agents_list_item");
@@ -892,7 +894,8 @@ function setLayerEditorData (data) {
     $layerFormIdInput.val(data.id);
     $layerFormNameInput.val(data.name);
     $layerFormVisibleCheckbox.prop("checked", data.visible);
-    $layerFormAgentsFromGroupSelect.val(data.agentsFromGroup);
+    $(`#layer_group_form option[value=${data.agentsFromGroup}]`).attr('selected', 'selected');
+    $(`#layer_group_form`).trigger('change');
     $layerFormAgentInput.val("");
     $layerFormAgentButton.prop("disabled", true);
     $layerFormAgentsListItems.remove();
@@ -981,7 +984,7 @@ function unbindLayerEditorEvents () {
 
     $layerFormNameInput.unbind("change");
     $layerFormVisibleCheckbox.unbind("click");
-    $layerFormAgentsFromGroupSelect.unbind("change");
+    $layerFormAgentsFromGroupSelect.val('-1');
 }
 
 function getAgentRow (layerId, agentId, agentAlias) {
@@ -990,7 +993,7 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?> </a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', false, ['class' => 'invert_filter']); ?> </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);

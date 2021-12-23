@@ -21,8 +21,6 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
         'ACL Violation',
@@ -49,6 +47,8 @@ if (is_ajax()) {
         return;
     }
 }
+
+enterprise_hook('open_meta_frame');
 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
@@ -747,6 +747,7 @@ $(document).ready (function () {
 
                     if ($('#field5_value').val() !== '') {
                         ajax_get_integria_custom_fields($('#field5_value').val(), integria_custom_fields_values, integria_custom_fields_rvalues);
+                        $('#field5_value').trigger('change');
                     }
 
                     $('#field5_value').on('change', function() {

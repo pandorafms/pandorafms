@@ -9817,19 +9817,21 @@ function reporting_set_conf_charts(
     $content,
     &$ttl
 ) {
+    global $config;
+
     switch ($type) {
         case 'dinamic':
         default:
             $only_image = false;
             $width = 900;
-            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : $config['graph_image_height'];
             $ttl = 1;
         break;
 
         case 'static':
             $ttl = 2;
             $only_image = true;
-            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : $config['graph_image_height'];
             $width = 650;
         break;
 

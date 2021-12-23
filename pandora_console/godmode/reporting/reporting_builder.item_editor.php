@@ -211,7 +211,7 @@ switch ($action) {
         $failover_type = REPORT_FAILOVER_TYPE_NORMAL;
         $server_name = '';
         $server_id = 0;
-        $dyn_height = 230;
+        $dyn_height = (empty($config['graph_image_height']) === false) ? $config['graph_image_height'] : REPORT_ITEM_DYNAMIC_HEIGHT;
         $landscape = false;
         $pagebreak = false;
         $summary = 0;
@@ -252,7 +252,7 @@ switch ($action) {
                 $server_name = '';
                 $server_id = 0;
                 $get_data_editor = false;
-                $dyn_height = 230;
+                $dyn_height = (empty($config['graph_image_height']) === false) ? $config['graph_image_height'] : REPORT_ITEM_DYNAMIC_HEIGHT;
             break;
         }
 

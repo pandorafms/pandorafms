@@ -1385,9 +1385,15 @@ if ($update_module || $create_module) {
         $custom_integer_2_default = $module['custom_integer_2'];
     }
 
-    if ($id_module_type == 25) {
+    if ($id_module_type === 25) {
         // Web analysis, from MODULE_WUX.
-        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1', $custom_string_1_default));
+        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1'));
+        // If the custom_string_1 parameter come empty, set the content
+        // of the module (it is base64_encoded).
+        if (empty($custom_string_1) === true) {
+            $custom_string_1 = $custom_string_1_default;
+        }
+
         $custom_integer_1 = (int) get_parameter('custom_integer_1', $custom_integer_1_default);
     } else {
         $custom_string_1 = (string) get_parameter('custom_string_1', $custom_string_1_default);
@@ -1402,7 +1408,7 @@ if ($update_module || $create_module) {
     $macros = (string) get_parameter('macros');
     $macros_names = (array) get_parameter('macro_name', []);
 
-    if (!empty($macros)) {
+    if (empty($macros) === false) {
         $macros = json_decode(base64_decode($macros), true);
 
         foreach ($macros as $k => $m) {

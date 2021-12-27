@@ -329,7 +329,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.
-        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, true).'</a>';
+        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, false).'</a>';
     }
 
     $output .= '</td>
@@ -2748,7 +2748,8 @@ function ui_print_module_status(
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
-    $output .= '" title="'.$title.'"></div>';
+    $output .= ' forced_title" data-title="'.$title.'" title="';
+    $output .= $title.'" data-use_title_for_force_title="1"></div>';
 
     if ($return === false) {
         echo $output;
@@ -3459,6 +3460,11 @@ function ui_print_datatable(array $parameters)
         }
     }
 
+    $export_columns = '';
+    if ($parameters['csv_exclude_latest'] === true) {
+        $export_columns = ',columns: \'th:not(:last-child)\'';
+    }
+
     $js .= '
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
@@ -3489,8 +3495,7 @@ function ui_print_datatable(array $parameters)
                             order : "current",
                             page : "All",
                             search : "applied"
-                        },
-                        columns: [1,'.$columns.']
+                        }'.$export_columns.'
                     }
                 }
             ],

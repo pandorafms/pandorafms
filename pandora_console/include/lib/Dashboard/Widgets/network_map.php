@@ -317,7 +317,7 @@ class NetworkMapWidget extends Widget
                 'type'     => 'select',
                 'fields'   => $fields,
                 'name'     => 'networkmapId',
-                'selected' => $values['networkmapId'],
+                'selected' => $selected,
                 'return'   => true,
             ],
         ];

@@ -83,16 +83,18 @@ $in_process_event = get_parameter('in_process_event', 0);
 $validate_event = get_parameter('validate_event', 0);
 $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
-$get_comments = get_parameter('get_comments', 0);
+$get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
-if ($get_comments) {
+if ($get_comments === true) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
 
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
+
+    $eventsGrouped = [];
 
     if ($filter['group_rep'] == 1) {
         $events = events_get_all(
@@ -119,23 +121,52 @@ if ($get_comments) {
             // True for show comments of validated events.
             true
         );
+
         if ($events !== false) {
             $event = $events[0];
         }
     } else {
-        $events = events_get_event(
-            $event['id_evento'],
-            false,
-            $meta,
-            $history
-        );
+        // Consider if the event is grouped.
+        if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
+            // Evaluate if we are in metaconsole or not.
+            $eventTable = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+            // Default grouped message filtering (evento and estado).
+            $whereGrouped = sprintf(
+                '`evento` = "%s" AND `estado` = "%s"',
+                io_safe_output($event['evento']),
+                $event['estado']
+            );
+            // If id_agente is reported, filter the messages by them as well.
+            if ((int) $event['id_agente'] > 0) {
+                $whereGrouped .= sprintf(' AND `id_agente` = "%s"', $event['id_agente']);
+            }
 
-        if ($events !== false) {
-            $event = $events;
+            // Get grouped comments.
+            $eventsGrouped = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT `user_comment`
+                    FROM `%s`
+                    WHERE %s',
+                    $eventTable,
+                    $whereGrouped
+                )
+            );
+        } else {
+            $events = events_get_event(
+                $event['id_evento'],
+                false,
+                is_metaconsole(),
+                $history
+            );
+
+            if ($events !== false) {
+                $event = $events;
+            }
         }
     }
 
-    echo events_page_comments($event, true);
+    // End of get_comments.
+    echo events_page_comments($event, true, $eventsGrouped);
 
     return;
 }
@@ -1207,25 +1238,18 @@ if ($dialogue_event_response) {
     }
 }
 
-if ($add_comment) {
-    $aviability_comment = true;
-    $comment = get_parameter('comment');
+if ($add_comment === true) {
+    $comment = (string) get_parameter('comment');
+    $eventId = (int) get_parameter('event_id');
+
+    // Safe comments for hacks.
     if (preg_match('/script/i', io_safe_output($comment))) {
-        $aviability_comment = false;
         $return = false;
-    }
-
-    $event_id = get_parameter('event_id');
-
-    if ($aviability_comment !== false) {
-        $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
-    }
-
-    if ($return) {
-        echo 'comment_ok';
     } else {
-        echo 'comment_error';
+        $return = events_comment($eventId, $comment, 'Added comment', $meta, $history);
     }
+
+    echo ($return === true) ? 'comment_ok' : 'comment_error';
 
     return;
 }
@@ -1309,6 +1333,14 @@ if ($get_extended_event) {
         && isset($config['event_replication'])
         && $config['event_replication'] == 1
         && $config['show_events_in_local'] == 1
+        || enterprise_hook(
+            'enterprise_acl',
+            [
+                $config['id_user'],
+                'eventos',
+                'execute_event_responses',
+            ]
+        ) === false
     ) {
         $readonly = true;
     }
@@ -1330,6 +1362,10 @@ if ($get_extended_event) {
     $timestamp_first = $event['min_timestamp'];
     $timestamp_last = $event['max_timestamp'];
     $server_id = $event['server_id'];
+    if (empty($server_id) && !empty($event['server_name']) && is_metaconsole()) {
+        $server_id = metaconsole_get_id_server($event['server_name']);
+    }
+
     $comments = $event['comments'];
 
     $event['similar_ids'] = $similar_ids;
@@ -1505,7 +1541,7 @@ if ($get_extended_event) {
 
     $console_url = '';
     // If metaconsole switch to node to get details and custom fields.
-    if ($meta) {
+    if ($meta || (is_metaconsole() && !empty($server_id))) {
         $server = metaconsole_get_connection_by_id($server_id);
     } else {
         $server = '';
@@ -1518,7 +1554,7 @@ if ($get_extended_event) {
     }
 
     $connected = true;
-    if ($meta) {
+    if ($meta || (is_metaconsole() && !empty($server_id))) {
         if (metaconsole_connect($server) === NOERR) {
             $connected = true;
         } else {

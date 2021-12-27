@@ -408,7 +408,7 @@ final class Group extends Item
         $html .= '<div class="group-item-title">';
         $html .= $groupName;
         $html .= '</div>';
-        $html .= '<div class="group-item-info">';
+        $html .= '<div class="group-item-info" style="padding:0%;width: 96%">';
         // Critical.
         $html .= '<div class="group-item-info-container">';
         $html .= '<div class="value-style red_background">';

@@ -381,6 +381,52 @@ SimpleMapController.prototype.paint_nodes = function() {
           });
         }
       });
+
+      if (
+        typeof node["type_net"] !== "undefined" &&
+        node["type_net"] === "supernet"
+      ) {
+        var items_list = {};
+        items_list["details"] = {
+          name: "Show/hide subnets",
+          icon: "show",
+          disabled: false,
+          callback: function(key, options) {
+            self.nodes.forEach(function(subnode) {
+              if (
+                subnode.id != node["id"] &&
+                subnode.id_parent != null &&
+                subnode.id_parent == node["id"]
+              ) {
+                if ($("#node_" + subnode.id).css("display") == "none") {
+                  $("#node_" + subnode.id).show();
+                } else {
+                  $("#node_" + subnode.id).hide();
+                }
+              }
+            });
+
+            self.arrows.forEach(function(arrow) {
+              if (arrow.source == node["id"] || arrow.target == node["id"]) {
+                if (
+                  $("#arrow_" + arrow.source + "_" + arrow.target).css(
+                    "display"
+                  ) == "none"
+                ) {
+                  $("#arrow_" + arrow.source + "_" + arrow.target).show();
+                } else {
+                  $("#arrow_" + arrow.source + "_" + arrow.target).hide();
+                }
+              }
+            });
+          }
+        };
+
+        $.contextMenu({
+          selector: "#node_" + node["id"],
+          items: items_list
+        });
+      }
     }
   });
 };
@@ -416,6 +462,9 @@ SimpleMapController.prototype.paint_arrows = function() {
       })
       .attr("y2", function(d) {
         return self.center_y + self.getSecondPoint(d["dest"], "y");
+      })
+      .attr("id", function(d) {
+        return "arrow_" + d["source"] + "_" + d["target"];
       });
   }
 };

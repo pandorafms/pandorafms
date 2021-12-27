@@ -3970,15 +3970,20 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`network` varchar(100) NOT NULL default '',
 	`name_network` varchar(255) default '',
 	`description` text NOT NULL,
-	`location` tinytext NOT NULL,
+	`location` int(10) unsigned NULL,
 	`id_recon_task` int(10) unsigned NOT NULL,
 	`scan_interval` tinyint(2) default 1,
 	`monitoring` tinyint(2) default 0,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
+	`id_site` bigint unsigned,
+	`vrf` int(10) unsigned,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_ip` (
@@ -4033,7 +4038,9 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet` (
 	`address` varchar(250) NOT NULL,
 	`mask` varchar(250) NOT NULL,
 	`subneting_mask` varchar(250) default '',
-	PRIMARY KEY (`id`)
+	`id_site` bigint unsigned,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
@@ -4044,6 +4051,24 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_network_location` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
 
 SET @insert_type = 3;
 SET @insert_name = 'IPAM Recon';
@@ -4077,6 +4102,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`operation` text,
 	`table` text,
 	`error` MEDIUMTEXT,
+	`result` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4109,6 +4135,7 @@ UPDATE `tlanguage` SET `name` = 'Deutsch' WHERE `id_language` = 'de';
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
     `name` varchar(255) UNIQUE,
+    `icon` VARCHAR(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4173,6 +4200,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_template` bigint(20) unsigned,
     `execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
+    `cron_interval` varchar(100) default '',
+    `event_on_change` int unsigned default null,
     `last_error` text,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4195,6 +4224,41 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------------------------------------------------
+-- Table `tncm_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_queue` (
+    `id` SERIAL,
+    `id_agent` INT(10) UNSIGNED NOT NULL,
+    `id_script` BIGINT(20) UNSIGNED NOT NULL,
+    `utimestamp` INT UNSIGNED NOT NULL,
+    `scheduled` INT UNSIGNED DEFAULT NULL,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_snippet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_snippet` (
+    `id` SERIAL,
+    `name` TEXT,
+    `content` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_firmware`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_firmware` (
+    `id` SERIAL,
+    `name` varchar(255),
+    `shortname` varchar(255) unique,
+    `vendor` bigint(20) unsigned,
+    `models` text,
+    `path` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tncm_vendor` VALUES
     (1,'Cisco'),
@@ -4221,9 +4285,9 @@ INSERT INTO `tncm_script` VALUES
     (2,1,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;running-config&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(3,2,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;_applyconfigbackup_&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(4,3,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#x0d;&#x0a;exit&#x0d;&#x0a;'),
-	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;');
-
-INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5);
+	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(6,4,'copy&#x20;tftp&#x20;flash&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_TFTP_SERVER_IP_&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_SOURCE_FILE_NAME_&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_DESTINATION_FILE_NAME_&#x0d;&#x0a;show&#x20;flash&#x0d;&#x0a;reload&#x0d;&#x0a;expect:confirm&#x0d;&#x0a;y&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;boot&#x20;system&#x20;_DESTINATION_FILE_NAME_');
+INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6);
 
 -- ----------------------------------------------------------------------
 -- Table `talert_calendar`
@@ -4252,3 +4316,5 @@ UPDATE `talert_special_days` set `day_code` = 7 WHERE `same_day` = 'sunday';
 
 ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
 ALTER TABLE `talert_special_days` ADD FOREIGN KEY (`id_calendar`) REFERENCES `talert_calendar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+UPDATE `tconfig` c1 JOIN (select count(*) as n FROM `tconfig` c2 WHERE (c2.`token` = "node_metaconsole" AND c2.`value` = 1) OR (c2.`token` = "centralized_management" AND c2.`value` = 1) ) v SET c1. `value` = 0 WHERE c1.token = "autocreate_remote_users" AND v.n = 2;

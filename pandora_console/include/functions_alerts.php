@@ -2838,3 +2838,588 @@ function alerts_get_agent_modules(
     return $agent_modules;
 
 }
+
+
+function alerts_get_actions_names($actions, $reduce=false)
+{
+    $where = '';
+    if (empty($actions) === false) {
+        if (is_array($actions) === true) {
+            $where = sprintf(
+                'WHERE id IN (%s)',
+                implode(',', $actions)
+            );
+        } else {
+            $where = sprintf('WHERE id = %d', $actions);
+        }
+    }
+
+    $sql = sprintf(
+        'SELECT id, `name`
+        FROM talert_actions
+        %s',
+        $where
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    if ($reduce === true) {
+        $result = array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $result;
+}
+
+
+/**
+ * Alert fired.
+ *
+ * @param array $filters  Filters.
+ * @param array $groupsBy Groupby and lapse.
+ *
+ * @return array Result data.
+ */
+function alerts_get_alert_fired($filters=[], $groupsBy=[])
+{
+    global $config;
+
+    $table = 'tevento';
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_event';
+    }
+
+    $filter_date = '';
+    if (isset($filters['period']) === true
+        && empty($filters['period']) === false
+    ) {
+        $filter_date = sprintf(
+            'AND %s.utimestamp > %d',
+            $table,
+            (time() - $filters['period'])
+        );
+    }
+
+    $filter_group = '';
+    if (isset($filters['group']) === true
+        && empty($filters['group']) === false
+    ) {
+        $filter_group = sprintf(
+            'AND %s.id_grupo = %d',
+            $table,
+            $filters['group']
+        );
+    }
+
+    $filter_agents = '';
+    if (isset($filters['agents']) === true
+        && empty($filters['agents']) === false
+    ) {
+        if (is_metaconsole() === true) {
+            $agents = array_reduce(
+                $filters['agents'],
+                function ($carry, $item) {
+                    $explode = explode('|', $item);
+
+                    $carry[$explode[0]][] = $explode[1];
+                    return $carry;
+                }
+            );
+
+            $filter_agents .= ' AND ( ';
+            $i = 0;
+            foreach ($agents as $tserver => $agent) {
+                if ($i !== 0) {
+                    $filter_agents .= ' OR ';
+                }
+
+                $filter_agents .= sprintf(
+                    '( %s.id_agente IN (%s) AND %s.server_id = %d )',
+                    $table,
+                    implode(',', $agent),
+                    $table,
+                    (int) $tserver
+                );
+
+                $i++;
+            }
+
+            $filter_agents .= ' )';
+        } else {
+            $filter_agents = sprintf(
+                'AND %s.id_agente IN (%s)',
+                $table,
+                implode(',', $filters['agents'])
+            );
+        }
+    }
+
+    $filter_modules = '';
+    if (isset($filters['modules']) === true
+        && empty($filters['modules']) === false
+    ) {
+        if (is_metaconsole() === true) {
+            $modules = array_reduce(
+                $filters['modules'],
+                function ($carry, $item) {
+                    $explode = explode('|', $item);
+
+                    $carry[$explode[0]][] = $explode[1];
+                    return $carry;
+                }
+            );
+
+            $filter_modules .= ' AND ( ';
+            $i = 0;
+            foreach ($modules as $tserver => $module) {
+                if ($i !== 0) {
+                    $filter_modules .= ' OR ';
+                }
+
+                $filter_modules .= sprintf(
+                    '( %s.id_agentmodule IN (%s) AND %s.server_id = %d )',
+                    $table,
+                    implode(',', $module),
+                    $table,
+                    (int) $tserver
+                );
+
+                $i++;
+            }
+
+            $filter_modules .= ' )';
+        } else {
+            $filter_modules = sprintf(
+                'AND %s.id_agentmodule IN (%s)',
+                $table,
+                implode(',', $filters['modules'])
+            );
+        }
+    }
+
+    $filter_templates = '';
+    if (isset($filters['templates']) === true
+        && empty($filters['templates']) === false
+    ) {
+        if (is_metaconsole() === false) {
+            $filter_templates = sprintf(
+                'AND talert_template_modules.id_alert_template IN (%s)',
+                implode(',', $filters['templates'])
+            );
+        }
+    }
+
+    $total = (bool) $filters['show_summary'];
+    $only_data = (bool) $filters['only_data'];
+
+    $actions_names = alerts_get_actions_names($filters['actions'], true);
+
+    $group_array = [];
+
+    $filter_actions = '';
+    $fields_actions = [];
+    if (isset($filters['actions']) === true
+        && empty($filters['actions']) === false
+    ) {
+        $filter_actions .= 'AND ( ';
+        $first = true;
+        foreach ($actions_names as $name_action) {
+            if ($first === false) {
+                $filter_actions .= ' OR ';
+            }
+
+            $filter_actions .= sprintf(
+                "JSON_CONTAINS(%s.custom_data, '\"%s\"', '\$.actions')",
+                $table,
+                io_safe_output($name_action)
+            );
+
+            $fields_actions[$name_action] = sprintf(
+                "SUM(JSON_CONTAINS(%s.custom_data, '\"%s\"', '\$.actions')) as '%s'",
+                $table,
+                io_safe_output($name_action),
+                io_safe_output($name_action)
+            );
+
+            $first = false;
+        }
+
+        $filter_actions .= ' ) ';
+    } else {
+        foreach ($actions_names as $name_action) {
+            $fields[] = sprintf(
+                "SUM(JSON_CONTAINS(%s.custom_data, '\"%s\"', '\$.actions')) as '%s'",
+                $table,
+                io_safe_output($name_action),
+                io_safe_output($name_action)
+            );
+        }
+    }
+
+    if (is_array($fields_actions) === true
+        && empty($fields_actions) === false
+    ) {
+        foreach ($fields_actions as $name => $field) {
+            $fields[] = $field;
+        }
+    }
+
+    $names_search = [];
+    $names_server = [];
+    if (isset($groupsBy['group_by']) === true) {
+        switch ($groupsBy['group_by']) {
+            case 'module':
+                $fields[] = $table.'.id_agentmodule as module';
+                $group_array[] = $table.'.id_agentmodule';
+                $names_search = modules_get_agentmodule_name_array(
+                    array_values($filters['modules'])
+                );
+
+                if (is_metaconsole() === true) {
+                    $fields[] = $table.'.server_id as server';
+                    $group_array[] = $table.'.server_id';
+                    $names_server = metaconsole_get_names();
+                }
+            break;
+
+            case 'template':
+                if (is_metaconsole() === false) {
+                    $fields[] = 'talert_template_modules.id_alert_template as template';
+                    $group_array[] = 'talert_template_modules.id_alert_template';
+                    $names_search = alerts_get_templates_name_array(
+                        array_values($filters['templates'])
+                    );
+                }
+            break;
+
+            case 'agent':
+                $fields[] = $table.'.id_agente as agent';
+                $group_array[] = $table.'.id_agente';
+                $names_search = agents_get_alias_array(
+                    array_values($filters['agents'])
+                );
+
+                if (is_metaconsole() === true) {
+                    $fields[] = $table.'.server_id as server';
+                    $group_array[] = $table.'.server_id';
+                    $names_server = metaconsole_get_names();
+                }
+            break;
+
+            case 'group':
+                $fields[] = $table.'.id_grupo as `group`';
+                $group_array[] = $table.'.id_grupo';
+                $names_search = users_get_groups($config['user'], 'AR', false);
+            break;
+
+            default:
+                // Nothing.
+            break;
+        }
+    }
+
+    if (isset($groupsBy['lapse']) === true
+        && empty($groupsBy['lapse']) === false
+    ) {
+        $fields[] = sprintf(
+            '%s.utimestamp AS Period',
+            $table
+        );
+        $group_array[] = 'period';
+    }
+
+    $group_by = '';
+    if (is_array($group_array) === true && empty($group_array) === false) {
+        $group_by = sprintf(' GROUP BY %s', implode(", \n", $group_array));
+    }
+
+    $innerJoin = '';
+    if (is_metaconsole() === false) {
+        $innerJoin = sprintf(
+            'INNER JOIN talert_template_modules
+                ON talert_template_modules.id = %s.id_alert_am',
+            $table
+        );
+    }
+
+    $query = sprintf(
+        'SELECT
+            %s
+        FROM %s
+        %s
+        WHERE custom_data != ""
+            AND %s.event_type="alert_fired"
+            %s
+            %s
+            %s
+            %s
+            %s
+            %s
+            %s',
+        implode(", \n", $fields),
+        $table,
+        $innerJoin,
+        $table,
+        $filter_date,
+        $filter_group,
+        $filter_agents,
+        $filter_modules,
+        $filter_actions,
+        $filter_templates,
+        $group_by
+    );
+
+    $data_query = db_get_all_rows_sql($query);
+
+    if ($data_query === false) {
+        $data_query = [];
+    }
+
+    if (empty($data_query) === false) {
+        $data = array_reduce(
+            $data_query,
+            function ($carry, $item) use ($groupsBy) {
+                $period = (isset($item['Period']) === true) ? (int) $item['Period'] : 0;
+                if (is_metaconsole() === true
+                    && ($groupsBy['group_by'] === 'agent'
+                    || $groupsBy['group_by'] === 'module')
+                ) {
+                    $grby = $item[$groupsBy['group_by']];
+                    $server = $item['server'];
+                    unset($item['Period']);
+                    unset($item[$groupsBy['group_by']]);
+                    unset($item['server']);
+                    $carry[$period][$server][$grby] = $item;
+                } else {
+                    $grby = $item[$groupsBy['group_by']];
+                    unset($item['Period']);
+                    unset($item[$groupsBy['group_by']]);
+                    $carry[$period][$grby] = $item;
+                }
+
+                return $carry;
+            },
+            []
+        );
+
+        $intervals = [];
+        if (isset($groupsBy['lapse']) === true
+            && empty($groupsBy['lapse']) === false
+        ) {
+            $tend = time();
+            $tstart = ($tend - (int) $filters['period']);
+            for ($current_time = $tstart; $current_time < $tend; ($current_time += $groupsBy['lapse'])) {
+                $intervals[] = (int) $current_time;
+            }
+        }
+
+        $first_element = reset($data);
+        $first_element = reset($first_element);
+        if (is_metaconsole() === true
+            && ($groupsBy['group_by'] === 'agent'
+            || $groupsBy['group_by'] === 'module')
+        ) {
+                $first_element = reset($first_element);
+        }
+
+        $clone = [];
+        foreach ($first_element as $key_clone => $value_clone) {
+            $clone[$key_clone] = 0;
+        }
+
+        $result = [];
+        if (empty($intervals) === true) {
+            foreach ($data as $period => $array_data) {
+                if (is_metaconsole() === true
+                    && ($groupsBy['group_by'] === 'agent'
+                    || $groupsBy['group_by'] === 'module')
+                ) {
+                    foreach ($names_search as $server => $names) {
+                        foreach ($names as $id => $name) {
+                            $name = $names_server[$server].' &raquo; '.$name;
+                            if (isset($array_data[$server][$id]) === true) {
+                                $result[$period][$server.'|'.$id] = $array_data[$server][$id];
+                                $result[$period][$server.'|'.$id][$groupsBy['group_by']] = $name;
+                            } else {
+                                if ($only_data === false) {
+                                    $clone[$groupsBy['group_by']] = $name;
+                                    $result[$period][$server.'|'.$id] = $clone;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    foreach ($names_search as $id => $name) {
+                        if (isset($array_data[$id]) === true) {
+                            $result[$period][$id] = $array_data[$id];
+                            $result[$period][$id][$groupsBy['group_by']] = $name;
+                        } else {
+                            if ($only_data === false) {
+                                $clone[$groupsBy['group_by']] = $name;
+                                $result[$period][$id] = $clone;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $period_lapse = (int) $groupsBy['lapse'];
+            foreach ($intervals as $interval) {
+                $start_interval = $interval;
+                $end_interval = ($interval + $period_lapse);
+
+                if ($only_data === false) {
+                    if (is_metaconsole() === true
+                        && ($groupsBy['group_by'] === 'agent'
+                        || $groupsBy['group_by'] === 'module')
+                    ) {
+                        foreach ($names_search as $server => $names) {
+                            foreach ($names as $id => $name) {
+                                $result_name = $names_server[$server].' &raquo; '.$name;
+                                $result[$start_interval][$server.'|'.$id] = $clone;
+                                $result[$start_interval][$server.'|'.$id][$groupsBy['group_by']] = $result_name;
+                            }
+                        }
+                    } else {
+                        foreach ($names_search as $id => $name) {
+                            $result[$start_interval][$id] = $clone;
+                            $result[$start_interval][$id][$groupsBy['group_by']] = $name;
+                        }
+                    }
+                } else {
+                    foreach ($data as $period => $array_data) {
+                        if (is_metaconsole() === true
+                            && ($groupsBy['group_by'] === 'agent'
+                            || $groupsBy['group_by'] === 'module')
+                        ) {
+                            foreach ($array_data as $server => $datas) {
+                                foreach ($datas as $id_data => $value_data) {
+                                    $name = $names_server[$server].' &raquo; '.$names_search[$server][$id_data];
+                                    $result[$start_interval][$server.'|'.$id_data] = $clone;
+                                    $result[$start_interval][$server.'|'.$id_data][$groupsBy['group_by']] = $name;
+                                }
+                            }
+                        } else {
+                            foreach ($array_data as $id_data => $value_data) {
+                                $name = $names_search[$id_data];
+                                $result[$start_interval][$id_data] = $clone;
+                                $result[$start_interval][$id_data][$groupsBy['group_by']] = $name;
+                            }
+                        }
+                    }
+                }
+
+                foreach ($data as $period => $array_data) {
+                    $period_time = (int) $period;
+                    if ($start_interval < $period_time && $period_time <= $end_interval) {
+                        if (is_metaconsole() === true
+                            && ($groupsBy['group_by'] === 'agent'
+                            || $groupsBy['group_by'] === 'module')
+                        ) {
+                            foreach ($array_data as $server => $datas) {
+                                foreach ($datas as $id_data => $value_data) {
+                                    foreach ($value_data as $key_data => $v) {
+                                        if ($key_data !== $groupsBy['group_by']) {
+                                            if (isset($result[$start_interval][$server.'|'.$id_data][$key_data])) {
+                                                $result[$start_interval][$server.'|'.$id_data][$key_data] += $v;
+                                            } else {
+                                                $result[$start_interval][$server.'|'.$id_data][$key_data] = $v;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            foreach ($array_data as $id_data => $value_data) {
+                                foreach ($value_data as $key_data => $v) {
+                                    if ($key_data !== $groupsBy['group_by']) {
+                                        if (isset($result[$start_interval][$id_data][$key_data])) {
+                                            $result[$start_interval][$id_data][$key_data] += $v;
+                                        } else {
+                                            $result[$start_interval][$id_data][$key_data] = $v;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        unset($data[$period]);
+                    }
+                }
+            }
+        }
+    }
+
+    $result['data'] = $result;
+
+    if ($total === true) {
+        $total_values = [];
+        foreach ($data_query as $key => $array_data) {
+            foreach ($array_data as $key_value => $v) {
+                $total_values[$key_value] = ($total_values[$key_value] + $v);
+            }
+        }
+
+        if (is_metaconsole() === true
+            && ($groupsBy['group_by'] === 'agent'
+            || $groupsBy['group_by'] === 'module')
+        ) {
+            unset($total_values['server']);
+        }
+
+        unset($total_values['Period']);
+        $result['summary']['total'] = $total_values;
+        $result['summary']['total'][$groupsBy['group_by']] = __('Total');
+    }
+
+    return $result;
+}
+
+
+/**
+ * Get the templates names of an agent.
+ *
+ * @param array $array_ids Templates ids.
+ *
+ * @return array Id => name.
+ */
+function alerts_get_templates_name_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    $sql = sprintf(
+        'SELECT id, `name`
+        FROM talert_templates
+        WHERE id IN (%s)',
+        implode(',', $array_ids)
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    $result = array_reduce(
+        $result,
+        function ($carry, $item) {
+            $carry[$item['id']] = $item['name'];
+            return $carry;
+        },
+        []
+    );
+
+    return $result;
+}

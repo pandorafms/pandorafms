@@ -235,7 +235,7 @@ $search_string = (string) get_parameter('search_string', '');
 $group = (int) get_parameter('group', 0);
 $group_search = (int) get_parameter('group_search', 0);
 $id_command_search = (int) get_parameter('id_command_search', 0);
-$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions';
+$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&search_string='.$search_string.'&group_search='.$group_search.'&id_command_search='.$id_command_search;
 
 // Filter table.
 $table_filter = new stdClass();

@@ -9374,7 +9374,7 @@ function reporting_custom_graph(
                 $modules = [];
                 foreach ($module_source as $key => $value) {
                     $modules[$key]['module'] = $value['id_agent_module'];
-                    $modules[$key]['server'] = $value['id_server'];
+                    $modules[$key]['id_server'] = $value['id_server'];
                 }
             }
         }

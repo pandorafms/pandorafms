@@ -2183,7 +2183,7 @@ function get_group_alerts(
     // WHEN SELECT ALL TAGS TO FILTER ALERTS
     if ($action_filter) {
         $filter .= ' AND (talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions where id_alert_action = '.$action_filter.'))';
-        $filter .= ' OR talert_template_modules.id IN (SELECT talert_templates.id FROM talert_templates where talert_templates.id_alert_action = '.$action_filter.')';
+        $filter .= ' OR talert_template_modules.id_alert_template IN (SELECT talert_templates.id FROM talert_templates where talert_templates.id_alert_action = '.$action_filter.')';
     }
 
     if (is_array($options)) {

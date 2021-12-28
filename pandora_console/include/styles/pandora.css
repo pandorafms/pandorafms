@@ -1357,7 +1357,7 @@ td.datos2f9 {
   font-weight: bold;
 }
 .blue {
-  color: #5ab7e5;
+  color: #4a83f3;
   font-weight: bold;
 }
 .black {
@@ -2506,7 +2506,7 @@ tr.group_view_ok,
 
 tr.group_view_not_init,
 .group_view_not_init {
-  background-color: #5bb6e5;
+  background-color: #4a83f3;
   color: #fff;
 }
 
@@ -7299,6 +7299,10 @@ div.graph div.legend table {
 
 .bg_5bb6e5 {
   background-color: #5bb6e5;
+}
+
+.bg_4a83f3 {
+  background-color: #4a83f3;
 }
 
 .bg_aaaaaa {

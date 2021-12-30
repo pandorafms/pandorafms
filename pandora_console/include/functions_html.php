@@ -1181,6 +1181,7 @@ function html_print_select_multiple_filtered(
         ) {
             $output .= '<div class="item-filter flex-row-vcenter">';
 
+            $output .= '<div style="display:none">';
             $output .= html_print_input(
                 [
                     'style'   => 'display:none;',
@@ -1190,6 +1191,7 @@ function html_print_select_multiple_filtered(
                     'return'  => true,
                 ]
             );
+            $output .= '</div>';
 
             $f = "filterAvailableItems(this.value,'".$rid."','".__('None')."')";
             $output .= html_print_input(
@@ -1312,7 +1314,7 @@ function html_print_select_multiple_filtered(
                     'input_class' => 'flex-row-vcenter',
                     'label'       => __('Group recursion'),
                     'name'        => 'id-group-recursion-selected-select-'.$rid,
-                    'type'        => 'checkbox',
+                    'type'        => 'switch',
                     'script'      => $reload_content,
                     'return'      => true,
                 ]
@@ -1329,6 +1331,8 @@ function html_print_select_multiple_filtered(
         ) {
             $output .= '<div class="item-filter flex-row-vcenter">';
 
+            $output .= '<div style="display:none">';
+
             $output .= html_print_input(
                 [
                     'style'   => 'display:none;',
@@ -1338,6 +1342,7 @@ function html_print_select_multiple_filtered(
                     'return'  => true,
                 ]
             );
+            $output .= '</div>';
 
             $f = "filterSelectedItems(this.value,'".$rid."','".__('None')."')";
             $output .= html_print_input(

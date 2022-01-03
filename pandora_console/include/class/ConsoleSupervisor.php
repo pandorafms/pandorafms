@@ -1256,8 +1256,7 @@ class ConsoleSupervisor
                 unix_timestamp() - unix_timestamp(keepalive) as downtime
             FROM tserver
             WHERE 
-                unix_timestamp() - unix_timestamp(keepalive) > server_keepalive
-                OR status = 0'
+                unix_timestamp() - unix_timestamp(keepalive) > server_keepalive'
         );
 
         if ($servers === false) {
@@ -1298,13 +1297,12 @@ class ConsoleSupervisor
                 FROM tserver
                 WHERE 
                     unix_timestamp() - unix_timestamp(keepalive) <= server_keepalive
-                    OR status != 0'
+                    AND status = 1'
             );
-
             if (is_array($servers_working) === true) {
                 foreach ($servers_working as $server) {
                     $this->cleanNotifications(
-                        'NOTIF.SERVER.STATUS'.$server['id_server']
+                        'NOTIF.SERVER.STATUS.'.$server['id_server']
                     );
                 }
             }

@@ -186,6 +186,8 @@ if (isset($_GET['modified']) && !$view_mode) {
             } else {
                 if (!empty($password_new) && !empty($password_confirm)) {
                     $success_msg = __('Password successfully updated');
+                } else if ($upd_info['id_skin'] !== $user_info['id_skin']) {
+                    $success_msg = __('Skin successfully updated');
                 } else {
                     $return = false;
                     $error_msg = __('No changes have been made');
@@ -549,13 +551,13 @@ $table_ichanges = '<div class="autorefresh_select">
                         </div>
                         <div class="autorefresh_select_arrows" style="display:grid">
                             <a href="javascript:">'.html_print_image(
-                                'images/darrowright_green.png',
-                                true,
-                                [
-                                    'id'    => 'right_autorefreshlist',
-                                    'alt'   => __('Push selected pages into autorefresh list'),
-                                    'title' => __('Push selected pages into autorefresh list'),
-                                ]
+    'images/darrowright_green.png',
+    true,
+    [
+        'id'    => 'right_autorefreshlist',
+        'alt'   => __('Push selected pages into autorefresh list'),
+        'title' => __('Push selected pages into autorefresh list'),
+    ]
 ).'</a>
                             <a href="javascript:">'.html_print_image(
     'images/darrowleft_green.png',

@@ -2428,7 +2428,7 @@ switch ($tab) {
             
             var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() &&
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() &&
              '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>' == 19){
                 
                 event.preventDefault();
@@ -2462,7 +2462,7 @@ switch ($tab) {
             
             var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter('id_agent_module')); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() && (
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() && (
                 module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
                     
                     event.preventDefault();

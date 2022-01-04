@@ -5346,7 +5346,7 @@ function reporting_get_agents_by_status($data, $graph_width=250, $graph_height=1
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_notinit.png', true, ['title' => __('Agents not init')]);
-    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color_ligther font_12pt bolder big_data'>".format_numeric($data['agent_not_init']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color font_12pt bolder big_data'>".format_numeric($data['agent_not_init']).'</span></b></a>';
 
     $agent_data[2] = '';
     $agent_data[3] = '';

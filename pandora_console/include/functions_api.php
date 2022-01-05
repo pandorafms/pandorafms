@@ -15164,7 +15164,7 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 $module_exists_sql = sprintf(
                     'SELECT id_agente_modulo FROM tagente_modulo tam INNER JOIN tcluster_agent tca WHERE tam.id_agente=tca.id_agent AND tca.id_cluster=%d AND tam.nombre="%s"',
                     $element['id_cluster'],
-                    $element['name']
+                    io_safe_input($element['name'])
                 );
 
                 $module_exists = db_process_sql($module_exists_sql);
@@ -15220,7 +15220,7 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 $module_exists_sql = sprintf(
                     'SELECT id_agente_modulo FROM tagente_modulo tam INNER JOIN tcluster_agent tca WHERE tam.id_agente=tca.id_agent AND tca.id_cluster=%d AND tam.nombre="%s"',
                     $element['id_cluster'],
-                    $element['name']
+                    io_safe_input($element['name'])
                 );
 
                 $module_exists = db_process_sql($module_exists_sql);
@@ -15233,7 +15233,7 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                     'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.' and nombre = "'.io_safe_input('Cluster status').'"'
                 );
 
-                $tcluster_balanced_module = db_process_sql_insert('tcluster_item', ['name' => $element['name'], 'id_cluster' => $element['id_cluster'], 'critical_limit' => $element['critical_limit'], 'warning_limit' => $element['warning_limit']]);
+                $tcluster_balanced_module = db_process_sql_insert('tcluster_item', ['name' => io_safe_input($element['name']), 'id_cluster' => $element['id_cluster'], 'critical_limit' => $element['critical_limit'], 'warning_limit' => $element['warning_limit']]);
 
                 $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval,ip_target,id_module_group from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
 

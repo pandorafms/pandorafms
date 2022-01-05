@@ -1,14 +1,14 @@
 #docker build -t pandorafms/pandorafms-open-base-el8 -f $HOME/code/pandorafms/extras/docker/centos8/base/Dockerfile $HOME/code/pandorafms/extras/docker/centos8/base/
 #docker push pandorafms/pandorafms-open-base-el8
 
-FROM centos:8
+FROM rockylinux:8
 
 RUN dnf install -y --setopt=tsflags=nodocs \
         epel-release \
 	dnf-utils \
         http://rpms.remirepo.net/enterprise/remi-release-8.rpm
 		
-RUN dnf module reset -y php && dnf module install -y php:remi-7.3
+RUN dnf module reset -y php && dnf module install -y php:remi-7.4
 RUN dnf config-manager --set-enabled powertools
 
 # Install console dependencies

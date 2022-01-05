@@ -1121,6 +1121,63 @@ if ($config['pure'] == 0) {
     include 'godmode/menu.php';
 }
 
+if (has_metaconsole() === true
+    && (bool) $config['centralized_management'] === true
+) {
+    $MR = (float) $config['MR'];
+    // Node attached to a metaconsole.
+    $server_id = $config['metaconsole_node_id'];
+
+    // Connect to meta.
+    metaconsole_load_external_db(
+        [
+            'dbhost' => $config['replication_dbhost'],
+            'dbuser' => $config['replication_dbuser'],
+            'dbpass' => io_output_password($config['replication_dbpass']),
+            'dbname' => $config['replication_dbname'],
+        ]
+    );
+    $metaMR = (float) db_get_value(
+        'value',
+        'tconfig',
+        'token',
+        'MR',
+        false,
+        false
+    );
+
+    // Return connection to node.
+    metaconsole_restore_db();
+
+    if ($MR !== $metaMR) {
+        $err = '<div id="err_msg_centralised">'.html_print_image(
+            '/images/warning_modern.png',
+            true
+        );
+
+        $err .= '<div>'.__(
+            'Metaconsole MR (%d) is different than this one (%d)',
+            $metaMR,
+            $MR
+        );
+
+        $err .= '<br>';
+        $err .= __('Please keep all environment updated to same version.');
+        $err .= '</div>';
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                infoMessage({
+                    title: '<?php echo __('Warning'); ?>',
+                    text: '<?php echo $err; ?>',
+                    simple: true,
+                })
+            })
+        </script>
+        <?php
+    }
+}
+
 /*
  * Session locking concurrency speedup!
     * http://es2.php.net/manual/en/ref.session.php#64525
@@ -1362,8 +1419,6 @@ echo "\n<!-- Page generated in ".$run_time." seconds -->\n";
 
 // Values from PHP to be recovered from JAVASCRIPT.
 require 'include/php_to_js_values.php';
-
-
 ?>
 
 <script type="text/javascript" language="javascript">

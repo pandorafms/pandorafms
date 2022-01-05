@@ -335,7 +335,7 @@ function pandoraFlotHBars(
     "#e63c52",
     "#FFA631",
     "#f3b200",
-    "#5BB6E5",
+    "#4a83f3",
     "#F2919D",
     "#82b92e"
   ];

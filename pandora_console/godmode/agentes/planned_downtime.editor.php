@@ -947,9 +947,7 @@ if (empty($downtimes_agents)) {
 
         if (!$running) {
             $data[5] = '';
-            if ($type_downtime != 'disable_agents_alerts'
-                && $type_downtime != 'disable_agents'
-            ) {
+            if ($type_downtime !== 'disable_agents') {
                 $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
             }
 

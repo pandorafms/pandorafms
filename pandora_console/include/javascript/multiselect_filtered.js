@@ -211,7 +211,7 @@ function fmAgentChange(uniqId) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function fmModuleChange(uniqId) {
+function fmModuleChange(uniqId, isMeta) {
   var idModuleGroup = $("#filtered-module-module-group-" + uniqId).val();
   var idAgents = $("#filtered-module-agents-" + uniqId).val();
   var showCommonModules = $(
@@ -230,14 +230,20 @@ function fmModuleChange(uniqId) {
       $("#filtered-module-modules-" + uniqId).html("");
       if (data) {
         jQuery.each(data, function(id, value) {
-          var option = $("<option></option>")
-            .attr(
-              "value",
-              value["id_node"]
-                ? value["id_node"] + "|" + value["id_agente_modulo"]
-                : value["id_agente_modulo"]
-            )
-            .html(value["nombre"]);
+          var option = $("<option></option>");
+          if (isMeta === true) {
+            option
+              .attr(
+                "value",
+                value["id_node"]
+                  ? value["id_node"] + "|" + value["id_agente_modulo"]
+                  : value["id_agente_modulo"]
+              )
+              .html(value["nombre"]);
+          } else {
+            option.attr("value", value).html(value);
+          }
+
           $("#filtered-module-modules-" + uniqId).append(option);
         });
       }

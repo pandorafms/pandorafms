@@ -1480,7 +1480,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'        => true,
             'nothing'       => __('All'),
             'nothing_value' => 0,
-            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'        => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
     $output .= '</div>';
@@ -1533,7 +1533,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
 
@@ -1550,7 +1550,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'name'     => 'filtered-module-show-common-modules-'.$uniqId,
             'selected' => $data['mShowCommonModules'],
             'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
 
@@ -1565,11 +1565,10 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = [];
     }
 
-    if ($data['mShowSelectedOtherGroups']) {
+    if (isset($data['mShowSelectedOtherGroups']) === true) {
         $selected_modules_ids = explode(',', $data['mModules']);
-
         foreach ($selected_modules_ids as $id) {
-            if (!array_key_exists($id, $all_modules)) {
+            if (array_key_exists($id, $all_modules) === false) {
                 $module_data = modules_get_agentmodule($id);
                 $all_modules[$id] = $module_data['nombre'];
             }

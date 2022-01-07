@@ -330,7 +330,7 @@ enterprise_hook('close_meta_frame');
 
 <script type="text/javascript">
     var treeController = TreeController.getController();
-    
+
     processTreeSearch();
     
     $("form#tree_search").submit(function(e) {

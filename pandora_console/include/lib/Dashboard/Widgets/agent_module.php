@@ -648,6 +648,10 @@ class AgentModuleWidget extends Widget
             if (is_array($target_modules) === true
                 || is_numeric($target_modules) === true
             ) {
+                if (is_array($target_modules) === true) {
+                    $target_modules = array_keys($target_modules);
+                }
+
                 $all_modules = Module::search(
                     ['id_agente_modulo' => $target_modules]
                 );
@@ -676,6 +680,8 @@ class AgentModuleWidget extends Widget
                         ) {
                             $carry[$item] = null;
                         }
+
+                        $carry[] = $item;
                     }
 
                     return $carry;

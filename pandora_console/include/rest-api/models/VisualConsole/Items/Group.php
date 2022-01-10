@@ -346,9 +346,7 @@ final class Group extends Item
 
                 $countStatus = \db_get_row_sql($sql);
 
-                if ($countStatus['fired'] > 0) {
-                    $status = AGENT_STATUS_ALERT_FIRED;
-                } else if ($countStatus['critical'] > 0) {
+                if ($countStatus['critical'] > 0) {
                     $status = AGENT_STATUS_CRITICAL;
                 } else if ($countStatus['warning'] > 0) {
                     $status = AGENT_STATUS_WARNING;

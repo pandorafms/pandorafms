@@ -1349,6 +1349,15 @@ function servers_get_server_string_name(int $server)
         case SERVER_TYPE_ENTERPRISE_SATELLITE:
         return __('Satellite');
 
+        case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
+        return __('Transactional');
+
+        case SERVER_TYPE_ALERT:
+        return __('Alert server');
+
+        case SERVER_TYPE_NCM:
+        return __('NCM server');
+
         default:
         return __('N/A');
     }

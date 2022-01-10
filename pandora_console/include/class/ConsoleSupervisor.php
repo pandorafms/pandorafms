@@ -556,7 +556,7 @@ class ConsoleSupervisor
         ) {
             // Process user targets.
             $insertion_string = '';
-            $users_sql = 'INSERT INTO tnotification_user(id_mensaje,id_user)';
+            $users_sql = 'INSERT IGNORE INTO tnotification_user(id_mensaje,id_user)';
             foreach ($this->targetUsers as $user) {
                 $insertion_string .= sprintf(
                     '(%d,"%s")',
@@ -590,7 +590,7 @@ class ConsoleSupervisor
         ) {
             // Process group targets.
             $insertion_string = '';
-            $groups_sql = 'INSERT INTO tnotification_group(id_mensaje,id_group)';
+            $groups_sql = 'INSERT IGNORE INTO tnotification_group(id_mensaje,id_group)';
             foreach ($this->targetGroups as $group) {
                 $insertion_string .= sprintf(
                     '(%d,"%s")',

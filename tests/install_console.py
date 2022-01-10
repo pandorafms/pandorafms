@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Script to install the Pandora FMS Console.
 import os
 from pyvirtualdisplay import Display

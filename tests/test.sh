@@ -19,6 +19,11 @@ function check {
 # Start the required services.
 service mysqld start && /usr/bin/mysqladmin -u root password 'pandora'
 check "Starting the MySQL Server" $?
+
+mkdir -p /run/php-fpm/ 2>/dev/null
+/usr/sbin/php-fpm
+check "Starting PHP-FPM" $?
+
 service httpd start
 check "Starting the Apache Web Server" $?
 

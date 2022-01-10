@@ -17,14 +17,14 @@ function check {
 }
 
 # Start the required services.
-service mysqld start && /usr/bin/mysqladmin -u root password 'pandora'
+rm -rf /var/lib/mysql/* && sudo -u mysql mysqld --initialize-insecure && mysqld --user=mysql --sql-mode="" --daemonize=ON && /usr/bin/mysqladmin -u root password 'pandora'
 check "Starting the MySQL Server" $?
 
 mkdir -p /run/php-fpm/ 2>/dev/null
 /usr/sbin/php-fpm
 check "Starting PHP-FPM" $?
 
-service httpd start
+httpd
 check "Starting the Apache Web Server" $?
 
 # Install the Pandora FMS Console.

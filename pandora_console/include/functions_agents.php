@@ -1528,7 +1528,7 @@ function agents_get_modules(
             // ----------------------------------------------------------
             foreach ($list_filter as $item) {
                 $field = $item['field'];
-                $value = $item['value'];
+                $value = (string) $item['value'];
 
                 // Check <> operator
                 $operatorDistin = false;

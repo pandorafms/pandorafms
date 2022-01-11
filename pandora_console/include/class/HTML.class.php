@@ -498,10 +498,10 @@ class HTML
             }
 
             // Print independent block of inputs.
-            $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<li id="li-'.($input['block_id'] ?? '').'" class="'.$class.'">';
 
             if (isset($input['wrapper']) === true) {
-                $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
+                $output .= '<'.$input['wrapper'].' id="'.($input['block_id'] ?? '').'" class="'.$class.'">';
             }
 
             if (!$direct) {
@@ -551,9 +551,10 @@ class HTML
 
             $output .= '</li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden'
-                && $input['arguments']['type'] != 'hidden_extended'
-                && $input['arguments']['type'] != 'datalist'
+            if (is_array(($input['arguments'] ?? false)) === true
+                && ($input['arguments']['type'] ?? false) != 'hidden'
+                && ($input['arguments']['type'] ?? false) != 'hidden_extended'
+                && ($input['arguments']['type'] ?? false) != 'datalist'
             ) {
                 // Raw content for attach at the start of the input.
                 if (isset($input['surround_start']) === true) {
@@ -580,7 +581,7 @@ class HTML
                     $output .= $input['surround_end'];
                 }
             } else {
-                $output .= self::printInput($input['arguments']);
+                $output .= self::printInput(($input['arguments'] ?? []));
                 // Allow dynamic content.
                 $output .= ($input['extra'] ?? '');
             }

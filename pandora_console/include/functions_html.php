@@ -4598,7 +4598,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= ' class="'.$data['input_class'].'">';
     }
 
-    switch ($data['type']) {
+    switch (($data['type'] ?? null)) {
         case 'text':
             $output .= html_print_input_text(
                 $data['name'],
@@ -4650,15 +4650,15 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'text_extended':
             $output .= html_print_input_text_extended(
-                $data['name'],
-                $data['value'],
-                $data['id'],
-                $data['alt'],
-                $data['size'],
-                $data['maxlength'],
-                $data['disabled'],
-                $data['script'],
-                $data['attributes'],
+                ($data['name'] ?? null),
+                ($data['value'] ?? null),
+                ($data['id'] ?? null),
+                ($data['alt'] ?? null),
+                ($data['size'] ?? null),
+                ($data['maxlength'] ?? null),
+                ($data['disabled'] ?? null),
+                ($data['script'] ?? null),
+                ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
                 ((isset($data['function']) === true) ? $data['function'] : '')
@@ -4868,7 +4868,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'checkbox':
             $output .= html_print_checkbox(
                 $data['name'],
-                $data['value'],
+                ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),

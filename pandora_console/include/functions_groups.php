@@ -572,15 +572,14 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
         }
 
         // If the user has ACLs on a gruop but not in his father,
-        // we consider it as a son of group "all"
-        if (!isset($groups[$group['parent']])) {
+        // we consider it as a son of group "all".
+        if (isset($groups[$group['parent']]) === false) {
             $group['parent'] = 0;
         }
 
-        if (is_array($tree[$group['parent']]) === false) {
-            $str = $tree[$group['parent']];
+        if (is_array(($tree[$group['parent']] ?? null)) === false) {
             $tree[$group['parent']] = [
-                'nombre'   => $tree[$group['parent']],
+                'nombre'   => ($tree[$group['parent']] ?? ''),
                 'id_grupo' => $group['parent'],
             ];
         }
@@ -590,7 +589,7 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
     }
 
     // Depends on the All group we give different format.
-    if (isset($groups[0])) {
+    if (isset($groups[0]) === true) {
         $tree = [$tree[0]];
     } else {
         $tree = $tree[0]['branch'];
@@ -991,31 +990,31 @@ function groups_get_agents_counter($group, $agent_filter=[], $module_filter=[], 
                 switch ($agent_status) {
                     case AGENT_STATUS_CRITICAL:
                         if ($critical > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_WARNING:
                         if (($total > 0) && ($critical == 0) && ($warning > 0)) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_UNKNOWN:
                         if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NOT_INIT:
                         if ($total == 0 || $total == $not_init) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NORMAL:
                         if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
@@ -1026,23 +1025,23 @@ function groups_get_agents_counter($group, $agent_filter=[], $module_filter=[], 
             } else {
                 if (array_search(AGENT_STATUS_CRITICAL, $agent_status) !== false) {
                     if ($critical > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_WARNING, $agent_status) !== false) {
                     if ($total > 0 && $critical = 0 && $warning > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_UNKNOWN, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NOT_INIT, $agent_status) !== false) {
                     if ($total == 0 || $total == $not_init) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NORMAL, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                        $count ++;
+                        $count++;
                     }
                 }
                 // Invalid status
@@ -1846,8 +1845,12 @@ function groups_get_tree(&$groups, $parent=false)
 }
 
 
-function groups_get_tree_good(&$groups, $parent=false, &$childs)
+function groups_get_tree_good(&$groups, $parent, &$childs)
 {
+    if (isset($parent) === false) {
+        $parent = false;
+    }
+
     $return = [];
 
     foreach ($groups as $id => $group) {
@@ -1895,8 +1898,15 @@ function groups_get_tree_keys($groups, &$group_keys)
 }
 
 
-function group_get_data($id_user=false, $user_strict=false, $acltags, $returnAllGroup=false, $mode='group', $agent_filter=[], $module_filter=[])
-{
+function group_get_data(
+    $id_user=false,
+    $user_strict=false,
+    $acltags=[],
+    $returnAllGroup=false,
+    $mode='group',
+    $agent_filter=[],
+    $module_filter=[]
+) {
     global $config;
     if ($id_user == false) {
         $id_user = $config['id_user'];

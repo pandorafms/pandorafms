@@ -2641,11 +2641,10 @@ class NetworkMap
             'MW'
         );
 
-        $simulate = false;
         if (isset($networkmap['__simulated']) === false) {
             if ($this->widget) {
                 $networkmap['filter'] = $this->mapOptions;
-            } else {
+            } else if (is_string($networkmap['filter']) === true) {
                 $networkmap['filter'] = json_decode(
                     $networkmap['filter'],
                     true
@@ -2658,7 +2657,6 @@ class NetworkMap
             ];
             $holding_area_title = __('Holding Area');
         } else {
-            $simulate = true;
             $holding_area_title = '';
             $networkmap['filter']['holding_area'] = [
                 0,
@@ -2674,7 +2672,7 @@ class NetworkMap
         html_print_input_hidden('product_name', get_product_name());
         html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
 
-        $output .= '<script type="text/javascript">
+        $output = '<script type="text/javascript">
     ////////////////////////////////////////////////////////////////////
     // VARS FROM THE DB
     ////////////////////////////////////////////////////////////////////

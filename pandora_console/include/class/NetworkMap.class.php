@@ -2430,6 +2430,13 @@ class NetworkMap
             $this->map['height'] = $this->mapOptions['height'];
         }
 
+        if (is_string($this->map['filter']) === true) {
+            $this->map['filter'] = json_decode($this->map['filter'], true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->map['filter'] = [];
+            }
+        }
+
         $this->map['filter']['z_dash'] = $this->mapOptions['z_dash'];
 
         if (is_array($graph) === true) {

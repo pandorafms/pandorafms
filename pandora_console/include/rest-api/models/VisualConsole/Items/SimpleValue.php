@@ -423,7 +423,7 @@ final class SimpleValue extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);

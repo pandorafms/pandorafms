@@ -385,7 +385,7 @@ final class Clock extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         if (isset($values['isLinkEnabled']) === false) {
             $values['isLinkEnabled'] = false;

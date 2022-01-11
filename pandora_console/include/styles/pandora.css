@@ -8435,6 +8435,12 @@ div.stat-win-spinner img {
   font-size: 12px;
 }
 
+/* For backups dt, can be useful for others */
+#backups_list > thead > tr > th:last-child,
+#backups_list > tbody > tr > td:last-child {
+  text-align: center;
+}
+
 /*  err_msg_centralised */
 div#err_msg_centralised div {
   margin-top: 1em;

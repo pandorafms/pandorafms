@@ -20,6 +20,15 @@ function check {
 rm -rf /var/lib/mysql/* && sudo -u mysql mysqld --initialize-insecure && mysqld --user=mysql --sql-mode="" --daemonize=ON && /usr/bin/mysqladmin -u root password 'pandora'
 check "Starting the MySQL Server" $?
 
+# PHP FPM
+# Customize php.ini
+echo "php_value[error_reporting] = E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_USER_WARNING" >> /etc/php-fpm.d/www.conf
+echo "php_value[max_execution_time] = 0" >> /etc/php-fpm.d/www.conf
+echo "php_value[max_input_time] = -1" >> /etc/php-fpm.d/www.conf
+echo "php_value[upload_max_filesize] = 800M" >> /etc/php-fpm.d/www.conf
+echo "php_value[post_max_size] = 800M" >> /etc/php-fpm.d/www.conf
+echo "php_value[memory_limit] = -1" >> /etc/php-fpm.d/www.conf
+
 mkdir -p /run/php-fpm/ 2>/dev/null
 /usr/sbin/php-fpm
 check "Starting PHP-FPM" $?

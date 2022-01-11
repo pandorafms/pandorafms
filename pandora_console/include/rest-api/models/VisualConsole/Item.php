@@ -243,10 +243,10 @@ class Item extends CachedModel
         }
 
         $decodedData['agentDisabled'] = static::parseBool(
-            $data['agentDisabled']
+            ($data['agentDisabled'] ?? false)
         );
         $decodedData['moduleDisabled'] = static::parseBool(
-            $data['moduleDisabled']
+            ($data['moduleDisabled'] ?? false)
         );
 
         return $decodedData;
@@ -1097,8 +1097,8 @@ class Item extends CachedModel
         $baseUrl = \ui_get_full_url('index.php');
         $mobileUrl = \ui_get_full_url('mobile/index.php');
 
-        if ((bool) $data['agentDisabled'] === true
-            || (bool) $data['moduleDisabled'] === true
+        if ((bool) ($data['agentDisabled'] ?? null) === true
+            || (bool) ($data['moduleDisabled'] ?? null) === true
         ) {
             return null;
         }

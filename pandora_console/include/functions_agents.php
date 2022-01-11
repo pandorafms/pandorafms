@@ -1374,7 +1374,7 @@ function agents_get_group_agents(
             $key = $row['id_agente'];
         }
 
-        if ($row['id_server'] !== '') {
+        if (($row['id_server'] ?? '') !== '') {
             if (is_metaconsole()) {
                 $server_name = db_get_row_filter(
                     'tmetaconsole_setup',

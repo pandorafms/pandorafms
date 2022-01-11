@@ -1010,7 +1010,7 @@ if (isset($_GET['bye'])) {
 
 clear_pandora_error_for_header();
 
-if ((bool) $config['node_deactivated'] === true) {
+if ((bool) ($config['node_deactivated'] ?? false) === true) {
     // Prevent access node if not merged.
     include 'general/node_deactivated.php';
 
@@ -1021,7 +1021,7 @@ if ((bool) $config['node_deactivated'] === true) {
     exit('</html>');
 }
 
-if ((bool) $config['maintenance_mode'] === true
+if ((bool) ($config['maintenance_mode'] ?? false) === true
     && (bool) users_is_admin() === false
 ) {
     // Show maintenance web-page. For non-admin users only.
@@ -1082,7 +1082,7 @@ if (get_parameter('login', 0) !== 0) {
 }
 
 
-if ((bool) $config['maintenance_mode'] === true
+if ((bool) ($config['maintenance_mode'] ?? false) === true
     && (bool) users_is_admin() === false
 ) {
     // Show maintenance web-page. For non-admin users only.

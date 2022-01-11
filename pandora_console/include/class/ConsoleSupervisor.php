@@ -659,15 +659,17 @@ class ConsoleSupervisor
             $_cache_targets = [];
         }
 
-        if ($_cache_targets[$key] !== null) {
+        if (isset($_cache_targets[$key]) === true
+            && $_cache_targets[$key] !== null
+        ) {
             $targets = $_cache_targets[$key];
         } else {
             $targets = get_notification_source_targets(
                 $source_id,
                 $data['type']
             );
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
+            $this->targetGroups = ($targets['groups'] ?? null);
+            $this->targetUsers = ($targets['users'] ?? null);
 
             $_cache_targets[$key] = $targets;
         }

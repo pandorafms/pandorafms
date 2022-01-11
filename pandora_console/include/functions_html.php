@@ -2816,7 +2816,7 @@ function html_print_input_number(array $settings):string
                 $output .= $attribute.'="'.$attr_value.'" ';
             }
 
-            $output .= $function.'/>';
+            $output .= '/>';
         }
     }
 
@@ -4472,8 +4472,8 @@ function html_print_switch($attributes=[])
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
-    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value'] ?? false) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled'] ?? false) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -4495,9 +4495,9 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
-    $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+    $disabled_class = (bool) ($attributes['disabled'] ?? false) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
+    return "<label class='p-switch ".($attributes['container-class'] ?? '')."' style='".($attributes['style'] ?? '')."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";
@@ -4573,7 +4573,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     $output = '';
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
         $output .= '<label '.$style.' class="'.$data['label_class'].'">';
@@ -5165,7 +5165,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= '</'.$data['wrapper'].'>';
     }
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output .= '</'.$wrapper.'>';
         if (!$data['return']) {
             echo '</'.$wrapper.'>';

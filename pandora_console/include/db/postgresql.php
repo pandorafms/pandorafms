@@ -686,10 +686,10 @@ function postgresql_db_format_array_where_clause_sql($values, $join='AND', $pref
  *
  * @return the first value of the first row of a table result from query.
  */
-function postgresql_db_get_value_sql($sql, $dbconnection=false)
+function postgresql_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql .= ' LIMIT 1';
-    $result = postgresql_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = postgresql_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;

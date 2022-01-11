@@ -9925,12 +9925,19 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
 
     if (isset($other['data'][2]) && $other['data'][2] != '') {
         if ($use_agent_name === false) {
-            $idAgents = agents_get_agent_id_by_alias($other['data'][2]);
+            $idAgents = agents_get_agent_id_by_alias($other['data'][2], is_metaconsole());
 
             if (!empty($idAgents)) {
                 $idAgent = [];
+
+                $id_agent_field = 'id_agente';
+
+                if (is_metaconsole() === true) {
+                    $id_agent_field = 'id_tagente';
+                }
+
                 foreach ($idAgents as $key => $value) {
-                    $idAgent[] .= $value['id_agente'];
+                    $idAgent[] .= $value[$id_agent_field];
                 }
 
                 $filter[] = 'id_agente IN ('.implode(',', $idAgent).')';
@@ -11438,7 +11445,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     global $config;
 
     $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $table_events = 'tmetaconsole_event';
     }
 
@@ -11671,7 +11678,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                         ORDER BY criticity DESC
                         LIMIT 1';
                 } else {
-                    if (defined('METACONSOLE')) {
+                    if (is_metaconsole() === true) {
                         $sql = 'SELECT *,
                             (SELECT t2.nombre
                                 FROM tgrupo t2
@@ -11972,7 +11979,7 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
  * @param $returnType
  * @param $user_in_db
  */
-function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
+function api_get_events($node_id, $trash2, $other, $returnType, $user_in_db=null)
 {
     if ($user_in_db !== null) {
         $correct = get_events_with_user(
@@ -12017,6 +12024,10 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
     }
 
     if (is_metaconsole()) {
+        if ((int) $node_id !== 0) {
+            $filterString .= ' AND server_id = '.$node_id;
+        }
+
         $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
     } else {
         $dataRows = db_get_all_rows_filter('tevento', $filterString);

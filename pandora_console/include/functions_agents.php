@@ -162,9 +162,13 @@ function agents_locate_agent(string $field)
  *
  * @return array|boolean Agents ids or false if error.
  */
-function agents_get_agent_id_by_alias($alias)
+function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
-    return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    if ($is_metaconsole === true) {
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+    } else {
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    }
 }
 
 

@@ -3555,7 +3555,7 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 }
 
 
-function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true)
+function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true, $useName=false)
 {
     if ((bool) is_metaconsole() === true) {
         if ($select_mode === true) {
@@ -3675,8 +3675,14 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
 
         $modules = array_reduce(
             $modules,
-            function ($carry, $item) {
-                $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
+            function ($carry, $item) use ($useName) {
+                // Only works in select mode.
+                if ($useName === true) {
+                    $carry[io_safe_input($item['nombre'])] = io_safe_input($item['nombre']);
+                } else {
+                    $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
+                }
+
                 return $carry;
             },
             []

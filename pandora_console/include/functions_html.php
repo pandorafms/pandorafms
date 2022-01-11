@@ -1555,24 +1555,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
     );
 
     if ($data['mAgents'] !== null) {
-        $all_modules = select_modules_for_agent_group(
+        $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),
             $data['mShowCommonModules'],
-            false
+            false,
+            true
         );
     } else {
         $all_modules = [];
-    }
-
-    if (isset($data['mShowSelectedOtherGroups']) === true) {
-        $selected_modules_ids = explode(',', $data['mModules']);
-        foreach ($selected_modules_ids as $id) {
-            if (array_key_exists($id, $all_modules) === false) {
-                $module_data = modules_get_agentmodule($id);
-                $all_modules[$id] = $module_data['nombre'];
-            }
-        }
     }
 
     $output .= html_print_input(
@@ -1581,7 +1572,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'type'     => 'select',
             'fields'   => $all_modules,
             'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => explode(',', $data['mModules']),
+            'selected' => explode((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ',', $data['mModules']),
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',

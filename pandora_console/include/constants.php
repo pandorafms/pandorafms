@@ -113,6 +113,7 @@ define('SECONDS_3YEARS', 94608000);
 // Separator constats.
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10));
+define('SEPARATOR_META_MODULE', '|-|-|-|');
 // Chr(10) is \n.
 define('SEPARATOR_COLUMN_CSV', '#');
 define('SEPARATOR_ROW_CSV', "@\n");

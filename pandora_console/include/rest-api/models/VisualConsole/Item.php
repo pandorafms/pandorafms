@@ -2199,7 +2199,7 @@ class Item extends CachedModel
      *
      * @return array Array with default values.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         global $config;
 
@@ -2243,7 +2243,7 @@ class Item extends CachedModel
      *
      * @return array
      */
-    public function getListImagesVC(?bool $service=false):array
+    public static function getListImagesVC(?bool $service=false):array
     {
         global $config;
 
@@ -2367,7 +2367,7 @@ class Item extends CachedModel
      *
      * @return array Inputs.
      */
-    public function inputsLinkedVisualConsole(array $values):array
+    public static function inputsLinkedVisualConsole(array $values):array
     {
         // LinkConsoleInputGroup.
         $fields = self::getAllVisualConsole($values['vCId']);

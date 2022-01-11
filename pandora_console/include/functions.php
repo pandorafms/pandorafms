@@ -166,7 +166,7 @@ function safe_url_extraclean($string, $default_string='')
  * @param string  $searchHandler Pattern of files to match.
  * @param boolean $return        Whether to print or return the list.
  *
- * @return string he list of files if $return parameter is true.
+ * @return array the list of files if $return parameter is true.
  */
 function list_files($directory, $stringSearch, $searchHandler, $return=false)
 {

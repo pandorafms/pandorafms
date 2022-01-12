@@ -8775,6 +8775,8 @@ function reporting_increment($report, $content)
 
     $return['data'] = [];
 
+    $search_in_history_db = db_search_in_history_db($return['from']);
+
     if (is_metaconsole()) {
         $sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
                                      AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
@@ -8801,17 +8803,23 @@ function reporting_increment($report, $content)
                 $connection = false;
             }
 
-            $old_data = db_get_value_sql($sql1);
+            $old_data = db_get_value_sql($sql1, false, $search_in_history_db);
 
-            $last_data = db_get_value_sql($sql2);
+            $last_data = db_get_value_sql($sql2, false, $search_in_history_db);
         }
     } else {
         $old_data = db_get_value_sql(
             'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
-                                     AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC'
+                AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC',
+            false,
+            $search_in_history_db
         );
 
-        $last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC');
+        $last_data = db_get_value_sql(
+            'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC',
+            false,
+            $search_in_history_db
+        );
     }
 
     if (!is_metaconsole()) {

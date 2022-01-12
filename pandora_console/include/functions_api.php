@@ -16559,7 +16559,11 @@ function api_get_user_info($thrash1, $thrash2, $other, $returnType)
 
     $other = json_decode(base64_decode($other['data']), true);
 
-    $sql = 'select * from tusuario where id_user = "'.$other[0]['id_user'].'" and password = "'.$other[0]['password'].'"';
+    $sql = sprintf(
+        'SELECT * FROM tusuario WHERE id_user = "%s" and password = "%s"',
+        mysql_escape_string_sql($other[0]['id_user']),
+        mysql_escape_string_sql($other[0]['password'])
+    );
 
     $user_info = db_get_all_rows_sql($sql);
 

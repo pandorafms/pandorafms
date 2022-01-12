@@ -343,7 +343,7 @@ $countItems = db_get_sql(
 	FROM treport_content
 	WHERE '.$where.' AND id_report = '.$idReport
 );
-$table = null;
+$table = new stdClass();
 
 $table->style[0] = 'text-align: right;';
 
@@ -594,7 +594,7 @@ foreach ($items as $item) {
 
 
 
-    if ($style['name_label'] != '') {
+    if (($style['name_label'] ?? null) != '') {
         $text = empty($style['name_label']) ? $item['description'] : $style['name_label'];
     } else {
         if ($item['name'] == '' && $item['description'] == '') {

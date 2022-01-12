@@ -282,12 +282,13 @@ if (is_user_admin($id)) {
     $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
 }
 
-if ($view_mode === false) {
-    $table->rowspan[0][2] = 3;
-} else {
-    $table->rowspan[0][2] = 2;
+if (isset($table) === true) {
+    if ($view_mode === false) {
+        $table->rowspan = [0 => [2 => 3]];
+    } else {
+        $table->rowspan = [0 => [2 => 2]];
+    }
 }
-
 
 $email = '<div class="label_select_simple">'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', ['class' => 'input', 'placeholder' => __('E-mail')], true).'</div>';
 
@@ -551,13 +552,13 @@ $table_ichanges = '<div class="autorefresh_select">
                         </div>
                         <div class="autorefresh_select_arrows" style="display:grid">
                             <a href="javascript:">'.html_print_image(
-    'images/darrowright_green.png',
-    true,
-    [
-        'id'    => 'right_autorefreshlist',
-        'alt'   => __('Push selected pages into autorefresh list'),
-        'title' => __('Push selected pages into autorefresh list'),
-    ]
+                                'images/darrowright_green.png',
+                                true,
+                                [
+                                    'id'    => 'right_autorefreshlist',
+                                    'alt'   => __('Push selected pages into autorefresh list'),
+                                    'title' => __('Push selected pages into autorefresh list'),
+                                ]
 ).'</a>
                             <a href="javascript:">'.html_print_image(
     'images/darrowleft_green.png',

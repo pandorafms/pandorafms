@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "mpdf/mpdf": "^7.1",
+    "mpdf/mpdf": "^8.0.15",
     "swiftmailer/swiftmailer": "^6.0"
   },
   "autoload": {

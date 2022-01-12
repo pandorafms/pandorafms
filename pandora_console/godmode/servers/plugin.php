@@ -68,7 +68,7 @@ if (is_ajax()) {
             $modules = [];
         }
 
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->head[0] = __('Network Components');
         $table->data = [];
@@ -82,7 +82,7 @@ if (is_ajax()) {
             echo '<br />';
         }
 
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->head[0] = __('Agent');
         $table->head[1] = __('Module');

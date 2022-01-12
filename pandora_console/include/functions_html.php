@@ -98,6 +98,13 @@ function hd($var, $file='', $oneline=false)
 }
 
 
+function dd($var)
+{
+    hd($var);
+    die();
+}
+
+
 /**
  * Encapsulation (ob) for debug print function.
  *

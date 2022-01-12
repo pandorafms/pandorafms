@@ -419,7 +419,7 @@ function resource_exportation_extension_main()
 
     echo '<br /><br />';
 
-    $table = null;
+    $table = new stdClass();
     $table->width = '100%';
     $table->style[0] = 'width: 30%;';
     $table->style[1] = 'width: 10%;';

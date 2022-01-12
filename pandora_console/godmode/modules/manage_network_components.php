@@ -737,8 +737,7 @@ if ($components === false) {
     $components = [];
 }
 
-unset($table);
-
+$table = new stdClass();
 $table->width = '100%';
 $table->head = [];
 $table->class = 'info_table';

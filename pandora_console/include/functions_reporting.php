@@ -144,7 +144,7 @@ function reporting_get_name($id_report)
 
 
 function reporting_make_reporting_data(
-    $report=null,
+    $report,
     $id_report,
     $date,
     $time,
@@ -156,6 +156,8 @@ function reporting_make_reporting_data(
     $from_template=false
 ) {
     global $config;
+
+    $report ??= null;
 
     enterprise_include_once('include/functions_metaconsole.php');
 
@@ -783,7 +785,7 @@ function reporting_make_reporting_data(
                     )
                 );
                 if ($report_control['total_events'] == 0 && $content['hide_no_data'] == 1) {
-                    continue;
+                    break;
                 }
 
                     $report['contents'][] = $report_control;
@@ -799,7 +801,7 @@ function reporting_make_reporting_data(
                     $pdf
                 );
                 if ($report_control['total_events'] == 0 && $content['hide_no_data'] == 1) {
-                    continue;
+                    break;
                 }
 
                     $report['contents'][] = $report_control;
@@ -814,7 +816,7 @@ function reporting_make_reporting_data(
                     $force_height_chart
                 );
                 if ($report_control['total_events'] == 0 && $content['hide_no_data'] == 1) {
-                    continue;
+                    break;
                 }
 
                 $report['contents'][] = $report_control;
@@ -6840,6 +6842,8 @@ function reporting_advanced_sla(
     $inclusive_downtimes=1,
     $sla_check_warning=false
 ) {
+    global $config;
+
     // In content:
     // Example: [time_from, time_to] => Worktime
     // week's days => flags to manage workdays.
@@ -6860,7 +6864,7 @@ function reporting_advanced_sla(
 
         // Take in mind: the "inverse" critical threshold.
         $inverse_interval = ($agentmodule_info['critical_inverse'] == 0) ? 1 : 0;
-        $inverse_interval_warning = (int) $agentmodule_info['critical_warning'];
+        $inverse_interval_warning = (int) ($agentmodule_info['critical_warning'] ?? null);
 
         if (!$is_string_module) {
             $min_value         = $agentmodule_info['min_critical'];
@@ -7384,7 +7388,7 @@ function reporting_advanced_sla(
                             $worktime,
                             $planned_downtimes,
                             $inclusive_downtimes,
-                            $wt_check['idx']
+                            ($wt_check['idx'] ?? null)
                         );
                         $time_interval = $wt_check['interval'];
 
@@ -7500,7 +7504,7 @@ function reporting_advanced_sla(
                             }
 
                             if ($inclusive_downtimes == 1) {
-                                if ($wt_check['wt_in_downtime']) {
+                                if (isset($wt_check['wt_in_downtime']) === true) {
                                     // Add downtime interval as
                                     // OK in inclusion mode.
                                     $total_checks++;

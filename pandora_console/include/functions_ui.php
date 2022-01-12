@@ -6420,7 +6420,7 @@ function ui_print_comments($comments)
         $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
+    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
         $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
 

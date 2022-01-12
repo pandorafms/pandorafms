@@ -515,6 +515,7 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
 
     if ($exactly) {
         $returnDate = '';
+        $seconds = (float) $seconds;
 
         $years = floor($seconds / SECONDS_1YEAR);
 

@@ -851,11 +851,11 @@ class HTML
 
         foreach ($inputs as $input) {
             if (is_array(($input['arguments'] ?? null)) === true
-                && $input['arguments']['type'] != 'submit'
+                && $input['arguments']['type'] === 'submit'
             ) {
-                $output .= self::printBlock($input, true);
-            } else {
                 $output_submit .= self::printBlock($input, true);
+            } else {
+                $output .= self::printBlock($input, true);
             }
         }
 

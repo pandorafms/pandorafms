@@ -482,11 +482,10 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
     );
 
     $style = json_decode(io_safe_output($style), true);
-    $same_agent_in_resume = '';
 
     global $config;
 
-    $interval_description = $config['interval_description'];
+    $interval_description = ($config['interval_description'] ?? null);
 
     if ($mini === true) {
         $font_size = '1.5em';
@@ -2081,7 +2080,7 @@ function reporting_html_exception($table, $item, $pdf=0)
         }
 
         if (!empty($item['resume'])) {
-            $table1 = null;
+            $table1 = new stdClass();
             $table1->width = '99%';
 
             $table1->align = [];

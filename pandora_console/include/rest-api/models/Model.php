@@ -56,7 +56,7 @@ abstract class Model
      *
      * @abstract
      */
-    abstract protected function encode(array $data): array;
+    abstract static protected function encode(array $data): array;
 
 
     /**
@@ -98,6 +98,13 @@ abstract class Model
     }
 
 
+    /**
+     * Set data.
+     *
+     * @param array $data Data.
+     *
+     * @return void
+     */
     public function setData(array $data)
     {
         $this->data = $data;
@@ -121,7 +128,9 @@ abstract class Model
     /**
      * Obtain a data structure from the database using a filter.
      *
-     * @param array $filter Filter to retrieve the modeled element.
+     * @param array      $filter     Filter to retrieve the modeled element.
+     * @param float|null $ratio      Ratio.
+     * @param float|null $widthRatio Width ratio.
      *
      * @return array The modeled element data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
@@ -138,7 +147,9 @@ abstract class Model
     /**
      * Obtain a model's instance from the database using a filter.
      *
-     * @param array $filter Filter to retrieve the modeled element.
+     * @param array      $filter     Filter to retrieve the modeled element.
+     * @param float|null $ratio      Ratio.
+     * @param float|null $widthRatio Width ratio.
      *
      * @return self A modeled element's instance.
      */
@@ -152,7 +163,7 @@ abstract class Model
     /**
      * JSON representation of the model.
      *
-     * @return string
+     * @return array
      */
     public function toArray(): array
     {

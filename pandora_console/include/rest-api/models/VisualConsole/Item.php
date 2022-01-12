@@ -755,8 +755,9 @@ class Item extends CachedModel
     /**
      * Fetch a vc item data structure from the database using a filter.
      *
-     * @param array $filter Filter of the Visual Console Item.
-     * @param float $ratio  Ratio resize view.
+     * @param array      $filter     Filter of the Visual Console Item.
+     * @param float      $ratio      Ratio resize view.
+     * @param float|null $widthRatio Unknown.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
@@ -1382,7 +1383,7 @@ class Item extends CachedModel
      *
      * @overrides Model::encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $result = [];
 
@@ -1801,7 +1802,27 @@ class Item extends CachedModel
 
 
     /**
-     * Insert or update an item in the database
+     * Inserts a new item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public static function create(array $data=[]): int
+    {
+        // Insert.
+        $save = static::encode($data);
+
+        $result = \db_process_sql_insert('tlayout_data', $save);
+
+        return $result;
+    }
+
+
+    /**
+     * Update an item in the database
      *
      * @param array $data Unknown input data structure.
      *
@@ -1811,13 +1832,15 @@ class Item extends CachedModel
      */
     public function save(array $data=[]): int
     {
+        $data ??= $this->toArray();
+
         if (empty($data) === false) {
             if (empty($data['id']) === true) {
                 // Insert.
-                $save = static::encode($data);
+                $save = $this->encode($data);
 
                 $result = \db_process_sql_insert('tlayout_data', $save);
-                if ($result) {
+                if ($result !== false) {
                     $item = static::fromDB(['id' => $result]);
                     $item->setData($item->toArray());
                 }

@@ -385,7 +385,7 @@ final class ModuleGraph extends Item
             ];
 
             if ($imageOnly !== false) {
-                $imgbase64 = 'data:image/jpg;base64,';
+                $imgbase64 = 'data:image/png;base64,';
             }
 
             $imgbase64 .= \graphic_combined_module(
@@ -430,7 +430,7 @@ final class ModuleGraph extends Item
             ];
 
             if ($imageOnly !== false) {
-                $imgbase64 = 'data:image/jpg;base64,';
+                $imgbase64 = 'data:image/png;base64,';
             }
 
             $imgbase64 .= \grafico_modulo_sparse($params);

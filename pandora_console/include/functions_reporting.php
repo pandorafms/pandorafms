@@ -4543,7 +4543,7 @@ function agents_get_network_interfaces_array(
                                         $params_combined
                                     );
                                 } else {
-                                    $row_interface['chart'] = '<img src="data:image/jpg;base64,';
+                                    $row_interface['chart'] = '<img src="data:image/png;base64,';
                                     $row_interface['chart'] .= graphic_combined_module(
                                         array_values($interface['traffic']),
                                         $params,
@@ -5683,7 +5683,7 @@ function reporting_projection_graph(
             ];
 
             if ($pdf === true) {
-                $return['chart'] = '<img src="data:image/jpg;base64,';
+                $return['chart'] = '<img src="data:image/png;base64,';
                 $return['chart'] .= graphic_combined_module(
                     [$content['id_agent_module']],
                     $params,
@@ -6139,7 +6139,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                     if ($only_image === false) {
                         $graph = grafico_modulo_sparse($params);
                     } else {
-                        $graph = '<img src="data:image/jpg;base64,'.grafico_modulo_sparse($params).'" />';
+                        $graph = '<img src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
                     }
 
                     $return['data'][] = ['value' => $graph];
@@ -9480,7 +9480,7 @@ function reporting_custom_graph(
 
             $return['chart'] = '';
             if ($pdf === true) {
-                $return['chart'] .= '<img src="data:image/jpg;base64,';
+                $return['chart'] .= '<img src="data:image/png;base64,';
                 $return['chart'] .= graphic_combined_module(
                     $modules,
                     $params,
@@ -9685,7 +9685,7 @@ function reporting_simple_graph(
             if ($only_image === false) {
                 $return['chart'] = grafico_modulo_sparse($params);
             } else {
-                $return['chart'] = '<img src="data:image/jpg;base64,'.grafico_modulo_sparse($params).'" />';
+                $return['chart'] = '<img src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
             }
         break;
 

@@ -794,7 +794,7 @@ function grafico_modulo_sparse($params)
     }
 
     if (isset($params['type_mode_graph']) === false) {
-        $params['type_mode_graph'] = $config['type_mode_graph'];
+        $params['type_mode_graph'] = ($config['type_mode_graph'] ?? null);
         if (isset($params['graph_render']) === true) {
             $params['type_mode_graph'] = $params['graph_render'];
         }
@@ -2595,7 +2595,7 @@ function graphic_agentaccess(
     } else {
         $options['generals']['pdf']['width'] = 350;
         $options['generals']['pdf']['height'] = 125;
-        $imgbase64 = '<img src="data:image/jpg;base64,';
+        $imgbase64 = '<img src="data:image/png;base64,';
         $imgbase64 .= vbar_graph($data_array, $options, 2);
         $imgbase64 .= '" />';
 
@@ -3866,7 +3866,7 @@ function graph_custom_sql_graph(
                 $options['x']['color'] = 'transparent';
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
-                $output .= '<img src="data:image/jpg;base64,';
+                $output .= '<img src="data:image/png;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';
             } else {
@@ -4234,6 +4234,14 @@ function fullscale_data(
     $flag_unknown  = 0;
     $array_percentil = [];
 
+    // Missing initializations.
+    $params = ['baseline' => false];
+    $sum_data_total = 0;
+    $count_data_total = 0;
+    $sum_data_min = 0;
+    $sum_data_max = 0;
+    $sum_data_avg = 0;
+
     if ($data_slice) {
         if (isset($data_uncompress) === true
             && is_array($data_uncompress) === true
@@ -4478,6 +4486,8 @@ function fullscale_data(
             }
         }
     } else {
+        $sum_data = 0;
+        $count_data = 0;
         foreach ($data_uncompress as $k) {
             foreach ($k['data'] as $v) {
                 if (isset($v['type']) && $v['type'] == 1) {

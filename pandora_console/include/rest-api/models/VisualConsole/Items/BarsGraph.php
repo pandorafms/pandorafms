@@ -425,7 +425,7 @@ final class BarsGraph extends Item
             \metaconsole_restore_db();
         }
 
-        $imgbase64 = 'data:image/jpg;base64,';
+        $imgbase64 = 'data:image/png;base64,';
         $imgbase64 .= $graph;
 
         $data['html'] = $imgbase64;

@@ -750,7 +750,7 @@ function flot_slicesbar_graph(
             'server_id'          => $server_id,
         ];
 
-        $graph = '<img src="data:image/jpg;base64,';
+        $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
         $graph .= '" />';
 

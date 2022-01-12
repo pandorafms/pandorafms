@@ -70,6 +70,7 @@ RUN dnf install -y vim wget bzip2 curl && \
     perl-IO-Socket-INET6 \
     perl-Socket6 \
     perl-Sys-Syslog \
+    perl-IO-Socket-SSL \
     nmap \
     sudo \
     xprobe2 \

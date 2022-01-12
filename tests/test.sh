@@ -29,6 +29,15 @@ echo "php_value[upload_max_filesize] = 800M" >> /etc/php-fpm.d/www.conf
 echo "php_value[post_max_size] = 800M" >> /etc/php-fpm.d/www.conf
 echo "php_value[memory_limit] = -1" >> /etc/php-fpm.d/www.conf
 
+# Customize timeouts.
+sed -i 's/SetHandler "proxy:unix:\/run\/php-fpm\/www.sock|fcgi:\/\/localhost"/SetHandler "proxy:unix:\/run\/php-fpm\/www.sock\|fcgi:\/\/localhost" timeout 1200/' /etc/httpd/conf.d/php.conf
+cat<<EO_F >/etc/httpd/conf.d/fcgi.conf
+FcgidIdleTimeout 1200
+FcgidProcessLifeTime 1200
+FcgidConnectTimeout 1200
+FcgidIOTimeout 1200
+EO_F
+
 mkdir -p /run/php-fpm/ 2>/dev/null
 /usr/sbin/php-fpm
 check "Starting PHP-FPM" $?

@@ -664,24 +664,28 @@ class AgentModuleWidget extends Widget
         }
 
         if ($all_modules !== null) {
-            $reduceAllModules = array_reduce(
-                $all_modules,
-                function ($carry, $item) {
-                    if ($item === null) {
+            if (is_metaconsole() === true
+                && $this->values['mShowCommonModules'] === '1'
+            ) {
+                $reduceAllModules = [];
+            } else {
+                $reduceAllModules = array_reduce(
+                    $all_modules,
+                    function ($carry, $item) {
+                        if ($item === null) {
+                            return $carry;
+                        }
+
+                        if (is_object($item) === true) {
+                            $carry[$item->name()] = null;
+                        } else {
+                            $carry[io_safe_output($item)] = null;
+                        }
+
                         return $carry;
                     }
-
-                    if (is_object($item) === true) {
-                        $carry[$item->name()] = null;
-                    } else {
-                        $carry[io_safe_output($item)] = null;
-                    }
-
-                    return $carry;
-                }
-            );
-        } else {
-            $reduceAllModules = [];
+                );
+            }
         }
 
         $visualData = [];
@@ -708,13 +712,13 @@ class AgentModuleWidget extends Widget
                 $visualData[$agent_id]['agent_status'] = $agent->lastStatus();
                 $visualData[$agent_id]['agent_name'] = $agent->name();
                 $visualData[$agent_id]['agent_alias'] = $agent->alias();
+                $visualData[$agent_id]['modules'] = [];
 
                 if (is_metaconsole() === true
                     && $this->values['mShowCommonModules'] === '1'
                 ) {
                     // MC should connect to nodes and retrieve information
                     // from targets.
-                    $reduceAllModules = [];
                     $tmpModules = array_reduce(
                         $target_modules,
                         function ($carry, $item) {

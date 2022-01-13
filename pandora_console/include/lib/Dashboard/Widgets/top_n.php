@@ -455,6 +455,7 @@ class TopNWidget extends Widget
 
         $data_hbar = [];
         foreach ($modules as $module) {
+            $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20);
             $item_name = '';
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
             $data_hbar[$item_name]['g'] = $module[$display];

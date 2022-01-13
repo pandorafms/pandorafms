@@ -9925,12 +9925,19 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
 
     if (isset($other['data'][2]) && $other['data'][2] != '') {
         if ($use_agent_name === false) {
-            $idAgents = agents_get_agent_id_by_alias($other['data'][2]);
+            $idAgents = agents_get_agent_id_by_alias($other['data'][2], is_metaconsole());
 
             if (!empty($idAgents)) {
                 $idAgent = [];
+
+                $id_agent_field = 'id_agente';
+
+                if (is_metaconsole() === true) {
+                    $id_agent_field = 'id_tagente';
+                }
+
                 foreach ($idAgents as $key => $value) {
-                    $idAgent[] .= $value['id_agente'];
+                    $idAgent[] .= $value[$id_agent_field];
                 }
 
                 $filter[] = 'id_agente IN ('.implode(',', $idAgent).')';
@@ -9983,6 +9990,10 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
                 }
             }
         }
+    }
+
+    if (isset($idTemplate) && $idTemplate != '') {
+        $filter['id_alert_template'] = $idTemplate;
     }
 
     if (isset($other['data'][5]) && $other['data'][5] != '') {
@@ -11434,7 +11445,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     global $config;
 
     $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $table_events = 'tmetaconsole_event';
     }
 
@@ -11451,10 +11462,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $event_view_hr = 0;
     $tag = '';
     $group_rep = 0;
-    $offset = 0;
-    $pagination = 40;
     $utimestamp_upper = 0;
     $utimestamp_bottom = 0;
+    $id_alert_template = -1;
 
     $use_agent_name = ($other['data'][16] === '1') ? true : false;
 
@@ -11469,7 +11479,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     }
 
     if (isset($filter['id_agentmodule'])) {
-        $id_agentmodule = $filter['id_agentmodule'];
+        $id_agentmodule = $filter['id_agentmodule'][0];
     }
 
     if (isset($filter['id_alert_am'])) {
@@ -11488,12 +11498,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $search = $filter['evento'];
     }
 
-    if (isset($filter['limit'])) {
-        $pagination = $filter['limit'];
-    }
-
-    if (isset($filter['offset'])) {
-        $offset = $filter['offset'];
+    if (isset($filter['id_alert_template'])) {
+        $id_alert_template = $filter['id_alert_template'];
     }
 
     $id_group = (int) $filter['id_group'];
@@ -11611,10 +11617,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $sql_post .= ' AND id_agentmodule = '.$id_agentmodule;
     }
 
-    if ($id_alert_am != -1) {
-        $sql_post .= ' AND id_alert_am = '.$id_alert_am;
-    }
-
     if ($id_event != -1) {
         $sql_post .= ' AND id_evento = '.$id_event;
     }
@@ -11647,6 +11649,21 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $sql_post .= ' AND ('.$filter['sql'].') ';
     }
 
+    // Inject agent ID filter (it is set as the first numeric key in filter array).
+    if (isset($filter[0]) === true) {
+        $sql_post .= ' AND '.$filter[0];
+    }
+
+    if ($id_alert_template !== -1) {
+        $sql_post .= ' AND talert_template_modules.id_alert_template = '.$id_alert_template;
+    }
+
+    $alert_join = '';
+
+    if ($id_alert_template !== -1) {
+        $alert_join = ' INNER JOIN talert_template_modules ON '.$table_events.'.id_alert_am=talert_template_modules.id';
+    }
+
     if ($group_rep == 0) {
         switch ($config['dbtype']) {
             case 'mysql':
@@ -11661,7 +11678,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                         ORDER BY criticity DESC
                         LIMIT 1';
                 } else {
-                    if (defined('METACONSOLE')) {
+                    if (is_metaconsole() === true) {
                         $sql = 'SELECT *,
                             (SELECT t2.nombre
                                 FROM tgrupo t2
@@ -11669,10 +11686,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                             (SELECT t2.icon
                                 FROM tgrupo t2
                                 WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_icon
-                            FROM '.$table_events.'
+                            FROM '.$table_events.$alert_join.'
                             WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC
-                            LIMIT '.$offset.','.$pagination;
+                            ORDER BY utimestamp DESC';
                     } else {
                         $sql = 'SELECT *,
                             (SELECT t1.alias
@@ -11690,10 +11706,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                                     SELECT tagente_modulo.id_modulo
                                     FROM tagente_modulo
                                     WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                            FROM '.$table_events.'
+                            FROM '.$table_events.$alert_join.'
                             WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC
-                            LIMIT '.$offset.','.$pagination;
+                            ORDER BY utimestamp DESC';
                     }
                 }
             break;
@@ -11718,15 +11733,12 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                             WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
                     FROM tevento
                     WHERE 1=1 '.$sql_post.'
-                    ORDER BY utimestamp DESC
-                    LIMIT '.$pagination.' OFFSET '.$offset;
+                    ORDER BY utimestamp DESC';
             break;
 
             case 'oracle':
                 // TODO TOTAL
                 $set = [];
-                $set['limit'] = $pagination;
-                $set['offset'] = $offset;
 
                 $sql = 'SELECT *,
                     (SELECT t1.alias
@@ -11764,8 +11776,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                     FROM ".$table_events.'
                     WHERE 1=1 '.$sql_post.'
                     GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC
-                    LIMIT '.$offset.','.$pagination;
+                    ORDER BY timestamp_rep DESC';
             break;
 
             case 'postgresql':
@@ -11776,14 +11787,11 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                     FROM ".$table_events.'
                     WHERE 1=1 '.$sql_post.'
                     GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC
-                    LIMIT '.$pagination.' OFFSET '.$offset;
+                    ORDER BY timestamp_rep DESC';
             break;
 
             case 'oracle':
                 $set = [];
-                $set['limit'] = $pagination;
-                $set['offset'] = $offset;
                 // TODO: Remove duplicate user comments
                 $sql = 'SELECT a.*, b.event_rep, b.timestamp_rep
                     FROM (SELECT *
@@ -11971,7 +11979,7 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
  * @param $returnType
  * @param $user_in_db
  */
-function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
+function api_get_events($node_id, $trash2, $other, $returnType, $user_in_db=null)
 {
     if ($user_in_db !== null) {
         $correct = get_events_with_user(
@@ -12016,6 +12024,10 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
     }
 
     if (is_metaconsole()) {
+        if ((int) $node_id !== 0) {
+            $filterString .= ' AND server_id = '.$node_id;
+        }
+
         $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
     } else {
         $dataRows = db_get_all_rows_filter('tevento', $filterString);

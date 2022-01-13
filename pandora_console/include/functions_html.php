@@ -2426,6 +2426,38 @@ function html_print_div(
 
 
 /**
+ * Render an <pre> tag for show code.
+ * For debug purposes, see for `hd()` function.
+ *
+ * @param string  $content    Content of tag.
+ * @param boolean $return     Return the tag string formed.
+ * @param array   $attributes Attributes availables for pre tags.
+ *
+ * @return string
+ */
+function html_print_code(
+    string $content,
+    bool $return=true,
+    array $attributes=[]
+) {
+    $output = '<pre';
+    if (empty($attributes) === false) {
+        foreach ($attributes as $attribute => $value) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($value).'"';
+        }
+    }
+
+    $output .= sprintf('>%s</pre>', $content);
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+/**
  * Render an anchor <a> html element.
  *
  * @param array   $options Parameters.

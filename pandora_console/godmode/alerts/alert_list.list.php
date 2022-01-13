@@ -1134,7 +1134,7 @@ function show_add_action(id_alert) {
             },
             open: function() {
                 $(`#add_action-div-${id_alert}`).css('overflow', 'hidden');
-                $("#action_select, #action_select").select2({
+                $("select[id^='action_select'], select[id^='action_select']").select2({
                     tags: true,
                     dropdownParent: $("#add_action-div-" + id_alert)
                 });

@@ -3846,7 +3846,8 @@ sub pandora_get_agent_group {
 	my ($pa_config, $dbh, $agent_name, $agent_group, $agent_group_password) = @_;
 
 	my $group_id;
-	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($pa_config->{'autocreate_group'}, $agent_group) : ($agent_group, $pa_config->{'autocreate_group'});
+	my $auto_group = $pa_config->{'autocreate_group_name'} ne '' ? $pa_config->{'autocreate_group_name'} : $pa_config->{'autocreate_group'};
+	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($auto_group, $agent_group) : ($agent_group, $auto_group);
 	foreach my $group (@groups) {
 		next unless defined($group);
 

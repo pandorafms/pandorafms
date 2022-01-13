@@ -274,6 +274,9 @@ dataserver_threads 2
 
 autocreate_group 10
 
+# Works like autocreate_group, except the name of the group is specified (instead of its id). Do not set both.
+#autocreate_group_name Unknown
+
 # If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
 # If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).
 

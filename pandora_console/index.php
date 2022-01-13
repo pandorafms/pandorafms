@@ -424,6 +424,8 @@ if (! isset($config['id_user'])) {
                 // Process logout.
                 include 'general/logoff.php';
             }
+
+            $validatedCSRF = true;
         } else {
             // process_user_login is a virtual function which should be defined in each auth file.
             // It accepts username and password. The rest should be internal to the auth file.

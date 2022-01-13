@@ -2856,7 +2856,8 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
 	`id_service_child` int(10) unsigned NOT NULL default 0,
 	`id_server_meta` int(10)  unsigned NOT NULL default 0,
 	`rules` text,
-	PRIMARY KEY  (`id`)
+	PRIMARY KEY  (`id`),
+	INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 
 DEFAULT CHARSET=utf8;

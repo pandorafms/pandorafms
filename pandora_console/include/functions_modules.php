@@ -3678,7 +3678,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             function ($carry, $item) use ($useName) {
                 // Only works in select mode.
                 if ($useName === true) {
-                    $carry[io_safe_input($item['nombre'])] = io_safe_input($item['nombre']);
+                    $carry[io_safe_input($item['nombre'])] = $item['nombre'];
                 } else {
                     $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
                 }

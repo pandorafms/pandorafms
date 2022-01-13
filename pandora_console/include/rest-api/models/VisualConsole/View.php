@@ -655,6 +655,7 @@ class View extends \HTML
      * Returns a popup for networkLink viewer.
      *
      * @return void
+     * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
      */
     public function networkLinkPopup()
     {

@@ -1837,7 +1837,7 @@ class Item extends CachedModel
         if (empty($data) === false) {
             if (empty($data['id']) === true) {
                 // Insert.
-                $save = $this->encode($data);
+                $save = static::encode($data);
 
                 $result = \db_process_sql_insert('tlayout_data', $save);
                 if ($result !== false) {
@@ -1846,8 +1846,8 @@ class Item extends CachedModel
                 }
             } else {
                 // Update.
-                $dataModelEncode = $this->encode($this->toArray());
-                $dataEncode = $this->encode($data);
+                $dataModelEncode = static::encode($this->toArray());
+                $dataEncode = static::encode($data);
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 

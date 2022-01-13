@@ -553,7 +553,7 @@ function gis_get_groups_layer_by_agent_id($idLayer)
 
 function gis_add_point_path($layerName, $lat, $lon, $color, $manual, $id)
 {
-    $manual ??= 1;
+    $manual = ($manual ?? 1);
     ?>
     <script type="text/javascript">
     $(document).ready (

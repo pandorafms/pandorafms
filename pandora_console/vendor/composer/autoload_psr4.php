@@ -13,7 +13,7 @@ return array(
     'Symfony\\Polyfill\\Intl\\Normalizer\\' => array($vendorDir . '/symfony/polyfill-intl-normalizer'),
     'Symfony\\Polyfill\\Intl\\Idn\\' => array($vendorDir . '/symfony/polyfill-intl-idn'),
     'Symfony\\Polyfill\\Iconv\\' => array($vendorDir . '/symfony/polyfill-iconv'),
-    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'PandoraFMS\\Enterprise\\' => array($baseDir . '/enterprise/include/lib'),
     'PandoraFMS\\' => array($baseDir . '/include/lib'),
     'Mpdf\\' => array($vendorDir . '/mpdf/mpdf/src'),

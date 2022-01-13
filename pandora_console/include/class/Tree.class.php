@@ -585,7 +585,7 @@ class Tree
     {
         global $config;
 
-        $server ??= false;
+        $server = ($server ?? false);
 
         if (isset($module['children'])) {
             foreach ($module['children'] as $i => $children) {

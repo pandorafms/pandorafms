@@ -157,7 +157,7 @@ function reporting_make_reporting_data(
 ) {
     global $config;
 
-    $report ??= null;
+    $report = ($report ?? null);
 
     enterprise_include_once('include/functions_metaconsole.php');
 

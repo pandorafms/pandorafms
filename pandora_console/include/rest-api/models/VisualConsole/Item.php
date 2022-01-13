@@ -1812,7 +1812,7 @@ class Item extends CachedModel
      */
     public function save(array $data=[]): int
     {
-        $data ??= $this->toArray();
+        $data = ($data ?? $this->toArray());
 
         if (empty($data) === false) {
             if (empty($data['id']) === true) {

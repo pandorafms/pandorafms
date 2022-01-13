@@ -284,7 +284,7 @@ if ($getVisualConsole === true) {
     $class = VisualConsole::getItemClass((int) $data['type']);
     try {
         // Save the new item.
-        $result = $class::save($data);
+        $result = $class::create($data);
     } catch (\Throwable $th) {
         // There is no item in the database.
         echo false;

@@ -60,6 +60,26 @@ abstract class Model
 
 
     /**
+     * Inserts a new item model in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public static function create(array $data=[]): int
+    {
+        // Insert.
+        $save = static::encode($data);
+
+        $result = \db_process_sql_insert('tlayout_data', $save);
+
+        return $result;
+    }
+
+
+    /**
      * Insert or update an item in the database
      *
      * @param array $data Unknown input data structure.

@@ -56,7 +56,7 @@ abstract class Model
      *
      * @abstract
      */
-    abstract static protected function encode(array $data): array;
+    abstract protected static function encode(array $data): array;
 
 
     /**

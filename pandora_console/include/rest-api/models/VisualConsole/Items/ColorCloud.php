@@ -76,7 +76,7 @@ final class ColorCloud extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 
@@ -100,7 +100,7 @@ final class ColorCloud extends Item
                 ]
             );
         } else {
-            $prevData = $this->toArray();
+            $prevData = $data;
             $prevDataDefaultColor = static::extractDefaultColor(
                 ['defaultColor' => $prevData['defaultColor']]
             );

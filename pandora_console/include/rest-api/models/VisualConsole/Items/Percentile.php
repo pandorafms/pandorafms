@@ -37,7 +37,7 @@ final class Percentile extends Item
      * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
      * 'PERCENTILE_BAR' by default.
      */
-    protected function encodePercentileType(array $data): ?int
+    protected static function encodePercentileType(array $data): ?int
     {
         $type = null;
         if (isset($data['percentileType']) === true) {
@@ -74,7 +74,7 @@ final class Percentile extends Item
      * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
      * 'PERCENTILE_BAR' by default.
      */
-    protected function encodeValueType(array $data): ?string
+    protected static function encodeValueType(array $data): ?string
     {
         $valueType = null;
         if (isset($data['valueType']) === true) {
@@ -103,7 +103,7 @@ final class Percentile extends Item
      * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
      * 'PERCENTILE_BAR' by default.
      */
-    protected function encodeLabelColor(array $data): ?string
+    protected static function encodeLabelColor(array $data): ?string
     {
         $labelColor = null;
         if (isset($data['labelColor']) === true) {
@@ -123,7 +123,7 @@ final class Percentile extends Item
      * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
      * 'PERCENTILE_BAR' by default.
      */
-    protected function encodeColor(array $data): ?string
+    protected static function encodeColor(array $data): ?string
     {
         $color = null;
         if (isset($data['color']) === true) {
@@ -143,7 +143,7 @@ final class Percentile extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 

@@ -1827,7 +1827,10 @@ class Item extends CachedModel
             } else {
                 // Update.
                 $dataModelEncode = static::encode($this->toArray());
-                $dataEncode = static::encode($data);
+                // Exception colorcloud...
+                $dataEncode = static::encode(
+                    array_merge($this->toArray(), $data)
+                );
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 

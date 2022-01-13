@@ -63,7 +63,7 @@ final class Box extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 

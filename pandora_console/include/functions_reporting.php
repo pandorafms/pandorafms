@@ -3334,7 +3334,7 @@ function reporting_exception(
                 ];
                 $return['chart']['hbar'] = call_user_func_array(
                     'hbar_graph',
-                    $params
+                    array_values(($params ?? []))
                 );
             }
 

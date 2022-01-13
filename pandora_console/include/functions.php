@@ -1546,7 +1546,10 @@ function enterprise_hook($function_name, $parameters=false)
             return call_user_func($function_name);
         }
 
-        return call_user_func_array($function_name, $parameters);
+        return call_user_func_array(
+            $function_name,
+            array_values(($parameters ?? []))
+        );
     }
 
     return ENTERPRISE_NOT_HOOK;

@@ -192,7 +192,7 @@ class WSManager extends WebSocketServer
                 $this->stderr('Calling '.$handler[$proto]);
                 return call_user_func_array(
                     $handler[$proto],
-                    $arguments
+                    array_values(($arguments ?? []))
                 );
             }
         }

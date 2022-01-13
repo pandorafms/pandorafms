@@ -833,7 +833,7 @@ class HTML
             if (isset($cb_function) === true) {
                 call_user_func_array(
                     $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
+                    array_values((isset($cb_args) === true) ? $cb_args : [])
                 );
             }
         } catch (Exception $e) {
@@ -917,7 +917,7 @@ class HTML
             if (isset($cb_function) === true) {
                 call_user_func_array(
                     $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
+                    array_values((isset($cb_args) === true) ? $cb_args : [])
                 );
             }
         } catch (Exception $e) {
@@ -1052,7 +1052,7 @@ class HTML
             if (isset($cb_function) === true) {
                 call_user_func_array(
                     $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
+                    array_values((isset($cb_args) === true) ? $cb_args : [])
                 );
             }
         } catch (Exception $e) {
@@ -1066,7 +1066,7 @@ class HTML
             if ($input['arguments']['type'] != 'submit') {
                 $output .= self::printBlockAsList($input, true);
             } else {
-                $output_submit .= self::printBlockAsList($input, true);
+                $output_submit = self::printBlockAsList($input, true);
             }
         }
 

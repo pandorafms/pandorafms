@@ -137,7 +137,10 @@ function html_f2str($function, $params)
 {
     ob_start();
 
-    call_user_func_array($function, $params);
+    call_user_func_array(
+        $function,
+        array_values(($params ?? []))
+    );
 
     return ob_get_clean();
 }

@@ -4186,7 +4186,7 @@ function generator_chart_to_pdf(
         $width_img = 650;
         $height_img = ($params['height'] + 50);
     } else {
-        $width_img  = 550;
+        $width_img  = $params['width'];
         $height_img = $params['height'];
 
         if ((int) $params['landscape'] === 1) {

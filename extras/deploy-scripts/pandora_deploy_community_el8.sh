@@ -6,7 +6,7 @@
 # Centos 8.4, 8.5
 # Rocky 8.4, 8.5
 # Almalinuz 8.4, 8.5
-# RedHat N/A
+# RedHat 8.5
 
 #Constants
 PANDORA_CONSOLE=/var/www/html/pandora_console
@@ -281,6 +281,7 @@ console_dependencies=" \
     xorg-x11-fonts-misc \
     poppler-data \
     php-yaml \
+    mod_ssl \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
@@ -448,7 +449,7 @@ cat > $PANDORA_CONSOLE/include/config.php << EO_CONFIG_F
 \$config["dbname"]="$DBNAME";
 \$config["dbuser"]="$DBUSER";
 \$config["dbpass"]="$DBPASS";
-\$config["dbhost"]="localhost";
+\$config["dbhost"]="$DBHOST";
 \$config["homedir"]="$PANDORA_CONSOLE";
 \$config["homeurl"]="/pandora_console";
 error_reporting(0);

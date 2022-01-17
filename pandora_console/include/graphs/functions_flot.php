@@ -146,7 +146,7 @@ function flot_area_graph(
         break;
     }
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
+    if (($config['style'] === 'pandora_black' && !is_metaconsole()) && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
     ) {
         $background_style = '#222';
         $params['grid_color'] = '#fff';

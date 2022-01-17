@@ -98,7 +98,7 @@ function add_component_selection($id_network_component_type)
     global $table_simple;
     global $config;
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $background_row = 'background-color: #444';
     } else {
         $background_row = 'background-color: #cfcfcf';

@@ -471,7 +471,7 @@ function html_print_select_groups(
     global $config;
     $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2_css = 'select2_dark.min';
     }
 
@@ -777,11 +777,11 @@ function html_print_select(
 
     if ($style === false) {
         $styleText = ' ';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $styleText = 'style="color: white"';
         }
     } else {
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $style .= ' color: white';
         }
 
@@ -922,7 +922,7 @@ function html_print_select(
     }
 
     $select2 = 'select2.min';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2 = 'select2_dark.min';
     }
 
@@ -2820,7 +2820,7 @@ function html_print_input_number(array $settings):string
     global $config;
     $text_color = '';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
     }
 
@@ -4297,7 +4297,7 @@ function html_print_autocomplete_modules(
 
     $text_color = '';
     $module_icon = 'images/search_module.png';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
     }
@@ -4599,7 +4599,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     enterprise_include_once('include/functions_metaconsole.php');
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $style = 'style="color: white"';
     }
 
@@ -5260,7 +5260,7 @@ function html_print_autocomplete_users_from_integria(
     global $config;
 
     $user_icon = 'images/user_green.png';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $user_icon = 'images/header_user.png';
     }
 
@@ -5367,7 +5367,7 @@ function html_print_tabs(array $tabs)
 
     $bg_color = '';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $bg_color = 'style="background-color: #222"';
     }
 
@@ -5469,7 +5469,7 @@ function html_print_select_search(
 
     $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2_css = 'select2_dark.min';
     }
 

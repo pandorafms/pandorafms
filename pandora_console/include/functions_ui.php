@@ -4964,7 +4964,7 @@ function ui_print_agent_autocomplete_input($parameters)
     // Default value.
     $icon_agent = 'images/search_agent.png';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
     }
@@ -5820,7 +5820,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $html = '';
 
     $text_color = '';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'color: white';
     }
 

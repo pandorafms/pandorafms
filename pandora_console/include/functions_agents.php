@@ -3876,7 +3876,7 @@ function agents_get_status_animation($up=true)
     $red = 'images/heartbeat_green.gif';
     $green = 'images/heartbeat_green.gif';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $red = 'images/heartbeat_green_black.gif';
         $green = 'images/heartbeat_green_black.gif';
     }

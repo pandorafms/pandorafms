@@ -394,20 +394,17 @@ if (!$meta) {
     $home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
     $home_screen .= '</div>';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
-
-
-
-    // User only can change skins if has more than one group.
-    $skin = '';
-    if (function_exists('skins_print_select')) {
-        if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
-        }
-    }
 } else {
     $home_screen = '';
-    $skin = '';
+}
+
+// User only can change skins if has more than one group.
+$skin = '';
+if (function_exists('skins_print_select')) {
+    if (count($usr_groups) > 1) {
+        $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
+        $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+    }
 }
 
 $timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';

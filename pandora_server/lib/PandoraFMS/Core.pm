@@ -3846,7 +3846,8 @@ sub pandora_get_agent_group {
 	my ($pa_config, $dbh, $agent_name, $agent_group, $agent_group_password) = @_;
 
 	my $group_id;
-	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($pa_config->{'autocreate_group'}, $agent_group) : ($agent_group, $pa_config->{'autocreate_group'});
+	my $auto_group = $pa_config->{'autocreate_group_name'} ne '' ? $pa_config->{'autocreate_group_name'} : $pa_config->{'autocreate_group'};
+	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($auto_group, $agent_group) : ($agent_group, $auto_group);
 	foreach my $group (@groups) {
 		next unless defined($group);
 
@@ -5540,7 +5541,24 @@ sub pandora_process_policy_queue ($) {
 			}
 
 			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
+				my $policy_applied = enterprise_hook(
+					'pandora_apply_policy',
+					[
+						$dbh,
+						$pa_config,
+						$operation->{'id_policy'},
+						$operation->{'id_agent'},
+						$operation->{'id'},
+						$operation->{'operation'}
+					]
+				);
+
+				if($policy_applied == 0) {
+					sleep($pa_config->{'server_threshold'});
+					# Skip.
+					next;
+				}
+				
 			}
 			elsif($operation->{'operation'} eq 'delete') {
 				if($operation->{'id_agent'} == 0) {

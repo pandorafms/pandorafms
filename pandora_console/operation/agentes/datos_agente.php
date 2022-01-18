@@ -258,7 +258,7 @@ foreach ($result as $row) {
 
     foreach ($columns as $col => $attr) {
         if ($attr[1] != 'modules_format_data') {
-            $data[] = $attr[1] ($row[$attr[0]]);
+            $data[] = $attr[1]($row[$attr[0]]);
         } else if (($config['command_snapshot']) && (preg_match("/[\n]+/i", $row[$attr[0]]))) {
             // Its a single-data, multiline data (data snapshot) ?
             // Detect string data with \n and convert to <br>'s.

@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.758.1
+# Version 7.0NG.759
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -347,6 +347,9 @@ fsnmp /usr/bin/pandorafsnmp
 # will be dropped. We use the Group ID #10 (Unknown) for a "valid" default value, please change as your own decision.
 
 autocreate_group 10
+
+# Works like autocreate_group, except the name of the group is specified (instead of its id). Do not set both.
+#autocreate_group_name Unknown
 
 # If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
 # If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).

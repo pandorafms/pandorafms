@@ -697,7 +697,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`evento` text NOT NULL,
 	`utimestamp` bigint(20) NOT NULL default '0',
-	`event_type` enum('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
+	`event_type` enum('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change', 'ncm') default 'unknown',
 	`id_agentmodule` int(10) NOT NULL default '0',
 	`id_alert_am` int(10) NOT NULL default '0',
 	`criticity` int(4) unsigned NOT NULL default '0',
@@ -2856,7 +2856,8 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
 	`id_service_child` int(10) unsigned NOT NULL default 0,
 	`id_server_meta` int(10)  unsigned NOT NULL default 0,
 	`rules` text,
-	PRIMARY KEY  (`id`)
+	PRIMARY KEY  (`id`),
+	INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 
 DEFAULT CHARSET=utf8;
@@ -2951,7 +2952,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_queue` (
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`id_agent` int(10) unsigned NOT NULL default '0',
 	`operation` varchar(15) default '',
-	`progress` int(10) unsigned NOT NULL default '0',
+	`progress` int(10) NOT NULL default '0',
 	`end_utimestamp` int(10) unsigned NOT NULL default 0,
 	`priority` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id`)
@@ -4097,6 +4098,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
     `name` varchar(255) UNIQUE,
+    `icon` varchar(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4161,6 +4163,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_template` bigint(20) unsigned,
     `execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
+    `cron_interval` varchar(100) default '',
+    `event_on_change` int unsigned default null,
     `last_error` text,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4181,4 +4185,40 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
     `status` int(4) NOT NULL default 5,
     `updated_at` bigint(20) NOT NULL default 0,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_queue` (
+    `id` SERIAL,
+    `id_agent` INT(10) UNSIGNED NOT NULL,
+    `id_script` BIGINT(20) UNSIGNED NOT NULL,
+    `utimestamp` INT UNSIGNED NOT NULL,
+    `scheduled` INT UNSIGNED DEFAULT NULL,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_snippet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_snippet` (
+    `id` SERIAL,
+    `name` TEXT,
+    `content` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_firmware`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_firmware` (
+    `id` SERIAL,
+    `name` varchar(255),
+    `shortname` varchar(255) unique,
+    `vendor` bigint(20) unsigned,
+    `models` text,
+    `path` text,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

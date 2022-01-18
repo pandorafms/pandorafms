@@ -474,6 +474,9 @@ select:-internal-list-box {
 .mx180px {
   max-width: 180px;
 }
+.mx450px {
+  max-width: 450px;
+}
 .mw100px {
   min-width: 100px;
 }
@@ -494,6 +497,9 @@ select:-internal-list-box {
 }
 .mw300px {
   min-width: 300px;
+}
+.mw400px {
+  min-width: 400px;
 }
 .mw500px {
   min-width: 500px;
@@ -659,6 +665,18 @@ select:-internal-list-box {
   justify-content: flex-end;
   align-content: flex-end;
 }
+.flex-content-left,
+.flex-content-left-pretty {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+}
+.flex-content-left-pretty img {
+  margin-right: 0.5em;
+}
 .flex-column {
   display: flex;
   flex-direction: column;
@@ -746,6 +764,18 @@ select:-internal-list-box {
 .padding-6 {
   padding: 6em;
 }
+.padding-top-2 {
+  padding-top: 2em;
+}
+.padding-top-4 {
+  padding-top: 4em;
+}
+.padding-bottom-2 {
+  padding-bottom: 2em;
+}
+.padding-bottom-4 {
+  padding-bottom: 4em;
+}
 .padding-right-2 {
   padding-right: 2em;
 }
@@ -779,6 +809,21 @@ select:-internal-list-box {
 .no-border-imp,
 .no-border-imp > div {
   border: none !important;
+}
+.button-soft-border {
+  border: 1px solid #d1d1d1;
+  border-radius: 5px;
+  padding: 0.2em;
+  box-shadow: 0 0 10px -5px #d1d1d1;
+}
+.button-soft-border.icon {
+  width: 1.5em;
+}
+.button-soft-border:hover {
+  box-shadow: 0 0 10px 0px #d1d1d1;
+}
+.button-soft-border:active {
+  box-shadow: none;
 }
 .no-padding {
   padding: 0;
@@ -1312,7 +1357,7 @@ td.datos2f9 {
   font-weight: bold;
 }
 .blue {
-  color: #5ab7e5;
+  color: #4a83f3;
   font-weight: bold;
 }
 .black {
@@ -2461,7 +2506,7 @@ tr.group_view_ok,
 
 tr.group_view_not_init,
 .group_view_not_init {
-  background-color: #5bb6e5;
+  background-color: #4a83f3;
   color: #fff;
 }
 
@@ -7256,6 +7301,10 @@ div.graph div.legend table {
   background-color: #5bb6e5;
 }
 
+.bg_4a83f3 {
+  background-color: #4a83f3;
+}
+
 .bg_aaaaaa {
   background-color: #aaaaaa;
 }
@@ -8394,4 +8443,25 @@ div.stat-win-spinner img {
 
 #stat-win-module-graph .stat_win_histogram div.nodata_container {
   width: 100%;
+}
+
+/* For backups dt, can be useful for others */
+#backups_list > thead > tr > th:last-child,
+#backups_list > tbody > tr > td:last-child {
+  text-align: center;
+}
+
+/*  err_msg_centralised */
+div#err_msg_centralised div {
+  margin-top: 1em;
+  font-size: 14px;
+}
+
+div#err_msg_centralised img {
+  width: 100px;
+  margin-right: 3em;
+}
+div#err_msg_centralised {
+  display: flex;
+  flex-direction: row;
 }

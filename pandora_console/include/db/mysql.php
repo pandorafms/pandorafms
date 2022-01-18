@@ -778,8 +778,59 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
             $not = (($negative === true) ? ' !' : '');
             $query .= sprintf('%s %s= %f', $field, $not, $value);
         } else if (is_array($value)) {
-            $not = (($negative === true) ? 'NOT' : '');
-            $query .= sprintf('%s %s IN ("%s")', $field, $not, implode('", "', $value));
+            $values_check = array_keys($value);
+            $ranges = false;
+            $initialized = false;
+            foreach ($values_check as $operation) {
+                if ($ranges === true && $initialized === true) {
+                    $query .= ' '.$join.' ';
+                } else {
+                    $initialized = true;
+                }
+
+                if ($operation === '>') {
+                    $query .= sprintf("%s > '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '>=') {
+                    $query .= sprintf("%s >= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '<') {
+                    $query .= sprintf("%s < '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '<=') {
+                    $query .= sprintf("%s <= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '!=') {
+                    $query .= sprintf("%s != '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '=') {
+                    $query .= sprintf("%s = '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '>') {
+                    $query .= sprintf("%s <= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '>=') {
+                    $query .= sprintf("%s < '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '<') {
+                    $query .= sprintf("%s >= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '<=') {
+                    $query .= sprintf("%s > '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '!=') {
+                    $query .= sprintf("%s = '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '=') {
+                    $query .= sprintf("%s != '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                }
+            }
+
+            if ($ranges !== true) {
+                $not = (($negative === true) ? 'NOT' : '');
+                $query .= sprintf('%s %s IN ("%s")', $field, $not, implode('", "', $value));
+            }
         } else {
             if ($value === '') {
                 // Search empty string.
@@ -823,10 +874,10 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
  *
  * @return the first value of the first row of a table result from query.
  */
-function mysql_db_get_value_sql($sql, $dbconnection=false)
+function mysql_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql .= ' LIMIT 1';
-    $result = mysql_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = mysql_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;

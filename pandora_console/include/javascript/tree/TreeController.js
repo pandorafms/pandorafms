@@ -976,6 +976,11 @@ var TreeController = {
                   "</span>"
               );
 
+              // Avoiding 'undefined' text.
+              if (typeof element.value === "undefined") {
+                element.value = "";
+              }
+
               // Value.
               $content.append(
                 '<span class="module-value">' + element.value + "</span>"

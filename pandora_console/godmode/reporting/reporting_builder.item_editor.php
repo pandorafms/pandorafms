@@ -211,7 +211,7 @@ switch ($action) {
         $failover_type = REPORT_FAILOVER_TYPE_NORMAL;
         $server_name = '';
         $server_id = 0;
-        $dyn_height = 230;
+        $dyn_height = (empty($config['graph_image_height']) === false) ? $config['graph_image_height'] : REPORT_ITEM_DYNAMIC_HEIGHT;
         $landscape = false;
         $pagebreak = false;
         $summary = 0;
@@ -252,7 +252,7 @@ switch ($action) {
                 $server_name = '';
                 $server_id = 0;
                 $get_data_editor = false;
-                $dyn_height = 230;
+                $dyn_height = (empty($config['graph_image_height']) === false) ? $config['graph_image_height'] : REPORT_ITEM_DYNAMIC_HEIGHT;
             break;
         }
 
@@ -891,6 +891,10 @@ switch ($action) {
 
                     $users_groups = $es['users_groups'];
                     $select_by_group = $es['select_by_group'];
+                break;
+
+                case 'ncm':
+                    $idAgent = $item['id_agent'];
                 break;
 
                 default:
@@ -4000,23 +4004,23 @@ function print_SLA_list($width, $action, $idItem=null)
                                         ],
                                     ]
                                 );
-                        if (!empty($services_tmp)
-                            && $services_tmp != ENTERPRISE_NOT_HOOK
-                        ) {
-                            foreach ($services_tmp as $service) {
-                                $check_module_sla = modules_check_agentmodule_exists(
-                                    $service['sla_id_module']
-                                );
-                                $check_module_sla_value = modules_check_agentmodule_exists(
-                                    $service['sla_value_id_module']
-                                );
-                                if ($check_module_sla
-                                    && $check_module_sla_value
+                                if (!empty($services_tmp)
+                                    && $services_tmp != ENTERPRISE_NOT_HOOK
                                 ) {
-                                    $services[$service['id']] = $service['name'];
+                                    foreach ($services_tmp as $service) {
+                                        $check_module_sla = modules_check_agentmodule_exists(
+                                            $service['sla_id_module']
+                                        );
+                                        $check_module_sla_value = modules_check_agentmodule_exists(
+                                            $service['sla_value_id_module']
+                                        );
+                                        if ($check_module_sla
+                                            && $check_module_sla_value
+                                        ) {
+                                            $services[$service['id']] = $service['name'];
+                                        }
+                                    }
                                 }
-                            }
-                        }
 
                                 echo '<td class="sla_list_service_col">';
                                 echo html_print_select(
@@ -6593,6 +6597,11 @@ function chooseType() {
             } else {
                 $("#row_profiles_group").hide(); 
             }
+            break;
+
+        case 'ncm':
+            $("#row_agent").show();
+            break;
             
     }
 

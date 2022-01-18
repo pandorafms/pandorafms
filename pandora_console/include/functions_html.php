@@ -1181,6 +1181,7 @@ function html_print_select_multiple_filtered(
         ) {
             $output .= '<div class="item-filter flex-row-vcenter">';
 
+            $output .= '<div style="display:none">';
             $output .= html_print_input(
                 [
                     'style'   => 'display:none;',
@@ -1190,6 +1191,7 @@ function html_print_select_multiple_filtered(
                     'return'  => true,
                 ]
             );
+            $output .= '</div>';
 
             $f = "filterAvailableItems(this.value,'".$rid."','".__('None')."')";
             $output .= html_print_input(
@@ -1312,7 +1314,7 @@ function html_print_select_multiple_filtered(
                     'input_class' => 'flex-row-vcenter',
                     'label'       => __('Group recursion'),
                     'name'        => 'id-group-recursion-selected-select-'.$rid,
-                    'type'        => 'checkbox',
+                    'type'        => 'switch',
                     'script'      => $reload_content,
                     'return'      => true,
                 ]
@@ -1329,6 +1331,8 @@ function html_print_select_multiple_filtered(
         ) {
             $output .= '<div class="item-filter flex-row-vcenter">';
 
+            $output .= '<div style="display:none">';
+
             $output .= html_print_input(
                 [
                     'style'   => 'display:none;',
@@ -1338,6 +1342,7 @@ function html_print_select_multiple_filtered(
                     'return'  => true,
                 ]
             );
+            $output .= '</div>';
 
             $f = "filterSelectedItems(this.value,'".$rid."','".__('None')."')";
             $output .= html_print_input(
@@ -2423,6 +2428,38 @@ function html_print_div(
     $output .= '</div>';
 
     if ($return) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+/**
+ * Render an <pre> tag for show code.
+ * For debug purposes, see for `hd()` function.
+ *
+ * @param string  $content    Content of tag.
+ * @param boolean $return     Return the tag string formed.
+ * @param array   $attributes Attributes availables for pre tags.
+ *
+ * @return string
+ */
+function html_print_code(
+    string $content,
+    bool $return=true,
+    array $attributes=[]
+) {
+    $output = '<pre';
+    if (empty($attributes) === false) {
+        foreach ($attributes as $attribute => $value) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($value).'"';
+        }
+    }
+
+    $output .= sprintf('>%s</pre>', $content);
+
+    if ($return === true) {
         return $output;
     } else {
         echo $output;
@@ -4096,6 +4133,10 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['required'])) {
             $output .= ' required';
         }
+
+        if (isset($options['onchange'])) {
+            $output .= ' onchange="'.$options['onchange'].'"';
+        }
     }
 
     $output .= ' />';
@@ -4488,7 +4529,7 @@ function html_print_switch($attributes=[])
 
     $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch' style='".$attributes['style']."'>
+    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";

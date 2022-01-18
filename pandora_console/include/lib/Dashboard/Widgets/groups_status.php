@@ -350,7 +350,7 @@ class GroupsStatusWidget extends Widget
             // Agent Not Init.
             $table->data[2][1] = $this->getCellCounter(
                 $stats['agent_not_init'],
-                '#5bb6e5'
+                '#4a83f3'
             );
 
             $data .= html_print_table($table, true);
@@ -424,7 +424,7 @@ class GroupsStatusWidget extends Widget
             // Modules Not Init.
             $table->data[2][1] = $this->getCellCounter(
                 $stats['monitor_not_init'],
-                '#5bb6e5'
+                '#4a83f3'
             );
 
             $data .= html_print_table($table, true);

@@ -411,6 +411,14 @@ table.widget_agent_module tbody tr td {
   padding: 5px;
 }
 
+table.widget_agent_module tbody tr:first-child > th {
+  background-color: #373737;
+  color: #fff;
+  font-size: 7.5pt;
+  letter-spacing: 0.3pt;
+  line-height: 16pt;
+}
+
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
   font-family: inherit !important;

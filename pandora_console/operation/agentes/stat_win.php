@@ -504,7 +504,13 @@ ui_print_message_dialog(
         );
         $menu_form .= '</span>';
         $menu_form .= '</div>';
-        $menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed invisible">';
+
+        $class = 'module_graph_menu_content';
+        if ($histogram === false) {
+            $class .= ' module_graph_menu_content_closed invisible';
+        }
+
+        $menu_form .= '<div class="'.$class.'">';
         $menu_form .= $form_table;
         $menu_form .= '</div>';
         $menu_form .= '</div>';

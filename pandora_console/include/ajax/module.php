@@ -1396,11 +1396,11 @@ if (check_login()) {
             $output .= grafico_modulo_sparse($params);
         }
 
-        echo $output;
         if (is_metaconsole() === true && empty($server_id) === false) {
             metaconsole_restore_db();
         }
 
+        echo $output;
         return;
     }
 

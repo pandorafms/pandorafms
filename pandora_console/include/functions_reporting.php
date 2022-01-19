@@ -14165,7 +14165,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if (modules_is_disable_agent($content['id_agent_module'])
         || modules_is_not_init($content['id_agent_module'])
     ) {
-        if ($metaconsole_on) {
+        if ($metaconsole_on && $server_name != '') {
             // Restore db connection.
             metaconsole_restore_db();
         }
@@ -14429,7 +14429,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         );
     }
 
-    if ($metaconsole_on) {
+    if ($metaconsole_on && $server_name != '') {
         // Restore db connection.
         metaconsole_restore_db();
     }

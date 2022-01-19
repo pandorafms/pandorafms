@@ -990,7 +990,7 @@ var TreeController = {
                 typeof element.showGraphs != "undefined" &&
                 element.showGraphs != 0
               ) {
-                // Graph hisstogram pop-up
+                // Graph histogram pop-up
                 if (typeof element.histogramGraph != "undefined") {
                   var graphImageHistogram = $(
                     '<img src="' +

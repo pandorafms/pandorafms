@@ -3231,9 +3231,10 @@ function modules_get_first_date($id_agent_module, $datelimit=0)
 {
     global $config;
 
-    // check datatype string or normal
+    // Check datatype string or normal.
     $table = 'tagente_datos';
-    $module_type_str = modules_get_agentmodule_type($id_agent_module);
+    $module_type = modules_get_agentmodule_type($id_agent_module);
+    $module_type_str = modules_get_type_name($module_type);
     if (strstr($module_type_str, 'string') !== false) {
         $table = 'tagente_datos_string';
     }

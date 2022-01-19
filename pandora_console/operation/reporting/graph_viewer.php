@@ -461,8 +461,6 @@ if ($view_graph) {
                     dataType: "html",
                     data: data,
                     success: function (data) {
-                        console.log("////////////");
-                        console.log(typeof stacked);
                         if (stacked === "<?php echo CUSTOM_GRAPH_VBARS; ?>") {
                             document.getElementById("div-container").classList.add('w100p', 'height_600px');
                         }

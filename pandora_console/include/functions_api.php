@@ -16725,7 +16725,7 @@ function api_get_traps($thrash1, $thrash2, $other, $returnType)
         $sql .= ' and status = 0';
     }
 
-    if (sizeof($other['data']) == 0) {
+    if (count($other['data']) == 0) {
         $sql = 'SELECT * from ttrap';
     }
 

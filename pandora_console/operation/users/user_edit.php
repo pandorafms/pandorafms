@@ -33,7 +33,6 @@ $headerTitle = __('User detail editor');
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
 if (is_metaconsole() === false) {
-    date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
     // Read in options for map builder.

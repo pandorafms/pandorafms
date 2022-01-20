@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@
 // Begin.
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === false) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access massive agent deletion section'
@@ -38,10 +38,11 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
     return;
 }
 
-require_once 'include/functions_agents.php';
-require_once 'include/functions_alerts.php';
-require_once 'include/functions_modules.php';
-require_once 'include/functions_users.php';
+require_once $config['homedir'].'/include/functions_agents.php';
+require_once $config['homedir'].'/include/functions_alerts.php';
+require_once $config['homedir'].'/include/functions_modules.php';
+require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_massive_operations.php';
 
 
 function process_manage_delete($id_agents)
@@ -99,19 +100,50 @@ $recursion = get_parameter('recursion');
 
 $delete = (bool) get_parameter_post('delete');
 
-if ($delete) {
+if ($delete === true) {
     $result = process_manage_delete($id_agents);
 
     $info = '{"Agent":"'.implode(',', $id_agents).'"}';
-    if ($result) {
-        db_pandora_audit('Massive management', 'Delete agent ', false, false, $info);
+    if ($result === true) {
+        db_pandora_audit(
+            'Massive management',
+            'Delete agent ',
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit('Massive management', 'Fail try to delete agent', false, false, $info);
+        db_pandora_audit(
+            'Massive management',
+            'Fail try to delete agent',
+            false,
+            false,
+            $info
+        );
     }
 }
 
-$groups = users_get_groups();
 
+if (is_metaconsole() === false && is_management_allowed() === false) {
+    if (\is_metaconsole() === false) {
+        $url_link = '<a target="_blank" href="'.ui_get_meta_url($url).'">';
+        $url_link .= __('metaconsole');
+        $url_link .= '</a>';
+    } else {
+        $url_link = __('any node');
+    }
+
+    \ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All alert calendar information is read only. Go to %s to manage it.',
+            $url_link
+        )
+    );
+}
+
+
+// $groups = users_get_groups();
+$table = new stdClass;
 $table->id = 'delete_table';
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -177,31 +209,75 @@ $table->data[1][3] = html_print_select(
     __('All'),
     2,
     true,
+    false,
+    true,
     '',
-    '',
-    '',
-    '',
+    false,
     'width:30%;'
 );
 
-$table->data[2][0] = __('Agents');
-$table->data[2][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[2][0] .= html_print_image('images/spinner.png', true);
-$table->data[2][0] .= '</span>';
-$table->data[2][1] = html_print_select(
-    agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false)), false, 'none'),
+if (is_metaconsole() === true) {
+    $servers = metaconsole_get_servers();
+    $server_fields = [];
+    foreach ($servers as $key => $server) {
+        $server_fields[$key] = $server['server_name'];
+    }
+
+    $table->data[2][2] = __('Node');
+    $table->data[2][3] = html_print_select(
+        $server_fields,
+        'node',
+        0,
+        '',
+        __('All'),
+        0,
+        true
+    );
+}
+
+
+
+$table->data[3][0] = __('Agents');
+$table->data[3][0] .= '<span id="agent_loading" class="invisible">';
+$table->data[3][0] .= html_print_image('images/spinner.png', true);
+$table->data[3][0] .= '</span>';
+$table->data[3][1] = html_print_select(
+    agents_get_agents_selected(
+        array_keys(users_get_groups($config['id_user'], 'AW', false))
+    ),
     'id_agents[]',
     0,
     false,
     '',
     '',
     true,
+    true,
+    true,
+    '',
+    false,
+    'min-width: 500px; max-width: 500px; max-height: 100px',
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    true,
+    true,
     true
 );
 
-echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents">';
+$url = 'index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents';
+if (is_metaconsole() === true) {
+    $ulr = 'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents&pure=0&option=delete_agents';
+}
+
+echo '<form method="post" id="form_agents" action="'.$url.'">';
 html_print_table($table);
-if (is_management_allowed() === true) {
+
+if (is_metaconsole() === true || is_management_allowed() === true) {
     attachActionButton('delete', 'delete', $table->width);
 }
 
@@ -215,24 +291,18 @@ ui_require_jquery_file('pandora.controls');
 
 <script type="text/javascript">
     $(document).ready (function () {
-
         var recursion;
-        
         $("#checkbox-recursion").click(function () {
             recursion = this.checked ? 1 : 0;
-            
             $("#id_group").trigger("change");
         });
-        
+
         var disabled;
-        
         $("#disabled").click(function () {
-        
-                disabled = this.value;
-        
-             $("#id_group").trigger("change");
+            disabled = this.value;
+            $("#id_group").trigger("change");
         });
-        
+
         $("#id_group").pandoraSelectGroupAgent ({
             status_agents: function () {
                 return $("#status_agents").val();
@@ -246,14 +316,13 @@ ui_require_jquery_file('pandora.controls');
                 return disabled;
             }
         });
-        
+
         $("#status_agents").change(function() {
             $("#id_group").trigger("change");
         });
-        
+
         disabled = 2;
 
-     $("#id_group").trigger("change");
-     
+        //$("#id_group").trigger("change");
     });
 </script>

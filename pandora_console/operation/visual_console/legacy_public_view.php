@@ -79,7 +79,7 @@ $refr = (int) get_parameter('refr', $config['refr']);
 $layout = db_get_row('tlayout', 'id', $id_layout);
 
 if (! $layout) {
-    db_pandora_audit('ACL Violation', 'Trying to access visual console without id layout');
+    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access visual console without id layout');
     include $config['homedir'].'/general/noaccess.php';
     exit;
 }

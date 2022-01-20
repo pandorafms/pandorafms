@@ -616,7 +616,7 @@ class HostDevices extends Wizard
 
         if (! check_acl($config['id_user'], 0, $this->access)) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Agent Management'
             );
             include 'general/noaccess.php';

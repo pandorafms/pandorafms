@@ -42,7 +42,7 @@ if (defined('_activeTab_') && _activeTab_ != '_activeTab_') {
 // Networkmap id required
 if (!isset($id)) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access node graph builder'
     );
     include 'general/noaccess.php';
@@ -54,7 +54,7 @@ if (!isset($store_group)) {
     $store_group = db_get_value('id_group', 'tmap', 'id', $id);
     if ($store_group === false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to accessnode graph builder'
         );
         include 'general/noaccess.php';
@@ -77,7 +77,7 @@ if (!isset($networkmap_manage)) {
 
 if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access node graph builder'
     );
     include 'general/noaccess.php';

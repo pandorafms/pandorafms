@@ -19,7 +19,7 @@ enterprise_hook('open_meta_frame');
 require_once $config['homedir'].'/include/functions_tags.php';
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Edit Tag');
+    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Edit Tag');
     include 'general/noaccess.php';
 
     return;

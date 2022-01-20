@@ -69,7 +69,7 @@ if ($delete_graph) {
 
         echo $result;
     } else {
-        db_pandora_audit('ACL Violation', 'Trying to delete a graph from access graph builder');
+        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to delete a graph from access graph builder');
         include 'general/noaccess.php';
         exit;
     }
@@ -150,7 +150,7 @@ if ($view_graph) {
     $name = $graph['name'];
     if (($graph['private'] == 1) && ($graph['id_user'] != $id_user)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access to a custom graph not allowed'
         );
         include 'general/noaccess.php';

@@ -44,7 +44,7 @@ $time_to = (string) get_parameter('time_to', date(TIME_FORMAT));
 
 if (! check_acl($config['id_user'], $group, 'AR') || $module_id == 0) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Data view'
     );
     include 'general/noaccess.php';

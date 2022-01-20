@@ -17,7 +17,7 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
-    db_pandora_audit('ACL Violation', 'Trying to access module management');
+    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access module management');
     include 'general/noaccess.php';
     exit;
 }

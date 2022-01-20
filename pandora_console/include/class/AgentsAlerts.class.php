@@ -114,7 +114,7 @@ class AgentsAlerts extends HTML
 
         if (! check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
             );
 
@@ -174,7 +174,7 @@ class AgentsAlerts extends HTML
 
                 db_process_sql_update('tagente_modulo', ['flag' => 1], $where);
             } else {
-                db_pandora_audit('ACL Violation', 'Trying to set flag for groups');
+                db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to set flag for groups');
                 include 'general/noaccess.php';
                 exit;
             }

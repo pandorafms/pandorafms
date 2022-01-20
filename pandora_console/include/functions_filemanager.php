@@ -142,7 +142,7 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
     check_login();
 
     if (! check_acl($config['id_user'], 0, 'AW')) {
-        db_pandora_audit('ACL Violation', 'Trying to access File manager');
+        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access File manager');
         include 'general/noaccess.php';
         return;
     }
@@ -257,7 +257,7 @@ function create_text_file($default_real_directory, $destination_directory)
     check_login();
 
     if (! check_acl($config['id_user'], 0, 'AW')) {
-        db_pandora_audit('ACL Violation', 'Trying to access File manager');
+        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access File manager');
         include 'general/noaccess.php';
         return;
     }
@@ -1019,7 +1019,10 @@ function filemanager_safe_directory(
     }
 
     if ($forbiddenAttempting === true) {
-        db_pandora_audit('File manager', 'Attempting to use a forbidden file or directory name');
+        db_pandora_audit(
+            AUDIT_LOG_HACK_ATTEMPT,
+            'Attempting to use a forbidden file or directory name'
+        );
     }
 
     return $directory;

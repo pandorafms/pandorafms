@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive agent deletion section'
     );
     include 'general/noaccess.php';
@@ -104,9 +104,9 @@ if ($delete) {
 
     $info = '{"Agent":"'.implode(',', $id_agents).'"}';
     if ($result) {
-        db_pandora_audit('Massive management', 'Delete agent ', false, false, $info);
+        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Delete agent ', false, false, $info);
     } else {
-        db_pandora_audit('Massive management', 'Fail try to delete agent', false, false, $info);
+        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to delete agent', false, false, $info);
     }
 }
 

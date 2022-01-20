@@ -2282,7 +2282,11 @@ function check_login($output=true)
         return false;
     }
 
-    db_pandora_audit('No session', 'Trying to access without a valid session', 'N/A');
+    db_pandora_audit(
+        AUDIT_LOG_HACK_ATTEMPT,
+        'Trying to access without a valid session',
+        'N/A'
+    );
     include $config['homedir'].'/general/noaccess.php';
     exit;
 }

@@ -19,7 +19,7 @@ enterprise_hook('open_meta_frame');
 require_once $config['homedir'].'/include/functions_categories.php';
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Edit Category');
+    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Edit Category');
     include 'general/noaccess.php';
 
     return;
@@ -85,10 +85,10 @@ if ($update_category && $id_category != 0) {
     }
 
     if ($result === false) {
-        db_pandora_audit('Category management', "Fail try to update category #$id_category");
+        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, "Fail try to update category #$id_category");
         ui_print_error_message(__('Error updating category'));
     } else {
-        db_pandora_audit('Category management', "Update category #$id_category");
+        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, "Update category #$id_category");
         ui_print_success_message(__('Successfully updated category'));
     }
 }
@@ -107,12 +107,12 @@ if ($create_category) {
     }
 
     if ($return_create === false) {
-        db_pandora_audit('Category management', 'Fail try to create category');
+        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, 'Fail try to create category');
         ui_print_error_message(__('Error creating category'));
         $action = 'new';
         // If create action ends successfully then current action is update
     } else {
-        db_pandora_audit('Category management', "Create category #$return_create");
+        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, "Create category #$return_create");
         ui_print_success_message(__('Successfully created category'));
         $id_category = $return_create;
         $action = 'update';

@@ -23,7 +23,7 @@ $access = ($read_permisson == true) ? 'AR' : (($write_permisson == true) ? 'AD' 
 
 if (! $read_permisson && !$manage_permisson) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access downtime scheduler'
     );
     include 'general/noaccess.php';
@@ -70,7 +70,7 @@ if ($stop_downtime) {
     // Check AD permission on the downtime
     if (empty($downtime) || (! check_acl($config['id_user'], $downtime['id_group'], 'AD') && ! check_acl($config['id_user'], $downtime['id_group'], 'AW'))) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -94,7 +94,7 @@ if ($delete_downtime) {
     // Check AD permission on the downtime
     if (empty($downtime) || (! check_acl($config['id_user'], $downtime['id_group'], 'AD') && ! check_acl($config['id_user'], $downtime['id_group'], 'AW'))) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';

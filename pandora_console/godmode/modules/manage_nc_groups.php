@@ -20,7 +20,7 @@ enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access SNMP Group Management'
     );
     include 'general/noaccess.php';
@@ -73,9 +73,9 @@ if ($create) {
             ]
         );
         if ($result) {
-            db_pandora_audit('Module management', "Create component group #$result");
+            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Create component group #$result");
         } else {
-            db_pandora_audit('Module management', 'Fail try to create component group');
+            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, 'Fail try to create component group');
         }
 
         ui_print_result_message(
@@ -102,9 +102,9 @@ if ($update) {
             ['id_sg' => $id]
         );
         if ($result) {
-            db_pandora_audit('Module management', "Update component group #$id");
+            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Update component group #$id");
         } else {
-            db_pandora_audit('Module management', "Fail try to update component group #$id");
+            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Fail try to update component group #$id");
         }
 
         ui_print_result_message(
@@ -132,9 +132,9 @@ if ($delete) {
     }
 
     if ($result) {
-        db_pandora_audit('Module management', "Delete component group #$id");
+        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Delete component group #$id");
     } else {
-        db_pandora_audit('Module management', "Fail try to delete component group #$id");
+        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Fail try to delete component group #$id");
     }
 
     ui_print_result_message(
@@ -170,12 +170,12 @@ if ($multiple_delete) {
     $str_ids = implode(',', $ids);
     if ($result) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             "Multiple delete component group: $str_ids"
         );
     } else {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             "Fail try to delete component group: $str_ids"
         );
     }

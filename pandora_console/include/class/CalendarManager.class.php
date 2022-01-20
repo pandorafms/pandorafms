@@ -121,7 +121,7 @@ class CalendarManager
         // ACL Check.
         if ((bool) check_acl($config['id_user'], 0, $this->access) !== true) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert calendar view'
             );
             include 'general/noaccess.php';

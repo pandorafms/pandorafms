@@ -37,7 +37,7 @@ if ($get_agent_alerts_simple) {
 
     if (! check_acl($config['id_user'], $id_group, 'AR')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         echo json_encode(false);
@@ -46,7 +46,7 @@ if ($get_agent_alerts_simple) {
 
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         echo json_encode(false);
@@ -331,7 +331,7 @@ if ($get_agent_alerts_agent_view) {
 if ($enable_alert) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -352,7 +352,7 @@ if ($enable_alert) {
 if ($disable_alert) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -373,7 +373,7 @@ if ($disable_alert) {
 if ($get_actions_module) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -394,7 +394,7 @@ if ($get_actions_module) {
 if ($show_update_action_menu) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;

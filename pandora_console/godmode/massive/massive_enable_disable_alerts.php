@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive alert deletion'
     );
     include 'general/noaccess.php';
@@ -103,9 +103,9 @@ switch ($action) {
 
         $info = '{"Alert":"'.implode(',', $id_disabled_alerts).'"}';
         if ($result) {
-            db_pandora_audit('Massive management', 'Enable alert', false, false, $info);
+            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Enable alert', false, false, $info);
         } else {
-            db_pandora_audit('Massive management', 'Fail try to enable alert', false, false, $info);
+            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to enable alert', false, false, $info);
         }
     break;
 
@@ -121,9 +121,9 @@ switch ($action) {
 
         $info = '{"Alert":"'.implode(',', $id_enabled_alerts).'"}';
         if ($result) {
-            db_pandora_audit('Massive management', 'Disable alert', false, false, $info);
+            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Disable alert', false, false, $info);
         } else {
-            db_pandora_audit('Massive management', 'Fail try to Disable alert', false, false, $info);
+            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to Disable alert', false, false, $info);
         }
     break;
 

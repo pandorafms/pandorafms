@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive module update'
     );
     include 'general/noaccess.php';
@@ -187,9 +187,9 @@ if ($update) {
 
     $info = '{"Modules":"'.implode(',', $modules_).'","Agents":"'.implode(',', $agents_).'"}';
     if ($success > 0) {
-        db_pandora_audit('Massive management', 'Edit module', false, false, $info);
+        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Edit module', false, false, $info);
     } else {
-        db_pandora_audit('Massive management', 'Fail try to edit module', false, false, $info);
+        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to edit module', false, false, $info);
     }
 }
 

@@ -86,7 +86,7 @@ try {
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
 } catch (Throwable $e) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without Id'
     );
     include $config['homedir'].'/general/noaccess.php';

@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access agent massive deletion'
     );
     include 'general/noaccess.php';
@@ -230,7 +230,7 @@ if ($delete) {
 
                 foreach ($module_name as $mod_name) {
                     $result = process_manage_delete($mod_name['nombre'], $id_agent['id_agente'], $modules_selection_mode);
-                    $count ++;
+                    $count++;
                     $success += (int) $result;
                 }
             }
@@ -267,9 +267,9 @@ if ($delete) {
         'Module' => implode(',', $modules_),
     ];
     if ($result) {
-        db_pandora_audit('Massive management', 'Delete module ', false, false, json_encode($info));
+        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Delete module ', false, false, json_encode($info));
     } else {
-        db_pandora_audit('Massive management', 'Fail try to delete module', false, false, json_encode($info));
+        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to delete module', false, false, json_encode($info));
     }
 }
 

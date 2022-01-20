@@ -39,7 +39,7 @@ require_once $config['homedir'].'/include/functions_groups.php';
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access User Management'
     );
     include 'general/noaccess.php';
@@ -242,7 +242,7 @@ if ($is_management_allowed === true && $update_profile === true) {
 				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Update profile '.io_safe_output($name),
                 false,
                 false,
@@ -293,7 +293,7 @@ if ($is_management_allowed === true && $create_profile === true) {
 				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Created profile '.io_safe_output($name),
                 false,
                 false,

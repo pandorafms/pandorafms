@@ -2644,7 +2644,7 @@ function alerts_ui_update_or_create_actions($update=true)
             if ($al_action['id_group'] == 0) {
                 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'LM')) {
                     db_pandora_audit(
-                        'ACL Violation',
+                        AUDIT_LOG_ACL_VIOLATION,
                         'Trying to access Alert Management'
                     );
                     include 'general/noaccess.php';

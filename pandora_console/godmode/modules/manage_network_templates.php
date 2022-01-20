@@ -18,7 +18,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Network Profile Management'
     );
     include 'general/noaccess.php';
@@ -67,9 +67,9 @@ if ($delete_profile) {
     $result = network_profiles_delete_network_profile($id);
 
     if ($result) {
-        db_pandora_audit('Module management', "Delete module template #$id");
+        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Delete module template #$id");
     } else {
-        db_pandora_audit('Module management', "Fail try to delete module template #$id");
+        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Fail try to delete module template #$id");
     }
 
     ui_print_result_message(
@@ -92,9 +92,9 @@ if ($multiple_delete) {
 
     $str_ids = implode(',', $ids);
     if ($result) {
-        db_pandora_audit('Module management', "Multiple delete module template: $str_ids");
+        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Multiple delete module template: $str_ids");
     } else {
-        db_pandora_audit('Module management', "Fail try to delete module template: $str_ids");
+        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Fail try to delete module template: $str_ids");
     }
 
     ui_print_result_message(

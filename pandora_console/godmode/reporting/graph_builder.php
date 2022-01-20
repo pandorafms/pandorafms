@@ -65,7 +65,7 @@ if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access graph builder'
     );
     include 'general/noaccess.php';
@@ -90,7 +90,7 @@ if ($id_graph > 0) {
         && !check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access graph builder'
         );
         include 'general/noaccess.php';
@@ -146,9 +146,9 @@ if ($add_graph === true) {
     if (trim($name) != '') {
         $id_graph = db_process_sql_insert('tgraph', $values);
         if ($id_graph !== false) {
-            db_pandora_audit('Report management', 'Create graph #'.$id_graph);
+            db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, 'Create graph #'.$id_graph);
         } else {
-            db_pandora_audit('Report management', 'Fail try to create graph');
+            db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, 'Fail try to create graph');
         }
     } else {
         $id_graph = false;
@@ -199,12 +199,12 @@ if ($update_graph) {
         );
         if ($success !== false) {
             db_pandora_audit(
-                'Report management',
+                AUDIT_LOG_REPORT_MANAGEMENT,
                 'Update graph #'.$id_graph
             );
         } else {
             db_pandora_audit(
-                'Report management',
+                AUDIT_LOG_REPORT_MANAGEMENT,
                 'Fail try to update graph #'.$id_graph
             );
         }

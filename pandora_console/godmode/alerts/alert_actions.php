@@ -42,7 +42,7 @@ enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert actions'
     );
     include 'general/noaccess.php';
@@ -104,7 +104,7 @@ if ($copy_action) {
             // Then action group have to be in his own groups.
             if (!$is_in_group) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Alert Management'
                 );
                 include 'general/noaccess.php';
@@ -117,12 +117,12 @@ if ($copy_action) {
 
     if ($result) {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_COMMAND_MANAGEMENT,
             'Duplicate alert action '.$id.' clone to '.$result
         );
     } else {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_COMMAND_MANAGEMENT,
             'Fail try to duplicate alert action '.$id
         );
     }
@@ -145,7 +145,7 @@ if ($delete_action) {
 
     if (!check_acl_restricted_all($config['id_user'], $al_action['id_group'], 'LM')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         include 'general/noaccess.php';
@@ -158,7 +158,7 @@ if ($delete_action) {
             // Then must have "PM" access privileges.
             if (! check_acl($config['id_user'], 0, 'PM')) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Alert Management'
                 );
                 include 'general/noaccess.php';
@@ -182,7 +182,7 @@ if ($delete_action) {
             // Then action group have to be in his own groups.
             if (!$is_in_group) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Alert Management'
                 );
                 include 'general/noaccess.php';
@@ -196,12 +196,12 @@ if ($delete_action) {
 
     if ($result) {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_COMMAND_MANAGEMENT,
             'Delete alert action #'.$id
         );
     } else {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_COMMAND_MANAGEMENT,
             'Fail try to delete alert action #'.$id
         );
     }

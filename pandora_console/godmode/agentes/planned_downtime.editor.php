@@ -38,7 +38,7 @@ $agent_w = check_acl($config['id_user'], 0, 'AW');
 $access = ($agent_d == true) ? 'AD' : (($agent_w == true) ? 'AW' : 'AD');
 if (!$agent_d && !$agent_w) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access downtime scheduler'
     );
     include 'general/noaccess.php';
@@ -169,7 +169,7 @@ if ($delete_downtime_agent === 1) {
         || !in_array($downtime_group, $user_groups_ad)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -188,7 +188,7 @@ if ($delete_downtime_agent === 1) {
         || !in_array($agent_group, $user_groups_ad)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -265,7 +265,7 @@ if ($create_downtime || $update_downtime) {
             // Check AD permission on new downtime.
             if (!in_array($id_group, $user_groups_ad)) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access downtime scheduler'
                 );
                 include 'general/noaccess.php';
@@ -323,7 +323,7 @@ if ($create_downtime || $update_downtime) {
             // Check AD permission on OLD downtime.
             if (empty($old_downtime) || !in_array($old_downtime['id_group'], $user_groups_ad)) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access downtime scheduler'
                 );
                 include 'general/noaccess.php';
@@ -333,7 +333,7 @@ if ($create_downtime || $update_downtime) {
             // Check AD permission on NEW downtime group.
             if (!in_array($id_group, $user_groups_ad)) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access downtime scheduler'
                 );
                 include 'general/noaccess.php';
@@ -487,7 +487,7 @@ if ($id_downtime > 0) {
     // Permission check for the downtime with the AD user groups
     if (empty($result) || !in_array($result['id_group'], $user_groups_ad)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -1082,7 +1082,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         || !in_array($downtime_group, $user_groups_ad)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';

@@ -768,3 +768,29 @@ define('COMMAND_PING', 2);
 define('COMMAND_SNMP', 3);
 define('COMMAND_NMAP', 4);
 define('COMMAND_DIGWHOIS', 5);
+
+// Audit logs.
+define('AUDIT_LOG_ACL_VIOLATION', 'ACL Violation');
+define('AUDIT_LOG_USER_REGISTRATION', 'Console user registration');
+define('AUDIT_LOG_METACONSOLE_NODE', 'Metaconsole node');
+define('AUDIT_LOG_EXTENSION_MANAGER', 'Extension manager');
+define('AUDIT_LOG_USER_MANAGEMENT', 'User management');
+define('AUDIT_LOG_AGENT_MANAGEMENT', 'Agent management');
+define('AUDIT_LOG_MODULE_MANAGEMENT', 'Module management');
+define('AUDIT_LOG_CATEGORY_MANAGEMENT', 'Category management');
+define('AUDIT_LOG_REPORT_MANAGEMENT', 'Report management');
+define('AUDIT_LOG_COMMAND_MANAGEMENT', 'Command management');
+define('AUDIT_LOG_MASSIVE_MANAGEMENT', 'Massive operation management');
+define('AUDIT_LOG_POLICY_MANAGEMENT', 'Policy management');
+define('AUDIT_LOG_AGENT_REMOTE_MANAGEMENT', 'Agent remote configuration');
+define('AUDIT_LOG_FILE_COLLECTION', 'File collection');
+define('AUDIT_LOG_HACK_ATTEMPT', 'HACK Attempt');
+define('AUDIT_LOG_ALERT_MANAGEMENT', 'Alert management');
+define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
+
+define('AUDIT_LOG_ALERT_MANAGEsMENT', 'Alert management');
+define('AUDIT_LOG_ALERT_MANsAGEMENT', 'Alert management');
+define('AUDIT_LOG_ALERT_MANsAGEMENT', 'Alert management');
+define('AUDIT_LOG_ALERT_MAsNAGEMENT', 'Alert management');
+define('AUDIT_LOG_ALERT_MANsAGEMENT', 'Alert management');
+define('AUDIT_LOG_ALERT_MAsNAGEMENT', 'Alert management');

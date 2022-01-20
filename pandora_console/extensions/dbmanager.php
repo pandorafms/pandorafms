@@ -89,7 +89,10 @@ function dbmgr_extension_main()
     global $config;
 
     if (!is_user_admin($config['id_user'])) {
-        db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Setup Management'
+        );
         include 'general/noaccess.php';
         return;
     }

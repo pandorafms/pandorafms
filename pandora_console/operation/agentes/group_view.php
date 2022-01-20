@@ -40,7 +40,7 @@ $agent_w = check_acl($config['id_user'], 0, 'AW');
 
 if (!$agent_a && !$agent_w) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent view (Grouped)'
     );
     include 'general/noaccess.php';
@@ -66,7 +66,7 @@ if (isset($_GET['update_netgroup'])) {
             );
         }
     } else {
-        db_pandora_audit('ACL Violation', 'Trying to set flag for groups');
+        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to set flag for groups');
         include 'general/noaccess.php';
         exit;
     }

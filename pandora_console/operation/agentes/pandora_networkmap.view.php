@@ -488,7 +488,7 @@ if (is_ajax() === true) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             echo json_encode($return);
@@ -550,7 +550,7 @@ if (is_ajax() === true) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             echo json_encode($return);
@@ -595,7 +595,7 @@ if (is_ajax() === true) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             echo json_encode($return);
@@ -637,7 +637,7 @@ if (is_ajax() === true) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             echo json_encode($return);
@@ -952,7 +952,7 @@ if (is_ajax() === true) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             echo json_encode($return);
@@ -2020,7 +2020,7 @@ if (is_ajax() === true) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             echo json_encode($return);
@@ -2244,7 +2244,7 @@ if ($networkmap === false) {
 
     if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access networkmap'
         );
         include 'general/noaccess.php';

@@ -32,7 +32,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR')) {
     // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access Module Library View');
+    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Module Library View');
     include 'general/noaccess.php';
     exit;
 }

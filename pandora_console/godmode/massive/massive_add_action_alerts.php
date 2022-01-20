@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive agent deletion section'
     );
     include 'general/noaccess.php';
@@ -150,7 +150,7 @@ if ($add) {
                         'Fires_max' => $fires_max,
                         'Actions'   => implode(',', $actions),
                     ];
-                    db_pandora_audit('Massive management', 'Add alert action '.json_encode($id_agents), false, false, json_encode($info));
+                    db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Add alert action '.json_encode($id_agents), false, false, json_encode($info));
                     ui_print_result_message($results, __('Successfully added'), __('Could not be added'));
                 }
             } else {

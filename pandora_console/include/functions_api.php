@@ -2099,7 +2099,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
 
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Created agent '.$unsafe_alias,
                 false,
                 true,
@@ -15087,17 +15087,17 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3)
             }
         }
 
-        if ($id_cluster !== false) {
-            db_pandora_audit('Report management', "Created cluster $name (#$id_cluster)");
-        } else {
-            db_pandora_audit('Report management', "Failed to create cluster $name");
-        }
+        $auditMessageCluster = ((bool) $id_cluster === true)
+                                                            ? sprintf('Created new cluster %s (#%s)', $name, $id_cluster)
+                                                            : sprintf('Failed to create cluster %s ', $name);
 
-        if ($id_agent !== false) {
-            db_pandora_audit('Report management', "Created new cluster agent $name (#$id_agent)");
-        } else {
-            db_pandora_audit('Report management', "Failed to create cluster agent $name");
-        }
+        db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, $auditMessageCluster);
+
+        $auditMessageAgent = ((bool) $id_agent === true)
+                                                        ? sprintf('Created new cluster agent %s (#%s)', $name, $id_agent)
+                                                        : sprintf('Failed to create cluster agent %s ', $name);
+
+        db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, $auditMessageAgent);
 
         if ($id_cluster !== false) {
             returnData(

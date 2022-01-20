@@ -35,7 +35,7 @@ check_login();
 enterprise_hook('open_meta_frame');
 
 if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Categories Management');
+    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Categories Management');
     include 'general/noaccess.php';
     return;
 }
@@ -113,10 +113,10 @@ if (is_management_allowed() === false) {
 if ($is_management_allowed === true && $delete != 0) {
     $return_delete = categories_delete_category($delete);
     if (!$return_delete) {
-        db_pandora_audit('Category management', 'Fail try to delete category #'.$delete);
+        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, 'Fail try to delete category #'.$delete);
         ui_print_error_message(__('Error deleting category'));
     } else {
-        db_pandora_audit('Category management', 'Delete category #'.$delete);
+        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, 'Delete category #'.$delete);
         ui_print_success_message(__('Successfully deleted category'));
     }
 }

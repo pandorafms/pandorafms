@@ -106,7 +106,10 @@ function pandora_files_repo_godmode()
     // ACL Check
     check_login();
     if (! check_acl($config['id_user'], 0, 'PM')) {
-        db_pandora_audit('ACL Violation', 'Trying to access to Files repository');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access to Files repository'
+        );
         include 'general/noaccess.php';
         return;
     }

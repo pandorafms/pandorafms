@@ -16,7 +16,7 @@
 // Load global vars
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access SNMP Alert Management'
     );
     include 'general/noaccess.php';
@@ -497,7 +497,7 @@ if ($update_alert || $duplicate_alert) {
 
     if (!check_acl_restricted_all($config['id_user'], $group, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access SNMP Alert Management'
         );
         include 'general/noaccess.php';

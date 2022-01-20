@@ -143,14 +143,14 @@ function process_upload_xml_report($xml, $group_filter=0)
 
         if ($id_report) {
             db_pandora_audit(
-                'Report management',
+                AUDIT_LOG_REPORT_MANAGEMENT,
                 'Create report '.$id_report,
                 false,
                 false
             );
         } else {
             db_pandora_audit(
-                'Report management',
+                AUDIT_LOG_REPORT_MANAGEMENT,
                 'Fail to create report',
                 false,
                 false
@@ -554,7 +554,11 @@ function process_upload_xml_visualmap($xml, $filter_group=0)
         );
 
         if ($id_visual_map !== false) {
-            db_pandora_audit('CREATE VISUAL CONSOLE', $id_visual_map, $config['id_user']);
+            db_pandora_audit(
+                AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                sprintf('Create Visual Console #%s', $id_visual_map),
+                $config['id_user']
+            );
         } else {
             break;
         }
@@ -716,7 +720,11 @@ function process_upload_xml_visualmap($xml, $filter_group=0)
                 );
 
                 if ($id_item !== false) {
-                    db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'].' - '.$id_item, $config['id_user']);
+                    db_pandora_audit(
+                        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                        sprintf('Create Item %s in Visual Console #%s', $id_item, $values['id_layout']),
+                        $config['id_user']
+                    );
                 }
             } else {
                 foreach ($agents_in_item as $id => $agent) {
@@ -725,7 +733,7 @@ function process_upload_xml_visualmap($xml, $filter_group=0)
 
                         $id_item = db_process_sql_insert('tlayout_data', $values);
 
-                        if (isset($item->other_id)) {
+                        if (isset($item->other_id) === true) {
                             $relation_other_ids[(string) $item->other_id] = $id_item;
                         }
 
@@ -736,9 +744,14 @@ function process_upload_xml_visualmap($xml, $filter_group=0)
                         );
 
                         if ($id_item !== false) {
-                            db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'].' - '.$id_item, $config['id_user']);
+                            db_pandora_audit(
+                                AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                                sprintf('Create Item %s in Visual Console #%s', $id_item, $values['id_layout']),
+                                $config['id_user']
+                            );
                         }
                     } else {
+                        // TODO: Review this else.
                         foreach ($agent['modules'] as $id_module => $module) {
                             $values['id_agent'] = $id;
                             $values['id_agente_modulo'] = $id_module;
@@ -752,7 +765,11 @@ function process_upload_xml_visualmap($xml, $filter_group=0)
                             );
 
                             if ($id_item !== false) {
-                                db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'].' - '.$id_item, $config['id_user']);
+                                db_pandora_audit(
+                                    AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                                    sprintf('Create Item %s in Visual Console #%s', $id_item, $values['id_layout']),
+                                    $config['id_user']
+                                );
                             }
                         }
                     }
@@ -1063,7 +1080,10 @@ function resource_registration_extension_main()
     global $config;
 
     if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-        db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Setup Management'
+        );
         include 'general/noaccess.php';
         return;
     }

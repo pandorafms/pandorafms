@@ -23,7 +23,7 @@ enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     include 'general/noaccess.php';
@@ -73,7 +73,7 @@ if ($id > 0) {
 
     if (!check_acl_restricted_all($config['id_user'], $filter_group, 'AW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access events filter editor'
         );
         include 'general/noaccess.php';

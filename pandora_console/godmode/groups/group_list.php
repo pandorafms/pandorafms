@@ -47,7 +47,7 @@ if (is_metaconsole() === true) {
 
 if (is_ajax() === true) {
     if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
-        db_pandora_audit('ACL Violation', 'Trying to access Group Management');
+        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Group Management');
         include 'general/noaccess.php';
         return;
     }
@@ -74,7 +74,7 @@ if (is_ajax() === true) {
 
         if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert Management'
             );
             echo json_encode(false);
@@ -116,7 +116,7 @@ if (is_ajax() === true) {
 
         if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert Management'
             );
             echo json_encode(false);
@@ -270,7 +270,7 @@ if ($tab !== 'credbox'
     && (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
@@ -280,7 +280,7 @@ if ($tab !== 'credbox'
     && (bool) check_acl($config['id_user'], 0, 'PM') === false
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Credential Store'
     );
     include 'general/noaccess.php';

@@ -56,7 +56,7 @@ if (is_ajax()) {
             $name = agents_get_name($id_agent);
             $agent_md5 = md5($name);
             if (file_exists($config['remote_config'].'/md5/'.$agent_md5.'.md5')) {
-                $cont ++;
+                $cont++;
             }
         }
 
@@ -468,12 +468,13 @@ $table->data[1][3] = html_print_select(
     __('All'),
     2,
     true,
+    false,
+    true,
     '',
-    '',
-    '',
-    '',
+    false,
     'width:30%;'
 );
+
 $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
@@ -940,16 +941,13 @@ $(document).ready (function () {
             return false;
         }
     });
-    
+
     var disabled;
-    
-    $("#disabled").click(function () {
-    
-            disabled = this.value;
-    
-         $("#id_group").trigger("change");
+    $("#disabled").change(function () {
+        disabled = this.value;
+        $("#id_group").trigger("change");
     });
-    
+
     $('#id_agents').on('change', function() {
         var idAgents = Array();
         jQuery.each ($("#id_agents option:selected"), function (i, val) {

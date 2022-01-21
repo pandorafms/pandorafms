@@ -113,6 +113,9 @@ if (is_ajax() === true) {
             '|'
         );
         $force_serialized = (bool) get_parameter('force_serialized', false);
+        $nodes = (array) get_parameter('nodes', []);
+
+        hd($nodes, true);
 
         if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
@@ -152,6 +155,10 @@ if (is_ajax() === true) {
         if ($show_void_agents == 0) {
             $_sql_post .= ' AND id_agente IN (SELECT a.id_agente FROM tagente a, tagente_modulo b WHERE a.id_agente=b.id_agente AND b.delete_pending=0) AND \'1\'';
             $filter[$_sql_post] = '1';
+        }
+
+        if (is_metaconsole() === true && empty($nodes) === false) {
+            $filter['id_server'] = $nodes;
         }
 
         $id_groups_get_agents = $id_group;

@@ -21,7 +21,8 @@
       disabled: disabled || false,
       privilege: "",
       serialized: false,
-      serialized_separator: ""
+      serialized_separator: "",
+      nodes: []
     };
 
     /* public methods */
@@ -67,79 +68,39 @@
             add_alert_bulk_op: config.add_alert_bulk_op,
             privilege: config.privilege,
             // Add a key prefix to avoid auto sorting in js object conversion
-            keys_prefix: "_"
+            keys_prefix: "_",
+            serialized: config.serialized,
+            serialized_separator: config.serialized_separator,
+            nodes:
+              typeof config.nodes === "function"
+                ? config.nodes()
+                : config.disabled
           };
-          if (opts["disabled"] == 1 || opts["disabled"] == 0) {
-            jQuery.post(
-              "ajax.php",
-              opts,
-              function(data) {
-                jQuery.each(data, function(id, value) {
-                  // Remove keys_prefix from the index.
-                  id = id.substring(1);
-                  if (id !== "keycount") {
-                    config.callbackPre();
-                    var option = $("<option></option>")
-                      .attr("value", id)
-                      .html(value);
-                    config.callbackPost(id, value, option);
-                    $(config.agentSelect).append(option);
-                  }
-                });
-                $(config.loading).hide();
-                $select.enable();
-                config.callbackAfter();
-              },
-              "json"
-            );
-          } else {
-            opts["disabled"] = 0;
-            jQuery.post(
-              "ajax.php",
-              opts,
-              function(data) {
-                jQuery.each(data, function(id, value) {
-                  // Remove keys_prefix from the index
-                  id = id.substring(1);
-                  if (id !== "keycount") {
-                    config.callbackPre();
-                    var option = $("<option></option>")
-                      .attr("value", id)
-                      .html(value);
-                    config.callbackPost(id, value, option);
-                    $(config.agentSelect).append(option);
-                  }
-                });
-                $(config.loading).hide();
-                $select.enable();
-                config.callbackAfter();
-              },
-              "json"
-            );
-            opts["disabled"] = 1;
-            jQuery.post(
-              "ajax.php",
-              opts,
-              function(data) {
-                jQuery.each(data, function(id, value) {
-                  // Remove keys_prefix from the index
-                  id = id.substring(1);
-                  if (id !== "keycount") {
-                    config.callbackPre();
-                    var option = $("<option></option>")
-                      .attr("value", id)
-                      .html(value);
-                    config.callbackPost(id, value, option);
-                    $(config.agentSelect).append(option);
-                  }
-                });
-                $(config.loading).hide();
-                $select.enable();
-                config.callbackAfter();
-              },
-              "json"
-            );
-          }
+
+          console.log(opts);
+
+          jQuery.post(
+            "ajax.php",
+            opts,
+            function(data) {
+              jQuery.each(data, function(id, value) {
+                // Remove keys_prefix from the index.
+                id = id.substring(1);
+                if (id !== "keycount") {
+                  config.callbackPre();
+                  var option = $("<option></option>")
+                    .attr("value", id)
+                    .html(value);
+                  config.callbackPost(id, value, option);
+                  $(config.agentSelect).append(option);
+                }
+              });
+              $(config.loading).hide();
+              $select.enable();
+              config.callbackAfter();
+            },
+            "json"
+          );
         });
       });
     };

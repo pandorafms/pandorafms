@@ -1217,6 +1217,15 @@ function agents_get_group_agents(
             }
         }
 
+        if ((isset($search['disabled']) === true
+            && $search['disabled'] === 2)
+            || (isset($filter['disabled']) === true
+            && $filter['disabled'] === 2)
+        ) {
+            unset($search['disabled']);
+            unset($filter['disabled']);
+        }
+
         if (isset($search['all_agents'])) {
             unset($search['all_agents']);
         }
@@ -1309,16 +1318,19 @@ function agents_get_group_agents(
             }
         }
 
-        if (is_metaconsole() && isset($search['id_server'])) {
-            $filter['id_tmetaconsole_setup'] = $search['id_server'];
+        if (is_metaconsole() === true
+            && isset($search['id_server']) === true
+            && empty($search['id_server']) === false
+        ) {
+            $filter['ta.id_tmetaconsole_setup'] = $search['id_server'];
 
             if ($filter['id_tmetaconsole_setup'] == 0) {
                 // All nodes.
                 unset($filter['id_tmetaconsole_setup']);
             }
-
-            unset($search['id_server']);
         }
+
+        unset($search['id_server']);
 
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
@@ -1332,7 +1344,7 @@ function agents_get_group_agents(
 
     $filter['order'] = 'alias';
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
         if ($meta_fields === true) {
@@ -1356,6 +1368,10 @@ function agents_get_group_agents(
             'alias',
         ];
     }
+
+    hd($table_name, true);
+    hd($filter, true);
+    hd($fields, true);
 
     $result = db_get_all_rows_filter($table_name, $filter, $fields);
 

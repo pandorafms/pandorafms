@@ -222,8 +222,8 @@ function add_quotes($item)
 
 if ($add_module === true) {
     $id_graph = get_parameter('id');
-    $id_modules = get_parameter('module');
-    $id_agents = get_parameter('id_agents');
+    $id_agent_modules = explode(',', get_parameter('id_modules'));
+    $id_agents = explode(',', get_parameter('id_agents'));
     $weight = get_parameter('weight');
 
     // Id modules has double entities conversion.
@@ -234,9 +234,7 @@ if ($add_module === true) {
     // to browse in db.
     io_safe_input_array($id_modules);
 
-    $id_agent_modules = db_get_all_rows_sql(
-        'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN ('.implode(',', $id_agents).") AND nombre IN ('".implode("','", $id_modules)."')"
-    );
+
 
     if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
         $order = db_get_row_sql("SELECT `field_order` from tgraph_source WHERE id_graph=$id_graph ORDER BY `field_order` DESC");
@@ -244,7 +242,7 @@ if ($add_module === true) {
         $order = $order['field_order'];
         foreach ($id_agent_modules as $id_agent_module) {
             $order++;
-            $result = db_process_sql_insert('tgraph_source', ['id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight, 'field_order' => $order]);
+            $result = db_process_sql_insert('tgraph_source', ['id_graph' => $id_graph, 'id_agent_module' => $id_agent_module, 'weight' => $weight, 'field_order' => $order]);
         }
     } else {
         $result = false;

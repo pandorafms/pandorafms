@@ -145,17 +145,31 @@ function integriaims_get_details($details, $detail_index=false)
 /**
  * Perform an API call to Integria IMS.
  *
- * @param string API host URL.
- * @param string User name.
- * @param string User password.
- * @param string API password.
- * @param string API Operation.
- * @param mixed String or array with parameters required by the API function.
+ * @param string|null $api_hostname               API host URL.
+ * @param string|null $user                       User name.
+ * @param string|null $user_pass                  User password.
+ * @param string|null $api_pass                   API password.
+ * @param string|null $operation                  API Operation.
+ * @param mixed       $params                     String or array with parameters required by the API function.
+ * @param mixed       $show_credentials_error_msg Show_credentials_error_msg.
+ * @param mixed       $return_type                Return_type.
+ * @param mixed       $token                      Token.
+ * @param mixed       $user_level_conf            User_level_conf.
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api_pass=null, $operation, $params='', $show_credentials_error_msg=false, $return_type='', $token='', $user_level_conf=null)
-{
+function integria_api_call(
+    $api_hostname=null,
+    $user=null,
+    $user_pass=null,
+    $api_pass=null,
+    $operation=null,
+    $params='',
+    $show_credentials_error_msg=false,
+    $return_type='',
+    $token='',
+    $user_level_conf=null
+) {
     global $config;
 
     if (is_metaconsole()) {

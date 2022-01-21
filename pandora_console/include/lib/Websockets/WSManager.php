@@ -251,8 +251,13 @@ class WSManager extends WebSocketServer
             }
         } else {
             // Failed. Disconnect all.
-            $this->disconnect($user->socket);
-            $this->disconnect($user->redirect->socket);
+            if (isset($user) === true) {
+                $this->disconnect($user->socket);
+            }
+
+            if (isset($user->redirect) === true) {
+                $this->disconnect($user->redirect->socket);
+            }
         }
 
     }

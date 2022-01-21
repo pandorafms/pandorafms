@@ -1353,7 +1353,9 @@ $agent_interfaces = agents_get_network_interfaces(
     ['id_agente' => $id_agente]
 );
 
-if (is_array($agent_interfaces[$id_agente]['interfaces']) !== true
+if (isset($agent_interfaces) !== true
+    || isset($agent_interfaces[$id_agente]) !== true
+    || is_array($agent_interfaces[$id_agente]['interfaces']) !== true
     || is_object($agent_interfaces[$id_agente]['interfaces']) !== true
 ) {
     $agent_interfaces_count = 0;
@@ -1660,26 +1662,24 @@ if ($tab == 'external_tools') {
 }
 
 $onheader = [
-    'manage'             => $managetab,
-    'main'               => $maintab,
-    'alert'              => $alerttab,
-    'interface'          => $interfacetab,
-    'inventory'          => $inventorytab,
-    'collection'         => $collectiontab,
-    'gis'                => $gistab,
-    'custom'             => $custom_fields,
-    'graphs'             => $graphs,
-    'policy'             => $policyTab,
-    'ux_console'         => $ux_console_tab,
-    'wux_console'        => $wux_console_tab,
-    'url_route_analyzer' => $url_route_analyzer_tab,
-    'sap_view'           => $saptab,
-    'ncm_view'           => $ncm_tab,
-    'external_tools'     => $external_tools,
+    'manage'             => ($managetab ?? null),
+    'main'               => ($maintab ?? null),
+    'alert'              => ($alerttab ?? null),
+    'interface'          => ($interfacetab ?? null),
+    'inventory'          => ($inventorytab ?? null),
+    'collection'         => ($collectiontab ?? null),
+    'gis'                => ($gistab ?? null),
+    'custom'             => ($custom_fields ?? null),
+    'graphs'             => ($graphs ?? null),
+    'policy'             => ($policyTab ?? null),
+    'ux_console'         => ($ux_console_tab ?? null),
+    'wux_console'        => ($wux_console_tab ?? null),
+    'url_route_analyzer' => ($url_route_analyzer_tab ?? null),
+    'sap_view'           => ($saptab ?? null),
+    'ncm_view'           => ($ncm_tab ?? null),
+    'external_tools'     => ($external_tools ?? null),
+    'incident'           => ($incidenttab ?? null),
 ];
-
-
-$onheader['incident'] = $incidenttab;
 
 
 if ($agent['url_address'] != '') {

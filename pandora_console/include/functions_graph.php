@@ -2800,7 +2800,7 @@ function graph_agent_status(
  * @param integer height pie graph height
  * @param integer id_agent Agent ID
  */
-function graph_event_module($width=300, $height=200, $id_agent)
+function graph_event_module($width=300, $height=200, $id_agent=null)
 {
     global $config;
     global $graphic_type;
@@ -2960,9 +2960,9 @@ function graph_sla_slicebar(
     $sla_min,
     $sla_max,
     $date,
-    $daysWeek=null,
-    $time_from=null,
-    $time_to=null,
+    $daysWeek,
+    $time_from,
+    $time_to,
     $width,
     $height,
     $home_url,

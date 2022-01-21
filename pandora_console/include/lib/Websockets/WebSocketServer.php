@@ -218,7 +218,7 @@ abstract class WebSocketServer
 
         $this->sockets['m'] = $this->master;
         $this->stderr('Listening on: '.$addr.':'.$port);
-        $this->stderr('Master socket: '.$this->master."\n");
+        $this->stderr('Master socket: '.\obhd($this->master)."\n");
 
     }
 
@@ -454,7 +454,7 @@ abstract class WebSocketServer
                         continue;
                     } else {
                         $this->connect($client);
-                        $this->stderr('Client connected. '.$client);
+                        $this->stderr('Client connected. '.\obhd($client));
                     }
                 } else {
                     if (!$socket) {
@@ -569,7 +569,7 @@ abstract class WebSocketServer
     /**
      * Disconnect socket from master.
      *
-     * @param Socket  $socket        Socket.
+     * @param \Socket $socket        Socket.
      * @param boolean $triggerClosed Also close.
      * @param integer $sockErrNo     Clear error.
      *
@@ -605,7 +605,7 @@ abstract class WebSocketServer
             if ($triggerClosed) {
                 $this->closed($user);
                 $this->stderr(
-                    'Client disconnected. '.$user->socket
+                    'Client disconnected. '.$user->id
                 );
                 socket_close($user->socket);
             } else {

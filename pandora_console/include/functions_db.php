@@ -1170,9 +1170,11 @@ function db_get_all_rows_filter($table, $filter=[], $fields=false, $where_join='
  * @param  string   $sql
  * @return mixed The row or false in error.
  */
-function db_get_all_row_by_steps_sql($new=true, &$result, $sql=null)
+function db_get_all_row_by_steps_sql($new, &$result, $sql=null)
 {
     global $config;
+
+    $new = ($new ?? true);
 
     switch ($config['dbtype']) {
         case 'mysql':

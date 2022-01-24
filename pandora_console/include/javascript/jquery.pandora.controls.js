@@ -77,8 +77,6 @@
                 : config.disabled
           };
 
-          console.log(opts);
-
           jQuery.post(
             "ajax.php",
             opts,

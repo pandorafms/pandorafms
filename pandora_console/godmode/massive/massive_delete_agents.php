@@ -63,9 +63,16 @@ function process_manage_delete($id_agents)
 
     $count_deleted = 0;
     $agent_id_restore = 0;
+
+    hd('borrando');
+    hd($id_agents);
+
     foreach ($id_agents as $id_agent) {
-        $success = agents_delete_agent($id_agent);
-        if (!$success) {
+        hd($id_agent);
+        // TODO:XXX.
+        // $success = agents_delete_agent($id_agent);
+        $success = false;
+        if ($success === false) {
             $agent_id_restore = $id_agent;
             break;
         }
@@ -73,11 +80,22 @@ function process_manage_delete($id_agents)
         $count_deleted++;
     }
 
-    if (!$success) {
+    if ($success === false) {
+        if (is_metaconsole() === true) {
+            $array_id = explode('|', $agent_id_restore);
+            $alias = agents_get_alias_metaconsole(
+                $array_id[1],
+                'none',
+                $array_id[0]
+            );
+        } else {
+            $alias = agents_get_alias($agent_id_restore);
+        }
+
         ui_print_error_message(
             sprintf(
                 __('There was an error deleting the agent, the operation has been cancelled Could not delete agent %s'),
-                agents_get_name($agent_id_restore)
+                $alias
             )
         );
 
@@ -123,24 +141,6 @@ if ($delete === true) {
             $info
         );
     }
-}
-
-
-if (is_metaconsole() === false && is_management_allowed() === false) {
-    if (\is_metaconsole() === false) {
-        $url_link = '<a target="_blank" href="'.ui_get_meta_url($url).'">';
-        $url_link .= __('metaconsole');
-        $url_link .= '</a>';
-    } else {
-        $url_link = __('any node');
-    }
-
-    \ui_print_warning_message(
-        __(
-            'This node is configured with centralized mode. Bulk operations is read only. Go to %s to manage it.',
-            $url_link
-        )
-    );
 }
 
 $table = new stdClass;
@@ -291,10 +291,10 @@ $table->data[3][1] = html_print_select(
 
 $url = 'index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents';
 if (is_metaconsole() === true) {
-    $ulr = 'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents&pure=0&option=delete_agents';
+    $url = 'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents&pure=0&option=delete_agents';
 }
 
-echo '<form method="post" id="form_agents" action="'.$url.'">';
+echo '<form method="post" id="from_agents" action="'.$url.'">';
 html_print_table($table);
 
 if (is_metaconsole() === true || is_management_allowed() === true) {

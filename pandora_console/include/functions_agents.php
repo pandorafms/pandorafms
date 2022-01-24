@@ -1369,10 +1369,6 @@ function agents_get_group_agents(
         ];
     }
 
-    hd($table_name, true);
-    hd($filter, true);
-    hd($fields, true);
-
     $result = db_get_all_rows_filter($table_name, $filter, $fields);
 
     if ($result === false) {

@@ -38,13 +38,13 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
     return;
 }
 
-require_once 'include/functions_agents.php';
-require_once 'include/functions_ui.php';
-require_once 'include/functions_alerts.php';
-require_once 'include/functions_modules.php';
-require_once 'include/functions_servers.php';
-require_once 'include/functions_gis.php';
-require_once 'include/functions_users.php';
+require_once $config['homedir'].'/include/functions_agents.php';
+require_once $config['homedir'].'/include/functions_ui.php';
+require_once $config['homedir'].'/include/functions_alerts.php';
+require_once $config['homedir'].'/include/functions_modules.php';
+require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_gis.php';
+require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_config_agents.php');
 
 if (is_ajax()) {
@@ -171,7 +171,7 @@ if ($update_agents) {
         }
     }
 
-    // CONF FILE DELETION
+    // CONF FILE DELETION.
     if (isset($values['delete_conf'])) {
         unset($values['delete_conf']);
         $n_deleted = 0;
@@ -339,7 +339,7 @@ if ($update_agents) {
         }
 
         $info = [];
-        // Update Custom Fields
+        // Update Custom Fields.
         foreach ($fields as $field) {
             $info[$field['id_field']] = $field['name'];
             $value = get_parameter('customvalue_'.$field['id_field']);
@@ -354,7 +354,7 @@ if ($update_agents) {
                 );
 
                 if ($old_value === false) {
-                    // Create custom field if not exist
+                    // Create custom field if not exist.
                     $result = db_process_sql_insert(
                         'tagent_custom_data',
                         [
@@ -399,8 +399,6 @@ if ($update_agents) {
 }
 
 $id_group = 0;
-
-$groups = users_get_groups();
 
 $table = new StdClass();
 $table->id = 'delete_table';
@@ -479,8 +477,11 @@ $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
-$enabled_agents = agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false)), ['disabled' => 0], 'none');
-$all_agents = (agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false)), ['disabled' => 1], 'none') + $enabled_agents);
+$all_agents = agents_get_group_agents(
+    array_keys(users_get_groups($config['id_user'], 'AW', false)),
+    false,
+    'none'
+);
 
 $table->data[2][1] = html_print_select(
     $all_agents,
@@ -489,6 +490,21 @@ $table->data[2][1] = html_print_select(
     false,
     '',
     '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'min-width: 500px; max-width: 500px; max-height: 100px',
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    true,
     true,
     true
 );
@@ -522,9 +538,6 @@ $table->size[2] = '15%';
 $table->size[3] = '35%';
 
 $table->data = [];
-
-$groups = users_get_groups($config['id_user'], 'AW', false);
-$agents = agents_get_group_agents(array_keys($groups));
 
 $modules = db_get_all_rows_sql(
     'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
@@ -610,7 +623,7 @@ $table->data[3][1] .= ' <span id="os_preview">';
 $table->data[3][1] .= ui_print_os_icon($id_os, false, true);
 $table->data[3][1] .= '</span>';
 
-// Network server
+// Network server.
 $none = '';
 if ($server_name == '' && $id_agente) {
     $none = __('None');
@@ -632,7 +645,7 @@ $table->data[4][1] = html_print_select(
     'width: 150px;'
 );
 
-// Description
+// Description.
 $table->data[5][0] = __('Description');
 $table->data[5][1] = html_print_input_text('description', $description, '', 45, 255, true);
 
@@ -663,27 +676,27 @@ $table->style = [];
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = [];
 
-// Custom ID
+// Custom ID.
 $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255, true);
 
-// Learn mode / Normal mode
+// Learn mode / Normal mode.
 $table->data[1][0] = __('Module definition');
 $table->data[1][1] = __('No change').' '.html_print_radio_button_extended('mode', -1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
 $table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended('mode', 1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
 $table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended('mode', 0, '', $mode, false, '', 'class="mrgn_right_40px"', true);
 $table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended('mode', 2, '', $mode, false, '', 'class="mrgn_right_40px"', true);
 
-// Status (Disabled / Enabled)
+// Status (Disabled / Enabled).
 $table->data[2][0] = __('Status');
 $table->data[2][1] = __('No change').' '.html_print_radio_button_extended('disabled', -1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
 $table->data[2][1] .= __('Disabled').' '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).' '.html_print_radio_button_extended('disabled', 1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
 $table->data[2][1] .= __('Active').' '.html_print_radio_button_extended('disabled', 0, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
 
-// Remote configuration
+// Remote configuration.
 $table->data[3][0] = __('Remote configuration');
 
-// Delete remote configuration
+// Delete remote configuration.
 $table->data[3][1] = '<div id="delete_configurations" class="invisible">'.__('Delete available remote configurations').' (';
 $table->data[3][1] .= '<span id="n_configurations"></span>';
 $table->data[3][1] .= ') '.html_print_checkbox_extended('delete_conf', 1, 0, false, '', 'class="mrgn_right_40px"', true).'</div>';
@@ -701,7 +714,7 @@ $path = 'images/gis_map/icons/';
 // TODO set better method the path
 if ($icon_path == '') {
     $display_icons = 'none';
-    // Hack to show no icon. Use any given image to fix not found image errors
+    // Hack to show no icon. Use any given image to fix not found image errors.
     $path_without = 'images/spinner.png';
     $path_default = 'images/spinner.png';
     $path_ok = 'images/spinner.png';
@@ -865,7 +878,6 @@ var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
     var checked = $("#cascade_protection").val();
-    
     $("#cascade_protection_module").attr("disabled", 'disabled');
 
     $("#cascade_protection").change(function () {
@@ -892,9 +904,9 @@ $(document).ready (function () {
             $("#safe_mode_module").attr("disabled", "disabled");
             $('#safe_mode_module').empty();
             $("#safe_mode_module").append($("<option></option>").attr("value", 'Any').html('Any'));
-        } 
+        }
     });
- 
+
     // Fill modules in Safe Operation Mode.
     function refreshSafeModules(){
         var idAgents = Array();
@@ -908,7 +920,7 @@ $(document).ready (function () {
             "id_agent" : idAgents,
             "selection_mode": "common"
         };
-        
+
         jQuery.post ("ajax.php",
             params,
             function (data, status) {
@@ -927,15 +939,14 @@ $(document).ready (function () {
         );
     }
 
-
     $("#form_agent").submit(function() {
         var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
         var post_parameters_count = $("#form_agent").serializeArray().length;
-        
+
         var count_parameters =
             get_parameters_count + post_parameters_count;
-        
+
         if (count_parameters > limit_parameters_massive) {
             alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
             return false;
@@ -978,19 +989,19 @@ $(document).ready (function () {
             refreshSafeModules();
         }
     });
-    
+
     $("#id_group").change (function () {
         $("#form_agents").attr("style", "display: none");
     });
-    
+
     $("select#id_os").pandoraSelectOS ();
-    
+
     var recursion;
     $("#checkbox-recursion2").click(function () {
         recursion = this.checked ? 1 : 0;
         $("#id_group").trigger("change");
     });
-    
+
     $("#id_group").pandoraSelectGroupAgent ({
         status_agents: function () {
             return $("#status_agents").val();
@@ -1004,27 +1015,26 @@ $(document).ready (function () {
             return disabled;
         }
     });
-    
+
     $("#status_agents").change(function() {
         $("#id_group").trigger("change");
     });
-    
-    
+
     disabled = 2;
 
- $("#id_group").trigger("change");
-    
+    //$("#id_group").trigger("change");
+
 });
 
 function changeIcons() {
     var icon = $("#icon_path :selected").val();
-    
+
     $("#icon_without_status").attr("src", "images/spinner.png");
     $("#icon_default").attr("src", "images/spinner.png");
     $("#icon_ok").attr("src", "images/spinner.png");
     $("#icon_bad").attr("src", "images/spinner.png");
     $("#icon_warning").attr("src", "images/spinner.png");
-    
+
     if (icon.length == 0) {
         $("#icon_without_status").attr("style", "display:none;");
         $("#icon_default").attr("style", "display:none;");

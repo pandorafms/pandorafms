@@ -115,8 +115,6 @@ if (is_ajax() === true) {
         $force_serialized = (bool) get_parameter('force_serialized', false);
         $nodes = (array) get_parameter('nodes', []);
 
-        hd($nodes, true);
-
         if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',

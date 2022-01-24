@@ -26,6 +26,9 @@
  * ============================================================================
  */
 
+use PandoraFMS\Agent;
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 check_login();
 
@@ -63,15 +66,32 @@ function process_manage_delete($id_agents)
 
     $count_deleted = 0;
     $agent_id_restore = 0;
-
-    hd('borrando');
-    hd($id_agents);
-
     foreach ($id_agents as $id_agent) {
-        hd($id_agent);
-        // TODO:XXX.
-        // $success = agents_delete_agent($id_agent);
-        $success = false;
+        if (is_metaconsole() === true) {
+            $array_id = explode('|', $id_agent);
+            try {
+                $node = new Node((int) $array_id[0]);
+                $node->connect();
+
+                $agent = new Agent((int) $array_id[1]);
+                $success = $agent->delete();
+
+                $node->disconnect();
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                $success = false;
+                $node->disconnect();
+            }
+        } else {
+            try {
+                $agent = new Agent($id_agent);
+                $success = $agent->delete();
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                $success = false;
+            }
+        }
+
         if ($success === false) {
             $agent_id_restore = $id_agent;
             break;
@@ -255,16 +275,19 @@ $table->data[3][0] = __('Agents');
 $table->data[3][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[3][0] .= html_print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
+
+$agents = agents_get_group_agents(
+    array_keys(users_get_groups($config['id_user'], 'AW', false)),
+    ['disabled' => 2],
+    'none',
+    false,
+    false,
+    is_metaconsole(),
+    '|'
+);
+
 $table->data[3][1] = html_print_select(
-    agents_get_group_agents(
-        array_keys(users_get_groups($config['id_user'], 'AW', false)),
-        false,
-        'none',
-        false,
-        false,
-        is_metaconsole(),
-        '|'
-    ),
+    $agents,
     'id_agents[]',
     0,
     false,
@@ -294,7 +317,7 @@ if (is_metaconsole() === true) {
     $url = 'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents&pure=0&option=delete_agents';
 }
 
-echo '<form method="post" id="from_agents" action="'.$url.'">';
+echo '<form method="post" id="form_agent" action="'.$url.'">';
 html_print_table($table);
 
 if (is_metaconsole() === true || is_management_allowed() === true) {

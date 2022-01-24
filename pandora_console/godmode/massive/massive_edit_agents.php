@@ -479,7 +479,7 @@ $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $all_agents = agents_get_group_agents(
     array_keys(users_get_groups($config['id_user'], 'AW', false)),
-    false,
+    ['disabled' => 2],
     'none'
 );
 

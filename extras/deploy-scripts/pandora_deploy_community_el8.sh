@@ -12,7 +12,7 @@
 PANDORA_CONSOLE=/var/www/html/pandora_console
 PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 
-S_VERSION='2021121401'
+S_VERSION='2022012401'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -26,6 +26,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
+[ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -199,7 +200,7 @@ execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP"
 
 # Install percona Database
 execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
-rm -rf /etc/my.cnf
+#rm -rf /etc/my.cnf
 execute_cmd "dnf install -y Percona-Server-server-57" "Installing Percona Server"
 
 # Console dependencies
@@ -306,7 +307,8 @@ server_dependencies=" \
     perl(IO::Socket::INET6) \
     perl(XML::Twig) \
     expect \
-        openssh-clients \
+    openssh-clients \
+    java \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -332,6 +334,7 @@ oracle_dependencies=" \
     https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-sqlplus-19.8.0.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $oracle_dependencies" "Installing Oracle Instant client"
 
+#ipam dependencies
 ipam_dependencies=" \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
@@ -341,15 +344,22 @@ ipam_dependencies=" \
     perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig)"
-execute_cmd "dnf install -y $ipam_dependencies" "Installing Oracle Instant client"
+execute_cmd "dnf install -y $ipam_dependencies" "Installing IPAM Instant client"
+
+# MSSQL dependencies el8
+execute_cmd "curl https://packages.microsoft.com/config/rhel/8/prod.repo -o /etc/yum.repos.d/mssql-release.repo" "Configuring Microsoft repositories" 
+execute_cmd "dnf remove unixODBC-utf16 unixODBC-utf16-devel" "Removing default unixODBC packages"
+execute_cmd "env ACCEPT_EULA=Y dnf install -y msodbcsql17" "Installing ODBC Driver for Microsoft(R) SQL Server(R)"
+MS_ID=$(head -1 /etc/odbcinst.ini | tr -d '[]') &>> "$LOGFILE"
+#dnf config-manager --set-disable packages-microsoft-com-prod
 
 # Disabling SELINUX and firewalld
 setenforce 0  &>> "$LOGFILE"
 sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config  &>> "$LOGFILE"
 systemctl disable firewalld --now &>> "$LOGFILE"
 
-if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
 #Configuring Database
+if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
 execute_cmd "systemctl start mysqld" "Starting database engine"
 export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
 echo """
@@ -367,7 +377,6 @@ echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPA
 export MYSQL_PWD=$DBPASS
 
 #Generating my.cnf
-POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 cat > /etc/my.cnf << EO_CONFIG_F
 [mysqld]
 datadir=/var/lib/mysql
@@ -518,6 +527,7 @@ sed -i -e "s/^dbname.*/dbname $DBNAME/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
+sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
 
 # Set Oracle environment for pandora_server
 cat > /etc/pandora/pandora_server.env << 'EOF_ENV'
@@ -528,8 +538,9 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/$VERSION/client64/lib
 export ORACLE_HOME=/usr/lib/oracle/$VERSION/client64
 EOF_ENV
 
-if [ "$SKIP_KERNEL_OPTIMIZATIONS" -eq '0' ] ; then
 # Kernel optimization
+
+if [ "$SKIP_KERNEL_OPTIMIZATIONS" -eq '0' ] ; then
 cat >> /etc/sysctl.conf <<EO_KO
 # Pandora FMS Optimization
 

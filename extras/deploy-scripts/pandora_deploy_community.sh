@@ -289,7 +289,7 @@ execute_cmd "yum install -y $vmware_dependencies" "Installing SDK VMware perl de
 oracle_dependencies=" \
     https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-basic-19.8.0.0.0-1.x86_64.rpm \
     https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-sqlplus-19.8.0.0.0-1.x86_64.rpm"
-execute_cmd "yum install -y $oracle_dependencies" "Installing Oracle Instant client"
+execute_cmd "yum install -y $oracle_dependencies || yum reinstall -y $oracle_dependencies" "Installing Oracle Instant client"
 
 #ipam dependencies
 ipam_dependencies=" \
@@ -301,7 +301,7 @@ ipam_dependencies=" \
     perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig)"
-execute_cmd "dnf install -y $ipam_dependencies" "Installing IPAM Instant client"
+execute_cmd "yum install -y $ipam_dependencies" "Installing IPAM Instant client"
 
 # MSSQL dependencies el7
 execute_cmd "curl https://packages.microsoft.com/config/rhel/7/prod.repo -o /etc/yum.repos.d/mssql-release.repo" "Configuring Microsoft repositories" 

@@ -480,7 +480,8 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`id_service_child` int(10) unsigned NOT NULL default 0,
 	`id_server_meta` int(10)  unsigned NOT NULL default 0,
-	PRIMARY KEY  (`id`)
+	PRIMARY KEY  (`id`),
+	INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 
 DEFAULT CHARSET=utf8;
@@ -578,7 +579,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_queue` (
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`id_agent` int(10) unsigned NOT NULL default '0',
 	`operation` varchar(15) default '',
-	`progress` int(10) unsigned NOT NULL default '0',
+	`progress` int(10) NOT NULL default '0',
 	`end_utimestamp` int(10) unsigned NOT NULL default 0,
 	`priority` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id`)
@@ -1450,13 +1451,13 @@ ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 50);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 51);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 758);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 759);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';

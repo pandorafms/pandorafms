@@ -982,14 +982,17 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
 		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
-			
+			my $monitoring_event_custom_data = '';
+
+			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
+
 			# Does the action generate an event?
 			if (safe_output($action->{'name'}) eq "Monitoring Event") {
 				$event_generated = 1;
+				$monitoring_event_custom_data = $custom_data;
 			}
-			
-			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
-			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
+
+			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
 		} else {
 			if (defined ($module)) {
 				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
@@ -1082,9 +1085,9 @@ Execute the given action.
 
 =cut
 ##########################################################################
-sub pandora_execute_action ($$$$$$$$$;$) {
+sub pandora_execute_action ($$$$$$$$$;$$) {
 	my ($pa_config, $data, $agent, $alert,
-		$alert_mode, $action, $module, $dbh, $timestamp, $extra_macros) = @_;
+		$alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $custom_data) = @_;
 
 	logger($pa_config, "Executing action '" . safe_output($action->{'name'}) . "' for alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 10);
 
@@ -1642,25 +1645,30 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		if ((! defined($alert->{'disable_event'})) || (defined($alert->{'disable_event'}) && $alert->{'disable_event'} == 0)) {
 			pandora_event(
-			$pa_config,
-			$event_text,
-			(defined ($agent) ? $agent->{'id_grupo'} : 0),
-			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
-			$priority,
-			(defined($alert)
-				? defined($alert->{'id_template_module'})
-					? $alert->{'id_template_module'}
-					: $alert->{'id'}
-				: 0),
-			(defined($alert) ? $alert->{'id_agent_module'} : 0),
-			$event_type,
-			0,
-			$dbh,
-			$source,
-			'',
-			$comment,
-			$id_extra,
-			$tags);
+				$pa_config,
+				$event_text,
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
+				$priority,
+				(defined($alert)
+					? defined($alert->{'id_template_module'})
+						? $alert->{'id_template_module'}
+						: $alert->{'id'}
+					: 0),
+				(defined($alert) ? $alert->{'id_agent_module'} : 0),
+				$event_type,
+				0,
+				$dbh,
+				$source,
+				'',
+				$comment,
+				$id_extra,
+				$tags,
+				'',
+				'',
+				'',
+				p_encode_json($pa_config, $custom_data)
+			);
 			# Validate event (field1: agent name; field2: module name)
 		}
 	} elsif ($clean_name eq "Validate Event") {
@@ -3846,7 +3854,8 @@ sub pandora_get_agent_group {
 	my ($pa_config, $dbh, $agent_name, $agent_group, $agent_group_password) = @_;
 
 	my $group_id;
-	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($pa_config->{'autocreate_group'}, $agent_group) : ($agent_group, $pa_config->{'autocreate_group'});
+	my $auto_group = $pa_config->{'autocreate_group_name'} ne '' ? $pa_config->{'autocreate_group_name'} : $pa_config->{'autocreate_group'};
+	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($auto_group, $agent_group) : ($agent_group, $auto_group);
 	foreach my $group (@groups) {
 		next unless defined($group);
 
@@ -5540,7 +5549,24 @@ sub pandora_process_policy_queue ($) {
 			}
 
 			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
+				my $policy_applied = enterprise_hook(
+					'pandora_apply_policy',
+					[
+						$dbh,
+						$pa_config,
+						$operation->{'id_policy'},
+						$operation->{'id_agent'},
+						$operation->{'id'},
+						$operation->{'operation'}
+					]
+				);
+
+				if($policy_applied == 0) {
+					sleep($pa_config->{'server_threshold'});
+					# Skip.
+					next;
+				}
+				
 			}
 			elsif($operation->{'operation'} eq 'delete') {
 				if($operation->{'id_agent'} == 0) {

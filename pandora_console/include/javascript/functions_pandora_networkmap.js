@@ -683,10 +683,10 @@ function update_link(row_index, id_link) {
         temp_link["text_end"] = data["text_end"];
 
         $.each(graph.nodes, function(k, node) {
-          if (node["id_agent"] == data["id_db_target"]) {
+          if (node["id_db"] == data["id_db_target"]) {
             temp_link["target"] = graph.nodes[k];
           }
-          if (node["id_agent"] == data["id_db_source"]) {
+          if (node["id_db"] == data["id_db_source"]) {
             temp_link["source"] = graph.nodes[k];
           }
         });
@@ -703,9 +703,21 @@ function update_link(row_index, id_link) {
           .append("g")
           .attr("id", "layer_graph_nodes_" + networkmap_id);
 
+        var graph_links_aux = graph.links.filter(function(d, i) {
+          if (typeof d["source"] === "undefined") {
+            return false;
+          }
+
+          if (typeof d["target"] === "undefined") {
+            return false;
+          }
+
+          return d;
+        });
+
         force
           .nodes(graph.nodes)
-          .links(graph.links)
+          .links(graph_links_aux)
           .start();
 
         window.node = layer_graph_nodes.selectAll(".node");
@@ -2353,9 +2365,21 @@ function refresh_holding_area() {
           .append("g")
           .attr("id", "layer_graph_nodes_" + networkmap_id);
 
+        var graph_links_aux = graph.links.filter(function(d, i) {
+          if (typeof d["source"] === "undefined") {
+            return false;
+          }
+
+          if (typeof d["target"] === "undefined") {
+            return false;
+          }
+
+          return d;
+        });
+
         force
           .nodes(graph.nodes)
-          .links(graph.links)
+          .links(graph_links_aux)
           .start();
 
         window.node = layer_graph_nodes.selectAll(".node");

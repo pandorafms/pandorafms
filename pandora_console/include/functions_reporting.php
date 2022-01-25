@@ -8775,6 +8775,8 @@ function reporting_increment($report, $content)
 
     $return['data'] = [];
 
+    $search_in_history_db = db_search_in_history_db($return['from']);
+
     if (is_metaconsole()) {
         $sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
                                      AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
@@ -8801,17 +8803,23 @@ function reporting_increment($report, $content)
                 $connection = false;
             }
 
-            $old_data = db_get_value_sql($sql1);
+            $old_data = db_get_value_sql($sql1, false, $search_in_history_db);
 
-            $last_data = db_get_value_sql($sql2);
+            $last_data = db_get_value_sql($sql2, false, $search_in_history_db);
         }
     } else {
         $old_data = db_get_value_sql(
             'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
-                                     AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC'
+                AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC',
+            false,
+            $search_in_history_db
         );
 
-        $last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC');
+        $last_data = db_get_value_sql(
+            'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC',
+            false,
+            $search_in_history_db
+        );
     }
 
     if (!is_metaconsole()) {
@@ -9374,7 +9382,7 @@ function reporting_custom_graph(
                 $modules = [];
                 foreach ($module_source as $key => $value) {
                     $modules[$key]['module'] = $value['id_agent_module'];
-                    $modules[$key]['server'] = $value['id_server'];
+                    $modules[$key]['id_server'] = $value['id_server'];
                 }
             }
         }
@@ -9817,19 +9825,21 @@ function reporting_set_conf_charts(
     $content,
     &$ttl
 ) {
+    global $config;
+
     switch ($type) {
         case 'dinamic':
         default:
             $only_image = false;
             $width = 900;
-            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : $config['graph_image_height'];
             $ttl = 1;
         break;
 
         case 'static':
             $ttl = 2;
             $only_image = true;
-            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : $config['graph_image_height'];
             $width = 650;
         break;
 
@@ -14155,7 +14165,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if (modules_is_disable_agent($content['id_agent_module'])
         || modules_is_not_init($content['id_agent_module'])
     ) {
-        if ($metaconsole_on) {
+        if ($metaconsole_on && $server_name != '') {
             // Restore db connection.
             metaconsole_restore_db();
         }
@@ -14179,6 +14189,9 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if ($modules_is_string === false) {
         if ($agentmodule_info['max_critical'] == 0) {
             $max_value_critical = null;
+            if ((bool) $content['dinamic_proc'] === true) {
+                $max_value_critical = 0.01;
+            }
         } else {
             $max_value_critical = $agentmodule_info['max_critical'];
         }
@@ -14386,28 +14399,37 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $width_graph  = 100;
     $height_graph = 80;
-    $return['chart'] = flot_slicesbar_graph(
-        $array_result,
-        $time_total,
-        $width_graph,
-        $height_graph,
-        $legend,
-        $colors,
-        $config['fontpath'],
-        $config['round_corner'],
-        $homeurl,
-        '',
-        '',
-        false,
-        0,
-        [],
-        true,
-        $ttl,
-        $content['sizeForTicks'],
-        true
-    );
+    if (empty($array_result) === false) {
+        $return['chart'] = flot_slicesbar_graph(
+            $array_result,
+            $time_total,
+            $width_graph,
+            $height_graph,
+            $legend,
+            $colors,
+            $config['fontpath'],
+            $config['round_corner'],
+            $homeurl,
+            '',
+            '',
+            false,
+            0,
+            [],
+            true,
+            $ttl,
+            $content['sizeForTicks'],
+            true,
+            $report['datetime']
+        );
+    } else {
+        $return['chart'] = graph_nodata_image(
+            $width_graph,
+            $height_graph,
+            'area'
+        );
+    }
 
-    if ($metaconsole_on) {
+    if ($metaconsole_on && $server_name != '') {
         // Restore db connection.
         metaconsole_restore_db();
     }

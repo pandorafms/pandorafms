@@ -102,6 +102,8 @@ $default_filter = [
 $fb64 = get_parameter('fb64', null);
 if (isset($fb64)) {
     $filter = json_decode(base64_decode($fb64), true);
+    $filter['tag_with'] = [];
+    $filter['tag_without'] = [];
 } else {
     $filter = get_parameter(
         'filter',
@@ -261,11 +263,6 @@ if (is_ajax() === true) {
     if ($get_events) {
         try {
             ob_start();
-            $order = get_datatable_order(true);
-
-            if (is_array($order) === true && $order['field'] === 'mini_severity') {
-                $order['field'] = 'te.criticity';
-            }
 
             $fields = [
                 'te.id_evento',
@@ -295,6 +292,20 @@ if (is_ajax() === true) {
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
+
+            $order = get_datatable_order(true);
+
+            if (is_array($order) === true && $order['field'] === 'mini_severity') {
+                $order['field'] = 'te.criticity';
+            }
+
+            // Find the order field and set the table and field name.
+            foreach ($fields as $field) {
+                if (str_contains($field, $order['field']) === true) {
+                    $order['field'] = $field;
+                    break;
+                }
+            }
 
             if (is_metaconsole() === false) {
                 $fields[] = 'am.nombre as module_name';
@@ -345,7 +356,8 @@ if (is_ajax() === true) {
 
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
-                        if (is_metaconsole()) {
+                        // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+                        if ($tmp->meta === true) {
                             if ($tmp->server_name !== null) {
                                 $tmp->data_server = metaconsole_get_servers($tmp->server_id);
                                 $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
@@ -371,7 +383,7 @@ if (is_ajax() === true) {
                                 sprintf(
                                     'SELECT criticity, timestamp FROM %s
                                     WHERE id_evento = %s',
-                                    ($tmp->meta) ? 'tmetaconsole_event' : 'tevento',
+                                    ($tmp->meta === true) ? 'tmetaconsole_event' : 'tevento',
                                     $tmp->max_id_evento
                                 )
                             );
@@ -538,7 +550,7 @@ if (is_array($tag_without) === false) {
 }
 
 
-foreach ($tags as $id_tag => $tag) {
+foreach ((array) $tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
         && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
@@ -2197,7 +2209,7 @@ function process_datatables_item(item) {
     // Url to agent view.
     var url_link = '<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>';
     var url_link_hash = '';
-    if(item.meta === true){   
+    if(item.meta === true){
         url_link = server_url+'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
         url_link_hash = hashdata;
     }
@@ -2327,7 +2339,7 @@ function click_button_add_tag(what_button) {
         id_button_remove = "#button-remove_without";
         id_button_add = "#button-add_without";
     }
-    
+
     $(id_select_origin + " option:selected").each(function() {
         if (what_button == 'with') {
             select_destiny_empty = select_with_tag_empty;
@@ -2335,17 +2347,17 @@ function click_button_add_tag(what_button) {
         else { //without
             select_destiny_empty = select_without_tag_empty;
         }
-        
-        
+
+
         without_val = $(this).val();
         if(without_val == null) {
             next;
         }
         without_text = $(this).text();
-                
+
         if (select_destiny_empty) {
             $(id_select_destiny).empty();
-            
+
             if (what_button == 'with') {
                 select_with_tag_empty = false;
             }
@@ -2353,15 +2365,15 @@ function click_button_add_tag(what_button) {
                 select_without_tag_empty = false;
             }
         }
-        
+
         $(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
         $(id_select_origin + " option:selected").remove();
         $(id_button_remove).removeAttr('disabled');
-        
+
         if ($(id_select_origin + " option").length == 0) {
             $(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
             $(id_button_add).attr('disabled', 'true');
-            
+
             if (what_button == 'with') {
                 origin_select_with_tag_empty = true;
             }
@@ -2369,10 +2381,10 @@ function click_button_add_tag(what_button) {
                 origin_select_without_tag_empty = true;
             }
         }
-            
+
         replace_hidden_tags(what_button);
     });
-    
+
 }
 
 function replace_hidden_tags(what_button) {
@@ -2384,15 +2396,15 @@ function replace_hidden_tags(what_button) {
         id_select_destiny = "#tag_without_temp";
         id_hidden = "#hidden-tag_without";
     }
-    
+
     value_store = [];
-    
+
     jQuery.each($(id_select_destiny + " option"), function(key, element) {
         val = $(element).val();
-        
+
         value_store.push(val);
     });
-    
+
     $(id_hidden).val(Base64.encode(JSON.stringify(value_store)));
 }
 
@@ -2407,28 +2419,26 @@ function reorder_tags_inputs() {
     jQuery.each($("#tag_with_temp option"), function(key, element) {
         val = $(element).val();
         text = $(element).text();
-        
+
         if (val == val_none)
             return;
-        
+
         $("#select_with").append($("<option value='" + val + "'>" + text + "</option>"));
     });
     $("#tag_with_temp option").remove();
-    
-    
+
     $('#select_without option[value="' + val_none + '"]').remove();
     jQuery.each($("#tag_without_temp option"), function(key, element) {
         val = $(element).val();
         text = $(element).text();
-        
+
         if (val == val_none)
             return;
-        
+
         $("#select_without").append($("<option value='" + val + "'>" + text + "</option>"));
     });
     $("#tag_without_temp option").remove();
-    
-    
+
     tags_base64 = $("#hidden-tag_with").val();
     if (tags_base64.length > 0) {
         tags = jQuery.parseJSON(Base64.decode(tags_base64));
@@ -2461,7 +2471,7 @@ function reorder_tags_inputs() {
         select_with_tag_empty = false;
         $("#button-remove_with").removeAttr('disabled');
     }
-    
+
     tags_base64 = $("#hidden-tag_without").val();
     if (tags_base64.length > 0) {
         tags = jQuery.parseJSON(Base64.decode(tags_base64));

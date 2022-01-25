@@ -32,6 +32,13 @@ if ($maps === false || !$searchMaps) {
     $table->align[1] = 'center';
     $table->align[2] = 'center';
 
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: center';
+    $table->headstyle[1] = 'text-align: center';
+
+
+
     $table->data = [];
     foreach ($maps as $map) {
         array_push(

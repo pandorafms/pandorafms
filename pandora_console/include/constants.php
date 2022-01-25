@@ -113,6 +113,7 @@ define('SECONDS_3YEARS', 94608000);
 // Separator constats.
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10));
+define('SEPARATOR_META_MODULE', '|-|-|-|');
 // Chr(10) is \n.
 define('SEPARATOR_COLUMN_CSV', '#');
 define('SEPARATOR_ROW_CSV', "@\n");
@@ -455,6 +456,8 @@ define('REPORT_ITEM_ORDER_BY_AGENT_NAME', 3);
 define('REPORT_ITEM_ORDER_BY_ASCENDING', 2);
 define('REPORT_ITEM_ORDER_BY_DESCENDING', 1);
 define('REPORT_ITEM_ORDER_BY_UNSORT', 0);
+
+define('REPORT_ITEM_DYNAMIC_HEIGHT', 230);
 
 define('REPORT_OLD_TYPE_SIMPLE_GRAPH', 1);
 define('REPORT_OLD_TYPE_CUSTOM_GRAPH', 2);

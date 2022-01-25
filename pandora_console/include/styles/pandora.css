@@ -776,6 +776,10 @@ select:-internal-list-box {
 .padding-bottom-4 {
   padding-bottom: 4em;
 }
+
+.padding-bottom-5px {
+  padding-bottom: 5px;
+}
 .padding-right-2 {
   padding-right: 2em;
 }
@@ -1357,7 +1361,7 @@ td.datos2f9 {
   font-weight: bold;
 }
 .blue {
-  color: #5ab7e5;
+  color: #4a83f3;
   font-weight: bold;
 }
 .black {
@@ -2506,7 +2510,7 @@ tr.group_view_ok,
 
 tr.group_view_not_init,
 .group_view_not_init {
-  background-color: #5bb6e5;
+  background-color: #4a83f3;
   color: #fff;
 }
 
@@ -7301,6 +7305,10 @@ div.graph div.legend table {
   background-color: #5bb6e5;
 }
 
+.bg_4a83f3 {
+  background-color: #4a83f3;
+}
+
 .bg_aaaaaa {
   background-color: #aaaaaa;
 }
@@ -8429,4 +8437,35 @@ div.stat-win-spinner img {
   text-align: left;
   margin: 5px;
   font-size: 12px;
+}
+
+.stat_win_histogram {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 18%;
+}
+
+#stat-win-module-graph .stat_win_histogram div.nodata_container {
+  width: 100%;
+}
+
+/* For backups dt, can be useful for others */
+#backups_list > thead > tr > th:last-child,
+#backups_list > tbody > tr > td:last-child {
+  text-align: center;
+}
+
+/*  err_msg_centralised */
+div#err_msg_centralised div {
+  margin-top: 1em;
+  font-size: 14px;
+}
+
+div#err_msg_centralised img {
+  width: 100px;
+  margin-right: 3em;
+}
+div#err_msg_centralised {
+  display: flex;
+  flex-direction: row;
 }

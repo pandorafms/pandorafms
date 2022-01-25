@@ -36,6 +36,7 @@ $ajax = true;
 
 $render_map = (bool) get_parameter('render_map', false);
 $graph_javascript = (bool) get_parameter('graph_javascript', false);
+$force_remote_check = (bool) get_parameter('force_remote_check', false);
 
 if ($render_map) {
     $width = (int) get_parameter('width', '400');
@@ -53,5 +54,38 @@ if ($render_map) {
         $graph_javascript,
         $keep_aspect_ratio
     );
+    return;
+}
+
+if ($force_remote_check) {
+    $id_layout = (int) get_parameter('id_layout', false);
+    $data = db_get_all_rows_sql(
+        sprintf(
+            'SELECT id_agent FROM tlayout_data WHERE id_layout = %d AND id_agent <> 0',
+            $id_layout
+        )
+    );
+
+    if (empty($data)) {
+        echo '0';
+    } else {
+        $ids = [];
+        foreach ($data as $key => $value) {
+            $ids[] = $value['id_agent'];
+        }
+
+        $sql = sprintf(
+            'UPDATE `tagente_modulo` SET flag = 1 WHERE `id_agente` IN (%s)',
+            implode(',', $ids)
+        );
+
+        $result = db_process_sql($sql);
+        if ($result) {
+            echo true;
+        } else {
+            echo '0';
+        }
+    }
+
     return;
 }

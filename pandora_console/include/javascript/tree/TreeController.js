@@ -976,6 +976,11 @@ var TreeController = {
                   "</span>"
               );
 
+              // Avoiding 'undefined' text.
+              if (typeof element.value === "undefined") {
+                element.value = "";
+              }
+
               // Value.
               $content.append(
                 '<span class="module-value">' + element.value + "</span>"
@@ -985,6 +990,35 @@ var TreeController = {
                 typeof element.showGraphs != "undefined" &&
                 element.showGraphs != 0
               ) {
+                // Graph histogram pop-up
+                if (typeof element.histogramGraph != "undefined") {
+                  var graphImageHistogram = $(
+                    '<img src="' +
+                      (controller.baseURL.length > 0
+                        ? controller.baseURL
+                        : "") +
+                      'images/histograma.png" /> '
+                  );
+
+                  graphImageHistogram
+                    .addClass("module-graph")
+                    .click(function(e) {
+                      e.stopPropagation();
+                      try {
+                        winopeng_var(
+                          element.histogramGraph.url,
+                          element.histogramGraph.handle,
+                          800,
+                          480
+                        );
+                      } catch (error) {
+                        // console.log(error);
+                      }
+                    });
+
+                  $content.append(graphImageHistogram);
+                }
+
                 // Graph pop-up
                 if (typeof element.moduleGraph != "undefined") {
                   if (element.statusImageHTML.indexOf("data:image") != -1) {
@@ -1178,24 +1212,26 @@ var TreeController = {
             disabled == false
           ) {
             if (element.type == "agent" || element.type == "module") {
-              $content
-                .click(function(e) {
-                  _getTreeDetailData(
-                    element.type,
-                    element.id,
-                    element.serverID,
-                    function(error, data) {
-                      if (error) {
-                        // console.error(error);
-                      } else {
-                        controller.detailRecipient
-                          .render(element.name, data)
-                          .open();
+              if (typeof element.noAcl === "undefined") {
+                $content
+                  .click(function(e) {
+                    _getTreeDetailData(
+                      element.type,
+                      element.id,
+                      element.serverID,
+                      function(error, data) {
+                        if (error) {
+                          // console.error(error);
+                        } else {
+                          controller.detailRecipient
+                            .render(element.name, data)
+                            .open();
+                        }
                       }
-                    }
-                  );
-                })
-                .css("cursor", "pointer");
+                    );
+                  })
+                  .css("cursor", "pointer");
+              }
             }
           }
 

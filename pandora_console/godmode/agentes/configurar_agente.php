@@ -1385,9 +1385,15 @@ if ($update_module || $create_module) {
         $custom_integer_2_default = $module['custom_integer_2'];
     }
 
-    if ($id_module_type == 25) {
+    if ($id_module_type === 25) {
         // Web analysis, from MODULE_WUX.
-        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1', $custom_string_1_default));
+        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1'));
+        // If the custom_string_1 parameter come empty, set the content
+        // of the module (it is base64_encoded).
+        if (empty($custom_string_1) === true) {
+            $custom_string_1 = $custom_string_1_default;
+        }
+
         $custom_integer_1 = (int) get_parameter('custom_integer_1', $custom_integer_1_default);
     } else {
         $custom_string_1 = (string) get_parameter('custom_string_1', $custom_string_1_default);
@@ -1402,7 +1408,7 @@ if ($update_module || $create_module) {
     $macros = (string) get_parameter('macros');
     $macros_names = (array) get_parameter('macro_name', []);
 
-    if (!empty($macros)) {
+    if (empty($macros) === false) {
         $macros = json_decode(base64_decode($macros), true);
 
         foreach ($macros as $k => $m) {
@@ -2422,7 +2428,7 @@ switch ($tab) {
             
             var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() &&
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() &&
              '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>' == 19){
                 
                 event.preventDefault();
@@ -2456,7 +2462,7 @@ switch ($tab) {
             
             var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter('id_agent_module')); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() && (
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() && (
                 module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
                     
                     event.preventDefault();

@@ -942,7 +942,9 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
         .children()
         .eq(1)
         .children()
-        .attr("type", "password");
+        .attr("type", "password")
+        .removeAttr("value")
+        .val(macro_value);
     } else {
       $("#" + row_id)
         .children()
@@ -955,7 +957,9 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
       $("#" + row_id)
         .children()
         .eq(1)
-        .attr("type", "password");
+        .attr("type", "password")
+        .removeAttr("value")
+        .val(macro_value);
     } else {
       $("#" + row_id)
         .children()

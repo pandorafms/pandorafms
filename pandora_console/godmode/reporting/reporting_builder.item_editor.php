@@ -211,7 +211,7 @@ switch ($action) {
         $failover_type = REPORT_FAILOVER_TYPE_NORMAL;
         $server_name = '';
         $server_id = 0;
-        $dyn_height = 230;
+        $dyn_height = (empty($config['graph_image_height']) === false) ? $config['graph_image_height'] : REPORT_ITEM_DYNAMIC_HEIGHT;
         $landscape = false;
         $pagebreak = false;
         $summary = 0;
@@ -252,7 +252,7 @@ switch ($action) {
                 $server_name = '';
                 $server_id = 0;
                 $get_data_editor = false;
-                $dyn_height = 230;
+                $dyn_height = (empty($config['graph_image_height']) === false) ? $config['graph_image_height'] : REPORT_ITEM_DYNAMIC_HEIGHT;
             break;
         }
 
@@ -3914,7 +3914,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <input id="hidden-id_server" name="id_server" value="" type="hidden">
                                 <?php
                                 // Set autocomplete image.
-                                $autocompleteImage = html_print_image(($config['style'] === 'pandora_black') ? 'images/agent_mc.menu.png' : 'images/search_agent.png', true, false, true);
+                                $autocompleteImage = html_print_image(($config['style'] === 'pandora_black' && !is_metaconsole()) ? 'images/agent_mc.menu.png' : 'images/search_agent.png', true, false, true);
                                 // Params for agent autocomplete input.
                                 $params = [];
                                 $params['show_helptip'] = true;
@@ -4004,23 +4004,23 @@ function print_SLA_list($width, $action, $idItem=null)
                                         ],
                                     ]
                                 );
-                                if (!empty($services_tmp)
-                                    && $services_tmp != ENTERPRISE_NOT_HOOK
+                        if (!empty($services_tmp)
+                            && $services_tmp != ENTERPRISE_NOT_HOOK
+                        ) {
+                            foreach ($services_tmp as $service) {
+                                $check_module_sla = modules_check_agentmodule_exists(
+                                    $service['sla_id_module']
+                                );
+                                $check_module_sla_value = modules_check_agentmodule_exists(
+                                    $service['sla_value_id_module']
+                                );
+                                if ($check_module_sla
+                                    && $check_module_sla_value
                                 ) {
-                                    foreach ($services_tmp as $service) {
-                                        $check_module_sla = modules_check_agentmodule_exists(
-                                            $service['sla_id_module']
-                                        );
-                                        $check_module_sla_value = modules_check_agentmodule_exists(
-                                            $service['sla_value_id_module']
-                                        );
-                                        if ($check_module_sla
-                                            && $check_module_sla_value
-                                        ) {
-                                            $services[$service['id']] = $service['name'];
-                                        }
-                                    }
+                                    $services[$service['id']] = $service['name'];
                                 }
+                            }
+                        }
 
                                 echo '<td class="sla_list_service_col">';
                                 echo html_print_select(

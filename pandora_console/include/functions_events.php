@@ -1157,7 +1157,7 @@ function events_get_all(
                 }
 
                 if ($tags[0] === $id_tag) {
-                    $_tmp .= ' AND ( ';
+                    $_tmp .= ' AND (( ';
                 } else {
                     $_tmp .= ' OR ( ';
                 }
@@ -1185,7 +1185,7 @@ function events_get_all(
                 $_tmp .= ') ';
             }
 
-            $sql_filters[] = $_tmp;
+            $sql_filters[] = $_tmp.')';
         }
     }
 

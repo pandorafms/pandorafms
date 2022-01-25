@@ -64,7 +64,7 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
     $l10n->load_tables();
 }
 
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     ui_require_css_file('pandora_black', 'include/styles/', true);
 }
 
@@ -97,7 +97,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
         ?>
     </head>
     <?php
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     }
     ?>
     <body bgcolor="#ffffff" class='bg_white'>

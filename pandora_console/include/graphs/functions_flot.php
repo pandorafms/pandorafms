@@ -146,7 +146,7 @@ function flot_area_graph(
         break;
     }
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
+    if (($config['style'] === 'pandora_black' && !is_metaconsole()) && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
     ) {
         $background_style = '#222';
         $params['grid_color'] = '#fff';
@@ -552,11 +552,6 @@ function flot_custom_pie_chart(
 function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='', $font_size=7, $background_color='white', $tick_color='white', $val_min=null, $val_max=null, $pdf=false)
 {
     global $config;
-
-    if ($pdf === true) {
-        $background_color = 'white';
-        $tick_color = '#000';
-    }
 
     // Include_javascript_dependencies_flot_graph().
     $return = '';

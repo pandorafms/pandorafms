@@ -669,15 +669,20 @@ class Tree
         // HTML of the server type image
         $module['serverTypeHTML'] = servers_show_type($module['server_type']);
 
-        // Link to the Module graph
-        // ACL
+        // Link to the Module graph.
+        // ACL.
         $acl_graphs = false;
         $module['showGraphs'] = 0;
 
-        // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
-        if (!empty($group_id) && !is_metaconsole()) {
-            $acl_graphs = check_acl_one_of_groups($config['id_user'], $all_groups, 'RR');
-        } else if (!empty($all_groups)) {
+        // Avoid the check on the metaconsole.
+        // Too slow to show/hide an icon depending on the permissions.
+        if (empty($group_id) === false && is_metaconsole() === false) {
+            $acl_graphs = check_acl_one_of_groups(
+                $config['id_user'],
+                $all_groups,
+                'RR'
+            );
+        } else if (empty($all_groups) === false) {
             $acl_graphs = true;
         }
 
@@ -686,8 +691,24 @@ class Tree
         }
 
         if ($module['showGraphs']) {
+            $tresholds = true;
+            if (empty((float) $module['min_warning']) === true
+                && empty((float) $module['max_warning']) === true
+                && empty($module['warning_inverse']) === true
+                && empty((float) $module['min_critical']) === true
+                && empty((float) $module['max_critical']) === true
+                && empty($module['critical_inverse']) === true
+            ) {
+                $tresholds = false;
+            }
+
             $graphType = return_graphtype($module['id_module_type']);
-            $url = ui_get_full_url('operation/agentes/stat_win.php', false, false, false);
+            $url = ui_get_full_url(
+                'operation/agentes/stat_win.php',
+                false,
+                false,
+                false
+            );
             $winHandle = dechex(crc32($module['id'].$module['name']));
 
             $graph_params = [
@@ -697,20 +718,20 @@ class Tree
                 'refresh' => SECONDS_10MINUTES,
             ];
 
-            if (is_metaconsole()) {
-                // Set the server id
+            if (is_metaconsole() === true) {
+                // Set the server id.
                 $graph_params['server'] = $module['serverID'];
             }
 
             $graph_params_str = http_build_query($graph_params);
-            $moduleGraphURL = "$url?$graph_params_str";
+            $moduleGraphURL = $url.'?'.$graph_params_str;
 
             $module['moduleGraph'] = [
                 'url'    => $moduleGraphURL,
                 'handle' => $winHandle,
             ];
 
-            // Info to be able to open the snapshot image new page
+            // Info to be able to open the snapshot image new page.
             $module['snapshot'] = ui_get_snapshot_link(
                 [
                     'id_module'   => $module['id'],
@@ -720,6 +741,16 @@ class Tree
                 ],
                 true
             );
+
+            if ($tresholds === true || $graphType === 'boolean') {
+                $graph_params['histogram'] = 1;
+                $graph_params_str_th = http_build_query($graph_params);
+                $moduleGraphURLTh = $url.'?'.$graph_params_str_th;
+                $module['histogramGraph'] = [
+                    'url'    => $moduleGraphURLTh,
+                    'handle' => $winHandle,
+                ];
+            }
         }
 
         $module_alerts = alerts_get_alerts_agent_module($module['id']);

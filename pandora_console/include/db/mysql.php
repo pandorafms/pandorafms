@@ -874,10 +874,10 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
  *
  * @return the first value of the first row of a table result from query.
  */
-function mysql_db_get_value_sql($sql, $dbconnection=false)
+function mysql_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql .= ' LIMIT 1';
-    $result = mysql_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = mysql_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;

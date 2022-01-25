@@ -776,6 +776,10 @@ select:-internal-list-box {
 .padding-bottom-4 {
   padding-bottom: 4em;
 }
+
+.padding-bottom-5px {
+  padding-bottom: 5px;
+}
 .padding-right-2 {
   padding-right: 2em;
 }

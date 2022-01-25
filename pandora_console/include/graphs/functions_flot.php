@@ -553,11 +553,6 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 {
     global $config;
 
-    if ($pdf === true) {
-        $background_color = 'white';
-        $tick_color = '#000';
-    }
-
     // Include_javascript_dependencies_flot_graph().
     $return = '';
 

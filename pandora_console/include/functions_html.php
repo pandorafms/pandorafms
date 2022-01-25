@@ -1480,7 +1480,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'        => true,
             'nothing'       => __('All'),
             'nothing_value' => 0,
-            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'        => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
     $output .= '</div>';
@@ -1533,7 +1533,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
 
@@ -1550,30 +1550,20 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'name'     => 'filtered-module-show-common-modules-'.$uniqId,
             'selected' => $data['mShowCommonModules'],
             'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
 
     if ($data['mAgents'] !== null) {
-        $all_modules = select_modules_for_agent_group(
+        $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),
             $data['mShowCommonModules'],
-            false
+            false,
+            true
         );
     } else {
         $all_modules = [];
-    }
-
-    if ($data['mShowSelectedOtherGroups']) {
-        $selected_modules_ids = explode(',', $data['mModules']);
-
-        foreach ($selected_modules_ids as $id) {
-            if (!array_key_exists($id, $all_modules)) {
-                $module_data = modules_get_agentmodule($id);
-                $all_modules[$id] = $module_data['nombre'];
-            }
-        }
     }
 
     $output .= html_print_input(
@@ -1582,7 +1572,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'type'     => 'select',
             'fields'   => $all_modules,
             'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => explode(',', $data['mModules']),
+            'selected' => explode((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ',', $data['mModules']),
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',

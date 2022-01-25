@@ -1389,7 +1389,10 @@ class AgentWizard extends HTML
         foreach (array_keys($data) as $k) {
             foreach ($modulesActivated as $key => $value) {
                 $valueStr = preg_replace('/\//', '\/', $value);
-                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false) {
+
+                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false
+                    || empty(preg_match('/-'.$valueStr.'_sent$/', $k)) === false
+                ) {
                     if (empty(preg_match('/module-name-set/', $k)) === false) {
                         $result[$value]['name'] = $data[$k];
                     } else if (empty(preg_match('/module-description-set/', $k)) === false) {
@@ -1418,6 +1421,42 @@ class AgentWizard extends HTML
                             } else if (empty(preg_match('/module-unit/', $k)) === false) {
                                 $result[$value]['unit'] = $data['module-unit-'.$key];
                                 continue;
+                            } else if (empty(preg_match('/module-warning-min/', $k)) === false) {
+                                $result[$value]['warningMin'] = $data['module-warning-min-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-warning-max/', $k)) === false) {
+                                $result[$value]['warningMax'] = $data['module-warning-max-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-critical-min/', $k)) === false) {
+                                $result[$value]['criticalMin'] = $data['module-critical-min-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-critical-max/', $k)) === false) {
+                                $result[$value]['criticalMax'] = $data['module-critical-max-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-critical-inv/', $k)) === false) {
+                                if (isset($data['module-critical-inv-0_0-0'])) {
+                                    $result[$value]['criticalInv'] = $data['module-critical-inv-0_0-0_sent'];
+                                }
+
+                                continue;
+                            } else if (empty(preg_match('/module-warning-inv/', $k)) === false) {
+                                if (isset($data['module-warning-inv-0_0-0'])) {
+                                    $result[$value]['warningInv'] = $data['module-warning-inv-0_0-0_sent'];
+                                }
+
+                                continue;
+                            } else if (empty(preg_match('/module-warning-perc/', $k)) === false) {
+                                if (isset($data['module-warning-perc-0_0-0'])) {
+                                    $result[$value]['warningPerc'] = $data['module-warning-perc-0_0-0_sent'];
+                                }
+
+                                continue;
+                            } else if (empty(preg_match('/module-critical-perc/', $k)) === false) {
+                                if (isset($data['module-critical-perc-0_0-0'])) {
+                                    $result[$value]['criticalPerc'] = $data['module-critical-perc-0_0-0_sent'];
+                                }
+
+                                continue;
                             }
 
                             preg_match('/^(.*).*?_(\d+)-+(\d+)$/', $k, $matches);
@@ -1429,6 +1468,10 @@ class AgentWizard extends HTML
                         }
                     }
 
+                    if (empty(preg_match('/-'.$valueStr.'_sent$/', $k)) === false) {
+                        continue;
+                    }
+
                     if (empty(preg_match('/module-warning-min/', $k)) === false) {
                         $result[$value]['warningMin'] = $data[$k];
                     } else if (empty(preg_match('/module-warning-max/', $k)) === false) {
@@ -1438,9 +1481,9 @@ class AgentWizard extends HTML
                     } else if (empty(preg_match('/module-critical-max/', $k)) === false) {
                         $result[$value]['criticalMax'] = $data[$k];
                     } else if (empty(preg_match('/module-critical-inv/', $k)) === false) {
-                        $result[$value]['criticalInv'] = $data[$k];
+                        $result[$value]['criticalInv'] = $data[$k.'_sent'];
                     } else if (empty(preg_match('/module-warning-inv/', $k)) === false) {
-                        $result[$value]['warningInv'] = $data[$k];
+                        $result[$value]['warningInv'] = $data[$k.'_sent'];
                     } else if (empty(preg_match('/module-warning-perc/', $k)) === false) {
                         $result[$value]['warningPerc'] = $data[$k.'_sent'];
                     } else if (empty(preg_match('/module-critical-perc/', $k)) === false) {

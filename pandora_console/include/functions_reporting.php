@@ -8775,6 +8775,8 @@ function reporting_increment($report, $content)
 
     $return['data'] = [];
 
+    $search_in_history_db = db_search_in_history_db($return['from']);
+
     if (is_metaconsole()) {
         $sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
                                      AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
@@ -8801,17 +8803,23 @@ function reporting_increment($report, $content)
                 $connection = false;
             }
 
-            $old_data = db_get_value_sql($sql1);
+            $old_data = db_get_value_sql($sql1, false, $search_in_history_db);
 
-            $last_data = db_get_value_sql($sql2);
+            $last_data = db_get_value_sql($sql2, false, $search_in_history_db);
         }
     } else {
         $old_data = db_get_value_sql(
             'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
-                                     AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC'
+                AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC',
+            false,
+            $search_in_history_db
         );
 
-        $last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC');
+        $last_data = db_get_value_sql(
+            'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC',
+            false,
+            $search_in_history_db
+        );
     }
 
     if (!is_metaconsole()) {
@@ -9374,7 +9382,7 @@ function reporting_custom_graph(
                 $modules = [];
                 foreach ($module_source as $key => $value) {
                     $modules[$key]['module'] = $value['id_agent_module'];
-                    $modules[$key]['server'] = $value['id_server'];
+                    $modules[$key]['id_server'] = $value['id_server'];
                 }
             }
         }
@@ -9817,19 +9825,21 @@ function reporting_set_conf_charts(
     $content,
     &$ttl
 ) {
+    global $config;
+
     switch ($type) {
         case 'dinamic':
         default:
             $only_image = false;
             $width = 900;
-            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : $config['graph_image_height'];
             $ttl = 1;
         break;
 
         case 'static':
             $ttl = 2;
             $only_image = true;
-            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : $config['graph_image_height'];
             $width = 650;
         break;
 

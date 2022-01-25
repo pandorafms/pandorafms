@@ -158,35 +158,86 @@ function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api
 {
     global $config;
 
-    if ($user_level_conf === null) {
-        $user_level_conf = (bool) $config['integria_user_level_conf'];
-    }
+    if (is_metaconsole()) {
+        $servers = metaconsole_get_connection_names();
+        foreach ($servers as $key => $server) {
+            $connection = metaconsole_get_connection($server);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
 
-    $user_info = users_get_user_by_id($config['id_user']);
+            $integria_enabled = db_get_sql(
+                'SELECT `value` FROM tconfig WHERE `token` = "integria_enabled"'
+            );
 
-    // API access data.
-    if ($api_hostname === null) {
-        $api_hostname = $config['integria_hostname'];
-    }
+            if (!$integria_enabled) {
+                metaconsole_restore_db();
+                continue;
+            }
 
-    if ($api_pass === null) {
-        $api_pass = $config['integria_api_pass'];
-    }
+            // integria_user_level_conf, integria_hostname, integria_api_pass, integria_user, integria_user_level_user, integria_pass, integria_user_level_pass
+            $config_aux = db_get_all_rows_sql('SELECT `token`, `value` FROM `tconfig` WHERE `token` IN ("integria_user_level_conf", "integria_hostname", "integria_api_pass", "integria_user", "integria_user_level_user", "integria_pass", "integria_user_level_pass")');
+            $user_info = users_get_user_by_id($config['id_user']);
+            foreach ($config_aux as $key => $conf) {
+                if ($conf['token'] === 'integria_user_level_conf') {
+                    $user_level_conf = $conf['value'];
+                }
 
-    // Integria user and password.
-    if ($user === null || $user_level_conf === true) {
-        $user = $config['integria_user'];
+                if ($conf['token'] === 'integria_hostname') {
+                    $api_hostname = $conf['value'];
+                }
 
-        if ($user_level_conf === true) {
-            $user = $user_info['integria_user_level_user'];
+                if ($conf['token'] === 'integria_api_pass') {
+                    $api_pass = $conf['value'];
+                }
+
+                if ($conf['token'] === 'integria_user') {
+                    $user = $conf['value'];
+                }
+
+                if ($conf['token'] === 'integria_pass') {
+                    $user_pass = $conf['value'];
+                }
+            }
+
+            if ($user_level_conf == true) {
+                $user = $user_info['integria_user_level_user'];
+                $user_pass = $user_info['integria_user_level_pass'];
+            }
+
+            metaconsole_restore_db();
         }
-    }
+    } else {
+        if ($user_level_conf === null) {
+            $user_level_conf = (bool) $config['integria_user_level_conf'];
+        }
 
-    if ($user_pass === null || $user_level_conf === true) {
-        $user_pass = $config['integria_pass'];
+        $user_info = users_get_user_by_id($config['id_user']);
 
-        if ($user_level_conf === true) {
-            $user_pass = $user_info['integria_user_level_pass'];
+        // API access data.
+        if ($api_hostname === null) {
+            $api_hostname = $config['integria_hostname'];
+        }
+
+        if ($api_pass === null) {
+            $api_pass = $config['integria_api_pass'];
+        }
+
+        // Integria user and password.
+        if ($user === null || $user_level_conf === true) {
+            $user = $config['integria_user'];
+
+            if ($user_level_conf === true) {
+                $user = $user_info['integria_user_level_user'];
+            }
+        }
+
+        if ($user_pass === null || $user_level_conf === true) {
+            $user_pass = $config['integria_pass'];
+
+            if ($user_level_conf === true) {
+                $user_pass = $user_info['integria_user_level_pass'];
+            }
         }
     }
 

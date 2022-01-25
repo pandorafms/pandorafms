@@ -5966,3 +5966,24 @@ function send_test_email(
     return $result;
 
 }
+
+
+if (function_exists('str_contains') === false) {
+
+
+    /**
+     * Checks if $needle is found in $haystack and returns a boolean value.
+     * For lower than PHP8 versions.
+     *
+     * @param string $haystack The string who can have the needle.
+     * @param string $needle   The needle.
+     *
+     * @return boolean True if haystack contains the needle.
+     */
+    function str_contains(string $haystack, string $needle)
+    {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+
+
+}

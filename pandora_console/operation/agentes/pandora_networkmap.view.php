@@ -480,7 +480,7 @@ if (is_ajax() === true) {
         $return = [];
         $return['correct'] = false;
 
-        // ACL for the network map
+        // ACL for the network map.
         $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
         $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
@@ -497,9 +497,7 @@ if (is_ajax() === true) {
 
         $return['correct'] = networkmap_delete_link(
             $networkmap_id,
-            $source_id,
             $source_module_id,
-            $target_id,
             $target_module_id,
             $id_link
         );
@@ -1028,12 +1026,12 @@ if (is_ajax() === true) {
             // Source_value is id_agente.
             $source_text = '';
             $source_agent = $interface_source;
-            $source_type = NODE_AGENT;
+            $source_type = ($interface_source == 0) ? NODE_PANDORA : NODE_AGENT;
             $source_link_value = $source_agent;
         }
 
         // Search node id in map.
-        $child_id = db_get_value_filter(
+        $parent_id = db_get_value_filter(
             'id',
             'titem',
             [
@@ -1075,7 +1073,7 @@ if (is_ajax() === true) {
         }
 
         // Search node id in map.
-        $parent_id = db_get_value_filter(
+        $child_id = db_get_value_filter(
             'id',
             'titem',
             [
@@ -1091,10 +1089,10 @@ if (is_ajax() === true) {
         $link['id_item'] = 0;
         $link['deleted'] = 0;
         $link['id_map'] = $networkmap_id;
-        $link['parent_type'] = $target_type;
-        $link['id_parent_source_data'] = $target_link_value;
-        $link['child_type'] = $source_type;
-        $link['id_child_source_data'] = $source_link_value;
+        $link['parent_type'] = $source_type;
+        $link['id_parent_source_data'] = $source_link_value;
+        $link['child_type'] = $target_type;
+        $link['id_child_source_data'] = $target_link_value;
 
         $insert_result = db_process_sql_insert('trel_item', $link);
 
@@ -1125,8 +1123,8 @@ if (is_ajax() === true) {
             $return['text_start'] = $source_text;
             $return['text_end'] = $target_text;
             $return['id_db_link'] = $insert_result;
-            $return['id_db_source'] = $source_agent;
-            $return['id_db_target'] = $target_agent;
+            $return['id_db_source'] = $parent_id;
+            $return['id_db_target'] = $child_id;
             $return['type_source'] = $source_type;
             $return['type_target'] = $target_type;
         } else {

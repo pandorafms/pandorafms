@@ -1362,6 +1362,10 @@ if ($get_extended_event) {
     $timestamp_first = $event['min_timestamp'];
     $timestamp_last = $event['max_timestamp'];
     $server_id = $event['server_id'];
+    if (empty($server_id) && !empty($event['server_name']) && is_metaconsole()) {
+        $server_id = metaconsole_get_id_server($event['server_name']);
+    }
+
     $comments = $event['comments'];
 
     $event['similar_ids'] = $similar_ids;
@@ -1537,7 +1541,7 @@ if ($get_extended_event) {
 
     $console_url = '';
     // If metaconsole switch to node to get details and custom fields.
-    if ($meta) {
+    if ($meta || (is_metaconsole() && !empty($server_id))) {
         $server = metaconsole_get_connection_by_id($server_id);
     } else {
         $server = '';
@@ -1550,7 +1554,7 @@ if ($get_extended_event) {
     }
 
     $connected = true;
-    if ($meta) {
+    if ($meta || (is_metaconsole() && !empty($server_id))) {
         if (metaconsole_connect($server) === NOERR) {
             $connected = true;
         } else {

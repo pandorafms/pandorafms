@@ -323,11 +323,22 @@ class MapsStatusWidget extends Widget
                 $data = [];
 
                 $url = $config['homeurl'];
-                $url .= 'index.php?sec=visualc';
-                $url .= '&sec2=operation/visual_console/render_view&refr=60';
+                if (\is_metaconsole() === true) {
+                    $url .= sprintf(
+                        'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&refr=%s&id_visualmap=%s',
+                        $config['vc_refr'],
+                        $id_layout
+                    );
+                } else {
+                    $url .= sprintf(
+                        'index.php?sec=visualc&sec2=operation/visual_console/render_view&refr=%s&id=%s',
+                        $config['vc_refr'],
+                        $id_layout
+                    );
+                }
 
                 // This will give us the group name.
-                $data[0] = '<a href="'.$url.'&id='.$id_layout.'">';
+                $data[0] = '<a href="'.$url.'">';
                 $data[0] .= $user_layouts[$id_layout]['name'];
                 $data[0] .= '</a>';
 

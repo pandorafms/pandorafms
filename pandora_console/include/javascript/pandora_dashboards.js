@@ -388,8 +388,8 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: widgetId == 14 || widgetId == 2 ? 750 : 450,
-        maxHeight: 600,
+        width: widgetId == 14 || widgetId == 2 || widgetId == 23 ? 750 : 450,
+        maxHeight: 610,
         minHeight: 400
       },
       onsubmit: {

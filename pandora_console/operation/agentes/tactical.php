@@ -147,7 +147,7 @@ echo '<td class="tactical_left_column" id="leftcolumn">';
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
 $bg_color = 'background-color: #222';
-if ($config['style'] !== 'pandora_black') {
+if ($config['style'] !== 'pandora_black' && !is_metaconsole()) {
     $bg_color = 'background-color: #fff';
 }
 

@@ -35,7 +35,6 @@ use PandoraFMS\Module;
  */
 class AgentModuleWidget extends Widget
 {
-    const MODULE_SEPARATOR = '|-|-|-|';
 
     /**
      * Name widget.
@@ -309,16 +308,12 @@ class AgentModuleWidget extends Widget
 
         if (is_metaconsole() === true) {
             $values['mModules'] = implode(
-                self::MODULE_SEPARATOR,
+                SEPARATOR_META_MODULE,
                 array_reduce(
                     $values['mModules'],
                     function ($carry, $item) {
                         $d = explode('|', $item);
-                        if (isset($d[1]) === true) {
-                            $carry[] = \io_safe_output($d[1]);
-                        } else {
-                            $carry[] = \io_safe_output($item);
-                        }
+                        $carry[] = (isset($d[1]) === true) ? $d[1] : $item;
 
                         return $carry;
                     },
@@ -639,7 +634,7 @@ class AgentModuleWidget extends Widget
         $target_modules = $this->values['mModules'];
         if (is_metaconsole() === true) {
             $target_modules = explode(
-                self::MODULE_SEPARATOR,
+                SEPARATOR_META_MODULE,
                 $this->values['mModules']
             );
 
@@ -648,8 +643,17 @@ class AgentModuleWidget extends Widget
             if (is_array($target_modules) === true
                 || is_numeric($target_modules) === true
             ) {
+                $target_modules = array_reduce(
+                    $target_modules,
+                    function ($carry, $item) {
+                        $carry[] = io_safe_output($item);
+
+                        return $carry;
+                    }
+                );
+
                 $all_modules = Module::search(
-                    ['id_agente_modulo' => $target_modules]
+                    ['nombre' => $target_modules]
                 );
             } else {
                 // From previous definitions.
@@ -660,29 +664,28 @@ class AgentModuleWidget extends Widget
         }
 
         if ($all_modules !== null) {
-            $reduceAllModules = array_reduce(
-                $all_modules,
-                function ($carry, $item) {
-                    if ($item === null) {
+            if (is_metaconsole() === true
+                && $this->values['mShowCommonModules'] === '1'
+            ) {
+                $reduceAllModules = [];
+            } else {
+                $reduceAllModules = array_reduce(
+                    $all_modules,
+                    function ($carry, $item) {
+                        if ($item === null) {
+                            return $carry;
+                        }
+
+                        if (is_object($item) === true) {
+                            $carry[$item->name()] = null;
+                        } else {
+                            $carry[io_safe_output($item)] = null;
+                        }
+
                         return $carry;
                     }
-
-                    if (is_object($item) === true) {
-                        $carry[$item->name()] = null;
-                    } else {
-                        if ((is_metaconsole() === true
-                            && $this->values['mShowCommonModules'] !== '1')
-                            || is_metaconsole() === false
-                        ) {
-                            $carry[$item] = null;
-                        }
-                    }
-
-                    return $carry;
-                }
-            );
-        } else {
-            $reduceAllModules = [];
+                );
+            }
         }
 
         $visualData = [];
@@ -709,14 +712,26 @@ class AgentModuleWidget extends Widget
                 $visualData[$agent_id]['agent_status'] = $agent->lastStatus();
                 $visualData[$agent_id]['agent_name'] = $agent->name();
                 $visualData[$agent_id]['agent_alias'] = $agent->alias();
+                $visualData[$agent_id]['modules'] = [];
 
                 if (is_metaconsole() === true
                     && $this->values['mShowCommonModules'] === '1'
                 ) {
                     // MC should connect to nodes and retrieve information
                     // from targets.
+                    $tmpModules = array_reduce(
+                        $target_modules,
+                        function ($carry, $item) {
+                            // In this case, the modules come with '» ' chain.
+                            $tmpCarry = explode('&raquo;&#x20;', $item);
+                            $carry[trim($tmpCarry[1])] = null;
+
+                            return $carry;
+                        }
+                    );
+
                     $modules = $agent->searchModules(
-                        ['id_agente_modulo' => $target_modules]
+                        ['nombre' => array_keys($tmpModules)]
                     );
 
                     foreach ($modules as $module) {

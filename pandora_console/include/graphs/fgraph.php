@@ -220,7 +220,7 @@ function vbar_graph(
         $options['x']['font']['color'] = '#545454';
         if ($options['pdf'] === true) {
             $options['x']['font']['color'] = '#000';
-        } else if ($config['style'] === 'pandora_black') {
+        } else if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $options['x']['font']['color'] = '#fff';
         }
     }
@@ -238,7 +238,7 @@ function vbar_graph(
     // Grid color axes x.
     if (isset($options['x']['color']) === false) {
         $options['x']['color'] = '#ffffff';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $options['x']['color'] = '#222';
         }
     }
@@ -305,7 +305,7 @@ function vbar_graph(
         $options['y']['font']['color'] = '#545454';
         if ($options['pdf'] === true) {
             $options['y']['font']['color'] = '#000';
-        } else if ($config['style'] === 'pandora_black') {
+        } else if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $options['y']['font']['color'] = '#fff';
         }
     }
@@ -323,7 +323,7 @@ function vbar_graph(
     // Grid color axes y.
     if (isset($options['y']['color']) === false) {
         $options['y']['color'] = '#ffffff';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $options['y']['color'] = '#222';
         }
     }
@@ -361,7 +361,7 @@ function vbar_graph(
 
     if (isset($options['grid']['color']) === false) {
         $options['grid']['color'] = '#ffffff';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $options['grid']['color'] = '#111';
         }
     }
@@ -373,7 +373,7 @@ function vbar_graph(
                 '#ffffff',
             ],
         ];
-        if ($config['style'] === 'pandora_black' && $ttl === 1) {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole() && $ttl === 1) {
             $options['grid']['backgroundColor'] = [
                 'colors' => [
                     '#222',
@@ -746,11 +746,11 @@ function hbar_graph(
         return generator_chart_to_pdf('hbar', $params);
     }
 
-    if ($config['style'] === 'pandora_black' && $ttl === 1) {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole() && $ttl === 1) {
         $backgroundColor = '#222';
     }
 
-    if ($config['style'] === 'pandora_black' && $ttl === 1) {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole() && $ttl === 1) {
         $tick_color = '#fff';
     }
 

@@ -162,9 +162,13 @@ function agents_locate_agent(string $field)
  *
  * @return array|boolean Agents ids or false if error.
  */
-function agents_get_agent_id_by_alias($alias)
+function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
-    return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    if ($is_metaconsole === true) {
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+    } else {
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    }
 }
 
 
@@ -906,7 +910,11 @@ function agents_process_manage_config($source_id_agent, $destiny_id_agents, $cop
                 [
                     'nombre'   => $module['nombre'],
                     'disabled' => false,
-                ]
+                ],
+                true,
+                true,
+                false,
+                false
             );
 
             // Keep all modules repeated
@@ -1439,7 +1447,8 @@ function agents_get_modules(
     $filter=false,
     $indexed=true,
     $get_not_init_modules=true,
-    $force_tags=false
+    $force_tags=false,
+    $filter_include_sql=true
 ) {
     global $config;
 
@@ -1538,18 +1547,18 @@ function agents_get_modules(
                     }
                 }
 
-                if ($value[0] == '%') {
+                if ($value[0] == '%' && $filter_include_sql === true) {
                     array_push(
                         $fields,
                         $field.' LIKE "'.$value.'"'
                     );
-                } else if ($operatorDistin) {
+                } else if ($operatorDistin && $filter_include_sql === true) {
                     array_push($fields, $field.' <> '.substr($value, 2));
-                } else if (substr($value, -1) == '%') {
+                } else if (substr($value, -1) == '%' && $filter_include_sql === true) {
                     array_push($fields, $field.' LIKE "'.$value.'"');
                 } else if (strncmp($value, '666=666', 7) == 0) {
                     array_push($fields, ' '.$value);
-                } else if (preg_match('/\bin\b/i', $field)) {
+                } else if (preg_match('/\bin\b/i', $field) && $filter_include_sql === true) {
                     array_push($fields, $field.' '.$value);
                 } else {
                     array_push($fields, 'tagente_modulo.'.$field.' = "'.$value.'"');
@@ -3872,7 +3881,7 @@ function agents_get_status_animation($up=true)
     $red = 'images/heartbeat_green.gif';
     $green = 'images/heartbeat_green.gif';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $red = 'images/heartbeat_green_black.gif';
         $green = 'images/heartbeat_green_black.gif';
     }

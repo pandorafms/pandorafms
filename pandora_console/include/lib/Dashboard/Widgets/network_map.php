@@ -253,6 +253,14 @@ class NetworkMapWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        $inputs[] = [
+            'label' => \ui_print_info_message(
+                __('It is recommended to have only one such widget in the control panel.'),
+                '',
+                true
+            ),
+        ];
+
         // Default values.
         if (isset($values['xOffset']) === false) {
             $values['xOffset'] = 0;

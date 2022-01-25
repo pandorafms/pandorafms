@@ -977,10 +977,10 @@ function oracle_recode_query($sql, $values, $join='AND', $return=true)
  *
  * @return the first value of the first row of a table result from query.
  */
-function oracle_db_get_value_sql($sql, $dbconnection=false)
+function oracle_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql = 'SELECT * FROM ('.$sql.') WHERE rownum < 2';
-    $result = oracle_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = oracle_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;

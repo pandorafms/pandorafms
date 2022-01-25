@@ -474,7 +474,7 @@ class HTML
     ) {
         global $config;
         $text_color = '';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $text_color = 'style="color: white"';
         }
 

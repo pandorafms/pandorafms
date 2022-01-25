@@ -97,7 +97,7 @@ $visualConsoleData = $visualConsole->toArray();
 $visualConsoleName = $visualConsoleData['name'];
 
 $bg_color = '';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $bg_color = 'style="background-color: #222"';
 }
 

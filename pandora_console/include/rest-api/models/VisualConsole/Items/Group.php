@@ -346,9 +346,7 @@ final class Group extends Item
 
                 $countStatus = \db_get_row_sql($sql);
 
-                if ($countStatus['fired'] > 0) {
-                    $status = AGENT_STATUS_ALERT_FIRED;
-                } else if ($countStatus['critical'] > 0) {
+                if ($countStatus['critical'] > 0) {
                     $status = AGENT_STATUS_CRITICAL;
                 } else if ($countStatus['warning'] > 0) {
                     $status = AGENT_STATUS_WARNING;
@@ -359,7 +357,7 @@ final class Group extends Item
                 }
             } else {
                 // Get the status img src.
-                $status = \groups_get_status($groupId);
+                $status = \groups_get_status($groupId, true);
             }
 
             $imagePath = \visual_map_get_image_status_element($data, $status);

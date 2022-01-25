@@ -9925,12 +9925,19 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
 
     if (isset($other['data'][2]) && $other['data'][2] != '') {
         if ($use_agent_name === false) {
-            $idAgents = agents_get_agent_id_by_alias($other['data'][2]);
+            $idAgents = agents_get_agent_id_by_alias($other['data'][2], is_metaconsole());
 
             if (!empty($idAgents)) {
                 $idAgent = [];
+
+                $id_agent_field = 'id_agente';
+
+                if (is_metaconsole() === true) {
+                    $id_agent_field = 'id_tagente';
+                }
+
                 foreach ($idAgents as $key => $value) {
-                    $idAgent[] .= $value['id_agente'];
+                    $idAgent[] .= $value[$id_agent_field];
                 }
 
                 $filter[] = 'id_agente IN ('.implode(',', $idAgent).')';
@@ -9983,6 +9990,10 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
                 }
             }
         }
+    }
+
+    if (isset($idTemplate) && $idTemplate != '') {
+        $filter['id_alert_template'] = $idTemplate;
     }
 
     if (isset($other['data'][5]) && $other['data'][5] != '') {
@@ -11434,7 +11445,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     global $config;
 
     $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $table_events = 'tmetaconsole_event';
     }
 
@@ -11451,10 +11462,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $event_view_hr = 0;
     $tag = '';
     $group_rep = 0;
-    $offset = 0;
-    $pagination = 40;
     $utimestamp_upper = 0;
     $utimestamp_bottom = 0;
+    $id_alert_template = -1;
 
     $use_agent_name = ($other['data'][16] === '1') ? true : false;
 
@@ -11469,7 +11479,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     }
 
     if (isset($filter['id_agentmodule'])) {
-        $id_agentmodule = $filter['id_agentmodule'];
+        $id_agentmodule = $filter['id_agentmodule'][0];
     }
 
     if (isset($filter['id_alert_am'])) {
@@ -11488,12 +11498,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $search = $filter['evento'];
     }
 
-    if (isset($filter['limit'])) {
-        $pagination = $filter['limit'];
-    }
-
-    if (isset($filter['offset'])) {
-        $offset = $filter['offset'];
+    if (isset($filter['id_alert_template'])) {
+        $id_alert_template = $filter['id_alert_template'];
     }
 
     $id_group = (int) $filter['id_group'];
@@ -11611,10 +11617,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $sql_post .= ' AND id_agentmodule = '.$id_agentmodule;
     }
 
-    if ($id_alert_am != -1) {
-        $sql_post .= ' AND id_alert_am = '.$id_alert_am;
-    }
-
     if ($id_event != -1) {
         $sql_post .= ' AND id_evento = '.$id_event;
     }
@@ -11647,6 +11649,21 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $sql_post .= ' AND ('.$filter['sql'].') ';
     }
 
+    // Inject agent ID filter (it is set as the first numeric key in filter array).
+    if (isset($filter[0]) === true) {
+        $sql_post .= ' AND '.$filter[0];
+    }
+
+    if ($id_alert_template !== -1) {
+        $sql_post .= ' AND talert_template_modules.id_alert_template = '.$id_alert_template;
+    }
+
+    $alert_join = '';
+
+    if ($id_alert_template !== -1) {
+        $alert_join = ' INNER JOIN talert_template_modules ON '.$table_events.'.id_alert_am=talert_template_modules.id';
+    }
+
     if ($group_rep == 0) {
         switch ($config['dbtype']) {
             case 'mysql':
@@ -11661,7 +11678,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                         ORDER BY criticity DESC
                         LIMIT 1';
                 } else {
-                    if (defined('METACONSOLE')) {
+                    if (is_metaconsole() === true) {
                         $sql = 'SELECT *,
                             (SELECT t2.nombre
                                 FROM tgrupo t2
@@ -11669,10 +11686,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                             (SELECT t2.icon
                                 FROM tgrupo t2
                                 WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_icon
-                            FROM '.$table_events.'
+                            FROM '.$table_events.$alert_join.'
                             WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC
-                            LIMIT '.$offset.','.$pagination;
+                            ORDER BY utimestamp DESC';
                     } else {
                         $sql = 'SELECT *,
                             (SELECT t1.alias
@@ -11690,10 +11706,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                                     SELECT tagente_modulo.id_modulo
                                     FROM tagente_modulo
                                     WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                            FROM '.$table_events.'
+                            FROM '.$table_events.$alert_join.'
                             WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC
-                            LIMIT '.$offset.','.$pagination;
+                            ORDER BY utimestamp DESC';
                     }
                 }
             break;
@@ -11718,15 +11733,12 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                             WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
                     FROM tevento
                     WHERE 1=1 '.$sql_post.'
-                    ORDER BY utimestamp DESC
-                    LIMIT '.$pagination.' OFFSET '.$offset;
+                    ORDER BY utimestamp DESC';
             break;
 
             case 'oracle':
                 // TODO TOTAL
                 $set = [];
-                $set['limit'] = $pagination;
-                $set['offset'] = $offset;
 
                 $sql = 'SELECT *,
                     (SELECT t1.alias
@@ -11764,8 +11776,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                     FROM ".$table_events.'
                     WHERE 1=1 '.$sql_post.'
                     GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC
-                    LIMIT '.$offset.','.$pagination;
+                    ORDER BY timestamp_rep DESC';
             break;
 
             case 'postgresql':
@@ -11776,14 +11787,11 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                     FROM ".$table_events.'
                     WHERE 1=1 '.$sql_post.'
                     GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC
-                    LIMIT '.$pagination.' OFFSET '.$offset;
+                    ORDER BY timestamp_rep DESC';
             break;
 
             case 'oracle':
                 $set = [];
-                $set['limit'] = $pagination;
-                $set['offset'] = $offset;
                 // TODO: Remove duplicate user comments
                 $sql = 'SELECT a.*, b.event_rep, b.timestamp_rep
                     FROM (SELECT *
@@ -11971,7 +11979,7 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
  * @param $returnType
  * @param $user_in_db
  */
-function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
+function api_get_events($node_id, $trash2, $other, $returnType, $user_in_db=null)
 {
     if ($user_in_db !== null) {
         $correct = get_events_with_user(
@@ -12016,6 +12024,10 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
     }
 
     if (is_metaconsole()) {
+        if ((int) $node_id !== 0) {
+            $filterString .= ' AND server_id = '.$node_id;
+        }
+
         $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
     } else {
         $dataRows = db_get_all_rows_filter('tevento', $filterString);
@@ -15159,12 +15171,24 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
             }
 
             if ($element['type'] == 'AA') {
+                $id_agent = db_get_value_sql('SELECT id_agent FROM tcluster WHERE id = '.$element['id_cluster']);
+
+                $module_exists_sql = sprintf(
+                    'SELECT id_agente_modulo FROM tagente_modulo tam INNER JOIN tcluster_agent tca WHERE tam.id_agente=tca.id_agent AND tca.id_cluster=%d AND tam.nombre="%s"',
+                    $element['id_cluster'],
+                    io_safe_input($element['name'])
+                );
+
+                $module_exists = db_process_sql($module_exists_sql);
+
+                if ($module_exists === false) {
+                    continue;
+                }
+
                 $tcluster_module = db_process_sql_insert('tcluster_item', ['name' => io_safe_input($element['name']), 'id_cluster' => $element['id_cluster'], 'critical_limit' => $element['critical_limit'], 'warning_limit' => $element['warning_limit']]);
 
-                $id_agent = db_process_sql('select id_agent from tcluster where id = '.$element['id_cluster']);
-
                 $id_parent_modulo = db_process_sql(
-                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "'.io_safe_input('Cluster status').'"'
+                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.' and nombre = "'.io_safe_input('Cluster status').'"'
                 );
 
                 $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
@@ -15179,7 +15203,7 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                     'nombre'            => io_safe_input($element['name']),
                     'id_modulo'         => 0,
                     'prediction_module' => 6,
-                    'id_agente'         => $id_agent[0]['id_agent'],
+                    'id_agente'         => $id_agent,
                     'parent_module_id'  => $id_parent_modulo[0]['id_agente_modulo'],
                     'custom_integer_1'  => $element['id_cluster'],
                     'custom_integer_2'  => $tcluster_module,
@@ -15203,15 +15227,27 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                     db_pandora_audit('Report management', 'Failed to assign AA item module to cluster '.$element['name']);
                 }
             } else if ($element['type'] == 'AP') {
-                $id_agent = db_process_sql('select id_agent from tcluster where id = '.$element['id_cluster']);
+                $id_agent = db_get_value_sql('SELECT id_agent FROM tcluster WHERE id = '.$element['id_cluster']);
 
-                $id_parent_modulo = db_process_sql(
-                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "'.io_safe_input('Cluster status').'"'
+                $module_exists_sql = sprintf(
+                    'SELECT id_agente_modulo FROM tagente_modulo tam INNER JOIN tcluster_agent tca WHERE tam.id_agente=tca.id_agent AND tca.id_cluster=%d AND tam.nombre="%s"',
+                    $element['id_cluster'],
+                    io_safe_input($element['name'])
                 );
 
-                $tcluster_balanced_module = db_process_sql_insert('tcluster_item', ['name' => $element['name'], 'id_cluster' => $element['id_cluster'], 'item_type' => 'AP', 'is_critical' => $element['is_critical']]);
+                $module_exists = db_process_sql($module_exists_sql);
 
-                $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
+                if ($module_exists === false) {
+                    continue;
+                }
+
+                $id_parent_modulo = db_process_sql(
+                    'select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.' and nombre = "'.io_safe_input('Cluster status').'"'
+                );
+
+                $tcluster_balanced_module = db_process_sql_insert('tcluster_item', ['name' => io_safe_input($element['name']), 'id_cluster' => $element['id_cluster'], 'item_type' => 'AP', 'is_critical' => $element['is_critical']]);
+
+                $get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval,ip_target,id_module_group from tagente_modulo where nombre = "'.io_safe_input($element['name']).'" limit 1');
 
                 $get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
                 $get_module_description_value = $get_module_type[0]['descripcion'];
@@ -15220,33 +15256,28 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 $get_module_interval_value = $get_module_type[0]['module_interval'];
                 $get_module_type_nombre = db_process_sql('select nombre from ttipo_modulo where id_tipo = '.$get_module_type_value);
                 $get_module_type_nombre_value = $get_module_type_nombre[0]['nombre'];
-
-                if (strpos($get_module_type_nombre_value, 'inc') != false) {
-                    $get_module_type_value_normal = 4;
-                } else if (strpos($get_module_type_nombre_value, 'proc') != false) {
-                    $get_module_type_value_normal = 2;
-                } else if (strpos($get_module_type_nombre_value, 'data') != false) {
-                    $get_module_type_value_normal = 1;
-                } else if (strpos($get_module_type_nombre_value, 'string') != false) {
-                    $get_module_type_value_normal = 3;
-                } else {
-                    $get_module_type_value_normal = 1;
-                }
+                $get_module_ip_target = $get_module_type[0]['ip_target'];
+                $get_module_id_module_group = $get_module_type[0]['id_module_group'];
+                $get_module_id_flag = $get_module_type[0]['flag'];
+                $get_module_dynamic_two_tailed = $get_module_type[0]['dynamic_two_tailed'];
 
                 $values_module = [
                     'nombre'            => $element['name'],
-                    'id_modulo'         => 5,
+                    'id_modulo'         => 0,
                     'prediction_module' => 7,
-                    'id_agente'         => $id_agent[0]['id_agent'],
+                    'id_agente'         => $id_agent,
                     'parent_module_id'  => $id_parent_modulo[0]['id_agente_modulo'],
                     'custom_integer_1'  => $element['id_cluster'],
                     'custom_integer_2'  => $tcluster_balanced_module,
-                    'id_tipo_modulo'    => $get_module_type_value_normal,
+                    'id_tipo_modulo'    => 1,
                     'descripcion'       => $get_module_description_value,
                     'min_warning'       => $get_module_warning_value,
                     'min_critical'      => $get_module_critical_value,
                     'tcp_port'          => $element['is_critical'],
                     'module_interval'   => $get_module_interval_value,
+                    'ip_target'         => $get_module_ip_target,
+                    'tcp_port'          => 1,
+                    'id_module_group'   => $get_module_id_module_group,
                 ];
 
                 $id_module = modules_create_agent_module($values_module['id_agente'], $values_module['nombre'], $values_module, true);
@@ -16559,7 +16590,11 @@ function api_get_user_info($thrash1, $thrash2, $other, $returnType)
 
     $other = json_decode(base64_decode($other['data']), true);
 
-    $sql = 'select * from tusuario where id_user = "'.$other[0]['id_user'].'" and password = "'.$other[0]['password'].'"';
+    $sql = sprintf(
+        'SELECT * FROM tusuario WHERE id_user = "%s" and password = "%s"',
+        mysql_escape_string_sql($other[0]['id_user']),
+        mysql_escape_string_sql($other[0]['password'])
+    );
 
     $user_info = db_get_all_rows_sql($sql);
 

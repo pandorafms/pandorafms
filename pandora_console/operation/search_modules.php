@@ -51,6 +51,17 @@ if (!$modules || !$searchModules) {
     $table->align[7] = 'left';
     $table->align[8] = 'left';
 
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
+    $table->headstyle[2] = 'text-align: left';
+    $table->headstyle[3] = 'text-align: left';
+    $table->headstyle[4] = 'text-align: left';
+    $table->headstyle[5] = 'text-align: left';
+    $table->headstyle[6] = 'text-align: left';
+    $table->headstyle[7] = 'text-align: left';
+    $table->headstyle[8] = 'text-align: left';
+
     $table->data = [];
 
     $id_type_web_content_string = db_get_value(

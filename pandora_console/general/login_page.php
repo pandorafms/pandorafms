@@ -330,8 +330,30 @@ if ($config['enterprise_installed']) {
         $reset_pass_link = 'reset_pass.php';
         // Reset password link.
         echo '<div class="reset_password">';
-        echo '<a href="index.php?reset=true&first=true">'.__('Forgot your password?');
-        echo '</a>';
+        if ((!$config['centralized_management'])) {
+            echo '<a href="index.php?reset=true&first=true">'.__('Forgot your password?');
+            echo '</a>';
+        } else {
+            echo '<a href="javascript:centralized_mode_reset_dialog();">'.__('Forgot your password?');
+            echo '</a>';
+
+            echo '<div id="centralized_mode_reset_dialog" title="'.__('Password reset').'" style="display:none">';
+                echo '<div class="content_alert">';
+                    echo '<div class="icon_message_alert">';
+                        echo html_print_image('images/icono_stop.png', true, ['alt' => __('Password reset'), 'border' => 0]);
+                    echo '</div>';
+                    echo '<div class="content_message_alert">';
+                        echo '<div class="text_message_alert">';
+                            echo '<p>'.__('This node is configured with centralized mode. Go to metaconsole to reset the password').'</p>';
+                        echo '</div>';
+                        echo '<div class="button_message_alert">';
+                            html_print_submit_button('Ok', 'centralized_mode_reset_button', false);
+                        echo '</div>';
+                    echo '</div>';
+                echo '</div>';
+            echo '</div>';
+        }
+
         echo '</div>';
     }
 }
@@ -825,6 +847,24 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $("#final_process_correct").dialog('close');
         });        
     });
+
+    function centralized_mode_reset_dialog() {
+        $("#centralized_mode_reset_dialog").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            height: 220,
+            width: 528,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        });
+
+        $("#submit-centralized_mode_reset_button").click (function () {
+            $("#centralized_mode_reset_dialog").dialog('close');
+        });
+    }
 
     /* ]]> */
 </script>

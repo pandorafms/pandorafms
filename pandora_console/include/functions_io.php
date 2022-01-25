@@ -557,11 +557,12 @@ function io_input_password($password)
  * Process the given password read from the Pandora FMS Database,
  * decrypting it if necessary.
  *
- * @param string password Password read from the DB.
+ * @param string $password  Password read from the DB.
+ * @param string $wrappedBy Wrap the password with the informed character.
  *
  * @return string The processed password.
  */
-function io_output_password($password)
+function io_output_password($password, $wrappedBy='')
 {
     global $config;
 
@@ -574,11 +575,14 @@ function io_output_password($password)
         ]
     );
 
-    if ($plaintext === ENTERPRISE_NOT_HOOK) {
-            return io_safe_output($password);
-    }
+    $output = ($plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
 
-    return io_safe_output($plaintext);
+    return sprintf(
+        '%s%s%s',
+        $wrappedBy,
+        io_safe_output($output),
+        $wrappedBy
+    );
 }
 
 

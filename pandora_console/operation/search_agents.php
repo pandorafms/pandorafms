@@ -36,7 +36,8 @@ if (!$agents || !$searchAgents) {
     $table->width = '98%';
     $table->class = 'databox';
 
-        $table->head = [];
+    $table->head = [];
+
     if ($only_count) {
         $table->head[0] = __('Agent');
         $table->head[1] = __('Description');
@@ -56,6 +57,18 @@ if (!$agents || !$searchAgents) {
     $table->head[7] = __('Alerts');
     $table->head[8] = __('Last contact').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastContactUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastContactDown]).'</a>';
     $table->head[9] = '';
+
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
+    $table->headstyle[2] = 'text-align: left';
+    $table->headstyle[3] = 'text-align: left';
+    $table->headstyle[4] = 'text-align: left';
+    $table->headstyle[5] = 'text-align: left';
+    $table->headstyle[6] = 'text-align: left';
+    $table->headstyle[7] = 'text-align: left';
+    $table->headstyle[8] = 'text-align: left';
+    $table->headstyle[9] = 'text-align: center';
 
     $table->align = [];
     $table->align[0] = 'left';

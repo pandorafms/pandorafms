@@ -414,21 +414,21 @@ function db_get_value_filter($field, $table, $filter, $where_join='AND', $search
  *
  * @return mixed the first value of the first row of a table result from query.
  */
-function db_get_value_sql($sql, $dbconnection=false)
+function db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_value_sql($sql, $dbconnection);
+        return mysql_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_value_sql($sql, $dbconnection);
+        return postgresql_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
         case 'oracle':
-        return oracle_db_get_value_sql($sql, $dbconnection);
+        return oracle_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
     }

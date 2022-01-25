@@ -318,7 +318,7 @@ class ServiceViewWidget extends Widget
 
             // Css Files.
             \ui_require_css_file('tree', 'include/styles/', true);
-            if ($config['style'] == 'pandora_black') {
+            if ($config['style'] == 'pandora_black' && !is_metaconsole()) {
                 \ui_require_css_file('pandora_black', 'include/styles/', true);
             }
 

@@ -454,20 +454,26 @@ if ($view_graph) {
                 data['threshold'] = 1;
             }
 
-            $.ajax({
-                type: "POST",
-                url: "ajax.php",
-                dataType: "html",
-                data: data,
-                success: function (data) {
-                    document.getElementById("div-container").innerHTML = "";
-                    $("#spinner_loading").hide();
-                    $("#div-container").append(data);
-                },
-                error: function (data) {
-                    console.error("Fatal error")
-                }
-            });
+            (function (stacked) {
+                $.ajax({
+                    type: "POST",
+                    url: "ajax.php",
+                    dataType: "html",
+                    data: data,
+                    success: function (data) {
+                        if (stacked === "<?php echo CUSTOM_GRAPH_VBARS; ?>") {
+                            document.getElementById("div-container").classList.add('w100p', 'height_600px');
+                        }
+
+                        document.getElementById("div-container").innerHTML = "";
+                        $("#spinner_loading").hide();
+                        $("#div-container").append(data);
+                    },
+                    error: function (data) {
+                        console.error("Fatal error")
+                    }
+                });
+            })(data['stacked']);
         });
 
 

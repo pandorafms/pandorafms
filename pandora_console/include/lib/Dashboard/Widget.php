@@ -512,7 +512,7 @@ class Widget
         if (empty($values['background']) === true) {
             $values['background'] = '#ffffff';
 
-            if ($config['style'] === 'pandora_black') {
+            if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
                 $values['background'] = '#222222';
             }
         }

@@ -30,6 +30,14 @@ if (!$users || !$searchUsers) {
     $table->align = [];
     $table->align[4] = 'center';
 
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
+    $table->headstyle[2] = 'text-align: left';
+    $table->headstyle[3] = 'text-align: left';
+    $table->headstyle[4] = 'text-align: center';
+    $table->headstyle[5] = 'text-align: left';
+
     $table->head = [];
     $table->head[0] = __('User ID').' '.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=id_user&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectUserIDUp]).'</a>'.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=id_user&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectUserIDDown]).'</a>';
     $table->head[1] = __('Name').' '.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp]).'</a>'.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown]).'</a>';
@@ -37,6 +45,8 @@ if (!$users || !$searchUsers) {
     $table->head[3] = __('Last contact').' '.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastContactUp]).'</a>'.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastContactDown]).'</a>';
     $table->head[4] = __('Profile').' '.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=profile&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectProfileUp]).'</a>'.'<a href="index.php?search_category=users&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=profile&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectProfileDown]).'</a>';
     $table->head[5] = __('Description');
+
+
 
     $table->data = [];
 

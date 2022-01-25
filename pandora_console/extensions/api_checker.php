@@ -202,9 +202,7 @@ function extension_api_checker()
     echo '</fieldset>';
     echo "<div class='right'>";
     echo '</div>';
-    echo '</form>';
 
-    echo "<form method='post'>";
     echo '<fieldset>';
     echo '<legend>'.__('Custom URL').'</legend>';
     html_print_table($table3);

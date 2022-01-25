@@ -776,6 +776,10 @@ select:-internal-list-box {
 .padding-bottom-4 {
   padding-bottom: 4em;
 }
+
+.padding-bottom-5px {
+  padding-bottom: 5px;
+}
 .padding-right-2 {
   padding-right: 2em;
 }
@@ -8433,6 +8437,16 @@ div.stat-win-spinner img {
   text-align: left;
   margin: 5px;
   font-size: 12px;
+}
+
+.stat_win_histogram {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 18%;
+}
+
+#stat-win-module-graph .stat_win_histogram div.nodata_container {
+  width: 100%;
 }
 
 /* For backups dt, can be useful for others */

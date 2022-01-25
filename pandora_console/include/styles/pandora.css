@@ -8435,6 +8435,16 @@ div.stat-win-spinner img {
   font-size: 12px;
 }
 
+.stat_win_histogram {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 18%;
+}
+
+#stat-win-module-graph .stat_win_histogram div.nodata_container {
+  width: 100%;
+}
+
 /* For backups dt, can be useful for others */
 #backups_list > thead > tr > th:last-child,
 #backups_list > tbody > tr > td:last-child {

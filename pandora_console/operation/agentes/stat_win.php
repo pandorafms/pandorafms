@@ -194,60 +194,7 @@ ui_print_message_dialog(
         $time_compare_separated = get_parameter('time_compare_separated', 0);
         $time_compare_overlapped = get_parameter('time_compare_overlapped', 0);
         $unknown_graph = get_parameter_checkbox('unknown_graph', 1);
-
-        $fullscale_sent = get_parameter('fullscale_sent', 0);
-        if (!$fullscale_sent) {
-            if (isset($config['full_scale_option']) === false
-                || $config['full_scale_option'] == 0
-            ) {
-                $fullscale = 0;
-            } else if ($config['full_scale_option'] == 1) {
-                $fullscale = 1;
-            } else if ($config['full_scale_option'] == 2) {
-                if ($graph_type == 'boolean') {
-                    $fullscale = 1;
-                } else {
-                    $fullscale = 0;
-                }
-            }
-        } else {
-            $fullscale = get_parameter('fullscale', 0);
-        }
-
-        $type_mode_graph = get_parameter_checkbox(
-            'type_mode_graph',
-            ($fullscale === 1) ? 0 : $config['type_mode_graph']
-        );
-
-        $time_compare = false;
-
-        if ($time_compare_separated) {
-            $time_compare = 'separated';
-        } else if ($time_compare_overlapped) {
-            $time_compare = 'overlapped';
-        }
-
-        if ($zoom > 1) {
-            $height = ($height * ($zoom / 2.1));
-            $width = ($width * ($zoom / 1.4));
-        }
-
-        // Build date.
-        $date = strtotime($start_date.' '.$start_time);
-        $now = time();
-
-        if ($date > $now) {
-            $date = $now;
-        }
-
-        $urlImage = ui_get_full_url(false, false, false, false);
-
-        $unit = db_get_value(
-            'unit',
-            'tagente_modulo',
-            'id_agente_modulo',
-            $id
-        );
+        $histogram = (bool) get_parameter('histogram', 0);
 
         // FORM TABLE.
         $table = html_get_predefined_table('transparent', 2);
@@ -258,161 +205,256 @@ ui_print_message_dialog(
         $table->style[2] = 'text-align:left;font-weight: bold;';
         $table->style[3] = 'text-align:left;';
         $table->class = 'table_modal_alternate';
-
         $table->data = [];
-        $table->data[0][0] = __('Refresh time');
-        $table->data[0][1] = html_print_extended_select_for_time(
-            'refresh',
-            $refresh,
-            '',
-            '',
-            0,
-            7,
-            true
-        );
 
-        $table->data[0][2] = __('Show events');
-        $disabled = false;
-        if (isset($config['event_replication']) === true) {
-            if ($config['event_replication']
-                && !$config['show_events_in_local']
-            ) {
-                $disabled = true;
+        $time_compare = false;
+
+        if ($time_compare_separated) {
+            $time_compare = 'separated';
+        } else if ($time_compare_overlapped) {
+            $time_compare = 'overlapped';
+        }
+
+        if ($histogram === false) {
+            $fullscale_sent = get_parameter('fullscale_sent', 0);
+            if (!$fullscale_sent) {
+                if (isset($config['full_scale_option']) === false
+                    || $config['full_scale_option'] == 0
+                ) {
+                    $fullscale = 0;
+                } else if ($config['full_scale_option'] == 1) {
+                    $fullscale = 1;
+                } else if ($config['full_scale_option'] == 2) {
+                    if ($graph_type == 'boolean') {
+                        $fullscale = 1;
+                    } else {
+                        $fullscale = 0;
+                    }
+                }
+            } else {
+                $fullscale = get_parameter('fullscale', 0);
             }
-        }
 
-        $table->data[0][3] = html_print_checkbox_switch(
-            'draw_events',
-            1,
-            (bool) $draw_events,
-            true,
-            $disabled
-        );
-        if ($disabled) {
-            $table->data[1] .= ui_print_help_tip(
-                __("'Show events' is disabled because this %s node is set to event replication.", get_product_name()),
-                true
+            $type_mode_graph = get_parameter_checkbox(
+                'type_mode_graph',
+                ($fullscale === 1) ? 0 : $config['type_mode_graph']
             );
-        }
 
-        $table->data[1][0] = __('Begin date');
-        $table->data[1][1] = html_print_input_text(
-            'start_date',
-            $start_date,
-            '',
-            10,
-            20,
-            true
-        );
+            if ($zoom > 1) {
+                $height = ($height * ($zoom / 2.1));
+                $width = ($width * ($zoom / 1.4));
+            }
 
-        $table->data[1][2] = __('Show alerts');
-        $table->data[1][3] = html_print_checkbox_switch(
-            'draw_alerts',
-            1,
-            (bool) $draw_alerts,
-            true
-        );
+            // Build date.
+            $date = strtotime($start_date.' '.$start_time);
+            $now = time();
 
-        $table->data[2][0] = __('Begin time');
-        $table->data[2][1] = html_print_input_text(
-            'start_time',
-            $start_time,
-            '',
-            10,
-            10,
-            true
-        );
+            if ($date > $now) {
+                $date = $now;
+            }
 
-        $table->data[2][2] = __('Show unknown graph');
-        $table->data[2][3] = html_print_checkbox_switch(
-            'unknown_graph',
-            1,
-            (bool) $unknown_graph,
-            true
-        );
+            $urlImage = ui_get_full_url(false, false, false, false);
 
-        $table->data[3][0] = __('Time range');
-        $table->data[3][1] = html_print_extended_select_for_time(
-            'period',
-            $period,
-            '',
-            '',
-            0,
-            7,
-            true
-        );
+            $unit = db_get_value(
+                'unit',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $id
+            );
 
-        $table->data[3][2] = '';
-        $table->data[3][3] = '';
-
-        if (!modules_is_boolean($id)) {
-            $table->data[4][0] = __('Zoom');
-            $options = [];
-            $options[$zoom] = 'x'.$zoom;
-            $options[1] = 'x1';
-            $options[2] = 'x2';
-            $options[3] = 'x3';
-            $options[4] = 'x4';
-            $options[5] = 'x5';
-            $table->data[4][1] = html_print_select(
-                $options,
-                'zoom',
-                $zoom,
+            $table->data[0][0] = __('Refresh time');
+            $table->data[0][1] = html_print_extended_select_for_time(
+                'refresh',
+                $refresh,
                 '',
                 '',
                 0,
+                7,
+                true
+            );
+
+            $table->data[0][2] = __('Show events');
+            $disabled = false;
+            if (isset($config['event_replication']) === true) {
+                if ($config['event_replication']
+                    && !$config['show_events_in_local']
+                ) {
+                    $disabled = true;
+                }
+            }
+
+            $table->data[0][3] = html_print_checkbox_switch(
+                'draw_events',
+                1,
+                (bool) $draw_events,
                 true,
-                false,
+                $disabled
+            );
+            if ($disabled) {
+                $table->data[1] .= ui_print_help_tip(
+                    __("'Show events' is disabled because this %s node is set to event replication.", get_product_name()),
+                    true
+                );
+            }
+
+            $table->data[1][0] = __('Begin date');
+            $table->data[1][1] = html_print_input_text(
+                'start_date',
+                $start_date,
+                '',
+                10,
+                20,
+                true
+            );
+
+            $table->data[1][2] = __('Show alerts');
+            $table->data[1][3] = html_print_checkbox_switch(
+                'draw_alerts',
+                1,
+                (bool) $draw_alerts,
+                true
+            );
+
+            $table->data[2][0] = __('Begin time');
+            $table->data[2][1] = html_print_input_text(
+                'start_time',
+                $start_time,
+                '',
+                10,
+                10,
+                true
+            );
+
+            $table->data[2][2] = __('Show unknown graph');
+            $table->data[2][3] = html_print_checkbox_switch(
+                'unknown_graph',
+                1,
+                (bool) $unknown_graph,
+                true
+            );
+
+            $table->data[3][0] = __('Time range');
+            $table->data[3][1] = html_print_extended_select_for_time(
+                'period',
+                $period,
+                '',
+                '',
+                0,
+                7,
+                true
+            );
+
+            $table->data[3][2] = '';
+            $table->data[3][3] = '';
+
+            if (!modules_is_boolean($id)) {
+                $table->data[4][0] = __('Zoom');
+                $options = [];
+                $options[$zoom] = 'x'.$zoom;
+                $options[1] = 'x1';
+                $options[2] = 'x2';
+                $options[3] = 'x3';
+                $options[4] = 'x4';
+                $options[5] = 'x5';
+                $table->data[4][1] = html_print_select(
+                    $options,
+                    'zoom',
+                    $zoom,
+                    '',
+                    '',
+                    0,
+                    true,
+                    false,
+                    false
+                );
+
+                $table->data[4][2] = __('Show percentil');
+                $table->data[4][3] = html_print_checkbox_switch(
+                    'show_percentil',
+                    1,
+                    (bool) $show_percentil,
+                    true
+                );
+            }
+
+            $table->data[5][0] = __('Time compare (Overlapped)');
+            $table->data[5][1] = html_print_checkbox_switch(
+                'time_compare_overlapped',
+                1,
+                (bool) $time_compare_overlapped,
+                true
+            );
+
+            $table->data[5][2] = __('Time compare (Separated)');
+            $table->data[5][3] = html_print_checkbox_switch(
+                'time_compare_separated',
+                1,
+                (bool) $time_compare_separated,
+                true
+            );
+
+
+            $table->data[6][0] = __('Show AVG/MAX/MIN data series in graph');
+            $table->data[6][1] = html_print_checkbox_switch(
+                'type_mode_graph',
+                1,
+                (bool) $type_mode_graph,
+                true,
                 false
             );
 
-            $table->data[4][2] = __('Show percentil');
-            $table->data[4][3] = html_print_checkbox_switch(
-                'show_percentil',
+            $table->data[6][2] = __('Show full scale graph (TIP)');
+            $table->data[6][2] .= ui_print_help_tip(
+                __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
+                true
+            );
+            $table->data[6][3] = html_print_checkbox_switch(
+                'fullscale',
                 1,
-                (bool) $show_percentil,
+                (bool) $fullscale,
+                true,
+                false
+            );
+        } else {
+            $table->data[0][0] = __('Begin date');
+            $table->data[0][1] = html_print_input_text(
+                'start_date',
+                $start_date,
+                '',
+                10,
+                20,
+                true
+            );
+
+            $table->data[0][2] = __('Begin time');
+            $table->data[0][3] = html_print_input_text(
+                'start_time',
+                $start_time,
+                '',
+                10,
+                10,
+                true
+            );
+
+            $table->data[1][0] = __('Time range');
+            $table->data[1][1] = html_print_extended_select_for_time(
+                'period',
+                $period,
+                '',
+                '',
+                0,
+                7,
+                true
+            );
+
+            $table->data[1][2] = __('Time compare (Separated)');
+            $table->data[1][3] = html_print_checkbox_switch(
+                'time_compare_separated',
+                1,
+                (bool) $time_compare_separated,
                 true
             );
         }
-
-        $table->data[5][0] = __('Time compare (Overlapped)');
-        $table->data[5][1] = html_print_checkbox_switch(
-            'time_compare_overlapped',
-            1,
-            (bool) $time_compare_overlapped,
-            true
-        );
-
-        $table->data[5][2] = __('Time compare (Separated)');
-        $table->data[5][3] = html_print_checkbox_switch(
-            'time_compare_separated',
-            1,
-            (bool) $time_compare_separated,
-            true
-        );
-
-
-        $table->data[6][0] = __('Show AVG/MAX/MIN data series in graph');
-        $table->data[6][1] = html_print_checkbox_switch(
-            'type_mode_graph',
-            1,
-            (bool) $type_mode_graph,
-            true,
-            false
-        );
-
-        $table->data[6][2] = __('Show full scale graph (TIP)');
-        $table->data[6][2] .= ui_print_help_tip(
-            __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
-            true
-        );
-        $table->data[6][3] = html_print_checkbox_switch(
-            'fullscale',
-            1,
-            (bool) $fullscale,
-            true,
-            false
-        );
 
         $form_table = html_print_table($table, true);
         $form_table .= '<div class="w100p right mrgn_top_15px right_align">';
@@ -433,6 +475,8 @@ ui_print_message_dialog(
         if (empty($server_id) === false) {
             $menu_form .= html_print_input_hidden('server', $server_id, true);
         }
+
+        $menu_form .= html_print_input_hidden('histogram', $histogram, true);
 
         if (isset($_GET['type']) === true) {
             $type = get_parameter_get('type');
@@ -460,7 +504,13 @@ ui_print_message_dialog(
         );
         $menu_form .= '</span>';
         $menu_form .= '</div>';
-        $menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed invisible">';
+
+        $class = 'module_graph_menu_content';
+        if ($histogram === false) {
+            $class .= ' module_graph_menu_content_closed invisible';
+        }
+
+        $menu_form .= '<div class="'.$class.'">';
         $menu_form .= $form_table;
         $menu_form .= '</div>';
         $menu_form .= '</div>';
@@ -497,6 +547,8 @@ ui_print_message_dialog(
             'zoom'            => $zoom,
             'height'          => 300,
             'type_mode_graph' => $type_mode_graph,
+            'histogram'       => $histogram,
+            'begin_date'      => strtotime($start_date.' '.$start_time),
         ];
 
         // Graph.

@@ -990,6 +990,35 @@ var TreeController = {
                 typeof element.showGraphs != "undefined" &&
                 element.showGraphs != 0
               ) {
+                // Graph histogram pop-up
+                if (typeof element.histogramGraph != "undefined") {
+                  var graphImageHistogram = $(
+                    '<img src="' +
+                      (controller.baseURL.length > 0
+                        ? controller.baseURL
+                        : "") +
+                      'images/histograma.png" /> '
+                  );
+
+                  graphImageHistogram
+                    .addClass("module-graph")
+                    .click(function(e) {
+                      e.stopPropagation();
+                      try {
+                        winopeng_var(
+                          element.histogramGraph.url,
+                          element.histogramGraph.handle,
+                          800,
+                          480
+                        );
+                      } catch (error) {
+                        // console.log(error);
+                      }
+                    });
+
+                  $content.append(graphImageHistogram);
+                }
+
                 // Graph pop-up
                 if (typeof element.moduleGraph != "undefined") {
                   if (element.statusImageHTML.indexOf("data:image") != -1) {

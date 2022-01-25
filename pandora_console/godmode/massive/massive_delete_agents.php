@@ -77,6 +77,11 @@ function process_manage_delete($id_agents)
                 $success = $agent->delete();
 
                 $node->disconnect();
+
+                $success = agent_delete_from_metaconsole(
+                    $array_id[1],
+                    $array_id[0]
+                );
             } catch (\Exception $e) {
                 // Unexistent agent.
                 $success = false;

@@ -269,7 +269,7 @@ if ($pure === false) {
         $class_basic_chart = 'basic_chart_min link-create-item';
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $class_camera = 'camera_min_white link-create-item';
             $class_percentile = 'percentile_item_min_white link-create-item';
             $class_module_graph = 'graph_min_white link-create-item';
@@ -417,7 +417,7 @@ if ($pure === false) {
 }
 
 $bg_color = '';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $bg_color = 'style="background-color: #222"';
 }
 

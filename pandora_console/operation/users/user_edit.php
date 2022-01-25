@@ -348,7 +348,7 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
 $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
-
+$skin = '';
 if (!$meta) {
     $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
     $values = [
@@ -394,10 +394,7 @@ if (!$meta) {
     $home_screen .= '</div>';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
-
-
     // User only can change skins if has more than one group.
-    $skin = '';
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
             $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
@@ -406,7 +403,16 @@ if (!$meta) {
     }
 } else {
     $home_screen = '';
-    $skin = '';
+    // User only can change skins if has more than one group.
+    if (function_exists('skins_print_select')) {
+        if (count($usr_groups) > 1) {
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').ui_print_help_tip(
+                __('This change will only apply to nodes'),
+                true
+            ).'</p>';
+            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+        }
+    }
 }
 
 $timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';

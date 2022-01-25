@@ -122,7 +122,7 @@ function html_do_report_info($report)
 {
     global $config;
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $background_color = '#222';
     } else {
         $background_color = '#f5f5f5';

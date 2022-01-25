@@ -116,7 +116,7 @@ $table_remote->data['ehorus_test'] = $row;
 // Print.
 echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     html_print_image('include/ehorus/images/ehorus-logo.png');
 } else {
     html_print_image('include/ehorus/images/ehorus-logo-grey.png');

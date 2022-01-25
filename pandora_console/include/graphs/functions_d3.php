@@ -202,7 +202,7 @@ function d3_bullet_chart(
     $font = array_shift(explode('.', array_pop(explode('/', $font))));
 
     $invert_color = '';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $invert_color = 'filter: invert(100%);';
     }
 

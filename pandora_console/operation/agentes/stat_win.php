@@ -67,7 +67,7 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
 global $config;
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
 }
 

@@ -1203,7 +1203,7 @@ function ui_format_alert_row(
 
     $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
 
-    if (empty($actions) === false) {
+    if (empty($actions) === false || $actionDefault != '') {
         $actionText = '<div><ul class="action_list">';
         foreach ($actions as $action) {
             $actionText .= '<div class="mrgn_btn_5px" ><span class="action_name"><li>'.$action['name'];
@@ -1215,9 +1215,9 @@ function ui_format_alert_row(
         }
 
         $actionText .= '</ul></div>';
-    } else {
+
         if ($actionDefault != '') {
-            $actionText = db_get_sql(
+            $actionText .= db_get_sql(
                 sprintf(
                     'SELECT name FROM talert_actions WHERE id = %d',
                     $actionDefault

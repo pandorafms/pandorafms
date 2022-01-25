@@ -8473,7 +8473,7 @@ div#err_msg_centralised {
 #select_multiple_modules_filtered > div {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   margin: 5px;
   flex-wrap: wrap;
@@ -8499,4 +8499,8 @@ div#err_msg_centralised {
 
 #select_multiple_modules_filtered > div > div > .select2 {
   min-width: 250px !important;
+}
+
+#select_multiple_modules_filtered > div > div > select {
+  max-width: 250px !important;
 }

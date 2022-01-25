@@ -333,10 +333,10 @@ echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters
 echo '<tr>';
 echo '<td class="w50p" id="select_multiple_modules_filtered">'.html_print_input(
     [
-        'type'   => 'select_multiple_modules_filtered',
-        'uniqId' => 'modules',
-        'class'  => 'flex flex-row',
-
+        'type'      => 'select_multiple_modules_filtered',
+        'uniqId'    => 'modules',
+        'class'     => 'flex flex-row',
+        'searchBar' => true,
     ]
 ).'</td>';
 echo '</tr><tr>';

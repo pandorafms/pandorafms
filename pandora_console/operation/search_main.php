@@ -32,21 +32,21 @@ $table->id = 'summary';
 $table->width = '98%';
 
 $table->style = [];
-$table->style[0] = 'font-weight: bold; text-align: center;';
-$table->style[1] = 'font-weight: bold; text-align: center;';
-$table->style[2] = 'font-weight: bold; text-align: center;';
-$table->style[3] = 'font-weight: bold; text-align: center;';
-$table->style[4] = 'font-weight: bold; text-align: center;';
-$table->style[5] = 'font-weight: bold; text-align: center;';
-$table->style[6] = 'font-weight: bold; text-align: center;';
-$table->style[7] = 'font-weight: bold; text-align: center;';
-$table->style[8] = 'font-weight: bold; text-align: center;';
-$table->style[9] = 'font-weight: bold; text-align: center;';
-$table->style[10] = 'font-weight: bold; text-align: center;';
-$table->style[11] = 'font-weight: bold; text-align: center;';
-$table->style[13] = 'font-weight: bold; text-align: center;';
-$table->style[14] = 'font-weight: bold; text-align: center;';
-$table->style[15] = 'font-weight: bold; text-align: center;';
+$table->style[0] = 'font-weight: bold; text-align: left;';
+$table->style[1] = 'font-weight: bold; text-align: left;';
+$table->style[2] = 'font-weight: bold; text-align: left;';
+$table->style[3] = 'font-weight: bold; text-align: left;';
+$table->style[4] = 'font-weight: bold; text-align: left;';
+$table->style[5] = 'font-weight: bold; text-align: left;';
+$table->style[6] = 'font-weight: bold; text-align: left;';
+$table->style[7] = 'font-weight: bold; text-align: left;';
+$table->style[8] = 'font-weight: bold; text-align: left;';
+$table->style[9] = 'font-weight: bold; text-align: left;';
+$table->style[10] = 'font-weight: bold; text-align: left;';
+$table->style[11] = 'font-weight: bold; text-align: left;';
+$table->style[13] = 'font-weight: bold; text-align: left;';
+$table->style[14] = 'font-weight: bold; text-align: left;';
+$table->style[15] = 'font-weight: bold; text-align: left;';
 
 
 

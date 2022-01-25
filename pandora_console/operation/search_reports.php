@@ -44,6 +44,8 @@ if ($reports === false || !$searchReports) {
     $table->head[3] = __('XML');
     $table->size[0] = '50%';
     $table->size[1] = '20%';
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
     $table->size[2] = '2%';
     $table->headstyle[2] = 'min-width: 35px;text-align: left;';
     $table->size[3] = '2%';

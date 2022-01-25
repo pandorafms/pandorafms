@@ -215,7 +215,7 @@ $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $row = [];
 $row[] = __('Search group');
-$row[] = html_print_input_text('search_group', $search_group, '', is_metaconsole() ? 50 : 25, 30, true);
+$row[] = html_print_input_text('search_group', $search_group, '', 25, 30, true);
 
 if (is_metaconsole()) {
     $row[] = __('Show not init modules');
@@ -228,10 +228,15 @@ $table->data[] = $row;
 
 $row = [];
 $row[] = __('Search agent');
-$row[] = html_print_input_text('search_agent', $search_agent, '', is_metaconsole() ? 50 : 25, 30, true);
+$row[] = html_print_input_text('search_agent', $search_agent, '', 25, 30, true);
 
 $row[] = __('Show not init agents');
 $row[] = html_print_checkbox('show_not_init_agents', $show_not_init_agents, true, true);
+
+if (is_metaconsole() === true) {
+    $table->data[] = $row;
+    $row = [];
+}
 
 $row[] = __('Show full hirearchy');
 $row[] = html_print_checkbox('serach_hirearchy', $serach_hirearchy, false, true);
@@ -241,8 +246,12 @@ $row[] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '',
 $row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
 
 // Button
+if (is_metaconsole() === true) {
+    $table->data[] = $row;
+    $row = [];
+}
+
 $row[] = html_print_submit_button(__('Filter'), 'uptbutton', false, 'class="sub search"', true);
-$table->rowspan[][(count($row) - 1)] = 2;
 
 $table->data[] = $row;
 

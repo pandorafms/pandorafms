@@ -3231,9 +3231,10 @@ function modules_get_first_date($id_agent_module, $datelimit=0)
 {
     global $config;
 
-    // check datatype string or normal
+    // Check datatype string or normal.
     $table = 'tagente_datos';
-    $module_type_str = modules_get_agentmodule_type($id_agent_module);
+    $module_type = modules_get_agentmodule_type($id_agent_module);
+    $module_type_str = modules_get_type_name($module_type);
     if (strstr($module_type_str, 'string') !== false) {
         $table = 'tagente_datos_string';
     }
@@ -3555,7 +3556,7 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 }
 
 
-function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true)
+function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true, $useName=false)
 {
     if ((bool) is_metaconsole() === true) {
         if ($select_mode === true) {
@@ -3675,8 +3676,14 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
 
         $modules = array_reduce(
             $modules,
-            function ($carry, $item) {
-                $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
+            function ($carry, $item) use ($useName) {
+                // Only works in select mode.
+                if ($useName === true) {
+                    $carry[io_safe_input($item['nombre'])] = $item['nombre'];
+                } else {
+                    $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
+                }
+
                 return $carry;
             },
             []

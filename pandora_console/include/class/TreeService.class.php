@@ -430,6 +430,7 @@ class TreeService extends Tree
                         $tmp['searchChildren'] = 1;
                     } else {
                         $tmp['searchChildren'] = 0;
+                        $tmp['noAcl'] = 1;
                     }
 
                     $tmp['showEventsBtn'] = 1;

@@ -1183,24 +1183,26 @@ var TreeController = {
             disabled == false
           ) {
             if (element.type == "agent" || element.type == "module") {
-              $content
-                .click(function(e) {
-                  _getTreeDetailData(
-                    element.type,
-                    element.id,
-                    element.serverID,
-                    function(error, data) {
-                      if (error) {
-                        // console.error(error);
-                      } else {
-                        controller.detailRecipient
-                          .render(element.name, data)
-                          .open();
+              if (typeof element.noAcl === "undefined") {
+                $content
+                  .click(function(e) {
+                    _getTreeDetailData(
+                      element.type,
+                      element.id,
+                      element.serverID,
+                      function(error, data) {
+                        if (error) {
+                          // console.error(error);
+                        } else {
+                          controller.detailRecipient
+                            .render(element.name, data)
+                            .open();
+                        }
                       }
-                    }
-                  );
-                })
-                .css("cursor", "pointer");
+                    );
+                  })
+                  .css("cursor", "pointer");
+              }
             }
           }
 

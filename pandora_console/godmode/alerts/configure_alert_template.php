@@ -1618,9 +1618,22 @@ if ($step == 2) {
       },
       eventClick: function(info) {
         console.log('event click');
-        console.log(info);
+        //console.log(calendar);
+        //console.log(calendar.getDate());
+        //console.log(calendar.getEvents());
 
-        console.log(info.view.getCurrentData());
+        var calendar_date_from = new Date(calendar.view.activeStart);
+        var calendar_date_to = new Date(calendar.view.activeEnd);
+        var calendar_day_from = calendar_date_from.getDate();
+        var calendar_day_to = calendar_date_to.getDate();
+
+        var calendar_days = [];
+        for (var index = calendar_day_from; index < calendar_day_to; index++) {
+            calendar_days[index] = index;
+        }
+
+        console.log(calendar_days);
+
         confirmDialog({
             title: 'Eventoooooo',
             message: function () {
@@ -1662,11 +1675,17 @@ if ($step == 2) {
                 return "<div id ='" + id + "'>" + loading + "</div>";
             },
             onAccept: function() {
-                //info.el.remove();
+                var replace_day_from = $('#day_from').val();
+                var replace_day_to = $('#day_to').val();
+                var replace_time_from = $('#text-time_from').val();
+                var replace_time_to = $('#text-time_to').val();
 
-                console.log(calendar);
-                console.log(calendar.view());
-                console.log(calendar.getEvents());
+                console.log(replace_day_from);
+                console.log(replace_day_to);
+                console.log(replace_time_from);
+                console.log(replace_time_to);
+
+                //info.el.remove();
                 console.log(info.event);
                 //info.event.setDates('2022-01-24T00:00:00','2022-01-24T23:59:59')
             }

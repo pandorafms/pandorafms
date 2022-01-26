@@ -453,7 +453,8 @@ class CredentialStore extends Wizard
                     $item['extra_2'] = io_output_password($item['extra_2']);
                     $carry[$item['identifier']] = $item['identifier'];
                     return $carry;
-                }
+                },
+                []
             );
 
             return $return;

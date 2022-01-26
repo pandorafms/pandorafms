@@ -25,6 +25,7 @@ $enable_alert = (bool) get_parameter('enable_alert');
 $get_actions_module = (bool) get_parameter('get_actions_module');
 $show_update_action_menu = (bool) get_parameter('show_update_action_menu');
 $get_agent_alerts_agent_view = (bool) get_parameter('get_agent_alerts_agent_view');
+$resize_event_week = (bool) get_parameter('resize_event_week');
 
 if ($get_agent_alerts_simple) {
     $id_agent = (int) get_parameter('id_agent');
@@ -558,6 +559,73 @@ if ($show_update_action_menu) {
     );
     $data .= '</form>';
     echo $data;
+    return;
+}
+
+if ($resize_event_week === true) {
+    // Date.
+    $day_from = get_parameter('day_from', 0);
+    $day_to = get_parameter('day_to', 0);
+
+    // Time.
+    $time_from = get_parameter('time_from', '');
+    $time_to = get_parameter('time_to', '');
+
+    hd($day_from, true);
+    hd($day_to, true);
+
+    $days = [
+        __('Sunday'),
+        __('Monday'),
+        __('Tuesday'),
+        __('Wednesday'),
+        __('Thursday'),
+        __('Friday'),
+        __('Saturday'),
+    ];
+
+    $table = new StdClass();
+    $table->class = 'databox filters';
+    $table->width = '100%';
+    $table->data = [];
+    $table->data[0][0] = __('From:');
+    $table->data[0][1] = html_print_select(
+        $days,
+        'day_from',
+        $day_from,
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[0][2] = html_print_input_text(
+        'time_from',
+        $time_from,
+        '',
+        9,
+        9,
+        true
+    );
+    $table->data[1][0] = __('To:');
+    $table->data[1][1] = html_print_select(
+        $days,
+        'day_to',
+        $day_to,
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[1][2] = html_print_input_text(
+        'time_to',
+        $time_to,
+        '',
+        9,
+        9,
+        true
+    );
+
+    echo html_print_table($table, true);
     return;
 }
 

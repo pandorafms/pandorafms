@@ -1282,6 +1282,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ui_require_css_file('main.min', 'include/javascript/fullcalendar/');
 ui_require_javascript_file('main.min', 'include/javascript/fullcalendar/');
+
 ?>
 
 <script type="text/javascript">
@@ -1548,6 +1549,33 @@ if ($step == 2) {
         }
     });
 
+    /*
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('/');
+    }*/
+
+    function time_format(date) {
+        var d = new Date(date)
+        hours = format_two_digits(d.getHours() - 1);
+        minutes = format_two_digits(d.getMinutes());
+        seconds = format_two_digits(d.getSeconds());
+        return hours + ":" + minutes + ":" + seconds;
+    }
+
+    function format_two_digits(n) {
+        return n < 10 ? '0' + n : n;
+    }
+
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
       height: 625,
@@ -1574,75 +1602,75 @@ if ($step == 2) {
       scrollTime: '00:00:00',
       timeFormat: 'H:mm',
       locale: 'en-GB',
+      timeZone: "local",
       firstDay: 1,
       select: function(arg) {
-          //console.log(arg);
+        //console.log(arg);
         calendar.addEvent({
           title: 'hummmm',
           start: arg.start,
           end: arg.end,
         });
-        calendar.unselect()
+        calendar.unselect();
       },
       eventDrop: function(event) {
         event.revert();
       },
-      eventClick: function(arg) {
-        console.log(arg);
+      eventClick: function(info) {
+        console.log('event click');
+        console.log(info);
 
-        var div = document.createElement('div');
-
-        var input_start = document.createElement('input');
-        input_start.setAttribute('type', 'time');
-        input_start.setAttribute('value', arg.start);
-
-        var input_end = document.createElement('input');
-        input_end.setAttribute('type', 'time');
-        input_end.setAttribute('value', arg.end);
-
-        div.append(input_start);
-        div.append(input_end);
-
-          confirmDialog({
+        console.log(info.view.getCurrentData());
+        confirmDialog({
             title: 'Eventoooooo',
-            message: 'ole',
-            onAccept: function() {
-                /*
+            message: function () {
+                var id = "div-" + uniqId();
+                var loading = "<?php echo __('Loading, this operation might take several minutes...'); ?>";
                 $.ajax({
                     method: "post",
-                    url: settings.url,
+                    url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
                     data: {
-                    page: settings.page,
-                    method: "deleteActionAlert",
-                    id_alert: settings.id_alert,
-                    id_action: settings.id_action
+                        page: 'include/ajax/alert_list.ajax',
+                        resize_event_week: true,
+                        day_from: info.el.fcSeg.start.getDay(),
+                        day_to: info.el.fcSeg.end.getDay(),
+                        time_from: time_format(info.el.fcSeg.start),
+                        time_to: time_format(info.el.fcSeg.end),
                     },
-                    dataType: "json",
+                    dataType: "html",
                     success: function(data) {
-                    // Delete row table.
-                    $(
-                        "#li-al-" + settings.id_alert + "-act-" + settings.id_action
-                    ).remove();
+                        $('#' + id).empty().append(data);
+                        $("#text-time_from, #text-time_to").timepicker({
+                            showSecond: false,
+                            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+                            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+                            timeText: '<?php echo __('Time'); ?>',
+                            hourText: '<?php echo __('Hour'); ?>',
+                            minuteText: '<?php echo __('Minute'); ?>',
+                            secondText: '<?php echo __('Second'); ?>',
+                            currentText: '<?php echo __('Now'); ?>',
+                            closeText: '<?php echo __('Close'); ?>'
+                        });
 
-                    var num_row = $("#ul-al-" + settings.id_alert + " li").length;
-                    if (num_row === 0) {
-                        var emptyli =
-                        "<li id='emptyli-al-" +
-                        settings.id_alert +
-                        "'>" +
-                        settings.emptyli +
-                        "</li>";
-                        $("#ul-al-" + settings.id_alert).append(emptyli);
-                    }
+                        $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
                     },
                     error: function(error) {
-                    console.log(error);
+                        console.log(error);
                     }
                 });
-                */
+
+                return "<div id ='" + id + "'>" + loading + "</div>";
+            },
+            onAccept: function() {
+                //info.el.remove();
+
+                console.log(calendar);
+                console.log(calendar.view());
+                console.log(calendar.getEvents());
+                console.log(info.event);
+                //info.event.setDates('2022-01-24T00:00:00','2022-01-24T23:59:59')
             }
         });
-
 
         //arg.event.remove()
       },

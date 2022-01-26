@@ -65,6 +65,42 @@ if ($enable_init_date) {
     $period = ($datetime - $datetime_init);
 }
 
+// Shchedule report email.
+$schedule_report = get_parameter('schbutton', '');
+
+if (empty($schedule_report) === false) {
+    $id_user_task = 1;
+    $scheduled = 'no';
+    $date = date(DATE_FORMAT);
+    $time = date(TIME_FORMAT);
+    $parameters[0] = get_parameter('id_schedule_report');
+    $parameters[1] = get_parameter('schedule_email_address');
+    $parameters[2] = get_parameter('schedule_subject', '');
+    $parameters[3] = get_parameter('schedule_email', '');
+    $parameters[4] = get_parameter('report_type', '');
+    $parameters['first_execution'] = strtotime($date.' '.$time);
+
+
+    $values = [
+        'id_usuario'   => $config['id_user'],
+        'id_user_task' => $id_user_task,
+        'args'         => serialize($parameters),
+        'scheduled'    => $scheduled,
+        'flag_delete'  => 1,
+    ];
+
+    $result = db_process_sql_insert('tuser_task_scheduled', $values);
+
+    $report_type = $parameters[4];
+
+    ui_print_result_message(
+        $result,
+        __('Your report has been planned, and the system will email you a '.$report_type.' file with the report as soon as its finished'),
+        __('An error has ocurred')
+    );
+    echo '<br>';
+}
+
 
 // ------------------- INIT HEADER --------------------------------------
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
@@ -249,16 +285,18 @@ if (reporting_get_description($id_report)) {
     $table->data[0][1] = '<div class="float-left">'.reporting_get_name($id_report).'</div>';
 }
 
-$table->data[0][1] .= '<div class="right w100p mrgn_right_50px right_align">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
-$html_enterprise = enterprise_hook(
-    'reporting_print_button_PDF',
-    [$id_report]
-);
-if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
-    $table->data[0][1] .= $html_enterprise;
+$table->data[0][1] .= '<div class="flex-content-right">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true).'</br>';
+
+$html_menu_export = enterprise_hook('reporting_print_button_export');
+if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
+    $html_menu_export = '';
 }
 
+
 $table->data[0][1] .= '</div>';
+$table->data[0][1] .= $html_menu_export;
+
+
 
 $table->data[1][1] = '<div>'.__('From').': </div>';
 $table->data[1][1] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';

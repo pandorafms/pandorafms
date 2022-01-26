@@ -378,6 +378,8 @@ class GraphModuleHistogramWidget extends Widget
 
         $size = parent::getSize();
 
+        $output = '';
+
         // Desactive scroll bars only this item.
         $id_agent = $this->values['agentId'];
         $id_module = $this->values['moduleId'];

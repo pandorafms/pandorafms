@@ -42,7 +42,7 @@ function pandora_realtime_graphs()
     global $config;
     check_login();
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         ui_require_css_file('pandora_black', 'include/styles/', true);
     }
 

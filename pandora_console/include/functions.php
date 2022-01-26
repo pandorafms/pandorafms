@@ -4185,6 +4185,9 @@ function generator_chart_to_pdf(
     ) {
         $width_img = 650;
         $height_img = ($params['height'] + 50);
+    } else if ($type_graph_pdf === 'hbar') {
+        $width_img  = ($params['width'] ?? 550);
+        $height_img = $params['height'];
     } else {
         $width_img  = 550;
         $height_img = $params['height'];

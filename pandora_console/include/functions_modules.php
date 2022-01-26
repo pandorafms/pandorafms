@@ -189,7 +189,11 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         [
             'nombre'   => $module['nombre'],
             'disabled' => false,
-        ]
+        ],
+        true,
+        true,
+        false,
+        false
     );
 
     // The module already exist in the target
@@ -203,7 +207,11 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         [
             'nombre'   => $module['nombre'],
             'disabled' => true,
-        ]
+        ],
+        true,
+        true,
+        false,
+        false
     );
 
     // If the module exist but disabled, we enable it

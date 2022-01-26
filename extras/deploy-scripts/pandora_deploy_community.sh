@@ -8,6 +8,8 @@
 #Constants
 PANDORA_CONSOLE=/var/www/html/pandora_console
 PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
+PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
+
 
 S_VERSION='2022012401'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
@@ -383,7 +385,7 @@ execute_cmd "systemctl restart mysqld" "Configuring database engine"
 # Downloading Pandora Packages
 execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm" "Downloading Pandora FMS Server community"
 execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm" "Downloading Pandora FMS Console community"
-execute_cmd "wget http://firefly.artica.es/centos7/pandorafms_agent_unix-7.0NG.751_x86_64.rpm" "Downloading Pandora FMS Agent community"
+execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm" "Downloading Pandora FMS Agent community"
 
 # Install Pandora
 execute_cmd "yum install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "installing PandoraFMS packages"
@@ -483,6 +485,9 @@ sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
+
+# Enable agent remote config
+sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 
 
 # Set Oracle environment for pandora_server
 cat > /etc/pandora/pandora_server.env << 'EOF_ENV'
@@ -598,7 +603,7 @@ execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate http://12
 echo "* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> $LOGFILE
-execute_cmd "systemctl start pandora_agent_daemon" "starting Pandora FMS Agent"
+execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

@@ -1491,11 +1491,11 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $output .= '<div>';
         $output .= html_print_input(
             [
-                'type'    => 'text',
-                'name'    => 'agent-searchBar-'.$uniqId,
-                'onKeyUp' => 'searchAgent(\''.$uniqId.'\')',
-                'value'   => __('Type for search...'),
-                'return'  => true,
+                'type'        => 'text',
+                'name'        => 'agent-searchBar-'.$uniqId,
+                'onKeyUp'     => 'searchAgent(\''.$uniqId.'\')',
+                'placeholder' => __('Type to search agents'),
+                'return'      => true,
             ]
         );
 
@@ -1504,11 +1504,11 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $output .= '<div>';
         $output .= html_print_input(
             [
-                'type'    => 'text',
-                'name'    => 'module-searchBar-'.$uniqId,
-                'onKeyUp' => 'searchModule(\''.$uniqId.'\')',
-                'return'  => true,
-                'value'   => 'test',
+                'type'        => 'text',
+                'name'        => 'module-searchBar-'.$uniqId,
+                'onKeyUp'     => 'searchModule(\''.$uniqId.'\')',
+                'return'      => true,
+                'placeholder' => __('Type to search modules'),
             ]
         );
 

@@ -331,7 +331,7 @@ echo "<form  id='agentmodules' method='post' action='index.php?sec=reporting&sec
 
 echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters'>";
 echo '<tr>';
-echo '<td class="w50p" id="select_multiple_modules_filtered">'.html_print_input(
+echo '<td class="w50p pdd_50px" id="select_multiple_modules_filtered">'.html_print_input(
     [
         'type'      => 'select_multiple_modules_filtered',
         'uniqId'    => 'modules',

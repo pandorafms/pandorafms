@@ -8501,6 +8501,8 @@ div#err_msg_centralised {
   min-width: 250px !important;
 }
 
-#select_multiple_modules_filtered > div > div > select {
-  max-width: 250px !important;
+#select_multiple_modules_filtered > div > div > input {
+  max-width: 250px;
+  width: 95%;
+  height: 95%;
 }

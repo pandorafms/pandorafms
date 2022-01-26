@@ -994,6 +994,12 @@ function html_print_select(
             }';
         }
 
+        // Hack for not autocomplete never select2 browser.
+        $output .= '$(document).on("focus", ":input", function(){
+            $(this).attr("autocomplete", "new-password");
+        });';
+        $output .= '$("input.select2-input").attr("autocomplete", "new-password");';
+
         $output .= '</script>';
     }
 

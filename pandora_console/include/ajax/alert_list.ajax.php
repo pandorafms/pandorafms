@@ -571,35 +571,18 @@ if ($resize_event_week === true) {
     $time_from = get_parameter('time_from', '');
     $time_to = get_parameter('time_to', '');
 
-    hd($day_from, true);
-    hd($day_to, true);
-
-    $days = [
-        __('Sunday'),
-        __('Monday'),
-        __('Tuesday'),
-        __('Wednesday'),
-        __('Thursday'),
-        __('Friday'),
-        __('Saturday'),
-    ];
-
     $table = new StdClass();
     $table->class = 'databox filters';
     $table->width = '100%';
     $table->data = [];
     $table->data[0][0] = __('From:');
-    $table->data[0][1] = html_print_select(
-        $days,
+    $table->data[0][1] = html_print_input_hidden(
         'day_from',
         $day_from,
-        '',
-        '',
-        0,
         true
     );
-    $table->data[0][2] = html_print_input_text(
-        'time_from',
+    $table->data[0][1] .= html_print_input_text(
+        'time_from_event',
         $time_from,
         '',
         9,
@@ -607,21 +590,25 @@ if ($resize_event_week === true) {
         true
     );
     $table->data[1][0] = __('To:');
-    $table->data[1][1] = html_print_select(
-        $days,
+    $table->data[1][1] = html_print_input_hidden(
         'day_to',
-        $day_to,
-        '',
-        '',
-        0,
+        $day_from,
         true
     );
-    $table->data[1][2] = html_print_input_text(
-        'time_to',
-        $time_to,
+    $table->data[1][1] .= html_print_input_text(
+        'time_to_event',
+        ($time_to === '00:00:00') ? '23:59:59' : $time_to,
         '',
         9,
         9,
+        true
+    );
+
+    echo __('Remove');
+    echo html_print_checkbox_switch(
+        'remove_event',
+        1,
+        false,
         true
     );
 

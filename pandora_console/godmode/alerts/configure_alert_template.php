@@ -1566,7 +1566,7 @@ if ($step == 2) {
 
     function time_format(date) {
         var d = new Date(date)
-        hours = format_two_digits(d.getHours() - 1);
+        hours = format_two_digits(d.getHours());
         minutes = format_two_digits(d.getMinutes());
         seconds = format_two_digits(d.getSeconds());
         return hours + ":" + minutes + ":" + seconds;
@@ -1591,7 +1591,7 @@ if ($step == 2) {
       selectMirror: true,
       slotDuration: '01:00:00',
       slotLabelInterval: '02:00:00',
-      snapDuration: '00:05:00',
+      snapDuration: '01:00:00',
       slotLabelFormat: {
         hour: 'numeric',
         minute: '2-digit',
@@ -1599,15 +1599,15 @@ if ($step == 2) {
       },
       slotMinTime: '00:00:00',
       slotMaxTime: '24:00:00',
-      scrollTime: '00:00:00',
+      scrollTime: '01:00:00',
       timeFormat: 'H:mm',
       locale: 'en-GB',
-      timeZone: "local",
+      //timeZone: "local",
       firstDay: 1,
+      eventOverlap: false,
       select: function(arg) {
-        //console.log(arg);
         calendar.addEvent({
-          title: 'hummmm',
+          title: '',
           start: arg.start,
           end: arg.end,
         });
@@ -1617,25 +1617,26 @@ if ($step == 2) {
         event.revert();
       },
       eventClick: function(info) {
-        console.log('event click');
-        //console.log(calendar);
-        //console.log(calendar.getDate());
-        //console.log(calendar.getEvents());
-
         var calendar_date_from = new Date(calendar.view.activeStart);
         var calendar_date_to = new Date(calendar.view.activeEnd);
         var calendar_day_from = calendar_date_from.getDate();
         var calendar_day_to = calendar_date_to.getDate();
 
         var calendar_days = [];
+        var acum = 1;
+        var i = 0;
         for (var index = calendar_day_from; index < calendar_day_to; index++) {
-            calendar_days[index] = index;
+            if(acum === 7) {
+                acum = 0;
+            }
+            var date_acum = new Date(calendar_date_from);
+            calendar_days[acum] = date_acum.setDate(calendar_date_from.getDate() + i);
+            acum++;
+            i++;
         }
 
-        console.log(calendar_days);
-
         confirmDialog({
-            title: 'Eventoooooo',
+            title: 'Event',
             message: function () {
                 var id = "div-" + uniqId();
                 var loading = "<?php echo __('Loading, this operation might take several minutes...'); ?>";
@@ -1645,16 +1646,15 @@ if ($step == 2) {
                     data: {
                         page: 'include/ajax/alert_list.ajax',
                         resize_event_week: true,
-                        day_from: info.el.fcSeg.start.getDay(),
-                        day_to: info.el.fcSeg.end.getDay(),
-                        time_from: time_format(info.el.fcSeg.start),
-                        time_to: time_format(info.el.fcSeg.end),
+                        day_from: info.event.start.getDay(),
+                        day_to: info.event.end.getDay(),
+                        time_from: time_format(info.event.start),
+                        time_to: time_format(info.event.end),
                     },
                     dataType: "html",
                     success: function(data) {
                         $('#' + id).empty().append(data);
-                        $("#text-time_from, #text-time_to").timepicker({
-                            showSecond: false,
+                        $("#text-time_from_event, #text-time_to_event").timepicker({
                             timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
                             timeOnlyTitle: '<?php echo __('Choose time'); ?>',
                             timeText: '<?php echo __('Time'); ?>',
@@ -1668,30 +1668,47 @@ if ($step == 2) {
                         $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
                     },
                     error: function(error) {
-                        console.log(error);
+                        console.error(error);
                     }
                 });
 
                 return "<div id ='" + id + "'>" + loading + "</div>";
             },
             onAccept: function() {
-                var replace_day_from = $('#day_from').val();
-                var replace_day_to = $('#day_to').val();
-                var replace_time_from = $('#text-time_from').val();
-                var replace_time_to = $('#text-time_to').val();
+                var remove_event = $('#checkbox-remove_event').is(':checked');
+                if(remove_event === false) {
+                    var replace_day_from = $('#hidden-day_from').val();
+                    var replace_time_from = $('#text-time_from_event').val();
 
-                console.log(replace_day_from);
-                console.log(replace_day_to);
-                console.log(replace_time_from);
-                console.log(replace_time_to);
+                    var array_time_from = replace_time_from.split(':');
+                    var new_date_from = new Date(calendar_days[replace_day_from]);
+                    new_date_from.setHours(
+                        array_time_from[0],
+                        array_time_from[1],
+                        array_time_from[2]
+                    );
 
-                //info.el.remove();
-                console.log(info.event);
-                //info.event.setDates('2022-01-24T00:00:00','2022-01-24T23:59:59')
+                    var replace_day_to = $('#hidden-day_to').val();
+                    var replace_time_to = $('#text-time_to_event').val();
+                    if(replace_time_to === '23:59:59'){
+                        replace_day_to++;
+                        replace_time_to = '00:00:00';
+                    }
+
+                    var array_time_to = replace_time_to.split(':');
+                    var new_date_to = new Date(calendar_days[replace_day_to]);
+                    new_date_to.setHours(
+                        array_time_to[0],
+                        array_time_to[1],
+                        array_time_to[2]
+                    );
+
+                    info.event.setDates(new_date_from,new_date_to);
+                } else {
+                    info.event.remove();
+                }
             }
         });
-
-        //arg.event.remove()
       },
       eventOverlap: function(stillEvent, movingEvent) {
         return stillEvent.allDay && movingEvent.allDay;

@@ -509,7 +509,9 @@ $table->data[2][1] = html_print_select(
     true
 );
 
-echo '<form method="post" id="form_agent" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
+echo '<form method="post" autocomplete="off" id="form_agent" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
+echo html_print_avoid_autocomplete();
+
 html_print_table($table);
 
 $nombre_agente = '';
@@ -815,7 +817,8 @@ foreach ($fields as $field) {
     }
 
     if ($field['is_password_type']) {
-        $data[1] = html_print_input_text_extended(
+        $data[1] = html_print_input_password_avoid_autocomplete();
+        $data[1] .= html_print_input_text_extended(
             'customvalue_'.$field['id_field'],
             $custom_value,
             'customvalue_'.$field['id_field'],

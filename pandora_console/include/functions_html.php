@@ -994,12 +994,6 @@ function html_print_select(
             }';
         }
 
-        // Hack for not autocomplete never select2 browser.
-        $output .= '$(document).on("focus", ":input", function(){
-            $(this).attr("autocomplete", "new-password");
-        });';
-        $output .= '$("input.select2-input").attr("autocomplete", "new-password");';
-
         $output .= '</script>';
     }
 
@@ -4221,6 +4215,33 @@ function html_html2rgb($htmlcolor)
     } else {
         return false;
     }
+}
+
+
+/**
+ * Avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_avoid_autocomplete()
+{
+    $output = '';
+    $output .= '<input type="text" style="display:none">';
+    $output .= '<input type="password" style="display:none">';
+
+    return $output;
+}
+
+
+/**
+ * Input password avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_input_password_avoid_autocomplete()
+{
+    $output = '<input type="text" style="opacity: 0;position: absolute; width: 0px;">';
+    return $output;
 }
 
 

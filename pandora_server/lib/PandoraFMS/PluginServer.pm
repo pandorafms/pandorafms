@@ -297,7 +297,7 @@ sub data_consumer ($$) {
 			elsif ($ReturnCode == 2){
 				$module_data = 0;
 			} 
-			elsif ($ReturnCode == 3 || $ReturnCode == 124){
+			elsif ($ReturnCode == 3 || $ReturnCode == 124 || $ReturnCode == 137){
 				# 124 should be a exit code of the timeout command (command times out)
 				$module_data = ''; # not defined = Uknown 
 			} 
@@ -305,7 +305,15 @@ sub data_consumer ($$) {
 				$module_data = 1;
 			}
 		}
+	} else {
+		# Timeout.
+		if ($ReturnCode == 124 || $ReturnCode == 137) {
+			logger($pa_config, "Plug-in module with ID #" . $module_id . " timed out.", 3);
+			pandora_update_module_on_error ($pa_config, $module, $dbh);
+			return;
+		}
 	}
+
 	if (! defined $module_data || $module_data eq '') {
 		logger (
 			$pa_config,

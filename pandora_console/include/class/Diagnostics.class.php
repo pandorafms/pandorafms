@@ -38,7 +38,7 @@ require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
 class Diagnostics extends Wizard
 {
 
-    const INNODB_FLUSH_LOG_AT_TRX_COMMIT = 1;
+    const INNODB_FLUSH_LOG_AT_TRX_COMMIT = 2;
 
     /**
      * Ajax controller page.

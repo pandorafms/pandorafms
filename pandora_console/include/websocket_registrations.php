@@ -60,12 +60,15 @@ function connectInt(
     $to_url
 ) {
     $intSocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    // Not sure.
     $connect = socket_connect(
         $intSocket,
         $to_addr,
         $to_port
     );
-    if (!$connect) {
+
+    if ($connect === false) {
+        $ws_object->stderr(socket_last_error($intSocket));
         return null;
     }
 
@@ -80,7 +83,7 @@ function connectInt(
         $c_str .= 'Sec-WebSocket-Protocol: '.$headers['Sec-WebSocket-Protocol']."\r\n";
     }
 
-    $c_str .= "\r\n";
+    $c_str .= "\r\n\r\n";
 
     // Send.
     // Register user - internal.
@@ -92,6 +95,7 @@ function connectInt(
         'origin'                 => $to_addr,
         'sec-websocket-protocol' => 'gotty',
     ];
+
     $ws_object->writeSocket($intUser, $c_str);
 
     return $intUser;
@@ -118,9 +122,9 @@ function proxyConnected(
      */
 
     // Gotty. Based on the command selected, redirect to a target port.
-    if ($user->requestedResource == '/ssh') {
+    if ($user->requestedResource === '/ssh') {
         $port = $config['gotty_ssh_port'];
-    } else if ($user->requestedResource == '/telnet') {
+    } else if ($user->requestedResource === '/telnet') {
         $port = $config['gotty_telnet_port'];
     } else {
         $ws_object->disconnect($user->socket);
@@ -154,7 +158,8 @@ function proxyConnected(
     $ws_object->remoteUsers[$intUser->id] = $intUser;
 
     // Ignore. Cleanup socket.
-    $response = $ws_object->readSocket($user->intUser);
+    // $response = $ws_object->readSocket($user->intUser);
+    flush();
 }
 
 

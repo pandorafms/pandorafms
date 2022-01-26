@@ -218,8 +218,6 @@ abstract class WebSocketServer
 
         $this->sockets['m'] = $this->master;
         $this->stderr('Listening on: '.$addr.':'.$port);
-        $this->stderr('Master socket: '.\obhd($this->master)."\n");
-
     }
 
 
@@ -353,7 +351,7 @@ abstract class WebSocketServer
     /**
      * Manage behaviour on socket error.
      *
-     * @param socket $socket Target socket.
+     * @param \socket $socket Target socket.
      *
      * @return void
      */
@@ -449,15 +447,15 @@ abstract class WebSocketServer
                 if ($socket == $this->master) {
                     // External to master connection. New client.
                     $client = socket_accept($socket);
-                    if ($client < 0) {
-                        $this->stderr('Failed: socket_accept()');
+                    if ((bool) $client !== true) {
+                        $this->stderr('Failed: socket_accept(), reason: ', socket_last_error());
                         continue;
                     } else {
                         $this->connect($client);
-                        $this->stderr('Client connected. '.\obhd($client));
+                        $this->stderr('Client connected. '.obhd($client));
                     }
                 } else {
-                    if (!$socket) {
+                    if ((bool) $socket !== true) {
                         $this->disconnect($socket);
                         continue;
                     }

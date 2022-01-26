@@ -750,7 +750,7 @@ class EventsListWidget extends Widget
                 $table->data[$i] = $data;
 
                 $bg_color = 'background: #E8E8E8;';
-                if ($config['style'] === 'pandora_black') {
+                if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
                     $bg_color = 'background: #222;';
                 }
 

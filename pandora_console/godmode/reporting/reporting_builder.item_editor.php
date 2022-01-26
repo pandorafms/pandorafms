@@ -3914,7 +3914,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <input id="hidden-id_server" name="id_server" value="" type="hidden">
                                 <?php
                                 // Set autocomplete image.
-                                $autocompleteImage = html_print_image(($config['style'] === 'pandora_black') ? 'images/agent_mc.menu.png' : 'images/search_agent.png', true, false, true);
+                                $autocompleteImage = html_print_image(($config['style'] === 'pandora_black' && !is_metaconsole()) ? 'images/agent_mc.menu.png' : 'images/search_agent.png', true, false, true);
                                 // Params for agent autocomplete input.
                                 $params = [];
                                 $params['show_helptip'] = true;

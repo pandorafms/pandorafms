@@ -42,6 +42,13 @@ if ($alerts === false || $totalAlerts == 0 || !$searchAlerts) {
     $table->align[3] = 'left';
     $table->align[4] = 'left';
 
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: center';
+    $table->headstyle[1] = 'text-align: left';
+    $table->headstyle[2] = 'text-align: left';
+    $table->headstyle[3] = 'text-align: left';
+    $table->headstyle[4] = 'text-align: left';
+
     $table->valign = [];
     $table->valign[0] = 'top';
     $table->valign[1] = 'top';

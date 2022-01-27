@@ -919,3 +919,73 @@ function delete_planned_downtimes($filter)
 
     return $return;
 }
+
+
+function planned_downtimes_copy($id_downtime)
+{
+    $planned_downtime = db_get_row_filter(
+        'tplanned_downtime',
+        ['id' => $id_downtime]
+    );
+
+    $planned_agents = db_get_row_filter(
+        'tplanned_downtime_agents',
+        ['id_downtime' => $id_downtime]
+    );
+
+    $planned_modules = db_get_row_filter(
+        'tplanned_downtime_modules',
+        ['id_downtime' => $id_downtime]
+    );
+
+    if ($planned_downtime === false) {
+        return false;
+    }
+
+    // Unset id.
+    unset($planned_downtime['id']);
+
+    // Change copy name.
+    $planned_downtime['name'] = __('Coy of ').$planned_downtime['name'];
+
+    // Insert new downtime
+    $result = db_process_sql_insert(
+        'tplanned_downtime',
+        $planned_downtime
+    );
+
+    if ($result === false) {
+        return false;
+    }
+
+    if ($planned_agents !== false) {
+        // Unser id.
+        unset($planned_agents['id']);
+        $result = db_process_sql_insert(
+            'tplanned_downtime_agents',
+            $planned_agents
+        );
+    }
+
+    if ($result === false) {
+        return false;
+    }
+
+    if ((bool) $planned_agents['all_modules'] === false
+        && $planned_modules !== false
+    ) {
+        // Unser id.
+        unset($planned_modules['id']);
+        $result = db_process_sql_insert(
+            'tplanned_downtime_agents',
+            $planned_agents
+        );
+    }
+
+    if ($result === false) {
+        return false;
+    }
+
+    return true;
+
+}

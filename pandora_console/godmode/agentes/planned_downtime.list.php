@@ -405,6 +405,7 @@ else {
 
     if ($write_permisson || $manage_permisson) {
         $table->head['stop'] = __('Stop downtime');
+        $table->head['copy'] = __('Copy');
         $table->head['edit'] = __('Edit');
         $table->head['delete'] = __('Delete');
     }
@@ -492,6 +493,8 @@ else {
                 if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
                     || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
                 ) {
+                    // Copy.
+                    $data['copy'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&downtime_copy=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/copy.png', true, ['title' => __('Copy'), 'class' => 'invert_filter']).'</a>';
                     // Edit.
                     $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>';
                     // Delete.
@@ -504,6 +507,8 @@ else {
                 if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
                     || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
                 ) {
+                    // Copy.
+                    $data['copy'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&downtime_copy=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/copy.png', true, ['title' => __('Copy'), 'class' => 'invert_filter']).'</a>';
                     // Edit.
                     $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>';
                     // Delete.
@@ -513,11 +518,13 @@ else {
                     $data['delete'] = '';
                 }
             } else {
+                $data['copy'] = '';
                 $data['edit'] = '';
                 $data['delete'] = '';
             }
         } else {
             $data['stop'] = '';
+            $data['copy'] = '';
             $data['edit'] = '';
             $data['delete'] = '';
         }

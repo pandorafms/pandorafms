@@ -1,4 +1,4 @@
-FROM centos:8
+FROM rockylinux:8.5
 
 RUN { \
     echo '[artica_pandorafms]'; \
@@ -30,6 +30,8 @@ RUN dnf install -y vim wget bzip2 curl && \
     pip3 install unittest2 && \
     pip3 install testtools && \
     dnf install -y git \
+    passwd \
+    openssh-server \
     httpd \
     cronie \
     openldap \

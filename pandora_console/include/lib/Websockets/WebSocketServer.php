@@ -451,8 +451,8 @@ abstract class WebSocketServer
                         $this->stderr('Failed: socket_accept(), reason: ', socket_last_error());
                         continue;
                     } else {
-                        $this->connect($client);
-                        $this->stderr('Client connected. '.obhd($client));
+                        $user = $this->connect($client);
+                        $this->stderr('Client connected. '.$user->id);
                     }
                 } else {
                     if ((bool) $socket !== true) {
@@ -548,9 +548,9 @@ abstract class WebSocketServer
     /**
      * Register user (and its socket) into master.
      *
-     * @param Socket $socket Socket.
+     * @param \Socket $socket Socket.
      *
-     * @return void
+     * @return object
      */
     public function connect($socket)
     {
@@ -561,6 +561,8 @@ abstract class WebSocketServer
         $this->users[$user->id] = $user;
         $this->sockets[$user->id] = $socket;
         $this->connecting($user);
+
+        return $user;
     }
 
 
@@ -628,6 +630,7 @@ abstract class WebSocketServer
      */
     public function doHandshake($user, $buffer)
     {
+        // WS RFC.
         $magicGUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
         $headers = [];
         $lines = explode("\n", $buffer);
@@ -642,6 +645,7 @@ abstract class WebSocketServer
             }
         }
 
+        $handshakeResponse = null;
         if (isset($headers['get'])) {
             $user->requestedResource = $headers['get'];
         } else {

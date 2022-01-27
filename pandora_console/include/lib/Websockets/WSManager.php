@@ -54,27 +54,6 @@ class WSManager extends WebSocketServer
 {
 
     /**
-     * Target host.
-     *
-     * @var string
-     */
-    private $intHost = '127.0.0.1';
-
-    /**
-     * Target port
-     *
-     * @var integer
-     */
-    private $intPort = 8080;
-
-    /**
-     * Internal URL.
-     *
-     * @var string
-     */
-    private $intUrl = '/ws';
-
-    /**
      * 1MB... overkill for an echo server, but potentially plausible for other
      * applications.
      *
@@ -255,7 +234,9 @@ class WSManager extends WebSocketServer
      */
     public function writeSocket($user, $message)
     {
-        if (is_resource($user->socket)) {
+        if (is_resource($user->socket) === true
+            || ($user->socket instanceof \Socket) === true
+        ) {
             if (socket_write($user->socket, $message) === false) {
                 $this->disconnect($user->socket);
             }

@@ -31,7 +31,7 @@ require_once __DIR__.'/vendor/autoload.php';
 use \PandoraFMS\Websockets\WSManager;
 
 // Set to true to get full output.
-$debug = true;
+$debug = false;
 
 // 1MB.
 $bufferSize = 1048576;

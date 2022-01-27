@@ -575,13 +575,22 @@ if ($resize_event_week === true) {
     $table->class = 'databox filters';
     $table->width = '100%';
     $table->data = [];
-    $table->data[0][0] = __('From:');
-    $table->data[0][1] = html_print_input_hidden(
+
+    $table->data[0][0] = __('Remove');
+    $table->data[0][1] = html_print_checkbox_switch(
+        'remove_event',
+        1,
+        false,
+        true
+    );
+
+    $table->data[1][0] = __('From:');
+    $table->data[1][1] = html_print_input_hidden(
         'day_from',
         $day_from,
         true
     );
-    $table->data[0][1] .= html_print_input_text(
+    $table->data[1][1] .= html_print_input_text(
         'time_from_event',
         $time_from,
         '',
@@ -589,26 +598,18 @@ if ($resize_event_week === true) {
         9,
         true
     );
-    $table->data[1][0] = __('To:');
-    $table->data[1][1] = html_print_input_hidden(
+    $table->data[2][0] = __('To:');
+    $table->data[2][1] = html_print_input_hidden(
         'day_to',
         $day_from,
         true
     );
-    $table->data[1][1] .= html_print_input_text(
+    $table->data[2][1] .= html_print_input_text(
         'time_to_event',
         ($time_to === '00:00:00') ? '23:59:59' : $time_to,
         '',
         9,
         9,
-        true
-    );
-
-    echo __('Remove');
-    echo html_print_checkbox_switch(
-        'remove_event',
-        1,
-        false,
         true
     );
 

@@ -1282,7 +1282,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ui_require_css_file('main.min', 'include/javascript/fullcalendar/');
 ui_require_javascript_file('main.min', 'include/javascript/fullcalendar/');
-
+ui_require_javascript_file('pandora_fullcalendar');
 ?>
 
 <script type="text/javascript">
@@ -1305,18 +1305,18 @@ var not_normal = <?php echo "'".__('The alert would fire when the module is in n
 
 function check_fields_step2() {
     var correct = true;
-    
+
     type = $("select[name='type']").val();
     min_v = $("input[name='min']").val();
     max_v = $("input[name='max']").val();
-    
+
     if (type == 'max_min') {
         if ((min_v == 0) && (max_v == 0)) {
             alert(error_message_min_max_zero);
             correct = false;
         }
     }
-    
+
     return correct;
 }
 
@@ -1391,7 +1391,7 @@ if ($step == 2) {
     $("input#text-value").keyup (render_example);
     $("input#text-max").keyup (render_example);
     $("input#text-min").keyup (render_example);
-    
+
     $("#type").change (function () {
         switch (this.value) {
         case "equal":
@@ -1399,76 +1399,74 @@ if ($step == 2) {
             $("img#regex_good, img#regex_bad, span#matches_value").hide ();
             $("#template-max, #template-min").hide ();
             $("#template-value, #template-example").show ();
-            
+
             /* Show example */
             if (this.value == "equal")
                 $("span#example").empty ().append (is);
             else
                 $("span#example").empty ().append (is_not);
-            
             break;
         case "regex":
             $("#template-max, #template-min").hide ();
             $("#template-value, #template-example, span#matches_value").show ();
             check_regex ();
-            
+
             /* Show example */
             if ($("#checkbox-matches_value")[0].checked)
                 $("span#example").empty ().append (matches);
             else
                 $("span#example").empty ().append (matches_not);
-            
             break;
         case "max_min":
             $("#template-value").hide ();
             $("#template-max, #template-min, #template-example, span#matches_value").show ();
-            
+
             /* Show example */
             if ($("#checkbox-matches_value")[0].checked)
                 $("span#example").empty ().append (between);
             else
                 $("span#example").empty ().append (between_not);
-            
+
             break;
         case "max":
             $("#template-value, #template-min, span#matches_value").hide ();
             $("#template-max, #template-example").show ();
-            
+
             /* Show example */
             $("span#example").empty ().append (over);
             break;
         case "min":
             $("#template-value, #template-max, span#matches_value").hide ();
             $("#template-min, #template-example").show ();
-            
+
             /* Show example */
             $("span#example").empty ().append (under);
             break;
         case "warning":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
             $("#template-example").show ();
-            
+
             /* Show example */
             $("span#example").empty ().append (warning);
             break;
         case "critical":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
             $("#template-example").show ();
-            
+
             /* Show example */
             $("span#example").empty ().append (critical);
             break;
         case "not_normal":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
             $("#template-example").show ();
-            
+
             /* Show example */
             $("span#example").empty ().append (not_normal);
             break;
         case "onchange":
             $("#template-value, #template-max, #template-min").hide ();
             $("#template-example, span#matches_value").show ();
-            
+
             /* Show example */
             if ($("#checkbox-matches_value")[0].checked)
                 $("span#example").empty ().append (onchange_msg);
@@ -1490,10 +1488,10 @@ if ($step == 2) {
             $("#template-value, #template-max, #template-min, #template-example, span#matches_value").hide ();
             break;
         }
-        
+
         render_example ();
     }).change ();
-    
+
     $("#checkbox-matches_value").click (function () {
         enabled = this.checked;
         type = $("#type").val();
@@ -1520,12 +1518,12 @@ if ($step == 2) {
             else {
                 $("span#example").empty ().append (onchange_not);
             }
-        } 
+        }
         render_example ();
     });
-    
+
     $("#text-value").keyup (check_regex);
-    
+
     $('#text-time_from, #text-time_to').timepicker({
         showSecond: true,
         timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -1535,8 +1533,9 @@ if ($step == 2) {
         minuteText: '<?php echo __('Minute'); ?>',
         secondText: '<?php echo __('Second'); ?>',
         currentText: '<?php echo __('Now'); ?>',
-        closeText: '<?php echo __('Close'); ?>'});
-    
+        closeText: '<?php echo __('Close'); ?>'}
+    );
+
     $("#threshold").change (function () {
         if (this.value == -1) {
             $("#text-other_threshold").val("");
@@ -1549,186 +1548,21 @@ if ($step == 2) {
         }
     });
 
-    /*
-    function formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-
-        if (month.length < 2)
-            month = '0' + month;
-        if (day.length < 2)
-            day = '0' + day;
-
-        return [year, month, day].join('/');
-    }*/
-
-    function time_format(date) {
-        var d = new Date(date)
-        hours = format_two_digits(d.getHours());
-        minutes = format_two_digits(d.getMinutes());
-        seconds = format_two_digits(d.getSeconds());
-        return hours + ":" + minutes + ":" + seconds;
-    }
-
-    function format_two_digits(n) {
-        return n < 10 ? '0' + n : n;
-    }
-
     var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      height: 625,
-      headerToolbar: {
-        left: '',
-        center: '',
-        right: ''
-      },
-      dayHeaderFormat: { weekday: 'short' },
-      initialView: 'timeGridWeek',
-      navLinks: false,
-      selectable: true,
-      selectMirror: true,
-      slotDuration: '01:00:00',
-      slotLabelInterval: '02:00:00',
-      snapDuration: '01:00:00',
-      slotLabelFormat: {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12:false
-      },
-      slotMinTime: '00:00:00',
-      slotMaxTime: '24:00:00',
-      scrollTime: '01:00:00',
-      timeFormat: 'H:mm',
-      locale: 'en-GB',
-      //timeZone: "local",
-      firstDay: 1,
-      eventOverlap: false,
-      select: function(arg) {
-        calendar.addEvent({
-          title: '',
-          start: arg.start,
-          end: arg.end,
-        });
-        calendar.unselect();
-      },
-      eventDrop: function(event) {
-        event.revert();
-      },
-      eventClick: function(info) {
-        var calendar_date_from = new Date(calendar.view.activeStart);
-        var calendar_date_to = new Date(calendar.view.activeEnd);
-        var calendar_day_from = calendar_date_from.getDate();
-        var calendar_day_to = calendar_date_to.getDate();
+    var settings = {
+        timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+        timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+        timeText: '<?php echo __('Time'); ?>',
+        hourText: '<?php echo __('Hour'); ?>',
+        minuteText: '<?php echo __('Minute'); ?>',
+        secondText: '<?php echo __('Second'); ?>',
+        currentText: '<?php echo __('Now'); ?>',
+        closeText: '<?php echo __('Close'); ?>',
+        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>'
+    }
 
-        var calendar_days = [];
-        var acum = 1;
-        var i = 0;
-        for (var index = calendar_day_from; index < calendar_day_to; index++) {
-            if(acum === 7) {
-                acum = 0;
-            }
-            var date_acum = new Date(calendar_date_from);
-            calendar_days[acum] = date_acum.setDate(calendar_date_from.getDate() + i);
-            acum++;
-            i++;
-        }
-
-        confirmDialog({
-            title: 'Event',
-            message: function () {
-                var id = "div-" + uniqId();
-                var loading = "<?php echo __('Loading, this operation might take several minutes...'); ?>";
-                $.ajax({
-                    method: "post",
-                    url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                    data: {
-                        page: 'include/ajax/alert_list.ajax',
-                        resize_event_week: true,
-                        day_from: info.event.start.getDay(),
-                        day_to: info.event.end.getDay(),
-                        time_from: time_format(info.event.start),
-                        time_to: time_format(info.event.end),
-                    },
-                    dataType: "html",
-                    success: function(data) {
-                        $('#' + id).empty().append(data);
-                        $("#text-time_from_event, #text-time_to_event").timepicker({
-                            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-                            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-                            timeText: '<?php echo __('Time'); ?>',
-                            hourText: '<?php echo __('Hour'); ?>',
-                            minuteText: '<?php echo __('Minute'); ?>',
-                            secondText: '<?php echo __('Second'); ?>',
-                            currentText: '<?php echo __('Now'); ?>',
-                            closeText: '<?php echo __('Close'); ?>'
-                        });
-
-                        $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-                    },
-                    error: function(error) {
-                        console.error(error);
-                    }
-                });
-
-                return "<div id ='" + id + "'>" + loading + "</div>";
-            },
-            onAccept: function() {
-                var remove_event = $('#checkbox-remove_event').is(':checked');
-                if(remove_event === false) {
-                    var replace_day_from = $('#hidden-day_from').val();
-                    var replace_time_from = $('#text-time_from_event').val();
-
-                    var array_time_from = replace_time_from.split(':');
-                    var new_date_from = new Date(calendar_days[replace_day_from]);
-                    new_date_from.setHours(
-                        array_time_from[0],
-                        array_time_from[1],
-                        array_time_from[2]
-                    );
-
-                    var replace_day_to = $('#hidden-day_to').val();
-                    var replace_time_to = $('#text-time_to_event').val();
-                    if(replace_time_to === '23:59:59'){
-                        replace_day_to++;
-                        replace_time_to = '00:00:00';
-                    }
-
-                    var array_time_to = replace_time_to.split(':');
-                    var new_date_to = new Date(calendar_days[replace_day_to]);
-                    new_date_to.setHours(
-                        array_time_to[0],
-                        array_time_to[1],
-                        array_time_to[2]
-                    );
-
-                    info.event.setDates(new_date_from,new_date_to);
-                } else {
-                    info.event.remove();
-                }
-            }
-        });
-      },
-      eventOverlap: function(stillEvent, movingEvent) {
-        return stillEvent.allDay && movingEvent.allDay;
-      },
-      selectOverlap: function(event) {
-        return event.rendering === 'background';
-      },
-      eventTimeFormat: {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12:false
-      },
-      eventColor: '#82b92e',
-      editable: true,
-      dayMaxEvents: false, // allow "more" link when too many events
-      events: []
-    });
-
+    var calendar = fullCalendarPandora(calendarEl, settings);
     calendar.render();
-
     <?php
 } else if ($step == 3) {
     ?>

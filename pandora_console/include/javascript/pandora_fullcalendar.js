@@ -1,0 +1,311 @@
+/* globals $, FullCalendar, uniqId, confirmDialog*/
+// eslint-disable-next-line no-unused-vars
+function fullCalendarPandora(calendarEl, settings) {
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    height: 625,
+    headerToolbar: {
+      left: "",
+      center: "",
+      right: ""
+    },
+    dayHeaderFormat: { weekday: "short" },
+    initialView: "timeGridWeek",
+    navLinks: false,
+    selectable: true,
+    selectMirror: true,
+    slotDuration: "01:00:00",
+    slotLabelInterval: "02:00:00",
+    snapDuration: "01:00:00",
+    slotLabelFormat: {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: false
+    },
+    slotMinTime: "00:00:00",
+    slotMaxTime: "24:00:00",
+    scrollTime: "01:00:00",
+    timeFormat: "H:mm",
+    locale: "en-GB",
+    //timeZone: "local",
+    firstDay: 1,
+    eventTimeFormat: {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: false
+    },
+    eventColor: "#82b92e",
+    editable: true,
+    dayMaxEvents: false,
+    events: [],
+    select: function(info) {
+      var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
+      if (
+        info.start.getDay() == info.end.getDay() ||
+        (nextDay == info.end.getDay() && time_format(info.end) == "00:00:00")
+      ) {
+        recalculate_events(calendar, {}, info.start, info.end, true);
+      }
+      calendar.unselect();
+    },
+    selectAllow: function(info) {
+      var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
+      if (
+        info.start.getDay() == info.end.getDay() ||
+        (nextDay == info.end.getDay() && time_format(info.end) == "00:00:00")
+      ) {
+        return true;
+      }
+      return false;
+    },
+    eventAllow: function(dropInfo, draggedEvent) {
+      var nextDay =
+        draggedEvent.start.getDay() === 6 ? 0 : draggedEvent.start.getDay() + 1;
+      if (
+        (draggedEvent.start.getDay() == dropInfo.start.getDay() &&
+          dropInfo.start.getDay() == dropInfo.end.getDay()) ||
+        (nextDay == dropInfo.end.getDay() &&
+          time_format(dropInfo.end) == "00:00:00")
+      ) {
+        return true;
+      }
+      return false;
+    },
+    eventDrop: function(info) {
+      var nextDay =
+        info.event.start.getDay() === 6 ? 0 : info.event.start.getDay() + 1;
+      if (
+        info.event.start.getDay() == info.event.end.getDay() ||
+        (nextDay == info.event.end.getDay() &&
+          time_format(info.event.end) == "00:00:00")
+      ) {
+        recalculate_events(
+          calendar,
+          info.event,
+          info.event.start,
+          info.event.end,
+          false
+        );
+      }
+    },
+    eventDragStop: function(info) {
+      var trashEl = $("#calendar");
+      var ofs = trashEl.offset();
+
+      var x1 = ofs.left;
+      var x2 = ofs.left + trashEl.outerWidth(true);
+      var y1 = ofs.top;
+      var y2 = ofs.top + trashEl.outerHeight(true);
+
+      if (
+        x1 >= info.jsEvent.pageX ||
+        x2 <= info.jsEvent.pageX ||
+        y1 >= info.jsEvent.pageY ||
+        y2 <= info.jsEvent.pageY
+      ) {
+        // Remove event.
+        info.event.remove();
+      }
+    },
+    eventResize: function(info) {
+      var nextDay =
+        info.event.start.getDay() === 6 ? 0 : info.event.start.getDay() + 1;
+      if (
+        info.event.start.getDay() == info.event.end.getDay() ||
+        (nextDay == info.event.end.getDay() &&
+          time_format(info.event.end) == "00:00:00")
+      ) {
+        recalculate_events(
+          calendar,
+          info.event,
+          info.event.start,
+          info.event.end,
+          false
+        );
+      }
+    },
+    eventClick: function(info) {
+      var calendar_date_from = new Date(calendar.view.activeStart);
+      var calendar_date_to = new Date(calendar.view.activeEnd);
+      var calendar_day_from = calendar_date_from.getDate();
+      var calendar_day_to = calendar_date_to.getDate();
+
+      var calendar_days = [];
+      var acum = 1;
+      var i = 0;
+      // Week date.
+      for (var index = calendar_day_from; index < calendar_day_to; index++) {
+        // Sunday key 0.
+        if (acum === 7) {
+          acum = 0;
+        }
+        var date_acum = new Date(calendar_date_from);
+        calendar_days[acum] = date_acum.setDate(
+          calendar_date_from.getDate() + i
+        );
+        acum++;
+        i++;
+      }
+
+      confirmDialog({
+        title: "Event",
+        message: function() {
+          var id = "div-" + uniqId();
+          var loading =
+            "<?php echo __('Loading, this operation might take several minutes...'); ?>";
+          $.ajax({
+            method: "post",
+            url: settings.url,
+            data: {
+              page: "include/ajax/alert_list.ajax",
+              resize_event_week: true,
+              day_from: info.event.start.getDay(),
+              day_to: info.event.end.getDay(),
+              time_from: time_format(info.event.start),
+              time_to: time_format(info.event.end)
+            },
+            dataType: "html",
+            success: function(data) {
+              $("#" + id)
+                .empty()
+                .append(data);
+              $("#text-time_from_event, #text-time_to_event").timepicker({
+                timeFormat: settings.timeFormat,
+                timeOnlyTitle: settings.timeOnlyTitle,
+                timeText: settings.timeText,
+                hourText: settings.hourText,
+                minuteText: settings.minuteText,
+                secondText: settings.secondText,
+                currentText: settings.currentText,
+                closeText: settings.closeText
+              });
+
+              $.datepicker.setDefaults(
+                $.datepicker.regional["<?php echo get_user_language(); ?>"]
+              );
+            },
+            error: function(error) {
+              console.error(error);
+            }
+          });
+
+          return "<div id ='" + id + "'>" + loading + "</div>";
+        },
+        onAccept: function() {
+          var remove_event = $("#checkbox-remove_event").is(":checked");
+          if (remove_event === false) {
+            var replace_day_from = $("#hidden-day_from").val();
+            var replace_time_from = $("#text-time_from_event").val();
+
+            var array_time_from = replace_time_from.split(":");
+            var new_date_from = new Date(calendar_days[replace_day_from]);
+            new_date_from.setHours(
+              array_time_from[0],
+              array_time_from[1],
+              array_time_from[2]
+            );
+
+            var replace_day_to = $("#hidden-day_to").val();
+            var replace_time_to = $("#text-time_to_event").val();
+            if (replace_time_to === "23:59:59") {
+              replace_day_to++;
+              replace_time_to = "00:00:00";
+            }
+
+            var array_time_to = replace_time_to.split(":");
+            var new_date_to = new Date(calendar_days[replace_day_to]);
+            new_date_to.setHours(
+              array_time_to[0],
+              array_time_to[1],
+              array_time_to[2]
+            );
+
+            if (new_date_from < new_date_to) {
+              recalculate_events(
+                calendar,
+                info.event,
+                new_date_from,
+                new_date_to,
+                false
+              );
+            } else {
+              console.error("You cannot add smaller events");
+            }
+          } else {
+            // Remove event.
+            info.event.remove();
+          }
+        }
+      });
+    },
+    eventOverlap: false,
+    selectOverlap: false
+  });
+
+  return calendar;
+}
+
+function time_format(date) {
+  var d = new Date(date);
+  var hours = format_two_digits(d.getHours());
+  var minutes = format_two_digits(d.getMinutes());
+  var seconds = format_two_digits(d.getSeconds());
+  return hours + ":" + minutes + ":" + seconds;
+}
+
+function format_two_digits(n) {
+  return n < 10 ? "0" + n : n;
+}
+
+function recalculate_events(calendar, newEvent, from, to, create) {
+  var allEvents = calendar.getEvents();
+  allEvents.forEach(function(oldEvent) {
+    if (create === false) {
+      // Avoid the same event.
+      if (newEvent.id === oldEvent.id) {
+        return;
+      }
+
+      // New event inside complete in old event.
+      if (oldEvent.start < from && oldEvent.end > to) {
+        // Remove new event.
+        newEvent.remove();
+        return;
+      }
+
+      // New event inside complete in old event.
+      if (oldEvent.start > from && oldEvent.end < to) {
+        // Remove new event.
+        oldEvent.remove();
+        return;
+      }
+    }
+
+    // Inside From.
+    if (oldEvent.start > from && oldEvent.start <= to) {
+      if (time_format(oldEvent.start) !== "00:00:00") {
+        to = oldEvent.end;
+        oldEvent.remove();
+      }
+    }
+
+    // Inside To.
+    if (oldEvent.end >= from && oldEvent.end < to) {
+      if (time_format(oldEvent.end) !== "00:00:00") {
+        from = oldEvent.start;
+        oldEvent.remove();
+      }
+    }
+  });
+
+  if (create === true) {
+    calendar.addEvent({
+      title: "",
+      start: from,
+      end: to,
+      id: uniqId()
+    });
+  } else {
+    // Update event.
+    newEvent.setDates(from, to);
+  }
+}

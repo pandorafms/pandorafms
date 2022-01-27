@@ -66,6 +66,9 @@ define('REPORT_STATUS_NOT_INIT', 3);
 define('REPORT_STATUS_DOWNTIME', 4);
 define('REPORT_STATUS_IGNORED', 5);
 
+// Clases.
+use PandoraFMS\Module;
+
 
 function reporting_user_can_see_report($id_report, $id_user=null)
 {
@@ -699,7 +702,9 @@ function reporting_make_reporting_data(
             case 'last_value':
                 $report['contents'][] = reporting_last_value(
                     $report,
-                    $content
+                    $content,
+                    $datetime,
+                    $period
                 );
             break;
 
@@ -4071,15 +4076,18 @@ function reporting_database_serialized($report, $content)
 /**
  * Show last value and state of module.
  *
- * @param array $report  Data report.
- * @param array $content Content report.
+ * @param array   $report    Data report.
+ * @param array   $content   Content report.
+ * @param integer $datetime  Date limit of report.
+ * @param integer $init_date Init date of report.
  *
  * @return array
  */
-function reporting_last_value($report, $content)
+function reporting_last_value($report, $content, $datetime, $period)
 {
     global $config;
 
+    $module = new Module($content['id_agent_module']);
     $return['type'] = 'last_value';
 
     if (empty($content['name'])) {
@@ -4095,22 +4103,14 @@ function reporting_last_value($report, $content)
         }
     }
 
-    $id_agent = agents_get_module_id(
-        $content['id_agent_module']
-    );
-    $agent_alias = agents_get_alias($id_agent);
-    $module_name = modules_get_agentmodule_name(
-        $content['id_agent_module']
-    );
-
+    $id_agent = $module->agent()->id_agente();
     $id_agent_module = $content['id_agent_module'];
-    $agent_description = agents_get_description($id_agent);
-    $agent_group = agents_get_agent_group($id_agent);
-    $agent_address = agents_get_address($id_agent);
-
-    $module_description = modules_get_agentmodule_descripcion(
-        $id_agent_module
-    );
+    $agent_alias = $module->agent()->alias();
+    $module_name = $module->name();
+    $agent_description = $module->agent()->comentarios();
+    $agent_group = $module->agent()->group();
+    $agent_address = $module->agent()->field['direccion'];
+    $module_description = $module->descripcion();
 
     $items_label = [
         'type'               => $return['type'],
@@ -4138,22 +4138,50 @@ function reporting_last_value($report, $content)
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
-    $return['agent_name_db'] = agents_get_name($id_agent);
+    $return['agent_name_db'] = $module->agent()->id_agente();
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
+    $return['date'] = reporting_get_date_text($report, $content);
 
-    $sql = sprintf(
-        'SELECT *
-        FROM tagente_estado
-        WHERE id_agente_modulo = %s',
-        $content['id_agent_module']
-    );
-
-    $result = db_get_row_sql($sql);
+    $result = $module->getStatus()->toArray();
 
     if ($result === false) {
         $result = [];
+        $result['utimestamp'] = '-';
+        $result['datos'] = __('No data to display within the selected interval');
+    }
+
+    if ($datetime < $result['utimestamp']) {
+        $table_data = modules_get_table_data($id_agent_module);
+
+        $init_date_condition = '';
+        if ($period !== null) {
+            $sql = sprintf(
+                'SELECT datos, utimestamp FROM %s WHERE id_agente_modulo = %d AND utimestamp BETWEEN %d AND %d ORDER BY utimestamp DESC',
+                $table_data,
+                $id_agent_module,
+                ($datetime - $period),
+                $datetime
+            );
+        } else {
+            $sql = sprintf(
+                'SELECT datos, utimestamp FROM %s WHERE id_agente_modulo = %d AND utimestamp <= %d ORDER BY utimestamp DESC',
+                $table_data,
+                $id_agent_module,
+                $datetime
+            );
+        }
+
+        $datos = db_get_row_sql($sql);
+        if ($datos !== false) {
+            $result['datos'] = $datos['datos'];
+            $result['utimestamp'] = $datos['utimestamp'];
+        } else {
+            $result = [];
+
+            $result['utimestamp'] = '-';
+            $result['datos'] = __('No data to display within the selected interval');
+        }
     }
 
     $result['agent_name'] = $agent_alias;

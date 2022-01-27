@@ -353,6 +353,8 @@ if (is_ajax()) {
         $selection_mode = get_parameter('selection_mode', 'common') == 'all';
         $status_modulo = (int) get_parameter('status_module', -1);
         $tags_selected = (array) get_parameter('tags', []);
+        $truncate_agent_names = (bool) get_parameter('truncate_agent_names');
+
         $names = select_agents_for_module_group(
             $nameModules,
             $selection_mode,
@@ -362,6 +364,15 @@ if (is_ajax()) {
             ],
             'AW'
         );
+
+        if ($truncate_agent_names === true) {
+            $names = array_map(
+                function ($name) {
+                    return ui_print_truncate_text($name, 30);
+                },
+                $names
+            );
+        }
 
         echo json_encode($names);
         return;
@@ -790,6 +801,8 @@ if (is_ajax()) {
 
         $safe_name = (bool) get_parameter('safe_name', false);
 
+        $truncate_module_names = (bool) get_parameter('truncate_module_names');
+
         // Filter.
         $filter = [];
         if ($disabled !== -1) {
@@ -943,6 +956,16 @@ if (is_ajax()) {
             }
 
             $agent_modules = $new_elements;
+        }
+
+        if ($truncate_module_names === true) {
+            $agent_modules = array_map(
+                function ($item) {
+                    $item['safe_name'] = ui_print_truncate_text($item['safe_name'], 'module_medium');
+                    return $item;
+                },
+                $agent_modules
+            );
         }
 
         echo json_encode($agent_modules);

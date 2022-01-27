@@ -683,6 +683,7 @@ $(document).ready (function () {
         var params = {
             "page" : "operation/agentes/ver_agente",
             "get_agent_modules_json" : 1,
+            "truncate_module_names": 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
             "privilege" : "AW",

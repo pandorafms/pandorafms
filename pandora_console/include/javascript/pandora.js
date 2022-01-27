@@ -554,6 +554,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
     {
       page: "operation/agentes/ver_agente",
       get_agents_json_for_multiple_modules: 1,
+      truncate_agent_names: 1,
       status_module: status_module,
       "module_name[]": idModules,
       selection_mode: selection_mode,

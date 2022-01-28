@@ -27,7 +27,7 @@ cd /tmp/pandorafms/pandora_console && chmod +x pandora_console_install && yes | 
 check "Installing the Pandora FMS Console" $?
 
 # Create the Pandora FMS database.
-cd /tmp/pandorafms/tests && chmod +x install_console.py && ./install_console.py
+cd /tmp/pandorafms/tests && chmod +x install_console.py && python install_console.py
 check "Creating the Pandora FMS Database" $?
 
 # Build and install the Pandora FMS Server.

@@ -284,6 +284,7 @@ function update_template($step)
 
         $result = alerts_update_alert_template($id, $values);
     } else if ($step == 2) {
+        // TODO: Days.
         $monday = (bool) get_parameter('monday');
         $tuesday = (bool) get_parameter('tuesday');
         $wednesday = (bool) get_parameter('wednesday');
@@ -291,11 +292,14 @@ function update_template($step)
         $friday = (bool) get_parameter('friday');
         $saturday = (bool) get_parameter('saturday');
         $sunday = (bool) get_parameter('sunday');
-        $special_day = (int) get_parameter('special_day');
         $time_from = (string) get_parameter('time_from');
         $time_from = date('H:i:00', strtotime($time_from));
         $time_to = (string) get_parameter('time_to');
         $time_to = date('H:i:00', strtotime($time_to));
+
+        $schedule = get_parameter('schedule');
+
+        $special_day = (int) get_parameter('special_day');
         $threshold = (int) get_parameter('threshold');
         $max_alerts = (int) get_parameter('max_alerts');
         $min_alerts = (int) get_parameter('min_alerts');
@@ -312,14 +316,24 @@ function update_template($step)
             $default_action = null;
         }
 
+        hd($schedule);
+
         $values = [
-            'monday'                   => $monday,
-            'tuesday'                  => $tuesday,
-            'wednesday'                => $wednesday,
-            'thursday'                 => $thursday,
-            'friday'                   => $friday,
-            'saturday'                 => $saturday,
-            'sunday'                   => $sunday,
+            // 'monday'                   => $monday,
+            // 'tuesday'                  => $tuesday,
+            // 'wednesday'                => $wednesday,
+            // 'thursday'                 => $thursday,
+            // 'friday'                   => $friday,
+            // 'saturday'                 => $saturday,
+            // 'sunday'                   => $sunday,
+            // 'time_from'                => $time_from,
+            // 'time_to'                  => $time_to,
+            'schedule'                 => json_encode(
+                json_decode(
+                    io_safe_output($schedule),
+                    true
+                )
+            ),
             'special_day'              => $special_day,
             'time_threshold'           => $threshold,
             'id_alert_action'          => $default_action,
@@ -333,20 +347,6 @@ function update_template($step)
             'matches_value'            => $matches,
             'disable_event'            => $disable_event,
         ];
-
-        // Different datetimes format for oracle
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $values['time_from'] = $time_from;
-                $values['time_to'] = $time_to;
-            break;
-
-            case 'oracle':
-                $values['time_from'] = "#to_date('".$time_from."','hh24:mi:ss')";
-                $values['time_to'] = "#to_date('".$time_to."','hh24:mi:ss')";
-            break;
-        }
 
         $result = alerts_update_alert_template($id, $values);
     } else if ($step == 3) {
@@ -412,6 +412,7 @@ $type = '';
 $value = '';
 $max = '';
 $min = '';
+// TODO: Remove.
 $time_from = '12:00:00';
 $time_to = '12:00:00';
 $monday = true;
@@ -421,6 +422,8 @@ $thursday = true;
 $friday = true;
 $saturday = true;
 $sunday = true;
+
+$schedule = null;
 $special_day = 0;
 $default_action = 0;
 $fields = [];
@@ -555,6 +558,8 @@ if ($id && ! $create_template) {
     $max = $template['max_value'];
     $min = $template['min_value'];
     $matches = $template['matches_value'];
+
+    // TODO: Remove.
     $time_from = $template['time_from'];
     $time_to = $template['time_to'];
     $monday = (bool) $template['monday'];
@@ -564,6 +569,8 @@ if ($id && ! $create_template) {
     $friday = (bool) $template['friday'];
     $saturday = (bool) $template['saturday'];
     $sunday = (bool) $template['sunday'];
+
+    $schedule = $template['schedule'];
     $special_day = (int) $template['special_day'];
     $max_alerts = $template['max_alerts'];
     $min_alerts = $template['min_alerts'];
@@ -613,70 +620,7 @@ if ($step == 2) {
         $show_matches = false;
     }
 
-    // Firing conditions and events.
-    $table->colspan = [];
-    $table->data[0][0] = __('Days of week');
-    $table->data[0][1] = __('Mon');
-    $table->data[0][1] .= html_print_checkbox(
-        'monday',
-        1,
-        $monday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[0][1] .= __('Tue');
-    $table->data[0][1] .= html_print_checkbox(
-        'tuesday',
-        1,
-        $tuesday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[0][1] .= __('Wed');
-    $table->data[0][1] .= html_print_checkbox(
-        'wednesday',
-        1,
-        $wednesday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[0][1] .= __('Thu');
-    $table->data[0][1] .= html_print_checkbox(
-        'thursday',
-        1,
-        $thursday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[0][1] .= __('Fri');
-    $table->data[0][1] .= html_print_checkbox(
-        'friday',
-        1,
-        $friday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[0][1] .= __('Sat');
-    $table->data[0][1] .= html_print_checkbox(
-        'saturday',
-        1,
-        $saturday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[0][1] .= __('Sun');
-    $table->data[0][1] .= html_print_checkbox(
-        'sunday',
-        1,
-        $sunday,
-        true,
-        (!$is_management_allowed | $disabled)
-    );
-
-    $table->colspan[0][1] = 3;
-    $table->data[0][1] = '<div id="calendar"></div>';
-
-    $table->data[1][0] = __('Use special days list');
+    $table->data[0][0] = __('Use special days list');
     $data_special_days = Calendar::calendars(
         // Fields.
         [ '`talert_calendar`.*' ],
@@ -696,7 +640,7 @@ if ($step == 2) {
         true
     );
 
-    $table->data[1][1] = html_print_select(
+    $table->data[0][1] = html_print_select(
         $data_special_days,
         'special_day',
         $special_day,
@@ -710,46 +654,12 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    $table->data[2][0] = __('Time from');
-    $table->data[2][1] = html_print_input_text(
-        'time_from',
-        $time_from,
-        '',
-        7,
-        8,
-        true,
-        false,
-        false,
-        '',
-        '',
-        '',
-        '',
-        false,
-        '',
-        '',
-        '',
-        (!$is_management_allowed | $disabled)
-    );
-    $table->data[2][2] = __('Time to');
-    $table->data[2][3] = html_print_input_text(
-        'time_to',
-        $time_to,
-        '',
-        7,
-        8,
-        true,
-        false,
-        false,
-        '',
-        '',
-        '',
-        '',
-        false,
-        '',
-        '',
-        '',
-        (!$is_management_allowed | $disabled)
-    );
+    // Firing conditions and events.
+    $table->colspan = [];
+    $table->data[1][0] = __('Schedule');
+    $table->colspan[1][1] = 3;
+    $table->data[1][1] = '<div id="calendar_map"></div>';
+    $table->data[1][1] .= html_print_input_hidden('schedule', $schedule, true);
 
     $table->colspan['threshold'][1] = 3;
     $table->data['threshold'][0] = __('Time threshold');
@@ -958,6 +868,8 @@ if ($step == 2) {
     );
     $table->colspan['example'][1] = 4;
 } else if ($step == 3) {
+    hd($_POST);
+
     $table->style[0] = 'font-weight: bold; vertical-align: middle';
     $table->style[1] = 'font-weight: bold; vertical-align: top';
     $table->style[2] = 'font-weight: bold; vertical-align: top';
@@ -1548,7 +1460,11 @@ if ($step == 2) {
         }
     });
 
-    var calendarEl = document.getElementById('calendar');
+    //time_from, time_to, monday, tuesday, wednesday, thursday, friday, saturday, sunday
+    var eventsBBDD = $("#hidden-schedule").val();
+    var events = loadEventBBDD(eventsBBDD);
+
+    var calendarEl = document.getElementById('calendar_map');
     var settings = {
         timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
         timeOnlyTitle: '<?php echo __('Choose time'); ?>',
@@ -1561,7 +1477,7 @@ if ($step == 2) {
         url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>'
     }
 
-    var calendar = fullCalendarPandora(calendarEl, settings);
+    var calendar = fullCalendarPandora(calendarEl, settings, events);
     calendar.render();
     <?php
 } else if ($step == 3) {

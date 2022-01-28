@@ -1,6 +1,6 @@
 /* globals $, FullCalendar, uniqId, confirmDialog*/
 // eslint-disable-next-line no-unused-vars
-function fullCalendarPandora(calendarEl, settings) {
+function fullCalendarPandora(calendarEl, settings, initialEvents) {
   var calendar = new FullCalendar.Calendar(calendarEl, {
     height: 625,
     headerToolbar: {
@@ -36,7 +36,7 @@ function fullCalendarPandora(calendarEl, settings) {
     eventColor: "#82b92e",
     editable: true,
     dayMaxEvents: false,
-    events: [],
+    events: initialEvents,
     select: function(info) {
       var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
       if (
@@ -46,6 +46,7 @@ function fullCalendarPandora(calendarEl, settings) {
         recalculate_events(calendar, {}, info.start, info.end, true);
       }
       calendar.unselect();
+      save_data_input(calendar);
     },
     selectAllow: function(info) {
       var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
@@ -85,10 +86,11 @@ function fullCalendarPandora(calendarEl, settings) {
           info.event.end,
           false
         );
+        save_data_input(calendar);
       }
     },
     eventDragStop: function(info) {
-      var trashEl = $("#calendar");
+      var trashEl = $("#calendar_map");
       var ofs = trashEl.offset();
 
       var x1 = ofs.left;
@@ -104,6 +106,7 @@ function fullCalendarPandora(calendarEl, settings) {
       ) {
         // Remove event.
         info.event.remove();
+        save_data_input(calendar);
       }
     },
     eventResize: function(info) {
@@ -121,6 +124,7 @@ function fullCalendarPandora(calendarEl, settings) {
           info.event.end,
           false
         );
+        save_data_input(calendar);
       }
     },
     eventClick: function(info) {
@@ -234,6 +238,7 @@ function fullCalendarPandora(calendarEl, settings) {
             // Remove event.
             info.event.remove();
           }
+          save_data_input(calendar);
         }
       });
     },
@@ -308,4 +313,113 @@ function recalculate_events(calendar, newEvent, from, to, create) {
     // Update event.
     newEvent.setDates(from, to);
   }
+}
+
+function save_data_input(calendar) {
+  var allEvents = calendar.getEvents();
+  var data = {};
+  var day_names = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday"
+  ];
+  allEvents.forEach(function(event) {
+    var obj = {
+      start: time_format(event.start),
+      end: time_format(event.end)
+    };
+    if (data[day_names[event.start.getDay()]] == undefined) {
+      data[day_names[event.start.getDay()]] = [];
+    }
+    data[day_names[event.start.getDay()]].push(obj);
+  });
+
+  $("#hidden-schedule").val(JSON.stringify(data));
+}
+
+// eslint-disable-next-line no-unused-vars
+function loadEventBBDD(events) {
+  console.log(events);
+  if (events === null || events === "") {
+    return {};
+  }
+
+  var current_day = new Date();
+
+  var day_names = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+    "sun"
+  ];
+
+  var keys_days_names = {
+    monday: 0,
+    tuesday: 1,
+    wednesday: 2,
+    thursday: 3,
+    friday: 4,
+    saturday: 5,
+    sunday: 6,
+    sun: 7
+  };
+
+  var dates = [];
+  day_names.forEach(function(element, i) {
+    dates[element] = getDays(current_day, i);
+  });
+
+  var result = [];
+  Object.entries(JSON.parse(events)).forEach(function(element) {
+    var day_string = element[0];
+    var events_day = element[1];
+    events_day.forEach(function(event) {
+      if (event != null) {
+        var time_from = event.start.split(":");
+        var time_to = event.end.split(":");
+        var end = dates[day_string].setHours(
+          time_to[0],
+          time_to[1],
+          time_to[2],
+          0
+        );
+        if (event.end === "00:00:00") {
+          end = dates[day_names[keys_days_names[day_string] + 1]].setHours(
+            time_to[0],
+            time_to[1],
+            time_to[2],
+            0
+          );
+        }
+        result.push({
+          title: "",
+          start: dates[day_string].setHours(
+            time_from[0],
+            time_from[1],
+            time_from[2],
+            0
+          ),
+          end: end,
+          id: uniqId()
+        });
+      }
+    });
+  });
+
+  return result;
+}
+
+function getDays(d, i) {
+  d = new Date(d);
+  var day = d.getDay(),
+    diff = d.getDate() - day + i + (day == 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
 }

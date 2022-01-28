@@ -928,12 +928,12 @@ function planned_downtimes_copy($id_downtime)
         ['id' => $id_downtime]
     );
 
-    $planned_agents = db_get_row_filter(
+    $planned_agents = db_get_all_rows_filter(
         'tplanned_downtime_agents',
         ['id_downtime' => $id_downtime]
     );
 
-    $planned_modules = db_get_row_filter(
+    $planned_modules = db_get_all_rows_filter(
         'tplanned_downtime_modules',
         ['id_downtime' => $id_downtime]
     );
@@ -949,22 +949,34 @@ function planned_downtimes_copy($id_downtime)
     $planned_downtime['name'] = __('Coy of ').$planned_downtime['name'];
 
     // Insert new downtime
-    $result = db_process_sql_insert(
+    $result['id_downtime'] = db_process_sql_insert(
         'tplanned_downtime',
         $planned_downtime
     );
 
     if ($result === false) {
-        return false;
+        $result['error'] = __('Could not be copied');
+        return $result;
+    } else {
+        $result['success'] = __('Successfully copied');
     }
 
     if ($planned_agents !== false) {
-        // Unser id.
-        unset($planned_agents['id']);
-        $result = db_process_sql_insert(
-            'tplanned_downtime_agents',
-            $planned_agents
-        );
+        foreach ($planned_agents as $planned_agent) {
+            // Unset id.
+            unset($planned_agent['id']);
+            // Set id_planned downtime
+            $planned_agent['id_downtime'] = $result['id_downtime'];
+            $result['id_agents'][] = db_process_sql_insert(
+                'tplanned_downtime_agents',
+                $planned_agent
+            );
+
+            if ($result === false) {
+                $return['error'] = __('Error adding agents to copied downtime');
+                break;
+            }
+        }
     }
 
     if ($result === false) {
@@ -974,18 +986,21 @@ function planned_downtimes_copy($id_downtime)
     if ((bool) $planned_agents['all_modules'] === false
         && $planned_modules !== false
     ) {
-        // Unser id.
-        unset($planned_modules['id']);
-        $result = db_process_sql_insert(
-            'tplanned_downtime_agents',
-            $planned_agents
-        );
+        foreach ($planned_modules as $planned_module) {
+            // Unset id.
+            unset($planned_module['id']);
+            // Set id_planned downtime
+            $planned_module['id_downtime'] = $result['id_downtime'];
+            $result['id_modules'][] = db_process_sql_insert(
+                'tplanned_downtime_moduless',
+                $planned_module
+            );
+            if ($result === false) {
+                $return['error'] = __('Error adding module to copied downtime');
+                break;
+            }
+        }
     }
 
-    if ($result === false) {
-        return false;
-    }
-
-    return true;
-
+    return $result;
 }

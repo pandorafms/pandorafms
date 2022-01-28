@@ -423,10 +423,11 @@ if ($create_downtime || $update_downtime) {
 
 if ($downtime_copy) {
     $result = planned_downtimes_copy($id_downtime);
-    if ($result === true) {
-        ui_print_success_message(__('Successfully copied'));
+    if ($result['id_downtime'] !== false) {
+        $id_downtime = $result['id_downtime'];
+        ui_print_success_message($result['success']);
     } else {
-        ui_print_error_message(__('Could not be copied'));
+        ui_print_error_message(__($result['error']));
     }
 }
 

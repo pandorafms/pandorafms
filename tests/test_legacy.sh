@@ -17,9 +17,9 @@ function check {
 }
 
 # Start the required services.
-service mysqld start && /usr/bin/mysqladmin -u root password 'pandora'
+rm -rf /var/lib/mysql/* && sudo -u mysql mysqld --initialize-insecure && mysqld --user=mysql --sql-mode="" --daemonize=ON && /usr/bin/mysqladmin -u root password 'pandora'
 check "Starting the MySQL Server" $?
-service httpd start
+httpd -k start
 check "Starting the Apache Web Server" $?
 
 # Install the Pandora FMS Console.

@@ -12,4 +12,4 @@ test_php_legacy:
     - df -h | grep instaladores | awk '{print $NF}' |xargs umount >/dev/null 2>&1 || true
   script:
     - docker pull pandorafms/pandorafms-base:centos7
-    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:centos7 /tmp/pandorafms/tests/test.sh
+    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:centos7 /tmp/pandorafms/tests/test_legacy.sh

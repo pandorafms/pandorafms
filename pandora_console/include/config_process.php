@@ -20,7 +20,7 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC220128';
+$build_version = 'PC220129';
 $pandora_version = 'v7.0NG.759';
 
 // Do not overwrite default timezone set if defined.

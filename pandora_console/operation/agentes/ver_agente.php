@@ -365,15 +365,6 @@ if (is_ajax()) {
             'AW'
         );
 
-        if ($truncate_agent_names === true) {
-            $names = array_map(
-                function ($name) {
-                    return ui_print_truncate_text($name, 30);
-                },
-                $names
-            );
-        }
-
         echo json_encode($names);
         return;
     }

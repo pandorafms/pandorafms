@@ -88,6 +88,23 @@ function js_html_entity_decode(str) {
   return str2;
 }
 
+function truncate_string(str, str_length, separator) {
+  if (str.length <= str_length) {
+    return str;
+  }
+
+  separator = separator || "...";
+
+  var separator_length = separator.length,
+    chars_to_show = str_length - separator_length,
+    front_chars = Math.ceil(chars_to_show / 2),
+    tail_chars = Math.floor(chars_to_show / 2);
+
+  return (
+    str.substr(0, front_chars) + separator + str.substr(str.length - tail_chars)
+  );
+}
+
 /**
  * Function to search an element in an array.
  *
@@ -620,7 +637,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
         s = js_html_entity_decode(val);
         $("#agents").append(
           $("<option></option>")
-            .html(s)
+            .html(truncate_string(s, 30, "..."))
             .attr({ value: i, title: s })
         );
         $("#agents").fadeIn("normal");

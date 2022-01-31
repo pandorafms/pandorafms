@@ -713,7 +713,7 @@ $(document).ready (function () {
             function (data, status) {
                 jQuery.each (data, function (id, value) {
                     option = $("<option></option>")
-                        .attr("value", value["nombre"])
+                        .attr({value: value["nombre"], title: value["nombre"]})
                         .html(value["safe_name"]);
                     $("#module_name").append (option);
                 });

@@ -621,7 +621,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
         $("#agents").append(
           $("<option></option>")
             .html(s)
-            .attr("value", i)
+            .attr({ value: i, title: s })
         );
         $("#agents").fadeIn("normal");
       });

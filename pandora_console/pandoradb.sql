@@ -3051,6 +3051,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`id_template_fields` int(10) unsigned NOT NULL default 0,
 	`last_evaluation` bigint(20) NOT NULL default 0,
 	`pool_occurrences` int unsigned not null default 0,
+	`schedule` text default null,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

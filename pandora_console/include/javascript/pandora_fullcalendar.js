@@ -364,7 +364,7 @@ function save_data_input(calendar) {
 
 // eslint-disable-next-line no-unused-vars
 function loadEventBBDD(events) {
-  if (events === null || events === "") {
+  if (events == undefined || events === null || events === "") {
     $(".warning").show();
     return {};
   }

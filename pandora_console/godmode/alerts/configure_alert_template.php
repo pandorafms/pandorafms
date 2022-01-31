@@ -617,7 +617,7 @@ if ($step == 2) {
     $table->colspan[1][1] = 3;
     $table->data[1][1] = ui_print_warning_message(
         [
-            'message'     => __('Not selected any day'),
+            'message'     => __('No alert has been scheduled yet'),
             'force_style' => 'display:none;',
         ],
         '',

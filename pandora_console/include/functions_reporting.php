@@ -4087,20 +4087,23 @@ function reporting_last_value($report, $content, $datetime, $period)
 {
     global $config;
 
-    $module = new Module($content['id_agent_module']);
+    try {
+        $id_meta = null;
+        if (is_metaconsole()) {
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server = metaconsole_get_connection_by_id($id_meta);
+        }
+
+        $module = new Module($content['id_agent_module'], false, $server['id']);
+    } catch (\Exception $e) {
+        $result = [];
+        return reporting_check_structure_content($result);
+    }
+
     $return['type'] = 'last_value';
 
     if (empty($content['name'])) {
         $content['name'] = __('Last Value');
-    }
-
-    if (is_metaconsole()) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-        $server = metaconsole_get_connection_by_id($id_meta);
-        if (metaconsole_connect($server) != NOERR) {
-            $result = [];
-            return reporting_check_structure_content($result);
-        }
     }
 
     $id_agent = $module->agent()->id_agente();
@@ -4188,10 +4191,6 @@ function reporting_last_value($report, $content, $datetime, $period)
     $result['module_name'] = $module_name;
 
     $return['data'] = $result;
-
-    if (is_metaconsole()) {
-        metaconsole_restore_db();
-    }
 
     return reporting_check_structure_content($return);
 }

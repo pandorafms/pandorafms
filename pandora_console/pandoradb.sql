@@ -522,6 +522,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`min_alerts_reset_counter` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
 	`previous_name` text,
+	`schedule` text default null,
 	PRIMARY KEY  (`id`),
 	KEY `idx_template_action` (`id_alert_action`),
 	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)

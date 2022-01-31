@@ -8473,3 +8473,15 @@ div#err_msg_centralised {
   display: flex;
   flex-direction: row;
 }
+
+.tooltipevent {
+  width: 70px;
+  background: #fff;
+  position: absolute;
+  z-index: 10001;
+  top: 20px;
+  left: 20px;
+  border: 2px solid #82b92e;
+  border-radius: 5px;
+  padding: 5px;
+}

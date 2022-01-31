@@ -62,7 +62,7 @@ if (check_acl_restricted_all($config['id_user'], 0, 'LM')) {
 }
 
 if ($a_template !== false) {
-    // If user tries to duplicate/edit a template with group=ALL
+    // If user tries to duplicate/edit a template with group=ALL.
     if ($a_template['id_group'] == 0) {
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
@@ -84,7 +84,7 @@ if ($a_template !== false) {
             );
         }
     } else {
-        // If user tries to duplicate/edit a template of others groups
+        // If user tries to duplicate/edit a template of others groups.
         $own_info = get_user_info($config['id_user']);
         if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
             $own_groups = array_keys(users_get_groups($config['id_user'], 'LM'));
@@ -93,9 +93,9 @@ if ($a_template !== false) {
         }
 
         $is_in_group = in_array($a_template['id_group'], $own_groups);
-        // Then template group have to be in his own groups
+        // Then template group have to be in his own groups.
         if ($is_in_group) {
-            // Header
+            // Header.
             if (defined('METACONSOLE')) {
                 alerts_meta_print_header();
             } else {
@@ -117,9 +117,9 @@ if ($a_template !== false) {
         }
     }
 
-    // This prevents to duplicate the header in case duplicate/edit_template action is performed
+    // This prevents to duplicate the header in case duplicate/edit_template action is performed.
 } else {
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -145,8 +145,10 @@ if ($a_template !== false) {
 if ($duplicate_template) {
     $source_id = (int) get_parameter('source_id');
 
-    // If user doesn't have the permission to access All group and source template is All group, then group is changed to the first group of user.
-    if ($can_edit_all == false && a_template['id_group'] == 0) {
+    // If user doesn't have the permission to access
+    // All group and source template is All group,
+    // then group is changed to the first group of user.
+    if ($can_edit_all == false && $a_template['id_group'] == 0) {
         $a_template['id_group'] = users_get_first_group(false, 'LM', false);
     }
 
@@ -178,7 +180,7 @@ function print_alert_template_steps($step, $id)
 
     $pure = get_parameter('pure', 0);
 
-    // Step 1
+    // Step 1.
     if ($step == 1) {
         echo '<li class="first current">';
     } else if ($step > 1) {
@@ -199,7 +201,7 @@ function print_alert_template_steps($step, $id)
 
     echo '</li>';
 
-    // Step 2
+    // Step 2.
     if ($step == 2) {
         echo '<li class="current">';
     } else if ($step > 2) {
@@ -220,7 +222,7 @@ function print_alert_template_steps($step, $id)
 
     echo '</li>';
 
-    // Step 3
+    // Step 3.
     if ($step == 3) {
         echo '<li class="last current">';
     } else if ($step > 3) {
@@ -284,21 +286,7 @@ function update_template($step)
 
         $result = alerts_update_alert_template($id, $values);
     } else if ($step == 2) {
-        // TODO: Days.
-        $monday = (bool) get_parameter('monday');
-        $tuesday = (bool) get_parameter('tuesday');
-        $wednesday = (bool) get_parameter('wednesday');
-        $thursday = (bool) get_parameter('thursday');
-        $friday = (bool) get_parameter('friday');
-        $saturday = (bool) get_parameter('saturday');
-        $sunday = (bool) get_parameter('sunday');
-        $time_from = (string) get_parameter('time_from');
-        $time_from = date('H:i:00', strtotime($time_from));
-        $time_to = (string) get_parameter('time_to');
-        $time_to = date('H:i:00', strtotime($time_to));
-
         $schedule = get_parameter('schedule');
-
         $special_day = (int) get_parameter('special_day');
         $threshold = (int) get_parameter('threshold');
         $max_alerts = (int) get_parameter('max_alerts');
@@ -312,22 +300,11 @@ function update_template($step)
         $matches = (bool) get_parameter('matches_value');
 
         $default_action = (int) get_parameter('default_action');
-        if (empty($default_action)) {
+        if (empty($default_action) === true) {
             $default_action = null;
         }
 
-        hd($schedule);
-
         $values = [
-            // 'monday'                   => $monday,
-            // 'tuesday'                  => $tuesday,
-            // 'wednesday'                => $wednesday,
-            // 'thursday'                 => $thursday,
-            // 'friday'                   => $friday,
-            // 'saturday'                 => $saturday,
-            // 'sunday'                   => $sunday,
-            // 'time_from'                => $time_from,
-            // 'time_to'                  => $time_to,
             'schedule'                 => json_encode(
                 json_decode(
                     io_safe_output($schedule),
@@ -364,9 +341,21 @@ function update_template($step)
     }
 
     if ($result) {
-        db_pandora_audit('Template alert management', 'Update alert template #'.$id, false, false, json_encode($values));
+        db_pandora_audit(
+            'Template alert management',
+            'Update alert template #'.$id,
+            false,
+            false,
+            json_encode($values)
+        );
     } else {
-        db_pandora_audit('Template alert management', 'Fail try to update alert template #'.$id, false, false, json_encode($values));
+        db_pandora_audit(
+            'Template alert management',
+            'Fail try to update alert template #'.$id,
+            false,
+            false,
+            json_encode($values)
+        );
     }
 
     return $result;
@@ -412,16 +401,6 @@ $type = '';
 $value = '';
 $max = '';
 $min = '';
-// TODO: Remove.
-$time_from = '12:00:00';
-$time_to = '12:00:00';
-$monday = true;
-$tuesday = true;
-$wednesday = true;
-$thursday = true;
-$friday = true;
-$saturday = true;
-$sunday = true;
 
 $schedule = null;
 $special_day = 0;
@@ -458,17 +437,7 @@ if ($create_template) {
     $priority = (int) get_parameter('priority');
     $wizard_level = (string) get_parameter('wizard_level');
     $id_group = get_parameter('id_group');
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $name_check = db_get_value('name', 'talert_templates', 'name', $name);
-        break;
-
-        case 'oracle':
-            $name_check = db_get_value('name', 'talert_templates', 'to_char(name)', $name);
-        break;
-    }
-
+    $name_check = db_get_value('name', 'talert_templates', 'name', $name);
 
     $values = [
         'description'   => $description,
@@ -510,8 +479,7 @@ if ($create_template) {
         );
     }
 
-
-    // Show errors
+    // Show errors.
     if (!isset($messageAction)) {
         $messageAction = __('Could not be created');
     }
@@ -527,9 +495,9 @@ if ($create_template) {
     );
 
 
-    // Go to previous step in case of error
+    // Go to previous step in case of error.
     if ($result === false) {
-        $step = ($step - 1);
+        $step--;
     } else {
         $id = $result;
     }
@@ -543,9 +511,9 @@ if ($update_template) {
         __('Successfully updated'),
         __('Could not be updated')
     );
-    // Go to previous step in case of error
+    // Go to previous step in case of error.
     if ($result === false) {
-        $step = ($step - 1);
+        $step--;
     }
 }
 
@@ -558,17 +526,6 @@ if ($id && ! $create_template) {
     $max = $template['max_value'];
     $min = $template['min_value'];
     $matches = $template['matches_value'];
-
-    // TODO: Remove.
-    $time_from = $template['time_from'];
-    $time_to = $template['time_to'];
-    $monday = (bool) $template['monday'];
-    $tuesday = (bool) $template['tuesday'];
-    $wednesday = (bool) $template['wednesday'];
-    $thursday = (bool) $template['thursday'];
-    $friday = (bool) $template['friday'];
-    $saturday = (bool) $template['saturday'];
-    $sunday = (bool) $template['sunday'];
 
     $schedule = $template['schedule'];
     $special_day = (int) $template['special_day'];
@@ -658,7 +615,15 @@ if ($step == 2) {
     $table->colspan = [];
     $table->data[1][0] = __('Schedule');
     $table->colspan[1][1] = 3;
-    $table->data[1][1] = '<div id="calendar_map"></div>';
+    $table->data[1][1] = ui_print_warning_message(
+        [
+            'message'     => __('Not selected any day'),
+            'force_style' => 'display:none;',
+        ],
+        '',
+        true
+    );
+    $table->data[1][1] .= '<div id="calendar_map"></div>';
     $table->data[1][1] .= html_print_input_hidden('schedule', $schedule, true);
 
     $table->colspan['threshold'][1] = 3;
@@ -711,7 +676,7 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled),
         '',
         false,
-        $create_template == 1 ? 'checked=checked' : ''
+        ($create_template == 1) ? 'checked=checked' : ''
     );
 
     $table->data[5][0] = __('Max. number of alerts');
@@ -793,7 +758,7 @@ if ($step == 2) {
         '',
         (!$is_management_allowed | $disabled)
     );
-    $table->data[7][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
+    $table->data[7][1] .= '<span id="matches_value" '.(($show_matches) ? '' : 'class="invisible"').'>';
     $table->data[7][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
     $table->data[7][1] .= html_print_label(
         __('Trigger when matches the value'),
@@ -868,8 +833,6 @@ if ($step == 2) {
     );
     $table->colspan['example'][1] = 4;
 } else if ($step == 3) {
-    hd($_POST);
-
     $table->style[0] = 'font-weight: bold; vertical-align: middle';
     $table->style[1] = 'font-weight: bold; vertical-align: top';
     $table->style[2] = 'font-weight: bold; vertical-align: top';
@@ -1035,6 +998,10 @@ if ($step == 2) {
         case 'onchange':
             $show_matches = true;
         break;
+
+        default:
+            // Not possible.
+        break;
     }
 
     $table->data[0][0] = __('Name');
@@ -1135,7 +1102,7 @@ if ($step == 2) {
     echo ui_get_using_system_timezone_warning();
 }
 
-// If it's the last step it will redirect to template lists
+// If it's the last step it will redirect to template lists.
 if ($step >= LAST_STEP) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_templates&pure='.$pure.'">';
 } else {
@@ -1164,7 +1131,7 @@ if (!$disabled) {
         } else {
             html_print_input_hidden('step', ($step + 1));
             if ($step == 2) {
-                // Javascript onsubmit to avoid min = 0 and max = 0
+                // Javascript onsubmit to avoid min = 0 and max = 0.
                 html_print_submit_button(
                     __('Next'),
                     'next',
@@ -1460,10 +1427,8 @@ if ($step == 2) {
         }
     });
 
-    //time_from, time_to, monday, tuesday, wednesday, thursday, friday, saturday, sunday
     var eventsBBDD = $("#hidden-schedule").val();
     var events = loadEventBBDD(eventsBBDD);
-
     var calendarEl = document.getElementById('calendar_map');
     var settings = {
         timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -1474,7 +1439,11 @@ if ($step == 2) {
         secondText: '<?php echo __('Second'); ?>',
         currentText: '<?php echo __('Now'); ?>',
         closeText: '<?php echo __('Close'); ?>',
-        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>'
+        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+        removeText:  '<?php echo __('Remove'); ?>',
+        userLanguage: '<?php echo get_user_language(); ?>',
+        loadingText: '<?php echo __('Loading, this operation might take several minutes...'); ?>',
+        tooltipText: '<?php echo __('Drag out to remove'); ?>',
     }
 
     var calendar = fullCalendarPandora(calendarEl, settings, events);

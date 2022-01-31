@@ -24,7 +24,6 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
     slotMinTime: "00:00:00",
     slotMaxTime: "24:00:00",
     scrollTime: "01:00:00",
-    timeFormat: "H:mm",
     locale: "en-GB",
     //timeZone: "local",
     firstDay: 1,
@@ -37,6 +36,7 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
     editable: true,
     dayMaxEvents: false,
     events: initialEvents,
+    defaultAllDay: false,
     select: function(info) {
       var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
       if (
@@ -59,34 +59,40 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
       return false;
     },
     eventAllow: function(dropInfo, draggedEvent) {
-      var nextDay =
-        draggedEvent.start.getDay() === 6 ? 0 : draggedEvent.start.getDay() + 1;
-      if (
-        (draggedEvent.start.getDay() == dropInfo.start.getDay() &&
-          dropInfo.start.getDay() == dropInfo.end.getDay()) ||
-        (nextDay == dropInfo.end.getDay() &&
-          time_format(dropInfo.end) == "00:00:00")
-      ) {
-        return true;
+      if (dropInfo.allDay != true) {
+        var nextDay =
+          draggedEvent.start.getDay() === 6
+            ? 0
+            : draggedEvent.start.getDay() + 1;
+        if (
+          (draggedEvent.start.getDay() == dropInfo.start.getDay() &&
+            dropInfo.start.getDay() == dropInfo.end.getDay()) ||
+          (nextDay == dropInfo.end.getDay() &&
+            time_format(dropInfo.end) == "00:00:00")
+        ) {
+          return true;
+        }
       }
       return false;
     },
     eventDrop: function(info) {
-      var nextDay =
-        info.event.start.getDay() === 6 ? 0 : info.event.start.getDay() + 1;
-      if (
-        info.event.start.getDay() == info.event.end.getDay() ||
-        (nextDay == info.event.end.getDay() &&
-          time_format(info.event.end) == "00:00:00")
-      ) {
-        recalculate_events(
-          calendar,
-          info.event,
-          info.event.start,
-          info.event.end,
-          false
-        );
-        save_data_input(calendar);
+      if (info.event.allDay != true) {
+        var nextDay =
+          info.event.start.getDay() === 6 ? 0 : info.event.start.getDay() + 1;
+        if (
+          info.event.start.getDay() == info.event.end.getDay() ||
+          (nextDay == info.event.end.getDay() &&
+            time_format(info.event.end) == "00:00:00")
+        ) {
+          recalculate_events(
+            calendar,
+            info.event,
+            info.event.start,
+            info.event.end,
+            false
+          );
+          save_data_input(calendar);
+        }
       }
     },
     eventDragStop: function(info) {
@@ -127,17 +133,23 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
         save_data_input(calendar);
       }
     },
+    eventMouseEnter: function(info) {
+      var tooltip = '<div class="tooltipevent">';
+      tooltip += settings.tooltipText;
+      tooltip += "</div>";
+
+      $(tooltip).appendTo(info.el);
+    },
+    eventMouseLeave: function() {
+      $(".tooltipevent").remove();
+    },
     eventClick: function(info) {
       var calendar_date_from = new Date(calendar.view.activeStart);
-      var calendar_date_to = new Date(calendar.view.activeEnd);
-      var calendar_day_from = calendar_date_from.getDate();
-      var calendar_day_to = calendar_date_to.getDate();
-
       var calendar_days = [];
       var acum = 1;
       var i = 0;
       // Week date.
-      for (var index = calendar_day_from; index < calendar_day_to; index++) {
+      for (var index = 1; index <= 7; index++) {
         // Sunday key 0.
         if (acum === 7) {
           acum = 0;
@@ -154,8 +166,7 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
         title: "Event",
         message: function() {
           var id = "div-" + uniqId();
-          var loading =
-            "<?php echo __('Loading, this operation might take several minutes...'); ?>";
+          var loading = settings.loadingText;
           $.ajax({
             method: "post",
             url: settings.url,
@@ -184,7 +195,7 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
               });
 
               $.datepicker.setDefaults(
-                $.datepicker.regional["<?php echo get_user_language(); ?>"]
+                $.datepicker.regional[settings.userLanguage]
               );
             },
             error: function(error) {
@@ -195,55 +206,59 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
           return "<div id ='" + id + "'>" + loading + "</div>";
         },
         onAccept: function() {
-          var remove_event = $("#checkbox-remove_event").is(":checked");
-          if (remove_event === false) {
-            var replace_day_from = $("#hidden-day_from").val();
-            var replace_time_from = $("#text-time_from_event").val();
+          var replace_day_from = $("#hidden-day_from").val();
+          var replace_time_from = $("#text-time_from_event").val();
 
-            var array_time_from = replace_time_from.split(":");
-            var new_date_from = new Date(calendar_days[replace_day_from]);
-            new_date_from.setHours(
-              array_time_from[0],
-              array_time_from[1],
-              array_time_from[2]
+          var array_time_from = replace_time_from.split(":");
+          var new_date_from = new Date(calendar_days[replace_day_from]);
+          new_date_from.setHours(
+            array_time_from[0],
+            array_time_from[1],
+            array_time_from[2]
+          );
+
+          var replace_day_to = $("#hidden-day_to").val();
+          var replace_time_to = $("#text-time_to_event").val();
+          if (replace_time_to === "23:59:59") {
+            replace_day_to++;
+            replace_time_to = "00:00:00";
+          }
+
+          var array_time_to = replace_time_to.split(":");
+          var new_date_to = new Date(calendar_days[replace_day_to]);
+          new_date_to.setHours(
+            array_time_to[0],
+            array_time_to[1],
+            array_time_to[2]
+          );
+
+          if (new_date_from < new_date_to) {
+            recalculate_events(
+              calendar,
+              info.event,
+              new_date_from,
+              new_date_to,
+              false
             );
-
-            var replace_day_to = $("#hidden-day_to").val();
-            var replace_time_to = $("#text-time_to_event").val();
-            if (replace_time_to === "23:59:59") {
-              replace_day_to++;
-              replace_time_to = "00:00:00";
-            }
-
-            var array_time_to = replace_time_to.split(":");
-            var new_date_to = new Date(calendar_days[replace_day_to]);
-            new_date_to.setHours(
-              array_time_to[0],
-              array_time_to[1],
-              array_time_to[2]
-            );
-
-            if (new_date_from < new_date_to) {
-              recalculate_events(
-                calendar,
-                info.event,
-                new_date_from,
-                new_date_to,
-                false
-              );
-            } else {
-              console.error("You cannot add smaller events");
-            }
           } else {
-            // Remove event.
-            info.event.remove();
+            console.error("You cannot add smaller events");
           }
           save_data_input(calendar);
+        },
+        newButton: {
+          text: settings.removeText,
+          class: "",
+          onFunction: function() {
+            // Remove event.
+            info.event.remove();
+            save_data_input(calendar);
+          }
         }
       });
     },
+    selectOverlap: false,
     eventOverlap: false,
-    selectOverlap: false
+    allDaySlot: true
   });
 
   return calendar;
@@ -338,15 +353,23 @@ function save_data_input(calendar) {
     data[day_names[event.start.getDay()]].push(obj);
   });
 
+  if (data && Object.keys(data).length === 0) {
+    $(".warning.textodialogo").show();
+  } else {
+    $(".warning").hide();
+  }
+
   $("#hidden-schedule").val(JSON.stringify(data));
 }
 
 // eslint-disable-next-line no-unused-vars
 function loadEventBBDD(events) {
-  console.log(events);
   if (events === null || events === "") {
+    $(".warning").show();
     return {};
   }
+
+  $(".warning").hide();
 
   var current_day = new Date();
 

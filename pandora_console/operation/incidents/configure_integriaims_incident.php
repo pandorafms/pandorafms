@@ -225,7 +225,7 @@ $table->data[0][0] .= '<div class="label_select_parent">'.html_print_input_text(
 ).'</div>';
 
 $integria_logo = 'images/integria_logo_gray.png';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $integria_logo = 'images/integria_logo.svg';
 }
 

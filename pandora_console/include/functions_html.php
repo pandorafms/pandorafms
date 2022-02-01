@@ -471,7 +471,7 @@ function html_print_select_groups(
     global $config;
     $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2_css = 'select2_dark.min';
     }
 
@@ -777,11 +777,11 @@ function html_print_select(
 
     if ($style === false) {
         $styleText = ' ';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $styleText = 'style="color: white"';
         }
     } else {
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $style .= ' color: white';
         }
 
@@ -922,7 +922,7 @@ function html_print_select(
     }
 
     $select2 = 'select2.min';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2 = 'select2_dark.min';
     }
 
@@ -1480,7 +1480,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'        => true,
             'nothing'       => __('All'),
             'nothing_value' => 0,
-            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'        => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
     $output .= '</div>';
@@ -1533,7 +1533,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
 
@@ -1550,30 +1550,20 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'name'     => 'filtered-module-show-common-modules-'.$uniqId,
             'selected' => $data['mShowCommonModules'],
             'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
         ]
     );
 
     if ($data['mAgents'] !== null) {
-        $all_modules = select_modules_for_agent_group(
+        $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),
             $data['mShowCommonModules'],
-            false
+            false,
+            true
         );
     } else {
         $all_modules = [];
-    }
-
-    if ($data['mShowSelectedOtherGroups']) {
-        $selected_modules_ids = explode(',', $data['mModules']);
-
-        foreach ($selected_modules_ids as $id) {
-            if (!array_key_exists($id, $all_modules)) {
-                $module_data = modules_get_agentmodule($id);
-                $all_modules[$id] = $module_data['nombre'];
-            }
-        }
     }
 
     $output .= html_print_input(
@@ -1582,7 +1572,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'type'     => 'select',
             'fields'   => $all_modules,
             'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => explode(',', $data['mModules']),
+            'selected' => explode((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ',', $data['mModules']),
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
@@ -2820,7 +2810,7 @@ function html_print_input_number(array $settings):string
     global $config;
     $text_color = '';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
     }
 
@@ -4297,7 +4287,7 @@ function html_print_autocomplete_modules(
 
     $text_color = '';
     $module_icon = 'images/search_module.png';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
     }
@@ -4599,7 +4589,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     enterprise_include_once('include/functions_metaconsole.php');
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $style = 'style="color: white"';
     }
 
@@ -5260,7 +5250,7 @@ function html_print_autocomplete_users_from_integria(
     global $config;
 
     $user_icon = 'images/user_green.png';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $user_icon = 'images/header_user.png';
     }
 
@@ -5367,7 +5357,7 @@ function html_print_tabs(array $tabs)
 
     $bg_color = '';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $bg_color = 'style="background-color: #222"';
     }
 
@@ -5469,7 +5459,7 @@ function html_print_select_search(
 
     $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2_css = 'select2_dark.min';
     }
 

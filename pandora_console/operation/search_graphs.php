@@ -29,6 +29,10 @@ if ($graphs === false || !$searchGraphs) {
     $table->head[0] = __('Graph name');
     $table->head[1] = __('Description');
 
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
+
     $table->data = [];
     foreach ($graphs as $graph) {
         array_push(

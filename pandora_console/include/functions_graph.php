@@ -1555,7 +1555,7 @@ function graphic_combined_module(
 
     $long_index = '';
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null )
+    if (($config['style'] === 'pandora_black' && !is_metaconsole()) && ($params['pdf'] === false || $params['pdf'] === null )
     ) {
         $background_color = '#222';
         $params['legend_color'] = '#fff';

@@ -302,7 +302,7 @@ function mainModuleGroups()
         $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
 
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $background_color = '#333';
         } else {
             $background_color = '#fff';

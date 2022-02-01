@@ -426,17 +426,17 @@ if ($filter_standby == 'standby_on') {
 if (is_metaconsole() === true) {
     include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
     if ($idAgent != 0) {
-        $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user);
+        $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
-        $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user);
+        $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
     } else {
         $id_groups = array_keys(
             users_get_groups($config['id_user'], 'AR', false)
         );
 
-        $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
+        $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
-        $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
+        $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
     }
 } else {
     if ($idAgent != 0) {

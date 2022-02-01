@@ -1725,6 +1725,17 @@ $table->data[4][0] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you 
                     }
 
                     if ($row['history_data'] == 1 && $acl_graphs) {
+                        $tresholds = true;
+                        if (empty((float) $module['min_warning']) === true
+                            && empty((float) $module['max_warning']) === true
+                            && empty($module['warning_inverse']) === true
+                            && empty((float) $module['min_critical']) === true
+                            && empty((float) $module['max_critical']) === true
+                            && empty($module['critical_inverse']) === true
+                        ) {
+                            $tresholds = false;
+                        }
+
                         $graph_type = return_graphtype($row['module_type']);
 
                         $url = ui_get_full_url('operation/agentes/stat_win.php', false, false, false);
@@ -1738,6 +1749,10 @@ $table->data[4][0] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you 
                             'refresh' => SECONDS_10MINUTES,
                         ];
 
+                        if ($tresholds === true || $graph_type === 'boolean') {
+                            $graph_params['histogram'] = 1;
+                        }
+
                         if (is_metaconsole() && isset($row['server_id'])) {
                             // Set the server id.
                             $graph_params['server'] = $row['server_id'];
@@ -1748,6 +1763,18 @@ $table->data[4][0] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you 
                         $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
 
                         $data[8] = get_module_realtime_link_graph($row);
+
+                        if ($tresholds === true || $graph_type === 'boolean') {
+                            $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image(
+                                'images/histograma.png',
+                                true,
+                                [
+                                    'border' => '0',
+                                    'alt'    => '',
+                                    'class'  => 'invert_filter',
+                                ]
+                            ).'</a>';
+                        }
 
                         if (!is_snapshot_data($row['datos'])) {
                             $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';

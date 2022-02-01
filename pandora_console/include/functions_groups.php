@@ -982,31 +982,31 @@ function groups_get_agents_counter($group, $agent_filter=[], $module_filter=[], 
                 switch ($agent_status) {
                     case AGENT_STATUS_CRITICAL:
                         if ($critical > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_WARNING:
                         if (($total > 0) && ($critical == 0) && ($warning > 0)) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_UNKNOWN:
                         if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NOT_INIT:
                         if ($total == 0 || $total == $not_init) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NORMAL:
                         if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
@@ -1017,23 +1017,23 @@ function groups_get_agents_counter($group, $agent_filter=[], $module_filter=[], 
             } else {
                 if (array_search(AGENT_STATUS_CRITICAL, $agent_status) !== false) {
                     if ($critical > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_WARNING, $agent_status) !== false) {
                     if ($total > 0 && $critical = 0 && $warning > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_UNKNOWN, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NOT_INIT, $agent_status) !== false) {
                     if ($total == 0 || $total == $not_init) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NORMAL, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                        $count ++;
+                        $count++;
                     }
                 }
                 // Invalid status

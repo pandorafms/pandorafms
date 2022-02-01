@@ -17549,6 +17549,35 @@ function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
 
 
 /**
+ * Return whether or not a node is in centralized mode.
+ *
+ * @param [string] $server_id  server id (node)
+ * @param [string] $thrash1    don't use
+ * @param [string] $thrash2    don't use
+ * @param [string] $returnType
+ *
+ * Example
+ * api.php?op=get&op2=is_centralized&id=3&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+function api_get_is_centralized($server_id, $thrash1, $thrash2, $returnType)
+{
+    if (is_metaconsole() === true) {
+        $unified = db_get_value_filter('unified', 'tmetaconsole_setup', ['id' => $server_id]);
+
+        if ($unified !== false) {
+            returnData($returnType, ['type' => 'string', 'data' => $unified]);
+        } else {
+            returnData($returnType, ['type' => 'string', 'data' => 'Node with ID '.$server_id.' does not exist']);
+        }
+    } else {
+        returnData($returnType, ['type' => 'string', 'data' => (int) is_centralized()]);
+    }
+}
+
+
+/**
  * Function to set events in progress status.
  *
  * @param [int]    $event_id   Id event (Node or Meta).

@@ -94,9 +94,16 @@ function process_user_login($login, $pass, $api=false)
     }
 
     // 2. Try local.
+    $local_user = db_get_value_filter(
+        'local_user',
+        'tusuario',
+        ['id_user' => $login]
+    );
+
     if ($login_remote === false
         && ($config['fallback_local_auth']
         || is_user_admin($login)
+        || $local_user
         || strtolower($config['auth']) == 'mysql')
     ) {
         return process_user_login_local($login, $pass, $api);

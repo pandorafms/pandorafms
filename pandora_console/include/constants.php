@@ -771,9 +771,12 @@ define('COMMAND_NMAP', 4);
 define('COMMAND_DIGWHOIS', 5);
 
 // Audit logs.
+define('AUDIT_LOG_SETUP', 'Setup');
+define('AUDIT_LOG_SYSTEM', 'System');
+define('AUDIT_LOG_HACK_ATTEMPT', 'HACK Attempt');
 define('AUDIT_LOG_ACL_VIOLATION', 'ACL Violation');
-define('AUDIT_LOG_USER_REGISTRATION', 'Console user registration');
 define('AUDIT_LOG_METACONSOLE_NODE', 'Metaconsole node');
+define('AUDIT_LOG_USER_REGISTRATION', 'Console user registration');
 define('AUDIT_LOG_EXTENSION_MANAGER', 'Extension manager');
 define('AUDIT_LOG_USER_MANAGEMENT', 'User management');
 define('AUDIT_LOG_AGENT_MANAGEMENT', 'Agent management');
@@ -785,13 +788,10 @@ define('AUDIT_LOG_MASSIVE_MANAGEMENT', 'Massive operation management');
 define('AUDIT_LOG_POLICY_MANAGEMENT', 'Policy management');
 define('AUDIT_LOG_AGENT_REMOTE_MANAGEMENT', 'Agent remote configuration');
 define('AUDIT_LOG_FILE_COLLECTION', 'File collection');
-define('AUDIT_LOG_HACK_ATTEMPT', 'HACK Attempt');
 define('AUDIT_LOG_ALERT_MANAGEMENT', 'Alert management');
-define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
 define('AUDIT_LOG_ALERT_CORRELATION_MANAGEMENT', 'Alert correlation management');
+define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
 define('AUDIT_LOG_TAG_MANAGEMENT', 'Tag management');
-define('AUDIT_LOG_SETUP', 'Setup');
-define('AUDIT_LOG_SYSTEM', 'System');
 define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
 define('AUDIT_LOG_WEB_SOCKETS', 'WebSockets engine');
 define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');

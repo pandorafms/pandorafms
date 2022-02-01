@@ -58,6 +58,52 @@ if (defined('LAST_STEP') === false) {
     define('LAST_STEP', 3);
 }
 
+// Default events calendar.
+$default_events_calendar = [
+    'monday'    => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+    'tuesday'   => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+    'wednesday' => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+    'thursday'  => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+    'friday'    => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+    'saturday'  => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+    'sunday'    => [
+        [
+            'start' => '00:00:00',
+            'end'   => '00:00:00',
+        ],
+    ],
+];
+
 if ($duplicate_template === true) {
     $source_id = (int) get_parameter('source_id');
     $a_template = alerts_get_alert_template($source_id);
@@ -417,7 +463,9 @@ $value = '';
 $max = '';
 $min = '';
 
-$schedule = null;
+$schedule = json_encode(
+    $default_events_calendar
+);
 $special_day = 0;
 $default_action = 0;
 $fields = [];
@@ -463,6 +511,7 @@ if ($create_template) {
         'matches_value' => $matches,
         'priority'      => $priority,
         'wizard_level'  => $wizard_level,
+        'schedule'      => $schedule,
     ];
 
     if ($config['dbtype'] == 'oracle') {
@@ -1442,6 +1491,11 @@ if ($step == 2) {
     });
 
     var eventsBBDD = $("#hidden-schedule").val();
+    if(eventsBBDD === '') {
+        eventsBBDD = '<?php echo json_encode($default_events_calendar); ?>';
+    }
+
+    console.log(eventsBBDD);
     var events = loadEventBBDD(eventsBBDD);
     var calendarEl = document.getElementById('calendar_map');
     var settings = {
@@ -1458,6 +1512,8 @@ if ($step == 2) {
         userLanguage: '<?php echo get_user_language(); ?>',
         loadingText: '<?php echo __('Loading, this operation might take several minutes...'); ?>',
         tooltipText: '<?php echo __('Drag out to remove'); ?>',
+        simple: '<?php echo __('Simple'); ?>',
+        detailed: '<?php echo __('Detailed'); ?>',
     }
 
     var calendar = fullCalendarPandora(calendarEl, settings, events);

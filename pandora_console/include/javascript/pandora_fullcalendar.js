@@ -2,14 +2,19 @@
 // eslint-disable-next-line no-unused-vars
 function fullCalendarPandora(calendarEl, settings, initialEvents) {
   var calendar = new FullCalendar.Calendar(calendarEl, {
-    height: 625,
+    //height: 200,
+    contentHeight: "auto",
     headerToolbar: {
       left: "",
       center: "",
-      right: ""
+      right: "timeGridWeek,dayGridWeek"
+    },
+    buttonText: {
+      dayGridWeek: settings.simple,
+      timeGridWeek: settings.detailed
     },
     dayHeaderFormat: { weekday: "short" },
-    initialView: "timeGridWeek",
+    initialView: "dayGridWeek",
     navLinks: false,
     selectable: true,
     selectMirror: true,
@@ -34,7 +39,7 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
     },
     eventColor: "#82b92e",
     editable: true,
-    dayMaxEvents: false,
+    dayMaxEvents: 3,
     events: initialEvents,
     defaultAllDay: false,
     select: function(info) {

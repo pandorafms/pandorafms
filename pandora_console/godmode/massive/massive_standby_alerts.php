@@ -103,9 +103,21 @@ switch ($action) {
 
         $info = '{"Alert":"'.implode(',', $id_standby_alerts).'"}';
         if ($result) {
-            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Set off standby alerts', false, false, $info);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Set off standby alerts',
+                false,
+                false,
+                $info
+            );
         } else {
-            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to set off standby alerts', false, false, $info);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Fail try to set off standby alerts',
+                false,
+                false,
+                $info
+            );
         }
     break;
 
@@ -121,9 +133,21 @@ switch ($action) {
 
         $info = '{"Alert":"'.implode(',', $id_not_standby_alerts).'"}';
         if ($result) {
-            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Set on standby alerts', false, false, $info);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Set on standby alerts',
+                false,
+                false,
+                $info
+            );
         } else {
-            db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to set on standby alerts', false, false, $info);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Fail try to set on standby alerts',
+                false,
+                false,
+                $info
+            );
         }
     break;
 

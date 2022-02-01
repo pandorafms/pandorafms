@@ -588,7 +588,7 @@ function planned_downtimes_stop($downtime)
             1
         );
         db_pandora_audit(
-            'Planned Downtime management',
+            AUDIT_LOG_SYSTEM,
             'Manual stop downtime '.$downtime['name'].' (ID '.$downtime['id'].')',
             false,
             true

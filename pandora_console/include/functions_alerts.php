@@ -2744,7 +2744,7 @@ function alerts_ui_update_or_create_actions($update=true)
 
     if ($result) {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             $update ? 'Update alert action #'.$id : 'Create alert action #'.$result,
             false,
             false,
@@ -2752,7 +2752,7 @@ function alerts_ui_update_or_create_actions($update=true)
         );
     } else {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             $update ? 'Fail try to update alert action #'.$id : 'Fail try to create alert action',
             false,
             false,

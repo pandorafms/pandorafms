@@ -127,7 +127,7 @@ if ($is_management_allowed === true && $delete_profile === true) {
         ui_print_error_message(__('There was a problem deleting the profile'));
     } else {
         db_pandora_audit(
-            'Profile management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Delete profile '.io_safe_output($profile['name'])
         );
         ui_print_success_message(__('Successfully deleted'));

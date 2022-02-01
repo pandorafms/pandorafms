@@ -174,7 +174,10 @@ class AgentsAlerts extends HTML
 
                 db_process_sql_update('tagente_modulo', ['flag' => 1], $where);
             } else {
-                db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to set flag for groups');
+                db_pandora_audit(
+                    AUDIT_LOG_ACL_VIOLATION,
+                    'Trying to set flag for groups'
+                );
                 include 'general/noaccess.php';
                 exit;
             }

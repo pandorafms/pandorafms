@@ -33,7 +33,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Tag Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Tag Management'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -160,13 +163,21 @@ if (is_metaconsole() === false) {
 if ($delete !== 0) {
     $return_delete = tags_delete_tag($delete);
 
-    if ($return_delete === false) {
-        db_pandora_audit('Tag management', 'Fail try to delete tag #'.$delete);
-        ui_print_error_message(__('Error deleting tag'));
-    } else {
-        db_pandora_audit('Tag management', 'Delete tag #'.$delete);
-        ui_print_success_message(__('Successfully deleted tag'));
-    }
+    $auditMessage = ($return_delete === false) ? 'Fail try to delete tag' : 'Delete tag';
+    db_pandora_audit(
+        AUDIT_LOG_TAG_MANAGEMENT,
+        sprintf(
+            '%s #%s',
+            $auditMessage,
+            $delete
+        )
+    );
+
+    ui_print_result_message(
+        (bool) $return_delete !== false,
+        __('Successfully deleted tag'),
+        __('Error deleting tag')
+    );
 }
 
 $is_management_allowed = is_management_allowed();

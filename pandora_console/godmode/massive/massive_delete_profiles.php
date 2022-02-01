@@ -111,9 +111,21 @@ if ($delete_profiles) {
     ];
 
     if ($result) {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Delete profile ', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Delete profile ',
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to delete profile', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to delete profile',
+            false,
+            false,
+            json_encode($info)
+        );
     }
 
     ui_print_result_message(

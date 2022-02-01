@@ -146,9 +146,21 @@ function process_manage_add($id_alert_template, $id_agents, $module_names)
     }
 
     if ($contsuccess > 0) {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Add alert', false, false, 'Alert template: '.$id_alert_template.' Modules: '.json_encode($modules_id));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Add alert',
+            false,
+            false,
+            'Alert template: '.$id_alert_template.' Modules: '.json_encode($modules_id)
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to add alert', false, false, 'Alert template: '.$id_alert_template.' Modules: '.json_encode($modules_id));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to add alert',
+            false,
+            false,
+            'Alert template: '.$id_alert_template.' Modules: '.json_encode($modules_id)
+        );
     }
 
     ui_print_result_message(

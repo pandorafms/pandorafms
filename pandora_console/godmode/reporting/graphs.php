@@ -163,11 +163,17 @@ if ($delete_graph) {
             __('Not deleted. Error deleting data')
         );
 
-        db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, sprintf('%s #%s', $auditMessage, $id));
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            sprintf('%s #%s', $auditMessage, $id)
+        );
 
         echo $result;
     } else {
-        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to delete a graph from access graph builder');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to delete a graph from access graph builder'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -197,7 +203,10 @@ if ($multiple_delete) {
 
     $str_ids = implode(',', $ids);
 
-    db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, sprintf('%s: %s', $auditMessage, $str_ids));
+    db_pandora_audit(
+        AUDIT_LOG_REPORT_MANAGEMENT,
+        sprintf('%s: %s', $auditMessage, $str_ids)
+    );
 
     ui_print_result_message(
         $result,

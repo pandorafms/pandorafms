@@ -96,7 +96,10 @@ if ($al_action !== false) {
 }
 
 if (!$is_in_group && $al_action['id_group'] != 0) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access unauthorized alert action configuration');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access unauthorized alert action configuration'
+    );
     include 'general/noaccess.php';
     exit;
 }

@@ -40,7 +40,10 @@ enterprise_include_once('include/functions_config_agents.php');
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access agent main list view');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access agent main list view'
+    );
     include 'general/noaccess.php';
 
     return;

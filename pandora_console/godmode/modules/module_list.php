@@ -17,12 +17,15 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access module management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access module management'
+    );
     include 'general/noaccess.php';
     exit;
 }
 
-// Header
+// Header.
 ui_print_page_header(__('Module management').' &raquo; '.__('Defined modules'), 'images/gm_modules.png', false, '', true);
 
 $update_module = (bool) get_parameter_post('update_module');

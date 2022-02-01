@@ -150,7 +150,13 @@ if ($add) {
                         'Fires_max' => $fires_max,
                         'Actions'   => implode(',', $actions),
                     ];
-                    db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Add alert action '.json_encode($id_agents), false, false, json_encode($info));
+                    db_pandora_audit(
+                        AUDIT_LOG_MASSIVE_MANAGEMENT,
+                        'Add alert action '.json_encode($id_agents),
+                        false,
+                        false,
+                        json_encode($info)
+                    );
                     ui_print_result_message($results, __('Successfully added'), __('Could not be added'));
                 }
             } else {

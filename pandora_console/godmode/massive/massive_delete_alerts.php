@@ -223,9 +223,21 @@ if ($delete) {
     ];
 
     if ($result) {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Delete alert ', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Delete alert ',
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to delete alert', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to delete alert',
+            false,
+            false,
+            json_encode($info)
+        );
     }
 }
 

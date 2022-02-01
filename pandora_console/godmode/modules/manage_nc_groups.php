@@ -72,11 +72,12 @@ if ($create) {
                 'parent' => $parent,
             ]
         );
-        if ($result) {
-            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Create component group #$result");
-        } else {
-            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, 'Fail try to create component group');
-        }
+
+        $auditMessage = ((bool) $result === true) ? sprintf('Create component group #%s', $result) : 'Fail try to create component group';
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            $auditMessage
+        );
 
         ui_print_result_message(
             $result,
@@ -101,11 +102,16 @@ if ($update) {
             ],
             ['id_sg' => $id]
         );
-        if ($result) {
-            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Update component group #$id");
-        } else {
-            db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Fail try to update component group #$id");
-        }
+
+        $auditMessage = ((bool) $result === true) ? 'Update component group' : 'Fail try to update component group';
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            sprintf(
+                '%s #%s',
+                $auditMessage,
+                $id
+            )
+        );
 
         ui_print_result_message(
             $result,
@@ -131,11 +137,15 @@ if ($delete) {
         $result = false;
     }
 
-    if ($result) {
-        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Delete component group #$id");
-    } else {
-        db_pandora_audit(AUDIT_LOG_MODULE_MANAGEMENT, "Fail try to delete component group #$id");
-    }
+    $auditMessage = ((bool) $result === true) ? 'Delete component group' : 'Fail try to delete component group';
+    db_pandora_audit(
+        AUDIT_LOG_MODULE_MANAGEMENT,
+        sprintf(
+            '%s #%s',
+            $auditMessage,
+            $id
+        )
+    );
 
     ui_print_result_message(
         $result,
@@ -168,17 +178,16 @@ if ($multiple_delete) {
     }
 
     $str_ids = implode(',', $ids);
-    if ($result) {
-        db_pandora_audit(
-            AUDIT_LOG_MODULE_MANAGEMENT,
-            "Multiple delete component group: $str_ids"
-        );
-    } else {
-        db_pandora_audit(
-            AUDIT_LOG_MODULE_MANAGEMENT,
-            "Fail try to delete component group: $str_ids"
-        );
-    }
+
+    $auditMessage = ((bool) $result === true) ? 'Multiple delete component group' : 'Fail try to delete multiple component group';
+    db_pandora_audit(
+        AUDIT_LOG_MODULE_MANAGEMENT,
+        sprintf(
+            '%s #%s',
+            $auditMessage,
+            $str_ids
+        )
+    );
 
     ui_print_result_message(
         $result,

@@ -72,7 +72,7 @@ if (!isset($config['pure'])) {
 // Check input hash.
 if (User::validatePublicHash($hash) !== true) {
     db_pandora_audit(
-        'Invalid public visual console',
+        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
         'Trying to access public visual console'
     );
     include 'general/noaccess.php';

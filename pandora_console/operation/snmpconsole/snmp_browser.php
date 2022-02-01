@@ -35,7 +35,10 @@ ui_require_jquery_file('pandora.controls');
 // Check login and ACLs.
 check_login();
 if (!check_acl($config['id_user'], 0, 'AR')) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access SNMP Console');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access SNMP Console'
+    );
     include 'general/noaccess.php';
     exit();
 }

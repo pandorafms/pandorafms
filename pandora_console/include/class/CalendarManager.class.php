@@ -420,8 +420,8 @@ class CalendarManager
 
         if ($result === true) {
             db_pandora_audit(
-                'Special days list',
-                'Upload iCalendar '.$_FILES['ical_file']['name']
+                AUDIT_LOG_SYSTEM,
+                'Special Days. Upload iCalendar '.$_FILES['ical_file']['name']
             );
         }
 

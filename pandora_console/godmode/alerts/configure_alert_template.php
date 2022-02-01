@@ -153,9 +153,15 @@ if ($duplicate_template) {
     $id = alerts_duplicate_alert_template($source_id, $a_template['id_group']);
 
     if ($id) {
-        db_pandora_audit(AUDIT_LOG_ALERT_MANAGEMENT, 'Duplicate alert template '.$source_id.' clone to '.$id);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Duplicate alert template '.$source_id.' clone to '.$id
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_ALERT_MANAGEMENT, 'Fail try to duplicate alert template '.$source_id);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail try to duplicate alert template '.$source_id
+        );
     }
 
     ui_print_result_message(
@@ -364,9 +370,21 @@ function update_template($step)
     }
 
     if ($result) {
-        db_pandora_audit(AUDIT_LOG_ALERT_MANAGEMENT, 'Update alert template #'.$id, false, false, json_encode($values));
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Update alert template #'.$id,
+            false,
+            false,
+            json_encode($values)
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_ALERT_MANAGEMENT, 'Fail try to update alert template #'.$id, false, false, json_encode($values));
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail try to update alert template #'.$id,
+            false,
+            false,
+            json_encode($values)
+        );
     }
 
     return $result;

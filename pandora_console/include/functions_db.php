@@ -285,7 +285,12 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
  */
 function db_logon($id_user, $ip)
 {
-    db_pandora_audit(AUDIT_LOG_USER_REGISTRATION, 'Logged in', $id_user, $ip);
+    db_pandora_audit(
+        AUDIT_LOG_USER_REGISTRATION,
+        'Logged in',
+        $id_user,
+        $ip
+    );
 
     // Update last registry of user to set last logon. How do we audit when the user was created then?
     process_user_contact($id_user);
@@ -302,7 +307,12 @@ function db_logon($id_user, $ip)
  */
 function db_logoff($id_user, $ip)
 {
-    db_pandora_audit(AUDIT_LOG_USER_REGISTRATION, 'Logged out', $id_user, $ip);
+    db_pandora_audit(
+        AUDIT_LOG_USER_REGISTRATION,
+        'Logged out',
+        $id_user,
+        $ip
+    );
 }
 
 

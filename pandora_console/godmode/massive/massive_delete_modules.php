@@ -266,11 +266,16 @@ if ($delete) {
         'Agent'  => implode(',', $agents_),
         'Module' => implode(',', $modules_),
     ];
-    if ($result) {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Delete module ', false, false, json_encode($info));
-    } else {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to delete module', false, false, json_encode($info));
-    }
+
+    $auditMessage = ((bool) $result === true) ? 'Delete module' : 'Fail try to delete module';
+
+    db_pandora_audit(
+        AUDIT_LOG_MASSIVE_MANAGEMENT,
+        $auditMessage,
+        false,
+        false,
+        json_encode($info)
+    );
 }
 
 $groups = users_get_groups();

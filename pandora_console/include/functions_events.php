@@ -1903,7 +1903,10 @@ function events_delete_event(
 
         if (check_acl($config['id_user'], $event_group, 'EM') == 0) {
             // Check ACL.
-            db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Attempted deleting event #'.$event);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted deleting event #'.$event
+            );
             $errors++;
         } else {
             $ret = db_process_sql_delete($table_event, ['id_evento' => $event]);
@@ -1911,7 +1914,10 @@ function events_delete_event(
             if (!$ret) {
                 $errors++;
             } else {
-                db_pandora_audit('Event deleted', 'Deleted event #'.$event);
+                db_pandora_audit(
+                    AUDIT_LOG_ALERT_MANAGEMENT,
+                    'Deleted event #'.$event
+                );
                 // ACL didn't fail nor did return.
                 continue;
             }
@@ -1995,7 +2001,10 @@ function events_change_status(
         }
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
-            db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Attempted updating event #'.$id);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
 
             unset($id_event[$k]);
         }
@@ -2106,7 +2115,10 @@ function events_change_owner(
         }
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
-            db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Attempted updating event #'.$id);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
             unset($id_event[$k]);
         }
     }
@@ -2221,7 +2233,10 @@ function events_comment(
         }
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
-            db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Attempted updating event #'.$id);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
 
             unset($id_event[$k]);
         }

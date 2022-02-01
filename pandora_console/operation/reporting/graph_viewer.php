@@ -69,7 +69,10 @@ if ($delete_graph) {
 
         echo $result;
     } else {
-        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to delete a graph from access graph builder');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to delete a graph from access graph builder'
+        );
         include 'general/noaccess.php';
         exit;
     }

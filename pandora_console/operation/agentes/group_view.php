@@ -66,7 +66,10 @@ if (isset($_GET['update_netgroup'])) {
             );
         }
     } else {
-        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to set flag for groups');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to set flag for groups'
+        );
         include 'general/noaccess.php';
         exit;
     }

@@ -145,11 +145,11 @@ if ($add_graph === true) {
 
     if (trim($name) != '') {
         $id_graph = db_process_sql_insert('tgraph', $values);
-        if ($id_graph !== false) {
-            db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, 'Create graph #'.$id_graph);
-        } else {
-            db_pandora_audit(AUDIT_LOG_REPORT_MANAGEMENT, 'Fail try to create graph');
-        }
+        $auditMessage = ($id_graph !== false) ? sprintf('Create graph #%s', $id_graph) : 'Fail try to create graph';
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            $auditMessage
+        );
     } else {
         $id_graph = false;
     }
@@ -197,17 +197,16 @@ if ($update_graph) {
             ],
             ['id_graph' => $id_graph]
         );
-        if ($success !== false) {
-            db_pandora_audit(
-                AUDIT_LOG_REPORT_MANAGEMENT,
-                'Update graph #'.$id_graph
-            );
-        } else {
-            db_pandora_audit(
-                AUDIT_LOG_REPORT_MANAGEMENT,
-                'Fail try to update graph #'.$id_graph
-            );
-        }
+
+        $auditMessage = ($success !== false) ? 'Update graph' : 'Fail try to update graph';
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            sprintf(
+                '%s #%s',
+                $auditMessage,
+                $id_graph
+            )
+        );
     } else {
         $success = false;
     }

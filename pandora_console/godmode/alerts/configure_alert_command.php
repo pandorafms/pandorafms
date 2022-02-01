@@ -52,7 +52,10 @@ if ($id > 0) {
     $alert = alerts_get_alert_command($id);
 
     if ($alert['internal'] || !check_acl_restricted_all($config['id_user'], $alert['id_group'], 'PM')) {
-        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Alert Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Alert Management'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -110,9 +113,20 @@ if ($update_command) {
     }
 
     if ($result) {
-        db_pandora_audit(AUDIT_LOG_COMMAND_MANAGEMENT, 'Update alert command #'.$id, false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_COMMAND_MANAGEMENT,
+            'Update alert command #'.$id,
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_COMMAND_MANAGEMENT, 'Fail to update alert command #'.$id, false, false);
+        db_pandora_audit(
+            AUDIT_LOG_COMMAND_MANAGEMENT,
+            'Fail to update alert command #'.$id,
+            false,
+            false
+        );
     }
 
     ui_print_result_message(

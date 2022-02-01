@@ -75,7 +75,11 @@ if (isset($_GET['direct']) && $_GET['direct']) {
         // User not known.
         $login_failed = true;
         include_once 'general/login_page.php';
-        db_pandora_audit(AUDIT_LOG_USER_REGISTRATION, 'Invalid login: '.$nick, $nick);
+        db_pandora_audit(
+            AUDIT_LOG_USER_REGISTRATION,
+            'Invalid login: '.$nick,
+            $nick
+        );
         exit;
     }
 } else {

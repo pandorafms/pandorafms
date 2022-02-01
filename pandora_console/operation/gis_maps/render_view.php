@@ -34,7 +34,10 @@ $confMapDefaultUrlFull = json_decode($confMapDefault['conection_data'], true);
 $confMapUrlDefault = $confMapDefaultFull['url'];
 
 if (! check_acl($config['id_user'], $map['group_id'], 'MR') && ! check_acl($config['id_user'], $map['group_id'], 'MW') && ! check_acl($config['id_user'], $map['group_id'], 'MM')) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }

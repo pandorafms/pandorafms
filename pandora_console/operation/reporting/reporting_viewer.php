@@ -36,7 +36,10 @@ enterprise_include_once('include/functions_reporting.php');
 
 
 if (!reporting_user_can_see_report($id_report)) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access report viewer');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access report viewer'
+    );
     include 'general/noaccess.php';
     exit;
 }

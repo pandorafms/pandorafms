@@ -34,7 +34,10 @@ check_login();
 enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Group Management2');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Group Management2'
+    );
     include 'general/noaccess.php';
     return;
 }

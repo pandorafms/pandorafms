@@ -187,9 +187,21 @@ if ($update) {
 
     $info = '{"Modules":"'.implode(',', $modules_).'","Agents":"'.implode(',', $agents_).'"}';
     if ($success > 0) {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Edit module', false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Edit module',
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to edit module', false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to edit module',
+            false,
+            false,
+            $info
+        );
     }
 }
 

@@ -146,7 +146,13 @@ function dbmgr_extension_main()
         echo '<strong>An error has occured when querying the database.</strong><br />';
         echo $error;
 
-        db_pandora_audit('DB Interface Extension', 'Error in SQL', false, false, $sql);
+        db_pandora_audit(
+            AUDIT_LOG_SYSTEM,
+            'DB Interface Extension. Error in SQL',
+            false,
+            false,
+            $sql
+        );
 
         return;
     }
@@ -154,7 +160,13 @@ function dbmgr_extension_main()
     if (! is_array($result)) {
         echo '<strong>Output: <strong>'.$result;
 
-        db_pandora_audit('DB Interface Extension', 'SQL', false, false, $sql);
+        db_pandora_audit(
+            AUDIT_LOG_SYSTEM,
+            'DB Interface Extension. SQL',
+            false,
+            false,
+            $sql
+        );
 
         return;
     }

@@ -145,7 +145,10 @@ function config_update_config()
     $update_config = (bool) get_parameter('update_config');
 
     if ($update_config) {
-        db_pandora_audit('Setup', 'Setup has changed');
+        db_pandora_audit(
+            AUDIT_LOG_SETUP,
+            'Setup has changed'
+        );
     } else {
         // Do nothing.
         return false;

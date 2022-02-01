@@ -272,7 +272,10 @@ function agents_create_agent(
         agents_add_address($id_agent, $ip_address);
     }
 
-    db_pandora_audit(AUDIT_LOG_AGENT_MANAGEMENT, 'New agent '.$name.' created');
+    db_pandora_audit(
+        AUDIT_LOG_AGENT_MANAGEMENT,
+        'New agent '.$name.' created'
+    );
 
     return $id_agent;
 }

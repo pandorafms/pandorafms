@@ -14486,7 +14486,10 @@ function reporting_email_template(
         if (empty($destination) === false) {
             send_email_attachment($destination, $body, $subject, $attachments);
         } else {
-            db_pandora_audit('ERROR:', 'Cron jobs mail, empty destination email.');
+            db_pandora_audit(
+                AUDIT_LOG_SYSTEM,
+                'Cron jobs mail, empty destination email.'
+            );
         }
     }
 }

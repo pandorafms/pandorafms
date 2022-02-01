@@ -591,9 +591,15 @@ if ($delete_command) {
     $result = alerts_delete_alert_command($id);
 
     if ($result) {
-        db_pandora_audit(AUDIT_LOG_COMMAND_MANAGEMENT, 'Delete alert command #'.$id);
+        db_pandora_audit(
+            AUDIT_LOG_COMMAND_MANAGEMENT,
+            'Delete alert command #'.$id
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_COMMAND_MANAGEMENT, 'Fail try to delete alert command #'.$id);
+        db_pandora_audit(
+            AUDIT_LOG_COMMAND_MANAGEMENT,
+            'Fail try to delete alert command #'.$id
+        );
     }
 
     ui_print_result_message(

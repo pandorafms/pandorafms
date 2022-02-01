@@ -104,9 +104,21 @@ if ($delete) {
 
     $info = '{"Agent":"'.implode(',', $id_agents).'"}';
     if ($result) {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Delete agent ', false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Delete agent ',
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit(AUDIT_LOG_MASSIVE_MANAGEMENT, 'Fail try to delete agent', false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to delete agent',
+            false,
+            false,
+            $info
+        );
     }
 }
 

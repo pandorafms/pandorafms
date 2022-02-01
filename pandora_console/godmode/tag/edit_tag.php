@@ -19,7 +19,10 @@ enterprise_hook('open_meta_frame');
 require_once $config['homedir'].'/include/functions_tags.php';
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Edit Tag');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Edit Tag'
+    );
     include 'general/noaccess.php';
 
     return;
@@ -110,13 +113,21 @@ if ($update_tag && $id_tag != 0) {
         $result = tags_update_tag($values, 'id_tag = '.$id_tag);
     }
 
-    if ($result === false) {
-        db_pandora_audit('Tag management', "Fail try to update tag #$id_tag");
-        ui_print_error_message(__('Error updating tag'));
-    } else {
-        db_pandora_audit('Tag management', "Update tag #$id_tag");
-        ui_print_success_message(__('Successfully updated tag'));
-    }
+    $auditMessage = ($result === false) ? 'Fail try to update tag' : 'Update tag';
+    db_pandora_audit(
+        AUDIT_LOG_TAG_MANAGEMENT,
+        sprintf(
+            '%s #%s',
+            $auditMessage,
+            $id_tag
+        )
+    );
+
+    ui_print_result_message(
+        (bool) $result,
+        __('Successfully updated tag'),
+        __('Error updating tag')
+    );
 }
 
 // Create tag: creates a new tag
@@ -140,16 +151,24 @@ if ($create_tag) {
     }
 
     if ($return_create === false) {
-        db_pandora_audit('Tag management', 'Fail try to create tag');
-        ui_print_error_message(__('Error creating tag'));
+        $auditMessage = 'Fail try to create tag';
         $action = 'new';
-        // If create action ends successfully then current action is update
+        // If create action ends successfully then current action is update.
     } else {
-        db_pandora_audit('Tag management', "Create tag #$return_create");
-        ui_print_success_message(__('Successfully created tag'));
+        $auditMessage = sprintf('Create tag #%s', $return_create);
         $id_tag = $return_create;
         $action = 'update';
     }
+
+    db_pandora_audit(
+        AUDIT_LOG_TAG_MANAGEMENT,
+        $auditMessage
+    );
+    ui_print_result_message(
+        $action === 'update',
+        __('Successfully created tag'),
+        __('Error creating tag')
+    );
 }
 
 // Form fields are filled here

@@ -19,7 +19,10 @@ enterprise_hook('open_meta_frame');
 require_once $config['homedir'].'/include/functions_categories.php';
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Edit Category');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Edit Category'
+    );
     include 'general/noaccess.php';
 
     return;
@@ -85,34 +88,46 @@ if ($update_category && $id_category != 0) {
     }
 
     if ($result === false) {
-        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, "Fail try to update category #$id_category");
+        db_pandora_audit(
+            AUDIT_LOG_CATEGORY_MANAGEMENT,
+            'Fail try to update category #'.$id_category
+        );
         ui_print_error_message(__('Error updating category'));
     } else {
-        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, "Update category #$id_category");
+        db_pandora_audit(
+            AUDIT_LOG_CATEGORY_MANAGEMENT,
+            'Update category #'.$id_category
+        );
         ui_print_success_message(__('Successfully updated category'));
     }
 }
 
-// Create category: creates a new category
+// Create category: creates a new category.
 if ($create_category) {
     $return_create = true;
 
     $values = [];
     $values['name'] = $name_category;
 
-    // DB insert
+    // DB insert.
     $return_create = false;
     if ($values['name'] != '') {
         $return_create = db_process_sql_insert('tcategory', $values);
     }
 
     if ($return_create === false) {
-        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, 'Fail try to create category');
+        db_pandora_audit(
+            AUDIT_LOG_CATEGORY_MANAGEMENT,
+            'Fail try to create category'
+        );
         ui_print_error_message(__('Error creating category'));
         $action = 'new';
-        // If create action ends successfully then current action is update
+        // If create action ends successfully then current action is update.
     } else {
-        db_pandora_audit(AUDIT_LOG_CATEGORY_MANAGEMENT, "Create category #$return_create");
+        db_pandora_audit(
+            AUDIT_LOG_CATEGORY_MANAGEMENT,
+            'Create category #'.$return_create
+        );
         ui_print_success_message(__('Successfully created category'));
         $id_category = $return_create;
         $action = 'update';
@@ -120,7 +135,7 @@ if ($create_category) {
 }
 
 // Form fields are filled here
-// Get results when update action is performed
+// Get results when update action is performed.
 if ($action == 'update' && $id_category != 0) {
     $result_category = db_get_row_filter('tcategory', ['id' => $id_category]);
     $name_category = $result_category['name'];

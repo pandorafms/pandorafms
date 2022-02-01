@@ -142,7 +142,10 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
     check_login();
 
     if (! check_acl($config['id_user'], 0, 'AW')) {
-        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access File manager');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access File manager'
+        );
         include 'general/noaccess.php';
         return;
     }
@@ -257,7 +260,10 @@ function create_text_file($default_real_directory, $destination_directory)
     check_login();
 
     if (! check_acl($config['id_user'], 0, 'AW')) {
-        db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access File manager');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access File manager'
+        );
         include 'general/noaccess.php';
         return;
     }

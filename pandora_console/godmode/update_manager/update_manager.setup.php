@@ -35,7 +35,10 @@ require_once __DIR__.'/../../include/functions_update_manager.php';
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit(AUDIT_LOG_ACL_VIOLATION, 'Trying to access Setup Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Setup Management'
+    );
     include 'general/noaccess.php';
     return;
 }

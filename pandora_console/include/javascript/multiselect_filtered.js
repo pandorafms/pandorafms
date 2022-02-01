@@ -231,7 +231,7 @@ function fmModuleChange(uniqId, isMeta) {
       if (data) {
         jQuery.each(data, function(id, value) {
           var option = $("<option></option>");
-          if (isMeta === true) {
+          if (isMeta === 1) {
             option
               .attr(
                 "value",
@@ -250,4 +250,51 @@ function fmModuleChange(uniqId, isMeta) {
     },
     "json"
   );
+}
+
+// Function to search in agents select.
+function searchAgent(uniqId) {
+  // Declare variables
+  var agents = $("#filtered-module-agents-" + uniqId + " option");
+
+  // Loop through all list items, and hide those who don't match the search query
+  agents.each(function() {
+    var filter = $("#text-agent-searchBar-modules")
+      .val()
+      .toUpperCase();
+
+    if (
+      $(this)
+        .text()
+        .toUpperCase()
+        .indexOf(filter) > -1
+    ) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
+}
+
+// Function to search in modules select.
+function searchModule(uniqId) {
+  // Declare variables
+  var modules = $("#filtered-module-modules-" + uniqId + " option");
+
+  // Loop through all list items, and hide those who don't match the search query
+  modules.each(function() {
+    var filter = $("#text-module-searchBar-modules")
+      .val()
+      .toUpperCase();
+    if (
+      $(this)
+        .text()
+        .toUpperCase()
+        .indexOf(filter) > -1
+    ) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
 }

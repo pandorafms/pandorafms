@@ -8485,3 +8485,40 @@ div#err_msg_centralised {
   border-radius: 5px;
   padding: 5px;
 }
+
+#select_multiple_modules_filtered > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px;
+  flex-wrap: wrap;
+  flex: 1 1 320px;
+}
+
+#select_multiple_modules_filtered > div > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 250px;
+}
+
+#select_multiple_modules_filtered > div > div > * {
+  flex: auto;
+}
+
+#select_multiple_modules_filtered > div > div > select {
+  min-width: 250px !important;
+}
+
+#select_multiple_modules_filtered > div > div > .select2 {
+  min-width: 250px !important;
+}
+
+#select_multiple_modules_filtered > div > div > input {
+  max-width: 250px;
+  width: 95%;
+  height: 95%;
+}

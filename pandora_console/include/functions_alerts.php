@@ -3390,3 +3390,62 @@ function alerts_get_templates_name_array($array_ids)
 
     return $result;
 }
+
+
+/**
+ * Draw schedule info
+ *
+ * @param array $schedule
+ *
+ * @return string
+ */
+function drawInfoSchedule($schedule, $class='info_table')
+{
+    $table_days = new stdClass();
+    $table_days->width = '100%';
+    $table_days->class = $class;
+    $table_days->data = [];
+    $table_days->styleTable = 'text-align: center;';
+    $table_days->head['monday'] = __('Mon');
+    $table_days->head['tuesday'] = __('Tue');
+    $table_days->head['wednesday'] = __('Wed');
+    $table_days->head['thursday'] = __('Thu');
+    $table_days->head['friday'] = __('Fri');
+    $table_days->head['saturday'] = __('Sat');
+    $table_days->head['sunday'] = __('Sun');
+
+    $week = [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday',
+    ];
+
+    foreach ($week as $day) {
+        $table_days->data[0][$day] = html_print_image(
+            'images/blade.png',
+            true,
+            ['class' => 'invert_filter']
+        );
+    }
+
+    foreach ($schedule as $day => $sch) {
+        if (isset($sch) === true && empty($sch) === false) {
+            $table_days->data[0][$day] = '';
+            foreach ($sch as $value) {
+                $table_days->data[0][$day] .= '<p>';
+                $table_days->data[0][$day] .= '<span>'.__('From').': </span>';
+                $table_days->data[0][$day] .= '<span>'.$value['start'].'</span>';
+
+                $table_days->data[0][$day] .= '<span> '.__('To').': </span>';
+                $table_days->data[0][$day] .= '<span>'.$value['end'].'</span>';
+                $table_days->data[0][$day] .= '</p>';
+            }
+        }
+    }
+
+    return \html_print_table($table_days, true);
+}

@@ -206,105 +206,15 @@ $data[0] = $condition;
 
 $table_conditions->data[] = $data;
 
-// DAYS
-$table_days->class = 'databox alert_days';
-$table_days->width = '100%';
-$table_days->size = [];
-$table_days->data = [];
-$table_days->style = [];
-$table_days->styleTable = 'padding: 1px; margin: 0px; text-align: center; height: 80px;';
-$table_days->head[0] = __('Mon');
-$table_days->head[1] = __('Tue');
-$table_days->head[2] = __('Wed');
-$table_days->head[3] = __('Thu');
-$table_days->head[4] = __('Fri');
-$table_days->head[5] = __('Sat');
-$table_days->head[6] = __('Sun');
-$table_days->data[0] = array_fill(0, 7, html_print_image('images/blade.png', true));
-
-$days = [];
-if ($template['monday']) {
-    $table_days->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['tuesday']) {
-    $table_days->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['wednesday']) {
-    $table_days->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['thursday']) {
-    $table_days->data[0][3] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['friday']) {
-    $table_days->data[0][4] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['saturday']) {
-    $table_days->data[0][5] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['sunday']) {
-    $table_days->data[0][6] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-$data[0] = html_print_table($table_days, true);
-unset($table_days);
-
-// TIME
-$table_time->class = 'databox alert_time';
-$table_time->width = '100%';
-$table_time->size = [];
-$table_time->data = [];
-$table_time->style = [];
-$table_time->styleTable = 'padding: 1px; margin: 0px; text-align: center; height: 80px; width: 100%;';
-
-// $data[0] = __('Time from') . ' / ' . __('Time to');
-if ($template['time_from'] == $template['time_to']) {
-    $table_time->head[0] = '00:00:00<br>-<br>23:59:59';
-    $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-} else {
-    $from_array = explode(':', $template['time_from']);
-    $from = ($from_array[0] * SECONDS_1HOUR + $from_array[1] * SECONDS_1MINUTE + $from_array[2]);
-    $to_array = explode(':', $template['time_to']);
-    $to = ($to_array[0] * SECONDS_1HOUR + $to_array[1] * SECONDS_1MINUTE + $to_array[2]);
-    if ($to > $from) {
-        if ($template['time_from'] != '00:00:00') {
-            $table_time->head[0] = '00:00:00<br>-<br>'.$template['time_from'];
-            $table_time->data[0][0] = html_print_image('images/blade.png', true);
-        }
-
-        $table_time->head[1] = $template['time_from'].'<br>-<br>'.$template['time_to'];
-        $table_time->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-
-        if ($template['time_to'] != '23:59:59') {
-            $table_time->head[2] = $template['time_to'].'<br>-<br>23:59:59';
-            $table_time->data[0][2] = html_print_image('images/blade.png', true);
-        }
-    } else {
-        if ($template['time_to'] != '00:00:00') {
-            $table_time->head[0] = '00:00:00<br>-<br>'.$template['time_to'];
-            $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-        }
-
-        $table_time->head[1] = $template['time_to'].'<br>-<br>'.$template['time_from'];
-        $table_time->data[0][1] = html_print_image('images/blade.png', true, ['class' => 'invert_filter']);
-
-        if ($template['time_from'] != '23:59:59') {
-            $table_time->head[2] = $template['time_from'].'<br>-<br>23:59:59';
-            $table_time->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-        }
-    }
-
-    $data[1] = $template['time_from'].' / '.$template['time_to'];
-}
-
-$data[1] = html_print_table($table_time, true);
-unset($table_time);
-
+$table_conditions->colspan[1][0] = 2;
+$schedule = json_decode(
+    io_safe_output(
+        $template['schedule']
+    ),
+    true
+);
+$data[0] = drawInfoSchedule($schedule, 'databox alert_days');
+$data[1] = '';
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');

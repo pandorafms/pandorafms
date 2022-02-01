@@ -1,16 +1,31 @@
 <?php
+/**
+ * Alerts templates.
+ *
+ * @category   Alerts
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 // Load global vars.
 global $config;
 
@@ -43,14 +58,14 @@ if (defined('LAST_STEP') === false) {
     define('LAST_STEP', 3);
 }
 
-if ($duplicate_template) {
+if ($duplicate_template === true) {
     $source_id = (int) get_parameter('source_id');
     $a_template = alerts_get_alert_template($source_id);
 } else {
     $a_template = alerts_get_alert_template($id);
 }
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $sec = 'advanced';
 } else {
     $sec = 'galertas';
@@ -64,7 +79,7 @@ if (check_acl_restricted_all($config['id_user'], 0, 'LM')) {
 if ($a_template !== false) {
     // If user tries to duplicate/edit a template with group=ALL.
     if ($a_template['id_group'] == 0) {
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole() === true) {
             alerts_meta_print_header();
         } else {
             if ($step == 1) {
@@ -96,7 +111,7 @@ if ($a_template !== false) {
         // Then template group have to be in his own groups.
         if ($is_in_group) {
             // Header.
-            if (defined('METACONSOLE')) {
+            if (is_metaconsole() === true) {
                 alerts_meta_print_header();
             } else {
                 ui_print_page_header(
@@ -120,7 +135,7 @@ if ($a_template !== false) {
     // This prevents to duplicate the header in case duplicate/edit_template action is performed.
 } else {
     // Header.
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         alerts_meta_print_header();
     } else {
         if ($step == 1) {
@@ -172,7 +187,7 @@ function print_alert_template_steps($step, $id)
 {
     echo '<ol class="steps">';
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $sec = 'advanced';
     } else {
         $sec = 'galertas';
@@ -256,7 +271,7 @@ function update_template($step)
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $sec = 'advanced';
     } else {
         $sec = 'galertas';
@@ -558,7 +573,7 @@ $table = new stdClass();
 $table->id = 'template';
 $table->width = '100%';
 $table->class = 'databox filters';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->head[0] = __('Create Template');
     $table->head_colspan[0] = 4;
     $table->headstyle[0] = 'text-align: center';
@@ -623,7 +638,7 @@ if ($step == 2) {
         '',
         true
     );
-    $table->data[1][1] .= '<div id="calendar_map"></div>';
+    $table->data[1][1] .= '<div id="calendar_map" style="width: 90%;"></div>';
     $table->data[1][1] .= html_print_input_hidden('schedule', $schedule, true);
 
     $table->colspan['threshold'][1] = 3;
@@ -716,8 +731,7 @@ if ($step == 2) {
     );
 
     $sql_query = sprintf(
-        '
-        SELECT id, name
+        'SELECT id, name
         FROM talert_actions
         WHERE id_group IN (%s)
         ORDER BY name',
@@ -1085,7 +1099,7 @@ if ($step == 2) {
         (!$is_management_allowed | $disabled)
     );
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $table->data[3][0] = __('Wizard level');
         $wizard_levels = [
             'nowizard' => __('No wizard'),

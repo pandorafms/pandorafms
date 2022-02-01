@@ -590,14 +590,18 @@ class Agent extends Entity
     /**
      * Delete agent from db.
      *
-     * @return void
+     * @return boolean
      */
     public function delete()
     {
         // This function also mark modules for deletion.
-        \agents_delete_agent(
+        $res = (bool) \agents_delete_agent(
             $this->fields['id_agente']
         );
+
+        if ($res === false) {
+            return false;
+        }
 
         // Delete modules.
         if ($this->modules !== null) {
@@ -608,6 +612,8 @@ class Agent extends Entity
 
         unset($this->fields);
         unset($this->modules);
+
+        return $res;
     }
 
 

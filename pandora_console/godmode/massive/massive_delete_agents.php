@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,10 +26,13 @@
  * ============================================================================
  */
 
+use PandoraFMS\Agent;
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === false) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access massive agent deletion section'
@@ -38,30 +41,63 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
     return;
 }
 
-require_once 'include/functions_agents.php';
-require_once 'include/functions_alerts.php';
-require_once 'include/functions_modules.php';
-require_once 'include/functions_users.php';
+require_once $config['homedir'].'/include/functions_agents.php';
+require_once $config['homedir'].'/include/functions_alerts.php';
+require_once $config['homedir'].'/include/functions_modules.php';
+require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_massive_operations.php';
 
 
+/**
+ * Bulk operations Delete.
+ *
+ * @param array $id_agents Agents to delete.
+ *
+ * @return boolean
+ */
 function process_manage_delete($id_agents)
 {
-    if (empty($id_agents)) {
+    if (empty($id_agents) === true) {
         ui_print_error_message(__('No agents selected'));
         return false;
     }
 
     $id_agents = (array) $id_agents;
 
-    $copy_modules = (bool) get_parameter('copy_modules');
-    $copy_alerts = (bool) get_parameter('copy_alerts');
-
-    $error = false;
     $count_deleted = 0;
     $agent_id_restore = 0;
     foreach ($id_agents as $id_agent) {
-        $success = agents_delete_agent($id_agent);
-        if (! $success) {
+        if (is_metaconsole() === true) {
+            $array_id = explode('|', $id_agent);
+            try {
+                $node = new Node((int) $array_id[0]);
+                $node->connect();
+
+                $agent = new Agent((int) $array_id[1]);
+                $success = $agent->delete();
+
+                $node->disconnect();
+
+                $success = agent_delete_from_metaconsole(
+                    $array_id[1],
+                    $array_id[0]
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                $success = false;
+                $node->disconnect();
+            }
+        } else {
+            try {
+                $agent = new Agent($id_agent);
+                $success = $agent->delete();
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                $success = false;
+            }
+        }
+
+        if ($success === false) {
             $agent_id_restore = $id_agent;
             break;
         }
@@ -69,11 +105,22 @@ function process_manage_delete($id_agents)
         $count_deleted++;
     }
 
-    if (! $success) {
+    if ($success === false) {
+        if (is_metaconsole() === true) {
+            $array_id = explode('|', $agent_id_restore);
+            $alias = agents_get_alias_metaconsole(
+                $array_id[1],
+                'none',
+                $array_id[0]
+            );
+        } else {
+            $alias = agents_get_alias($agent_id_restore);
+        }
+
         ui_print_error_message(
             sprintf(
                 __('There was an error deleting the agent, the operation has been cancelled Could not delete agent %s'),
-                agents_get_name($agent_id_restore)
+                $alias
             )
         );
 
@@ -96,22 +143,32 @@ function process_manage_delete($id_agents)
 $id_group = (int) get_parameter('id_group');
 $id_agents = get_parameter('id_agents');
 $recursion = get_parameter('recursion');
-
 $delete = (bool) get_parameter_post('delete');
 
-if ($delete) {
+if ($delete === true) {
     $result = process_manage_delete($id_agents);
 
     $info = '{"Agent":"'.implode(',', $id_agents).'"}';
-    if ($result) {
-        db_pandora_audit('Massive management', 'Delete agent ', false, false, $info);
+    if ($result === true) {
+        db_pandora_audit(
+            'Massive management',
+            'Delete agent ',
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit('Massive management', 'Fail try to delete agent', false, false, $info);
+        db_pandora_audit(
+            'Massive management',
+            'Fail try to delete agent',
+            false,
+            false,
+            $info
+        );
     }
 }
 
-$groups = users_get_groups();
-
+$table = new stdClass;
 $table->id = 'delete_table';
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -177,31 +234,98 @@ $table->data[1][3] = html_print_select(
     __('All'),
     2,
     true,
+    false,
+    true,
     '',
-    '',
-    '',
-    '',
+    false,
     'width:30%;'
 );
 
-$table->data[2][0] = __('Agents');
-$table->data[2][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[2][0] .= html_print_image('images/spinner.png', true);
-$table->data[2][0] .= '</span>';
-$table->data[2][1] = html_print_select(
-    agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false)), false, 'none'),
+if (is_metaconsole() === true) {
+    $servers = metaconsole_get_servers();
+    $server_fields = [];
+    foreach ($servers as $key => $server) {
+        $server_fields[$key] = $server['server_name'];
+    }
+
+    $table->data[2][2] = __('Node');
+    $table->data[2][3] = html_print_select(
+        $server_fields,
+        'nodes[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 500px; max-width: 500px; max-height: 100px',
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true
+    );
+}
+
+$table->data[3][0] = __('Agents');
+$table->data[3][0] .= '<span id="agent_loading" class="invisible">';
+$table->data[3][0] .= html_print_image('images/spinner.png', true);
+$table->data[3][0] .= '</span>';
+
+$agents = agents_get_group_agents(
+    array_keys(users_get_groups($config['id_user'], 'AW', false)),
+    ['disabled' => 2],
+    'none',
+    false,
+    false,
+    is_metaconsole(),
+    '|'
+);
+
+$table->data[3][1] = html_print_select(
+    $agents,
     'id_agents[]',
     0,
     false,
     '',
     '',
     true,
+    true,
+    true,
+    '',
+    false,
+    'min-width: 500px; max-width: 500px; max-height: 100px',
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    true,
+    true,
     true
 );
 
-echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents">';
+$url = 'index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents';
+if (is_metaconsole() === true) {
+    $url = 'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents&pure=0&option=delete_agents';
+}
+
+echo '<form method="post" id="form_agent" action="'.$url.'">';
 html_print_table($table);
-if (is_management_allowed() === true) {
+
+if (is_metaconsole() === true || is_management_allowed() === true) {
     attachActionButton('delete', 'delete', $table->width);
 }
 
@@ -215,25 +339,34 @@ ui_require_jquery_file('pandora.controls');
 
 <script type="text/javascript">
     $(document).ready (function () {
+        // Check Metaconsole.
+        var metaconsole = '<?php echo (is_metaconsole() === true) ? 1 : 0; ?>';
 
+        // Listeners.
         var recursion;
-        
         $("#checkbox-recursion").click(function () {
             recursion = this.checked ? 1 : 0;
-            
             $("#id_group").trigger("change");
         });
-        
+
         var disabled;
-        
-        $("#disabled").click(function () {
-        
-                disabled = this.value;
-        
-             $("#id_group").trigger("change");
+        $("#disabled").change(function () {
+            disabled = this.value;
+            $("#id_group").trigger("change");
         });
-        
-        $("#id_group").pandoraSelectGroupAgent ({
+
+        var nodes;
+        $("#nodes").change(function () {
+            nodes = $("#nodes").val();
+            $("#id_group").trigger("change");
+        });
+
+        $("#status_agents").change(function() {
+            $("#id_group").trigger("change");
+        });
+
+        // Build data.
+        var data = {
             status_agents: function () {
                 return $("#status_agents").val();
             },
@@ -244,16 +377,18 @@ ui_require_jquery_file('pandora.controls');
             },
             disabled: function() {
                 return disabled;
-            }
-        });
-        
-        $("#status_agents").change(function() {
-            $("#id_group").trigger("change");
-        });
-        
-        disabled = 2;
+            },
+        }
 
-     $("#id_group").trigger("change");
-     
+        if (metaconsole == 1) {
+            data.serialized = true;
+            data.serialized_separator = '|';
+            data.nodes = function() {
+                return nodes;
+            };
+        }
+
+        // Change agents.
+        $("#id_group").pandoraSelectGroupAgent(data);
     });
 </script>

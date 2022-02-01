@@ -4219,6 +4219,33 @@ function html_html2rgb($htmlcolor)
 
 
 /**
+ * Avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_avoid_autocomplete()
+{
+    $output = '';
+    $output .= '<input type="text" style="display:none">';
+    $output .= '<input type="password" style="display:none">';
+
+    return $output;
+}
+
+
+/**
+ * Input password avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_input_password_avoid_autocomplete()
+{
+    $output = '<input type="text" style="opacity: 0;position: absolute; width: 0px;">';
+    return $output;
+}
+
+
+/**
  * Print a magic-ajax control to select the module.
  *
  * @param string  $name            The name of ajax control, by default is "module".

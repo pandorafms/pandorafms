@@ -261,8 +261,8 @@ class Agents
 
         if (!empty($this->free_search)) {
             $search_sql = " AND (
-				alias COLLATE utf8_general_ci LIKE '%".$this->free_search."%'
-				OR nombre COLLATE utf8_general_ci LIKE '%".$this->free_search."%'
+				alias LIKE '%".$this->free_search."%'
+				OR nombre LIKE '%".$this->free_search."%'
 				OR direccion LIKE '%".$this->free_search."%'
 				OR comentarios LIKE '%".$this->free_search."%') ";
         }

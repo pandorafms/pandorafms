@@ -549,7 +549,7 @@ if ($search != '') {
     if ($id != '') {
         $aux = $id[0]['id_agent'];
         $search_sql = ' AND ( nombre '.$order_collation."
-			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%' 
+			LIKE '%$search%' OR alias ".$order_collation." LIKE '%$search%' 
 			OR tagente.id_agente = $aux";
         if (count($id) >= 2) {
             for ($i = 1; $i < count($id); $i++) {
@@ -561,9 +561,9 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = ' AND ( nombre '.$order_collation."
-            COLLATE utf8_general_ci LIKE '%$search%' 
-            OR comentarios ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%'
-            OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
+            LIKE '%$search%' 
+            OR comentarios ".$order_collation." LIKE '%$search%'
+            OR alias ".$order_collation." LIKE '%$search%') ";
     }
 }
 
@@ -590,14 +590,14 @@ if ($group_id > 0) {
 
 if ($strict_user) {
     $count_filter = [
-        // 'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+        // 'order' => 'tagente.nombre ASC',
         'order'    => 'tagente.nombre ASC',
         'disabled' => 0,
         'status'   => $status,
         'search'   => $search,
     ];
     $filter = [
-        // 'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+        // 'order' => 'tagente.nombre ASC',
         'order'    => 'tagente.nombre ASC',
         'disabled' => 0,
         'status'   => $status,

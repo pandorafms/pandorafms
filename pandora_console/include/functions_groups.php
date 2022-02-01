@@ -1924,7 +1924,7 @@ function group_get_data(
 			SELECT *
 			FROM tgrupo
 			WHERE id_grupo IN ('.$user_groups_ids.')
-			ORDER BY nombre COLLATE utf8_general_ci ASC'
+			ORDER BY nombre ASC'
         );
     }
 

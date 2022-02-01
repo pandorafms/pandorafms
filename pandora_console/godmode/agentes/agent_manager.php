@@ -47,7 +47,7 @@ if (is_ajax()) {
         $string = (string) get_parameter('q');
         // Field q is what autocomplete plugin gives.
         $filter = [];
-        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
+        $filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
         $filter[] = 'id_agente != '.$id_agent;
 
         $agents = agents_get_agents(

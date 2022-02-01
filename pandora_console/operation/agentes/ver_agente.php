@@ -489,7 +489,7 @@ if (is_ajax()) {
         }
 
         if (!empty($module_name)) {
-            $filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%".$module_name."%'";
+            $filter .= " AND t1.nombre LIKE '%".$module_name."%'";
         }
 
         // Status selector.

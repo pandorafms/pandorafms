@@ -48,8 +48,8 @@ function tags_search_tag($tag_name_description=false, $filter=false, $only_names
     if ($tag_name_description) {
         switch ($config['dbtype']) {
             case 'mysql':
-                $filter[] = '((name COLLATE utf8_general_ci LIKE "%'.$tag_name_description.'%") OR 
-						(description COLLATE utf8_general_ci LIKE "%'.$tag_name_description.'%"))';
+                $filter[] = '((name LIKE "%'.$tag_name_description.'%") OR 
+						(description LIKE "%'.$tag_name_description.'%"))';
             break;
 
             case 'postgresql':
@@ -2520,7 +2520,7 @@ function tags_get_all_user_agents(
     if ($filter) {
         if (($filter['search']) != '') {
             $string = io_safe_input($filter['search']);
-            $search_sql = ' AND (tagente.nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+            $search_sql = ' AND (tagente.nombre LIKE "%'.$string.'%")';
         }
 
         if (isset($filter['show_void_agents'])) {

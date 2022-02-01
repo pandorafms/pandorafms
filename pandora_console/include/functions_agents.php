@@ -1236,26 +1236,26 @@ function agents_get_group_agents(
 
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
-            $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
+            $filter[] = "(nombre LIKE '%$string%' OR direccion LIKE '%$string%')";
             unset($search['string']);
         }
 
         if (isset($search['name']) === true) {
             $name = io_safe_input($search['name']);
-            $filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "nombre LIKE '$name'";
             unset($search['name']);
         }
 
         if (isset($search['alias']) === true) {
             $name = io_safe_input($search['alias']);
-            $filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "alias LIKE '$name'";
             unset($search['alias']);
         }
 
         if (isset($search['aliasRegex']) === true) {
             $name = io_safe_input($search['aliasRegex']);
             $filter[] = sprintf(
-                'alias COLLATE utf8_general_ci REGEXP "%s"',
+                'alias REGEXP "%s"',
                 $name
             );
             unset($search['aliasRegex']);

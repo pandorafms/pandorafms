@@ -71,8 +71,6 @@ foreach ($layer_ids as $layer_id) {
 
 $next_action = 'new_map';
 
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
-
 $buttons['gis_maps_list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
@@ -411,6 +409,7 @@ function addConnectionMap() {
 </script>
 
 <?php
+$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
 echo '<form action="'.$url.'" id="form_setup" method="post">';
 
 // Load the data in edit or reload in update.

@@ -147,6 +147,7 @@ our @EXPORT = qw(
 	ping
 	resolve_hostname
 	ticks_totime
+	seconds_totime
 	safe_input
 	safe_output
 	month_have_days
@@ -1405,6 +1406,31 @@ sub ticks_totime ($){
 	my $minutes = int($ticks / $TICKS_PER_MINUTE) % 60;
 	my $hours   = int($ticks / $TICKS_PER_HOUR)   % 24;
 	my $days    = int($ticks / $TICKS_PER_DAY);
+
+	return "$days days, $hours hours, $minutes minutes, $seconds seconds";
+}
+
+
+
+################################################################################
+## SUB human_time_readable
+# Transform a seconds count in a human readable date
+################################################################################
+sub seconds_totime ($){
+	my $SECONDS_PER_MINUTE = 60;
+	my $SECONDS_PER_HOUR   = $SECONDS_PER_MINUTE * 60;
+	my $SECONDS_PER_DAY    = $SECONDS_PER_HOUR * 24;
+
+	my $orig_seconds   = shift;
+
+	if (!defined($orig_seconds)){
+			return "";
+	}
+
+	my $seconds = int($orig_seconds) % 60;
+	my $minutes = int($orig_seconds / $SECONDS_PER_MINUTE) % 60;
+	my $hours   = int($orig_seconds / $SECONDS_PER_HOUR)   % 24;
+	my $days    = int($orig_seconds / $SECONDS_PER_DAY);
 
 	return "$days days, $hours hours, $minutes minutes, $seconds seconds";
 }

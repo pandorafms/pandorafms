@@ -6868,7 +6868,7 @@ function reporting_advanced_sla(
             $min_value_warning = $agentmodule_info['min_warning'];
             $max_value_warning = $agentmodule_info['max_warning'];
         } else {
-            $max_values        = io_safe_output($agentmodule_info['str_critical']);
+            $max_value        = io_safe_output($agentmodule_info['str_critical']);
             $max_value_warning = io_safe_output($agentmodule_info['str_warning']);
         }
 
@@ -7412,23 +7412,25 @@ function reporting_advanced_sla(
                                         }
 
                                         // Take notice of $inverse_interval value.
-                                        if ($inverse_interval == 0) {
-                                            $sla_check_value = $match;
+                                        if ($inverse_interval === 1) {
+                                            // Is not inverse.
+                                            $sla_check_value = ($match === 1) ? false : true;
                                         } else {
-                                            $sla_check_value = !$match;
+                                            // Is inverse.
+                                            $sla_check_value = ($match === 1) ? true : false;
                                         }
 
                                         // Warning SLA check.
                                         if (empty($max_value_warning)) {
-                                            $match = preg_match('/^'.$max_value_warning.'$/', $current_data['datos']);
+                                            $match2 = preg_match('/^'.$max_value_warning.'$/', $current_data['datos']);
                                         } else {
-                                            $match = preg_match('/'.$max_value_warning.'/', $current_data['datos']);
+                                            $match2 = preg_match('/'.$max_value_warning.'/', $current_data['datos']);
                                         }
 
                                         if ($inverse_interval_warning == 0) {
-                                            $sla_check_value_warning = $match;
+                                            $sla_check_value_warning = $match2;
                                         } else {
-                                            $sla_check_value_warning = !$match;
+                                            $sla_check_value_warning = !$match2;
                                         }
                                     } else {
                                         // OK SLA check.

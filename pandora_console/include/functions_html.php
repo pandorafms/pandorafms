@@ -1490,10 +1490,42 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'        => true,
             'nothing'       => __('All'),
             'nothing_value' => 0,
-            'script'        => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
+            'script'        => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
     $output .= '</div>';
+
+    if (empty($data['searchBar']) === false && $data['searchBar'] === true) {
+        $output .= '<div>';
+
+        $output .= '<div>';
+        $output .= html_print_input(
+            [
+                'type'        => 'text',
+                'name'        => 'agent-searchBar-'.$uniqId,
+                'onKeyUp'     => 'searchAgent(\''.$uniqId.'\')',
+                'placeholder' => __('Type to search agents'),
+                'return'      => true,
+            ]
+        );
+
+        $output .= '</div>';
+
+        $output .= '<div>';
+        $output .= html_print_input(
+            [
+                'type'        => 'text',
+                'name'        => 'module-searchBar-'.$uniqId,
+                'onKeyUp'     => 'searchModule(\''.$uniqId.'\')',
+                'return'      => true,
+                'placeholder' => __('Type to search modules'),
+            ]
+        );
+
+        $output .= '</div>';
+
+        $output .= '</div>';
+    }
 
     $output .= '<div>';
     // Agent.
@@ -1543,7 +1575,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -1560,7 +1592,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'name'     => 'filtered-module-show-common-modules-'.$uniqId,
             'selected' => $data['mShowCommonModules'],
             'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.is_metaconsole().')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -4225,6 +4257,33 @@ function html_html2rgb($htmlcolor)
     } else {
         return false;
     }
+}
+
+
+/**
+ * Avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_avoid_autocomplete()
+{
+    $output = '';
+    $output .= '<input type="text" style="display:none">';
+    $output .= '<input type="password" style="display:none">';
+
+    return $output;
+}
+
+
+/**
+ * Input password avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_input_password_avoid_autocomplete()
+{
+    $output = '<input type="text" style="opacity: 0;position: absolute; width: 0px;">';
+    return $output;
 }
 
 

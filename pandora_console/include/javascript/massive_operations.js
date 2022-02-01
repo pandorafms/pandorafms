@@ -1,4 +1,4 @@
-/** global $ */
+/* global $, confirmDialog, showSpinner, hideSpinner */
 function massiveOperationValidation(contents, totalCount, limit, thisForm) {
   var output = false;
 

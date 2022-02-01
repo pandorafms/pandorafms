@@ -327,59 +327,17 @@ echo '<br>';
 
 // Configuration form.
 echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
-echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=".$id_graph."'>";
+echo "<form  id='agentmodules' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=".$id_graph."'>";
 
 echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters'>";
 echo '<tr>';
-echo "<td colspan='1'>".__('Filter group').'</td>';
-echo '</tr><tr>';
-echo "<td colspan='1'>".html_print_select_groups(
-    $config['id_user'],
-    ($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RW'),
-    true,
-    'group',
-    '',
-    'filterByGroup($(\'#group\').val());',
-    '',
-    0,
-    true
-).'</td>';
-echo '</tr><tr>';
-echo "<td class='top'>".__('Agents').ui_print_help_tip(
-    __('If you select several agents, only the common modules will be displayed'),
-    true
-).'</td>';
-echo '<td></td>';
-echo "<td class='top'>".__('Modules').'</td>';
-echo '</tr><tr>';
-echo '<td class="w50p">'.html_print_select(
-    agents_get_group_agents(),
-    'id_agents[]',
-    0,
-    false,
-    '',
-    '',
-    true,
-    true,
-    true,
-    'w100p',
-    false,
-    ''
-).'</td>';
-echo '<td class="select_module_graph"></td>';
-echo '<td class="w50p">'.html_print_select(
-    [],
-    'module[]',
-    0,
-    false,
-    '',
-    0,
-    true,
-    true,
-    true,
-    'w100p',
-    false,
-    ''
+echo '<td class="w50p pdd_50px" id="select_multiple_modules_filtered">'.html_print_input(
+    [
+        'type'      => 'select_multiple_modules_filtered',
+        'uniqId'    => 'modules',
+        'class'     => 'flex flex-row',
+        'searchBar' => true,
+    ]
 ).'</td>';
 echo '</tr><tr>';
 echo "<td colspan='3'>";
@@ -403,51 +361,33 @@ ui_require_jquery_file('autocomplete');
 $(document).ready (function () {
     $(document).data('text_for_module', $("#none_text").html());
     
-    $("#id_agents").change(agent_changed_by_multiple_agents);
-    
     
     $("#submit-add").click(function() {
-        $('#module').map(function(){
-            if ($(this).val() != "0" )
-                $(this).prop('selected', true);
-        });
-        
-        if($('#module')[0].childElementCount == 1 && ($('#module')[0].value == "" || $('#module')[0].value == "0")) {
+        if($('#filtered-module-modules-modules')[0].value == "" || $('#filtered-module-modules-modules')[0].value == "0") {
             alert("<?php echo __('Please, select a module'); ?>");
             return false;
         }
+
+        var modules_selected = $(
+            "#filtered-module-modules-modules"
+        ).val();
+        var agents_selected = $(
+            "#filtered-module-agents-modules"
+        ).val();
+
+        $("#agentmodules").submit( function(eventObj) {
+        $("<input />").attr("type", "hidden")
+          .attr("value", agents_selected)
+          .attr("name", "id_agents")
+          .appendTo("#agentmodules");
+          $("<input />").attr("type", "hidden")
+          .attr("value", modules_selected)
+          .attr("name", "id_modules")
+          .appendTo("#agentmodules");
+        return true;
+  });
     });
 });
-
-function filterByGroup(idGroup) {
-    $('#id_agents').empty ();
-    $('#module').empty();
-    $("#module").append ($("<option></option>").attr ("value", 0).html ('<?php echo __('None'); ?>'));
-    
-    jQuery.post ("ajax.php",
-            {"page" : "godmode/groups/group_list",
-            "get_group_agents" : 1,
-            "id_group" : idGroup,
-            // Add a key prefix to avoid auto sorting in js object conversion
-            "keys_prefix" : "_"
-            },
-            function (data, status) {
-                i = 0
-                jQuery.each (data, function (id, value) {
-                    // Remove keys_prefix from the index
-                    id = id.substring(1);
-                    
-                    i++;
-                    $("#id_agents").append ($("<option></option>").attr ("value", id).html (value));
-                });
-                
-                if (i == 0) {
-                    $("#id_agents").append ($("<option></option>").attr ("value", 0).html ('<?php echo __('None'); ?>'));
-                }
-            },
-            "json"
-        );
-}
 
 function added_ids_sorted_items_to_hidden_input() {
     var ids = '';

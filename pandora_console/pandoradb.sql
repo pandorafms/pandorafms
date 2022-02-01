@@ -2216,6 +2216,7 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
   `params` TEXT  NOT NULL,
   `server_to_exec` INT UNSIGNED NOT NULL DEFAULT 0,
   `command_timeout` INT UNSIGNED NOT NULL DEFAULT 90,
+  `display_command` TINYINT DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

@@ -946,7 +946,7 @@ function planned_downtimes_copy($id_downtime)
     unset($planned_downtime['id']);
 
     // Change copy name.
-    $planned_downtime['name'] = __('Coy of ').$planned_downtime['name'];
+    $planned_downtime['name'] = __('Copy of ').$planned_downtime['name'];
 
     // Insert new downtime
     $result['id_downtime'] = db_process_sql_insert(

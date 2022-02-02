@@ -1,16 +1,34 @@
 #!/bin/bash
+#######################################################
+# PandoraFMS Community  online installation script 
+#######################################################
+## Tested versions ##
+# Centos 8.4, 8.5
+# Rocky 8.4, 8.5
+# Almalinuz 8.4, 8.5
+# RedHat 8.5
 
-# define variables
+#Constants
 PANDORA_CONSOLE=/var/www/html/pandora_console
-CONSOLE_PATH=/var/www/html/pandora_console
 PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
-DBHOST=127.0.0.1
-DBNAME=pandora
-DBUSER=pandora
-DBPASS=pandora
-DBPORT=3306
-S_VERSION='2021070101'
+PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
+
+
+S_VERSION='2022012401'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
+
+# define default variables
+[ "$TZ" ] || TZ="Europe/Madrid"
+[ "$DBHOST" ] || DBHOST=127.0.0.1
+[ "$DBNAME" ] || DBNAME=pandora
+[ "$DBUSER" ] || DBUSER=pandora
+[ "$DBPASS" ] || DBPASS=pandora
+[ "$DBPORT" ] || DBPORT=3306
+[ "$DBROOTPASS" ] || DBROOTPASS=pandora
+[ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
+[ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
+[ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
+[ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -56,7 +74,7 @@ check_pre_pandora () {
 
     echo -en "${cyan}Checking environment ... ${reset}"
     rpm -qa | grep pandora &>> /dev/null && local fail=true
-    [ -d "$CONSOLE_PATH" ] && local fail=true
+    [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
     echo "use $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true
 
@@ -74,7 +92,7 @@ check_root_permissions () {
     echo -en "${cyan}Checking root account... ${reset}"
     if [ "$(whoami)" != "root" ]; then
         echo -e "${red}Fail${reset}"
-        echo "Please use a root account or sudo for installing PandoraFMS"
+        echo "Please use a root account or sudo for installing Pandora FMS"
         echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
         exit 1
 
@@ -87,8 +105,8 @@ check_root_permissions () {
 echo "Starting PandoraFMS Community deployment EL8 ver. $S_VERSION"
 
 # Centos Version
-if [ ! "$(grep -Ei 'centos|rocky' /etc/redhat-release)" ]; then
-         printf "\n ${red}Error this is not a Centos/Rocky Base system, this installer is compatible with Centos/Rocky systems only${reset}\n"
+if [ ! "$(grep -Ei 'centos|rocky|Almalinux|Red Hat Enterprise' /etc/redhat-release)" ]; then
+         printf "\n ${red}Error this is not a Centos/Rocky/Almalinux Base system, this installer is compatible with Centos/Rocky systems only${reset}\n"
          exit 1
 fi
 
@@ -106,7 +124,7 @@ echo "Community installer version: $S_VERSION" >> "$LOGFILE"
 check_root_permissions
 
 # Pre installed pandora
-check_pre_pandora
+[ "$SKIP_PRECHECK" == 1 ] || check_pre_pandora
 
 # Connectivity
 check_repo_connection
@@ -120,6 +138,9 @@ execute_cmd  "[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -ge 1700000 ]"
 # Check disk size at least 10 Gb free space
 execute_cmd "[ $(df -BM / | tail -1 | awk '{print $4}' | tr -d M) -gt 10000 ]" 'Checking Disk (required: 10 GB free min)'
 
+# Setting timezone
+execute_cmd "timedatectl set-timezone $TZ" "Setting Timezone $TZ"
+
 # Execute tools check
 execute_cmd "awk --version" 'Checking needed tools: awk'
 execute_cmd "grep --version" 'Checking needed tools: grep'
@@ -131,25 +152,57 @@ rm -rf "$HOME"/pandora_deploy_tmp/*.rpm* &>> "$LOGFILE"
 mkdir "$HOME"/pandora_deploy_tmp &>> "$LOGFILE"
 execute_cmd "cd $HOME/pandora_deploy_tmp" "Moving to workspace:  $HOME/pandora_deploy_tmp"
 
+## Extra steps on redhat envs
+if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
+    ## In case REDHAT
+    # Check susbscription manager status:
+    echo -en "${cyan}Checking Red Hat Enterprise subscription... ${reset}"
+    subscription-manager status &>> "$LOGFILE"
+    subscription-manager list &>> "$LOGFILE"
+    subscription-manager list | grep 'Status:' | grep Subscribed &>> "$LOGFILE"
+    check_cmd_status 'Error checking subscription status, make sure your server is activated and suscribed to Red Hat Enterprise repositories'
+
+    # Ckeck repolist
+    dnf repolist &>> "$LOGFILE"
+    echo -en "${cyan}Checking Red Hat Enterprise repolist... ${reset}"
+    dnf repolist | grep 'rhel-8-for-x86_64-baseos-rpms' &>> "$LOGFILE"
+    check_cmd_status 'Error checking repositories status, could try a subscription-manager attach command or contact sysadmin'
+    
+    #install extra repos
+    extra_repos=" \
+        tar \
+        dnf-utils \
+        https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+        http://rpms.remirepo.net/enterprise/remi-release-8.rpm \
+        https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
+
+    execute_cmd "dnf install -y $extra_repos" "Installing extra repositories"
+    execute_cmd "subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms" "Enabling subscription to codeready-builder"
+else
+    # For alma/rocky/centos
+    extra_repos=" \
+        tar \
+        dnf-utils \
+        epel-release \
+        http://rpms.remirepo.net/enterprise/remi-release-8.rpm \
+        https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
+
+    execute_cmd "dnf install -y $extra_repos" "Installing extra repositories"
+    execute_cmd "dnf config-manager --set-enabled powertools" "Configuring Powertools"
+fi
+
+
 #Installing wget
 execute_cmd "dnf install -y wget" "Installing wget"
 
 #Installing extra repositiries
-extra_repos=" \
-    tar \
-    dnf-utils \
-    epel-release \
-    http://rpms.remirepo.net/enterprise/remi-release-8.rpm \
-    https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
-execute_cmd "dnf install -y $extra_repos" "Installing extra repositories"
-execute_cmd "dnf config-manager --set-enabled powertools" "Configuring Powertools"
 execute_cmd "dnf module reset -y php " "Disabling standard PHP module"
-execute_cmd "dnf module install -y php:remi-7.3" "Configuring PHP"
+execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP"
 
 # Install percona Database
 execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
-rm -rf /etc/my.cnf
+#rm -rf /etc/my.cnf
 execute_cmd "dnf install -y Percona-Server-server-57" "Installing Percona Server"
 
 # Console dependencies
@@ -231,6 +284,7 @@ console_dependencies=" \
     xorg-x11-fonts-misc \
     poppler-data \
     php-yaml \
+    mod_ssl \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
@@ -255,7 +309,8 @@ server_dependencies=" \
     perl(IO::Socket::INET6) \
     perl(XML::Twig) \
     expect \
-        openssh-clients \
+    openssh-clients \
+    java \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -281,6 +336,7 @@ oracle_dependencies=" \
     https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-sqlplus-19.8.0.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $oracle_dependencies" "Installing Oracle Instant client"
 
+#ipam dependencies
 ipam_dependencies=" \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
@@ -290,32 +346,39 @@ ipam_dependencies=" \
     perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig)"
-execute_cmd "dnf install -y $ipam_dependencies" "Installing Oracle Instant client"
+execute_cmd "dnf install -y $ipam_dependencies" "Installing IPAM Instant client"
+
+# MSSQL dependencies el8
+execute_cmd "curl https://packages.microsoft.com/config/rhel/8/prod.repo -o /etc/yum.repos.d/mssql-release.repo" "Configuring Microsoft repositories" 
+execute_cmd "dnf remove unixODBC-utf16 unixODBC-utf16-devel" "Removing default unixODBC packages"
+execute_cmd "env ACCEPT_EULA=Y dnf install -y msodbcsql17" "Installing ODBC Driver for Microsoft(R) SQL Server(R)"
+MS_ID=$(head -1 /etc/odbcinst.ini | tr -d '[]') &>> "$LOGFILE"
+#dnf config-manager --set-disable packages-microsoft-com-prod
 
 # Disabling SELINUX and firewalld
 setenforce 0  &>> "$LOGFILE"
 sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config  &>> "$LOGFILE"
 systemctl disable firewalld --now &>> "$LOGFILE"
 
-
 #Configuring Database
+if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
 execute_cmd "systemctl start mysqld" "Starting database engine"
 export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
 echo """
     SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
     UNINSTALL PLUGIN validate_password;
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('pandora');
-    """ | mysql --connect-expired-password -uroot
-
-export MYSQL_PWD=$DBPASS
+    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
+    """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
+fi
+export MYSQL_PWD=$DBROOTPASS
 echo -en "${cyan}Creating Pandora FMS database...${reset}"
 echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
-check_cmd_status 'Error creating database pandora, is this an empty node? if you have a previus installation please contact with support.'
+check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
 echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST
+export MYSQL_PWD=$DBPASS
 
 #Generating my.cnf
-POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 cat > /etc/my.cnf << EO_CONFIG_F
 [mysqld]
 datadir=/var/lib/mysql
@@ -365,10 +428,10 @@ execute_cmd "systemctl restart mysqld" "Configuring database engine"
 # Downloading Pandora Packages
 execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm" "Downloading Pandora FMS Server community"
 execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm" "Downloading Pandora FMS Console community"
-execute_cmd "wget http://firefly.artica.es/centos7/pandorafms_agent_unix-7.0NG.751_x86_64.rpm" "Downloading Pandora FMS Agent community"
+execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm" "Downloading Pandora FMS Agent community"
 
 # Install Pandora
-execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "installing PandoraFMS packages"
+execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "Installing Pandora FMS packages"
 
 # Copy gotty utility
 execute_cmd "wget https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
@@ -391,13 +454,13 @@ mysql -u$DBUSER -P$DBPORT -h$DBHOST $DBNAME < $PANDORA_CONSOLE/pandoradb_data.sq
 check_cmd_status 'Error Loading database schema data'
 
 # Configure console
-cat > $CONSOLE_PATH/include/config.php << EO_CONFIG_F
+cat > $PANDORA_CONSOLE/include/config.php << EO_CONFIG_F
 <?php
 \$config["dbtype"] = "mysql";
 \$config["dbname"]="$DBNAME";
 \$config["dbuser"]="$DBUSER";
 \$config["dbpass"]="$DBPASS";
-\$config["dbhost"]="localhost";
+\$config["dbhost"]="$DBHOST";
 \$config["homedir"]="$PANDORA_CONSOLE";
 \$config["homeurl"]="/pandora_console";
 error_reporting(0);
@@ -437,9 +500,9 @@ sed -i -e "s/php_flag engine off//g" $PANDORA_CONSOLE/images/.htaccess
 sed -i -e "s/php_flag engine off//g" $PANDORA_CONSOLE/attachment/.htaccess
 
 # Fixing console permissions
-chmod 600 $CONSOLE_PATH/include/config.php
-chown apache. $CONSOLE_PATH/include/config.php
-mv $CONSOLE_PATH/install.php $CONSOLE_PATH/install.done
+chmod 600 $PANDORA_CONSOLE/include/config.php
+chown apache. $PANDORA_CONSOLE/include/config.php
+mv $PANDORA_CONSOLE/install.php $PANDORA_CONSOLE/install.done &>> "$LOGFILE"
 
 # Prepare php.ini
 sed -i -e "s/^max_input_time.*/max_input_time = -1/g" /etc/php.ini
@@ -466,6 +529,10 @@ sed -i -e "s/^dbname.*/dbname $DBNAME/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
+sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
+
+# Enable agent remote config
+sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 
 
 # Set Oracle environment for pandora_server
 cat > /etc/pandora/pandora_server.env << 'EOF_ENV'
@@ -477,6 +544,8 @@ export ORACLE_HOME=/usr/lib/oracle/$VERSION/client64
 EOF_ENV
 
 # Kernel optimization
+
+if [ "$SKIP_KERNEL_OPTIMIZATIONS" -eq '0' ] ; then
 cat >> /etc/sysctl.conf <<EO_KO
 # Pandora FMS Optimization
 
@@ -504,6 +573,7 @@ net.core.optmem_max = 81920
 EO_KO
 
 [ -d /dev/lxd/ ] || execute_cmd "sysctl --system" "Applying Kernel optimization"
+fi
 
 # Fix pandora_server.{log,error} permissions to allow Console check them
 chown pandora:apache /var/log/pandora
@@ -558,7 +628,7 @@ chmod 0644 /etc/logrotate.d/pandora_server
 chmod 0644 /etc/logrotate.d/pandora_agent
 
 # Add websocket engine start script.
-mv /var/www/html/pandora_console/pandora_websocket_engine /etc/init.d/
+mv /var/www/html/pandora_console/pandora_websocket_engine /etc/init.d/ &>> "$LOGFILE"
 chmod +x /etc/init.d/pandora_websocket_engine
 
 # Start Websocket engine
@@ -569,7 +639,7 @@ systemctl enable pandora_websocket_engine &>> "$LOGFILE"
 
 # Enable pandora ha service
 systemctl enable pandora_server --now &>> "$LOGFILE"
-execute_cmd "systemctl start pandora_server" "Starting Pandora FMS Server"
+execute_cmd "/etc/init.d/pandora_server start" "Starting Pandora FMS Server"
 
 # starting tentacle server
 systemctl enable tentacle_serverd &>> "$LOGFILE"
@@ -580,7 +650,7 @@ execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate http://12
 echo "* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> "$LOGFILE"
-execute_cmd "systemctl start pandora_agent_daemon" "starting Pandora FMS Agent"
+execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

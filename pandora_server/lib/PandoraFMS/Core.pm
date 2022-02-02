@@ -550,16 +550,32 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	else {
 		return $status if ($alert->{$DayNames[$wday]} != 1);
 	}
-	
-	# Check time slot
+
+	my $schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+
+	return $status unless defined($schedule) && ref $schedule eq "HASH";
+
+	return $status unless defined($schedule->{$DayNames[$wday]});
+
+	return $status unless ref($schedule->{$DayNames[$wday]}) eq "ARRAY";
+
 	my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
-	if (($alert->{'time_from'} ne $alert->{'time_to'})) {
-		if ($alert->{'time_from'} lt $alert->{'time_to'}) {
-			return $status if (($time le $alert->{'time_from'}) || ($time ge $alert->{'time_to'}));
-		} else {
-			return $status if (($time le $alert->{'time_from'}) && ($time ge $alert->{'time_to'}));
+
+	#
+	# Check time slots
+	#
+	my $inSlot = 0;
+	foreach my $timeBlock (@{$schedule->{$DayNames[$wday]}}) {
+		if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
+			# All day.
+			$inSlot = 1;
+		} elsif ($timeBlock->{'start'} le $time && $timeBlock->{'end'} ge $time) {
+			# In range.
+			$inSlot = 1;
 		}
 	}
+
+	return $status if $inSlot eq 0;
 	
 	# Check time threshold
 	my $limit_utimestamp = $alert->{'last_reference'} + $alert->{'time_threshold'};

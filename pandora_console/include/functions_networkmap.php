@@ -3280,7 +3280,10 @@ function get_status_color_networkmap_fictional_point($id_networkmap, $parent='')
     if ((int) $id_networkmap !== 0) {
         $agents = db_get_all_rows_filter(
             'titem',
-            ['id_map' => $id_networkmap]
+            [
+                'id_map'  => $id_networkmap,
+                'deleted' => 0,
+            ]
         );
 
         if ((bool) $agents === false) {

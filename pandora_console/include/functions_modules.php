@@ -890,7 +890,7 @@ function modules_create_agent_module(
         } else {
             db_process_sql(
                 'UPDATE tagente
-                SET total_count=total_count+1, notinit_count=notinit_count+1
+                SET total_count=total_count+1, notinit_count=notinit_count+1, update_module_count=1
                 WHERE id_agente='.(int) $id_agent
             );
         }

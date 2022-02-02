@@ -1893,14 +1893,14 @@ CREATE  TABLE IF NOT EXISTS `tgis_data_status` (
 CREATE  TABLE IF NOT EXISTS `tgis_map` (
   `id_tgis_map` INT NOT NULL AUTO_INCREMENT COMMENT 'table identifier' ,
   `map_name` VARCHAR(63) NOT NULL COMMENT 'Name of the map' ,
-  `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
-  `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
-  `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
+  `initial_longitude` DOUBLE NULL COMMENT "longitude of the center of the map when it\'s loaded",
+  `initial_latitude` DOUBLE NULL COMMENT "latitude of the center of the map when it\'s loaded",
+  `initial_altitude` DOUBLE NULL COMMENT "altitude of the center of the map when it\'s loaded",
   `zoom_level` TINYINT NULL DEFAULT 1 COMMENT 'Zoom level to show when the map is loaded.',
-  `map_background` VARCHAR(127) NULL COMMENT 'path on the server to the background image of the map' ,
-  `default_longitude` DOUBLE NULL COMMENT 'DEFAULT longitude for the agents placed on the map' ,
-  `default_latitude` DOUBLE NULL COMMENT 'DEFAULT latitude for the agents placed on the map' ,
-  `default_altitude` DOUBLE NULL COMMENT 'DEFAULT altitude for the agents placed on the map' ,
+  `map_background` VARCHAR(127) NULL COMMENT 'path on the server to the background image of the map',
+  `default_longitude` DOUBLE NULL COMMENT 'DEFAULT longitude for the agents placed on the map',
+  `default_latitude` DOUBLE NULL COMMENT 'DEFAULT latitude for the agents placed on the map',
+  `default_altitude` DOUBLE NULL COMMENT 'DEFAULT altitude for the agents placed on the map',
   `group_id` INT NOT NULL DEFAULT 0 COMMENT 'Group that owns the map' ,
   `default_map` TINYINT NULL DEFAULT 0 COMMENT '1 if this is the DEFAULT map, 0 in other case',
   PRIMARY KEY (`id_tgis_map`),
@@ -1911,18 +1911,18 @@ CREATE  TABLE IF NOT EXISTS `tgis_map` (
 -- Table `tgis_map_connection`
 -- ---------------------------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
-  `id_tmap_connection` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
-  `conection_name` VARCHAR(45) NULL COMMENT 'Name of the connection (name of the base layer)' ,
-  `connection_type` VARCHAR(45) NULL COMMENT 'Type of map server to connect' ,
-  `conection_data` TEXT NULL COMMENT 'connection information (this can probably change to fit better the possible connection parameters)' ,
-  `num_zoom_levels` TINYINT NULL COMMENT 'Number of zoom levels available' ,
-  `default_zoom_level` TINYINT NOT NULL DEFAULT 16 COMMENT 'DEFAULT Zoom Level for the connection' ,
-  `default_longitude` DOUBLE NULL COMMENT 'DEFAULT longitude for the agents placed on the map' ,
-  `default_latitude` DOUBLE NULL COMMENT 'DEFAULT latitude for the agents placed on the map' ,
-  `default_altitude` DOUBLE NULL COMMENT 'DEFAULT altitude for the agents placed on the map' ,
-  `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
-  `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
-  `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
+  `id_tmap_connection` INT NOT NULL AUTO_INCREMENT COMMENT 'table id',
+  `conection_name` VARCHAR(45) NULL COMMENT 'Name of the connection (name of the base layer)',
+  `connection_type` VARCHAR(45) NULL COMMENT 'Type of map server to connect',
+  `conection_data` TEXT NULL COMMENT 'connection information (this can probably change to fit better the possible connection parameters)',
+  `num_zoom_levels` TINYINT NULL COMMENT 'Number of zoom levels available',
+  `default_zoom_level` TINYINT NOT NULL DEFAULT 16 COMMENT 'DEFAULT Zoom Level for the connection',
+  `default_longitude` DOUBLE NULL COMMENT 'DEFAULT longitude for the agents placed on the map',
+  `default_latitude` DOUBLE NULL COMMENT 'DEFAULT latitude for the agents placed on the map',
+  `default_altitude` DOUBLE NULL COMMENT 'DEFAULT altitude for the agents placed on the map',
+  `initial_longitude` DOUBLE NULL COMMENT "longitude of the center of the map when it\'s loaded",
+  `initial_latitude` DOUBLE NULL COMMENT "latitude of the center of the map when it\'s loaded",
+  `initial_altitude` DOUBLE NULL COMMENT "altitude of the center of the map when it\'s loaded",
   `group_id` INT NOT NULL DEFAULT 0 COMMENT 'Group that owns the map',
   PRIMARY KEY (`id_tmap_connection`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COMMENT='Table to store the map connection information';
@@ -1954,14 +1954,14 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_con` (
 -- Table `tgis_map_layer`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
-  `id_tmap_layer` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
-  `layer_name` VARCHAR(45) NOT NULL COMMENT 'Name of the layer ' ,
-  `view_layer` TINYINT NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown' ,
-  `layer_stack_order` TINYINT NULL DEFAULT 0 COMMENT 'Number of order of the layer in the layer stack, bigger means upper on the stack.\n' ,
-  `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer' ,
-  `tgrupo_id_grupo` MEDIUMINT NOT NULL COMMENT 'reference to the group shown in the layer' ,
-  PRIMARY KEY (`id_tmap_layer`) ,
-  INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
+  `id_tmap_layer` INT NOT NULL AUTO_INCREMENT COMMENT 'table id',
+  `layer_name` VARCHAR(45) NOT NULL COMMENT 'Name of the layer ',
+  `view_layer` TINYINT NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown',
+  `layer_stack_order` TINYINT NULL DEFAULT 0 COMMENT 'Number of order of the layer in the layer stack, bigger means upper on the stack.',
+  `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer',
+  `tgrupo_id_grupo` MEDIUMINT NOT NULL COMMENT 'reference to the group shown in the layer',
+  PRIMARY KEY (`id_tmap_layer`),
+  INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC),
   CONSTRAINT `fk_tmap_layer_tgis_map1`
     FOREIGN KEY (`tgis_map_id_tgis_map` )
     REFERENCES `tgis_map` (`id_tgis_map` )
@@ -1973,11 +1973,11 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
 -- Table `tgis_map_layer_has_tagente`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
-  `tgis_map_layer_id_tmap_layer` INT NOT NULL ,
-  `tagente_id_agente` INT UNSIGNED NOT NULL ,
-  PRIMARY KEY (`tgis_map_layer_id_tmap_layer`, `tagente_id_agente`) ,
-  INDEX `fk_tgis_map_layer_has_tagente_tgis_map_layer1` (`tgis_map_layer_id_tmap_layer` ASC) ,
-  INDEX `fk_tgis_map_layer_has_tagente_tagente1` (`tagente_id_agente` ASC) ,
+  `tgis_map_layer_id_tmap_layer` INT NOT NULL,
+  `tagente_id_agente` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`tgis_map_layer_id_tmap_layer`, `tagente_id_agente`),
+  INDEX `fk_tgis_map_layer_has_tagente_tgis_map_layer1` (`tgis_map_layer_id_tmap_layer` ASC),
+  INDEX `fk_tgis_map_layer_has_tagente_tagente1` (`tagente_id_agente` ASC),
   CONSTRAINT `fk_tgis_map_layer_has_tagente_tgis_map_layer1`
     FOREIGN KEY (`tgis_map_layer_id_tmap_layer` )
     REFERENCES `tgis_map_layer` (`id_tmap_layer` )

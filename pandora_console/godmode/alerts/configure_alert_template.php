@@ -1532,6 +1532,7 @@ if ($step == 2) {
         tooltipText: '<?php echo __('Drag out to remove'); ?>',
         simple: '<?php echo __('Simple'); ?>',
         detailed: '<?php echo __('Detailed'); ?>',
+        alert: '<?php echo __('Alert'); ?>'
     }
 
     var calendar = fullCalendarPandora(calendarEl, settings, events);

@@ -170,7 +170,7 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
       }
 
       confirmDialog({
-        title: "Event",
+        title: settings.alert,
         message: function() {
           var id = "div-" + uniqId();
           var loading = settings.loadingText;

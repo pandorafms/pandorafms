@@ -40,6 +40,7 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
     eventColor: "#82b92e",
     editable: true,
     dayMaxEvents: 3,
+    dayPopoverFormat: { weekday: "long" },
     events: initialEvents,
     defaultAllDay: false,
     displayEventTime: true,

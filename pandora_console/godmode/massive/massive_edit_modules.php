@@ -1369,6 +1369,7 @@ $(document).ready (function () {
         var params = {
             "page" : "operation/agentes/ver_agente",
             "get_agent_modules_json" : 1,
+            "truncate_module_names": 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
             "safe_name" : 1
@@ -1396,7 +1397,7 @@ $(document).ready (function () {
             params,
             function (data, status) {
                 jQuery.each (data, function (id, value) {
-                    option = $("<option></option>").attr("value", value["nombre"]).html(value["safe_name"]);
+                    option = $("<option></option>").attr({value: value["nombre"], title: value["nombre"]}).html(value["safe_name"]);
                     $("#module_name").append (option);
                 });
                 hideSpinner();

@@ -607,7 +607,7 @@ CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
   `data` LONGTEXT,
   `utimestamp` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `tattachment`

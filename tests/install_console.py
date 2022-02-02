@@ -3,6 +3,7 @@
 import os
 from pyvirtualdisplay import Display
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
 # Are we running headless?
 if ('DISPLAY' not in os.environ):
@@ -27,14 +28,15 @@ try:
     browser.find_element_by_xpath("//*[@id='step4']").click()
 
     # Complete the installation.
-    browser.implicitly_wait(300) # The installation is going to take a long time.
+    browser.implicitly_wait(900) # The installation is going to take a long time.
     browser.find_element_by_xpath("//*[@id='step5']").click()
     browser.implicitly_wait(5)
     assert("Installation complete" in browser.page_source)
     browser.find_element_by_name("rn_file").click()
 except AssertionError as error:
     print("Error " + str(error) + ":\n" + browser.page_source)
-
+except NoSuchElementException as error:
+    print("Error " + str(error) + ":\n" + browser.page_source)
 
 # Clean-up
 browser.quit()

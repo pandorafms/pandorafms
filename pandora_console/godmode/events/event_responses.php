@@ -41,6 +41,7 @@ switch ($action) {
         $values['modal_height'] = get_parameter('modal_height');
         $values['new_window'] = get_parameter('new_window');
         $values['params'] = get_parameter('params');
+        $values['display_command'] = get_parameter('display_command');
         $values['server_to_exec'] = get_parameter('server_to_exec');
         $values['command_timeout'] = get_parameter('command_timeout', 90);
 
@@ -64,6 +65,7 @@ switch ($action) {
         $values['modal_height'] = get_parameter('modal_height');
         $values['new_window'] = get_parameter('new_window');
         $values['params'] = get_parameter('params');
+        $values['display_command'] = get_parameter('display_command');
         $values['server_to_exec'] = get_parameter('server_to_exec');
         $response_id = get_parameter('id_response', 0);
         $values['command_timeout'] = get_parameter('command_timeout', '90');

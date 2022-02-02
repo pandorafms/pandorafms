@@ -2004,6 +2004,7 @@ ALTER TABLE `tserver` ADD COLUMN `port` int(5) unsigned NOT NULL default 0;
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
 ALTER TABLE tevent_response ADD COLUMN command_timeout int(5) unsigned NOT NULL DEFAULT 90;
+ALTER TABLE tevent_response ADD COLUMN display_command tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule`

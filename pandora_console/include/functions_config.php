@@ -82,17 +82,17 @@ function config_update_value($token, $value)
         );
     }
 
-    if ($token == 'default_assign_tags') {
+    if ($token === 'default_assign_tags') {
         $value = ($value);
     }
 
-    if (!isset($config[$token])) {
+    if (isset($config[$token]) === false) {
         $config[$token] = $value;
         return (bool) config_create_value($token, io_safe_input($value));
     }
 
     // If it has not changed.
-    if ($config[$token] == $value) {
+    if ($config[$token] === $value) {
         return true;
     }
 
@@ -108,6 +108,15 @@ function config_update_value($token, $value)
     if ($result === 0) {
         return true;
     } else {
+        // Something in setup changes.
+        db_pandora_audit(
+            AUDIT_LOG_SETUP,
+            'Setup has changed',
+            false,
+            false,
+            sprintf('Token << %s >> updated.', $token)
+        );
+
         return (bool) $result;
     }
 }
@@ -126,7 +135,7 @@ function config_update_config()
     include_once $config['homedir'].'/include/functions_io.php';
 
     // If user is not even log it, don't try this.
-    if (! isset($config['id_user'])) {
+    if (isset($config['id_user']) === false) {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = false;
         $config['error_config_update_config']['message'] = __('Failed updated: User did not login.');
@@ -144,12 +153,7 @@ function config_update_config()
 
     $update_config = (bool) get_parameter('update_config');
 
-    if ($update_config) {
-        db_pandora_audit(
-            AUDIT_LOG_SETUP,
-            'Setup has changed'
-        );
-    } else {
+    if ($update_config === false) {
         // Do nothing.
         return false;
     }

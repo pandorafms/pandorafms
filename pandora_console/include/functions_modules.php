@@ -1080,14 +1080,23 @@ function modules_get_agentmodule($id_agentmodule)
 }
 
 
-function modules_get_table_data($id_agent_module)
+/**
+ * Gets data table for agent module
+ *
+ * @param  integer|null $id_agent_module Id agentmodule.
+ * @param  integer|null $id_type         Id module type.
+ * @return void
+ */
+function modules_get_table_data(?int $id_agent_module, ?int $id_type)
 {
-    $id_type = db_get_value(
-        'id_tipo_modulo',
-        'tagente_modulo',
-        'id_agente_modulo',
-        $id_agent_module
-    );
+    if ($id_type === null) {
+        $id_type = db_get_value(
+            'id_tipo_modulo',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $id_agent_module
+        );
+    }
 
     $name_type = db_get_value('nombre', 'ttipo_modulo', 'id_tipo', $id_type);
 

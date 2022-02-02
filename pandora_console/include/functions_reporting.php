@@ -4148,16 +4148,17 @@ function reporting_last_value($report, $content, $datetime, $period)
 
     $result = $module->getStatus()->toArray();
 
-    if ($result === false) {
-        $result = [];
-        $result['utimestamp'] = '-';
+    if ($result === false
+        || $result['estado'] == AGENT_MODULE_STATUS_NO_DATA
+        || $result['estado'] == AGENT_MODULE_STATUS_NOT_INIT
+    ) {
+        $result['utimestamp'] = '';
         $result['datos'] = __('No data to display within the selected interval');
     }
 
     if ($datetime < $result['utimestamp']) {
-        $table_data = modules_get_table_data($id_agent_module);
-
-        $init_date_condition = '';
+        $id_tipo_modulo = $module->id_tipo_modulo();
+        $table_data = modules_get_table_data(null, $id_tipo_modulo);
         if ($period !== null) {
             $sql = sprintf(
                 'SELECT datos, utimestamp FROM %s WHERE id_agente_modulo = %d AND utimestamp BETWEEN %d AND %d ORDER BY utimestamp DESC',
@@ -4175,7 +4176,8 @@ function reporting_last_value($report, $content, $datetime, $period)
             );
         }
 
-        $datos = db_get_row_sql($sql);
+        $search_in_history_db = db_search_in_history_db($datelimit);
+        $datos = db_get_row_sql($sql, $search_in_history_db);
         if ($datos !== false) {
             $result['datos'] = $datos['datos'];
             $result['utimestamp'] = $datos['utimestamp'];

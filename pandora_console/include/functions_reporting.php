@@ -4176,15 +4176,26 @@ function reporting_last_value($report, $content, $datetime, $period)
             );
         }
 
-        $search_in_history_db = db_search_in_history_db($datelimit);
+        $search_in_history_db = db_search_in_history_db($datetime);
+
+        try {
+            $module->connectNode();
+        } catch (\Exception $e) {
+            // Do not link items if failed to find them.
+            $module->restoreConnection();
+        }
+
         $datos = db_get_row_sql($sql, $search_in_history_db);
+
+        // Restore if needed.
+        $module->restoreConnection();
+
         if ($datos !== false) {
             $result['datos'] = $datos['datos'];
             $result['utimestamp'] = $datos['utimestamp'];
         } else {
-            $result = [];
-
             $result['utimestamp'] = '-';
+            $result['estado'] = AGENT_MODULE_STATUS_NO_DATA;
             $result['datos'] = __('No data to display within the selected interval');
         }
     }

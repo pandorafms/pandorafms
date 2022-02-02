@@ -37,7 +37,9 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-enterprise_hook('open_meta_frame');
+if (is_metaconsole() === true) {
+    enterprise_hook('open_meta_frame');
+}
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
@@ -48,11 +50,11 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
     exit;
 }
 
-
 $duplicate_template = (bool) get_parameter('duplicate_template');
 $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
 $step = (int) get_parameter('step', 1);
+
 // We set here the number of steps.
 if (defined('LAST_STEP') === false) {
     define('LAST_STEP', 3);
@@ -229,6 +231,14 @@ if ($duplicate_template) {
 }
 
 
+/**
+ * Build navbar steps.
+ *
+ * @param integer $step Step.
+ * @param integer $id   Id template.
+ *
+ * @return void Html output.
+ */
 function print_alert_template_steps($step, $id)
 {
     echo '<ol class="steps">';
@@ -307,13 +317,20 @@ function print_alert_template_steps($step, $id)
 }
 
 
+/**
+ * Update template
+ *
+ * @param integer $step Step.
+ *
+ * @return boolean result to update.
+ */
 function update_template($step)
 {
     global $config;
 
     $id = (int) get_parameter('id');
 
-    if (empty($id)) {
+    if (empty($id) === true) {
         return false;
     }
 
@@ -330,7 +347,7 @@ function update_template($step)
         $priority = (int) get_parameter('priority');
         $id_group = get_parameter('id_group');
         // Only for Metaconsole. Save the previous name for synchronizing.
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $previous_name = db_get_value('name', 'talert_templates', 'id', $id);
         } else {
             $previous_name = '';
@@ -391,7 +408,7 @@ function update_template($step)
         $recovery_notify = (bool) get_parameter('recovery_notify');
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
             $values['field'.$i] = (string) get_parameter('field'.$i);
-            $values['field'.$i.'_recovery'] = $recovery_notify ? (string) get_parameter('field'.$i.'_recovery') : '';
+            $values['field'.$i.'_recovery'] = ($recovery_notify) ? (string) get_parameter('field'.$i.'_recovery') : '';
         }
 
         $values['recovery_notify'] = $recovery_notify;
@@ -1216,7 +1233,9 @@ if (!$disabled) {
 echo '</div>';
 echo '</form>';
 
-enterprise_hook('close_meta_frame');
+if (is_metaconsole() === true) {
+    enterprise_hook('close_meta_frame');
+}
 
 ui_require_javascript_file('pandora_alerts');
 ui_include_time_picker();
@@ -1495,7 +1514,6 @@ if ($step == 2) {
         eventsBBDD = '<?php echo json_encode($default_events_calendar); ?>';
     }
 
-    console.log(eventsBBDD);
     var events = loadEventBBDD(eventsBBDD);
     var calendarEl = document.getElementById('calendar_map');
     var settings = {

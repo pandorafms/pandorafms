@@ -8475,15 +8475,17 @@ div#err_msg_centralised {
 }
 
 .tooltipevent {
-  width: 70px;
   background: #fff;
   position: absolute;
   z-index: 10001;
-  top: 20px;
-  left: 20px;
+  top: 0px;
+  right: 0px;
   border: 2px solid #82b92e;
   border-radius: 5px;
   padding: 5px;
+  width: 70px;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 #select_multiple_modules_filtered > div {

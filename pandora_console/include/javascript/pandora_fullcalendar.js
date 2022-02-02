@@ -21,11 +21,11 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
     slotDuration: "01:00:00",
     slotLabelInterval: "02:00:00",
     snapDuration: "01:00:00",
-    slotLabelFormat: {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: false
-    },
+    //slotLabelFormat: {
+    //  hour: "numeric",
+    //  minute: "2-digit",
+    //  hour12: false
+    //},
     slotMinTime: "00:00:00",
     slotMaxTime: "24:00:00",
     scrollTime: "01:00:00",
@@ -42,6 +42,8 @@ function fullCalendarPandora(calendarEl, settings, initialEvents) {
     dayMaxEvents: 3,
     events: initialEvents,
     defaultAllDay: false,
+    displayEventTime: true,
+    displayEventEnd: true,
     select: function(info) {
       var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
       if (
@@ -322,9 +324,14 @@ function recalculate_events(calendar, newEvent, from, to, create) {
     }
   });
 
+  var title = "";
+  if (time_format(from) === "00:00:00" && time_format(to) === "00:00:00") {
+    title = "All day";
+  }
+
   if (create === true) {
     calendar.addEvent({
-      title: "",
+      title: title,
       start: from,
       end: to,
       id: uniqId()
@@ -413,6 +420,14 @@ function loadEventBBDD(events) {
       if (event != null) {
         var time_from = event.start.split(":");
         var time_to = event.end.split(":");
+
+        var start = dates[day_string].setHours(
+          time_from[0],
+          time_from[1],
+          time_from[2],
+          0
+        );
+
         var end = dates[day_string].setHours(
           time_to[0],
           time_to[1],
@@ -427,14 +442,18 @@ function loadEventBBDD(events) {
             0
           );
         }
+
+        var title = "";
+        if (
+          time_format(start) === "00:00:00" &&
+          time_format(end) === "00:00:00"
+        ) {
+          title = "All day";
+        }
+
         result.push({
-          title: "",
-          start: dates[day_string].setHours(
-            time_from[0],
-            time_from[1],
-            time_from[2],
-            0
-          ),
+          title: title,
+          start: start,
           end: end,
           id: uniqId()
         });

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Script to install the Pandora FMS Console.
 import os
+import sys
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -35,8 +36,10 @@ try:
     browser.find_element_by_name("rn_file").click()
 except AssertionError as error:
     print("Error " + str(error) + ":\n" + browser.page_source)
+    sys.exit(1)
 except NoSuchElementException as error:
     print("Error " + str(error) + ":\n" + browser.page_source)
+    sys.exit(1)
 
 # Clean-up
 browser.quit()

@@ -308,7 +308,7 @@ sub data_consumer ($$) {
 	} else {
 		# Timeout.
 		if ($ReturnCode == 124 || $ReturnCode == 137) {
-			logger($pa_config, "Plug-in module with ID #" . $module_id . " timed out.", 3);
+			logger($pa_config, "Plug-in module " . $module->{'nombre'} . " for agent " . $agent->{'nombre'} . " timed out.", 3);
 			pandora_update_module_on_error ($pa_config, $module, $dbh);
 			return;
 		}

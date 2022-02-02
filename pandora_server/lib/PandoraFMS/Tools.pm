@@ -1130,9 +1130,9 @@ sub enterprise_hook ($$) {
 	my $output = eval { &$func (@args); };
 
 	# Discomment to debug.
-	if ($@) {
-		print STDERR $@;
-	}
+	#if ($@) {
+	#	print STDERR $@;
+	#}
 
 	# Check for errors
 	#return undef if ($@);
@@ -2640,7 +2640,7 @@ sub p_encode_json {
 	};
 	if ($@){
 		if (defined($data)) {
-			logger($pa_config, 'Failed to encode data: '.$@, 5);
+			logger($pa_config, 'Failed to encode data: '.$@, 1);
 		}
 	}
 

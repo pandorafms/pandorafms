@@ -760,10 +760,12 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
-			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
+		if ($pa_config->{'alertserver'} == 1) {
+			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
+				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
-			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh,
+				$timestamp, 0, $extra_macros, $is_correlated_alert);
 		}
 		return;
 	}
@@ -804,8 +806,9 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
-			pandora_queue_alert($pa_config, $dbh, $data, $alert, 1, $extra_macros);
+		if ($pa_config->{'alertserver'} == 1) {
+			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
+				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
 				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
@@ -821,7 +824,7 @@ Execute the given alert.
 
 =cut
 ##########################################################################
-sub pandora_execute_alert ($$$$$$$$$;$$) {
+sub pandora_execute_alert {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $forced_alert,
 		$extra_macros, $is_correlated_alert) = @_;
@@ -1065,17 +1068,15 @@ Queue the given alert for execution.
 
 =cut
 ##########################################################################
-sub pandora_queue_alert ($$$$$;$) {
-	my ($pa_config, $dbh, $data, $alert, $alert_mode, $extra_macros) = @_;
-	my $json_macros = '{}';
+sub pandora_queue_alert ($$$) {
+	my ($pa_config, $dbh, $arguments) = @_;
 
-	eval {
-		local $SIG{__DIE__};
-		$json_macros = encode_json($extra_macros);
-	};
+	my $json_arguments = PandoraFMS::Tools::p_encode_json($pa_config, $arguments);
 
-	db_do ($dbh, "INSERT INTO talert_execution_queue (id_alert_template_module, data, alert_mode, extra_macros, utimestamp)
-		VALUES (?, ?, ?, ?, ?)", $alert->{'id_template_module'}, $data, $alert_mode, $json_macros, time());
+	$json_arguments = encode_base64($json_arguments);
+
+	db_do ($dbh, "INSERT INTO talert_execution_queue (data, utimestamp)
+		VALUES (?, ?)", $json_arguments, time());
 }
 
 ##########################################################################

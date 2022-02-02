@@ -3,16 +3,16 @@
 import os
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from exceptions import AssertionError
 
 # Are we running headless?
 if ('DISPLAY' not in os.environ):
     display = Display(visible=0, size=(1920, 1080))
     display.start()
 
+browser = webdriver.Firefox(timeout=15)
+
 try:
     # Go to the installation page.
-    browser = webdriver.Firefox(timeout=15)
     browser.implicitly_wait(5)
     browser.get('http://localhost/pandora_console/install.php')
     assert("Pandora FMS - Installation Wizard" in browser.title)
@@ -32,8 +32,8 @@ try:
     browser.implicitly_wait(5)
     assert("Installation complete" in browser.page_source)
     browser.find_element_by_name("rn_file").click()
-except AssertionError:
-    print(browser.page_source)
+except AssertionError as error:
+    print("Error " + str(error) + ":\n" + browser.page_source)
 
 
 # Clean-up

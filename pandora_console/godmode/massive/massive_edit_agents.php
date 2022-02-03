@@ -140,8 +140,8 @@ if ($update_agents) {
         $values['safe_mode_module'] = '0';
     }
 
-    $secondary_groups_added = (string) get_parameter('secondary_hidden_added', '');
-    $secondary_groups_removed = (string) get_parameter('secondary_hidden_removed', '');
+    $secondary_groups_added = (array) get_parameter('secondary_groups_added', []);
+    $secondary_groups_removed = (array) get_parameter('secondary_groups_removed', []);
 
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -389,8 +389,8 @@ if ($update_agents) {
                 'agents_update_secondary_groups',
                 [
                     $id_agent,
-                    explode(',', $secondary_groups_added),
-                    explode(',', $secondary_groups_removed),
+                    $secondary_groups_added,
+                    $secondary_groups_removed,
                 ]
             );
         }
@@ -743,9 +743,10 @@ if (enterprise_installed() === true) {
         $agent,
         $id_agente,
         [
-            'container' => true,
-            'id_form'   => 'form_agent',
-            'extra_id'  => '_added',
+            'container'   => true,
+            'id_form'     => 'form_agent',
+            'extra_id'    => '_added',
+            'only_select' => true,
         ]
     );
 
@@ -754,9 +755,10 @@ if (enterprise_installed() === true) {
         $agent,
         $id_agente,
         [
-            'container' => true,
-            'id_form'   => 'form_agent',
-            'extra_id'  => '_removed',
+            'container'   => true,
+            'id_form'     => 'form_agent',
+            'extra_id'    => '_removed',
+            'only_select' => true,
         ]
     );
 }

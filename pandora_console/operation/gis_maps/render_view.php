@@ -139,7 +139,7 @@ if ($has_management_acl) {
     $hash = md5($config['dbpass'].$idMap.$config['id_user']);
     $buttons['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/gis_maps/public_console.php?hash='.$hash.'&map_id='.$idMap.'&id_user='.$config['id_user']
-    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console'), 'class' => 'invert_filter']).'</a>';
+    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public GIS map'), 'class' => 'invert_filter']).'</a>';
 }
 
 $times = [

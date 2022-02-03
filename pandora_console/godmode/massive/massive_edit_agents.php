@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -139,6 +139,9 @@ if ($update_agents) {
         // Disabled Safe Operation Mode.
         $values['safe_mode_module'] = '0';
     }
+
+    $secondary_groups_added = (string) get_parameter('secondary_hidden_added', '');
+    $secondary_groups_removed = (string) get_parameter('secondary_hidden_removed', '');
 
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -378,15 +381,40 @@ if ($update_agents) {
             }
         }
 
+        // Create or Remove the secondary groups.
+        if (empty($secondary_groups_added) === false
+            || empty($secondary_groups_removed) === false
+        ) {
+            $result = enterprise_hook(
+                'agents_update_secondary_groups',
+                [
+                    $id_agent,
+                    explode(',', $secondary_groups_added),
+                    explode(',', $secondary_groups_removed),
+                ]
+            );
+        }
+
         $n_edited += (int) $result;
     }
 
-
     if ($result !== false) {
-        db_pandora_audit('Massive management', 'Update agent '.$id_agent, false, false, json_encode($info));
+        db_pandora_audit(
+            'Massive management',
+            'Update agent '.$id_agent,
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
-        if (isset($id_agent)) {
-            db_pandora_audit('Massive management', 'Try to update agent '.$id_agent, false, false, json_encode($info));
+        if (isset($id_agent) === true) {
+            db_pandora_audit(
+                'Massive management',
+                'Try to update agent '.$id_agent,
+                false,
+                false,
+                json_encode($info)
+            );
         }
     }
 
@@ -581,7 +609,16 @@ $table->data[0][1] .= '<b>'.__('Cascade protection').'</b>'.html_print_select(
     true
 );
 
-$table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;'.html_print_select($modules, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true);
+$table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;';
+$table->data[0][1] .= html_print_select(
+    $modules,
+    'cascade_protection_module',
+    $cascade_protection_module,
+    '',
+    '',
+    0,
+    true
+);
 
 $table->data[1][0] = __('Group');
 $table->data[1][1] = '<div class="w290px inline">';
@@ -605,7 +642,17 @@ $table->data[1][1] .= '</div>';
 
 $table->data[2][0] = __('Interval');
 
-$table->data[2][1] = html_print_extended_select_for_time('interval', 0, '', __('No change'), '0', 10, true, 'width: 150px', false);
+$table->data[2][1] = html_print_extended_select_for_time(
+    'interval',
+    0,
+    '',
+    __('No change'),
+    '0',
+    10,
+    true,
+    'width: 150px',
+    false
+);
 
 $table->data[3][0] = __('OS');
 $table->data[3][1] = html_print_select_from_sql(
@@ -649,7 +696,14 @@ $table->data[4][1] = html_print_select(
 
 // Description.
 $table->data[5][0] = __('Description');
-$table->data[5][1] = html_print_input_text('description', $description, '', 45, 255, true);
+$table->data[5][1] = html_print_input_text(
+    'description',
+    $description,
+    '',
+    45,
+    255,
+    true
+);
 
 html_print_table($table);
 unset($table);
@@ -682,18 +736,117 @@ $table->data = [];
 $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255, true);
 
+// Secondary Groups.
+if (enterprise_installed() === true) {
+    $table->data['secondary_groups_added'][0] = __('Secondary groups added');
+    $table->data['secondary_groups_added'][1] = html_print_select_agent_secondary(
+        $agent,
+        $id_agente,
+        [
+            'container' => true,
+            'id_form'   => 'form_agent',
+            'extra_id'  => '_added',
+        ]
+    );
+
+    $table->data['seconsary_groups_removed'][0] = __('Secondary groups remove');
+    $table->data['seconsary_groups_removed'][1] = html_print_select_agent_secondary(
+        $agent,
+        $id_agente,
+        [
+            'container' => true,
+            'id_form'   => 'form_agent',
+            'extra_id'  => '_removed',
+        ]
+    );
+}
+
 // Learn mode / Normal mode.
 $table->data[1][0] = __('Module definition');
-$table->data[1][1] = __('No change').' '.html_print_radio_button_extended('mode', -1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
-$table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended('mode', 1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
-$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended('mode', 0, '', $mode, false, '', 'class="mrgn_right_40px"', true);
-$table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended('mode', 2, '', $mode, false, '', 'class="mrgn_right_40px"', true);
+$table->data[1][1] = __('No change').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    -1,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[1][1] .= __('Learning mode').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    1,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[1][1] .= __('Normal mode').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    0,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[1][1] .= __('Autodisable mode').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    2,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
 
 // Status (Disabled / Enabled).
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('No change').' '.html_print_radio_button_extended('disabled', -1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
-$table->data[2][1] .= __('Disabled').' '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).' '.html_print_radio_button_extended('disabled', 1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
-$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended('disabled', 0, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
+$table->data[2][1] = __('No change').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'disabled',
+    -1,
+    '',
+    $disabled,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[2][1] .= __('Disabled').' ';
+$table->data[1][1] .= ui_print_help_tip(
+    __('If the remote configuration is enabled, it will also go into standby mode when disabling it.'),
+    true
+).' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'disabled',
+    1,
+    '',
+    $disabled,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[2][1] .= __('Active').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'disabled',
+    0,
+    '',
+    $disabled,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
 
 // Remote configuration.
 $table->data[3][0] = __('Remote configuration');
@@ -868,7 +1021,6 @@ attachActionButton('update_agents', 'update', $table->width);
 echo '</div></form>';
 
 ui_require_jquery_file('form');
-
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');

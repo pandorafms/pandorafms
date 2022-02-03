@@ -188,7 +188,7 @@ if ($disk_conf_delete) {
     @unlink($filename['conf']);
 }
 
-echo '<form autocomplete="new-password" name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+echo '<form autocomplete="new-password" name="conf_agent" id="form_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 
 // Custom ID.
 $custom_id_div = '<div class="label_select">';
@@ -449,123 +449,14 @@ if (!$new_agent && $alias != '') {
 echo '</div>';
 
 if (enterprise_installed()) {
-    $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').'</p></div>';
-    $adv_secondary_groups_left = html_print_select_groups(
-        // Id_user.
-        // Use the current user to select the groups.
-        false,
-        // Privilege.
-        // ACL permission.
-        'AR',
-        // ReturnAllGroup.
-        // Not all group.
-        false,
-        // Name.
-        // HTML id.
-        'secondary_groups',
-        // Selected.
-        // No select any by default.
-        '',
-        // Script.
-        // Javascript onChange code.
-        '',
-        // Nothing.
-        // Do not user no selected value.
-        false,
-        // Nothing_value.
-        // Do not use no selected value.
-        0,
-        // Return.
-        // Return HTML (not echo).
-        true,
-        // Multiple.
-        // Multiple selection.
-        true,
-        // Sort.
-        // Sorting by default.
-        true,
-        // Class.
-        // CSS classnames (default).
-        '',
-        // Disabled.
-        // Not disabled (default).
-        false,
-        // Style.
-        // Inline styles (default).
-        'min-width:170px;',
-        // Option_style.
-        // Option style select (default).
-        false,
-        // Id_group.
-        // Do not truncate the users tree (default).
-        false,
-        // Keys_field.
-        // Key to get as value (default).
-        'id_grupo',
-        // Strict_user.
-        // Not strict user (default).
-        false,
-        // Delete_groups.
-        // Do not show the primary group in this selection.
-        array_merge(
-            (empty($secondary_groups_selected['plain']) === false) ? $secondary_groups_selected['plain'] : [],
-            [$agent['id_grupo']]
-        )
-        // Include_groups.
-        // Size.
-        // Simple_multiple_options.
-    );
-
-    $adv_secondary_groups_arrows = html_print_input_image(
-        'add_secondary',
-        'images/darrowright_green.png',
-        1,
-        '',
-        true,
-        [
-            'id'      => 'right_autorefreshlist',
-            'title'   => __('Add secondary groups'),
-            'onclick' => 'agent_manager_add_secondary_groups(event, '.$id_agente.');',
-        ]
-    ).html_print_input_image(
-        'remove_secondary',
-        'images/darrowleft_green.png',
-        1,
-        '',
-        true,
-        [
-            'id'      => 'left_autorefreshlist',
-            'title'   => __('Remove secondary groups'),
-            'onclick' => 'agent_manager_remove_secondary_groups(event, '.$id_agente.');',
-        ]
-    );
-
-    $adv_secondary_groups_right .= html_print_select(
-        // Values.
-        $secondary_groups_selected['for_select'],
-        // HTML id.
-        'secondary_groups_selected',
-        // Selected.
-        '',
-        // Javascript onChange code.
-        '',
-        // Nothing selected.
-        false,
-        // Nothing selected.
-        0,
-        // Return HTML (not echo).
-        true,
-        // Multiple selection.
-        true,
-        // Sort.
-        true,
-        // Class.
-        '',
-        // Disabled.
-        false,
-        // Style.
-        'min-width:170px;'
+    $adv_secondary_groups_label = '<div class="label_select">';
+    $adv_secondary_groups_label .= '<p class="input_label">';
+    $adv_secondary_groups_label .= __('Secondary groups');
+    $adv_secondary_groups_label .= '</p>';
+    $adv_secondary_groups_label .= '</div>';
+    $select_agent_secondary = html_print_select_agent_secondary(
+        $agent,
+        $id_agente
     );
 
     // Safe operation mode.
@@ -821,19 +712,15 @@ if (enterprise_installed()) {
 }
 
 // General display distribution.
-$table_adv_options = $advanced_div.$adv_secondary_groups_label.'
-            <div class="sg_source">
-                '.$adv_secondary_groups_left.'
-            </div>
-            <div class="secondary_group_arrows">
-                '.$adv_secondary_groups_arrows.'
-            </div>
-            <div class="sg_target">      
-                '.$adv_secondary_groups_right.'
-            </div>
-        </div>
-<div class="agent_av_opt_right" >
-        '.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
+$table_adv_options = $advanced_div;
+$table_adv_options .= $adv_secondary_groups_label;
+$table_adv_options .= $select_agent_secondary;
+$table_adv_options .= '</div>';
+
+$table_adv_options .= '<div class="agent_av_opt_right" >';
+$table_adv_options .= $table_adv_parent;
+$table_adv_options .= $table_adv_module_mode;
+$table_adv_options .= $table_adv_cascade;
 
 if ($new_agent) {
     // If agent is new, show custom id as old style format.
@@ -1110,133 +997,6 @@ ui_require_jquery_file('bgiframe');
         }
     }
 
-    function agent_manager_add_secondary_groups (event, id_agent) {
-        event.preventDefault();
-        var primary_value = $("#grupo").val()
-        // The selected primary value cannot be selected like secondary
-        if ($("#secondary_groups option:selected[value=" + primary_value + "]").length > 0) {
-            alert("<?php echo __('Primary group cannot be secondary too.'); ?>")
-            return
-        }
-
-        // On agent creation PHP will update the secondary groups table (not via AJAX)
-        if (id_agent == 0) {
-            agent_manager_add_secondary_groups_ui();
-            agent_manager_update_hidden_input_secondary();
-            return;
-        }
-
-        var selected_items = new Array();
-        $("#secondary_groups option:selected").each(function(){
-            selected_items.push($(this).val())
-        })
-
-        var data = {
-            page: "godmode/agentes/agent_manager",
-            id_agent: id_agent,
-            groups: selected_items,
-            add_secondary_groups: 1,
-        }
-
-        // Make the AJAX call to update the secondary groups
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "html",
-            data: data,
-            success: function (data) {
-                if (data == 1) {
-                    agent_manager_add_secondary_groups_ui();
-                } else {
-                    console.error("Error in AJAX call to add secondary groups")
-                }
-            },
-            error: function (data) {
-                console.error("Fatal error in AJAX call to add secondary groups")
-            }
-        });
-    }
-
-    function agent_manager_remove_secondary_groups (event, id_agent) {
-        event.preventDefault();
-
-        // On agent creation PHP will update the secondary groups table (not via AJAX)
-        if (id_agent == 0) {
-            agent_manager_remove_secondary_groups_ui();
-            agent_manager_update_hidden_input_secondary();
-            return;
-        }
-
-        var selected_items = new Array();
-        $("#secondary_groups_selected option:selected").each(function(){
-            selected_items.push($(this).val())
-        })
-
-        var data = {
-            page: "godmode/agentes/agent_manager",
-            id_agent: id_agent,
-            groups: selected_items,
-            remove_secondary_groups: 1,
-        }
-
-        // Make the AJAX call to update the secondary groups
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "html",
-            data: data,
-            success: function (data) {
-                if (data == 1) {
-                    agent_manager_remove_secondary_groups_ui();
-                } else {
-                    console.error("Error in AJAX call to add secondary groups")
-                }
-            },
-            error: function (data) {
-                console.error("Fatal error in AJAX call to add secondary groups")
-            }
-        });
-    }
-
-    // Move from left input to right input
-    function agent_manager_add_secondary_groups_ui () {
-        $("#secondary_groups_selected option[value=0]").remove()
-        $("#secondary_groups option:selected").each(function() {
-            $(this).remove().appendTo("#secondary_groups_selected")
-        })
-    }
-
-    // Move from right input to left input
-    function agent_manager_remove_secondary_groups_ui () {
-        // Remove the groups selected if success
-        $("#secondary_groups_selected option:selected").each(function(){
-            $(this).remove().appendTo("#secondary_groups")
-        })
-
-        // Add none if empty select
-        if ($("#secondary_groups_selected option").length == 0) {
-            $("#secondary_groups_selected").append($('<option>',{
-                value: 0,
-                text: "<?php echo __('None'); ?>"
-            }))
-        }
-    }
-
-    function agent_manager_update_hidden_input_secondary () {
-        var groups = [];
-        if(!$('form[name="conf_agent"] #secondary_hidden').length) {
-            $('form[name="conf_agent"]').append(
-                '<input name="secondary_hidden" type="hidden" id="secondary_hidden">'
-            );
-        }
-
-        var groups = new Array();
-        $("#secondary_groups_selected option").each(function() {
-            groups.push($(this).val())
-        })
-
-        $("#secondary_hidden").val(groups.join(','));
-    }
 
     $(document).ready (function() {
 

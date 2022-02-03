@@ -115,17 +115,14 @@ if ($copy_action) {
 
     $result = alerts_clone_alert_action($id, $al_action['id_group']);
 
-    if ($result) {
-        db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
-            'Duplicate alert action '.$id.' clone to '.$result
-        );
-    } else {
-        db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
-            'Fail try to duplicate alert action '.$id
-        );
-    }
+    $auditMessage = ((bool) $result === true)
+            ? sprintf('Duplicate alert action %s clone to %s', $id, $result)
+            : sprintf('Fail try to duplicate alert action %s', $id);
+
+    db_pandora_audit(
+        AUDIT_LOG_ALERT_MANAGEMENT,
+        $auditMessage
+    );
 
     ui_print_result_message(
         $result,
@@ -194,17 +191,14 @@ if ($delete_action) {
 
     $result = alerts_delete_alert_action($id);
 
-    if ($result) {
-        db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
-            'Delete alert action #'.$id
-        );
-    } else {
-        db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
-            'Fail try to delete alert action #'.$id
-        );
-    }
+    $auditMessage = ((bool) $result === true)
+    ? sprintf('Delete alert action #%s', $id)
+    : sprintf('Fail try to delete alert action #%s', $id);
+
+    db_pandora_audit(
+        AUDIT_LOG_ALERT_MANAGEMENT,
+        $auditMessage
+    );
 
     ui_print_result_message(
         $result,

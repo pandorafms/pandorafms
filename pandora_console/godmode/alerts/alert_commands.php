@@ -539,7 +539,7 @@ if ($create_command) {
 
     if ($result) {
         db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Create alert command #'.$result,
             false,
             false,
@@ -547,7 +547,7 @@ if ($create_command) {
         );
     } else {
         db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Fail try to create alert command',
             false,
             false
@@ -590,17 +590,14 @@ if ($delete_command) {
 
     $result = alerts_delete_alert_command($id);
 
-    if ($result) {
-        db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
-            'Delete alert command #'.$id
-        );
-    } else {
-        db_pandora_audit(
-            AUDIT_LOG_COMMAND_MANAGEMENT,
-            'Fail try to delete alert command #'.$id
-        );
-    }
+    $auditMessage = ((bool) $result === true)
+    ? sprintf('Delete alert command #%s', $id)
+    : sprintf('Fail try to delete alert command #%s', $id);
+
+    db_pandora_audit(
+        AUDIT_LOG_ALERT_MANAGEMENT,
+        $auditMessage
+    );
 
     ui_print_result_message(
         $result,

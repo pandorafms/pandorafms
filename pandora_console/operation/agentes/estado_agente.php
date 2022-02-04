@@ -319,29 +319,14 @@ $selectLastContactUp = false;
 $selectLastContactDown = false;
 $order = null;
 
-
-$order_collation = '';
-switch ($config['dbtype']) {
-    case 'mysql':
-        // $order_collation = " COLLATE utf8_general_ci";.
-        $order_collation = '';
-    break;
-
-    case 'postgresql':
-    case 'oracle':
-        $order_collation = '';
-    break;
-}
-
-
 switch ($sortField) {
     case 'remote':
         switch ($sort) {
             case 'up':
                 $selectRemoteUp = $selected;
                 $order = [
-                    'field'  => 'remote'.$order_collation,
-                    'field2' => 'nombre'.$order_collation,
+                    'field'  => 'remote',
+                    'field2' => 'nombre',
                     'order'  => 'ASC',
                 ];
             break;
@@ -349,8 +334,8 @@ switch ($sortField) {
             case 'down':
                 $selectRemoteDown = $selected;
                 $order = [
-                    'field'  => 'remote'.$order_collation,
-                    'field2' => 'nombre'.$order_collation,
+                    'field'  => 'remote',
+                    'field2' => 'nombre',
                     'order'  => 'DESC',
                 ];
             break;
@@ -366,8 +351,8 @@ switch ($sortField) {
             case 'up':
                 $selectNameUp = $selected;
                 $order = [
-                    'field'  => 'alias'.$order_collation,
-                    'field2' => 'alias'.$order_collation,
+                    'field'  => 'alias',
+                    'field2' => 'alias',
                     'order'  => 'ASC',
                 ];
             break;
@@ -375,8 +360,8 @@ switch ($sortField) {
             case 'down':
                 $selectNameDown = $selected;
                 $order = [
-                    'field'  => 'alias'.$order_collation,
-                    'field2' => 'alias'.$order_collation,
+                    'field'  => 'alias',
+                    'field2' => 'alias',
                     'order'  => 'DESC',
                 ];
             break;
@@ -393,7 +378,7 @@ switch ($sortField) {
                 $selectOsUp = $selected;
                 $order = [
                     'field'  => 'id_os',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'ASC',
                 ];
             break;
@@ -402,7 +387,7 @@ switch ($sortField) {
                 $selectOsDown = $selected;
                 $order = [
                     'field'  => 'id_os',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'DESC',
                 ];
             break;
@@ -419,7 +404,7 @@ switch ($sortField) {
                 $selectIntervalUp = $selected;
                 $order = [
                     'field'  => 'intervalo',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'ASC',
                 ];
             break;
@@ -428,7 +413,7 @@ switch ($sortField) {
                 $selectIntervalDown = $selected;
                 $order = [
                     'field'  => 'intervalo',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'DESC',
                 ];
             break;
@@ -445,7 +430,7 @@ switch ($sortField) {
                 $selectGroupUp = $selected;
                 $order = [
                     'field'  => 'id_grupo',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'ASC',
                 ];
             break;
@@ -454,7 +439,7 @@ switch ($sortField) {
                 $selectGroupDown = $selected;
                 $order = [
                     'field'  => 'id_grupo',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'DESC',
                 ];
             break;
@@ -471,7 +456,7 @@ switch ($sortField) {
                 $selectLastContactUp = $selected;
                 $order = [
                     'field'  => 'ultimo_contacto',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'DESC',
                 ];
             break;
@@ -480,7 +465,7 @@ switch ($sortField) {
                 $selectLastContactDown = $selected;
                 $order = [
                     'field'  => 'ultimo_contacto',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'ASC',
                 ];
             break;
@@ -497,7 +482,7 @@ switch ($sortField) {
                 $selectDescriptionUp = $selected;
                 $order = [
                     'field'  => 'comentarios',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'DESC',
                 ];
             break;
@@ -506,7 +491,7 @@ switch ($sortField) {
                 $selectDescriptionDown = $selected;
                 $order = [
                     'field'  => 'comentarios',
-                    'field2' => 'alias'.$order_collation,
+                    'field2' => 'alias',
                     'order'  => 'ASC',
                 ];
             break;
@@ -531,8 +516,8 @@ switch ($sortField) {
         $selectLastContactUp = false;
         $selectLastContactDown = false;
         $order = [
-            'field'  => 'alias'.$order_collation,
-            'field2' => 'alias'.$order_collation,
+            'field'  => 'alias',
+            'field2' => 'alias',
             'order'  => 'ASC',
         ];
     break;
@@ -540,39 +525,46 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != '') {
-    $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
-	INNER JOIN taddress_agent ON
-	taddress.id_a = taddress_agent.id_a
-	WHERE taddress.ip LIKE '%$search%'";
+    $sql = sprintf(
+        'SELECT DISTINCT taddress_agent.id_agent FROM taddress
+	     INNER JOIN taddress_agent ON
+	     taddress.id_a = taddress_agent.id_a
+	     WHERE taddress.ip LIKE "%%%s%%"',
+        $search
+    );
 
     $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = ' AND ( nombre '.$order_collation."
-			LIKE '%$search%' OR alias ".$order_collation." LIKE '%$search%' 
-			OR tagente.id_agente = $aux";
-        if (count($id) >= 2) {
-            for ($i = 1; $i < count($id); $i++) {
+        $search_sql = sprintf(
+            ' AND ( `nombre` LIKE "%%%s%%" OR tagente.id_agente = %d',
+            $search,
+            $aux
+        );
+        $nagent_count = count($id);
+        if ($nagent_count >= 2) {
+            for ($i = 1; $i < $nagent_count; $i++) {
                 $aux = $id[$i]['id_agent'];
-                $search_sql .= " OR tagente.id_agente = $aux";
+                $search_sql .= sprintf(
+                    ' OR tagente.id_agente = %d',
+                    $aux
+                );
             }
         }
 
         $search_sql .= ')';
     } else {
-        $search_sql = ' AND ( nombre '.$order_collation."
-            LIKE '%$search%' 
-            OR comentarios ".$order_collation." LIKE '%$search%'
-            OR alias ".$order_collation." LIKE '%$search%') ";
+        $search_sql = sprintf(
+            ' AND ( nombre 
+			 LIKE "%%%s%%" OR alias 
+			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%" 
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")',
+            $search,
+            $search,
+            $search,
+            $search
+        );
     }
-}
-
-
-if (!empty($search_custom)) {
-    $search_sql_custom = " AND EXISTS (SELECT * FROM tagent_custom_data 
-		WHERE id_agent = id_agente AND description LIKE '%$search_custom%')";
-} else {
-    $search_sql_custom = '';
 }
 
 // Show only selected groups.
@@ -655,7 +647,7 @@ if ($strict_user) {
 
     $agents = agents_get_agents(
         [
-            'order'         => 'nombre '.$order_collation.' ASC',
+            'order'         => 'nombre '.' ASC',
             'id_grupo'      => $groups,
             'disabled'      => 0,
             'status'        => $status,

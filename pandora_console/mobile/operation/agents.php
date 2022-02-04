@@ -296,8 +296,8 @@ class Agents
         $total = isset($total[0]['total']) ? $total[0]['total'] : 0;
 
         $order = [
-            'field'  => 'alias COLLATE utf8_general_ci',
-            'field2' => 'nombre COLLATE utf8_general_ci',
+            'field'  => 'alias',
+            'field2' => 'nombre',
             'order'  => 'ASC',
         ];
         if (!$system->getConfig('metaconsole')) {

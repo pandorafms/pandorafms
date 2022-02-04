@@ -59,8 +59,9 @@ function config_create_value($token, $value)
  *
  * If the config token doesn't exists, it's created.
  *
- * @param string $token Config token to update.
- * @param string $value New value to set.
+ * @param string  $token   Config token to update.
+ * @param string  $value   New value to set.
+ * @param boolean $noticed If true, not necessary audit it.
  *
  * @return boolean True if success. False on failure.
  */

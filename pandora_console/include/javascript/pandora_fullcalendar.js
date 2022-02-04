@@ -417,49 +417,51 @@ function loadEventBBDD(events) {
   Object.entries(JSON.parse(events)).forEach(function(element) {
     var day_string = element[0];
     var events_day = element[1];
-    events_day.forEach(function(event) {
-      if (event != null) {
-        var time_from = event.start.split(":");
-        var time_to = event.end.split(":");
+    if (events_day != "" && events_day != null && events_day != undefined) {
+      events_day.forEach(function(event) {
+        if (event != null) {
+          var time_from = event.start.split(":");
+          var time_to = event.end.split(":");
 
-        var start = dates[day_string].setHours(
-          time_from[0],
-          time_from[1],
-          time_from[2],
-          0
-        );
+          var start = dates[day_string].setHours(
+            time_from[0],
+            time_from[1],
+            time_from[2],
+            0
+          );
 
-        var end = dates[day_string].setHours(
-          time_to[0],
-          time_to[1],
-          time_to[2],
-          0
-        );
-        if (event.end === "00:00:00") {
-          end = dates[day_names[keys_days_names[day_string] + 1]].setHours(
+          var end = dates[day_string].setHours(
             time_to[0],
             time_to[1],
             time_to[2],
             0
           );
-        }
+          if (event.end === "00:00:00") {
+            end = dates[day_names[keys_days_names[day_string] + 1]].setHours(
+              time_to[0],
+              time_to[1],
+              time_to[2],
+              0
+            );
+          }
 
-        var title = "";
-        if (
-          time_format(start) === "00:00:00" &&
-          time_format(end) === "00:00:00"
-        ) {
-          title = "All day";
-        }
+          var title = "";
+          if (
+            time_format(start) === "00:00:00" &&
+            time_format(end) === "00:00:00"
+          ) {
+            title = "All day";
+          }
 
-        result.push({
-          title: title,
-          start: start,
-          end: end,
-          id: uniqId()
-        });
-      }
-    });
+          result.push({
+            title: title,
+            start: start,
+            end: end,
+            id: uniqId()
+          });
+        }
+      });
+    }
   });
 
   return result;

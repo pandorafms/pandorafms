@@ -567,6 +567,13 @@ if ($search != '') {
     }
 }
 
+if (!empty($search_custom)) {
+    $search_sql_custom = " AND EXISTS (SELECT * FROM tagent_custom_data 
+		WHERE id_agent = id_agente AND description LIKE '%$search_custom%')";
+} else {
+    $search_sql_custom = '';
+}
+
 // Show only selected groups.
 if ($group_id > 0) {
     $groups = [$group_id];

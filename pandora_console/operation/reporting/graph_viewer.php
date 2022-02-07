@@ -78,6 +78,9 @@ if ($delete_graph) {
 if ($view_graph) {
     $sql = "SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
     $sources = db_get_all_rows_sql($sql);
+    if ($sources === false) {
+        $sources = [];
+    }
 
     $sql = "SELECT * FROM tgraph WHERE id_graph = $id_graph";
     $graph = db_get_row_sql($sql);

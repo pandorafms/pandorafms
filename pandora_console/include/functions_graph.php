@@ -359,6 +359,7 @@ function grafico_modulo_sparse_data(
         $count_data = 0;
         $data_last_acum = $array_data['sum1']['data'][0][1];
 
+        $array_data_only = [];
         while ($period_time_interval > 0) {
             foreach ($array_data['sum1']['data'] as $key => $value) {
                 if ($value[0] >= $start_period

@@ -1810,7 +1810,7 @@ function agents_get_alias_array($array_ids)
  *
  * @return string Alias of the given agent.
  */
-function agents_get_alias(int|array $id_agent, string $case='none')
+function agents_get_alias($id_agent, string $case='none')
 {
     // Prepare cache.
     static $cache = [];

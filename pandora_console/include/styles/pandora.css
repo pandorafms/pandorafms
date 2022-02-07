@@ -8486,6 +8486,8 @@ div#err_msg_centralised {
   width: 70px;
   overflow-wrap: break-word;
   white-space: pre-wrap;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 #select_multiple_modules_filtered > div {
@@ -8523,4 +8525,9 @@ div#err_msg_centralised {
   max-width: 250px;
   width: 95%;
   height: 95%;
+}
+
+.resume_calendar_map {
+  width: 90%;
+  margin: 0 auto;
 }

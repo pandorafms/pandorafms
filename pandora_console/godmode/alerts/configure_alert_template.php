@@ -700,6 +700,7 @@ if ($step == 2) {
         [
             'message'     => __('No alert has been scheduled yet'),
             'force_style' => 'display:none;',
+            'force_class' => 'alert_schedule',
         ],
         '',
         true
@@ -1509,6 +1510,8 @@ if ($step == 2) {
         }
     });
 
+    var is_management_allowed = parseInt('<?php echo (int) $is_management_allowed; ?>');
+
     var eventsBBDD = $("#hidden-schedule").val();
     if(eventsBBDD === '') {
         eventsBBDD = '<?php echo json_encode($default_events_calendar); ?>';
@@ -1516,6 +1519,58 @@ if ($step == 2) {
 
     var events = loadEventBBDD(eventsBBDD);
     var calendarEl = document.getElementById('calendar_map');
+
+    var options = {
+        contentHeight: "auto",
+        headerToolbar: {
+            left: "",
+            center: "",
+            right: is_management_allowed === 0 ? '' : "timeGridWeek,dayGridWeek"
+        },
+        buttonText: {
+            dayGridWeek: '<?php echo __('Simple'); ?>',
+            timeGridWeek: '<?php echo __('Detailed'); ?>'
+        },
+        dayHeaderFormat: { weekday: "short" },
+        initialView: "dayGridWeek",
+        navLinks: false,
+        selectable: true,
+        selectMirror: true,
+        slotDuration: "01:00:00",
+        slotLabelInterval: "02:00:00",
+        snapDuration: "01:00:00",
+        slotMinTime: "00:00:00",
+        slotMaxTime: "24:00:00",
+        scrollTime: "01:00:00",
+        locale: "en-GB",
+        firstDay: 1,
+        eventTimeFormat: {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: false
+        },
+        eventColor: "#82b92e",
+        editable: is_management_allowed === 0 ? false : true,
+        dayMaxEvents: 3,
+        dayPopoverFormat: { weekday: "long" },
+        defaultAllDay: false,
+        displayEventTime: true,
+        displayEventEnd: true,
+        selectOverlap: false,
+        eventOverlap: false,
+        allDaySlot: true,
+        droppable: false,
+        select: is_management_allowed === 0 ? false : select_alert_template,
+        selectAllow: is_management_allowed === 0 ? false : selectAllow_alert_template,
+        eventAllow: is_management_allowed === 0 ? false : eventAllow_alert_template,
+        eventDrop: is_management_allowed === 0 ? false : eventDrop_alert_template,
+        eventDragStop: is_management_allowed === 0 ? false : eventDragStop_alert_template,
+        eventResize: is_management_allowed === 0 ? false : eventResize_alert_template,
+        eventMouseEnter: is_management_allowed === 0 ? false : eventMouseEnter_alert_template,
+        eventMouseLeave: is_management_allowed === 0 ? false : eventMouseLeave_alert_template,
+        eventClick: is_management_allowed === 0 ? false : eventClick_alert_template,
+    };
+
     var settings = {
         timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
         timeOnlyTitle: '<?php echo __('Choose time'); ?>',
@@ -1530,12 +1585,10 @@ if ($step == 2) {
         userLanguage: '<?php echo get_user_language(); ?>',
         loadingText: '<?php echo __('Loading, this operation might take several minutes...'); ?>',
         tooltipText: '<?php echo __('Drag out to remove'); ?>',
-        simple: '<?php echo __('Simple'); ?>',
-        detailed: '<?php echo __('Detailed'); ?>',
         alert: '<?php echo __('Alert'); ?>'
     }
 
-    var calendar = fullCalendarPandora(calendarEl, settings, events);
+    var calendar = fullCalendarPandora(calendarEl, options, settings, events);
     calendar.render();
     <?php
 } else if ($step == 3) {

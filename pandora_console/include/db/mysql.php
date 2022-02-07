@@ -760,7 +760,11 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
         if ($field[0] != '`') {
             // If the field is as <table>.<field>, don't scape.
             if (strstr($field, '.') === false) {
-                $field = '`'.$field.'`';
+                if (preg_match('/(UPPER|LOWER)(.+)/mi', $field)) {
+                    $field = preg_replace('/(UPPER|LOWER])\((.+)\)/mi', '$1(`$2`)', $field);
+                } else {
+                    $field = '`'.$field.'`';
+                }
             }
         }
 
@@ -774,8 +778,59 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
             $not = (($negative === true) ? ' !' : '');
             $query .= sprintf('%s %s= %f', $field, $not, $value);
         } else if (is_array($value)) {
-            $not = (($negative === true) ? 'NOT' : '');
-            $query .= sprintf('%s %s IN ("%s")', $field, $not, implode('", "', $value));
+            $values_check = array_keys($value);
+            $ranges = false;
+            $initialized = false;
+            foreach ($values_check as $operation) {
+                if ($ranges === true && $initialized === true) {
+                    $query .= ' '.$join.' ';
+                } else {
+                    $initialized = true;
+                }
+
+                if ($operation === '>') {
+                    $query .= sprintf("%s > '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '>=') {
+                    $query .= sprintf("%s >= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '<') {
+                    $query .= sprintf("%s < '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '<=') {
+                    $query .= sprintf("%s <= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '!=') {
+                    $query .= sprintf("%s != '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($operation === '=') {
+                    $query .= sprintf("%s = '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '>') {
+                    $query .= sprintf("%s <= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '>=') {
+                    $query .= sprintf("%s < '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '<') {
+                    $query .= sprintf("%s >= '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '<=') {
+                    $query .= sprintf("%s > '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '!=') {
+                    $query .= sprintf("%s = '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                } else if ($negative === true && $operation === '=') {
+                    $query .= sprintf("%s != '%s'", $field, $value[$operation]);
+                    $ranges = true;
+                }
+            }
+
+            if ($ranges !== true) {
+                $not = (($negative === true) ? 'NOT' : '');
+                $query .= sprintf('%s %s IN ("%s")', $field, $not, implode('", "', $value));
+            }
         } else {
             if ($value === '') {
                 // Search empty string.
@@ -819,10 +874,10 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
  *
  * @return the first value of the first row of a table result from query.
  */
-function mysql_db_get_value_sql($sql, $dbconnection=false)
+function mysql_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql .= ' LIMIT 1';
-    $result = mysql_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = mysql_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;
@@ -1241,57 +1296,6 @@ function mysql_db_get_all_row_by_steps_sql($new=true, &$result, $sql=null)
 
 
 /**
- * Starts a database transaction.
- */
-function mysql_db_process_sql_begin()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 0');
-        mysqli_query($config['dbconnection'], 'START TRANSACTION');
-    } else {
-        mysql_query('SET AUTOCOMMIT = 0');
-        mysql_query('START TRANSACTION');
-    }
-}
-
-
-/**
- * Commits a database transaction.
- */
-function mysql_db_process_sql_commit()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'COMMIT');
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-    } else {
-        mysql_query('COMMIT');
-        mysql_query('SET AUTOCOMMIT = 1');
-    }
-}
-
-
-/**
- * Rollbacks a database transaction.
- */
-function mysql_db_process_sql_rollback()
-{
-    global $config;
-
-    if ($config['mysqli']) {
-        mysqli_query($config['dbconnection'], 'ROLLBACK ');
-        mysqli_query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-    } else {
-        mysql_query('ROLLBACK ');
-        mysql_query('SET AUTOCOMMIT = 1');
-    }
-}
-
-
-/**
  * Get last error.
  *
  * @return string Return the string error.
@@ -1386,7 +1390,7 @@ function mysql_db_process_file($path, $handle_error=true)
         $query = '';
 
         // Begin the transaction
-        mysql_db_process_sql_begin();
+        db_process_sql_begin();
 
         foreach ($file_content as $sql_line) {
             if (trim($sql_line) != '' && strpos($sql_line, '--') === false) {
@@ -1401,7 +1405,7 @@ function mysql_db_process_file($path, $handle_error=true)
 
                     if (!$result = $query_result) {
                         // Error. Rollback the transaction
-                        mysql_db_process_sql_rollback();
+                        db_process_sql_rollback();
 
                         if ($config['mysqli']) {
                             $error_message = mysqli_error($config['dbconnection']);
@@ -1438,7 +1442,7 @@ function mysql_db_process_file($path, $handle_error=true)
         }
 
         // No errors. Commit the transaction
-        mysql_db_process_sql_commit();
+        db_process_sql_commit();
         return true;
     } else {
         return false;
@@ -1477,7 +1481,7 @@ function db_run_sql_file($location)
         $mysqli->query($config['dbconnection'], 'START TRANSACTION');
     } else {
         // Run commands
-        mysql_db_process_sql_begin();
+        db_process_sql_begin();
         // Begin transaction
     }
 
@@ -1503,7 +1507,7 @@ function db_run_sql_file($location)
             $mysqli->query($config['dbconnection'], 'COMMIT');
             $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
         } else {
-            mysql_db_process_sql_commit();
+            db_process_sql_commit();
             // Save results
         }
 
@@ -1513,7 +1517,7 @@ function db_run_sql_file($location)
             $mysqli->query($config['dbconnection'], 'ROLLBACK ');
             $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
         } else {
-            mysql_db_process_sql_rollback();
+            db_process_sql_rollback();
             // Undo results
         }
 

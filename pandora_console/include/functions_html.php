@@ -471,7 +471,7 @@ function html_print_select_groups(
     global $config;
     $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2_css = 'select2_dark.min';
     }
 
@@ -728,7 +728,9 @@ function html_print_select(
     $simple_multiple_options=false,
     $required=false,
     $truncate_size=false,
-    $select2_enable=true
+    $select2_enable=true,
+    $select2_multiple_enable=false,
+    $select2_multiple_enable_all=false
 ) {
     $output = "\n";
 
@@ -775,11 +777,11 @@ function html_print_select(
 
     if ($style === false) {
         $styleText = ' ';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $styleText = 'style="color: white"';
         }
     } else {
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $style .= ' color: white';
         }
 
@@ -788,6 +790,12 @@ function html_print_select(
 
     if ($required) {
         $required = 'required';
+    }
+
+    if ($select2_multiple_enable === true
+        && $select2_multiple_enable_all === true
+    ) {
+        $output .= '<div class="flex-row-center">';
     }
 
     $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
@@ -889,6 +897,24 @@ function html_print_select(
     }
 
     $output .= '</select>';
+
+    if ($select2_multiple_enable === true
+        && $select2_multiple_enable_all === true
+    ) {
+        $output .= '<div class="margin-left-2 flex-column">';
+        $output .= '<span>'.__('All').'</span>';
+        $output .= html_print_checkbox_switch(
+            $id.'-check-all',
+            1,
+            false,
+            true,
+            $disabled,
+            'checkMultipleAll('.$id.')'
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     if ($modal && !enterprise_installed()) {
         $output .= "
 		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -896,11 +922,11 @@ function html_print_select(
     }
 
     $select2 = 'select2.min';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2 = 'select2_dark.min';
     }
 
-    if ($multiple === false && $select2_enable === true) {
+    if (($multiple === false || $select2_multiple_enable === true) && $select2_enable === true) {
         if (is_ajax()) {
             $output .= '<script src="';
             $output .= ui_get_full_url(
@@ -940,6 +966,32 @@ function html_print_select(
                     );
                 }
             });';
+        }
+
+        if ($select2_multiple_enable === true
+            && $select2_multiple_enable_all === true
+        ) {
+            $output .= '$("#'.$id.'").on("change", function(e) {
+                var checked = false;
+                if(e.target.length !== $("#'.$id.' > option:selected").length) {
+                    checked = false;
+                } else {
+                    checked = true;
+                }
+
+                $("#checkbox-'.$id.'-check-all").prop("checked", checked);
+            });';
+
+            $output .= '$("#'.$id.'").trigger("change");';
+
+            $output .= 'function checkMultipleAll(id){
+                if ($("#checkbox-"+id.id+"-check-all").is(":checked")) {
+                    $("#"+id.id+" > option").prop("selected", "selected");
+                    $("#"+id.id).trigger("change");
+                } else {
+                    $("#"+id.id).val(null).trigger("change");
+                }
+            }';
         }
 
         $output .= '</script>';
@@ -1129,6 +1181,7 @@ function html_print_select_multiple_filtered(
         ) {
             $output .= '<div class="item-filter flex-row-vcenter">';
 
+            $output .= '<div style="display:none">';
             $output .= html_print_input(
                 [
                     'style'   => 'display:none;',
@@ -1138,6 +1191,7 @@ function html_print_select_multiple_filtered(
                     'return'  => true,
                 ]
             );
+            $output .= '</div>';
 
             $f = "filterAvailableItems(this.value,'".$rid."','".__('None')."')";
             $output .= html_print_input(
@@ -1260,7 +1314,7 @@ function html_print_select_multiple_filtered(
                     'input_class' => 'flex-row-vcenter',
                     'label'       => __('Group recursion'),
                     'name'        => 'id-group-recursion-selected-select-'.$rid,
-                    'type'        => 'checkbox',
+                    'type'        => 'switch',
                     'script'      => $reload_content,
                     'return'      => true,
                 ]
@@ -1277,6 +1331,8 @@ function html_print_select_multiple_filtered(
         ) {
             $output .= '<div class="item-filter flex-row-vcenter">';
 
+            $output .= '<div style="display:none">';
+
             $output .= html_print_input(
                 [
                     'style'   => 'display:none;',
@@ -1286,6 +1342,7 @@ function html_print_select_multiple_filtered(
                     'return'  => true,
                 ]
             );
+            $output .= '</div>';
 
             $f = "filterSelectedItems(this.value,'".$rid."','".__('None')."')";
             $output .= html_print_input(
@@ -1423,10 +1480,42 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'        => true,
             'nothing'       => __('All'),
             'nothing_value' => 0,
-            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'        => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
     $output .= '</div>';
+
+    if (empty($data['searchBar']) === false && $data['searchBar'] === true) {
+        $output .= '<div>';
+
+        $output .= '<div>';
+        $output .= html_print_input(
+            [
+                'type'        => 'text',
+                'name'        => 'agent-searchBar-'.$uniqId,
+                'onKeyUp'     => 'searchAgent(\''.$uniqId.'\')',
+                'placeholder' => __('Type to search agents'),
+                'return'      => true,
+            ]
+        );
+
+        $output .= '</div>';
+
+        $output .= '<div>';
+        $output .= html_print_input(
+            [
+                'type'        => 'text',
+                'name'        => 'module-searchBar-'.$uniqId,
+                'onKeyUp'     => 'searchModule(\''.$uniqId.'\')',
+                'return'      => true,
+                'placeholder' => __('Type to search modules'),
+            ]
+        );
+
+        $output .= '</div>';
+
+        $output .= '</div>';
+    }
 
     $output .= '<div>';
     // Agent.
@@ -1476,7 +1565,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -1493,30 +1582,20 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'name'     => 'filtered-module-show-common-modules-'.$uniqId,
             'selected' => $data['mShowCommonModules'],
             'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
     if ($data['mAgents'] !== null) {
-        $all_modules = select_modules_for_agent_group(
+        $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),
             $data['mShowCommonModules'],
-            false
+            false,
+            true
         );
     } else {
         $all_modules = [];
-    }
-
-    if ($data['mShowSelectedOtherGroups']) {
-        $selected_modules_ids = explode(',', $data['mModules']);
-
-        foreach ($selected_modules_ids as $id) {
-            if (!array_key_exists($id, $all_modules)) {
-                $module_data = modules_get_agentmodule($id);
-                $all_modules[$id] = $module_data['nombre'];
-            }
-        }
     }
 
     $output .= html_print_input(
@@ -1525,7 +1604,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'type'     => 'select',
             'fields'   => $all_modules,
             'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => explode(',', $data['mModules']),
+            'selected' => explode((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ',', $data['mModules']),
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
@@ -2379,6 +2458,38 @@ function html_print_div(
 
 
 /**
+ * Render an <pre> tag for show code.
+ * For debug purposes, see for `hd()` function.
+ *
+ * @param string  $content    Content of tag.
+ * @param boolean $return     Return the tag string formed.
+ * @param array   $attributes Attributes availables for pre tags.
+ *
+ * @return string
+ */
+function html_print_code(
+    string $content,
+    bool $return=true,
+    array $attributes=[]
+) {
+    $output = '<pre';
+    if (empty($attributes) === false) {
+        foreach ($attributes as $attribute => $value) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($value).'"';
+        }
+    }
+
+    $output .= sprintf('>%s</pre>', $content);
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+/**
  * Render an anchor <a> html element.
  *
  * @param array   $options Parameters.
@@ -2731,7 +2842,7 @@ function html_print_input_number(array $settings):string
     global $config;
     $text_color = '';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
     }
 
@@ -4030,15 +4141,23 @@ function html_print_input_file($name, $return=false, $options=false)
 
     if ($options) {
         if (isset($options['size'])) {
-            $output .= 'size="'.$options['size'].'"';
+            $output .= ' size="'.$options['size'].'"';
         }
 
         if (isset($options['disabled'])) {
-            $output .= 'disabled="disabled"';
+            $output .= ' disabled="disabled"';
         }
 
         if (isset($options['class'])) {
-            $output .= 'class="'.$options['class'].'"';
+            $output .= ' class="'.$options['class'].'"';
+        }
+
+        if (isset($options['required'])) {
+            $output .= ' required';
+        }
+
+        if (isset($options['onchange'])) {
+            $output .= ' onchange="'.$options['onchange'].'"';
         }
     }
 
@@ -4132,6 +4251,33 @@ function html_html2rgb($htmlcolor)
 
 
 /**
+ * Avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_avoid_autocomplete()
+{
+    $output = '';
+    $output .= '<input type="text" style="display:none">';
+    $output .= '<input type="password" style="display:none">';
+
+    return $output;
+}
+
+
+/**
+ * Input password avoid autocomplete.
+ *
+ * @return void
+ */
+function html_print_input_password_avoid_autocomplete()
+{
+    $output = '<input type="text" style="opacity: 0;position: absolute; width: 0px;">';
+    return $output;
+}
+
+
+/**
  * Print a magic-ajax control to select the module.
  *
  * @param string  $name            The name of ajax control, by default is "module".
@@ -4200,7 +4346,7 @@ function html_print_autocomplete_modules(
 
     $text_color = '';
     $module_icon = 'images/search_module.png';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
     }
@@ -4432,7 +4578,7 @@ function html_print_switch($attributes=[])
 
     $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch' style='".$attributes['style']."'>
+    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";
@@ -4502,7 +4648,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     enterprise_include_once('include/functions_metaconsole.php');
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $style = 'style="color: white"';
     }
 
@@ -5163,7 +5309,7 @@ function html_print_autocomplete_users_from_integria(
     global $config;
 
     $user_icon = 'images/user_green.png';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $user_icon = 'images/header_user.png';
     }
 
@@ -5270,7 +5416,7 @@ function html_print_tabs(array $tabs)
 
     $bg_color = '';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $bg_color = 'style="background-color: #222"';
     }
 
@@ -5372,7 +5518,7 @@ function html_print_select_search(
 
     $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $select2_css = 'select2_dark.min';
     }
 

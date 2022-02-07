@@ -113,6 +113,7 @@ define('SECONDS_3YEARS', 94608000);
 // Separator constats.
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10));
+define('SEPARATOR_META_MODULE', '|-|-|-|');
 // Chr(10) is \n.
 define('SEPARATOR_COLUMN_CSV', '#');
 define('SEPARATOR_ROW_CSV', "@\n");
@@ -173,6 +174,7 @@ define('COL_GRAPH13', '#E83128');
 // Styles.
 // Size of text in characters for truncate.
 define('GENERIC_SIZE_TEXT', 50);
+define('MENU_SIZE_TEXT', 20);
 
 
 
@@ -367,12 +369,15 @@ define('MODULE_WUX', 8);
 define('MODULE_WIZARD', 9);
 
 // Type of Modules of Prediction.
+define('MODULE_PREDICTION_PLANNING', 1);
 define('MODULE_PREDICTION_SERVICE', 2);
 define('MODULE_PREDICTION_SYNTHETIC', 3);
 define('MODULE_PREDICTION_NETFLOW', 4);
 define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
+define('MODULE_PREDICTION_TRENDING', 8);
+
 
 // Forced agent OS ID for cluster agents.
 define('CLUSTER_OS_ID', 100);
@@ -451,6 +456,8 @@ define('REPORT_ITEM_ORDER_BY_AGENT_NAME', 3);
 define('REPORT_ITEM_ORDER_BY_ASCENDING', 2);
 define('REPORT_ITEM_ORDER_BY_DESCENDING', 1);
 define('REPORT_ITEM_ORDER_BY_UNSORT', 0);
+
+define('REPORT_ITEM_DYNAMIC_HEIGHT', 230);
 
 define('REPORT_OLD_TYPE_SIMPLE_GRAPH', 1);
 define('REPORT_OLD_TYPE_CUSTOM_GRAPH', 2);

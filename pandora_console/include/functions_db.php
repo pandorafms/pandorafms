@@ -414,21 +414,21 @@ function db_get_value_filter($field, $table, $filter, $where_join='AND', $search
  *
  * @return mixed the first value of the first row of a table result from query.
  */
-function db_get_value_sql($sql, $dbconnection=false)
+function db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_value_sql($sql, $dbconnection);
+        return mysql_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_value_sql($sql, $dbconnection);
+        return postgresql_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
         case 'oracle':
-        return oracle_db_get_value_sql($sql, $dbconnection);
+        return oracle_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
     }
@@ -1377,39 +1377,53 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
         break;
     }
 
-    if ($rc !== false) {
-        if (enterprise_hook('is_metaconsole') === true
-            && isset($config['centralized_management']) === true
-            && (bool) $config['centralized_management'] === true
-            && $dbconnection === ''
-        ) {
-            $errors = null;
-            try {
-                // Synchronize changes to nodes if needed.
-                $sync = new Synchronizer();
-                if ($sync !== null) {
-                    if ($sync->queue($sql) === false) {
-                        // Launch events per failed query.
-                        $errors = $sync->getLatestErrors();
-                        if ($errors !== null) {
-                            $errors = join(', ', $errors);
-                        } else {
-                            $errors = '';
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                $errors = $e->getMessage();
-            }
-
-            if ($errors !== null) {
-                // TODO: Generate pandora event.
-                error_log($errors);
-            }
-        }
-    }
+    db_sync($dbconnection, $sql, $rc);
 
     return $rc;
+}
+
+
+/**
+ * Propagate to nodes.
+ *
+ * @param mixed $dbconnection Dbconnection.
+ * @param mixed $sql          Sql.
+ * @param mixed $rc           Rc.
+ *
+ * @return void
+ */
+function db_sync($dbconnection, $sql, $rc)
+{
+    global $config;
+    if (enterprise_hook('is_metaconsole') === true
+        && isset($config['centralized_management']) === true
+        && (bool) $config['centralized_management'] === true
+        && $dbconnection === ''
+    ) {
+        $errors = null;
+        try {
+            // Synchronize changes to nodes if needed.
+            $sync = new Synchronizer();
+            if ($sync !== null) {
+                if ($sync->queue($sql, $rc) === false) {
+                    // Launch events per failed query.
+                    $errors = $sync->getLatestErrors();
+                    if ($errors !== null) {
+                        $errors = join(', ', $errors);
+                    } else {
+                        $errors = '';
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $errors = $e->getMessage();
+        }
+
+        if ($errors !== null) {
+            // TODO: Generate pandora event.
+            error_log($errors);
+        }
+    }
 }
 
 
@@ -1808,20 +1822,20 @@ function db_process_sql_delete($table, $where, $where_join='AND')
 function db_process_sql_begin()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_process_sql_begin();
-
-            break;
         case 'postgresql':
         return postgresql_db_process_sql_begin();
 
-            break;
         case 'oracle':
         return oracle_db_process_sql_begin();
 
-            break;
+        default:
+        case 'mysql':
+            db_process_sql('SET AUTOCOMMIT = 0', 'affected_rows', '', false, $null, false);
+            db_process_sql('START TRANSACTION', 'affected_rows', '', false, $null, false);
+        break;
     }
 }
 
@@ -1832,20 +1846,20 @@ function db_process_sql_begin()
 function db_process_sql_commit()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_process_sql_commit();
-
-            break;
         case 'postgresql':
         return postgresql_db_process_sql_commit();
 
-            break;
         case 'oracle':
         return oracle_db_process_sql_commit();
 
-            break;
+        default:
+        case 'mysql':
+            db_process_sql('COMMIT', 'affected_rows', '', false, $null, false);
+            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, $null, false);
+        break;
     }
 }
 
@@ -1856,20 +1870,20 @@ function db_process_sql_commit()
 function db_process_sql_rollback()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_process_sql_rollback();
-
-            break;
         case 'postgresql':
         return postgresql_db_process_sql_rollback();
 
-            break;
         case 'oracle':
         return oracle_db_process_sql_rollback();
 
-            break;
+        default:
+        case 'mysql':
+            db_process_sql('ROLLBACK', 'affected_rows', '', false, $null, false);
+            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, $null, false);
+        break;
     }
 }
 
@@ -1889,6 +1903,7 @@ function db_print_database_debug()
 
     echo '<div class="database_debug_title">'.__('Database debug').'</div>';
 
+    $table = new stdClass();
     $table->id = 'database_debug';
     $table->cellpadding = '0';
     $table->width = '95%';
@@ -1946,18 +1961,15 @@ function db_get_last_error()
     global $config;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_get_last_error();
-
-            break;
         case 'postgresql':
         return postgresql_db_get_last_error();
 
-            break;
         case 'oracle':
         return oracle_db_get_last_error();
 
-            break;
+        case 'mysql':
+        default:
+        return mysql_db_get_last_error();
     }
 }
 
@@ -1975,18 +1987,15 @@ function db_get_type_field_table($table, $field)
     global $config;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_get_type_field_table($table, $field);
-
-            break;
         case 'postgresql':
         return postgresql_db_get_type_field_table($table, $field);
 
-            break;
         case 'oracle':
         return oracle_db_get_type_field_table($table, $field);
 
-            break;
+        case 'mysql':
+        default:
+        return mysql_db_get_type_field_table($table, $field);
     }
 }
 

@@ -519,8 +519,6 @@ class EventsListWidget extends Widget
             }
         }
 
-        $hours = ($this->values['maxHours'] * SECONDS_1HOUR);
-
         // Put hours in seconds.
         $filter = [];
         $order = [];
@@ -546,7 +544,7 @@ class EventsListWidget extends Widget
             }
         } else {
             // Filtering.
-            $filter['event_view_hr'] = $hours;
+            $filter['event_view_hr'] = $this->values['maxHours'];
 
             // Group.
             $filter['id_group_filter'] = $this->values['groupId'];
@@ -752,7 +750,7 @@ class EventsListWidget extends Widget
                 $table->data[$i] = $data;
 
                 $bg_color = 'background: #E8E8E8;';
-                if ($config['style'] === 'pandora_black') {
+                if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
                     $bg_color = 'background: #222;';
                 }
 

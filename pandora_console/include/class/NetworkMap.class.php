@@ -1672,10 +1672,15 @@ class NetworkMap
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
-                        $item['color'] = self::getColorByStatus(
-                            $node['status'],
-                            (bool) $node['id_module']
-                        );
+                        if (empty($node['status']) && empty($node['id_module']) && !empty($node['style']['id_networkmap'])) {
+                            $status_aux = get_status_color_networkmap_fictional_point($node['style']['id_networkmap']);
+                            $item['color'] = $status_aux;
+                        } else {
+                            $item['color'] = self::getColorByStatus(
+                                $node['status'],
+                                (bool) $node['id_module']
+                            );
+                        }
                     }
                 break;
             }
@@ -3409,6 +3414,15 @@ class NetworkMap
             $output .= '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url(
                 'include/styles/tooltipster.bundle.min.css'
             ).'" />'."\n";
+            ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
+            $output .= '<script type="text/javascript" src="';
+            $output .= ui_get_full_url(
+                'include/javascript/jquery.contextMenu.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" charset="utf-8"></script>';
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
             $output .= 'class="border_1px_dd" style="';

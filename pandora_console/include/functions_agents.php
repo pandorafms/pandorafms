@@ -162,9 +162,13 @@ function agents_locate_agent(string $field)
  *
  * @return array|boolean Agents ids or false if error.
  */
-function agents_get_agent_id_by_alias($alias)
+function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
-    return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    if ($is_metaconsole === true) {
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+    } else {
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    }
 }
 
 
@@ -421,12 +425,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         INNER JOIN tagente_modulo t2
             ON talert_template_modules.id_agent_module = t2.id_agente_modulo
         INNER JOIN tagente t3
-            ON t2.id_agente = t3.id_agente
+            ON t2.id_agente = t3.id_agente %s
         %s
         INNER JOIN talert_templates t4
             ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s',
         $selectText,
+        ($id_agent !== false && is_array($id_agent)) ? 'AND t3.id_agente IN ('.implode(',', $id_agent).')' : '',
         $secondary_join,
         $subQuery,
         $where,
@@ -434,39 +439,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         $orderbyText
     );
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " LIMIT $offset, $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-            $alerts = db_get_all_rows_sql($sql);
-        break;
-
-        case 'postgresql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " OFFSET $offset LIMIT $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-
-            $alerts = db_get_all_rows_sql($sql);
-
-        break;
-
-        case 'oracle':
-            $set = [];
-            if (isset($offset) && isset($limit)) {
-                $set['limit'] = $limit;
-                $set['offset'] = $offset;
-            }
-
-            $alerts = oracle_recode_query($sql, $set, 'AND', false);
-        break;
+    $limit_sql = '';
+    if (isset($offset) && isset($limit)) {
+        $limit_sql = " LIMIT $offset, $limit ";
     }
+
+    $sql = sprintf('%s %s', $sql, $limit_sql);
+    $alerts = db_get_all_rows_sql($sql);
 
     if ($alerts === false) {
         return [];
@@ -679,7 +658,7 @@ function agents_get_agents(
     // Add the group filter to
     $where = db_format_array_where_clause_sql($filter, 'AND', '('.$where_secondary.') AND ');
     if ($where == '' && $where_secondary != '') {
-        $where = $where_secondary;
+        $where = '('.$where_secondary.')';
     }
 
     $where_nogroup = db_format_array_where_clause_sql(
@@ -755,6 +734,63 @@ function agents_get_agents(
     }
 
     return $agents;
+}
+
+
+function agents_get_agents_selected($group)
+{
+    if (is_metaconsole() === true) {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_tagente',
+                'id_tmetaconsole_setup',
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            true
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    } else {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ]
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_agente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $all;
 }
 
 
@@ -874,7 +910,11 @@ function agents_process_manage_config($source_id_agent, $destiny_id_agents, $cop
                 [
                     'nombre'   => $module['nombre'],
                     'disabled' => false,
-                ]
+                ],
+                true,
+                true,
+                false,
+                false
             );
 
             // Keep all modules repeated
@@ -1181,6 +1221,19 @@ function agents_get_group_agents(
             }
         }
 
+        if ((isset($search['disabled']) === true
+            && $search['disabled'] === 2)
+            || (isset($filter['disabled']) === true
+            && $filter['disabled'] === 2)
+        ) {
+            unset($search['disabled']);
+            unset($filter['disabled']);
+        }
+
+        if (isset($search['all_agents'])) {
+            unset($search['all_agents']);
+        }
+
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
             $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
@@ -1269,21 +1322,24 @@ function agents_get_group_agents(
             }
         }
 
-        if (is_metaconsole() && isset($search['id_server'])) {
-            $filter['id_tmetaconsole_setup'] = $search['id_server'];
+        if (is_metaconsole() === true
+            && isset($search['id_server']) === true
+            && empty($search['id_server']) === false
+        ) {
+            $filter['ta.id_tmetaconsole_setup'] = $search['id_server'];
 
             if ($filter['id_tmetaconsole_setup'] == 0) {
                 // All nodes.
                 unset($filter['id_tmetaconsole_setup']);
             }
-
-            unset($search['id_server']);
         }
+
+        unset($search['id_server']);
 
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
             foreach ($search as $key => $value) {
-                $filter[] = $value;
+                $filter[$key] = $value;
             }
         }
     } else if ($filter !== true) {
@@ -1292,7 +1348,7 @@ function agents_get_group_agents(
 
     $filter['order'] = 'alias';
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
         if ($meta_fields === true) {
@@ -1403,7 +1459,8 @@ function agents_get_modules(
     $filter=false,
     $indexed=true,
     $get_not_init_modules=true,
-    $force_tags=false
+    $force_tags=false,
+    $filter_include_sql=true
 ) {
     global $config;
 
@@ -1502,18 +1559,18 @@ function agents_get_modules(
                     }
                 }
 
-                if ($value[0] == '%') {
+                if ($value[0] == '%' && $filter_include_sql === true) {
                     array_push(
                         $fields,
                         $field.' LIKE "'.$value.'"'
                     );
-                } else if ($operatorDistin) {
+                } else if ($operatorDistin && $filter_include_sql === true) {
                     array_push($fields, $field.' <> '.substr($value, 2));
-                } else if (substr($value, -1) == '%') {
+                } else if (substr($value, -1) == '%' && $filter_include_sql === true) {
                     array_push($fields, $field.' LIKE "'.$value.'"');
                 } else if (strncmp($value, '666=666', 7) == 0) {
                     array_push($fields, ' '.$value);
-                } else if (preg_match('/\bin\b/i', $field)) {
+                } else if (preg_match('/\bin\b/i', $field) && $filter_include_sql === true) {
                     array_push($fields, $field.' '.$value);
                 } else {
                     array_push($fields, 'tagente_modulo.'.$field.' = "'.$value.'"');
@@ -1667,6 +1724,85 @@ function agents_get_name($id_agent, $case='none')
 
             break;
     }
+}
+
+
+/**
+ * Get the agents names of an agent.
+ *
+ * @param array $array_ids Agents ids.
+ *
+ * @return array Id => name.
+ */
+function agents_get_alias_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        $agents = array_reduce(
+            $array_ids,
+            function ($carry, $item) {
+                $explode = explode('|', $item);
+
+                $carry[$explode[0]][] = $explode[1];
+                return $carry;
+            }
+        );
+
+        $result = [];
+        foreach ($agents as $tserver => $id_agents) {
+            $sql = sprintf(
+                'SELECT id_tagente as id, alias as `name`
+                FROM tmetaconsole_agent
+                WHERE id_tagente IN (%s) AND id_tmetaconsole_setup = %d',
+                implode(',', $id_agents),
+                $tserver
+            );
+
+            $data_server = db_get_all_rows_sql($sql);
+
+            if ($data_server === false) {
+                $data_server = [];
+            }
+
+            $data_server = array_reduce(
+                $data_server,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+
+            $result[$tserver] = $data_server;
+        }
+    } else {
+        $sql = sprintf(
+            'SELECT id_agente as id, alias as `name`
+            FROM tagente
+            WHERE id_agente IN (%s)',
+            implode(',', $array_ids)
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        if ($result === false) {
+            $result = [];
+        }
+
+        $result = array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $result;
 }
 
 
@@ -3757,7 +3893,7 @@ function agents_get_status_animation($up=true)
     $red = 'images/heartbeat_green.gif';
     $green = 'images/heartbeat_green.gif';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $red = 'images/heartbeat_green_black.gif';
         $green = 'images/heartbeat_green_black.gif';
     }

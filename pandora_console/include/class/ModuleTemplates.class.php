@@ -92,7 +92,7 @@ class ModuleTemplates extends HTML
     private $validPen;
 
     /**
-     * Complete list of PENes.
+     * Complete list of PENs.
      *
      * @var array.
      */

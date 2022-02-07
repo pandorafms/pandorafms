@@ -78,6 +78,10 @@ $integria_types_csv = integria_api_call(null, null, null, null, 'get_types');
 
 get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
 
+$integria_resolution_csv = integria_api_call(null, null, null, null, 'get_incidents_resolutions');
+
+get_array_from_csv_data_pair($integria_resolution_csv, $integria_resolution_values);
+
 $event_id = (int) get_parameter('from_event');
 $incident_id_edit = (int) get_parameter('incident_id');
 $create_incident = (bool) get_parameter('create_incident', 0);
@@ -88,8 +92,10 @@ $incident_owner = get_parameter('owner');
 $incident_type = (int) get_parameter('type');
 $incident_creator = get_parameter('creator');
 $incident_status = (int) get_parameter('status');
+$incident_resolution = (int) get_parameter('resolution');
 $incident_title = events_get_field_value_by_event_id($event_id, get_parameter('incident_title'));
 $incident_content = events_get_field_value_by_event_id($event_id, get_parameter('incident_content'));
+$file_description = get_parameter('file_description');
 
 // Separator conversions.
 $incident_title = str_replace(',', ':::', $incident_title);
@@ -97,10 +103,19 @@ $incident_content = str_replace(',', ':::', $incident_content);
 
 // Perform action.
 if ($create_incident === true) {
-    // Call Integria IMS API method to create an incident.
-    $result_api_call = integria_api_call(null, null, null, null, 'create_incident', [$incident_title, $incident_group_id, $incident_criticity_id, $incident_content, '', $incident_type, '', $incident_owner, '0', $incident_status], false, '', ',');
+    // Disregard incident resolution unless status is 'closed'.
+    if ($incident_status !== 7) {
+        $incident_resolution = 0;
+    }
 
-    // Necessary to explicitly set true if not false because function returns api call result in case of success instead of true value.
+    // Call Integria IMS API method to create an incident.
+    $result_api_call = integria_api_call(null, null, null, null, 'create_incident', [$incident_title, $incident_group_id, $incident_criticity_id, $incident_content, '', $incident_type, '', $incident_owner, '0', $incident_status, '', $incident_resolution], false, '', ',');
+
+    if ($userfile !== '' && $result_api_call !== false) {
+        integriaims_upload_file('userfile', $result_api_call, $file_description);
+    }
+
+    // Necessary to explicitly set true if not false because function returns result of api call in case of success instead of true value.
     $incident_created_ok = ($result_api_call != false) ? true : false;
 
     ui_print_result_message(
@@ -109,8 +124,17 @@ if ($create_incident === true) {
         __('Could not be created in Integria IMS')
     );
 } else if ($update_incident === true) {
+    // Disregard incident resolution unless status is 'closed'.
+    if ($incident_status !== 7) {
+        $incident_resolution = 0;
+    }
+
     // Call Integria IMS API method to update an incident.
-    $result_api_call = integria_api_call(null, null, null, null, 'update_incident', [$incident_id_edit, $incident_title, $incident_content, '', $incident_group_id, $incident_criticity_id, 0, $incident_status, $incident_owner, 0, $incident_type], false, '', ',');
+    $result_api_call = integria_api_call(null, null, null, null, 'update_incident', [$incident_id_edit, $incident_title, $incident_content, '', $incident_group_id, $incident_criticity_id, $incident_resolution, $incident_status, $incident_owner, 0, $incident_type], false, '', ',');
+
+    if ($userfile !== '') {
+        integriaims_upload_file('userfile', $incident_id_edit, $file_description);
+    }
 
     // Necessary to explicitly set true if not false because function returns api call result in case of success instead of true value.
     $incident_updated_ok = ($result_api_call != false) ? true : false;
@@ -152,7 +176,8 @@ $table->style[0] = 'width: 33%; padding-right: 50px; padding-left: 100px;';
 $table->style[1] = 'width: 33%; padding-right: 50px; padding-left: 50px;';
 $table->style[2] = 'width: 33%; padding-right: 100px; padding-left: 50px;';
 $table->colspan[0][0] = 2;
-$table->colspan[3][0] = 3;
+$table->colspan[4][0] = 3;
+$table->colspan[6][0] = 3;
 
 $help_macros = isset($_GET['from_event']) ? ui_print_help_icon('response_macros', true) : '';
 
@@ -164,6 +189,7 @@ if ($update) {
     $input_value_criticity = $incident_details[7];
     $input_value_owner = $incident_details[5];
     $input_value_content = $incident_details[4];
+    $input_value_resolution = $incident_details[12];
 } else if (isset($_GET['from_event'])) {
     $input_value_title = $config['cr_incident_title'];
     $input_value_type = $config['cr_incident_type'];
@@ -172,6 +198,7 @@ if ($update) {
     $input_value_criticity = $config['cr_default_criticity'];
     $input_value_owner = $config['cr_default_owner'];
     $input_value_content = $config['cr_incident_content'];
+    $input_value_resolution = 0;
 } else {
     $input_value_title = '';
     $input_value_type = '';
@@ -180,6 +207,7 @@ if ($update) {
     $input_value_criticity = '';
     $input_value_owner = '';
     $input_value_content = '';
+    $input_value_resolution = 0;
 }
 
 $table->data[0][0] = '<div class="label_select"><p class="input_label">'.__('Title').':&nbsp'.$help_macros.'</p>';
@@ -197,7 +225,7 @@ $table->data[0][0] .= '<div class="label_select_parent">'.html_print_input_text(
 ).'</div>';
 
 $integria_logo = 'images/integria_logo_gray.png';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $integria_logo = 'images/integria_logo.svg';
 }
 
@@ -293,8 +321,26 @@ $table->data[2][2] .= '<div class="label_select_parent">'.html_print_autocomplet
     'w100p'
 ).'</div>';
 
-$table->data[3][0] = '<div class="label_select"><p class="input_label">'.__('Description').':&nbsp'.$help_macros.'</p>';
-$table->data[3][0] .= '<div class="label_select_parent">'.html_print_textarea(
+
+$table->data[3][0] = '<div class="label_select"><p class="input_label">'.__('Resolution').': </p>';
+
+$table->data[3][0] .= '<div class="label_select_parent">'.html_print_select(
+    $integria_resolution_values,
+    'resolution',
+    $input_value_resolution,
+    '',
+    '',
+    1,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
+).'</div>';
+
+$table->data[4][0] = '<div class="label_select"><p class="input_label">'.__('Description').':&nbsp'.$help_macros.'</p>';
+$table->data[4][0] .= '<div class="label_select_parent">'.html_print_textarea(
     'incident_content',
     3,
     20,
@@ -303,8 +349,20 @@ $table->data[3][0] .= '<div class="label_select_parent">'.html_print_textarea(
     true
 ).'</div>';
 
+$table->data[5][0] = '<div class="label_select"><p class="input_label">'.__('File name').':</p>';
+$table->data[5][0] .= html_print_input_file('userfile', true);
+$table->data[6][0] = '<div class="label_select"><p class="input_label">'.__('Attachment description').':</p>';
+$table->data[6][0] .= html_print_textarea(
+    'file_description',
+    3,
+    20,
+    '',
+    '',
+    true
+);
+
 // Print forms and stuff.
-echo '<form id="create_integria_incident_form" name="create_integria_incident_form" method="POST">';
+echo '<form id="create_integria_incident_form" name="create_integria_incident_form" method="POST" enctype="multipart/form-data">';
 html_print_table($table);
 
 if (!$update) {
@@ -323,3 +381,32 @@ if ($update) {
 }
 
 echo '</div>';
+?>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#add_alert_table-3').hide();
+
+        var input_value_status =
+        <?php
+        $status_value = ($input_value_status === '') ? 0 : $input_value_status;
+            echo $status_value;
+        ?>
+        ;
+
+        if (input_value_status === 7) {
+            $('#add_alert_table-3').show();
+        } else {
+            $('#add_alert_table-3').hide();
+        }
+
+        $('#status').on('change', function() {
+            if ($(this).val() === '7') {
+                $('#add_alert_table-3').show();
+            } else {
+                $('#add_alert_table-3').hide();
+            }
+        });
+        
+    });
+</script>

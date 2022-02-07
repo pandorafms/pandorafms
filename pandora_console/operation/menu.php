@@ -220,7 +220,7 @@ if (check_acl($config['id_user'], 0, 'VR') || check_acl($config['id_user'], 0, '
 
                 $name = io_safe_output($layout['name']);
 
-                $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['text'] = mb_substr($name, 0, 19);
+                $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['text'] = ui_print_truncate_text($name, MENU_SIZE_TEXT, false, true, false);
                 $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['id'] = mb_substr($name, 0, 19);
                 $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['title'] = $name;
                 if (!empty($config['vc_refr'])) {
@@ -235,7 +235,7 @@ if (check_acl($config['id_user'], 0, 'VR') || check_acl($config['id_user'], 0, '
             if ($break_max_console) {
                 $sub2['godmode/reporting/visual_console_favorite']['text']  = __('Show more').' >';
                 $sub2['godmode/reporting/visual_console_favorite']['id']    = 'visual_favourite_console';
-                $sub2['godmode/reporting/visual_console_favorite']['title'] = 'show_more';
+                $sub2['godmode/reporting/visual_console_favorite']['title'] = __('Show more');
                 $sub2['godmode/reporting/visual_console_favorite']['refr']  = 0;
             }
 
@@ -281,7 +281,7 @@ if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, '
                 continue;
             }
 
-            $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['text'] = mb_substr(io_safe_output($gisMap['map_name']), 0, 15);
+            $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['text'] = ui_print_truncate_text(io_safe_output($gisMap['map_name']), MENU_SIZE_TEXT, false, true, false);
             $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['id'] = mb_substr(io_safe_output($gisMap['map_name']), 0, 15);
             $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['title'] = io_safe_output($gisMap['map_name']);
             $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['refr'] = 0;
@@ -345,7 +345,7 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
             $name = io_safe_output($dashboard['name']);
 
             $sub2['operation/dashboard/dashboard&dashboardId='.$dashboard['id']] = [
-                'text'  => mb_substr($name, 0, 19),
+                'text'  => ui_print_truncate_text($name, MENU_SIZE_TEXT, false, true, false),
                 'title' => $name,
             ];
         }
@@ -427,11 +427,18 @@ if (check_acl($config['id_user'], 0, 'ER')
     <script type="text/javascript">
     function openSoundEventWindow() {
         url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
+        // devicePixelRatio knows how much zoom browser applied.
+        var windowScale = parseFloat(window.devicePixelRatio);
+        var defaultWidth = 600;
+        var defaultHeight = 450;
+        // If the scale is 1, no zoom has been applied.
+        var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
+        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
         
         window.open(
             url,
             '<?php __('Sound Alerts'); ?>',
-            'width=600, height=450, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no'
+            'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
         );
     }
     </script>
@@ -545,7 +552,7 @@ if (is_array($config['extensions'])) {
             if (array_key_exists('fatherId', $extension_menu)) {
                 // Check that extension father ID exists previously on the menu.
                 if ((strlen($extension_menu['fatherId']) > 0)) {
-                    if (array_key_exists('subfatherId', $extension_menu)) {
+                    if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
                         if ((strlen($extension_menu['subfatherId']) > 0)) {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = $extension_menu['name'];

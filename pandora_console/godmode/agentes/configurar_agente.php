@@ -196,6 +196,13 @@ if ($create_agent) {
 
     $nombre_agente = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
     $grupo = (int) get_parameter_post('grupo');
+
+    if ((bool) check_acl($config['id_user'], $grupo, 'AW') === false) {
+        db_pandora_audit('ACL Violation', 'Trying to access agent manager');
+        include $config['homedir'].'/general/noaccess.php';
+        return;
+    }
+
     $intervalo = (string) get_parameter_post('intervalo', SECONDS_5MINUTES);
     $comentarios = (string) get_parameter_post('comentarios', '');
     $modo = (int) get_parameter_post('modo');
@@ -990,6 +997,8 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
+    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+
 
     if ($fields === false) {
         $fields = [];
@@ -1069,8 +1078,11 @@ if ($update_agent) {
         // If IP is set for deletion, delete first.
         if ($action_delete_ip) {
             $delete_ip = get_parameter_post('address_list');
-
-            $direccion_agente = agents_delete_address($id_agente, $delete_ip);
+            if (empty($direccion_agente) === true) {
+                $direccideon_agente = agents_delete_address($id_agente, $delete_ip);
+            } else {
+                agents_delete_address($id_agente, $delete_ip);
+            }
         }
 
         $values = [
@@ -1219,7 +1231,16 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
-            enterprise_hook('update_agent', [$id_agente]);
+            // Create the secondary groups.
+            enterprise_hook(
+                'agents_update_secondary_groups',
+                [
+                    $id_agente,
+                    explode(',', $secondary_groups),
+                    [],
+                ]
+            );
+
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 'Agent management',
@@ -1364,9 +1385,15 @@ if ($update_module || $create_module) {
         $custom_integer_2_default = $module['custom_integer_2'];
     }
 
-    if ($id_module_type == 25) {
+    if ($id_module_type === 25) {
         // Web analysis, from MODULE_WUX.
-        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1', $custom_string_1_default));
+        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1'));
+        // If the custom_string_1 parameter come empty, set the content
+        // of the module (it is base64_encoded).
+        if (empty($custom_string_1) === true) {
+            $custom_string_1 = $custom_string_1_default;
+        }
+
         $custom_integer_1 = (int) get_parameter('custom_integer_1', $custom_integer_1_default);
     } else {
         $custom_string_1 = (string) get_parameter('custom_string_1', $custom_string_1_default);
@@ -1381,7 +1408,7 @@ if ($update_module || $create_module) {
     $macros = (string) get_parameter('macros');
     $macros_names = (array) get_parameter('macro_name', []);
 
-    if (!empty($macros)) {
+    if (empty($macros) === false) {
         $macros = json_decode(base64_decode($macros), true);
 
         foreach ($macros as $k => $m) {
@@ -1523,6 +1550,8 @@ if ($update_module || $create_module) {
     $unknown_instructions = (string) get_parameter('unknown_instructions');
     $critical_inverse = (int) get_parameter('critical_inverse');
     $warning_inverse = (int) get_parameter('warning_inverse');
+    $percentage_critical = (int) get_parameter('percentage_critical');
+    $percentage_warning = (int) get_parameter('percentage_warning');
 
     $id_category = (int) get_parameter('id_category');
 
@@ -1582,6 +1611,15 @@ if ($update_module || $create_module) {
             'modules_delete_synthetic_operations',
             [$id_agent_module]
         );
+    }
+
+    if ($prediction_module === MODULE_PREDICTION_PLANNING) {
+        $custom_string_2 = get_parameter('estimation_type', 'estimation_calculation');
+        if ($custom_string_2 === 'estimation_calculation') {
+            $custom_string_1 = get_parameter('estimation_days', -1);
+        } else {
+            $custom_string_1 = get_parameter('estimation_interval', '300');
+        }
     }
 
     $active_snmp_v3 = get_parameter('active_snmp_v3');
@@ -1676,6 +1714,8 @@ if ($update_module) {
         'unknown_instructions'  => $unknown_instructions,
         'critical_inverse'      => $critical_inverse,
         'warning_inverse'       => $warning_inverse,
+        'percentage_critical'   => $percentage_critical,
+        'percentage_warning'    => $percentage_warning,
         'cron_interval'         => $cron_interval,
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
@@ -1767,7 +1807,7 @@ if ($update_module) {
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1882,6 +1922,8 @@ if ($create_module) {
         'unknown_instructions'  => $unknown_instructions,
         'critical_inverse'      => $critical_inverse,
         'warning_inverse'       => $warning_inverse,
+        'percentage_critical'   => $percentage_critical,
+        'percentage_warning'    => $percentage_warning,
         'cron_interval'         => $cron_interval,
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
@@ -1910,7 +1952,7 @@ if ($create_module) {
         }
     }
 
-    if ($prediction_module == 3 && $serialize_ops == '') {
+    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC && $serialize_ops == '') {
         $id_agent_module = false;
     } else {
         $id_agent_module = modules_create_agent_module(
@@ -1951,7 +1993,7 @@ if ($create_module) {
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -2386,7 +2428,7 @@ switch ($tab) {
             
             var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() &&
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() &&
              '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>' == 19){
                 
                 event.preventDefault();
@@ -2420,7 +2462,7 @@ switch ($tab) {
             
             var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter('id_agent_module')); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() && (
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() && (
                 module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
                     
                     event.preventDefault();

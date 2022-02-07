@@ -168,7 +168,9 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
     $autosearch = true;
 }
 
-if (!is_metaconsole()) {
+$is_metaconsole = is_metaconsole();
+
+if (!$is_metaconsole) {
     $ag_group = (int) get_parameter('ag_group', 0);
 } else {
     $ag_group  = get_parameter('ag_group', 0);
@@ -219,7 +221,7 @@ if (is_numeric($ag_group)) {
 }
 
 // Agent group selector.
-if (!is_metaconsole()) {
+if (!$is_metaconsole) {
     if ($ag_group > 0 && check_acl($config['id_user'], $ag_group, 'AR')) {
         if ($recursion) {
             $all_groups = groups_get_children_ids($ag_group, true);
@@ -272,7 +274,7 @@ if (!is_metaconsole()) {
 }
 
 // Module group.
-if (is_metaconsole()) {
+if ($is_metaconsole) {
     if ($modulegroup != '-1') {
         $sql_conditions .= sprintf(' AND tagente_modulo.id_module_group '.$not_condition.' IN (%s)', $modulegroup);
     }
@@ -370,7 +372,7 @@ if (!empty($ag_custom_fields)) {
 
 // Filter by tag.
 if ($tag_filter !== 0) {
-    if (is_metaconsole()) {
+    if ($is_metaconsole) {
         $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
@@ -391,7 +393,7 @@ $sql_conditions_tags = '';
 if (!users_is_admin()) {
         $sql_conditions_tags = tags_get_acl_tags(
             $config['id_user'],
-            $ag_group,
+            ($recursion) ? $all_groups : $ag_group,
             'AR',
             'module_condition',
             'AND',
@@ -415,7 +417,7 @@ if (!defined('METACONSOLE')) {
 }
 
 // Get limit_sql depend of the metaconsole or standard mode.
-if (is_metaconsole()) {
+if ($is_metaconsole) {
     // Offset will be used to get the subset of modules.
     $inferior_limit = $offset;
     $superior_limit = ($config['block_size'] + $offset);
@@ -514,7 +516,7 @@ $table->data[0][3] = html_print_select(
 $rows_select = [];
 $table->data[0][4] = __('Module group');
 $rows_select[0] = __('Not assigned');
-if (!is_metaconsole()) {
+if (!$is_metaconsole) {
     $rows = db_get_all_rows_sql(
         'SELECT *
 		FROM tmodule_group ORDER BY name'
@@ -617,27 +619,29 @@ if ($develop_bypass) {
     $prediction_available = 1;
 }
 
-    $typemodules = [];
-    $typemodules[1] = __('Data server module');
-if ($network_available) {
+
+
+$typemodules = [];
+$typemodules[1] = __('Data server module');
+if ($network_available || $is_metaconsole) {
     $typemodules[2] = __('Network server module');
 }
 
-if ($plugin_available) {
+if ($plugin_available || $is_metaconsole) {
     $typemodules[4] = __('Plugin server module');
 }
 
-if ($wmi_available) {
+if ($wmi_available || $is_metaconsole) {
     $typemodules[6] = __('WMI server module');
 }
 
-if ($prediction_available) {
+if ($prediction_available || $is_metaconsole) {
     $typemodules[5] = __('Prediction server module');
 }
 
 if (enterprise_installed()) {
     $typemodules[7] = __('Web server module');
-    if ($wux_available) {
+    if ($wux_available || $is_metaconsole) {
           $typemodules[8] = __('Wux server module');
     }
 }
@@ -769,37 +773,40 @@ if ($not_condition !== '') {
     $check_not_condition = true;
 }
 
-$table->data[4][0] .= __('Not condition');
-        $table->data[4][1] .= '<div class="w120px mrgn_top_20px">';
-        $table->data[4][1] .= html_print_input(
+$table->data[4][0] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
+        $table->data[4][1] = html_print_div(
             [
-                'type'    => 'switch',
-                'name'    => 'not_condition',
-                'return'  => false,
-                'checked' => $check_not_condition,
-                'value'   => 'NOT',
-                'id'      => 'not_condition_switch',
-                'onclick' => 'changeNotConditionStatus(this)',
-            ]
+                'class'   => 'w120px mrgn_5px mrgn_lft_0px mrgn_right_0px',
+                'content' => html_print_input(
+                    [
+                        'type'    => 'switch',
+                        'name'    => 'not_condition',
+                        'return'  => false,
+                        'checked' => $check_not_condition,
+                        'value'   => 'NOT',
+                        'id'      => 'not_condition_switch',
+                        'onclick' => 'changeNotConditionStatus(this)',
+                    ]
+                ),
+            ],
+            true
         );
-        $table->data[4][1] .= ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
-        $table->data[4][1] .= '</div>';
 
         $table_custom_fields = new stdClass();
         $table_custom_fields->class = 'filters';
         $table_custom_fields->width = '100%';
+        $table_custom_fields->style = [];
+        $table_custom_fields->style[0] = 'font-weight: bold;';
 
-        if (is_metaconsole()) {
+        // Style is different in metaconsole.
+        if ($is_metaconsole === false) {
+            $table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
+        }
+
+        if ($is_metaconsole === true) {
             $table_custom_fields->styleTable = 'margin-left:0px; margin-top:15px;';
             $table_custom_fields->cellpadding = '0';
             $table_custom_fields->cellspacing = '0';
-        }
-
-        $table_custom_fields->style = [];
-        if (!is_metaconsole()) {
-            $table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
-        } else {
-            $table_custom_fields->style[0] = 'font-weight: bold;';
         }
 
         $table_custom_fields->colspan = [];
@@ -815,9 +822,9 @@ $table->data[4][0] .= __('Not condition');
             $row[0] = $custom_field['name'];
 
             $custom_field_value = '';
-            if (!empty($ag_custom_fields)) {
+            if (empty($ag_custom_fields) === false) {
                 $custom_field_value = $ag_custom_fields[$custom_field['id_field']];
-                if (empty($custom_field_value)) {
+                if (empty($custom_field_value) === true) {
                     $custom_field_value = '';
                 }
             }
@@ -830,7 +837,7 @@ $table->data[4][0] .= __('Not condition');
         $filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $table->colspan[5][0] = 7;
             $table->cellstyle[5][0] = 'padding: 10px;';
             $table->data[5][0] = ui_toggle(
@@ -1718,6 +1725,17 @@ $table->data[4][0] .= __('Not condition');
                     }
 
                     if ($row['history_data'] == 1 && $acl_graphs) {
+                        $tresholds = true;
+                        if (empty((float) $module['min_warning']) === true
+                            && empty((float) $module['max_warning']) === true
+                            && empty($module['warning_inverse']) === true
+                            && empty((float) $module['min_critical']) === true
+                            && empty((float) $module['max_critical']) === true
+                            && empty($module['critical_inverse']) === true
+                        ) {
+                            $tresholds = false;
+                        }
+
                         $graph_type = return_graphtype($row['module_type']);
 
                         $url = ui_get_full_url('operation/agentes/stat_win.php', false, false, false);
@@ -1731,6 +1749,10 @@ $table->data[4][0] .= __('Not condition');
                             'refresh' => SECONDS_10MINUTES,
                         ];
 
+                        if ($tresholds === true || $graph_type === 'boolean') {
+                            $graph_params['histogram'] = 1;
+                        }
+
                         if (is_metaconsole() && isset($row['server_id'])) {
                             // Set the server id.
                             $graph_params['server'] = $row['server_id'];
@@ -1742,7 +1764,26 @@ $table->data[4][0] .= __('Not condition');
 
                         $data[8] = get_module_realtime_link_graph($row);
 
+                        if ($tresholds === true || $graph_type === 'boolean') {
+                            $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image(
+                                'images/histograma.png',
+                                true,
+                                [
+                                    'border' => '0',
+                                    'alt'    => '',
+                                    'class'  => 'invert_filter',
+                                ]
+                            ).'</a>';
+                        }
+
                         if (!is_snapshot_data($row['datos'])) {
+                            if ($tresholds === true || $graph_type === 'boolean') {
+                                unset($graph_params['histogram']);
+                            }
+
+                            $graph_params_str = http_build_query($graph_params);
+
+                            $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
                             $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
                         }
 

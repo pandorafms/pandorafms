@@ -131,7 +131,7 @@ if (!empty($files)) {
             $config_url = ui_get_full_url(
                 'index.php?sec=godmode/extensions&sec2=extensions/files_repo&file_id='.$file_id
             );
-            $data[4] .= '<a href=\"$config_url\">';
+            $data[4] .= "<a href=\"$config_url\">";
             $data[4] .= html_print_image(
                 'images/config.png',
                 true,

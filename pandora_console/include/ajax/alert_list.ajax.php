@@ -422,11 +422,16 @@ if ($show_update_action_menu) {
         $id_action
     );
 
-    $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
-    $data .= '<table class="databox_color w100p bg_color222">';
+    $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
+    $data .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
             1,
+            true
+        );
+        $data .= html_print_input_hidden(
+            'alert_id',
+            $id_alert,
             true
         );
         $data .= html_print_input_hidden(
@@ -478,7 +483,7 @@ if ($show_update_action_menu) {
             $data .= '<td class="datos2">';
                 $data .= html_print_select(
                     $actions,
-                    'action_select_ajax',
+                    'action_select_ajax-'.$id_alert,
                     $action_option['id_alert_action'],
                     '',
                     false,

@@ -158,35 +158,86 @@ function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api
 {
     global $config;
 
-    if ($user_level_conf === null) {
-        $user_level_conf = (bool) $config['integria_user_level_conf'];
-    }
+    if (is_metaconsole()) {
+        $servers = metaconsole_get_connection_names();
+        foreach ($servers as $key => $server) {
+            $connection = metaconsole_get_connection($server);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
 
-    $user_info = users_get_user_by_id($config['id_user']);
+            $integria_enabled = db_get_sql(
+                'SELECT `value` FROM tconfig WHERE `token` = "integria_enabled"'
+            );
 
-    // API access data.
-    if ($api_hostname === null) {
-        $api_hostname = $config['integria_hostname'];
-    }
+            if (!$integria_enabled) {
+                metaconsole_restore_db();
+                continue;
+            }
 
-    if ($api_pass === null) {
-        $api_pass = $config['integria_api_pass'];
-    }
+            // integria_user_level_conf, integria_hostname, integria_api_pass, integria_user, integria_user_level_user, integria_pass, integria_user_level_pass
+            $config_aux = db_get_all_rows_sql('SELECT `token`, `value` FROM `tconfig` WHERE `token` IN ("integria_user_level_conf", "integria_hostname", "integria_api_pass", "integria_user", "integria_user_level_user", "integria_pass", "integria_user_level_pass")');
+            $user_info = users_get_user_by_id($config['id_user']);
+            foreach ($config_aux as $key => $conf) {
+                if ($conf['token'] === 'integria_user_level_conf') {
+                    $user_level_conf = $conf['value'];
+                }
 
-    // Integria user and password.
-    if ($user === null || $user_level_conf === true) {
-        $user = $config['integria_user'];
+                if ($conf['token'] === 'integria_hostname') {
+                    $api_hostname = $conf['value'];
+                }
 
-        if ($user_level_conf === true) {
-            $user = $user_info['integria_user_level_user'];
+                if ($conf['token'] === 'integria_api_pass') {
+                    $api_pass = $conf['value'];
+                }
+
+                if ($conf['token'] === 'integria_user') {
+                    $user = $conf['value'];
+                }
+
+                if ($conf['token'] === 'integria_pass') {
+                    $user_pass = $conf['value'];
+                }
+            }
+
+            if ($user_level_conf == true) {
+                $user = $user_info['integria_user_level_user'];
+                $user_pass = $user_info['integria_user_level_pass'];
+            }
+
+            metaconsole_restore_db();
         }
-    }
+    } else {
+        if ($user_level_conf === null) {
+            $user_level_conf = (bool) $config['integria_user_level_conf'];
+        }
 
-    if ($user_pass === null || $user_level_conf === true) {
-        $user_pass = $config['integria_pass'];
+        $user_info = users_get_user_by_id($config['id_user']);
 
-        if ($user_level_conf === true) {
-            $user_pass = $user_info['integria_user_level_pass'];
+        // API access data.
+        if ($api_hostname === null) {
+            $api_hostname = $config['integria_hostname'];
+        }
+
+        if ($api_pass === null) {
+            $api_pass = $config['integria_api_pass'];
+        }
+
+        // Integria user and password.
+        if ($user === null || $user_level_conf === true) {
+            $user = $config['integria_user'];
+
+            if ($user_level_conf === true) {
+                $user = $user_info['integria_user_level_user'];
+            }
+        }
+
+        if ($user_pass === null || $user_level_conf === true) {
+            $user_pass = $config['integria_pass'];
+
+            if ($user_level_conf === true) {
+                $user_pass = $user_info['integria_user_level_pass'];
+            }
         }
     }
 
@@ -453,4 +504,47 @@ function get_tickets_integriaims($tickets_filters)
     }
 
     return $array_get_incidents;
+}
+
+
+function integriaims_upload_file($filename, $incident_id, $file_description)
+{
+    if ($_FILES[$filename]['name'] != '') {
+        $filename = io_safe_input($_FILES[$filename]['name']);
+        $filesize = io_safe_input($_FILES[$filename]['size']);
+
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $invalid_extensions = '/^(bat|exe|cmd|sh|php|php1|php2|php3|php4|php5|pl|cgi|386|dll|com|torrent|js|app|jar|iso|
+            pif|vb|vbscript|wsf|asp|cer|csr|jsp|drv|sys|ade|adp|bas|chm|cpl|crt|csh|fxp|hlp|hta|inf|ins|isp|jse|htaccess|
+            htpasswd|ksh|lnk|mdb|mde|mdt|mdw|msc|msi|msp|mst|ops|pcd|prg|reg|scr|sct|shb|shs|url|vbe|vbs|wsc|wsf|wsh)$/i';
+
+        if (!preg_match($invalid_extensions, $extension)) {
+            // The following is if you have clamavlib installed.
+            // (php5-clamavlib) and enabled in php.ini
+            // http://www.howtoforge.com/scan_viruses_with_php_clamavlib
+            if (extension_loaded('clamav')) {
+                cl_setlimits(5, 1000, 200, 0, 10485760);
+                $malware = cl_scanfile($_FILES['file']['tmp_name']);
+                if ($malware) {
+                    $error = 'Malware detected: '.$malware.'<br>ClamAV version: '.clam_get_version();
+                    die($error);
+                }
+            }
+
+            $filecontent = base64_encode(file_get_contents($_FILES[$filename]['tmp_name']));
+
+            $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $file_description, $filecontent], false, '', '|;|');
+
+            // API method returns '0' string if success.
+            $file_added = ($result_api_call === '0') ? true : false;
+
+            ui_print_result_message(
+                $file_added,
+                __('File successfully added'),
+                __('File could not be added')
+            );
+        } else {
+            ui_print_error_message(__('File has an invalid extension'));
+        }
+    }
 }

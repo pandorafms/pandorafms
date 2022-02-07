@@ -531,15 +531,16 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
 		# '0001' means every year.
 		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
-		my $special_day = get_db_value ($dbh, 'SELECT same_day FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'});
-		
+		my $special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
+
 		if (!defined($special_day)) {
-			$special_day = '';
+			$special_day = 0;
 		}
-		
-		if ($special_day ne '') {
-			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $special_day . ")", 10);
-			return $status if ($alert->{$special_day} != 1);
+
+		my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
+		if ($special_day != 0) {
+			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $weeks[$special_day] . ")", 10);
+			return $status if (!defined($alert->{$weeks[$special_day]}) || $alert->{$weeks[$special_day]} == 0);
 		}
 		else {
 			logger ($pa_config, $date . " is *NOT* a special day for " . $alert->{'name'}, 10);
@@ -981,14 +982,17 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
 		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
-			
+			my $monitoring_event_custom_data = '';
+
+			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
+
 			# Does the action generate an event?
 			if (safe_output($action->{'name'}) eq "Monitoring Event") {
 				$event_generated = 1;
+				$monitoring_event_custom_data = $custom_data;
 			}
-			
-			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
-			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
+
+			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
 		} else {
 			if (defined ($module)) {
 				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
@@ -1081,9 +1085,9 @@ Execute the given action.
 
 =cut
 ##########################################################################
-sub pandora_execute_action ($$$$$$$$$;$) {
+sub pandora_execute_action ($$$$$$$$$;$$) {
 	my ($pa_config, $data, $agent, $alert,
-		$alert_mode, $action, $module, $dbh, $timestamp, $extra_macros) = @_;
+		$alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $custom_data) = @_;
 
 	logger($pa_config, "Executing action '" . safe_output($action->{'name'}) . "' for alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 10);
 
@@ -1091,6 +1095,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
 	my ($field11, $field12, $field13, $field14, $field15, $field16, $field17, $field18, $field19, $field20);
+
+	# Check for empty alert fields and assign command field.
+	my $index = 1;
+	my @command_fields = split(/,|\[|\]/, $action->{'fields_values'});
+	foreach my $field (@command_fields) {
+		unless (defined($action->{'field'.$index}) && $action->{'field'.$index} ne "") {
+			$action->{'field'.$index}  = defined($field) ? $field : "" ;
+		}
+	}
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
@@ -1138,6 +1151,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
+		
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
@@ -1248,6 +1262,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
 	}
 
+	my $agent_status;
+	if(ref ($module) eq "HASH") {
+		$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+	}
+
+	my $time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
+
 	if (is_numeric($data)) {
 		my $data_precision = $pa_config->{'graph_precision'};
 		$data = sprintf("%.$data_precision" . "f", $data);
@@ -1255,94 +1276,100 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$data =~ s/\.+$//;
 	}
 
-	# Thanks to people of Cordoba univ. for the patch for adding module and 
+	# Thanks to people of Cordoba univ. for the patch for adding module and
 	# id_agent macros to the alert.
-	
+
 	# TODO: Reuse queries. For example, tag data can be extracted with a single query.
 	# Alert macros
-	my %macros = (_field1_ => $field1,
-				_field2_ => $field2,
-				_field3_ => $field3,
-				_field4_ => $field4,
-				_field5_ => $field5,
-				_field6_ => $field6,
-				_field7_ => $field7,
-				_field8_ => $field8,
-				_field9_ => $field9,
-				_field10_ => $field10,
-				_field11_ => $field11,
-				_field12_ => $field12,
-				_field13_ => $field13,
-				_field14_ => $field14,
-				_field15_ => $field15,
-				_field16_ => $field16,
-				_field17_ => $field17,
-				_field18_ => $field18,
-				_field19_ => $field19,
-				_field20_ => $field20,
-				_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
-				_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
-				_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
-				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
-				'_agentcustomfield_\d+_'  => undef,
-				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
-				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
-				_agentstatus_ => undef,
-				_agentos_ => (defined ($agent)) ? get_os_name($dbh, $agent->{'id_os'}) : '',
-				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
-				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
-				_timezone_ => strftime ("%Z", localtime()),
-				_data_ => $data,
-				_prevdata_ => undef,
-				_homeurl_ => $pa_config->{'public_url'},
-				_alert_name_ => $alert->{'name'},
-				_alert_description_ => $alert->{'description'},
-				_alert_threshold_ => $alert->{'time_threshold'},
-				_alert_times_fired_ => $alert->{'times_fired'},
-				_alert_priority_ => $alert->{'priority'},
-				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
-				_alert_critical_instructions_ => $alert->{'critical_instructions'},
-				_alert_warning_instructions_ => $alert->{'warning_instructions'},
-				_alert_unknown_instructions_ => $alert->{'unknown_instructions'},
-				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
-				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
-				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
-				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
-				_modulecustomid_ => (defined ($module)) ? $module->{'custom_id'} : '',
-				_modulegroup_ => undef,
-				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
-				_modulestatus_ => undef,
-				_moduletags_ => undef,
-				'_moduledata_\S+_' => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
-				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
-				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
-				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
-				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
-				_server_ip_ => (defined ($agent)) ? get_db_value($dbh, "SELECT ip_address FROM tserver WHERE name = ?", $agent->{'server_name'}) : '',
-				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
-				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
-				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", get_db_value ($dbh, "SELECT id_policy FROM tpolicy_modules WHERE id = ?", $module->{'id_policy_module'})) : '',
-				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
-				_email_tag_ => undef,
-				_phone_tag_ => undef,
-				_name_tag_ => undef,
-				_all_address_ => undef,
-				'_address_\d+_' => undef,
-				_secondarygroups_ => undef,
-				 );
-	
+	my %macros = (
+		_field1_ => $field1,
+		_field2_ => $field2,
+		_field3_ => $field3,
+		_field4_ => $field4,
+		_field5_ => $field5,
+		_field6_ => $field6,
+		_field7_ => $field7,
+		_field8_ => $field8,
+		_field9_ => $field9,
+		_field10_ => $field10,
+		_field11_ => $field11,
+		_field12_ => $field12,
+		_field13_ => $field13,
+		_field14_ => $field14,
+		_field15_ => $field15,
+		_field16_ => $field16,
+		_field17_ => $field17,
+		_field18_ => $field18,
+		_field19_ => $field19,
+		_field20_ => $field20,
+		_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+		_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
+		_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
+		_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
+		'_agentcustomfield_\d+_'  => undef,
+		_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
+		_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
+		_agentstatus_ => undef,
+		_agentos_ => (defined ($agent)) ? get_os_name($dbh, $agent->{'id_os'}) : '',
+		_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
+		_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
+		_timezone_ => strftime ("%Z", localtime()),
+		_data_ => $data,
+		_prevdata_ => undef,
+		_homeurl_ => $pa_config->{'public_url'},
+		_alert_name_ => $alert->{'name'},
+		_alert_description_ => $alert->{'description'},
+		_alert_threshold_ => $alert->{'time_threshold'},
+		_alert_times_fired_ => $alert->{'times_fired'},
+		_alert_priority_ => $alert->{'priority'},
+		_alert_text_severity_ => get_priority_name($alert->{'priority'}),
+		_alert_critical_instructions_ => $alert->{'critical_instructions'},
+		_alert_warning_instructions_ => $alert->{'warning_instructions'},
+		_alert_unknown_instructions_ => $alert->{'unknown_instructions'},
+		_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
+		_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
+		_groupother_ => (defined ($group)) ? $group->{'other'} : '',
+		_module_ => (defined ($module)) ? $module->{'nombre'} : '',
+		_modulecustomid_ => (defined ($module)) ? $module->{'custom_id'} : '',
+		_modulegroup_ => undef,
+		_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
+		_modulestatus_ => undef,
+		_moduletags_ => undef,
+		'_moduledata_\S+_' => undef,
+		_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
+		_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
+		_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
+		_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
+		_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
+		_server_ip_ => (defined ($agent)) ? get_db_value($dbh, "SELECT ip_address FROM tserver WHERE name = ?", $agent->{'server_name'}) : '',
+		_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
+		_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '',
+		_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '',
+		_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", get_db_value ($dbh, "SELECT id_policy FROM tpolicy_modules WHERE id = ?", $module->{'id_policy_module'})) : '',
+		_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
+		_email_tag_ => undef,
+		_phone_tag_ => undef,
+		_name_tag_ => undef,
+		_all_address_ => undef,
+		'_addressn_\d+_' => undef,
+		_secondarygroups_ => undef,
+		_time_down_seconds_ => (defined ($time_down)) ? int($time_down) : '',
+		_time_down_human_ => seconds_totime($time_down),
+		_warning_threshold_min_ => (defined ($module->{'min_warning'})) ? $module->{'min_warning'} : '',
+		_warning_threshold_max_ => (defined ($module->{'max_warning'})) ? $module->{'max_warning'} : '',
+		_critical_threshold_min_ => (defined ($module->{'min_critical'})) ? $module->{'min_critical'} : '',
+		_critical_threshold_max_ => (defined ($module->{'max_critical'})) ? $module->{'max_critical'} : '',
+	);
+
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
 		while ((my $macro, my $value) = each (%{$extra_macros})) {
 			$macros{$macro} = $value;
 		}
 	}
-	
+
 	if (defined ($module)) {
 		load_module_macros ($module->{'module_macros'}, \%macros);
 	}
-	
 
 	#logger($pa_config, "Clean name ".$clean_name, 10);
 	# User defined alert
@@ -1386,7 +1413,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				my $return_code = ($? >> 8) & 0xff;
 				logger($pa_config, "Command '$command_timeout' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "' returned with errorlevel " . $return_code, 8);
 				if ($return_code != 0) {
-					logger ($pa_config, "Action '" . safe_output($action->{'name'}) . "' alert '" . safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "' exceeded the global alert timeout " . $pa_config->{'global_alert_timeout'} . " seconds" , 8);
+					logger ($pa_config, "Action '" . safe_output($action->{'name'}) . "' alert '" . safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "' exceeded the global alert timeout " . $pa_config->{'global_alert_timeout'} . " seconds" , 3);
 				}
 			}	
 		};
@@ -1631,25 +1658,30 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		if ((! defined($alert->{'disable_event'})) || (defined($alert->{'disable_event'}) && $alert->{'disable_event'} == 0)) {
 			pandora_event(
-			$pa_config,
-			$event_text,
-			(defined ($agent) ? $agent->{'id_grupo'} : 0),
-			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
-			$priority,
-			(defined($alert)
-				? defined($alert->{'id_template_module'})
-					? $alert->{'id_template_module'}
-					: $alert->{'id'}
-				: 0),
-			(defined($alert) ? $alert->{'id_agent_module'} : 0),
-			$event_type,
-			0,
-			$dbh,
-			$source,
-			'',
-			$comment,
-			$id_extra,
-			$tags);
+				$pa_config,
+				$event_text,
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
+				$priority,
+				(defined($alert)
+					? defined($alert->{'id_template_module'})
+						? $alert->{'id_template_module'}
+						: $alert->{'id'}
+					: 0),
+				(defined($alert) ? $alert->{'id_agent_module'} : 0),
+				$event_type,
+				0,
+				$dbh,
+				$source,
+				'',
+				$comment,
+				$id_extra,
+				$tags,
+				'',
+				'',
+				'',
+				p_encode_json($pa_config, $custom_data)
+			);
 			# Validate event (field1: agent name; field2: module name)
 		}
 	} elsif ($clean_name eq "Validate Event") {
@@ -1934,7 +1966,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Get new status
-	my $new_status = get_module_status ($processed_data, $module, $module_type);
+	my $new_status = get_module_status ($processed_data, $module, $module_type, $last_data_value);
 	my $last_status_change = $agent_status->{'last_status_change'};
 
 	# Set the last status change macro. Even if its value changes later, whe want the original value.
@@ -3835,7 +3867,8 @@ sub pandora_get_agent_group {
 	my ($pa_config, $dbh, $agent_name, $agent_group, $agent_group_password) = @_;
 
 	my $group_id;
-	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($pa_config->{'autocreate_group'}, $agent_group) : ($agent_group, $pa_config->{'autocreate_group'});
+	my $auto_group = $pa_config->{'autocreate_group_name'} ne '' ? $pa_config->{'autocreate_group_name'} : $pa_config->{'autocreate_group'};
+	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($auto_group, $agent_group) : ($agent_group, $auto_group);
 	foreach my $group (@groups) {
 		next unless defined($group);
 
@@ -4505,33 +4538,30 @@ sub on_demand_macro($$$$$$;$) {
 		}
 		$field_value .= "</pre>";
 		return(defined($field_value)) ? $field_value : '';
-	} elsif ($macro =~ /_address_(\d+)_/) {
+	} elsif ($macro =~ /_addressn_(\d+)_/) {
 		return '' unless defined ($module);
 		my $field_number = $1 - 1;
-		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ? ORDER BY ip ASC', $module->{'id_agente'});
 		
 		my $field_value = $rows[$field_number]->{'ip'};
-		if($field_value == ''){
-			$field_value = 'Ip not defined';
-		}
-		
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;
-		
+
 		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
-		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
-		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $module_data = get_db_single_row ($dbh, 'SELECT id_tipo_modulo, unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $type_mod = $module_data->{'id_tipo_modulo'};
+		my $unit_mod = $module_data->{'unit'};
 
 		my $field_value = "";
 		if (defined($type_mod)
-			&& ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 )
+			&& ($type_mod eq 3 || $type_mod eq 10 || $type_mod eq 17 || $type_mod eq 23 || $type_mod eq 33 || $type_mod eq 36)
 		) {
-			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $id_mod);
 		}
 		else{
-			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
-			
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $id_mod);
+
 			my $data_precision = $pa_config->{'graph_precision'};
 			$field_value = sprintf("%.$data_precision" . "f", $field_value);
 			$field_value =~ s/0+$//;
@@ -4786,8 +4816,8 @@ sub log4x_get_severity_num($) {
 ##########################################################################
 # Returns the status of the module: 0 (NORMAL), 1 (CRITICAL), 2 (WARNING).
 ##########################################################################
-sub get_module_status ($$$) {
-	my ($data, $module, $module_type) = @_;
+sub get_module_status ($$$$) {
+	my ($data, $module, $module_type, $last_data_value) = @_;
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 	my ($critical_str, $warning_str) = ($module->{'str_critical'}, $module->{'str_warning'});
@@ -4804,6 +4834,42 @@ sub get_module_status ($$$) {
 	$critical_str = (defined ($critical_str) && valid_regex ($critical_str) == 1) ? safe_output($critical_str) : '';
 	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
+	# Adjust percentage max/min values.
+	if ($module->{'percentage_critical'} == 1) {
+		if ($critical_max != 0 && $critical_min != 0) {
+			$critical_max = $last_data_value * (1 +  $critical_max / 100.0);
+			$critical_min = $last_data_value * (1 -  $critical_min / 100.0);
+			$module->{'critical_inverse'} = 1;
+		}
+		elsif ($critical_min != 0) {
+			$critical_max = $last_data_value * (1 -  $critical_min / 100.0);
+			$critical_min = 0;
+			$module->{'critical_inverse'} = 0;
+		}
+		elsif ($critical_max != 0) {
+			$critical_min = $last_data_value * (1 +  $critical_max / 100.0);
+			$critical_max = 0;
+			$module->{'critical_inverse'} = 0;
+		}
+	}
+	if ($module->{'percentage_warning'} == 1) {
+		if ($warning_max != 0 && $warning_min != 0) {
+			$warning_max = $last_data_value * (1 +  $warning_max / 100.0);
+			$warning_min = $last_data_value * (1 -  $warning_min / 100.0);
+			$module->{'warning_inverse'} = 1;
+		}
+		elsif ($warning_min != 0) {
+			$warning_max = $last_data_value * (1 -  $warning_min / 100.0);
+			$warning_min = 0;
+			$module->{'warning_inverse'} = 0;
+		}
+		elsif ($warning_max != 0) {
+			$warning_min = $last_data_value * (1 +  $warning_max / 100.0);
+			$warning_max = 0;
+			$module->{'warning_inverse'} = 0;
+		}
+	}
+
 	if (($module_type =~ m/_proc$/ || $module_type =~ /web_analysis/) && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}
@@ -5499,7 +5565,24 @@ sub pandora_process_policy_queue ($) {
 			}
 
 			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
+				my $policy_applied = enterprise_hook(
+					'pandora_apply_policy',
+					[
+						$dbh,
+						$pa_config,
+						$operation->{'id_policy'},
+						$operation->{'id_agent'},
+						$operation->{'id'},
+						$operation->{'operation'}
+					]
+				);
+
+				if($policy_applied == 0) {
+					sleep($pa_config->{'server_threshold'});
+					# Skip.
+					next;
+				}
+				
 			}
 			elsif($operation->{'operation'} eq 'delete') {
 				if($operation->{'id_agent'} == 0) {

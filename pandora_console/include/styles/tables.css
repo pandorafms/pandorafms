@@ -301,6 +301,7 @@ a.pandora_pagination.current:hover {
   display: inline;
   padding: 7pt;
   margin-left: 10px;
+  background-color: transparent;
 }
 .dt-button.buttons-csv.buttons-html5 span {
   font-size: 0;

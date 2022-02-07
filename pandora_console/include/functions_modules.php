@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
@@ -187,7 +189,11 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         [
             'nombre'   => $module['nombre'],
             'disabled' => false,
-        ]
+        ],
+        true,
+        true,
+        false,
+        false
     );
 
     // The module already exist in the target
@@ -201,7 +207,11 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         [
             'nombre'   => $module['nombre'],
             'disabled' => true,
-        ]
+        ],
+        true,
+        true,
+        false,
+        false
     );
 
     // If the module exist but disabled, we enable it
@@ -880,7 +890,7 @@ function modules_create_agent_module(
         } else {
             db_process_sql(
                 'UPDATE tagente
-                SET total_count=total_count+1, notinit_count=notinit_count+1
+                SET total_count=total_count+1, notinit_count=notinit_count+1, update_module_count=1
                 WHERE id_agente='.(int) $id_agent
             );
         }
@@ -1070,14 +1080,23 @@ function modules_get_agentmodule($id_agentmodule)
 }
 
 
-function modules_get_table_data($id_agent_module)
+/**
+ * Gets data table for agent module
+ *
+ * @param  integer|null $id_agent_module Id agentmodule.
+ * @param  integer|null $id_type         Id module type.
+ * @return void
+ */
+function modules_get_table_data(?int $id_agent_module, ?int $id_type)
 {
-    $id_type = db_get_value(
-        'id_tipo_modulo',
-        'tagente_modulo',
-        'id_agente_modulo',
-        $id_agent_module
-    );
+    if ($id_type === null) {
+        $id_type = db_get_value(
+            'id_tipo_modulo',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $id_agent_module
+        );
+    }
 
     $name_type = db_get_value('nombre', 'ttipo_modulo', 'id_tipo', $id_type);
 
@@ -1432,6 +1451,90 @@ function modules_get_agentmodule_agent_alias($id_agentmodule)
 function modules_get_agentmodule_name($id_agente_modulo)
 {
     return (string) db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+}
+
+
+/**
+ * Get the module names of an agent module.
+ *
+ * @param array $array_ids Agents module ids.
+ *
+ * @return array Id => name.
+ */
+function modules_get_agentmodule_name_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        $modules = array_reduce(
+            $array_ids,
+            function ($carry, $item) {
+                $explode = explode('|', $item);
+
+                $carry[$explode[0]][] = $explode[1];
+                return $carry;
+            }
+        );
+
+        $result = [];
+        foreach ($modules as $tserver => $id_modules) {
+            if (metaconsole_connect(null, $tserver) == NOERR) {
+                $result_modules = modules_get_agentmodule_name_array_data(
+                    $id_modules
+                );
+
+                $result[$tserver] = $result_modules;
+                metaconsole_restore_db();
+            }
+        }
+    } else {
+        $result = modules_get_agentmodule_name_array_data(
+            $array_ids
+        );
+    }
+
+    return $result;
+}
+
+
+/**
+ * Data names.
+ *
+ * @param array $array_ids Ids.
+ *
+ * @return array
+ */
+function modules_get_agentmodule_name_array_data($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    $sql = sprintf(
+        'SELECT id_agente_modulo as id, nombre as `name`
+        FROM tagente_modulo
+        WHERE id_agente_modulo IN (%s)',
+        implode(',', $array_ids)
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    $result = array_reduce(
+        $result,
+        function ($carry, $item) {
+            $carry[$item['id']] = $item['name'];
+            return $carry;
+        },
+        []
+    );
+
+    return $result;
 }
 
 
@@ -3145,9 +3248,10 @@ function modules_get_first_date($id_agent_module, $datelimit=0)
 {
     global $config;
 
-    // check datatype string or normal
+    // Check datatype string or normal.
     $table = 'tagente_datos';
-    $module_type_str = modules_get_agentmodule_type($id_agent_module);
+    $module_type = modules_get_agentmodule_type($id_agent_module);
+    $module_type_str = modules_get_type_name($module_type);
     if (strstr($module_type_str, 'string') !== false) {
         $table = 'tagente_datos_string';
     }
@@ -3469,32 +3573,277 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 }
 
 
-function get_same_modules($agents, $modules)
+function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true, $useName=false)
 {
-    $modules_to_report = [];
-    if ($modules != '') {
-        foreach ($modules as $m) {
-            $module_name = modules_get_agentmodule_name($m);
-            foreach ($agents as $a) {
-                $module_in_agent = db_get_value_filter(
-                    'id_agente_modulo',
-                    'tagente_modulo',
-                    [
-                        'id_agente' => $a,
-                        'nombre'    => $module_name,
-                    ]
-                );
-                if ($module_in_agent) {
-                    $modules_to_report[] = $module_in_agent;
+    if ((bool) is_metaconsole() === true) {
+        if ($select_mode === true) {
+            $agents = array_reduce(
+                $id_agents,
+                function ($carry, $item) {
+                    $explode = explode('|', $item);
+
+                    $carry[$explode[0]][] = $explode[1];
+                    return $carry;
                 }
+            );
+        } else {
+            if (count($id_agents) > 0) {
+                $rows = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT `id_agente`, `id_tagente`, `id_tmetaconsole_setup`
+                        FROM `tmetaconsole_agent`
+                        WHERE `id_agente` IN (%s)',
+                        implode(',', $id_agents)
+                    )
+                );
+            } else {
+                $rows = [];
+            }
+
+            $agents = array_reduce(
+                $rows,
+                function ($carry, $item) {
+                    if ($carry[$item['id_tmetaconsole_setup']] === null) {
+                        $carry[$item['id_tmetaconsole_setup']] = [];
+                    }
+
+                    $carry[$item['id_tmetaconsole_setup']][] = $item['id_tagente'];
+                    return $carry;
+                },
+                []
+            );
+        }
+
+        $modules = [];
+        foreach ($agents as $tserver => $id_agents) {
+            if (metaconsole_connect(null, $tserver) == NOERR) {
+                $modules[$tserver] = select_modules_for_agent_group(
+                    $id_module_group,
+                    $id_agents,
+                    $selection,
+                    false,
+                    false,
+                    true
+                );
+
+                metaconsole_restore_db();
             }
         }
+
+        if (!$selection) {
+            // Common modules.
+            $final_modules = [];
+            $nodes_consulted = count($modules);
+
+            foreach ($modules as $tserver => $mods) {
+                foreach ($mods as $module) {
+                    if ($final_modules[$module['nombre']] === null) {
+                        $final_modules[$module['nombre']] = 0;
+                    }
+
+                    $final_modules[$module['nombre']]++;
+                }
+            }
+
+            $modules = [];
+            foreach ($final_modules as $module_name => $occurrences) {
+                if ($occurrences === $nodes_consulted) {
+                    // Module already present in ALL nodes.
+                    $modules[] = [
+                        'id_agente_modulo' => $module_name,
+                        'nombre'           => $module_name,
+                    ];
+                }
+            }
+        } else {
+            // All modules.
+            $return = [];
+            $nodes = [];
+            foreach ($agents as $tserver => $id_agents) {
+                try {
+                    $nodes[$tserver] = new Node($tserver);
+                } catch (Exception $e) {
+                    hd($e);
+                }
+
+                $return = array_reduce(
+                    $modules[$tserver],
+                    function ($carry, $item) use ($tserver, $nodes) {
+                        $t = [];
+                        foreach ($item as $k => $v) {
+                            $t[$k] = $v;
+                        }
+
+                        $t['id_node'] = $tserver;
+                        if ($nodes[$tserver] !== null) {
+                            $t['nombre'] = io_safe_output(
+                                $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
+                            );
+                        }
+
+                        $carry[] = $t;
+                        return $carry;
+                    },
+                    $return
+                );
+            }
+
+            $modules = $return;
+        }
+
+        $modules = array_reduce(
+            $modules,
+            function ($carry, $item) use ($useName) {
+                // Only works in select mode.
+                if ($useName === true) {
+                    $carry[io_safe_input($item['nombre'])] = $item['nombre'];
+                } else {
+                    $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
+                }
+
+                return $carry;
+            },
+            []
+        );
+    } else {
+        $modules = select_modules_for_agent_group(
+            $id_module_group,
+            $id_agents,
+            $selection,
+            false
+        );
     }
 
-    $modules_to_report = array_merge($modules_to_report, $modules);
+    return $modules;
+}
+
+
+/**
+ * List all modules in agents selection.
+ *
+ * @param array $agents  Agents ids array.
+ * @param array $modules Modules ids array.
+ *
+ * @return array
+ */
+function get_same_modules($agents, $modules)
+{
+    if (is_array($agents) === false || empty($agents) === true) {
+        return [];
+    }
+
+    $name_modules = modules_get_agentmodule_name_array_data(
+        array_values($modules)
+    );
+
+    $sql = sprintf(
+        'SELECT id_agente_modulo as id,
+            nombre as `name`
+        FROM tagente_modulo
+        WHERE id_agente IN (%s)',
+        implode(',', array_values($agents))
+    );
+
+    $all = db_get_all_rows_sql($sql);
+
+    if ($all === false) {
+        $all = [];
+    }
+
+    $all = array_reduce(
+        $all,
+        function ($carry, $item) use ($name_modules) {
+            if (array_search($item['name'], $name_modules)) {
+                $carry[$item['id']] = $item['id'];
+            }
+
+            return $carry;
+        },
+        []
+    );
+
+    $modules_to_report = array_merge($all, $modules);
     $modules_to_report = array_unique($modules_to_report);
 
-    return $modules_to_report;
+    return $all;
+}
+
+
+/**
+ * List all modules in agents selection to metaconsole or node.
+ *
+ * @param array $agents  Agents ids array.
+ * @param array $modules Modules ids array.
+ *
+ * @return array List modules [server|id_module, ...].
+ */
+function get_same_modules_all($agents, $modules, $select_mode=true)
+{
+    if (is_array($agents) === false || empty($agents) === true) {
+        return [];
+    }
+
+    if (is_metaconsole() === true) {
+        $modules = array_reduce(
+            $modules,
+            function ($carry, $item) {
+                $explode = explode('|', $item);
+
+                $carry[$explode[0]][] = $explode[1];
+                return $carry;
+            }
+        );
+
+        if ($select_mode === true) {
+            $agents = array_reduce(
+                $agents,
+                function ($carry, $item) {
+                    $explode = explode('|', $item);
+
+                    $carry[$explode[0]][] = $explode[1];
+                    return $carry;
+                }
+            );
+        } else {
+            $rows = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT `id_agente`, `id_tagente`, `id_tmetaconsole_setup`
+            FROM `tmetaconsole_agent`
+            WHERE `id_agente` IN (%s)',
+                    implode(',', $agents)
+                )
+            );
+
+            $agents = array_reduce(
+                $rows,
+                function ($carry, $item) {
+                    if ($carry[$item['id_tmetaconsole_setup']] === null) {
+                        $carry[$item['id_tmetaconsole_setup']] = [];
+                    }
+
+                    $carry[$item['id_tmetaconsole_setup']][] = $item['id_tagente'];
+                    return $carry;
+                },
+                []
+            );
+        }
+
+        $result = [];
+        foreach ($agents as $tserver => $id_agents) {
+            if (metaconsole_connect(null, $tserver) == NOERR) {
+                $same_modules = get_same_modules($id_agents, $modules[$tserver]);
+                foreach ($same_modules as $id_module) {
+                    $result[] = $tserver.'|'.$id_module;
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+    } else {
+        $result = get_same_modules($agents, $modules);
+    }
+
+    return $result;
 }
 
 

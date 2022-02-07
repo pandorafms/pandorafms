@@ -89,14 +89,13 @@ function agents_modules_load_js()
 
                 var controls = document.getElementById('vc-controls');
                 autoHideElement(controls, 1000);
-                
+
                 $('select#refresh').change(function (event) {
                     refr = Number.parseInt(event.target.value, 10);
                     startCountDown(refr, false);
                 });
             }
             else {
-                
                 var agentes_id = $("#id_agents2").val();
                 var id_agentes = getQueryParam("full_agents_id");
                 if (agentes_id === null && id_agentes !== null) {
@@ -104,15 +103,15 @@ function agents_modules_load_js()
                     id_agentes.forEach(function(element) {
                         $("#id_agents2 option[value="+ element +"]").attr("selected",true);
                     });
-                    
+
                     selection_agent_module();
                 }
-                
+
                 $('#refresh').change(function () {
                     $('#hidden-vc_refr').val($('#refresh option:selected').val());
                 });
             }
-            
+
             $("#group_id").change (function () {
                 jQuery.post ("ajax.php",
                     {"page" : "operation/agentes/ver_agente",
@@ -128,7 +127,6 @@ function agents_modules_load_js()
                         jQuery.each (data, function (id, value) {
                             // Remove keys_prefix from the index
                             id = id.substring(1);
-                            
                             option = $("<option></option>")
                                 .attr ("value", value["id_agente"])
                                 .html (value["alias"]);
@@ -139,7 +137,7 @@ function agents_modules_load_js()
                     "json"
                 );
             });
-            
+
             $("#checkbox-recursion").change (function () {
                 jQuery.post ("ajax.php",
                     {"page" : "operation/agentes/ver_agente",
@@ -155,7 +153,6 @@ function agents_modules_load_js()
                         jQuery.each (data, function (id, value) {
                             // Remove keys_prefix from the index
                             id = id.substring(1);
-                            
                             option = $("<option></option>")
                                 .attr ("value", value["id_agente"])
                                 .html (value["alias"]);
@@ -166,7 +163,7 @@ function agents_modules_load_js()
                     "json"
                 );
             });
-            
+
             $("#modulegroup").change (function () {
                 jQuery.post ("ajax.php",
                     {"page" : "operation/agentes/ver_agente",
@@ -180,8 +177,8 @@ function agents_modules_load_js()
                         if(data){
                             jQuery.each (data, function (id, value) {
                                 option = $("<option></option>")
-                                    .attr ("value", value["id_agente_modulo"])
-                                    .html (value["nombre"]);
+                                    .attr ("value", id)
+                                    .html (value);
                                 $("#module").append (option);
                             });
                         }
@@ -207,8 +204,8 @@ function agents_modules_load_js()
                         if(data){
                             jQuery.each (data, function (id, value) {
                                 option = $("<option></option>")
-                                    .attr ("value", value["id_agente_modulo"])
-                                    .html (value["nombre"]);
+                                    .attr ("value", id)
+                                    .html (value);
                                 $("#module").append (option);
                             });
                         }
@@ -231,11 +228,11 @@ function agents_modules_load_js()
                     if(data){
                         jQuery.each (data, function (id, value) {
                             option = $("<option></option>")
-                                .attr ("value", value["id_agente_modulo"])
-                                .html (value["nombre"]);
+                                .attr ("value", id)
+                                .html (value);
                             $("#module").append (option);
                         });
-                        
+
                         var id_modules = getQueryParam("full_modules_selected");
                         if(id_modules !== null) {
                             id_modules = id_modules.split(";");
@@ -249,20 +246,19 @@ function agents_modules_load_js()
             );
         }
 
-        function getQueryParam (key) {  
-            key = key.replace(/[[]/, '[');  
-            key = key.replace(/[]]/, ']');  
-            var pattern = "[?&]" + key + "=([^&#]*)";  
+        function getQueryParam (key) {
+            key = key.replace(/[[]/, '[');
+            key = key.replace(/[]]/, ']');
+            var pattern = "[?&]" + key + "=([^&#]*)";
             var regex = new RegExp(pattern);
             var url = unescape(window.location.href);
             var results = regex.exec(url);
-            if (results === null) {  
-                return null;  
-            } else {  
-                return results[1];  
-            } 
+            if (results === null) {
+                return null;
+            } else {
+                return results[1];
+            }
         }
-        
     </script>
     <?php
 }

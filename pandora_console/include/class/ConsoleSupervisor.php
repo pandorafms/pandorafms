@@ -52,6 +52,12 @@ class ConsoleSupervisor
      */
     public const MIN_PERFORMANCE_MODULES = 100;
 
+
+    /**
+     * Minimum queued elements in synchronization queue to be warned..
+     */
+    public const MIN_SYNC_QUEUE_LENGTH = 200;
+
     /**
      * Show if console supervisor is enabled or not.
      *
@@ -241,6 +247,16 @@ class ConsoleSupervisor
          */
 
         $this->checkAuditLogOldLocation();
+
+        /*
+         * Checks if sync queue is longer than limits.
+         *  NOTIF.SYNCQUEUE.LENGTH
+         */
+
+        if (is_metaconsole() === true) {
+            $this->checkSyncQueueLength();
+            $this->checkSyncQueueStatus();
+        }
 
     }
 
@@ -492,6 +508,16 @@ class ConsoleSupervisor
          */
 
         $this->checkAuditLogOldLocation();
+
+        /*
+         * Checks if sync queue is longer than limits.
+         *  NOTIF.SYNCQUEUE.LENGTH
+         */
+
+        if (is_metaconsole() === true) {
+            $this->checkSyncQueueLength();
+            $this->checkSyncQueueStatus();
+        }
     }
 
 
@@ -1230,8 +1256,7 @@ class ConsoleSupervisor
                 unix_timestamp() - unix_timestamp(keepalive) as downtime
             FROM tserver
             WHERE 
-                unix_timestamp() - unix_timestamp(keepalive) > server_keepalive
-                OR status = 0'
+                unix_timestamp() - unix_timestamp(keepalive) > server_keepalive'
         );
 
         if ($servers === false) {
@@ -1272,13 +1297,12 @@ class ConsoleSupervisor
                 FROM tserver
                 WHERE 
                     unix_timestamp() - unix_timestamp(keepalive) <= server_keepalive
-                    OR status != 0'
+                    AND status = 1'
             );
-
             if (is_array($servers_working) === true) {
                 foreach ($servers_working as $server) {
                     $this->cleanNotifications(
-                        'NOTIF.SERVER.STATUS'.$server['id_server']
+                        'NOTIF.SERVER.STATUS.'.$server['id_server']
                     );
                 }
             }
@@ -2681,6 +2705,119 @@ class ConsoleSupervisor
             'clean_phantomjs_cache',
             0
         );
+    }
+
+
+    /**
+     * Verifies the status of synchronization queue and warns if something is
+     * not working as expected.
+     *
+     * @return void
+     */
+    public function checkSyncQueueLength()
+    {
+        global $config;
+
+        if (is_metaconsole() !== true) {
+            return;
+        }
+
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $counts = $sync->getQueues(true);
+
+        if (count($counts) === 0) {
+            // Clean all.
+            $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.%');
+        }
+
+        $items_min = $config['sync_queue_items_max'];
+        if (is_numeric($items_min) !== true && $items_min <= 0) {
+            $items_min = self::MIN_SYNC_QUEUE_LENGTH;
+        }
+
+        foreach ($counts as $node_id => $count) {
+            if ($count < $items_min) {
+                $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.'.$node_id);
+            } else {
+                try {
+                    $node = new PandoraFMS\Enterprise\Metaconsole\Node($node_id);
+
+                    $url = '__url__/index.php?sec=advanced&sec2=advanced/metasetup&tab=consoles';
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SYNCQUEUE.LENGTH.'.$node_id,
+                            'title'   => __('Node %s sync queue length exceeded, ', $node->server_name()),
+                            'message' => __(
+                                'Synchronization queue lenght for node %s is %d items, this value should be 0 or lower than %d, please check the queue status.',
+                                $node->server_name(),
+                                $count,
+                                $items_min
+                            ),
+                            'url'     => $url,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Clean, exception in node finding.
+                    $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.'.$node_id);
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * Verifies the status of synchronization queue and warns if something is
+     * not working as expected.
+     *
+     * @return void
+     */
+    public function checkSyncQueueStatus()
+    {
+        if (is_metaconsole() !== true) {
+            return;
+        }
+
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $queues = $sync->getQueues();
+        if (count($queues) === 0) {
+            // Clean all.
+            $this->cleanNotifications('NOTIF.SYNCQUEUE.STATUS.%');
+        }
+
+        foreach ($queues as $node_id => $queue) {
+            if (count($queue) === 0) {
+                $this->cleanNotifications('NOTIF.SYNCQUEUE.STATUS.'.$node_id);
+                continue;
+            }
+
+            $item = $queue[0];
+
+            if (empty($item->error()) === false) {
+                try {
+                    $node = new PandoraFMS\Enterprise\Metaconsole\Node($node_id);
+                    $url = '__url__/index.php?sec=advanced&sec2=advanced/metasetup&tab=consoles';
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SYNCQUEUE.STATUS.'.$node_id,
+                            'title'   => __('Node %s sync queue failed, ', $node->server_name()),
+                            'message' => __(
+                                'Node %s cannot process synchronization queue due %s, please check the queue status.',
+                                $node->server_name(),
+                                $item->error()
+                            ),
+                            'url'     => $url,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Clean, exception in node finding.
+                    $this->cleanNotifications('NOTIF.SYNCQUEUE.STATUS.'.$node_id);
+                }
+            }
+        }
+
     }
 
 

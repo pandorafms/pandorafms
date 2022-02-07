@@ -613,6 +613,28 @@ $table->data['edit1'][1] = '<table width="100%">';
             );
             $table->data['edit1'][1] .= '</td>';
             $table->data['edit1'][1] .= '</tr>';
+            $table->data['edit1'][1] .= '<tr>';
+            $table->data['edit1'][1] .= '<td>';
+            $table->data['edit1'][1] .= '<em>'.__('Percentage').'</em>';
+            $table->data['edit1'][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+
+            $table->data['edit1'][1] .= '</td>';
+            $table->data['edit1'][1] .= '<td align="right">';
+            $table->data['edit1'][1] .= html_print_select(
+                [
+                    ''  => __('No change'),
+                    '1' => __('Yes'),
+                    '0' => __('No'),
+                ],
+                'percentage_warning',
+                '',
+                '',
+                '',
+                '',
+                true
+            );
+            $table->data['edit1'][1] .= '</td>';
+            $table->data['edit1'][1] .= '</tr>';
             $table->data['edit1'][1] .= '</table>';
 
             $table->data['edit1'][2] = __('Critical status');
@@ -674,6 +696,28 @@ $table->data['edit1'][1] = '<table width="100%">';
                     '0' => __('No'),
                 ],
                 'critical_inverse',
+                '',
+                '',
+                '',
+                '',
+                true
+            );
+            $table->data['edit1'][3] .= '</td>';
+            $table->data['edit1'][3] .= '</tr>';
+
+            $table->data['edit1'][3] .= '<tr>';
+            $table->data['edit1'][3] .= '<td>';
+            $table->data['edit1'][3] .= '<em>'.__('Percentage').'</em>';
+            $table->data['edit1'][3] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+            $table->data['edit1'][3] .= '</td>';
+            $table->data['edit1'][3] .= '<td align="right">';
+            $table->data['edit1'][3] .= html_print_select(
+                [
+                    ''  => __('No change'),
+                    '1' => __('Yes'),
+                    '0' => __('No'),
+                ],
+                'percentage_critical',
                 '',
                 '',
                 '',
@@ -1325,6 +1369,7 @@ $(document).ready (function () {
         var params = {
             "page" : "operation/agentes/ver_agente",
             "get_agent_modules_json" : 1,
+            "truncate_module_names": 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
             "safe_name" : 1
@@ -1352,7 +1397,7 @@ $(document).ready (function () {
             params,
             function (data, status) {
                 jQuery.each (data, function (id, value) {
-                    option = $("<option></option>").attr("value", value["nombre"]).html(value["safe_name"]);
+                    option = $("<option></option>").attr({value: value["nombre"], title: value["nombre"]}).html(value["safe_name"]);
                     $("#module_name").append (option);
                 });
                 hideSpinner();
@@ -1569,6 +1614,12 @@ $(document).ready (function () {
                 $("#groups_select").trigger("change");
             }
             else if (this.id == "checkbox-warning_inverse") {
+                return; //Do none
+            }
+            else if (this.id == "checkbox-percentage_critical") {
+                return; //Do none
+            }
+            else if (this.id == "checkbox-percentage_warning") {
                 return; //Do none
             }
             else if (this.id == "checkbox-critical_inverse") {
@@ -1829,6 +1880,31 @@ $(document).ready (function () {
             }    
         }
     });
+
+    $('#warning_inverse').change(function() {
+            if($(this).val() == 1) {
+                $("#percentage_warning").val('0').change()
+            }
+        });
+
+        $('#critical_inverse').change(function() {
+            if($(this).val() == 1) {
+                $("#percentage_critical").val('0').change();
+            }
+        });
+
+        $('#percentage_warning').change(function() {
+            if($(this).val() == 1) {
+                $("#warning_inverse").val('0').change()
+            }
+        });
+
+        $('#percentage_critical').change(function() {
+            if($(this).val() == 1) {
+                $("#critical_inverse").val('0').change()
+            }
+        });
+        
     
 });
 
@@ -1950,6 +2026,8 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'history_data',
         'critical_inverse',
         'warning_inverse',
+        'percentage_warning',
+        'percentage_critical',
         'critical_instructions',
         'warning_instructions',
         'unknown_instructions',

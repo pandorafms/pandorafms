@@ -480,7 +480,8 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`id_service_child` int(10) unsigned NOT NULL default 0,
 	`id_server_meta` int(10)  unsigned NOT NULL default 0,
-	PRIMARY KEY  (`id`)
+	PRIMARY KEY  (`id`),
+	INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 
 DEFAULT CHARSET=utf8;
@@ -578,7 +579,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_queue` (
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`id_agent` int(10) unsigned NOT NULL default '0',
 	`operation` varchar(15) default '',
-	`progress` int(10) unsigned NOT NULL default '0',
+	`progress` int(10) NOT NULL default '0',
 	`end_utimestamp` int(10) unsigned NOT NULL default 0,
 	`priority` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id`)
@@ -1450,13 +1451,13 @@ ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 50);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 51);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 758);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 759);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1565,7 +1566,7 @@ ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
 ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
-ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` varchar(200);
+ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` TEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -2001,6 +2002,7 @@ ALTER TABLE `tserver` ADD COLUMN `port` int(5) unsigned NOT NULL default 0;
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
 ALTER TABLE tevent_response ADD COLUMN command_timeout int(5) unsigned NOT NULL DEFAULT 90;
+ALTER TABLE tevent_response ADD COLUMN display_command tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule`
@@ -2683,6 +2685,7 @@ CREATE TABLE `tagent_repository` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
+  `deployment_timeout` INT UNSIGNED DEFAULT 600,
   `uploaded_by` VARCHAR(100) DEFAULT '',
   `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,
@@ -3969,15 +3972,20 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
 	`network` varchar(100) NOT NULL default '',
 	`name_network` varchar(255) default '',
 	`description` text NOT NULL,
-	`location` tinytext NOT NULL,
+	`location` int(10) unsigned NULL,
 	`id_recon_task` int(10) unsigned NOT NULL,
 	`scan_interval` tinyint(2) default 1,
 	`monitoring` tinyint(2) default 0,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`lightweight_mode` tinyint(2) default 0,
 	`users_operator` text,
+	`id_site` bigint unsigned,
+	`vrf` int(10) unsigned,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+	FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_ip` (
@@ -4032,7 +4040,9 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet` (
 	`address` varchar(250) NOT NULL,
 	`mask` varchar(250) NOT NULL,
 	`subneting_mask` varchar(250) default '',
-	PRIMARY KEY (`id`)
+	`id_site` bigint unsigned,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
@@ -4043,6 +4053,24 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_network_location` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_sites` (
+    `id` serial,
+    `name` varchar(100) UNIQUE NOT NULL default '',
+    `description` text,
+    `parent` bigint unsigned null,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`parent`) REFERENCES `tipam_sites`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT IGNORE INTO `tipam_network_location` (`name`) SELECT `location` FROM `tipam_network` WHERE `location` <> '';
 
 SET @insert_type = 3;
 SET @insert_name = 'IPAM Recon';
@@ -4076,6 +4104,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`operation` text,
 	`table` text,
 	`error` MEDIUMTEXT,
+	`result` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4108,6 +4137,7 @@ UPDATE `tlanguage` SET `name` = 'Deutsch' WHERE `id_language` = 'de';
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
     `name` varchar(255) UNIQUE,
+    `icon` VARCHAR(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4172,6 +4202,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_template` bigint(20) unsigned,
     `execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
+    `cron_interval` varchar(100) default '',
+    `event_on_change` int unsigned default null,
     `last_error` text,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4194,6 +4226,41 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------------------------------------------------
+-- Table `tncm_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_queue` (
+    `id` SERIAL,
+    `id_agent` INT(10) UNSIGNED NOT NULL,
+    `id_script` BIGINT(20) UNSIGNED NOT NULL,
+    `utimestamp` INT UNSIGNED NOT NULL,
+    `scheduled` INT UNSIGNED DEFAULT NULL,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_snippet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_snippet` (
+    `id` SERIAL,
+    `name` TEXT,
+    `content` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_firmware`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_firmware` (
+    `id` SERIAL,
+    `name` varchar(255),
+    `shortname` varchar(255) unique,
+    `vendor` bigint(20) unsigned,
+    `models` text,
+    `path` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tncm_vendor` VALUES
     (1,'Cisco'),
@@ -4220,6 +4287,36 @@ INSERT INTO `tncm_script` VALUES
     (2,1,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;running-config&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(3,2,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;_applyconfigbackup_&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(4,3,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#x0d;&#x0a;exit&#x0d;&#x0a;'),
-	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;');
+	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(6,4,'copy&#x20;tftp&#x20;flash&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_TFTP_SERVER_IP_&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_SOURCE_FILE_NAME_&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_DESTINATION_FILE_NAME_&#x0d;&#x0a;show&#x20;flash&#x0d;&#x0a;reload&#x0d;&#x0a;expect:confirm&#x0d;&#x0a;y&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;boot&#x20;system&#x20;_DESTINATION_FILE_NAME_');
+INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6);
 
-INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5);
+-- ----------------------------------------------------------------------
+-- Table `talert_calendar`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_calendar` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL default '',
+	`id_group` INT(10) NOT NULL DEFAULT 0,
+	`description` text,
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT IGNORE INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');
+
+ALTER TABLE `talert_special_days` ADD COLUMN `id_calendar` int(10) unsigned NOT NULL DEFAULT 1;
+ALTER TABLE `talert_special_days` ADD COLUMN `day_code` tinyint(2) unsigned NOT NULL DEFAULT 0;
+
+UPDATE `talert_special_days` set `day_code` = 1 WHERE `same_day` = 'monday';
+UPDATE `talert_special_days` set `day_code` = 2 WHERE `same_day` = 'tuesday';
+UPDATE `talert_special_days` set `day_code` = 3 WHERE `same_day` = 'wednesday';
+UPDATE `talert_special_days` set `day_code` = 4 WHERE `same_day` = 'thursday';
+UPDATE `talert_special_days` set `day_code` = 5 WHERE `same_day` = 'friday';
+UPDATE `talert_special_days` set `day_code` = 6 WHERE `same_day` = 'saturday';
+UPDATE `talert_special_days` set `day_code` = 7 WHERE `same_day` = 'sunday';
+
+ALTER TABLE `talert_special_days` DROP COLUMN `same_day`;
+ALTER TABLE `talert_special_days` ADD FOREIGN KEY (`id_calendar`) REFERENCES `talert_calendar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+UPDATE `tconfig` c1 JOIN (select count(*) as n FROM `tconfig` c2 WHERE (c2.`token` = "node_metaconsole" AND c2.`value` = 1) OR (c2.`token` = "centralized_management" AND c2.`value` = 1) ) v SET c1. `value` = 0 WHERE c1.token = "autocreate_remote_users" AND v.n = 2;

@@ -1389,7 +1389,10 @@ class AgentWizard extends HTML
         foreach (array_keys($data) as $k) {
             foreach ($modulesActivated as $key => $value) {
                 $valueStr = preg_replace('/\//', '\/', $value);
-                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false) {
+
+                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false
+                    || empty(preg_match('/-'.$valueStr.'_sent$/', $k)) === false
+                ) {
                     if (empty(preg_match('/module-name-set/', $k)) === false) {
                         $result[$value]['name'] = $data[$k];
                     } else if (empty(preg_match('/module-description-set/', $k)) === false) {
@@ -1418,6 +1421,42 @@ class AgentWizard extends HTML
                             } else if (empty(preg_match('/module-unit/', $k)) === false) {
                                 $result[$value]['unit'] = $data['module-unit-'.$key];
                                 continue;
+                            } else if (empty(preg_match('/module-warning-min/', $k)) === false) {
+                                $result[$value]['warningMin'] = $data['module-warning-min-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-warning-max/', $k)) === false) {
+                                $result[$value]['warningMax'] = $data['module-warning-max-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-critical-min/', $k)) === false) {
+                                $result[$value]['criticalMin'] = $data['module-critical-min-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-critical-max/', $k)) === false) {
+                                $result[$value]['criticalMax'] = $data['module-critical-max-0_0-0'];
+                                continue;
+                            } else if (empty(preg_match('/module-critical-inv/', $k)) === false) {
+                                if (isset($data['module-critical-inv-0_0-0'])) {
+                                    $result[$value]['criticalInv'] = $data['module-critical-inv-0_0-0_sent'];
+                                }
+
+                                continue;
+                            } else if (empty(preg_match('/module-warning-inv/', $k)) === false) {
+                                if (isset($data['module-warning-inv-0_0-0'])) {
+                                    $result[$value]['warningInv'] = $data['module-warning-inv-0_0-0_sent'];
+                                }
+
+                                continue;
+                            } else if (empty(preg_match('/module-warning-perc/', $k)) === false) {
+                                if (isset($data['module-warning-perc-0_0-0'])) {
+                                    $result[$value]['warningPerc'] = $data['module-warning-perc-0_0-0_sent'];
+                                }
+
+                                continue;
+                            } else if (empty(preg_match('/module-critical-perc/', $k)) === false) {
+                                if (isset($data['module-critical-perc-0_0-0'])) {
+                                    $result[$value]['criticalPerc'] = $data['module-critical-perc-0_0-0_sent'];
+                                }
+
+                                continue;
                             }
 
                             preg_match('/^(.*).*?_(\d+)-+(\d+)$/', $k, $matches);
@@ -1429,6 +1468,10 @@ class AgentWizard extends HTML
                         }
                     }
 
+                    if (empty(preg_match('/-'.$valueStr.'_sent$/', $k)) === false) {
+                        continue;
+                    }
+
                     if (empty(preg_match('/module-warning-min/', $k)) === false) {
                         $result[$value]['warningMin'] = $data[$k];
                     } else if (empty(preg_match('/module-warning-max/', $k)) === false) {
@@ -1438,9 +1481,13 @@ class AgentWizard extends HTML
                     } else if (empty(preg_match('/module-critical-max/', $k)) === false) {
                         $result[$value]['criticalMax'] = $data[$k];
                     } else if (empty(preg_match('/module-critical-inv/', $k)) === false) {
-                        $result[$value]['criticalInv'] = $data[$k];
+                        $result[$value]['criticalInv'] = $data[$k.'_sent'];
                     } else if (empty(preg_match('/module-warning-inv/', $k)) === false) {
-                        $result[$value]['warningInv'] = $data[$k];
+                        $result[$value]['warningInv'] = $data[$k.'_sent'];
+                    } else if (empty(preg_match('/module-warning-perc/', $k)) === false) {
+                        $result[$value]['warningPerc'] = $data[$k.'_sent'];
+                    } else if (empty(preg_match('/module-critical-perc/', $k)) === false) {
+                         $result[$value]['criticalPerc'] = $data[$k.'_sent'];
                     } else if (empty(preg_match('/module-type/', $k)) === false) {
                         $result[$value]['moduleType'] = $data[$k];
                     } else if (empty(preg_match('/module-unit/', $k)) === false) {
@@ -1856,6 +1903,8 @@ class AgentWizard extends HTML
                 $values['max_warning'] = $candidate['warningMax'];
                 $values['min_critical'] = $candidate['criticalMin'];
                 $values['max_critical'] = $candidate['criticalMax'];
+                $values['percentage_warning'] = $candidate['warningPerc'];
+                $values['percentage_critical'] = $candidate['criticalPerc'];
             }
 
             $values['warning_inverse'] = $candidate['warningInv'];
@@ -2292,6 +2341,8 @@ class AgentWizard extends HTML
                 $tmp->max_warning($candidate['warningMax']);
                 $tmp->min_critical($candidate['criticalMin']);
                 $tmp->max_critical($candidate['criticalMax']);
+                $tmp->percentage_warning($candidate['warningPerc']);
+                $tmp->percentage_critical($candidate['criticalPerc']);
             }
 
             $tmp->warning_inverse($candidate['warningInv']);
@@ -2423,17 +2474,20 @@ class AgentWizard extends HTML
             }
 
             // Get current value.
-            if (in_array(
-                $moduleData['module_type'],
-                [
-                    MODULE_TYPE_REMOTE_SNMP,
-                    MODULE_TYPE_REMOTE_SNMP_INC,
-                    MODULE_TYPE_REMOTE_SNMP_STRING,
-                    MODULE_TYPE_REMOTE_SNMP_PROC,
-                ]
-            ) === true
+            if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE
+                || in_array(
+                    $moduleData['module_type'],
+                    [
+                        MODULE_TYPE_REMOTE_SNMP,
+                        MODULE_TYPE_REMOTE_SNMP_INC,
+                        MODULE_TYPE_REMOTE_SNMP_STRING,
+                        MODULE_TYPE_REMOTE_SNMP_PROC,
+                    ]
+                ) === true
             ) {
-                $currentValue = $this->snmpGetValue($moduleData['value']);
+                if (isset($moduleData['value']) === true) {
+                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                }
             }
 
             // It unit of measure have data, attach to current value.
@@ -2454,6 +2508,8 @@ class AgentWizard extends HTML
                 'min_critical'   => $moduleData['module_thresholds']['min_critical'],
                 'max_critical'   => $moduleData['module_thresholds']['max_critical'],
                 'inv_critical'   => $moduleData['module_thresholds']['inv_critical'],
+                'perc_warning'   => $moduleData['module_thresholds']['perc_warning'],
+                'perc_critical'  => $moduleData['module_thresholds']['perc_critical'],
                 'module_enabled' => $moduleData['default_enabled'],
                 'name_oid'       => $moduleData['value'],
                 'value'          => $moduleData['value'],
@@ -2593,17 +2649,20 @@ class AgentWizard extends HTML
                 // Get current value.
                 $currentValue = '';
 
-                if (in_array(
-                    $moduleData['module_type'],
-                    [
-                        MODULE_TYPE_REMOTE_SNMP,
-                        MODULE_TYPE_REMOTE_SNMP_INC,
-                        MODULE_TYPE_REMOTE_SNMP_STRING,
-                        MODULE_TYPE_REMOTE_SNMP_PROC,
-                    ]
-                ) === true
+                if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE
+                    || in_array(
+                        $moduleData['module_type'],
+                        [
+                            MODULE_TYPE_REMOTE_SNMP,
+                            MODULE_TYPE_REMOTE_SNMP_INC,
+                            MODULE_TYPE_REMOTE_SNMP_STRING,
+                            MODULE_TYPE_REMOTE_SNMP_PROC,
+                        ]
+                    ) === true
                 ) {
-                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                    if (isset($moduleData['value']) === true) {
+                        $currentValue = $this->snmpGetValue($moduleData['value']);
+                    }
                 }
 
                 // Format current value with thousands and decimals.
@@ -2630,6 +2689,8 @@ class AgentWizard extends HTML
                     'min_critical'   => $moduleData['module_thresholds']['min_critical'],
                     'max_critical'   => $moduleData['module_thresholds']['max_critical'],
                     'inv_critical'   => $moduleData['module_thresholds']['inv_critical'],
+                    'perc_warning'   => $moduleData['module_thresholds']['perc_warning'],
+                    'perc_critical'  => $moduleData['module_thresholds']['perc_critical'],
                     'module_enabled' => $moduleData['module_enabled'],
                     'current_value'  => $currentValue,
                     'name_oid'       => $moduleData['value'],
@@ -3274,6 +3335,8 @@ class AgentWizard extends HTML
             nc.min_critical,
             nc.max_critical,
             nc.critical_inverse AS `inv_critical`,
+            nc.percentage_warning AS `perc_warning`,
+            nc.percentage_critical AS `perc_critical`,
             nc.module_enabled,
             %s,
             nc.scan_type,
@@ -3461,7 +3524,7 @@ class AgentWizard extends HTML
                 } else {
                     preg_match('/\.\d+$/', $key, $index);
                     $tmp = explode(': ', $oid_unit);
-                    $output[$index[0]] = ($tmp[1] ?? '');
+                    $output[$index[0]] = str_replace('"', '', ($tmp[1] ?? ''));
                 }
             }
         }
@@ -3861,9 +3924,11 @@ class AgentWizard extends HTML
             $table->width = '100%';
             $table->class = 'info_table';
             // Subheaders for Warning and Critical columns.
-            $subheaders = '<span class=\'font_w300 mrgn_lft_0.8em\'>Min.</span>';
-            $subheaders .= '<span class=\'font_w300 mrgn_lft_1.6em\'>Max.</span>';
-            $subheaders .= '<span class=\'font_w300 mrgn_lft_2em\'>Inv.</span>';
+            $subheaders = '<span class=\'wizard-colum-levels font_w300 mrgn_lft_0.8em\'>Min.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_1.6em\'>Max.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_2em\'>Inv.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_2em\'>%.</span>';
+
             // Warning header.
             $warning_header = html_print_div(
                 [
@@ -4075,7 +4140,7 @@ class AgentWizard extends HTML
                 );
                 $data_warning .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels',
+                        'class'   => 'wizard-column-levels-check',
                         'style'   => 'margin-top: 0.3em;',
                         'content' => html_print_checkbox(
                             'module-warning-inv-'.$uniqueId,
@@ -4083,7 +4148,24 @@ class AgentWizard extends HTML
                             $module['inv_warning'],
                             true,
                             false,
-                            '',
+                            'change_control(this, \''.$uniqueId.'\')',
+                            false,
+                            'form="form-create-modules"'
+                        ),
+                    ],
+                    true
+                );
+                $data_warning .= html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels-check',
+                        'style'   => 'margin-top: 0.3em;',
+                        'content' => html_print_checkbox(
+                            'module-warning-perc-'.$uniqueId,
+                            $module['perc_warning'],
+                            $module['perc_warning'],
+                            true,
+                            false,
+                            'change_control(this, \''.$uniqueId.'\')',
                             false,
                             'form="form-create-modules"'
                         ),
@@ -4142,15 +4224,33 @@ class AgentWizard extends HTML
 
                 $data[4] .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels',
+                        'class'   => 'wizard-column-levels-check',
                         'style'   => 'margin-top: 0.3em;',
                         'content' => html_print_checkbox(
-                            'module-critical_inv_'.$uniqueId,
+                            'module-critical-inv-'.$uniqueId,
                             $module['inv_critical'],
                             $module['inv_critical'],
                             true,
                             false,
-                            '',
+                            'change_control(this, \''.$uniqueId.'\')',
+                            false,
+                            'form="form-create-modules"'
+                        ),
+                    ],
+                    true
+                );
+
+                $data[4] .= html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels-check',
+                        'style'   => 'margin-top: 0.3em;',
+                        'content' => html_print_checkbox(
+                            'module-critical-perc-'.$uniqueId,
+                            $module['perc_critical'],
+                            $module['perc_critical'],
+                            true,
+                            false,
+                            'change_control(this,\''.$uniqueId.'\')',
                             false,
                             'form="form-create-modules"'
                         ),
@@ -4522,12 +4622,14 @@ class AgentWizard extends HTML
             'default_enabled'    => true,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => $min_warning,
-                'max_warning'  => $max_warning,
-                'inv_warning'  => $inv_warning,
-                'min_critical' => $min_critical,
-                'max_critical' => $max_critical,
-                'inv_critical' => $inv_critical,
+                'min_warning'   => $min_warning,
+                'max_warning'   => $max_warning,
+                'inv_warning'   => $inv_warning,
+                'min_critical'  => $min_critical,
+                'max_critical'  => $max_critical,
+                'inv_critical'  => $inv_critical,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -4577,12 +4679,14 @@ class AgentWizard extends HTML
             'default_enabled'    => true,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -4629,12 +4733,14 @@ class AgentWizard extends HTML
                 'default_enabled'    => true,
                 'module_enabled'     => false,
                 'module_thresholds'  => [
-                    'min_warning'  => '0',
-                    'max_warning'  => '0',
-                    'inv_warning'  => false,
-                    'min_critical' => $minc,
-                    'max_critical' => $maxc,
-                    'inv_critical' => false,
+                    'min_warning'   => '0',
+                    'max_warning'   => '0',
+                    'inv_warning'   => false,
+                    'min_critical'  => $minc,
+                    'max_critical'  => $maxc,
+                    'inv_critical'  => false,
+                    'perc_warning'  => false,
+                    'perc_critical' => false,
                 ],
             ];
         }
@@ -4717,12 +4823,14 @@ class AgentWizard extends HTML
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
-                        'min_warning'  => '0',
-                        'max_warning'  => '0',
-                        'inv_warning'  => false,
-                        'min_critical' => '85',
-                        'max_critical' => '0',
-                        'inv_critical' => false,
+                        'min_warning'   => '0',
+                        'max_warning'   => '0',
+                        'inv_warning'   => false,
+                        'min_critical'  => '85',
+                        'max_critical'  => '0',
+                        'inv_critical'  => false,
+                        'perc_warning'  => false,
+                        'perc_critical' => false,
                     ],
                 ];
 
@@ -4754,12 +4862,14 @@ class AgentWizard extends HTML
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
-                        'min_warning'  => '0',
-                        'max_warning'  => '0',
-                        'inv_warning'  => false,
-                        'min_critical' => '0',
-                        'max_critical' => '0',
-                        'inv_critical' => false,
+                        'min_warning'   => '0',
+                        'max_warning'   => '0',
+                        'inv_warning'   => false,
+                        'min_critical'  => '0',
+                        'max_critical'  => '0',
+                        'inv_critical'  => false,
+                        'perc_warning'  => false,
+                        'perc_critical' => false,
                     ],
                 ];
 
@@ -4791,12 +4901,14 @@ class AgentWizard extends HTML
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
-                        'min_warning'  => '0',
-                        'max_warning'  => '0',
-                        'inv_warning'  => false,
-                        'min_critical' => '0',
-                        'max_critical' => '0',
-                        'inv_critical' => false,
+                        'min_warning'   => '0',
+                        'max_warning'   => '0',
+                        'inv_warning'   => false,
+                        'min_critical'  => '0',
+                        'max_critical'  => '0',
+                        'inv_critical'  => false,
+                        'perc_warning'  => false,
+                        'perc_critical' => false,
                     ],
                 ];
             }
@@ -4820,12 +4932,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfInDiscards.
@@ -4845,12 +4959,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfOutDiscards.
@@ -4870,12 +4986,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfInErrors.
@@ -4895,12 +5013,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfOutErrors.
@@ -4920,12 +5040,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -4988,12 +5110,14 @@ class AgentWizard extends HTML
             'default_enabled'    => true,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
 
         ];
@@ -5014,12 +5138,14 @@ class AgentWizard extends HTML
             'default_enabled'    => true,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -5040,12 +5166,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfOutUcastPkts.
@@ -5065,12 +5193,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfInNUcastPkts.
@@ -5090,12 +5220,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfOutNUcastPkts.
@@ -5115,12 +5247,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -5183,12 +5317,14 @@ class AgentWizard extends HTML
             'default_enabled'    => true,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
 
         ];
@@ -5209,12 +5345,14 @@ class AgentWizard extends HTML
             'default_enabled'    => true,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -5235,12 +5373,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -5261,12 +5401,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfHCInNUcastPkts.
@@ -5286,12 +5428,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
         // IfOutNUcastPkts.
@@ -5311,12 +5455,14 @@ class AgentWizard extends HTML
             'default_enabled'    => false,
             'module_enabled'     => false,
             'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
+                'min_warning'   => '0',
+                'max_warning'   => '0',
+                'inv_warning'   => false,
+                'min_critical'  => '0',
+                'max_critical'  => '0',
+                'inv_critical'  => false,
+                'perc_warning'  => false,
+                'perc_critical' => false,
             ],
         ];
 
@@ -5817,6 +5963,29 @@ class AgentWizard extends HTML
                     size: 750,
                     maxHeight: 500
                 });
+
+            }
+
+            function change_control(checkbox, uniqueId) {
+                var checkbox_name = $(checkbox).attr('name');
+
+                if($(checkbox).prop('checked', true)) {
+                   if(checkbox_name.match(/warning-inv/gm) !== null) {
+                        $('#checkbox-module-warning-perc-'+uniqueId).prop('checked', false);
+                   }
+
+                   if(checkbox_name.match(/critical-inv/gm) !== null) {
+                        $('#checkbox-module-critical-perc-'+uniqueId).prop('checked', false);
+                    }
+
+                    if(checkbox_name.match(/warning-perc/gm) !== null) {
+                        $('#checkbox-module-warning-inv-'+uniqueId).prop('checked', false);
+                    }
+
+                    if(checkbox_name.match(/critical-perc/gm) !== null) {
+                        $('#checkbox-module-critical-inv-'+uniqueId).prop('checked', false);
+                    }
+                }
 
             }
         </script>

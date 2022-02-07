@@ -58,7 +58,8 @@ input.sub,
 button.sub,
 .bg_general,
 .show_result_interpreter,
-div#rules::after table.agent_info_table thead > tr:first-child th,
+div#rules::after,
+table.agent_info_table thead > tr:first-child th,
 table.agent_info_table tr {
   background-color: #222 !important;
   color: #fff !important;

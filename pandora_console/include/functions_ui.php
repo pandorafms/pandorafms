@@ -329,7 +329,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.
-        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, true).'</a>';
+        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, false).'</a>';
     }
 
     $output .= '</td>
@@ -1203,7 +1203,7 @@ function ui_format_alert_row(
 
     $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
 
-    if (empty($actions) === false) {
+    if (empty($actions) === false || $actionDefault != '') {
         $actionText = '<div><ul class="action_list">';
         foreach ($actions as $action) {
             $actionText .= '<div class="mrgn_btn_5px" ><span class="action_name"><li>'.$action['name'];
@@ -1215,9 +1215,9 @@ function ui_format_alert_row(
         }
 
         $actionText .= '</ul></div>';
-    } else {
+
         if ($actionDefault != '') {
-            $actionText = db_get_sql(
+            $actionText .= db_get_sql(
                 sprintf(
                     'SELECT name FROM talert_actions WHERE id = %d',
                     $actionDefault
@@ -2748,7 +2748,8 @@ function ui_print_module_status(
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
-    $output .= '" title="'.$title.'"></div>';
+    $output .= ' forced_title" data-title="'.$title.'" title="';
+    $output .= $title.'" data-use_title_for_force_title="1"></div>';
 
     if ($return === false) {
         echo $output;
@@ -3459,6 +3460,11 @@ function ui_print_datatable(array $parameters)
         }
     }
 
+    $export_columns = '';
+    if ($parameters['csv_exclude_latest'] === true) {
+        $export_columns = ',columns: \'th:not(:last-child)\'';
+    }
+
     $js .= '
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
@@ -3489,8 +3495,7 @@ function ui_print_datatable(array $parameters)
                             order : "current",
                             page : "All",
                             search : "applied"
-                        },
-                        columns: [1,'.$columns.']
+                        }'.$export_columns.'
                     }
                 }
             ],
@@ -3591,18 +3596,86 @@ function ui_print_datatable(array $parameters)
     // Order.
     $err_msg = '<div id="error-'.$table_id.'"></div>';
     $output = $err_msg.$filter.$extra.$table.$js;
+    if (is_ajax() === false) {
+        ui_require_css_file('datatables.min', 'include/styles/js/');
+        ui_require_css_file('tables');
+        if (is_metaconsole()) {
+            ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+        }
 
-    ui_require_css_file('datatables.min', 'include/styles/js/');
-    ui_require_css_file('tables');
-    if (is_metaconsole()) {
-        ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+        ui_require_javascript_file('datatables.min');
+        ui_require_javascript_file('buttons.dataTables.min');
+        ui_require_javascript_file('dataTables.buttons.min');
+        ui_require_javascript_file('buttons.html5.min');
+        ui_require_javascript_file('buttons.print.min');
+    } else {
+        // Load tables.css.
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/tables.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+        if (is_metaconsole() === true) {
+            // Load tables_meta.css.
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                ENTERPRISE_DIR.'/include/styles/tables_meta.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        }
+
+        // Load datatables.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/datatables.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.dataTables.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.dataTables.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load dataTables.buttons.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/dataTables.buttons.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.html5.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.html5.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.print.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.print.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
     }
-
-    ui_require_javascript_file('datatables.min');
-    ui_require_javascript_file('buttons.dataTables.min');
-    ui_require_javascript_file('dataTables.buttons.min');
-    ui_require_javascript_file('buttons.html5.min');
-    ui_require_javascript_file('buttons.print.min');
 
     if (isset($parameters['return']) && $parameters['return'] == true) {
         // Compat.
@@ -4891,7 +4964,7 @@ function ui_print_agent_autocomplete_input($parameters)
     // Default value.
     $icon_agent = 'images/search_agent.png';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
     }
@@ -5747,7 +5820,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $html = '';
 
     $text_color = '';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'color: white';
     }
 

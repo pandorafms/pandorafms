@@ -135,6 +135,7 @@ $first_create = (int) get_parameter('first_create');
 $create_downtime = (int) get_parameter('create_downtime');
 $update_downtime = (int) get_parameter('update_downtime');
 $edit_downtime = (int) get_parameter('edit_downtime');
+$downtime_copy = (int) get_parameter('downtime_copy');
 $id_downtime = (int) get_parameter('id_downtime');
 
 $id_agent = (int) get_parameter('id_agent');
@@ -250,6 +251,7 @@ if ($create_downtime || $update_downtime) {
     } else if ($type_execution == 'periodically'
         && $type_periodicity == 'monthly'
         && $periodically_day_from == $periodically_day_to
+        && $periodically_time_from >= $periodically_time_to
     ) {
         ui_print_error_message(
             __('Not created. Error inserting data').'. '.__('The end time must be higher than the start time')
@@ -416,6 +418,16 @@ if ($create_downtime || $update_downtime) {
                 ui_print_success_message(__('Successfully updated'));
             }
         }
+    }
+}
+
+if ($downtime_copy) {
+    $result = planned_downtimes_copy($id_downtime);
+    if ($result['id_downtime'] !== false) {
+        $id_downtime = $result['id_downtime'];
+        ui_print_success_message($result['success']);
+    } else {
+        ui_print_error_message(__($result['error']));
     }
 }
 
@@ -946,9 +958,7 @@ if (empty($downtimes_agents)) {
 
         if (!$running) {
             $data[5] = '';
-            if ($type_downtime != 'disable_agents_alerts'
-                && $type_downtime != 'disable_agents'
-            ) {
+            if ($type_downtime !== 'disable_agents') {
                 $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
             }
 

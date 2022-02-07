@@ -130,6 +130,9 @@ $warning_instructions = (string) get_parameter('warning_instructions');
 $unknown_instructions = (string) get_parameter('unknown_instructions');
 $critical_inverse = (int) get_parameter('critical_inverse');
 $warning_inverse = (int) get_parameter('warning_inverse');
+$percentage_critical = (int) get_parameter('percentage_critical');
+$percentage_warning = (int) get_parameter('percentage_warning');
+
 $id_category = (int) get_parameter('id_category');
 $id_tag_selected = (array) get_parameter('id_tag_selected');
 $pure = get_parameter('pure', 0);
@@ -383,6 +386,8 @@ if ($is_management_allowed === true && $create_component) {
                 'unknown_instructions'  => $unknown_instructions,
                 'critical_inverse'      => $critical_inverse,
                 'warning_inverse'       => $warning_inverse,
+                'percentage_warning'    => $percentage_warning,
+                'percentage_critical'   => $percentage_critical,
                 'id_category'           => $id_category,
                 'tags'                  => $tags,
                 'disabled_types_event'  => $disabled_types_event,
@@ -482,6 +487,8 @@ if ($is_management_allowed === true && $update_component) {
                 'unknown_instructions'  => $unknown_instructions,
                 'critical_inverse'      => $critical_inverse,
                 'warning_inverse'       => $warning_inverse,
+                'percentage_warning'    => $percentage_warning,
+                'percentage_critical'   => $percentage_critical,
                 'id_category'           => $id_category,
                 'tags'                  => $tags,
                 'disabled_types_event'  => $disabled_types_event,
@@ -581,7 +588,7 @@ if ($is_management_allowed === true && $multiple_delete) {
     $id = 0;
 }
 
-if ($id || $new_component
+if ((bool) $id !== false || $new_component
     || $create_network_from_module
     || $create_network_from_snmp_browser
 ) {
@@ -598,6 +605,7 @@ $url = ui_get_url_refresh(
         'offset'          => false,
         'search_string'   => $search_string,
         'search_id_group' => $search_id_group,
+        'id'              => $id,
     ],
     true,
     false

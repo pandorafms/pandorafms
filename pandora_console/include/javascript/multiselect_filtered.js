@@ -1,6 +1,20 @@
 /* global $, jQuery*/
 
 /**
+ * Custom selector for case instensitive contains.
+ */
+jQuery.expr[":"].iContains = jQuery.expr.createPseudo(function(arg) {
+  return function(elem) {
+    return (
+      jQuery(elem)
+        .text()
+        .toUpperCase()
+        .indexOf(arg.toUpperCase()) >= 0
+    );
+  };
+});
+
+/**
  * Add modules from available to selected.
  */
 // eslint-disable-next-line no-unused-vars
@@ -58,14 +72,14 @@ function filterItems(id, str) {
   $("#" + id + " option[value=0]").remove();
 
   // Move not matching elements filtered to tmp-id.
-  var tmp = $("#" + id + " option:not(:contains(" + str + "))").toArray();
+  var tmp = $("#" + id + " option:not(:iContains(" + str + "))").toArray();
   tmp.forEach(function(item) {
     $("#tmp-" + id).append(item);
     $(this).remove();
   });
 
   // Move matching filter back to id.
-  tmp = $("#tmp-" + id + " option:contains(" + str + ")").toArray();
+  tmp = $("#tmp-" + id + " option:iContains(" + str + ")").toArray();
   tmp.forEach(function(item) {
     $("#" + id).append(item);
     $(this).remove();
@@ -197,7 +211,7 @@ function fmAgentChange(uniqId) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function fmModuleChange(uniqId) {
+function fmModuleChange(uniqId, isMeta) {
   var idModuleGroup = $("#filtered-module-module-group-" + uniqId).val();
   var idAgents = $("#filtered-module-agents-" + uniqId).val();
   var showCommonModules = $(
@@ -216,18 +230,71 @@ function fmModuleChange(uniqId) {
       $("#filtered-module-modules-" + uniqId).html("");
       if (data) {
         jQuery.each(data, function(id, value) {
-          var option = $("<option></option>")
-            .attr(
-              "value",
-              value["id_node"]
-                ? value["id_node"] + "|" + value["id_agente_modulo"]
-                : value["id_agente_modulo"]
-            )
-            .html(value["nombre"]);
+          var option = $("<option></option>");
+          if (isMeta === 1) {
+            option
+              .attr(
+                "value",
+                value["id_node"]
+                  ? value["id_node"] + "|" + value["id_agente_modulo"]
+                  : value["id_agente_modulo"]
+              )
+              .html(value["nombre"]);
+          } else {
+            option.attr("value", value).html(value);
+          }
+
           $("#filtered-module-modules-" + uniqId).append(option);
         });
       }
     },
     "json"
   );
+}
+
+// Function to search in agents select.
+function searchAgent(uniqId) {
+  // Declare variables
+  var agents = $("#filtered-module-agents-" + uniqId + " option");
+
+  // Loop through all list items, and hide those who don't match the search query
+  agents.each(function() {
+    var filter = $("#text-agent-searchBar-modules")
+      .val()
+      .toUpperCase();
+
+    if (
+      $(this)
+        .text()
+        .toUpperCase()
+        .indexOf(filter) > -1
+    ) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
+}
+
+// Function to search in modules select.
+function searchModule(uniqId) {
+  // Declare variables
+  var modules = $("#filtered-module-modules-" + uniqId + " option");
+
+  // Loop through all list items, and hide those who don't match the search query
+  modules.each(function() {
+    var filter = $("#text-module-searchBar-modules")
+      .val()
+      .toUpperCase();
+    if (
+      $(this)
+        .text()
+        .toUpperCase()
+        .indexOf(filter) > -1
+    ) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
 }

@@ -144,7 +144,7 @@ if ($prediction_available) {
     $modules['predictionserver'] = __('Create a new prediction server module');
 }
 
-if ($web_available) {
+if (is_metaconsole() === true || $web_available === '1') {
     $modules['webserver'] = __('Create a new web Server module');
 }
 
@@ -253,6 +253,7 @@ $module_action = (string) get_parameter('module_action');
 if ($module_action === 'delete') {
     $id_agent_modules_delete = (array) get_parameter('id_delete');
 
+    $print_result_msg = true;
     $count_correct_delete_modules = 0;
     foreach ($id_agent_modules_delete as $id_agent_module_del) {
         $id_grupo = (int) agents_get_agent_group($id_agente);
@@ -268,12 +269,19 @@ if ($module_action === 'delete') {
         }
 
         if ($id_agent_module_del < 1) {
-            db_pandora_audit(
-                'HACK Attempt',
-                'Expected variable from form is not correct'
-            );
-            die(__('Nice try buddy'));
-            exit;
+            if (count($id_agent_modules_delete) === 1) {
+                ui_print_error_message(
+                    __('No modules selected')
+                );
+
+                $print_result_msg = false;
+            } else {
+                ui_print_error_message(
+                    __('There was a problem completing the operation')
+                );
+            }
+
+            continue;
         }
 
         enterprise_include_once('include/functions_config_agents.php');
@@ -421,25 +429,27 @@ if ($module_action === 'delete') {
         }
     }
 
-    $count_modules_to_delete = count($id_agent_modules_delete);
-    if ($count_correct_delete_modules == 0) {
-        ui_print_error_message(
-            sprintf(
-                __('There was a problem completing the operation. Applied to 0/%d modules.'),
-                $count_modules_to_delete
-            )
-        );
-    } else {
-        if ($count_correct_delete_modules == $count_modules_to_delete) {
-            ui_print_success_message(__('Operation finished successfully.'));
-        } else {
+    if ($print_result_msg === true) {
+        $count_modules_to_delete = count($id_agent_modules_delete);
+        if ($count_correct_delete_modules == 0) {
             ui_print_error_message(
                 sprintf(
-                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
-                    $count_correct_delete_modules,
+                    __('There was a problem completing the operation. Applied to 0/%d modules.'),
                     $count_modules_to_delete
                 )
             );
+        } else {
+            if ($count_correct_delete_modules == $count_modules_to_delete) {
+                ui_print_success_message(__('Operation finished successfully.'));
+            } else {
+                ui_print_error_message(
+                    sprintf(
+                        __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                        $count_correct_delete_modules,
+                        $count_modules_to_delete
+                    )
+                );
+            }
         }
     }
 } else if ($module_action === 'disable') {
@@ -704,6 +714,8 @@ if ((bool) $checked === true) {
             'quiet',
             'critical_inverse',
             'warning_inverse',
+            'percentage_critical',
+            'percentage_warning',
             'id_policy_module',
         ]
     );

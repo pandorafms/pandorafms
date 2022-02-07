@@ -34,6 +34,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
 $pure = get_parameter('pure', 0);
+$agent_id = get_parameter('agent_id', 0);
 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
@@ -74,6 +75,11 @@ $params['input_name'] = 'agent_name';
 $params['value'] = $agentName;
 $params['size'] = 24;
 $params['metaconsole_enabled'] = false;
+$params['use_hidden_input_idagent'] = true;
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
+$params['hidden_input_idagent_name'] = 'agent_id';
+$params['hidden_input_idagent_value'] = $agent_id;
 
 $form_filter .= ui_print_agent_autocomplete_input($params);
 
@@ -234,7 +240,7 @@ if ($searchFlag) {
 $id_agents = array_keys($agents);
 
 $total = agents_get_alerts_simple(
-    $id_agents,
+    (empty($agent_id) === false) ? ['0' => $agent_id] : $id_agents,
     false,
     false,
     $where,
@@ -412,7 +418,7 @@ if ($id_agente) {
 
 $offset = (int) get_parameter('offset');
 $simple_alerts = agents_get_alerts_simple(
-    $id_agents,
+    (empty($agent_id) === false) ? ['0' => $agent_id] : $id_agents,
     false,
     [
         'offset' => $offset,
@@ -688,7 +694,7 @@ foreach ($simple_alerts as $alert) {
         $data[3] .= '</tr>';
     }
 
-    $data[3] .= '<div id="update_action-div" class="invisible left">';
+    $data[3] .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
     $data[3] .= '</div>';
     $data[3] .= '</table>';
     // Is possible manage actions if have LW permissions in the agent group of the alert module
@@ -706,9 +712,9 @@ foreach ($simple_alerts as $alert) {
             $actions = alerts_get_alert_actions_filter(true, 'id_group IN ('.$filter_groups.')');
         }
 
-        $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible left">';
-            $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post">';
-                $data[3] .= '<table class="databox_color w100p bg_color222">';
+        $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible">';
+            $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" style="height:85%;">';
+                $data[3] .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
                     $data[3] .= html_print_input_hidden('add_action', 1, true);
                     $data[3] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
 
@@ -1127,13 +1133,14 @@ function show_add_action(id_alert) {
                 background: "black"
             },
             open: function() {
-                $("#action_select, #action_select").select2({
+                $(`#add_action-div-${id_alert}`).css('overflow', 'hidden');
+                $("select[id^='action_select'], select[id^='action_select']").select2({
                     tags: true,
                     dropdownParent: $("#add_action-div-" + id_alert)
                 });
             },
-            width: 500,
-            height: 300
+            width: 455,
+            height: 500
         })
         .show ();
 }
@@ -1151,8 +1158,8 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
         type: 'POST',
         url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
         success: function (data) {
-            $("#update_action-div").html (data);
-            $("#update_action-div").hide ()
+            $(`#update_action-div-${alert_id}`).html (data);
+            $(`#update_action-div-${alert_id}`).hide ()
                 .dialog ({
                     resizable: true,
                     draggable: true,
@@ -1163,18 +1170,18 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                         background: "black"
                     },
                     open: function() {
-                        $("#action_select_ajax, #action_select_ajax").select2({
+                        $(`#update_action-div-${alert_id}`).css('overflow', 'hidden');
+                        $(`#action_select_ajax-${alert_id}`).select2({
                             tags: true,
-                            dropdownParent: $("#update_action-div")
+                            dropdownParent: $(`#update_action-div-${alert_id}`)
                         });
                     },
-                    width: 500,
-                    height: 300
+                    width: 455,
+                    height: 500
                 })
                 .show ();
         }
     });
-    
 }
 
 /* ]]> */

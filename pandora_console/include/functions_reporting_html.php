@@ -468,7 +468,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
  * @param boolean $mini  If true or false letter mini.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_SLA($table, $item, $mini, $pdf=0)
 {
@@ -897,7 +897,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_top_n($table, $item, $pdf=0)
 {
@@ -1443,7 +1443,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   Print pdf true or false.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_agents_inventory($table, $item, $pdf=0)
 {
@@ -1610,7 +1610,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   Print pdf true or false.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_inventory_changes($table, $item, $pdf=0)
 {
@@ -1691,7 +1691,7 @@ function reporting_html_inventory_changes($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   Print pdf true or false.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_inventory($table, $item, $pdf=0)
 {
@@ -2006,7 +2006,7 @@ function reporting_html_agent_module($table, $item)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_exception($table, $item, $pdf=0)
 {
@@ -2131,7 +2131,7 @@ function reporting_html_exception($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_group_report($table, $item, $pdf=0)
 {
@@ -2386,7 +2386,7 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_historical_data($table, $item, $pdf=0)
 {
@@ -2470,7 +2470,7 @@ function reporting_html_historical_data($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_database_serialized($table, $item, $pdf=0)
 {
@@ -2537,7 +2537,7 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string Html code.
  */
 function reporting_html_last_value($table, $item, $pdf=0)
 {
@@ -2697,7 +2697,7 @@ function reporting_html_last_value($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_group_configuration($table, $item, $pdf=0)
 {
@@ -2839,7 +2839,7 @@ function get_alert_table($data)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_network_interfaces_report($table, $item, $pdf=0)
 {
@@ -2936,6 +2936,7 @@ function reporting_html_alert_report($table, $item, $pdf=0)
     $table->colspan['alerts']['cell'] = 3;
     $table->cellstyle['alerts']['cell'] = 'text-align: left;';
 
+    $table1 = new stdClass();
     $table1->width   = '99%';
     $table1->head    = [];
     $table1->data    = [];
@@ -3143,7 +3144,7 @@ function reporting_html_prediction_date($table, $item, $mini)
  * @param boolean $pdf   If it comes from pdf.
  * @param string  $title Show title pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_agent_configuration(
     $table,
@@ -3497,7 +3498,7 @@ function reporting_html_value(
  * @param array   $item  Parameters for item pdf.
  * @param boolean $pdf   Send pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_increment($table, $item, $pdf=0)
 {
@@ -3607,7 +3608,7 @@ function reporting_html_text(&$table, $item)
  * @param array   $item  Parameters for item pdf.
  * @param boolean $pdf   Send pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_availability($table, $item, $pdf=0)
 {
@@ -4146,7 +4147,7 @@ function reporting_html_availability($table, $item, $pdf=0)
  * @param array   $item  Parameters for item pdf.
  * @param boolean $pdf   Send pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_availability_graph($table, $item, $pdf=0)
 {
@@ -4444,7 +4445,7 @@ function get_agent_first_time($agent_name)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_general($table, $item, $pdf=0)
 {
@@ -4641,7 +4642,7 @@ function reporting_html_general($table, $item, $pdf=0)
  * @param array   $item  Items data.
  * @param boolean $pdf   If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_html_sql($table, $item, $pdf=0)
 {
@@ -4704,7 +4705,7 @@ function reporting_html_sql($table, $item, $pdf=0)
  * @param integer $graph_width  Items data.
  * @param integer $graph_height If it comes from pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_get_stats_summary($data, $graph_width, $graph_height)
 {
@@ -4943,7 +4944,7 @@ function reporting_get_monitors_down_table($monitors_down)
  * @param integer $id_group Group to get the report.
  * @param boolean $return   Flag to return or echo the report (by default).
  *
- * @return HTML string with group report
+ * @return string HTML code. string with group report
  */
 function reporting_print_group_reporting($id_group, $return=false)
 {

@@ -14047,7 +14047,7 @@ function reporting_translate_sla_status_for_graph($status)
  * @param string $title       Title of report.
  * @param string $description Description of report.
  *
- * @return html Return table of header.
+ * @return string HTML code. Return table of header.
  */
 function reporting_header_table_for_pdf($title='', $description='')
 {
@@ -14072,7 +14072,7 @@ function reporting_header_table_for_pdf($title='', $description='')
  * @param array   $content Info contents.
  * @param boolean $pdf     If pdf.
  *
- * @return html
+ * @return string HTML code.
  */
 function reporting_module_histogram_graph($report, $content, $pdf=0)
 {

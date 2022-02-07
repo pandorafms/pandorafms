@@ -31,7 +31,7 @@ require_once $config['homedir'].'/include/functions.php';
  * @param string $active_tab Current tab or false for View page.
  * @param number $view       Id of incident. Show View tab.
  *
- * @return html Print tabs in header.
+ * @return string HTML code. Print tabs in header.
  */
 function integriaims_tabs($active_tab, $view=false)
 {
@@ -375,7 +375,7 @@ function get_array_from_csv_data_all($csv_data, &$array_values, $index=false)
  * @param string $priority       value of priority in Integria IMS.
  * @param string $priority_label text shown in color box.
  *
- * @return HTML  code to print the color box.
+ * @return string HTML code.  code to print the color box.
  */
 function ui_print_integria_incident_priority($priority, $priority_label)
 {

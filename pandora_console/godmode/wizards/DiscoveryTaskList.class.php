@@ -1254,7 +1254,7 @@ class DiscoveryTaskList extends HTML
      *
      * @param array $task Task.
      *
-     * @return html code with summary.
+     * @return string HTML code. code with summary.
      */
     private function progressTaskSummary($task)
     {

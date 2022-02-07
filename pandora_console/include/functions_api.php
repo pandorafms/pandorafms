@@ -1776,11 +1776,6 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
             ]
         );
 
-        $tpolicy_group_old = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups
-                WHERE id_group = '.$values_old['id_grupo']
-        );
-
         $return = db_process_sql_update(
             'tagente',
             $fields,
@@ -1807,59 +1802,6 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
                         $field['disabled'],
                     ]
                 );
-            }
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $value) {
-                    $tpolicy_agents_old = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-                        WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$agent
-                    );
-
-                    if ($tpolicy_agents_old) {
-                        $result2 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 1],
-                            [
-                                'id_agent'  => $agent,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
-            $tpolicy_group = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-                WHERE id_group = '.$field['id_grupo']
-            );
-
-            if ($tpolicy_group) {
-                foreach ($tpolicy_group as $key => $value) {
-                    $tpolicy_agents = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-                        WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$agent
-                    );
-
-                    if (!$tpolicy_agents) {
-                        db_process_sql_insert(
-                            'tpolicy_agents',
-                            [
-                                'id_policy' => $value['id_policy'],
-                                'id_agent'  => $agent,
-                            ]
-                        );
-                    } else {
-                        $result3 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 0],
-                            [
-                                'id_agent'  => $agent,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
             }
         }
     }

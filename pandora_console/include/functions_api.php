@@ -1577,59 +1577,6 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
                 ]
             );
         }
-
-        if ($tpolicy_group_old) {
-            foreach ($tpolicy_group_old as $key => $value) {
-                $tpolicy_agents_old = db_get_sql(
-                    'SELECT * FROM tpolicy_agents 
-                    WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agent
-                );
-
-                if ($tpolicy_agents_old) {
-                    $result2 = db_process_sql_update(
-                        'tpolicy_agents',
-                        ['pending_delete' => 1],
-                        [
-                            'id_agent'  => $id_agent,
-                            'id_policy' => $value['id_policy'],
-                        ]
-                    );
-                }
-            }
-        }
-
-        $tpolicy_group = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups 
-            WHERE id_group = '.$idGroup
-        );
-
-        if ($tpolicy_group) {
-            foreach ($tpolicy_group as $key => $value) {
-                $tpolicy_agents = db_get_sql(
-                    'SELECT * FROM tpolicy_agents 
-                    WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agent
-                );
-
-                if (!$tpolicy_agents) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $value['id_policy'],
-                            'id_agent'  => $id_agent,
-                        ]
-                    );
-                } else {
-                    $result3 = db_process_sql_update(
-                        'tpolicy_agents',
-                        ['pending_delete' => 0],
-                        [
-                            'id_agent'  => $id_agent,
-                            'id_policy' => $value['id_policy'],
-                        ]
-                    );
-                }
-            }
-        }
     }
 
     returnData(

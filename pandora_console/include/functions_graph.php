@@ -1468,7 +1468,15 @@ function graphic_combined_module(
                     'module_description' => $module_description,
                 ];
 
-                if ($source['label'] != '') {
+                if (is_array($source['label']) === true) {
+                    $lab = '';
+                    foreach ($source['label'] as $label) {
+                        $lab .= reporting_label_macro(
+                            $items_label,
+                            $label
+                        );
+                    }
+                } else if ($source['label'] != '') {
                     $lab = reporting_label_macro(
                         $items_label,
                         $source['label']

@@ -1713,16 +1713,12 @@ function agents_get_name($id_agent, $case='none')
         case 'upper':
         return mb_strtoupper($agent, 'UTF-8');
 
-            break;
         case 'lower':
         return mb_strtolower($agent, 'UTF-8');
 
-            break;
         case 'none':
         default:
         return ($agent);
-
-            break;
     }
 }
 
@@ -1809,23 +1805,37 @@ function agents_get_alias_array($array_ids)
 /**
  * Get alias of an agent (cached function).
  *
- * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none).
+ * @param integer|array $id_agent Agent id or array or box, also a boat.
+ * @param string        $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
-function agents_get_alias($id_agent, $case='none')
+function agents_get_alias(int|array $id_agent, string $case='none')
 {
-    global $config;
     // Prepare cache.
     static $cache = [];
-    if (empty($case)) {
+    if (empty($case) === true) {
         $case = 'none';
     }
 
+    $agent_alias = '';
+    if (is_array($id_agent) === true) {
+        foreach ($id_agent as $agg) {
+            $agent_alias .= agents_get_alias($agg, $case);
+        }
+
+        return $agent_alias;
+    }
+
+    if (isset($cache[$case]) === false) {
+        $cache[$case] = [];
+    }
+
     // Check cache.
-    if (!is_metaconsole()) {
-        if (isset($cache[$case][$id_agent])) {
+    if (is_metaconsole() === false) {
+        if (is_numeric($id_agent) === true && isset($cache[$case]) === true
+            && isset($cache[$case][$id_agent]) === true
+        ) {
             return $cache[$case][$id_agent];
         }
     }
@@ -1851,7 +1861,7 @@ function agents_get_alias($id_agent, $case='none')
         break;
     }
 
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         $cache[$case][$id_agent] = $alias;
     }
 

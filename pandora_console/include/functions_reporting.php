@@ -2343,19 +2343,19 @@ function reporting_agents_inventory($report, $content)
         $search_sql .= ' AND id_os IN ('.implode(',', $es_os_filter).')';
     }
 
-    if ($es_agent_version_filter != '') {
+    if (empty($es_agent_version_filter) === false) {
         $search_sql .= ' AND tagente.agent_version LIKE "%'.$es_agent_version_filter.'%"';
     }
 
-    if ($es_agent_module_search_filter != '') {
+    if (empty($es_agent_module_search_filter) === false) {
         $search_sql .= ' AND tam.nombre LIKE "%'.$es_agent_module_search_filter.'%"';
     }
 
-    if ($es_agent_group_filter != 0) {
+    if (empty($es_agent_group_filter) === false) {
         $search_sql .= ' AND (tagente.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
     }
 
-    if ($es_agent_remote_conf != 0) {
+    if (empty($es_agent_remote_conf) === false) {
         $search_sql .= ' AND tagente.remote = '.$es_agent_remote_conf;
     }
 
@@ -9925,6 +9925,9 @@ function reporting_get_module_detailed_event(
             $id_server,
             $filter_event_filter_exclude
         );
+        if ($event['data'] === false) {
+            $event['data'] = [];
+        }
 
         // total_events
         if (isset($event['data'])) {
@@ -13785,7 +13788,7 @@ function reporting_get_agentmodule_sla_working_timestamp($period, $date_end, $wt
  *
  * @return string
  */
-function reporting_label_macro($item, $label)
+function reporting_label_macro($item, string $label)
 {
     if (preg_match('/_agent_/', $label)) {
         $label = str_replace(

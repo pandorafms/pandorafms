@@ -3003,7 +3003,8 @@ function events_get_group_events_steps(
  * @param boolean $id_server                   Id_server.
  * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
- * @return array An array with all the events happened.
+ * @return array|false An array with all the events happened. False if something
+ *                     failed.
  */
 function events_get_agent(
     $id_agent,

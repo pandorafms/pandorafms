@@ -90,6 +90,8 @@ $data[1] = html_print_input_text(
     '',
     50,
     255,
+    true,
+    false,
     true
 );
 $data[1] .= html_print_input_hidden('id_response', $event_response['id'], true);

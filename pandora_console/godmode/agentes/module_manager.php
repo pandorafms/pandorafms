@@ -144,7 +144,7 @@ if ($prediction_available) {
     $modules['predictionserver'] = __('Create a new prediction server module');
 }
 
-if (is_metaconsole() === true || $web_available === '1') {
+if (is_metaconsole() === true || $web_available >= '1') {
     $modules['webserver'] = __('Create a new web Server module');
 }
 

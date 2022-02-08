@@ -495,6 +495,53 @@ function confirmDialog(settings) {
     );
   }
 
+  var buttons = [
+    {
+      id: "cancel_btn_dialog",
+      text: settings.cancelText
+        ? settings.cancelText
+        : settings.strCancelButton,
+      class:
+        hideCancelButton +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+      click: function() {
+        if (typeof settings.notCloseOnDeny == "undefined") {
+          $(this).dialog("close");
+          $(this).remove();
+        }
+        if (typeof settings.onDeny == "function") settings.onDeny();
+      }
+    },
+    {
+      text: settings.strOKButton,
+      class:
+        hideOkButton +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+      click: function() {
+        $(this).dialog("close");
+        if (typeof settings.onAccept == "function") settings.onAccept();
+        $(this).remove();
+      }
+    }
+  ];
+
+  if (settings.newButton != undefined) {
+    var newButton = {
+      text: settings.newButton.text,
+      class:
+        settings.newButton.class +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-warning",
+      click: function() {
+        $(this).dialog("close");
+        if (typeof settings.newButton.onFunction == "function")
+          settings.newButton.onFunction();
+        $(this).remove();
+      }
+    };
+
+    buttons.unshift(newButton);
+  }
+
   $("#confirm_" + randomStr);
   $("#confirm_" + randomStr)
     .dialog({
@@ -504,35 +551,7 @@ function confirmDialog(settings) {
       width: settings.size,
       maxHeight: settings.maxHeight,
       modal: true,
-      buttons: [
-        {
-          id: "cancel_btn_dialog",
-          text: settings.cancelText
-            ? settings.cancelText
-            : settings.strCancelButton,
-          class:
-            hideCancelButton +
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-          click: function() {
-            if (typeof settings.notCloseOnDeny == "undefined") {
-              $(this).dialog("close");
-              $(this).remove();
-            }
-            if (typeof settings.onDeny == "function") settings.onDeny();
-          }
-        },
-        {
-          text: settings.strOKButton,
-          class:
-            hideOkButton +
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-          click: function() {
-            $(this).dialog("close");
-            if (typeof settings.onAccept == "function") settings.onAccept();
-            $(this).remove();
-          }
-        }
-      ]
+      buttons: buttons
     })
     .show();
 }

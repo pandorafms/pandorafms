@@ -251,6 +251,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $icon_image = '';
     $no_close_bool = false;
     $force_style = '';
+    $force_class = '';
     if (is_array($message)) {
         if (!empty($message['title'])) {
             $text_title = $message['title'];
@@ -270,6 +271,10 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 
         if (!empty($message['force_style'])) {
             $force_style = $message['force_style'];
+        }
+
+        if (empty($message['force_class']) === false) {
+            $force_class = $message['force_class'];
         }
     } else {
         $text_message = $message;
@@ -318,6 +323,10 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     }
 
     $id = 'info_box_'.uniqid();
+
+    if (empty($force_class) === false) {
+        $class = $class.' '.$force_class;
+    }
 
     // Use the no_meta parameter because this image is only in the base console.
     $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'

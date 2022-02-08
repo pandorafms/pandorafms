@@ -522,6 +522,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `min_alerts_reset_counter` TINYINT DEFAULT 0,
   `disable_event` TINYINT DEFAULT 0,
   `previous_name` TEXT,
+  `schedule` TEXT,
   PRIMARY KEY  (`id`),
   KEY `idx_template_action` (`id_alert_action`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -3041,6 +3042,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
   `id_template_fields` INT UNSIGNED NOT NULL DEFAULT 0,
   `last_evaluation` BIGINT NOT NULL DEFAULT 0,
   `pool_occurrences` INT UNSIGNED NOT NULL DEFAULT 0,
+  `schedule` TEXT,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

@@ -248,14 +248,11 @@ div#rules.show {
 }
 
 .info-item {
-  width: 25%;
-}
-
-.info-days {
-  width: 65%;
+  width: 100%;
 }
 
 .info-item table.info_table thead tr th {
+  min-width: 150px;
   text-align: center;
 }
 

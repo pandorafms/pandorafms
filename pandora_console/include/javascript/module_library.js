@@ -15,7 +15,6 @@ Variables from PHP:
 */
 
 const REMOTE_MODULE_LIBRARY_URI = "https://pandorafms.com/library/";
-
 $(document).ready(function() {
   // Save categories in sessionStorage to avoid making the request to the API many times.
   function set_local_categories() {

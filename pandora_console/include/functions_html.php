@@ -4827,7 +4827,13 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['modal']) === true) ? $data['modal'] : false),
                 ((isset($data['message']) === true) ? $data['message'] : ''),
-                ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['truncate_size']) === true) ? $data['truncate_size'] : false),
+                ((isset($data['select2_enable']) === true) ? $data['select2_enable'] : true),
+                ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
+                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false)
             );
         break;
 

@@ -1,17 +1,32 @@
 <?php
+/**
+ * Alerts details for agent.
+ *
+ * @category   Alert
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -28,7 +43,7 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
 enterprise_include_once('include/functions_policies.php');
 
 $id_alert = get_parameter('id_alert', 0);
-// ID given as parameter
+// ID given as parameter.
 $alert = alerts_get_alert_agent_module($id_alert);
 $template = alerts_get_alert_template($alert['id_alert_template']);
 $actions = alerts_get_alert_agent_module_actions($id_alert);
@@ -36,19 +51,27 @@ $agent_alias = modules_get_agentmodule_agent_alias($alert['id_agent_module']);
 $agent = modules_get_agentmodule_agent($alert['id_agent_module']);
 $module_name = modules_get_agentmodule_name($alert['id_agent_module']);
 
-// Default action
+// Default action.
 $default_action = $template['id_alert_action'];
 if ($default_action != 0) {
     $default_action = alerts_get_alert_action($default_action);
-    $default_action['name'] .= '  '.'('.__('Default').')';
+    $default_action['name'] .= ' ('.__('Default').')';
     $default_action['default'] = 1;
     $default_action['module_action_threshold'] = '0';
 }
 
-// Header
-ui_print_page_header(__('Alert details'), 'images/op_alerts.png', false, '', false, '');
+// Header.
+ui_print_page_header(
+    __('Alert details'),
+    'images/op_alerts.png',
+    false,
+    '',
+    false,
+    ''
+);
 
-// TABLE DETAILS
+// TABLE DETAILS.
+$table_details = new stdClass;
 $table_details->class = 'databox';
 $table_details->width = '100%';
 $table_details->size = [];
@@ -103,7 +126,7 @@ $data[1] = '<span title="'.$priorities[$template['priority']].'" class="'.get_pr
 $table_details->data[] = $data;
 
 $data[0] = __('Stand by');
-$data[1] = $alert['standby'] == 1 ? __('Yes') : __('No');
+$data[1] = ($alert['standby'] == 1) ? __('Yes') : __('No');
 $table_details->data[] = $data;
 
 if (enterprise_installed() && $alert['id_policy_alerts'] != 0) {
@@ -113,7 +136,13 @@ if (enterprise_installed() && $alert['id_policy_alerts'] != 0) {
     } else {
         $img = 'images/policies_mc.png';
 
-        $policy = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+        $policy = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">';
+        $policy .= html_print_image(
+            $img,
+            true,
+            ['title' => $policyInfo['name']]
+        );
+        $policy .= '</a>';
     }
 
     $data[0] = __('Policy');
@@ -121,8 +150,7 @@ if (enterprise_installed() && $alert['id_policy_alerts'] != 0) {
     $table_details->data[] = $data;
 }
 
-// TABLE DETAILS END
-// TABLE CONDITIONS
+$table_conditions = new stdClass;
 $table_conditions->class = 'databox';
 $table_conditions->width = '100%';
 $table_conditions->size = [];
@@ -155,9 +183,13 @@ switch ($template['type']) {
 
     case 'max_min':
         if ($template['matches_value']) {
-            $condition = __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
+            $condition = __(
+                'The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>'
+            );
         } else {
-            $condition = __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
+            $condition = __(
+                'The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>'
+            );
         }
 
         $condition = str_replace('<span id="min"></span>', $template['min_value'], $condition);
@@ -200,111 +232,27 @@ switch ($template['type']) {
 
     case 'always':
         $condition = __('Always');
+    break;
+
+    default:
+        // Not possible.
+    break;
 }
 
 $data[0] = $condition;
 
 $table_conditions->data[] = $data;
 
-// DAYS
-$table_days->class = 'databox alert_days';
-$table_days->width = '100%';
-$table_days->size = [];
-$table_days->data = [];
-$table_days->style = [];
-$table_days->styleTable = 'padding: 1px; margin: 0px; text-align: center; height: 80px;';
-$table_days->head[0] = __('Mon');
-$table_days->head[1] = __('Tue');
-$table_days->head[2] = __('Wed');
-$table_days->head[3] = __('Thu');
-$table_days->head[4] = __('Fri');
-$table_days->head[5] = __('Sat');
-$table_days->head[6] = __('Sun');
-$table_days->data[0] = array_fill(0, 7, html_print_image('images/blade.png', true));
+$table_conditions->colspan[1][0] = 2;
+$schedule = io_safe_output(
+    $template['schedule']
+);
 
-$days = [];
-if ($template['monday']) {
-    $table_days->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
+$data[0] = '';
+$data[0] .= html_print_input_hidden('schedule', $schedule, true);
+$data[0] .= '<div id="calendar_map"></div>';
 
-if ($template['tuesday']) {
-    $table_days->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['wednesday']) {
-    $table_days->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['thursday']) {
-    $table_days->data[0][3] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['friday']) {
-    $table_days->data[0][4] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['saturday']) {
-    $table_days->data[0][5] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-if ($template['sunday']) {
-    $table_days->data[0][6] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-}
-
-$data[0] = html_print_table($table_days, true);
-unset($table_days);
-
-// TIME
-$table_time->class = 'databox alert_time';
-$table_time->width = '100%';
-$table_time->size = [];
-$table_time->data = [];
-$table_time->style = [];
-$table_time->styleTable = 'padding: 1px; margin: 0px; text-align: center; height: 80px; width: 100%;';
-
-// $data[0] = __('Time from') . ' / ' . __('Time to');
-if ($template['time_from'] == $template['time_to']) {
-    $table_time->head[0] = '00:00:00<br>-<br>23:59:59';
-    $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-} else {
-    $from_array = explode(':', $template['time_from']);
-    $from = ($from_array[0] * SECONDS_1HOUR + $from_array[1] * SECONDS_1MINUTE + $from_array[2]);
-    $to_array = explode(':', $template['time_to']);
-    $to = ($to_array[0] * SECONDS_1HOUR + $to_array[1] * SECONDS_1MINUTE + $to_array[2]);
-    if ($to > $from) {
-        if ($template['time_from'] != '00:00:00') {
-            $table_time->head[0] = '00:00:00<br>-<br>'.$template['time_from'];
-            $table_time->data[0][0] = html_print_image('images/blade.png', true);
-        }
-
-        $table_time->head[1] = $template['time_from'].'<br>-<br>'.$template['time_to'];
-        $table_time->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-
-        if ($template['time_to'] != '23:59:59') {
-            $table_time->head[2] = $template['time_to'].'<br>-<br>23:59:59';
-            $table_time->data[0][2] = html_print_image('images/blade.png', true);
-        }
-    } else {
-        if ($template['time_to'] != '00:00:00') {
-            $table_time->head[0] = '00:00:00<br>-<br>'.$template['time_to'];
-            $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-        }
-
-        $table_time->head[1] = $template['time_to'].'<br>-<br>'.$template['time_from'];
-        $table_time->data[0][1] = html_print_image('images/blade.png', true, ['class' => 'invert_filter']);
-
-        if ($template['time_from'] != '23:59:59') {
-            $table_time->head[2] = $template['time_from'].'<br>-<br>23:59:59';
-            $table_time->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-        }
-    }
-
-    $data[1] = $template['time_from'].' / '.$template['time_to'];
-}
-
-$data[1] = html_print_table($table_time, true);
-unset($table_time);
-
+$data[1] = '';
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');
@@ -319,7 +267,8 @@ $data[0] = __('Number of alerts').' ('.__('Min').'/'.__('Max').')';
 $data[1] = $template['min_alerts'].'/'.$template['max_alerts'];
 $table_conditions->data[] = $data;
 
-// TABLE CONDITIONS END
+// TABLE CONDITIONS END.
+$table = new stdClass;
 $table->class = 'alert_list databox';
 $table->width = '98%';
 $table->size = [];
@@ -339,7 +288,8 @@ unset($table);
 
 $actions = alerts_get_actions_escalation($actions, $default_action);
 
-// ESCALATION
+// ESCALATION.
+$table = new stdClass;
 $table->class = 'alert_list databox alternate alert_escalation';
 $table->width = '98%';
 $table->size = [];
@@ -354,19 +304,33 @@ $table->style[0] = 'font-weight: bold; text-align: left;';
 if (count($actions) == 1 && isset($actions[0])) {
     $table->head[1] = __('Every time that the alert is fired');
     $table->data[0][0] = $actions[0]['name'];
-    $table->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
+    $table->data[0][1] = html_print_image(
+        'images/tick.png',
+        true,
+        ['class' => 'invert_filter']
+    );
 } else {
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];
-        if ($kaction == 0) {
-            $table->data[$kaction][0] .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
+        if ((int) $kaction === 0) {
+            $table->data[$kaction][0] .= ui_print_help_tip(
+                __('The default actions will be executed every time that the alert is fired and no other action is executed'),
+                true
+            );
         }
 
         foreach ($action['escalation'] as $k => $v) {
             if ($v > 0) {
-                $table->data[$kaction][$k] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
+                $table->data[$kaction][$k] = html_print_image(
+                    'images/tick.png',
+                    true,
+                    ['class' => 'invert_filter']
+                );
             } else {
-                $table->data[$kaction][$k] = html_print_image('images/blade.png', true);
+                $table->data[$kaction][$k] = html_print_image(
+                    'images/blade.png',
+                    true
+                );
             }
 
             if (count($table->head) <= count($action['escalation'])) {
@@ -382,12 +346,16 @@ if (count($actions) == 1 && isset($actions[0])) {
             }
         }
 
-        $action_threshold = $action['module_action_threshold'] > 0 ? $action['module_action_threshold'] : $action['action_threshold'];
+        $action_threshold = ($action['module_action_threshold'] > 0) ? $action['module_action_threshold'] : $action['action_threshold'];
 
         if ($action_threshold == 0) {
             $table->data[$kaction][($k + 1)] = __('No');
         } else {
-            $table->data[$kaction][($k + 1)] = human_time_description_raw($action_threshold, true, 'tiny');
+            $table->data[$kaction][($k + 1)] = human_time_description_raw(
+                $action_threshold,
+                true,
+                'tiny'
+            );
         }
 
         $table->head[($k + 1)] = __('Threshold');
@@ -397,7 +365,8 @@ if (count($actions) == 1 && isset($actions[0])) {
 html_print_table($table);
 unset($table);
 echo '</div>';
-// ESCALATION TABLE
+// ESCALATION TABLE.
+$table = new stdClass;
 $table->class = 'alert_list databox';
 $table->width = '98%';
 $table->size = [];
@@ -405,7 +374,7 @@ $table->head = [];
 $table->data = [];
 $table->rowstyle[1] = 'font-weight: bold;';
 
-if ($default_action != 0) {
+if ((int) $default_action != 0) {
     $actions_select[0] = $default_action['name'];
 }
 
@@ -416,17 +385,43 @@ foreach ($actions as $kaction => $action) {
 $table->data[0][0] = __('Select the desired action and mode to see the Firing/Recovery fields for this action');
 $table->colspan[0][0] = 2;
 
-$table->data[1][0] = __('Action').'<br>'.html_print_select($actions_select, 'firing_action_select', -1, '', __('Select the action'), -1, true, false, false);
+$table->data[1][0] = __('Action');
+$table->data[1][0] .= '<br>';
+$table->data[1][0] .= html_print_select(
+    $actions_select,
+    'firing_action_select',
+    -1,
+    '',
+    __('Select the action'),
+    -1,
+    true,
+    false,
+    false
+);
 
 $modes = [];
 $modes['firing'] = __('Firing');
 $modes['recovering'] = __('Recovering');
 
-$table->data[1][1] = '<div class="action_details invisible" >'.__('Mode').'<br>'.html_print_select($modes, 'modes', 'firing', '', '', 0, true, false, false).'</div>';
+$table->data[1][1] = '<div class="action_details invisible" >';
+$table->data[1][1] .= __('Mode');
+$table->data[1][1] .= '<br>';
+$table->data[1][1] .= html_print_select(
+    $modes,
+    'modes',
+    'firing',
+    '',
+    '',
+    0,
+    true,
+    false,
+    false
+);
+$table->data[1][1] .= '</div>';
 
 html_print_table($table);
-unset($table);
 
+$table = new stdClass;
 $table->class = 'alert_list databox alternate';
 $table->width = '98%';
 $table->size = [];
@@ -437,13 +432,33 @@ $table->style[1] = 'width: 30%;';
 $table->style[2] = 'width: 30%;';
 $table->style[3] = 'font-weight: bold; width: 30%;';
 
-$table->title = __('Firing fields').ui_print_help_tip(__('Fields passed to the command executed by this action when the alert is fired'), true);
+$table->title = __('Firing fields');
+$table->title .= ui_print_help_tip(
+    __('Fields passed to the command executed by this action when the alert is fired'),
+    true
+);
 
-$table->head[0] = __('Field').ui_print_help_tip(__('Fields configured on the command associated to the action'), true);
-$table->head[1] = __('Template fields').ui_print_help_tip(__('Triggering fields configured in template'), true);
-$table->head[2] = __('Action fields').ui_print_help_tip(__('Triggering fields configured in action'), true);
+$table->head[0] = __('Field');
+$table->head[0] .= ui_print_help_tip(
+    __('Fields configured on the command associated to the action'),
+    true
+);
+$table->head[1] = __('Template fields');
+$table->head[1] .= ui_print_help_tip(
+    __('Triggering fields configured in template'),
+    true
+);
+$table->head[2] = __('Action fields');
+$table->head[2] .= ui_print_help_tip(
+    __('Triggering fields configured in action'),
+    true
+);
 
-$table->head[3] = __('Executed on firing').ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
+$table->head[3] = __('Executed on firing');
+$table->head[3] .= ui_print_help_tip(
+    __('Fields used on execution when the alert is fired'),
+    true
+);
 
 $firing_fields = [];
 
@@ -456,14 +471,12 @@ foreach ($actions as $kaction => $action) {
     $descriptions = json_decode($command['fields_descriptions'], true);
 
     foreach ($descriptions as $kdesc => $desc) {
-        if (empty($desc)) {
-            // continue;
-        }
-
         $field = 'field'.($kdesc + 1);
         $data = [];
-        $data[0] = $firing_fields[$kaction]['description'][$field] = $desc;
-        if (!empty($data[0])) {
+        $data[0] = $desc;
+        $firing_fields[$kaction]['description'][$field] = $desc;
+
+        if (empty($data[0]) === false) {
             $data[0] = '<b>'.$data[0].'</b><br>';
         }
 
@@ -473,12 +486,14 @@ foreach ($actions as $kaction => $action) {
         ).')</span>';
         $data[1] = $template[$field];
         $data[2] = $action[$field];
-        $data[3] = $firing_fields[$kaction]['value'][$field] = empty($action[$field]) ? $template[$field] : $action[$field];
+        $data[3] = (empty($action[$field]) === true) ? $template[$field] : $action[$field];
+
+        $firing_fields[$kaction]['value'][$field] = (empty($action[$field]) === true) ? $template[$field] : $action[$field];
 
         $first_level = $template[$field];
         $second_level = $action[$field];
-        if (!empty($second_level) || !empty($first_level)) {
-            if (empty($second_level)) {
+        if (empty($second_level) === false || empty($first_level) === false) {
+            if (empty($second_level) === false) {
                 $table->cellclass[count($table->data)][1] = 'used_field';
                 $table->cellclass[count($table->data)][2] = 'empty_field';
             } else {
@@ -493,7 +508,7 @@ foreach ($actions as $kaction => $action) {
 
         $table->rowclass[] = 'firing_action firing_action_'.$kaction;
 
-        if ($command_preview != 'Internal type') {
+        if ($command_preview !== 'Internal type') {
             $command_preview = str_replace('_'.$field.'_', $data[3], $command_preview);
         }
     }
@@ -504,20 +519,32 @@ foreach ($actions as $kaction => $action) {
 echo '<div class="mode_table mode_table_firing action_details invisible w100p">';
 
 html_print_table($table);
-unset($table);
 
 foreach ($actions as $kaction => $action) {
     echo '<div class="firing_action firing_action_'.$kaction.' invisible">';
-    ui_print_info_message(['title' => __('Command preview'), 'message' => $firing_fields[$kaction]['command_preview'], 'no_close' => true]);
+    ui_print_info_message(
+        [
+            'title'    => __('Command preview'),
+            'message'  => $firing_fields[$kaction]['command_preview'],
+            'no_close' => true,
+        ]
+    );
     echo '</div>';
 }
 
 echo '</div>';
-// Firing table
+// Firing table.
 echo '<div class="mode_table mode_table_recovering action_details invisible w100p" >';
-if ($template['recovery_notify'] == 0) {
-    ui_print_info_message(['title' => __('Disabled'), 'message' => __('The alert recovering is disabled on this template.'), 'no_close' => true]);
+if ((int) $template['recovery_notify'] === 0) {
+    ui_print_info_message(
+        [
+            'title'    => __('Disabled'),
+            'message'  => __('The alert recovering is disabled on this template.'),
+            'no_close' => true,
+        ]
+    );
 } else {
+    $table = new stdClass;
     $table->class = 'alert_list databox alternate';
     $table->width = '98%';
     $table->size = [];
@@ -528,13 +555,37 @@ if ($template['recovery_notify'] == 0) {
     $table->style[2] = 'width: 25%;';
     $table->style[3] = 'width: 25%;';
     $table->style[3] = 'font-weight: bold; width: 25%;';
-    $table->title = __('Recovering fields').ui_print_help_tip(__('Fields passed to the command executed by this action when the alert is recovered'), true);
+    $table->title = __('Recovering fields');
+    $table->title .= ui_print_help_tip(
+        __('Fields passed to the command executed by this action when the alert is recovered'),
+        true
+    );
 
-    $table->head[0] = __('Field').ui_print_help_tip(__('Fields configured on the command associated to the action'), true);
-    $table->head[1] = __('Firing fields').ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
-    $table->head[2] = __('Template recovery fields').ui_print_help_tip(__('Recovery fields configured in alert template'), true);
-    $table->head[3] = __('Action recovery fields').ui_print_help_tip(__('Recovery fields configured in alert action'), true);
-    $table->head[4] = __('Executed on recovery').ui_print_help_tip(__('Fields used on execution when the alert is recovered'), true);
+    $table->head[0] = __('Field');
+    $table->head[0] .= ui_print_help_tip(
+        __('Fields configured on the command associated to the action'),
+        true
+    );
+    $table->head[1] = __('Firing fields');
+    $table->head[1] .= ui_print_help_tip(
+        __('Fields used on execution when the alert is fired'),
+        true
+    );
+    $table->head[2] = __('Template recovery fields');
+    $table->head[2] .= ui_print_help_tip(
+        __('Recovery fields configured in alert template'),
+        true
+    );
+    $table->head[3] = __('Action recovery fields');
+    $table->head[3] .= ui_print_help_tip(
+        __('Recovery fields configured in alert action'),
+        true
+    );
+    $table->head[4] = __('Executed on recovery');
+    $table->head[4] .= ui_print_help_tip(
+        __('Fields used on execution when the alert is recovered'),
+        true
+    );
     $table->style[4] = 'font-weight: bold;';
 
     foreach ($firing_fields as $kaction => $firing) {
@@ -544,7 +595,7 @@ if ($template['recovery_notify'] == 0) {
         foreach ($firing['description'] as $field => $desc) {
             $data[0] = $desc;
 
-            if (!empty($data[0])) {
+            if (empty($data[0]) === false) {
                 $data[0] = '<b>'.$data[0].'</b><br>';
             }
 
@@ -560,14 +611,14 @@ if ($template['recovery_notify'] == 0) {
             $first_level = $data[1];
             $second_level = $data[2];
             $third_level = $data[3];
-            if (!empty($third_level) || !empty($second_level) || !empty($first_level)) {
-                if (!empty($third_level)) {
+            if (empty($third_level) === false || empty($second_level) === false || empty($first_level) === false) {
+                if (empty($third_level) === false) {
                     $table->cellclass[count($table->data)][1] = 'overrided_field';
                     $table->cellclass[count($table->data)][2] = 'overrided_field';
                     $table->cellclass[count($table->data)][3] = 'used_field';
 
                     $data[4] = $data[3];
-                } else if (!empty($second_level)) {
+                } else if (empty($second_level) === false) {
                     $table->cellclass[count($table->data)][1] = 'overrided_field';
                     $table->cellclass[count($table->data)][2] = 'used_field';
                     $table->cellclass[count($table->data)][3] = 'empty_field';
@@ -578,8 +629,8 @@ if ($template['recovery_notify'] == 0) {
                     $table->cellclass[count($table->data)][2] = 'empty_field';
                     $table->cellclass[count($table->data)][3] = 'empty_field';
 
-                    // All fields but field1 will have [RECOVER] prefix if no recovery fields are configured
-                    $data[4] = $fieldn == 1 ? $data[1] : '[RECOVER]'.$data[1];
+                    // All fields but field1 will have [RECOVER] prefix if no recovery fields are configured.
+                    $data[4] = ((int) $fieldn === 1) ? $data[1] : '[RECOVER]'.$data[1];
                 }
             }
 
@@ -588,7 +639,7 @@ if ($template['recovery_notify'] == 0) {
 
             $table->rowclass[] = 'firing_action firing_action_'.$kaction;
 
-            if ($command_preview != 'Internal type') {
+            if ($command_preview !== 'Internal type') {
                 $command_preview = str_replace('_'.$field.'_', $data[4], $command_preview);
             }
 
@@ -598,16 +649,85 @@ if ($template['recovery_notify'] == 0) {
 
     html_print_table($table);
     unset($table);
-    ui_print_info_message(['title' => __('Command preview'), 'message' => $command_preview, 'no_close' => true]);
+    ui_print_info_message(
+        [
+            'title'    => __('Command preview'),
+            'message'  => $command_preview,
+            'no_close' => true,
+        ]
+    );
 }
 
 echo '</div>';
-// Recovering table
+
+ui_require_css_file('main.min', 'include/javascript/fullcalendar/');
+ui_require_javascript_file('main.min', 'include/javascript/fullcalendar/');
+ui_require_javascript_file('pandora_fullcalendar');
 ?>
 
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
-    
+    var calendarEl = document.getElementById('calendar_map');
+    if(calendarEl){
+        var eventsBBDD = $("#hidden-schedule").val();
+        if(eventsBBDD === '' || eventsBBDD === 'Array') {
+            eventsBBDD = '';
+        }
+        var events = loadEventBBDD(eventsBBDD);
+
+        var options = {
+            contentHeight: "auto",
+            headerToolbar: {
+                left: "",
+                center: "",
+                right: ''
+            },
+            buttonText: {},
+            dayHeaderFormat: { weekday: "short" },
+            initialView: "dayGridWeek",
+            navLinks: false,
+            selectable: true,
+            selectMirror: true,
+            slotDuration: "01:00:00",
+            slotLabelInterval: "02:00:00",
+            snapDuration: "01:00:00",
+            slotMinTime: "00:00:00",
+            slotMaxTime: "24:00:00",
+            scrollTime: "01:00:00",
+            locale: "en-GB",
+            firstDay: 1,
+            eventTimeFormat: {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: false
+            },
+            eventColor: "#82b92e",
+            editable: false,
+            dayMaxEvents: 3,
+            dayPopoverFormat: { weekday: "long" },
+            defaultAllDay: false,
+            displayEventTime: true,
+            displayEventEnd: true,
+            selectOverlap: false,
+            eventOverlap: false,
+            allDaySlot: true,
+            droppable: false,
+            select: false,
+            selectAllow: false,
+            eventAllow: false,
+            eventDrop: false,
+            eventDragStop: false,
+            eventResize: false,
+            eventMouseEnter: false,
+            eventMouseLeave: false,
+            eventClick: false,
+        };
+
+        var settings = {}
+
+        var calendar = fullCalendarPandora(calendarEl, options, settings, events);
+        calendar.render();
+    }
 });
 
 $('#firing_action_select').change(function() {
@@ -619,8 +739,7 @@ $('#firing_action_select').change(function() {
     else {
         $('.action_details').show();
     }
-    
-    
+
     $('.firing_action').hide();
     if($(this).val() != -1) {
         $('.firing_action_' + $(this).val()).show();

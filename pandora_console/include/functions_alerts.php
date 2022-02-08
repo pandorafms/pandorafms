@@ -1060,39 +1060,6 @@ function alerts_get_alert_template_time_to($id_alert_template)
 
 
 /**
- * Get alert template in weekday format.
- *
- * @param int Id of an alert template.
- *
- * @return mixed Alert template in weekday format or false if something goes wrong.
- */
-function alerts_get_alert_template_weekdays($id_alert_template)
-{
-    $alert = alerts_get_alert_template($id_alert_template);
-
-    if ($alert === false) {
-        return false;
-    }
-
-    $retval = [];
-    $days = [
-        'monday',
-        'tuesday',
-        'wednesday',
-        'thursday',
-        'friday',
-        'saturday',
-        'sunday',
-    ];
-    foreach ($days as $day) {
-        $retval[$day] = (bool) $alert[$day];
-    }
-
-    return $retval;
-}
-
-
-/**
  * Get recovery_notify of talert_templates table.
  *
  * @param int Id of an alert template.
@@ -2574,9 +2541,14 @@ function alerts_normalize_actions_escalation($escalation)
             $any_greater_than = true;
         }
 
-        $n = count($escalation[$k]);
-        if ($n > $max_elements) {
-            $max_elements = $n;
+        if (isset($escalation[$k]) === true
+            && empty($escalation[$k]) === false
+            && is_array($escalation[$k]) === true
+        ) {
+            $n = count($escalation[$k]);
+            if ($n > $max_elements) {
+                $max_elements = $n;
+            }
         }
     }
 

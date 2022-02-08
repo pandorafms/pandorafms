@@ -197,6 +197,18 @@ $data[0] = '<div id="command_timeout_label" class="labels invisible">'.__('Comma
 $data[1] = '<div id="command_timeout_value" class="invisible">'.html_print_input_text('command_timeout', $event_response['command_timeout'], '', 4, 5, true);
 
 $table->data[5] = $data;
+
+$data = [];
+$data[0] = __('Display command').ui_print_help_tip(__('If enabled the command will be displayed to any user that can execute this event response'), true);
+$data[1] = html_print_checkbox_switch(
+    'display_command',
+    1,
+    $event_response['display_command'],
+    true
+);
+
+$table->data[6] = $data;
+
 if ($event_response_id == 0) {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);

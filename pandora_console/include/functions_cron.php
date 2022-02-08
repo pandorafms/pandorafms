@@ -532,13 +532,20 @@ function cron_list_table()
                         continue;
                     }
 
-                    $email = $args[1];
-                    $report_type = $args[4];
-                    $data[2] .= '<br>- '.__('Report').": <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=".$args[0]."'>";
-                    $data[2] .= $report['name'].'</a>';
-                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
-                    $data[2] .= '<br>- '.__('Email').": <a href='mailto:".$email."'>";
-                    $data[2] .= ui_print_truncate_text($email, 60, false).'</a>';
+                    $email = ui_print_truncate_text($args[1], 120);
+                    $reportName = ui_print_truncate_text($report['name'], 120);
+                    $reportType = $args[4];
+                    $data[2] .= html_print_anchor(
+                        [
+                            'href'    => ui_get_full_url(
+                                'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$args[0]
+                            ),
+                            'content' => $reportName,
+                        ],
+                        true
+                    );
+                    $data[2] .= '<br>- '.__('Report type').': '.$reportType;
+                    $data[2] .= '<br>- '.__('Email').': '.$email;
                 break;
 
                 case 'cron_task_generate_report_by_template':
@@ -582,32 +589,48 @@ function cron_list_table()
                     }
 
                     if (empty($args[1]) === false && (string) $args[1] !== '0') {
-                        $agents_id = $args[1];
+                        if (is_metaconsole() === true) {
+                            $tmpAgents = explode(',', $args[1]);
+                            $agentsId = '';
+                            foreach ($tmpAgents as $tmpAgent) {
+                                $tmpAgentData = explode('|', $tmpAgent);
+                                $agentsId .= (empty($agentsId) === false) ? ', '.$tmpAgentData[2] : $tmpAgentData[2];
+                            }
+                        }
                     } else {
                         if (empty($args[2]) === false) {
-                            $agents_id = sprintf(
-                                '(%s) %s',
+                            $agentsId = sprintf(
+                                '<em>(%s)</em> %s',
                                 __('regex'),
                                 $args[2]
                             );
                         } else {
-                            $agents_id = __('None');
+                            $agentsId = __('None');
                         }
                     }
 
-                    $report_type = $args[8];
-                    $report_per_agent = $args[3];
-                    $report_name = $args[4];
-                    $email = $args[5];
+                    // Assignations.
+                    $agentsId = ui_print_truncate_text($agentsId, 120);
+                    $reportPerAgent = ((string) $args[3] === '1') ? __('Yes') : __('No');
+                    $reportName = ui_print_truncate_text($args[4], 120);
+                    $email = ui_print_truncate_text($args[5], 120);
+                    $reportType = $args[8];
+                    // Table row.
                     $data[2] .= '<br>- '.__('Template').': ';
-                    $data[2] .= '<a href="'.ui_get_full_url('index.php?sec=reporting&sec2=enterprise/godmode/reporting/reporting_builder.template&action=edit&id_template='.$args[0]).'">';
-                    $data[2] .= $template['name'].'</a>';
-                    $data[2] .= '<br>- '.__('Agents').': '.ui_print_truncate_text($agents_id, 120).'</a>';
-                    $data[2] .= '<br>- '.__('Report per agent').': '.$report_per_agent.'</a>';
-                    $data[2] .= '<br>- '.__('Report name').': '.$report_name.'</a>';
-                    $data[2] .= '<br>- '.__('Email').": <a href='mailto:".$email."'>".$email.'</a>';
-                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
-
+                    $data[2] .= html_print_anchor(
+                        [
+                            'href'    => ui_get_full_url(
+                                'index.php?sec=reporting&sec2=enterprise/godmode/reporting/reporting_builder.template&action=edit&id_template='.$args[0]
+                            ),
+                            'content' => $template['name'],
+                        ],
+                        true
+                    );
+                    $data[2] .= '<br>- '.__('Agents').': '.$agentsId;
+                    $data[2] .= '<br>- '.__('Report per agent').': '.$reportPerAgent;
+                    $data[2] .= '<br>- '.__('Report name').': '.$reportName;
+                    $data[2] .= '<br>- '.__('Email').': '.$email;
+                    $data[2] .= '<br>- '.__('Report type').': '.$reportType;
                 break;
 
                 case 'cron_task_execute_custom_script':

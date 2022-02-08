@@ -1535,10 +1535,6 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'disabled',
         ]
     );
-    $tpolicy_group_old = db_get_all_rows_sql(
-        'SELECT id_policy FROM tpolicy_groups
-            WHERE id_group = '.$values_old['id_grupo']
-    );
 
     $return = db_process_sql_update(
         'tagente',
@@ -1953,23 +1949,6 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             // Create address for this agent in taddress.
             if ($direccion_agente != '') {
                 agents_add_address($id_agente, $direccion_agente);
-            }
-
-            $tpolicy_group_old = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-                WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $old_group) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $id_agente,
-                        ]
-                    );
-                }
             }
 
             $info = '{"Name":"'.$nombre_agente.'",

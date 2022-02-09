@@ -2436,7 +2436,7 @@ class ConsoleSupervisor
 
         // Only ask for messages once every 2 hours.
         $future = (time() + 2 * SECONDS_1HOUR);
-        config_update_value('last_um_check', $future);
+        config_update_value('last_um_check', $future, true);
 
         $messages = update_manager_get_messages();
         if (is_array($messages) === true) {

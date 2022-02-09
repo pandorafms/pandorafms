@@ -61,6 +61,98 @@ require_once 'include/functions_events.php';
 require_once 'include/functions_planned_downtimes.php';
 require_once 'include/functions_reporting.php';
 
+if (is_ajax() === true) {
+    $show_info_agents_modules_affected = (bool) get_parameter(
+        'show_info_agents_modules_affected',
+        false
+    );
+
+    $get_info_agents_modules_affected = (bool) get_parameter(
+        'get_info_agents_modules_affected',
+        false
+    );
+
+    if ($show_info_agents_modules_affected === true) {
+        $id = (int) get_parameter('id', 0);
+
+        $columns = [
+            'agent_name',
+            'module_name',
+        ];
+
+        $column_names = [
+            __('Agents'),
+            __('Modules'),
+        ];
+
+        ui_print_datatable(
+            [
+                'id'                  => 'agent_modules_affected_planned_downtime',
+                'class'               => 'info_table',
+                'style'               => 'width: 100%',
+                'columns'             => $columns,
+                'column_names'        => $column_names,
+                'ajax_url'            => 'godmode/agentes/planned_downtime.list',
+                'ajax_data'           => [
+                    'get_info_agents_modules_affected' => 1,
+                    'id'                               => $id,
+                ],
+                'order'               => [
+                    'field'     => 'agent_name',
+                    'direction' => 'asc',
+                ],
+                'search_button_class' => 'sub filter float-right',
+                'form'                => [
+                    'inputs' => [
+                        [
+                            'label' => __('Agents'),
+                            'type'  => 'text',
+                            'class' => 'w200px',
+                            'id'    => 'filter_agents',
+                            'name'  => 'filter_agents',
+                        ],
+                        [
+                            'label' => __('Modules'),
+                            'type'  => 'text',
+                            'class' => 'w200px',
+                            'id'    => 'filter_modules',
+                            'name'  => 'filter_modules',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        return;
+    }
+
+    if ($get_info_agents_modules_affected === true) {
+        $id = (int) get_parameter('id', 0);
+
+        // Catch post parameters.
+        $options = [
+            'limit'   => get_parameter('start', 0),
+            'offset'  => get_parameter('length', $config['block_size']),
+            'order'   => get_datatable_order(),
+            'filters' => get_parameter('filter', []),
+        ];
+
+        $modules = get_agents_modules_planned_dowtime($id, $options);
+        $count = get_agents_modules_planned_dowtime($id, $options, $count);
+
+        echo json_encode(
+            [
+                'data'            => $modules,
+                'recordsTotal'    => $count[0]['total'],
+                'recordsFiltered' => $count[0]['total'],
+            ]
+        );
+        return;
+    }
+
+    return;
+}
+
 $malformed_downtimes = planned_downtimes_get_malformed();
 $malformed_downtimes_exist = (empty($malformed_downtimes) === false) ? true : false;
 $migrate_malformed = (bool) get_parameter('migrate_malformed');
@@ -297,7 +389,7 @@ if (empty($groups) === false) {
     if (empty($search_text) === false) {
         $filter_performed = true;
         $where_values .= sprintf(
-            ' AND (name LIKE "%%s%" OR description LIKE "%%s%")',
+            ' AND (name LIKE "%%%s%%" OR description LIKE "%%%s%%")',
             $search_text,
             $search_text
         );
@@ -522,6 +614,7 @@ if ($downtimes === false && $filter_performed === false) {
     $table->head['execution'] = __('Execution');
     $table->head['configuration'] = __('Configuration');
     $table->head['running'] = __('Running');
+    $table->head['agents_modules'] = __('Affected');
 
     if ($write_permisson === true
         || $manage_permisson === true
@@ -596,6 +689,24 @@ if ($downtimes === false && $filter_performed === false) {
                 ]
             );
         }
+
+        $settings = [
+            'url'         => ui_get_full_url('ajax.php', false, false, false),
+            'loadingText' => __('Loading, this operation might take several minutes...'),
+            'title'       => __('Agents / Modules affected'),
+            'id'          => $downtime['id'],
+        ];
+
+        $data['agents_modules'] = '<a href="#" onclick=\'dialogAgentModulesAffected('.json_encode($settings).')\'>';
+        $data['agents_modules'] .= html_print_image(
+            'images/search_big.png',
+            true,
+            [
+                'title' => __('Agents and modules affected'),
+                'style' => 'width:22px; height: 22px;',
+            ]
+        );
+        $data['agents_modules'] .= '</a>';
 
         // If user have writting permissions.
         if (in_array($downtime['id_group'], $groupsAD) === true) {
@@ -775,6 +886,7 @@ ui_require_jquery_file(
     'include/javascript/i18n/'
 );
 
+ui_require_javascript_file('pandora_planned_downtimes');
 ?>
 <script language="javascript" type="text/javascript">
 

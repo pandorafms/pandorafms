@@ -989,7 +989,7 @@ function planned_downtimes_copy($id_downtime)
         foreach ($planned_modules as $planned_module) {
             // Unset id.
             unset($planned_module['id']);
-            // Set id_planned downtime
+            // Set id_planned downtime.
             $planned_module['id_downtime'] = $result['id_downtime'];
             $result['id_modules'][] = db_process_sql_insert(
                 'tplanned_downtime_moduless',
@@ -1000,6 +1000,85 @@ function planned_downtimes_copy($id_downtime)
                 break;
             }
         }
+    }
+
+    return $result;
+}
+
+
+/**
+ * Get agentts and modules for planned_downtime.
+ *
+ * @param [type] $id Id planned.
+ *
+ * @return array Result array data.
+ */
+function get_agents_modules_planned_dowtime($id, $options, $count=false)
+{
+    $result = [];
+
+    $filters_agent = '';
+    if (isset($options['filters']['filter_agents']) === true
+        && empty($options['filters']['filter_agents']) === false
+    ) {
+        $filters_agent = sprintf(
+            ' AND (tagente.alias LIKE "%%%s%%")',
+            $options['filters']['filter_agents']
+        );
+    }
+
+    $filters_module = '';
+    if (isset($options['filters']['filter_modules']) === true
+        && empty($options['filters']['filter_modules']) === false
+    ) {
+        $filters_module = sprintf(
+            ' AND (tagente_modulo.nombre LIKE "%%%s%%")',
+            $options['filters']['filter_modules']
+        );
+    }
+
+    if ($count === false) {
+        $query = sprintf(
+            'SELECT tplanned_downtime_modules.*,
+            tagente.alias as agent_name,
+            tagente_modulo.nombre as module_name
+        FROM tplanned_downtime_modules
+        INNER JOIN tagente
+            ON tplanned_downtime_modules.id_agent = tagente.id_agente
+        INNER JOIN tagente_modulo
+            ON tplanned_downtime_modules.id_agent_module = tagente_modulo.id_agente_modulo
+        WHERE id_downtime = %d
+            %s
+            %s
+        ORDER BY %s
+        LIMIT %d, %d',
+            $id,
+            $filters_agent,
+            $filters_module,
+            $options['order'],
+            $options['limit'],
+            $options['offset']
+        );
+    } else {
+        $query = sprintf(
+            'SELECT count(tplanned_downtime_modules.id) as total
+        FROM tplanned_downtime_modules
+        INNER JOIN tagente
+            ON tplanned_downtime_modules.id_agent = tagente.id_agente
+        INNER JOIN tagente_modulo
+            ON tplanned_downtime_modules.id_agent_module = tagente_modulo.id_agente_modulo
+        WHERE id_downtime = %d
+            %s
+            %s',
+            $id,
+            $filters_agent,
+            $filters_module
+        );
+    }
+
+    $result = db_get_all_rows_sql($query);
+    if ($result === false) {
+        $result = [];
     }
 
     return $result;

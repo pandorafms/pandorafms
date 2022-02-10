@@ -152,7 +152,7 @@ if ($error === null) {
             $error = __('Cannot load INI file');
         } else {
             // Relocate files to target destination.
-            Files::move($tmp_path.'/*', $basepath.'/', true);
+            Files::move($tmp_path.'/', $basepath.'/', true);
 
             // Extract information.
             $version = preg_replace('/.*[.]/', '', $filename);

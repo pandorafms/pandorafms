@@ -743,6 +743,7 @@ switch ($action) {
                 break;
 
                 case 'agent_module':
+                case 'agent_module_status':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
 
@@ -4744,6 +4745,7 @@ $(document).ready (function () {
 
         switch (type){
             case 'agent_module':
+            case 'agent_module_status':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
@@ -4878,6 +4880,7 @@ $(document).ready (function () {
         }
         switch (type){
             case 'agent_module':
+            case 'agent_module_status':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
@@ -6345,6 +6348,7 @@ function chooseType() {
             break;
 
         case 'agent_module':
+        case 'agent_module_status':
             $("#row_description").show();
             $("#row_group").show();
             $("#row_module_group").show();

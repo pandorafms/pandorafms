@@ -1653,6 +1653,7 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
+                            case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 
@@ -2454,6 +2455,7 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
+                            case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 

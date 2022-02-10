@@ -31,7 +31,7 @@ enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Profile Management'
     );
     include 'general/noaccess.php';
@@ -203,7 +203,7 @@ if ($id_profile || $new_profile) {
         $network_config_edit = (bool) $profile['network_config_edit'] || $network_config_management;
 
         $id_audit = db_pandora_audit(
-            'User management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Edit profile '.io_safe_output($name)
         );
         enterprise_include_once('include/functions_audit.php');

@@ -23,7 +23,7 @@ $id_user_auth = (string) get_parameter('id_user_auth', $config['id_user']);
 
 if ($id_user !== $config['id_user'] && $FA_forced != 1) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Double Authentication'
     );
     echo json_encode(-1);

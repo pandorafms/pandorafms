@@ -20,7 +20,10 @@ $gis_m = check_acl($config['id_user'], 0, 'MM');
 $access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
 if (!$gis_w && !$gis_m) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -33,7 +36,10 @@ $action = get_parameter('action', 'new_map');
 $gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
 
 if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }

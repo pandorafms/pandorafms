@@ -37,7 +37,7 @@ $id_visual_console = get_parameter('id_visual_console', null);
 // Visual console id required
 if (empty($id_visual_console)) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -48,7 +48,7 @@ if (empty($id_visual_console)) {
 $group_id = db_get_value('id_group', 'tlayout', 'id', $id_visual_console);
 if ($group_id === false) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -68,7 +68,7 @@ if (!isset($vconsole_manage)) {
 
 if (!$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';

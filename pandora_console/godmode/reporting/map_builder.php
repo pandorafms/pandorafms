@@ -41,7 +41,7 @@ $is_metaconsole = is_metaconsole();
 
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access map builder'
     );
     include 'general/noaccess.php';
@@ -157,7 +157,7 @@ if ($delete_layout || $copy_layout) {
     // Visual console required
     if (empty($id_layout)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access map builder'
         );
         include 'general/noaccess.php';
@@ -167,7 +167,7 @@ if ($delete_layout || $copy_layout) {
     $group_id = db_get_value('id_group', 'tlayout', 'id', $id_layout);
     if ($group_id === false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access map builder'
         );
         include 'general/noaccess.php';
@@ -181,7 +181,7 @@ if ($delete_layout || $copy_layout) {
 
     if (!$vconsole_write && !$vconsole_manage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access map builder'
         );
         include 'general/noaccess.php';
@@ -197,22 +197,20 @@ if ($delete_layout || $copy_layout) {
             'tlayout',
             ['id' => $id_layout]
         );
-        if ($result) {
-            db_pandora_audit(
-                'Visual console builder',
-                "Delete visual console #$id_layout"
-            );
-            ui_print_success_message(__('Successfully deleted'));
-            db_clean_cache();
-        } else {
-            db_pandora_audit(
-                'Visual console builder',
-                "Fail try to delete visual console #$id_layout"
-            );
-            ui_print_error_message(
-                __('Not deleted. Error deleting data')
-            );
-        }
+
+        $auditMessage = ((bool) $result === true) ? 'Delete visual console' : 'Fail try to delete visual console';
+        db_pandora_audit(
+            AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+            sprintf('%s #%s', $auditMessage, $id_layout)
+        );
+
+        ui_print_result_message(
+            (bool) $result,
+            __('Successfully deleted'),
+            __('Not deleted. Error deleting data')
+        );
+
+        db_clean_cache();
 
         $id_layout = 0;
     }

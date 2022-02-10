@@ -58,7 +58,7 @@ if (! check_acl(
 )
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access agent manager'
     );
     include 'general/noaccess.php';
@@ -158,7 +158,7 @@ if ($agent_to_delete) {
     } else {
         // NO permissions.
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             "Trying to delete agent \'".agents_get_name($id_agente)."\'"
         );
         include 'general/noaccess.php';
@@ -219,12 +219,12 @@ if ($enable_agent) {
             ]
         );
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             'Enable  '.$alias
         );
     } else {
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             'Fail to enable '.$alias
         );
     }
@@ -262,12 +262,12 @@ if ($disable_agent) {
         );
 
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             'Disable  '.$alias
         );
     } else {
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             'Fail to disable '.$alias
         );
     }

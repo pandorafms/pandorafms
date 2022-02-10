@@ -20,7 +20,7 @@ ui_require_javascript_file('calendar');
 
 if (! check_acl($config['id_user'], $id_grupo, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access (read) to agent '.agents_get_name($id_agente)
     );
     include 'general/noaccess.php';

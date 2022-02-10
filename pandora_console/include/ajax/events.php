@@ -47,7 +47,7 @@ if (! check_acl($config['id_user'], 0, 'ER')
     && ! check_acl($config['id_user'], 0, 'EM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     include 'general/noaccess.php';

@@ -87,7 +87,7 @@ try {
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
 } catch (Throwable $e) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without Id'
     );
     include 'general/noaccess.php';
@@ -105,7 +105,7 @@ $aclManage = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VM')
 
 if ($aclRead === false && $aclWrite === false && $aclManage === false) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without group access'
     );
     include 'general/noaccess.php';

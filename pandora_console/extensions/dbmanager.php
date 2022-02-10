@@ -89,7 +89,10 @@ function dbmgr_extension_main()
     global $config;
 
     if (!is_user_admin($config['id_user'])) {
-        db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Setup Management'
+        );
         include 'general/noaccess.php';
         return;
     }
@@ -143,7 +146,13 @@ function dbmgr_extension_main()
         echo '<strong>An error has occured when querying the database.</strong><br />';
         echo $error;
 
-        db_pandora_audit('DB Interface Extension', 'Error in SQL', false, false, $sql);
+        db_pandora_audit(
+            AUDIT_LOG_SYSTEM,
+            'DB Interface Extension. Error in SQL',
+            false,
+            false,
+            $sql
+        );
 
         return;
     }
@@ -151,7 +160,13 @@ function dbmgr_extension_main()
     if (! is_array($result)) {
         echo '<strong>Output: <strong>'.$result;
 
-        db_pandora_audit('DB Interface Extension', 'SQL', false, false, $sql);
+        db_pandora_audit(
+            AUDIT_LOG_SYSTEM,
+            'DB Interface Extension. SQL',
+            false,
+            false,
+            $sql
+        );
 
         return;
     }

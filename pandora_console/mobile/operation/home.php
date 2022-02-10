@@ -45,19 +45,19 @@ class Home
             'name'      => __('Tactical view'),
             'filename'  => 'tactical.php',
             'menu_item' => true,
-            'icon'      => 'tactical_view',
+            'icon'      => 'ui-icon-tactical_view ui-widget-icon-floatbeginning',
         ];
         $items['events'] = [
             'name'      => __('Events'),
             'filename'  => 'events.php',
             'menu_item' => true,
-            'icon'      => 'events',
+            'icon'      => 'ui-icon-events ui-widget-icon-floatbeginning',
         ];
         $items['groups'] = [
             'name'      => __('Groups'),
             'filename'  => 'groups.php',
             'menu_item' => true,
-            'icon'      => 'groups',
+            'icon'      => 'ui-icon-groups ui-widget-icon-floatbeginning',
         ];
 
         if ((bool) $system->getConfig('legacy_vc', false) === false) {
@@ -66,7 +66,7 @@ class Home
                 'name'      => __('Visual consoles'),
                 'filename'  => 'visualmaps.php',
                 'menu_item' => true,
-                'icon'      => 'visual_console',
+                'icon'      => 'ui-icon-visual_console ui-widget-icon-floatbeginning',
             ];
         }
 
@@ -74,21 +74,21 @@ class Home
             'name'      => __('Alerts'),
             'filename'  => 'alerts.php',
             'menu_item' => true,
-            'icon'      => 'alerts',
+            'icon'      => 'ui-icon-alerts ui-widget-icon-floatbeginning',
         ];
 
         $items['agents'] = [
             'name'      => __('Agents'),
             'filename'  => 'agents.php',
             'menu_item' => true,
-            'icon'      => 'agents',
+            'icon'      => 'ui-icon-agents ui-widget-icon-floatbeginning',
         ];
 
         $items['modules'] = [
             'name'      => __('Modules'),
             'filename'  => 'modules.php',
             'menu_item' => true,
-            'icon'      => 'modules',
+            'icon'      => 'ui-icon-modules ui-widget-icon-floatbeginning',
         ];
 
         // Not in home.
@@ -118,10 +118,11 @@ class Home
         foreach ($this->pagesItems as $page => $data) {
             if ($data['menu_item']) {
                 $options = [
-                    'icon' => $data['icon'],
-                    'pos'  => 'right',
-                    'text' => $data['name'],
-                    'href' => "index.php?page=$page",
+                    'icon'  => $data['icon'],
+                    'pos'   => 'right',
+                    'text'  => $data['name'],
+                    'href'  => "index.php?page=$page",
+                    'class' => $data['class'],
                 ];
                 $ui->contentAddHtml($ui->createButton($options));
             }
@@ -142,10 +143,11 @@ class Home
         } else {
             $left_button = $ui->createHeaderButton(
                 [
-                    'icon' => 'back',
-                    'pos'  => 'left',
-                    'text' => __('Logout'),
-                    'href' => 'index.php?action=logout',
+                    'icon'  => 'ui-icon-back',
+                    'pos'   => 'left',
+                    'text'  => __('Logout'),
+                    'href'  => 'index.php?action=logout',
+                    'class' => 'header-button-left',
                 ]
             );
         }

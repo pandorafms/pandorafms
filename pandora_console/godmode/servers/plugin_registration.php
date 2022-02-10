@@ -39,7 +39,7 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === false
     || (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Plugin Management'
     );
     include 'general/noaccess.php';
@@ -152,7 +152,7 @@ if ($error === null) {
             $error = __('Cannot load INI file');
         } else {
             // Relocate files to target destination.
-            Files::move($tmp_path.'/*', $basepath.'/', true);
+            Files::move($tmp_path.'/', $basepath.'/', true);
 
             // Extract information.
             $version = preg_replace('/.*[.]/', '', $filename);

@@ -69,7 +69,7 @@ class AuditLog extends HTML
             && is_user_admin($config['id_user']) === true
         ) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Audit Logs'
             );
             include 'general/noaccess.php';

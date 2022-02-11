@@ -261,7 +261,7 @@ if ($module_action === 'delete') {
 
         if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to delete a module without admin rights'
             );
             include 'general/noaccess.php';

@@ -40,7 +40,10 @@ enterprise_include_once('include/functions_config_agents.php');
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
-    db_pandora_audit('ACL Violation', 'Trying to access agent main list view');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access agent main list view'
+    );
     include 'general/noaccess.php';
 
     return;
@@ -126,7 +129,7 @@ if (is_ajax()) {
         $id_agent = (int) modules_get_agentmodule_agent((int) $id_module);
         if (! check_acl_one_of_groups($config['id_user'], agents_get_all_groups_agent($id_agent), 'AR')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access agent main list view'
             );
             echo json_encode(false);

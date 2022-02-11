@@ -21,7 +21,7 @@ $access = ($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'EW');
 
 if (!$event_w && !$event_m) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access events filter editor'
     );
     include 'general/noaccess.php';

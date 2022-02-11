@@ -290,7 +290,7 @@ class WSManager extends WebSocketServer
         if (\check_login(false) === false) {
             $this->disconnect($user->socket);
             \db_pandora_audit(
-                'WebSockets engine',
+                AUDIT_LOG_WEB_SOCKETS,
                 'Trying to access websockets engine without a valid session',
                 'N/A'
             );
@@ -299,7 +299,7 @@ class WSManager extends WebSocketServer
 
         // User exists, and session is valid.
         \db_pandora_audit(
-            'WebSockets engine',
+            AUDIT_LOG_WEB_SOCKETS,
             'WebSocket connection started',
             $user->account->idUser
         );
@@ -422,7 +422,7 @@ class WSManager extends WebSocketServer
         if ($user->account) {
             $_SERVER['REMOTE_ADDR'] = $user->address;
             \db_pandora_audit(
-                'WebSockets engine',
+                AUDIT_LOG_WEB_SOCKETS,
                 'WebSocket connection finished',
                 $user->account->idUser
             );

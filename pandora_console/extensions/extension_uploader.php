@@ -17,7 +17,7 @@ function extension_uploader_extensions()
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Group Management'
         );
         include 'general/noaccess.php';
@@ -61,7 +61,10 @@ function extension_uploader_extensions()
         }
 
         if ($result) {
-            db_pandora_audit('Extension manager', 'Upload extension '.$_FILES['extension']['name']);
+            db_pandora_audit(
+                AUDIT_LOG_EXTENSION_MANAGER,
+                'Upload extension '.$_FILES['extension']['name']
+            );
         }
 
         ui_print_result_message(

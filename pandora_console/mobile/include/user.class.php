@@ -397,10 +397,11 @@ class User
 
         $left_button = $ui->createHeaderButton(
             [
-                'icon' => 'back',
-                'pos'  => 'left',
-                'text' => __('Logout'),
-                'href' => 'index.php?action=logout',
+                'icon'  => 'ui-icon-back',
+                'pos'   => 'left',
+                'text'  => __('Logout'),
+                'href'  => 'index.php?action=logout',
+                'class' => 'header-button-left ui-icon-back',
             ]
         );
         $ui->createHeader('', $left_button);

@@ -231,8 +231,8 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
 {
     global $config;
 
-    // Ignore $ip and always set the ip address
-    if (isset($config['remote_addr'])) {
+    // Ignore $ip and always set the ip address.
+    if (isset($config['remote_addr']) === true) {
         $ip = $config['remote_addr'];
     } else {
         if ($_SERVER['REMOTE_ADDR']) {
@@ -245,46 +245,26 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
     if ($user_id !== false) {
         $id = $user_id;
     } else {
-        if (isset($config['id_user'])) {
-            $id = $config['id_user'];
-        } else {
-            $id = 0;
-        }
+        $id = (isset($config['id_user']) === true) ? $config['id_user'] : 0;
     }
 
     $accion = io_safe_input($accion);
     $descripcion = io_safe_input($descripcion);
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $values = [
-                'id_usuario'  => $id,
-                'accion'      => $accion,
-                'ip_origen'   => $ip,
-                'descripcion' => $descripcion,
-                'fecha'       => date('Y-m-d H:i:s'),
-                'utimestamp'  => time(),
-            ];
-        break;
-
-        case 'oracle':
-            $values = [
-                'id_usuario'  => $id,
-                'accion'      => $accion,
-                'ip_origen'   => $ip,
-                'descripcion' => $descripcion,
-                'fecha'       => '#to_date(\''.date('Y-m-d H:i:s').'\',\'YYYY-MM-DD HH24:MI:SS\')',
-                'utimestamp'  => time(),
-            ];
-        break;
-    }
+    $values = [
+        'id_usuario'  => $id,
+        'accion'      => $accion,
+        'ip_origen'   => $ip,
+        'descripcion' => $descripcion,
+        'fecha'       => date('Y-m-d H:i:s'),
+        'utimestamp'  => time(),
+    ];
 
     $id_audit = db_process_sql_insert('tsesion', $values);
 
     $valor = ''.$values['fecha'].' - '.io_safe_output($id).' - '.io_safe_output($accion).' - '.$ip.' - '.io_safe_output($descripcion)."\n";
 
-    if ($config['audit_log_enabled']) {
+    if ((bool) $config['audit_log_enabled'] === true) {
         file_put_contents($config['homedir'].'/log/audit.log', $valor, FILE_APPEND);
     }
 
@@ -298,12 +278,19 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
 /**
  * Log in a user into Pandora.
  *
- * @param string $id_user User id
+ * @param string $id_user User id.
  * @param string $ip      Client user IP address.
+ *
+ * @return void
  */
 function db_logon($id_user, $ip)
 {
-    db_pandora_audit('Logon', 'Logged in', $id_user, $ip);
+    db_pandora_audit(
+        AUDIT_LOG_USER_REGISTRATION,
+        'Logged in',
+        $id_user,
+        $ip
+    );
 
     // Update last registry of user to set last logon. How do we audit when the user was created then?
     process_user_contact($id_user);
@@ -313,12 +300,19 @@ function db_logon($id_user, $ip)
 /**
  * Log out a user into Pandora.
  *
- * @param string $id_user User id
+ * @param string $id_user User id.
  * @param string $ip      Client user IP address.
+ *
+ * @return void
  */
 function db_logoff($id_user, $ip)
 {
-    db_pandora_audit('Logoff', 'Logged out', $id_user, $ip);
+    db_pandora_audit(
+        AUDIT_LOG_USER_REGISTRATION,
+        'Logged out',
+        $id_user,
+        $ip
+    );
 }
 
 

@@ -63,7 +63,7 @@ function extension_api_checker()
 
     if (! check_acl($config['id_user'], 0, 'PM')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Profile Management'
         );
         include 'general/noaccess.php';

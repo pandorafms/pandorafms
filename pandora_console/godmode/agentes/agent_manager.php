@@ -154,7 +154,10 @@ ui_require_javascript_file('openlayers.pandora');
 $new_agent = (empty($id_agente)) ? true : false;
 
 if (! isset($id_agente) && ! $new_agent) {
-    db_pandora_audit('ACL Violation', 'Trying to access agent manager witout an agent');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access agent manager witout an agent'
+    );
     include 'general/noaccess.php';
     return;
 }

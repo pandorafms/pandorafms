@@ -23,7 +23,10 @@ require_once '../../include/functions_reporting.php';
 
 $config['id_user'] = $_SESSION['id_usuario'];
 if (! check_acl($config['id_user'], 0, 'AR')) {
-    db_pandora_audit('ACL Violation', 'Trying to access downtime scheduler');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access downtime scheduler'
+    );
     include 'general/noaccess.php';
     return;
 }

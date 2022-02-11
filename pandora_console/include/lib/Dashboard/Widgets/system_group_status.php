@@ -364,7 +364,7 @@ class SystemGroupStatusWidget extends Widget
 
         if ($agent_a === 0 && $agent_w === 0) {
             \db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Agent view (Grouped)'
             );
             include 'general/noaccess.php';

@@ -2099,7 +2099,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
 
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Created agent '.$unsafe_alias,
                 false,
                 true,
@@ -15083,21 +15083,30 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3)
 
             $id_module = modules_create_agent_module($id_agent, $values_module['nombre'], $values_module, true);
             if ($id_module === false) {
-                db_pandora_audit('Report management', "Failed to create cluster status module in cluster $name (#$id_agent)");
+                db_pandora_audit(
+                    AUDIT_LOG_REPORT_MANAGEMENT,
+                    "Failed to create cluster status module in cluster $name (#$id_agent)"
+                );
             }
         }
 
-        if ($id_cluster !== false) {
-            db_pandora_audit('Report management', "Created cluster $name (#$id_cluster)");
-        } else {
-            db_pandora_audit('Report management', "Failed to create cluster $name");
-        }
+        $auditMessageCluster = ((bool) $id_cluster === true)
+                                                            ? sprintf('Created new cluster %s (#%s)', $name, $id_cluster)
+                                                            : sprintf('Failed to create cluster %s ', $name);
 
-        if ($id_agent !== false) {
-            db_pandora_audit('Report management', "Created new cluster agent $name (#$id_agent)");
-        } else {
-            db_pandora_audit('Report management', "Failed to create cluster agent $name");
-        }
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            $auditMessageCluster
+        );
+
+        $auditMessageAgent = ((bool) $id_agent === true)
+                                                        ? sprintf('Created new cluster agent %s (#%s)', $name, $id_agent)
+                                                        : sprintf('Failed to create cluster agent %s ', $name);
+
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            $auditMessageAgent
+        );
 
         if ($id_cluster !== false) {
             returnData(
@@ -15222,9 +15231,15 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 );
 
                 if ($tcluster_module !== false) {
-                    db_pandora_audit('Report management', 'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']);
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']
+                    );
                 } else {
-                    db_pandora_audit('Report management', 'Failed to assign AA item module to cluster '.$element['name']);
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'Failed to assign AA item module to cluster '.$element['name']
+                    );
                 }
             } else if ($element['type'] == 'AP') {
                 $id_agent = db_get_value_sql('SELECT id_agent FROM tcluster WHERE id = '.$element['id_cluster']);
@@ -15287,9 +15302,15 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 );
 
                 if ($tcluster_balanced_module !== false) {
-                    db_pandora_audit('Report management', 'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']);
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']
+                    );
                 } else {
-                    db_pandora_audit('Report management', 'The module could not be assigned to the cluster');
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'The module could not be assigned to the cluster'
+                    );
                 }
             }
         }
@@ -16675,16 +16696,32 @@ function api_set_access_process($thrash1, $thrash2, $other, $returnType)
                 }
             } else {
                 // There is no administrator user who has logged in since then to log us in.
-                db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Logged in '.$other['data'][3].' node '.$other['data'][2],
+                    $other['data'][0]
+                );
                 returnData('string', ['type' => 'string', 'data' => 'free']);
             }
         } else if ($other['data'][1] == 'logout') {
             // The administrator user wants to log out
-            db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Logout from '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
         } else if ($other['data'][1] == 'exclude') {
             // The administrator user has ejected another administrator user who was logged in
-            db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
-            db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $audit_concurrence[0]['id_usuario']);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Logged in '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Logout from '.$other['data'][3].' node '.$other['data'][2],
+                $audit_concurrence[0]['id_usuario']
+            );
         }
         // The admin user is trying to browse
         else if ($other['data'][1] == 'browse') {
@@ -16704,23 +16741,39 @@ function api_set_access_process($thrash1, $thrash2, $other, $returnType)
             }
         } else if ($other['data'][1] == 'cancelled') {
             // The administrator user tries to log in having another administrator logged in, but instead of expelling him he cancels his log in.
-            db_pandora_audit($other['data'][3].' cancelled access', 'Cancelled access in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Cancelled access in '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
             returnData('string', ['type' => 'string', 'data' => 'cancelled']);
         }
     } else {
         if ($other['data'][4] == 1) {
             // The user trying to log in is not an administrator and is not allowed no admin access
-            db_pandora_audit($other['data'][3].' denied access', 'Denied access to non-admin user '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Denied access to non-admin user '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
             returnData('string', ['type' => 'string', 'data' => 'denied']);
         } else {
             // The user trying to log in is not an administrator and is allowed no admin access
             if ($other['data'][1] == 'login') {
                 // The user trying to login is not admin, can enter without concurrent use filter
-                db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Logged in '.$other['data'][3].' node '.$other['data'][2],
+                    $other['data'][0]
+                );
                 returnData('string', ['type' => 'string', 'data' => 'free']);
             } else if ($other['data'][1] == 'logout') {
                 // The user trying to logoff is not admin
-                db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Logout from '.$other['data'][3].' node '.$other['data'][2],
+                    $other['data'][0]
+                );
             } else if ($other['data'][1] == 'browse') {
                 // The user trying to browse in an app page is not admin, can enter without concurrent use filter
                 returnData('string', ['type' => 'string', 'data' => 'free']);

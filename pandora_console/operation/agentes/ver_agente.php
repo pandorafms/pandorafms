@@ -1274,7 +1274,7 @@ $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
 if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente)) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access (read) to agent '.agents_get_name($id_agente)
     );
     include 'general/noaccess.php';

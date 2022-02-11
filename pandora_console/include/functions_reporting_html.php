@@ -2060,9 +2060,9 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
             $table_info->head['server'] = __('Server');
         }
 
-        $table_info->head['name_group'] = __('Group');
         $table_info->head['name_agent'] = __('Agent');
         $table_info->head['name_module'] = __('Module');
+        $table_info->head['name_group'] = __('Group');
         $table_info->head['status_module'] = __('Status');
         $table_info->head['data_module'] = __('Data');
         $table_info->head['data_time_module'] = __('Last time');
@@ -2076,9 +2076,9 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
                     $row['server'] = $server;
                 }
 
-                $row['name_group'] = $data['name_group'];
                 $row['name_agent'] = $data['name_agent'];
                 $row['name_module'] = $data['name_module'];
+                $row['name_group'] = $data['name_group'];
                 $row['status_module'] = ui_print_module_status(
                     $data['status_module'],
                     true,

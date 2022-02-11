@@ -6348,10 +6348,10 @@ function chooseType() {
             break;
 
         case 'agent_module':
+            $("#row_module_group").show();
         case 'agent_module_status':
             $("#row_description").show();
             $("#row_group").show();
-            $("#row_module_group").show();
             $("#select_agent_modules").show();
             $("#agents_modules_row").show();
             $("#modules_row").show();

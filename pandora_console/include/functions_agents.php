@@ -4183,7 +4183,7 @@ function get_status_data_agent_modules($id_group, $agents=[], $modules=[])
     $slq_filter_group = '';
     if (empty($id_group) === false) {
         $slq_filter_group = sprintf(
-            ' AND tagente.id_group = %d',
+            ' AND tagente.id_grupo = %d',
             $id_group
         );
     }

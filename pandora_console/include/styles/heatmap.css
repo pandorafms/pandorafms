@@ -1,0 +1,37 @@
+.mainDiv {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.normal {
+  fill: #82b92e;
+}
+
+.critical {
+  fill: #e63c52;
+}
+
+.warning {
+  fill: #f3b200;
+}
+
+.unknown {
+  fill: #b2b2b2;
+}
+
+.notinit {
+  fill: #4a83f3;
+}
+
+.hover:hover {
+  filter: brightness(1.5);
+  stroke-width: 0.009;
+  stroke: black;
+}
+
+.group {
+  fill: none;
+  stroke-width: 0.03;
+  stroke: black;
+}

@@ -549,7 +549,8 @@ class Agent extends Entity
      * @param array   $filter Filters.
      * @param integer $limit  Limit search results.
      *
-     * @return array Of PandoraFMS\Module Modules found.
+     * @return array|Module Of PandoraFMS\Module Modules
+     * found or Module found is limit 1.
      */
     public function searchModules(array $filter, int $limit=0)
     {

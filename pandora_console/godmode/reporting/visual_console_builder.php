@@ -31,6 +31,7 @@
 global $config;
 global $statusProcessInDB;
 
+use PandoraFMS\Agent;
 use PandoraFMS\User;
 
 check_login();
@@ -705,15 +706,13 @@ switch ($activeTab) {
                             } else {
                                 foreach ($name_modules as $mod) {
                                     foreach ($id_agents as $ag) {
-                                        $id_module = agents_get_modules(
-                                            $ag,
-                                            ['id_agente_modulo'],
-                                            ['nombre' => $mod]
-                                        );
+                                        $agent = new Agent($ag);
+                                        $id_module = $agent->searchModules(
+                                            ['nombre' => $mod],
+                                            1
+                                        )->id_agente_modulo();
 
-
-
-                                        if (empty($id_module)) {
+                                        if (empty($id_module) === true) {
                                             continue;
                                         } else {
                                             $id_module = reset($id_module);

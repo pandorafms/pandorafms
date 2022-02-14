@@ -631,44 +631,30 @@ switch ($activeTab) {
                         'message' => $message,
                     ];
                 } else {
-                    // One item per module
-                    if (empty($name_modules)) {
-                        $statusProcessInDB = [
-                            'flag'    => true,
-                            'message' => ui_print_error_message(
-                                __('No modules selected'),
-                                '',
-                                true
-                            ),
-                        ];
-                    } else {
-                        if (defined('METACONSOLE')) {
-                            $agents_ids = [];
-                            foreach ($id_agents as $id_agent_id) {
-                                $server_and_agent = explode('|', $id_agent_id);
+                    if (is_metaconsole() === true) {
+                        $agents_ids = [];
+                        foreach ($id_agents as $id_agent_id) {
+                            $server_and_agent = explode('|', $id_agent_id);
 
-                                $agents_ids[] = $server_and_agent[1];
-                            }
-
-                            $rows = db_get_all_rows_filter(
-                                'tmetaconsole_agent',
-                                ['id_tagente' => $agents_ids]
-                            );
-
-                            $agents = [];
-                            foreach ($rows as $row) {
-                                $agents[$row['id_tmetaconsole_setup']][] = $row['id_tagente'];
-                            }
-                        } else {
-                            $agents[0] = $id_agents;
+                            $agents_ids[] = $server_and_agent[1];
                         }
+
+                        $rows = db_get_all_rows_filter(
+                            'tmetaconsole_agent',
+                            ['id_tagente' => $agents_ids]
+                        );
+
+                        $agents = [];
+                        foreach ($rows as $row) {
+                            $agents[$row['id_tmetaconsole_setup']][] = $row['id_tagente'];
+                        }
+                    } else {
+                        $agents[0] = $id_agents;
                     }
 
-
-
                     foreach ($agents as $id_server => $id_agents) {
-                        // Any module
-                        if ($name_modules[0] == '0') {
+                        // Any module.
+                        if (empty($name_modules) === true || $name_modules[0] === '0') {
                             $message .= visual_map_process_wizard_add_agents(
                                 $id_agents,
                                 $image,
@@ -710,13 +696,10 @@ switch ($activeTab) {
                                         $id_module = $agent->searchModules(
                                             ['nombre' => $mod],
                                             1
-                                        )->toArray();
+                                        )->toArray()['id_agente_modulo'];
 
                                         if (empty($id_module) === true) {
                                             continue;
-                                        } else {
-                                            $id_module = reset($id_module);
-                                            $id_module = $id_module['id_agente_modulo'];
                                         }
 
                                         $id_modules[] = $id_module;

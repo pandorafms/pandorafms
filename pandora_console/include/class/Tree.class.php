@@ -929,7 +929,9 @@ class Tree
             $agents_aux = [];
             foreach ($agents as $iterator => $agent) {
                 $this->processAgent($agents[$iterator], $server);
-                if ($agents[$iterator]['counters']['total'] !== '0') {
+                if ($agents[$iterator]['counters']['total'] !== '0'
+                    || (bool) $this->filter['show_not_init_agents'] === true
+                ) {
                     $agents_aux[] = $agents[$iterator];
                 }
             }

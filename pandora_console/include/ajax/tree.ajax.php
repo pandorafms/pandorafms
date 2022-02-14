@@ -63,7 +63,7 @@ if (is_ajax() === true) {
             'searchAgent'  => '',
             'statusAgent'  => AGENT_STATUS_ALL,
             'searchModule' => '',
-            'statusModule' => -1,
+            'statusModule' => AGENT_MODULE_STATUS_ALL,
             'groupID'      => 0,
             'tagID'        => 0,
         ];

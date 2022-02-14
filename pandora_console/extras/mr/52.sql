@@ -14,6 +14,8 @@ SOURCE procedures/alertEvents.sql;
 CALL `migrateEventRanges`();
 DROP PROCEDURE `migrateEventRanges`;
 
+DELETE FROM `tpolicy_groups`;
+
 CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
     `id` SERIAL,
     `id_policy` INT UNSIGNED,

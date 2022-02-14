@@ -710,7 +710,7 @@ switch ($activeTab) {
                                         $id_module = $agent->searchModules(
                                             ['nombre' => $mod],
                                             1
-                                        )->id_agente_modulo();
+                                        )->toArray();
 
                                         if (empty($id_module) === true) {
                                             continue;

@@ -578,7 +578,10 @@ class Agent extends Entity
         } else {
             // Search in db.
             $return = Module::search($filter, $limit);
-            if (is_array($return) === false) {
+
+            if (is_array($return) === false
+                && is_object($return) === false
+            ) {
                 return [];
             }
 

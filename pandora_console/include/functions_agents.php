@@ -1430,6 +1430,9 @@ function agents_get_group_agents(
 
 
 /**
+ * @deprecated use \PandoraFMS\Agent::searchModules
+ *
+ *
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's, by default is null and this mean that use the ids of agents in user's groups.

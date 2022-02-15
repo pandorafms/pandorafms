@@ -1574,17 +1574,30 @@ function html_print_select_multiple_modules_filtered(array $data):string
         0 => __('Show common modules'),
         1 => __('Show all modules'),
     ];
-    $output .= html_print_input(
-        [
-            'label'    => __('Show common modules'),
-            'type'     => 'select',
-            'fields'   => $selection,
-            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
-            'selected' => $data['mShowCommonModules'],
-            'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+
+    if (empty($data['commonModulesSwitch']) === false && $data['commonModulesSwitch'] === true) {
+        $output .= html_print_input(
+            [
+
+                'label'    => __('Common/all modules'),
+                'type'     => 'switch',
+                'id'       => 'filtered-module-show-common-modules-'.$uniqId,
+                'return'   => true,
+                'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'  => __('Show common modules'),
+                'type'   => 'select',
+                'fields' => $selection,
+                'name'   => 'filtered-module-show-common-modules-'.$uniqId,
+                'return' => true,
+                'script' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     if ($data['mAgents'] !== null) {
         $all_modules = get_modules_agents(

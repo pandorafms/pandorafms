@@ -214,9 +214,22 @@ function fmAgentChange(uniqId) {
 function fmModuleChange(uniqId, isMeta) {
   var idModuleGroup = $("#filtered-module-module-group-" + uniqId).val();
   var idAgents = $("#filtered-module-agents-" + uniqId).val();
-  var showCommonModules = $(
+  var commonSelectorType = $(
     "#filtered-module-show-common-modules-" + uniqId
-  ).val();
+  ).attr("type");
+
+  var showCommonModules = 0;
+
+  if (commonSelectorType != "checkbox") {
+    showCommonModules = $(
+      "#filtered-module-show-common-modules-" + uniqId
+    ).val();
+  } else {
+    showCommonModules = +$(
+      "#filtered-module-show-common-modules-" + uniqId
+    ).prop("checked");
+  }
+
   jQuery.post(
     "ajax.php",
     {

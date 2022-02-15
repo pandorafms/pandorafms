@@ -17,7 +17,7 @@ global $config;
 // Check ACL
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access SNMP Filter Management'
     );
     include 'general/noaccess.php';

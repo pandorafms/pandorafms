@@ -105,7 +105,7 @@ $is_err = false;
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access User Management'
     );
     include 'general/noaccess.php';
@@ -124,7 +124,7 @@ if (is_ajax()) {
         $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
 
         db_pandora_audit(
-            'User management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Deleted profile for user '.io_safe_output($id2),
             false,
             false,
@@ -147,7 +147,7 @@ if (is_ajax()) {
 
             if ($result) {
                 db_pandora_audit(
-                    'User management',
+                    AUDIT_LOG_USER_MANAGEMENT,
                     __('Deleted user %s', io_safe_output($id_user))
                 );
             }
@@ -169,7 +169,7 @@ if (is_ajax()) {
                     $result = delete_user($id_user);
                     if ($result) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             __('Deleted user %s from metaconsole', io_safe_output($id_user))
                         );
                     }
@@ -180,7 +180,7 @@ if (is_ajax()) {
                     // Log to the metaconsole too
                     if ($result) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
                         );
                     }
@@ -450,7 +450,7 @@ if ($create_user) {
         }
 
         db_pandora_audit(
-            'User management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Created user '.io_safe_output($id),
             false,
             false,
@@ -493,7 +493,7 @@ if ($create_user) {
                         $no_hierarchy = $profile['hierarchy'];
 
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             'Added profile for user '.io_safe_output($id2),
                             false,
                             false,
@@ -702,7 +702,7 @@ if ($update_user) {
 
 
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Updated user '.io_safe_output($id),
                 false,
                 false,
@@ -771,7 +771,7 @@ if ($add_profile && empty($json_profile)) {
     $tags = implode(',', $tags);
 
     db_pandora_audit(
-        'User management',
+        AUDIT_LOG_USER_MANAGEMENT,
         'Added profile for user '.io_safe_output($id2),
         false,
         false,
@@ -808,7 +808,7 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     $result = db_get_all_rows_sql($sql);
     if ($result == false && $user_info['is_admin'] == false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
         );
         include 'general/noaccess.php';

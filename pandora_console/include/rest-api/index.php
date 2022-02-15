@@ -66,7 +66,7 @@ if ($visualConsoleId) {
 
     if (!$aclRead && !$aclWrite && !$aclManage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access visual console without group access'
         );
         http_response_code(403);
@@ -147,7 +147,7 @@ if ($getVisualConsole === true) {
 
     if (!$aclRead && !$aclWrite && !$aclManage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access visual console without group access'
         );
         http_response_code(403);
@@ -164,7 +164,7 @@ if ($getVisualConsole === true) {
 
         if (!$aclRead && !$aclWrite && !$aclManage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access visual console without group access'
             );
             http_response_code(403);
@@ -239,7 +239,7 @@ if ($getVisualConsole === true) {
     // ACL.
     if (!$aclWrite && !$aclManage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to delete visual console item without group access'
         );
         http_response_code(403);

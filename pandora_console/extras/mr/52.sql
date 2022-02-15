@@ -14,4 +14,6 @@ SOURCE procedures/alertEvents.sql;
 CALL `migrateEventRanges`();
 DROP PROCEDURE `migrateEventRanges`;
 
+ALTER TABLE `tautoconfig` ADD COLUMN `disabled` TINYINT DEFAULT 0;
+
 COMMIT;

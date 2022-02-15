@@ -43,7 +43,7 @@ if (is_metaconsole() === true) {
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -172,7 +172,7 @@ if ($a_template !== false) {
             }
         } else {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert Management'
             );
             include 'general/noaccess.php';
@@ -218,9 +218,15 @@ if ($duplicate_template) {
     $id = alerts_duplicate_alert_template($source_id, $a_template['id_group']);
 
     if ($id) {
-        db_pandora_audit('Template alert management', 'Duplicate alert template '.$source_id.' clone to '.$id);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Duplicate alert template '.$source_id.' clone to '.$id
+        );
     } else {
-        db_pandora_audit('Template alert management', 'Fail try to duplicate alert template '.$source_id);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail try to duplicate alert template '.$source_id
+        );
     }
 
     ui_print_result_message(
@@ -420,7 +426,7 @@ function update_template($step)
 
     if ($result) {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Update alert template #'.$id,
             false,
             false,
@@ -428,7 +434,7 @@ function update_template($step)
         );
     } else {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Fail try to update alert template #'.$id,
             false,
             false,
@@ -544,7 +550,7 @@ if ($create_template) {
 
     if ($result) {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Create alert template #'.$result,
             false,
             false,
@@ -552,7 +558,7 @@ if ($create_template) {
         );
     } else {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Fail try to create alert template',
             false,
             false,

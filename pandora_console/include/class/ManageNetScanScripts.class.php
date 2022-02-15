@@ -85,7 +85,7 @@ class ManageNetScanScripts extends Wizard
 
         if (check_acl($config['id_user'], 0, $this->access) === 0) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Net Scan Script.'
             );
             include 'general/noaccess.php';

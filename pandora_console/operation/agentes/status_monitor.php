@@ -36,7 +36,7 @@ if (! check_acl($config['id_user'], 0, 'AR')
     && ! check_acl($config['id_user'], 0, 'AM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';

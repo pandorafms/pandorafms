@@ -32,7 +32,7 @@ function extension_db_status()
 
     if (!is_user_admin($config['id_user'])) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access db status'
         );
         include 'general/noaccess.php';

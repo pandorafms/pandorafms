@@ -533,7 +533,7 @@ echo '</div>';
 echo '</form>';
 
 // Trick for it have a traduct text for javascript.
-echo '<span id="any_text"     class="invisible">'.__('Any').'</span>';
+echo '<span id="any_text"     class="invisible">'.__('None').'</span>';
 echo '<span id="none_text"    class="invisible">'.__('None').'</span>';
 echo '<span id="loading_text" class="invisible">'.__('Loading...').'</span>';
 ?>

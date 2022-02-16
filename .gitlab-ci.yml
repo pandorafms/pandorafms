@@ -1,7 +1,24 @@
 variables:
   GIT_STRATEGY: clone
+  REBRANDING: pandora
 
 test:
   script:
-    - docker pull pandorafms/pandorafms-base:centos6
-    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:centos6 /tmp/pandorafms/tests/test.sh
+    - if [ ! -e $CI_PROJECT_DIR/pandora_server/bin/${REBRANDING}_server ]; then cp $CI_PROJECT_DIR/pandora_server/bin/pandora_server $CI_PROJECT_DIR/pandora_server/bin/${REBRANDING}_server ; fi
+    - if [ ! -e $CI_PROJECT_DIR/pandora_server/util/${REBRANDING}_ha.pl ]; then cp $CI_PROJECT_DIR/pandora_server/util/pandora_ha.pl $CI_PROJECT_DIR/pandora_server/util/${REBRANDING}_ha.pl ; fi
+    - if [ ! -e $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent ]; then cp $CI_PROJECT_DIR/pandora_agents/unix/pandora_agent $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent ; fi
+    - sed -i "s/pandora/$REBRANDING/g" $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent
+    - if [ ! -e $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent_exec ]; then cp $CI_PROJECT_DIR/pandora_agents/unix/pandora_agent_exec $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent_exec ; fi
+    - if [ ! -e $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_revent ]; then cp $CI_PROJECT_DIR/pandora_agents/unix/pandora_revent $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_revent ; fi
+    - if [ ! -e $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent_logrotate ]; then cp $CI_PROJECT_DIR/pandora_agents/unix/pandora_agent_logrotate $CI_PROJECT_DIR/pandora_agents/unix/${REBRANDING}_agent_logrotate ; fi
+    - sed -i "s/_PRODUCT_/$REBRANDING/g"  $CI_PROJECT_DIR/pandora_server/Makefile.PL
+    - sed -i "s/TENTACLE_USER=\"pandora\"/TENTACLE_USER=\"$REBRANDING\"/g" $CI_PROJECT_DIR/pandora_server/util/tentacle_serverd
+    - docker run --rm -e REBRANDING="$REBRANDING" -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:rocky8.5 /tmp/pandorafms/tests/test.sh
+
+test_php_legacy:
+  stage: test
+  before_script:
+    - df -h | grep instaladores | awk '{print $NF}' |xargs umount >/dev/null 2>&1 || true
+  script:
+    - docker pull pandorafms/pandorafms-base:centos7
+    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:centos7 /tmp/pandorafms/tests/test_legacy.sh

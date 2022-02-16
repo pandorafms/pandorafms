@@ -392,7 +392,7 @@ function initialiceLayout(data) {
           widgetId == 14 || widgetId == 2 || widgetId == 23 || widgetId == 16
             ? 750
             : 450,
-        maxHeight: 610,
+        maxHeight: 650,
         minHeight: widgetId == 16 ? 450 : 400
       },
       onsubmit: {

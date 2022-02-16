@@ -218,17 +218,9 @@ function fmModuleChange(uniqId, isMeta) {
     "#filtered-module-show-common-modules-" + uniqId
   ).attr("type");
 
-  var showCommonModules = 0;
-
-  if (commonSelectorType != "checkbox") {
-    showCommonModules = $(
-      "#filtered-module-show-common-modules-" + uniqId
-    ).val();
-  } else {
-    showCommonModules = +$(
-      "#filtered-module-show-common-modules-" + uniqId
-    ).prop("checked");
-  }
+  var showCommonModules = +(
+    $("#filtered-module-show-common-modules-" + uniqId).prop("checked") == false
+  );
 
   jQuery.post(
     "ajax.php",

@@ -1575,12 +1575,13 @@ function html_print_select_multiple_modules_filtered(array $data):string
         1 => __('Show all modules'),
     ];
 
-    if (empty($data['commonModulesSwitch']) === false && $data['commonModulesSwitch'] === true) {
+    if (true) {
         $output .= html_print_input(
             [
 
-                'label'    => __('Common/all modules'),
+                'label'    => __('Only common modules'),
                 'type'     => 'switch',
+                'value'    => 'checked',
                 'id'       => 'filtered-module-show-common-modules-'.$uniqId,
                 'return'   => true,
                 'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',

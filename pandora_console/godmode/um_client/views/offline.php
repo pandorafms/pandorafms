@@ -84,8 +84,8 @@
         'ignoresign': "<?php echo __('Ignore'); ?>",
         'verifysigntitle': "<?php echo __('Verify package signature'); ?>",
         'verifysigns': "<?php echo __('Copy into the textarea the signature validation token you can retrieve from %s and press OK to verify the package, press ignore to avoid signature verification', 'https://support.pandorafms.com'); ?>",
-        'notGoingToInstallUnoficialServerWarning': "<?php echo __('This update does not correspond with next version of %s and is not going to be installed unless patches are allowed. Please enable patches in settings.', get_product_name()); ?>",
-        'notGoingToInstallUnoficialWarning': "<?php echo __('This server update does not correspond with current console version and is not going to be installed unless patches are allowed. Please enable patches in settings.'); ?>",
+        'notGoingToInstallUnoficialServerWarning': "<?php echo __('This server update does not correspond with current console version and is not going to be installed unless patches are allowed. Please enable patches in settings.'); ?>",
+        'notGoingToInstallUnoficialWarning': "<?php echo __('This update does not correspond with next version of %s and is not going to be installed unless patches are allowed. Please enable patches in settings.', get_product_name()); ?>",
     }
 
     var insecureMode = <?php echo ($insecure === true) ? 'true' : 'false'; ?>;

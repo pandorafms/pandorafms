@@ -19,96 +19,7 @@ function check {
 # Start the required services.
 rm -rf /var/lib/mysql/* && sudo -u mysql mysqld --initialize-insecure && mysqld --user=mysql --sql-mode="" --daemonize=ON && /usr/bin/mysqladmin -u root password 'pandora'
 check "Starting the MySQL Server" $?
-
-# PHP FPM
-# Customize php.ini
-echo "php_value[error_reporting] = E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_USER_WARNING" >> /etc/php-fpm.d/www.conf
-echo "php_value[max_execution_time] = 0" >> /etc/php-fpm.d/www.conf
-echo "php_value[max_input_time] = -1" >> /etc/php-fpm.d/www.conf
-echo "php_value[upload_max_filesize] = 800M" >> /etc/php-fpm.d/www.conf
-echo "php_value[post_max_size] = 800M" >> /etc/php-fpm.d/www.conf
-echo "php_value[memory_limit] = -1" >> /etc/php-fpm.d/www.conf
-
-# Customize php handling.
-cat <<EO_F >/etc/httpd/conf.d/php.conf
-#
-# The following lines prevent .user.ini files from being viewed by Web clients.
-#
-<Files ".user.ini">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-        Satisfy All
-    </IfModule>
-</Files>
-
-#
-# Allow php to handle Multiviews
-#
-AddType text/html .php
-
-#
-# Add index.php to the list of files that will be served as directory
-# indexes.
-#
-DirectoryIndex index.php
-
-# mod_php options
-<IfModule  mod_php.c>
-    #
-    # Cause the PHP interpreter to handle files with a .php extension.
-    #
-    <FilesMatch \.(php|phar)$>
-        SetHandler application/x-httpd-php
-    </FilesMatch>
-
-    #
-    # Uncomment the following lines to allow PHP to pretty-print .phps
-    # files as PHP source code:
-    #
-    #<FilesMatch \.phps$>
-    #    SetHandler application/x-httpd-php-source
-    #</FilesMatch>
-
-    #
-    # Apache specific PHP configuration options
-    # those can be override in each configured vhost
-    #
-    php_value session.save_handler "files"
-    php_value session.save_path    "/var/lib/php/session"
-    php_value soap.wsdl_cache_dir  "/var/lib/php/wsdlcache"
-
-    #php_value opcache.file_cache   "/var/lib/php/opcache"
-</IfModule>
-
-# Redirect to local php-fpm if mod_php (5 or 7) is not available
-<IfModule !mod_php5.c>
-  <IfModule !mod_php7.c>
-    <IfModule !mod_php.c>
-      # Enable http authorization headers
-      SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
-      <Proxy "unix:/run/php-fpm/www.sock|fcgi://localhost">
-        ProxySet timeout=1200
-      </Proxy>
-
-      <FilesMatch \.(php|phar)$>
-        SetHandler "proxy:fcgi://localhost"
-      </FilesMatch>
-
-    </IfModule>
-  </IfModule>
-</IfModule>
-
-EO_F
-
-mkdir -p /run/php-fpm/ 2>/dev/null
-/usr/sbin/php-fpm
-check "Starting PHP-FPM" $?
-
-httpd
+httpd -k start
 check "Starting the Apache Web Server" $?
 
 # Install the Pandora FMS Console.
@@ -116,7 +27,7 @@ cd /tmp/pandorafms/pandora_console && chmod +x pandora_console_install && yes | 
 check "Installing the Pandora FMS Console" $?
 
 # Create the Pandora FMS database.
-cd /tmp/pandorafms/tests && chmod +x install_console.py && ./install_console.py
+cd /tmp/pandorafms/tests && chmod +x install_console.py && python install_console.py
 check "Creating the Pandora FMS Database" $?
 
 # Build and install the Pandora FMS Server.

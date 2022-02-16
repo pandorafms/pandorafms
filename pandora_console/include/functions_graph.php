@@ -1474,18 +1474,18 @@ function graphic_combined_module(
                     foreach ($source['label'] as $label) {
                         $lab .= reporting_label_macro(
                             $items_label,
-                            $label
+                            ($label ?? '')
                         );
                     }
                 } else if ($source['label'] != '') {
                     $lab = reporting_label_macro(
                         $items_label,
-                        $source['label']
+                        ($source['label'] ?? '')
                     );
                 } else {
                     $lab = reporting_label_macro(
                         $items_label,
-                        $params_combined['labels']
+                        ($params_combined['labels'] ?? '')
                     );
                 }
 

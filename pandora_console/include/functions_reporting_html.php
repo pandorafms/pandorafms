@@ -219,7 +219,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             $label = reporting_label_macro(
                 $items_label,
-                $item['label']
+                ($item['label'] ?? '')
             );
         } else {
             $label = '';

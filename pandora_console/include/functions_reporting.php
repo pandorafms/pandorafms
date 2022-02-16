@@ -394,7 +394,7 @@ function reporting_make_reporting_data(
 
             $content['name'] = reporting_label_macro(
                 $items_label,
-                $content['style']['name_label']
+                ($content['style']['name_label'] ?? '')
             );
         }
 
@@ -1904,7 +1904,7 @@ function reporting_event_report_group(
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -2206,7 +2206,7 @@ function reporting_event_report_module(
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -2219,7 +2219,7 @@ function reporting_event_report_module(
     if ($return['label'] != '') {
         $return['label'] = reporting_label_macro(
             $items_label,
-            $return['label']
+            ($return['label'] ?? '')
         );
     }
 
@@ -2534,7 +2534,7 @@ function reporting_inventory_changes($report, $content, $type)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -2629,7 +2629,7 @@ function reporting_inventory($report, $content, $type)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -3453,7 +3453,7 @@ function reporting_group_report($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -3579,7 +3579,7 @@ function reporting_event_report_agent(
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -3587,7 +3587,7 @@ function reporting_event_report_agent(
     if ($label != '') {
         $label = reporting_label_macro(
             $items_label,
-            $label
+            ($label ?? '')
         );
     }
 
@@ -3818,7 +3818,7 @@ function reporting_historical_data($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -3833,7 +3833,7 @@ function reporting_historical_data($report, $content)
     if ($return['label'] != '') {
         $return['label'] = reporting_label_macro(
             $items_label,
-            $return['label']
+            ($return['label'] ?? '')
         );
     }
 
@@ -3952,7 +3952,7 @@ function reporting_database_serialized($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -3977,7 +3977,7 @@ function reporting_database_serialized($report, $content)
     if ($return['label'] != '') {
         $return['label'] = reporting_label_macro(
             $items_label,
-            $return['label']
+            ($return['label'] ?? '')
         );
     }
 
@@ -4134,7 +4134,7 @@ function reporting_last_value($report, $content, $datetime, $period)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -4359,7 +4359,7 @@ function reporting_group_configuration($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -4445,7 +4445,7 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -4692,7 +4692,7 @@ function reporting_alert_report_group($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -4884,7 +4884,7 @@ function reporting_alert_report_agent($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -4899,7 +4899,7 @@ function reporting_alert_report_agent($report, $content)
     if ($return['label'] != '') {
         $return['label'] = reporting_label_macro(
             $items_label,
-            $return['label']
+            ($return['label'] ?? '')
         );
     }
 
@@ -5063,7 +5063,7 @@ function reporting_alert_report_module($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -5077,7 +5077,7 @@ function reporting_alert_report_module($report, $content)
     if ($return['label'] != '') {
         $return['label'] = reporting_label_macro(
             $items_label,
-            $return['label']
+            ($return['label'] ?? '')
         );
     }
 
@@ -5355,7 +5355,7 @@ function reporting_monitor_report($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -5370,7 +5370,7 @@ function reporting_monitor_report($report, $content)
     if ($return['label'] != '') {
         $return['label'] = reporting_label_macro(
             $items_label,
-            $return['label']
+            ($return['label'] ?? '')
         );
     }
 
@@ -5585,7 +5585,7 @@ function reporting_prediction_date($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -5593,7 +5593,7 @@ function reporting_prediction_date($report, $content)
     if ($description != '') {
         $description = reporting_label_macro(
             $items_label,
-            $description
+            ($description ?? '')
         );
     }
 
@@ -5686,7 +5686,7 @@ function reporting_projection_graph(
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -5794,7 +5794,7 @@ function reporting_agent_configuration($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -6018,7 +6018,7 @@ function reporting_value($report, $content, $type, $pdf=false)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -6026,7 +6026,7 @@ function reporting_value($report, $content, $type, $pdf=false)
     if ($label != '') {
         $label = reporting_label_macro(
             $items_label,
-            $label
+            ($label ?? '')
         );
     }
 
@@ -8802,7 +8802,7 @@ function reporting_increment($report, $content)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -9471,7 +9471,7 @@ function reporting_custom_graph(
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -9479,7 +9479,7 @@ function reporting_custom_graph(
     if ($description != '') {
         $description = reporting_label_macro(
             $items_label,
-            $description
+            ($description ?? '')
         );
     }
 
@@ -9638,7 +9638,7 @@ function reporting_simple_graph(
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -9646,7 +9646,7 @@ function reporting_simple_graph(
     if ($description != '') {
         $description = reporting_label_macro(
             $items_label,
-            $description
+            ($description ?? '')
         );
     }
 
@@ -9654,7 +9654,7 @@ function reporting_simple_graph(
     if ($label != '') {
         $label = reporting_label_macro(
             $items_label,
-            $label
+            ($label ?? '')
         );
     }
 
@@ -14189,7 +14189,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
-            $title
+            ($title ?? '')
         );
     }
 
@@ -14197,7 +14197,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if ($description != '') {
         $description = reporting_label_macro(
             $items_label,
-            $description
+            ($description ?? '')
         );
     }
 

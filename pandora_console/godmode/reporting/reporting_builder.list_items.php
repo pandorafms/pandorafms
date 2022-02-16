@@ -604,11 +604,11 @@ foreach ($items as $item) {
         }
     }
 
-        // Apply macros
+        // Apply macros.
         $items_macro['type'] = $item['type'];
         $text = reporting_label_macro(
             $items_macro,
-            $text
+            ($text ?? '')
         );
     $row[5] = ui_print_truncate_text($text, 'description', true, true);
 

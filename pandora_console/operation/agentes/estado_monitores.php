@@ -139,7 +139,7 @@ if (is_ajax()) {
 if (!isset($id_agente)) {
     // This page is included, $id_agente should be passed to it.
     db_pandora_audit(
-        'HACK Attempt',
+        AUDIT_LOG_HACK_ATTEMPT,
         'Trying to get the monitor list without id_agent passed'
     );
     include 'general/noaccess.php';

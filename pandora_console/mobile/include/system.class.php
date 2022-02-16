@@ -142,7 +142,7 @@ class System
             return true;
         } else {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access to Mobile Page'
             );
 

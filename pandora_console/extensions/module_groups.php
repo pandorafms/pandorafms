@@ -33,7 +33,7 @@ check_login();
 // ACL Check.
 if (!check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Module Groups view'
     );
     include 'general/noaccess.php';

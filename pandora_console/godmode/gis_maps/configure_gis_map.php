@@ -20,7 +20,10 @@ $gis_m = check_acl($config['id_user'], 0, 'MM');
 $access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
 if (!$gis_w && !$gis_m) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -33,7 +36,10 @@ $action = get_parameter('action', 'new_map');
 $gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
 
 if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -70,6 +76,40 @@ foreach ($layer_ids as $layer_id) {
 }
 
 $next_action = 'new_map';
+
+$buttons['gis_maps_list'] = [
+    'active' => false,
+    'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
+];
+if ($idMap) {
+    $buttons['view_gis'] = [
+        'active' => false,
+        'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
+            'images/op_gis.png',
+            true,
+            [
+                'title' => __('View GIS'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
+    ];
+}
+
+ui_print_page_header(
+    __('GIS Maps builder'),
+    'images/gm_gis.png',
+    false,
+    'configure_gis_map_edit',
+    true,
+    $buttons
+);
 
 switch ($action) {
     case 'save_new':
@@ -269,42 +309,6 @@ switch ($action) {
     break;
 }
 
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
-
-$buttons['gis_maps_list'] = [
-    'active' => false,
-    'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
-        'images/list.png',
-        true,
-        [
-            'title' => __('GIS Maps list'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>',
-];
-if ($idMap) {
-    $buttons['view_gis'] = [
-        'active' => false,
-        'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
-            'images/op_gis.png',
-            true,
-            [
-                'title' => __('View GIS'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>',
-    ];
-}
-
-ui_print_page_header(
-    __('GIS Maps builder'),
-    'images/gm_gis.png',
-    false,
-    'configure_gis_map_edit',
-    true,
-    $buttons
-);
-
 ?>
 
 <script type="text/javascript">
@@ -411,6 +415,7 @@ function addConnectionMap() {
 </script>
 
 <?php
+$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
 echo '<form action="'.$url.'" id="form_setup" method="post">';
 
 // Load the data in edit or reload in update.

@@ -56,7 +56,7 @@ class ExternalTools extends HTML
         if ($this->origin === 'agent') {
             if (check_acl($config['id_user'], 0, 'AR') === false) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Agent Management'
                 );
                 include 'general/noaccess.php';
@@ -72,7 +72,7 @@ class ExternalTools extends HTML
         } else if ($this->origin === 'setup') {
             if (check_acl($config['id_user'], 0, 'PM') === false) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Profile Management'
                 );
                 include 'general/noaccess.php';

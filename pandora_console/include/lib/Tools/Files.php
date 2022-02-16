@@ -343,8 +343,13 @@ class Files
             }
 
             // If we copied this successfully, mark it for deletion.
-            rename($source.$file, $destination.$file);
+            $return = rename($source.$file, $destination.$file);
+            if ($return === false) {
+                return $return;
+            }
         }
+
+        return $return;
     }
 
 

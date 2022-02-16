@@ -144,7 +144,7 @@ if ($prediction_available) {
     $modules['predictionserver'] = __('Create a new prediction server module');
 }
 
-if (is_metaconsole() === true || $web_available === '1') {
+if (is_metaconsole() === true || $web_available >= '1') {
     $modules['webserver'] = __('Create a new web Server module');
 }
 
@@ -238,7 +238,7 @@ echo '</table>';
 if (!$config['disable_help']) {
     echo '<div class="disable_help">';
     echo '<strong>';
-    echo "<a class='color-black-grey invert_filter' target='_blank' href='http://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
+    echo "<a class='color-black-grey invert_filter' target='_blank' href='https://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
     echo '</strong>';
     echo '</div>';
 }
@@ -261,7 +261,7 @@ if ($module_action === 'delete') {
 
         if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to delete a module without admin rights'
             );
             include 'general/noaccess.php';

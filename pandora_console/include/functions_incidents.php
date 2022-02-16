@@ -289,7 +289,10 @@ function incidents_delete_incident($id_incident)
         $notes = array_merge($notes, array_keys(incidents_get_notes($id_inc)));
         $attachments = array_merge($attachments, array_keys(incidents_get_attach($id_inc)));
 
-        db_pandora_audit('Incident deleted', $config['id_user'].' deleted incident #'.$id_inc);
+        db_pandora_audit(
+            AUDIT_LOG_INCIDENT_MANAGEMENT,
+            $config['id_user'].' deleted incident #'.$id_inc
+        );
     }
 
     // Delete notes

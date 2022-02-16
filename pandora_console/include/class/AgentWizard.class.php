@@ -293,7 +293,7 @@ class AgentWizard extends HTML
 
         if (!check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
             );
 

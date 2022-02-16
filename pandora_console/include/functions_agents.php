@@ -272,7 +272,10 @@ function agents_create_agent(
         agents_add_address($id_agent, $ip_address);
     }
 
-    db_pandora_audit('Agent management', 'New agent '.$name.' created');
+    db_pandora_audit(
+        AUDIT_LOG_AGENT_MANAGEMENT,
+        'New agent '.$name.' created'
+    );
 
     return $id_agent;
 }
@@ -1427,6 +1430,9 @@ function agents_get_group_agents(
 
 
 /**
+ * @deprecated use \PandoraFMS\Agent::searchModules
+ *
+ *
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's, by default is null and this mean that use the ids of agents in user's groups.
@@ -2116,7 +2122,7 @@ function agents_delete_address($id_agent, $ip_address)
 
     $agent_name = agents_get_name($id_agent, '');
     db_pandora_audit(
-        'Agent management',
+        AUDIT_LOG_AGENT_MANAGEMENT,
         "Deleted IP $ip_address from agent '$agent_name'"
     );
 
@@ -2584,12 +2590,12 @@ function agents_delete_agent($id_agents, $disableACL=false)
             error_log($e->getMessage().' in '.$e->getFile().':'.$e->getLine());
         }
 
-        // The status of the module
+        // The status of the module.
         db_process_delete_temp('tagente_estado', 'id_agente', $id_agent);
 
         // The actual modules, don't put anything based on
         // DONT Delete this, just mark for deletion
-        // db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);
+        // db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);.
         db_process_sql_update(
             'tagente_modulo',
             [
@@ -2603,11 +2609,11 @@ function agents_delete_agent($id_agents, $disableACL=false)
         // Access entries
         // Dont delete here, this records are deleted in daily script
         // db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
-        // Delete agent policies
+        // Delete agent policies.
         enterprise_include_once('include/functions_policies.php');
         enterprise_hook('policies_delete_agent', [$id_agent]);
 
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             // Delete agent in networkmap.
             enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
@@ -2646,12 +2652,12 @@ function agents_delete_agent($id_agents, $disableACL=false)
             );
         }
 
-        // tagente_datos_inc
-        // Dont delete here, this records are deleted later, in database script
+        // Tagente_datos_inc.
+        // Dont delete here, this records are deleted later, in database script.
         // db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules, true);
-        // Delete remote configuration
-        if (enterprise_installed()) {
-            if (isset($config['remote_config'])) {
+        // Delete remote configuration.
+        if (enterprise_installed() === true) {
+            if (isset($config['remote_config']) === true) {
                 enterprise_include_once('include/functions_config_agents.php');
                 if (enterprise_hook('config_agents_has_remote_configuration', [$id_agent])) {
                     $agent_name = agents_get_name($id_agent);
@@ -2659,47 +2665,45 @@ function agents_delete_agent($id_agents, $disableACL=false)
                     $agent_alias = io_safe_output(agents_get_alias($id_agent));
                     $agent_md5 = md5($agent_name, false);
 
-                    // Agent remote configuration editor
+                    // Agent remote configuration editor.
                     $file_name = $config['remote_config'].'/conf/'.$agent_md5.'.conf';
 
                     $error = !@unlink($file_name);
 
-                    if (!$error) {
+                    if ((bool) $error === false) {
                         $file_name = $config['remote_config'].'/md5/'.$agent_md5.'.md5';
                         $error = !@unlink($file_name);
-                    }
-
-                    if ($error) {
+                    } else {
                         db_pandora_audit(
-                            'Agent management',
-                            "Error: Deleted agent $agent_alias, the error is in the delete conf or md5."
+                            AUDIT_LOG_AGENT_MANAGEMENT,
+                            sprintf('Error: Deleted agent %s, the error is in the delete conf or md5.', $agent_alias)
                         );
                     }
                 }
             }
         }
 
-        // And at long last, the agent
+        // And at long last, the agent.
         db_process_delete_temp('tagente', 'id_agente', $id_agent);
 
         db_process_sql('delete from ttag_module where id_agente_modulo in (select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.')');
 
         db_pandora_audit(
-            'Agent management',
-            "Deleted agent $agent_alias"
+            AUDIT_LOG_AGENT_MANAGEMENT,
+            sprintf('Deleted agent %s', $agent_alias)
         );
 
-        // Delete the agent from the metaconsole cache
+        // Delete the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
 
-        // Break the loop on error
-        if ($error) {
+        // Break the loop on error.
+        if ((bool) $error === true) {
             break;
         }
     }
 
-    if ($error) {
+    if ((bool) $error === true) {
         return false;
     } else {
         return true;

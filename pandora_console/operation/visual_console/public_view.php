@@ -72,7 +72,7 @@ if (!isset($config['pure'])) {
 // Check input hash.
 if (User::validatePublicHash($hash) !== true) {
     db_pandora_audit(
-        'Invalid public visual console',
+        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
         'Trying to access public visual console'
     );
     include 'general/noaccess.php';
@@ -86,7 +86,7 @@ try {
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
 } catch (Throwable $e) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without Id'
     );
     include $config['homedir'].'/general/noaccess.php';

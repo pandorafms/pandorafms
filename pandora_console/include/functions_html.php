@@ -2320,6 +2320,7 @@ function html_print_input_text_extended(
         'autocomplete',
         'form',
         'list',
+        'pattern',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" autocomplete="'.$autocomplete.'"');
@@ -2604,13 +2605,16 @@ function html_print_input_password(
  *
  * The element will have an id like: "text-$name"
  *
- * @param string  $name      Input name.
- * @param string  $value     Input value.
- * @param string  $alt       Alternative HTML string (invalid - not used).
- * @param integer $size      Size of the input (optional).
- * @param integer $maxlength Maximum length allowed (optional).
- * @param boolean $return    Whether to return an output string or echo now (optional, echo by default).
- * @param boolean $disabled  Disable the button (optional, button enabled by default).
+ * @param string      $name        Input name.
+ * @param string      $value       Input value.
+ * @param string      $alt         Alternative HTML string (invalid - not used).
+ * @param integer     $size        Size of the input (optional).
+ * @param integer     $maxlength   Maximum length allowed (optional).
+ * @param boolean     $return      Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean     $disabled    Disable the button (optional, button enabled by default).
+ * @param string|null $list        Some stuff.
+ * @param string|null $placeholder Some stuff.
+ * @param string|null $pattern     Some stuff.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2633,7 +2637,8 @@ function html_print_input_text(
     $onKeyUp='',
     $disabled=false,
     $list='',
-    $placeholder=null
+    $placeholder=null,
+    $pattern=null
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2680,6 +2685,10 @@ function html_print_input_text(
 
     if ($list !== null) {
         $attr['placeholder'] = $placeholder;
+    }
+
+    if ($pattern !== null) {
+        $attr['pattern'] = $pattern;
     }
 
     return html_print_input_text_extended(
@@ -4700,7 +4709,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['list']) === true) ? $data['list'] : ''),
-                ((isset($data['placeholder']) === true) ? $data['placeholder'] : '')
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : ''),
+                ((isset($data['pattern']) === true) ? $data['pattern'] : null)
             );
         break;
 

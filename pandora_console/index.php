@@ -377,7 +377,7 @@ if (! isset($config['id_user'])) {
                 $login_failed = true;
                 include_once 'general/login_page.php';
                 db_pandora_audit(
-                    'Logon Failed',
+                    AUDIT_LOG_USER_REGISTRATION,
                     'Invalid double auth login: '.$_SERVER['REMOTE_ADDR'],
                     $_SERVER['REMOTE_ADDR']
                 );
@@ -446,7 +446,11 @@ if (! isset($config['id_user'])) {
 
                 if ($blocked) {
                     include_once 'general/login_page.php';
-                    db_pandora_audit('Password expired', 'Password expired: '.$nick, $nick);
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        'Password expired: '.$nick,
+                        $nick
+                    );
                     while (ob_get_length() > 0) {
                         ob_end_flush();
                     }
@@ -489,7 +493,7 @@ if (! isset($config['id_user'])) {
             // Login ok and password has expired.
             include_once 'general/login_page.php';
             db_pandora_audit(
-                'Password expired',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Password expired: '.$nick,
                 $nick
             );
@@ -628,7 +632,7 @@ if (! isset($config['id_user'])) {
             $user_language = get_user_language($config['id_user']);
 
             $l10n = null;
-            if (file_exists('./include/languages/'.$user_language.'.mo')) {
+            if (file_exists('./include/languages/'.$user_language.'.mo') === true) {
                 $cacheFileReader = new CachedFileReader(
                     './include/languages/'.$user_language.'.mo'
                 );
@@ -639,60 +643,50 @@ if (! isset($config['id_user'])) {
             // Login wrong.
             $blocked = false;
 
-            if ((!is_user_admin($nick) || $config['enable_pass_policy_admin'])
-                && file_exists(ENTERPRISE_DIR.'/load_enterprise.php')
+            if ((is_user_admin($nick) === false || (bool) $config['enable_pass_policy_admin'] === true)
+                && file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true
             ) {
                 $blocked = login_check_blocked($nick);
             }
 
-            if (!$blocked) {
-                if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+            if ((bool) $blocked === false) {
+                if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true) {
                     // Checks failed attempts.
                     login_check_failed($nick);
                 }
 
                 $login_failed = true;
-                include_once 'general/login_page.php';
-                db_pandora_audit(
-                    'Logon Failed',
-                    'Invalid login: '.$nick,
-                    $nick
-                );
-                while (ob_get_length() > 0) {
-                    ob_end_flush();
-                }
-
-                exit('</html>');
-            } else {
-                include_once 'general/login_page.php';
-                db_pandora_audit(
-                    'Logon Failed',
-                    'Invalid login: '.$nick,
-                    $nick
-                );
-                while (ob_get_length() > 0) {
-                    ob_end_flush();
-                }
-
-                exit('</html>');
             }
+
+            include_once 'general/login_page.php';
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Invalid login: '.$nick,
+                $nick
+            );
+
+            while (ob_get_length() > 0) {
+                ob_end_flush();
+            }
+
+            exit('</html>');
         }
 
         // Form the url.
         $query_params_redirect = $_GET;
         // Visual console do not want sec2.
-        if ($home_page == 'Visual console') {
+        if ($home_page === 'Visual console') {
             unset($query_params_redirect['sec2']);
         }
 
         // Dashboard do not want sec2.
-        if ($home_page == 'Dashboard') {
+        if ($home_page === 'Dashboard') {
             unset($query_params_redirect['sec2']);
         }
 
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
-            if ($key == 'login') {
+            if ($key === 'login') {
                 continue;
             }
 
@@ -704,7 +698,7 @@ if (! isset($config['id_user'])) {
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
-    } else if (isset($_GET['loginhash'])) {
+    } else if (isset($_GET['loginhash']) === true) {
         // Hash login process.
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
@@ -719,7 +713,11 @@ if (! isset($config['id_user'])) {
             $config['id_user'] = $loginhash_user;
         } else {
             include_once 'general/login_page.php';
-            db_pandora_audit('Logon Failed (loginhash', '', 'system');
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Loginhash failed',
+                'system'
+            );
             while (ob_get_length() > 0) {
                 ob_end_flush();
             }
@@ -922,7 +920,11 @@ if (! isset($config['id_user'])) {
             $config['id_user'] = $loginhash_user;
         } else {
             include_once 'general/login_page.php';
-            db_pandora_audit('Logon Failed (loginhash', '', 'system');
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Loginhash failed',
+                'system'
+            );
             while (ob_get_length() > 0) {
                 ob_end_flush();
             }

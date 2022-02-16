@@ -82,10 +82,10 @@ execute_cmd  "[ $PANDORA_SERVER_IP ]" 'Check Server IP Address' 'Please define e
 # Check OS.
 OS=$([[ $(grep '^ID_LIKE=' /etc/os-release) ]] && grep ^ID_LIKE= /etc/os-release | cut -d '=' -f2 | tr -d '"' || grep ^ID= /etc/os-release | cut -d '=' -f2 | tr -d '"')
 
-[[ $OS == 'rhel fedora' ]] &&  OS_RELEASE=$OS
-[[ $OS == 'fedora' ]] &&  OS_RELEASE=$OS
-[[ $OS == 'centos rhel fedora' ]] &&  OS_RELEASE=$OS
-[[ $OS == 'debian' ]] &&  OS_RELEASE=$OS
+[[ $OS =~ 'rhel' ]] &&  OS_RELEASE=$OS
+[[ $OS =~ 'debian' ]] &&  OS_RELEASE=$OS
+#[[ $OS == 'rhel fedora' ]] &&  OS_RELEASE=$OS
+#[[ $OS == 'centos rhel fedora' ]] &&  OS_RELEASE=$OS
 
 # initialice logfile
 execute_cmd "echo 'Starting community deployment' > $LOGFILE" "All installer activity is logged on $LOGFILE"
@@ -113,7 +113,7 @@ execute_cmd "cd $HOME/pandora_deploy_tmp" "Moving to workspace:  $HOME/pandora_d
 
 # Downloading and installing packages
 
-if [[ $OS_RELEASE == 'rhel fedora' ]] || [[ $OS_RELEASE == 'centos rhel fedora' ]]; then
+if [[ $OS_RELEASE =~ 'rhel' ]]; then
     yum install -y perl wget curl perl-Sys-Syslog unzip &>> $LOGFILE 
     echo -e "${cyan}Instaling agent dependencies...${reset}" ${green}OK${reset}
     

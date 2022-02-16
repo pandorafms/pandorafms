@@ -147,6 +147,7 @@ execute_cmd  "[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -ge 1700000 ]"
 execute_cmd "[ $(df -BM / | tail -1 | awk '{print $4}' | tr -d M) -gt 10000 ]" 'Checking Disk (required: 10 GB free min)'
 
 # Setting timezone
+rm -rf /etc/localtime &>> "$LOGFILE"
 execute_cmd "timedatectl set-timezone $TZ" "Setting Timezone $TZ"
 
 # Execute tools check

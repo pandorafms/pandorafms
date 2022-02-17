@@ -326,7 +326,7 @@ function reporting_make_reporting_data(
             $items_label['id_agent_module'] = $content['id_agent_module'];
             $items_label['modules'] = $modules_to_macro;
             $items_label['agents'] = $agents_to_macro;
-            $items_label['visual_format'] = $visual_format;
+            $items_label['visual_format'] = null;
 
             $items_label['agent_description'] = agents_get_description(
                 $content['id_agent']
@@ -346,26 +346,15 @@ function reporting_make_reporting_data(
                 $modules_server_array = $content['id_agent_module'];
                 $modules_array = [];
                 foreach ($modules_server_array as $value) {
-                    $modules_array[] = $value['module'];
+                    if (is_array($value) === true) {
+                        $modules_array[] = $value['module'];
+                    } else {
+                        $modules_array[] = $value;
+                    }
                 }
 
                 $content['id_agent_module'] = $modules_array;
             }
-
-            $modules = agents_get_modules(
-                $agent_value,
-                [
-                    'id_agente_modulo',
-                    'nombre',
-                    'descripcion',
-                ],
-                [
-                    'id_agente_modulo' => $content['id_agent_module'],
-                ]
-            );
-
-            $items_label['module_name'] = $modules[$content['id_agent_module']]['nombre'];
-            $items_label['module_description'] = $modules[$content['id_agent_module']]['descripcion'];
 
             if (is_array($content['id_agent'])
                 && count($content['id_agent']) != 1

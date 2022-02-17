@@ -1,6 +1,7 @@
 /* exported form_upload */
 /* global $,ajax,cleanExit,preventExit,umConfirm,umErrorMsg */
 /* global texts,ajaxPage,insecureMode */
+/* global ImSureWhatImDoing */
 
 /**
  *
@@ -222,6 +223,26 @@ function form_upload(url, auth, current_package) {
               }
             });
           } else if (Math.round(parseFloat(number_update)) != target_version) {
+            if (ImSureWhatImDoing == undefined || ImSureWhatImDoing == false) {
+              umConfirm({
+                message:
+                  '<span class="warning"></span><p>' +
+                  (server_update
+                    ? texts.notGoingToInstallUnoficialServerWarning
+                    : texts.notGoingToInstallUnoficialWarning) +
+                  "</p>",
+                title: texts.warning,
+                size: 535,
+                onAccept: function() {
+                  location.reload();
+                },
+                onDeny: function() {
+                  cancelUpdate();
+                }
+              });
+              return;
+            }
+
             umConfirm({
               message:
                 '<span class="warning"></span><p>' +

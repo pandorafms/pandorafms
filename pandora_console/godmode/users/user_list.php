@@ -545,6 +545,13 @@ if ($search) {
     }
 }
 
+foreach ($info1 as $user_id => $user_info) {
+    // If user is not admin then don't display admin users.
+    if ($user_is_admin === false && (bool) $user_info['is_admin'] === true) {
+        unset($info1[$user_id]);
+    }
+}
+
 $info = $info1;
 
 // Prepare pagination.
@@ -557,11 +564,6 @@ $rowPair = true;
 $iterator = 0;
 $cont = 0;
 foreach ($info as $user_id => $user_info) {
-    if (!$user_is_admin && $user_info['is_admin']) {
-        // If user is not admin then don't display admin users.
-        continue;
-    }
-
     // User profiles.
     if ($user_is_admin || $user_id == $config['id_user'] || isset($group_um[0])) {
         $user_profiles = db_get_all_rows_field_filter(

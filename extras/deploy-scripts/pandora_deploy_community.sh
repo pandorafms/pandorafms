@@ -11,7 +11,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022012401'
+S_VERSION='2022020801'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -26,6 +26,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
+[ "$PANDORA_BETA" ] || PANDORA_BETA=0
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -110,6 +111,10 @@ fi
 
 execute_cmd "grep -i centos /etc/redhat-release" "Checking Centos" 'Error This is not a Centos Base system'
 
+#Detect OS
+os_name=$(grep ^PRETTY_NAME= /etc/os-release | cut -d '=' -f2 | tr -d '"')
+execute_cmd "echo $os_name" "OS detected: ${os_name}"
+
 echo -en "${cyan}Check Centos Version...${reset}"
 [ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '7' ]
 check_cmd_status 'Error OS version, Centos 7 is expected'
@@ -124,6 +129,9 @@ check_root_permissions
 
 # Pre installed pandora
 [ "$SKIP_PRECHECK" == 1 ] || check_pre_pandora
+
+#advicing BETA PROGRAM
+[ "$PANDORA_BETA" -ne '0' ] && echo -e "${red}BETA version enable using nightly PandoraFMS packages${reset}"
 
 # Connectivity
 check_repo_connection
@@ -317,6 +325,16 @@ setenforce 0
 sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config 
 systemctl disable firewalld --now &>> $LOGFILE
 
+# Adding standar cnf for initial setup.
+cat > /etc/my.cnf << EO_CONFIG_TMP
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+symbolic-links=0
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+EO_CONFIG_TMP
+
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
 execute_cmd "systemctl start mysqld" "Starting database engine"
@@ -382,10 +400,21 @@ EO_CONFIG_F
 
 execute_cmd "systemctl restart mysqld" "Configuring database engine"
 
+#Define packages
+if [ "$PANDORA_BETA" -eq '0' ] ; then
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm"
+elif [ "$PANDORA_BETA" -ne '0' ] ; then
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://pandorafms.com/community/community-console-rpm-beta/"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm"
+fi
+
 # Downloading Pandora Packages
-execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm" "Downloading Pandora FMS Server community"
-execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm" "Downloading Pandora FMS Console community"
-execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm" "Downloading Pandora FMS Agent community"
+execute_cmd "curl -LSs --output pandorafms_server-7.0NG.noarch.rpm ${PANDORA_SERVER_PACKAGE}" "Downloading Pandora FMS Server community"
+execute_cmd "curl -LSs --output pandorafms_console-7.0NG.noarch.rpm ${PANDORA_CONSOLE_PACKAGE}" "Downloading Pandora FMS Console community"
+execute_cmd "curl -LSs --output pandorafms_agent_unix-7.0NG.noarch.rpm ${PANDORA_AGENT_PACKAGE}" "Downloading Pandora FMS Agent community"
 
 # Install Pandora
 execute_cmd "yum install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "installing PandoraFMS packages"
@@ -633,4 +662,4 @@ execute_cmd "rm -rf $HOME/pandora_deploy_tmp" "Removing temporary files"
 GREEN='\033[01;32m'
 NONE='\033[0m'
 printf " -> Go to Public ${green}http://"$ipplublic"/pandora_console${reset} to manage this server"
-ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v -e "172.1[0-9].0.1" | awk '{print $2}' | awk -v g=$GREEN -v n=$NONE -F '/' '{printf "\n -> Go to Local "g"http://"$1"/pandora_console"n" to manage this server \n -> Use this credentials to login in the console "g"[ User: admin / Password: pandora ]"n" \n"}'
+ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v -e "172.1[0-9].0.1" | awk '{print $2}' | awk -v g=$GREEN -v n=$NONE -F '/' '{printf "\n -> Go to Local "g"http://"$1"/pandora_console"n" to manage this server \n -> Use these credentials to log in Pandora Console "g"[ User: admin / Password: pandora ]"n" \n"}'

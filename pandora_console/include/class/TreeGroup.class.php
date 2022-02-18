@@ -262,7 +262,7 @@ class TreeGroup extends Tree
         $groups = array_filter(
             $groups,
             function ($group) {
-                return !$group['have_parent'];
+                return !($group['have_parent'] ?? false);
             }
         );
         // Propagate child counters to her parents.
@@ -417,7 +417,7 @@ class TreeGroup extends Tree
         $groups = array_filter(
             $groups,
             function ($group) {
-                return !$group['have_parent'];
+                return !($group['have_parent'] ?? false);
             }
         );
 
@@ -489,6 +489,10 @@ class TreeGroup extends Tree
             }
 
             foreach ($groups[$id]['counters'] as $type => $value) {
+                if (isset($all_counters[$type]) === false) {
+                    $all_counters[$type] = 0;
+                }
+
                 $all_counters[$type] += $value;
             }
         }

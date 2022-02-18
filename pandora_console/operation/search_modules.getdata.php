@@ -134,7 +134,7 @@ if ($searchModules) {
 						)
 					)
 					AND
-					(t1.nombre COLLATE utf8_general_ci LIKE "%'.$stringSearchSQL.'%" OR
+					(t1.nombre LIKE "%'.$stringSearchSQL.'%" OR
 					t3.nombre LIKE "%'.$stringSearchSQL.'%") 
 					AND t1.disabled = 0';
         break;

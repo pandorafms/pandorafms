@@ -122,8 +122,7 @@ if ($table !== null) {
     html_print_table($table);
 }
 
-unset($table);
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->data = [];

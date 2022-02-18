@@ -98,6 +98,13 @@ function hd($var, $file='', $oneline=false)
 }
 
 
+function dd($var)
+{
+    hd($var);
+    die();
+}
+
+
 /**
  * Encapsulation (ob) for debug print function.
  *
@@ -130,7 +137,10 @@ function html_f2str($function, $params)
 {
     ob_start();
 
-    call_user_func_array($function, $params);
+    call_user_func_array(
+        $function,
+        array_values(($params ?? []))
+    );
 
     return ob_get_clean();
 }
@@ -2893,7 +2903,7 @@ function html_print_input_number(array $settings):string
                 $output .= $attribute.'="'.$attr_value.'" ';
             }
 
-            $output .= $function.'/>';
+            $output .= '/>';
         }
     }
 
@@ -4576,8 +4586,8 @@ function html_print_switch($attributes=[])
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
-    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value'] ?? false) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled'] ?? false) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -4599,9 +4609,9 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
-    $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+    $disabled_class = (bool) ($attributes['disabled'] ?? false) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
+    return "<label class='p-switch ".($attributes['container-class'] ?? '')."' style='".($attributes['style'] ?? '')."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";
@@ -4677,7 +4687,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     $output = '';
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
         $output .= '<label '.$style.' class="'.$data['label_class'].'">';
@@ -4702,7 +4712,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= ' class="'.$data['input_class'].'">';
     }
 
-    switch ($data['type']) {
+    switch (($data['type'] ?? null)) {
         case 'text':
             $output .= html_print_input_text(
                 $data['name'],
@@ -4755,15 +4765,15 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'text_extended':
             $output .= html_print_input_text_extended(
-                $data['name'],
-                $data['value'],
-                $data['id'],
-                $data['alt'],
-                $data['size'],
-                $data['maxlength'],
-                $data['disabled'],
-                $data['script'],
-                $data['attributes'],
+                ($data['name'] ?? null),
+                ($data['value'] ?? null),
+                ($data['id'] ?? null),
+                ($data['alt'] ?? null),
+                ($data['size'] ?? null),
+                ($data['maxlength'] ?? null),
+                ($data['disabled'] ?? null),
+                ($data['script'] ?? null),
+                ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
                 ((isset($data['function']) === true) ? $data['function'] : '')
@@ -4973,7 +4983,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'checkbox':
             $output .= html_print_checkbox(
                 $data['name'],
-                $data['value'],
+                ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
@@ -5270,7 +5280,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= '</'.$data['wrapper'].'>';
     }
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output .= '</'.$wrapper.'>';
         if (!$data['return']) {
             echo '</'.$wrapper.'>';

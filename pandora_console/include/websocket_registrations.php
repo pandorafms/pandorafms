@@ -34,6 +34,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Websockets\WSManager;
+
 /*
  * ============================================================================
  * * GOTTY PROTOCOL: PROXY
@@ -48,24 +50,27 @@
  * @param array     $headers   Communication headers.
  * @param string    $to_addr   Target address (internal).
  * @param integer   $to_port   Target port (internal).
- * @param integer   $to_url    Target url (internal).
+ * @param string    $to_url    Target url (internal).
  *
  * @return socket Active socket or null.
  */
 function connectInt(
-    $ws_object,
-    $headers,
-    $to_addr,
-    $to_port,
-    $to_url
+    WSManager $ws_object,
+    array $headers,
+    string $to_addr,
+    int $to_port,
+    string $to_url
 ) {
     $intSocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    // Not sure.
     $connect = socket_connect(
         $intSocket,
         $to_addr,
         $to_port
     );
-    if (!$connect) {
+
+    if ($connect === false) {
+        $ws_object->stderr(socket_last_error($intSocket));
         return null;
     }
 
@@ -76,7 +81,7 @@ function connectInt(
     $c_str .= 'Origin: http://'.$to_addr."\r\n";
     $c_str .= 'Sec-WebSocket-Key: '.$headers['Sec-WebSocket-Key']."\r\n";
     $c_str .= 'Sec-WebSocket-Version: '.$headers['Sec-WebSocket-Version']."\r\n";
-    if (isset($headers['Sec-WebSocket-Protocol'])) {
+    if (isset($headers['Sec-WebSocket-Protocol']) === true) {
         $c_str .= 'Sec-WebSocket-Protocol: '.$headers['Sec-WebSocket-Protocol']."\r\n";
     }
 
@@ -92,6 +97,7 @@ function connectInt(
         'origin'                 => $to_addr,
         'sec-websocket-protocol' => 'gotty',
     ];
+
     $ws_object->writeSocket($intUser, $c_str);
 
     return $intUser;
@@ -117,12 +123,21 @@ function proxyConnected(
      * $user->socket is connected to external.
      */
 
+    $failed = false;
+
     // Gotty. Based on the command selected, redirect to a target port.
-    if ($user->requestedResource == '/ssh') {
+    if ($user->requestedResource === '/ssh') {
         $port = $config['gotty_ssh_port'];
-    } else if ($user->requestedResource == '/telnet') {
+    } else if ($user->requestedResource === '/telnet') {
         $port = $config['gotty_telnet_port'];
     } else {
+        $failed = true;
+    }
+
+    if ($failed === true
+        || isset($config['gotty_host']) === false
+        || isset($port) === false
+    ) {
         $ws_object->disconnect($user->socket);
         return;
     }
@@ -154,7 +169,7 @@ function proxyConnected(
     $ws_object->remoteUsers[$intUser->id] = $intUser;
 
     // Ignore. Cleanup socket.
-    $response = $ws_object->readSocket($user->intUser);
+    $ws_object->readSocket($user->intUser);
 }
 
 

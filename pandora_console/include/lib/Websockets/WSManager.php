@@ -54,27 +54,6 @@ class WSManager extends WebSocketServer
 {
 
     /**
-     * Target host.
-     *
-     * @var string
-     */
-    private $intHost = '127.0.0.1';
-
-    /**
-     * Target port
-     *
-     * @var integer
-     */
-    private $intPort = 8080;
-
-    /**
-     * Internal URL.
-     *
-     * @var string
-     */
-    private $intUrl = '/ws';
-
-    /**
      * 1MB... overkill for an echo server, but potentially plausible for other
      * applications.
      *
@@ -192,7 +171,7 @@ class WSManager extends WebSocketServer
                 $this->stderr('Calling '.$handler[$proto]);
                 return call_user_func_array(
                     $handler[$proto],
-                    $arguments
+                    array_values(($arguments ?? []))
                 );
             }
         }
@@ -204,11 +183,21 @@ class WSManager extends WebSocketServer
     /**
      * Read from user's socket.
      *
-     * @param object $user Target user connection.
+     * @param object  $user  Target user connection.
+     * @param integer $flags Socket receive flags:
+     *           Flag            Description
+     *           MSG_OOB         Process out-of-band data.
+     *           MSG_PEEK        Receive data from the beginning of the receive
+     *                           queue without removing it from the queue.
+     *           MSG_WAITALL     Block until at least len are received. However,
+     *                           if a signal is caught or the remote host
+     *                           disconnects, the function may return less data.
+     *           MSG_DONTWAIT    With this flag set, the function returns even
+     *                           if it would normally have blocked.
      *
      * @return string Buffer.
      */
-    public function readSocket($user)
+    public function readSocket($user, $flags=0)
     {
         $buffer = '';
 
@@ -216,7 +205,7 @@ class WSManager extends WebSocketServer
             $user->socket,
             $buffer,
             $this->maxBufferSize,
-            0
+            $flags
         );
         if ($numBytes === false) {
             // Failed. Disconnect.
@@ -225,7 +214,7 @@ class WSManager extends WebSocketServer
         } else if ($numBytes == 0) {
             $this->disconnect($user->socket);
             $this->stderr(
-                'Client disconnected. TCP connection lost: '.$user->socket
+                'Client disconnected. TCP connection lost: '.$user->id
             );
             return false;
         }
@@ -245,16 +234,22 @@ class WSManager extends WebSocketServer
      */
     public function writeSocket($user, $message)
     {
-        if (is_resource($user->socket)) {
-            if (!socket_write($user->socket, $message)) {
+        if (is_resource($user->socket) === true
+            || ($user->socket instanceof \Socket) === true
+        ) {
+            if (socket_write($user->socket, $message) === false) {
                 $this->disconnect($user->socket);
             }
         } else {
             // Failed. Disconnect all.
-            $this->disconnect($user->socket);
-            $this->disconnect($user->redirect->socket);
-        }
+            if (isset($user) === true) {
+                $this->disconnect($user->socket);
+            }
 
+            if (isset($user->redirect) === true) {
+                $this->disconnect($user->redirect->socket);
+            }
+        }
     }
 
 

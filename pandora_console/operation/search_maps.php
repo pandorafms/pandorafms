@@ -18,6 +18,7 @@ $searchMaps = check_acl($config['id_user'], 0, 'VR');
 if ($maps === false || !$searchMaps) {
         echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';

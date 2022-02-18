@@ -104,7 +104,7 @@ final class SimpleValue extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
         $process_value = static::encodeProcessValue($data);
@@ -423,7 +423,7 @@ final class SimpleValue extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);

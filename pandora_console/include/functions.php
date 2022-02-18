@@ -166,7 +166,7 @@ function safe_url_extraclean($string, $default_string='')
  * @param string  $searchHandler Pattern of files to match.
  * @param boolean $return        Whether to print or return the list.
  *
- * @return string he list of files if $return parameter is true.
+ * @return array the list of files if $return parameter is true.
  */
 function list_files($directory, $stringSearch, $searchHandler, $return=false)
 {
@@ -515,6 +515,7 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
 
     if ($exactly) {
         $returnDate = '';
+        $seconds = (float) $seconds;
 
         $years = floor($seconds / SECONDS_1YEAR);
 
@@ -1545,7 +1546,10 @@ function enterprise_hook($function_name, $parameters=false)
             return call_user_func($function_name);
         }
 
-        return call_user_func_array($function_name, $parameters);
+        return call_user_func_array(
+            $function_name,
+            array_values(($parameters ?? []))
+        );
     }
 
     return ENTERPRISE_NOT_HOOK;

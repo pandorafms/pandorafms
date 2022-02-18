@@ -116,7 +116,7 @@ function extension_api_checker()
         ''
     );
 
-    $table = null;
+    $table = new stdClass();
     $table->data = [];
 
     $row = [];
@@ -144,7 +144,7 @@ function extension_api_checker()
     $row[] = html_print_input_password('password', $password, '', 50, 255, true);
     $table->data[] = $row;
 
-    $table2 = null;
+    $table2 = new stdClass();
     $table2->data = [];
 
     $row = [];
@@ -182,7 +182,7 @@ function extension_api_checker()
     $row[] = html_print_input_text('other_mode', $other_mode, '', 50, 255, true);
     $table2->data[] = $row;
 
-    $table3 = null;
+    $table3 = new stdClass();
     $table3->data = [];
 
     $row = [];

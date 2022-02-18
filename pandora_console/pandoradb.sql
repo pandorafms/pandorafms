@@ -1289,6 +1289,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `login_blocked` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_access` ENUM('basic','advanced') DEFAULT 'basic',
   `not_login` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `local_user` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_agents_manager` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_assigned_server` INT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_access_node` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -3670,7 +3671,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig` (
   `name` VARCHAR(100) NOT NULL,
   `order` INT NOT NULL DEFAULT 0,
   `description` TEXT,
-  `disabled` TINYINT DEFAULT 0,
+
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

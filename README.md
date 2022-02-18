@@ -2,8 +2,7 @@
 
 ![logo Pandora-FMS](https://user-images.githubusercontent.com/8567291/151817953-dc9c4c88-5f3c-459b-98a7-da0534930a2c.png)
 
-
-With more than 50,000 customer installations across the five continents, Pandora FMS is an out-of-the-box monitoring solution: profitable and scalable, covering most infrastructure deployment options. 
+With more than 50,000 customer installations across the five continents, Pandora FMS is an out-of-the-box monitoring solution: profitable and scalable, covering most infrastructure deployment options.
 
 Pandora FMS gives you the agility to find and solve problems quickly, scaling them so they can be derived from any source, on-premise, multi cloud or both of them mixed. Now you have that capability across your entire IT stack and analytics to find any problem, even the ones that are hard to find.
 

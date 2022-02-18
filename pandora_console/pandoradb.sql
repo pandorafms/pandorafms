@@ -1289,6 +1289,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `login_blocked` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_access` ENUM('basic','advanced') DEFAULT 'basic',
   `not_login` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `local_user` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_agents_manager` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_assigned_server` INT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_access_node` TINYINT UNSIGNED NOT NULL DEFAULT 0,

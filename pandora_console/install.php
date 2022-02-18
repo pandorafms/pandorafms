@@ -328,7 +328,7 @@ function parse_mysqli_dump($connection, $url)
                 $query .= $sql_line;
                 if (preg_match("/;[\040]*\$/", $sql_line)) {
                     if (!$result = mysqli_query($connection, $query)) {
-                        echo mysqli_error();
+                        echo mysqli_error($connection);
                         // Uncomment for debug
                         echo "<i><br>$query<br></i>";
                         return 0;

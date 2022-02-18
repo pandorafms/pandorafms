@@ -24,7 +24,7 @@ ui_print_page_header(__('Reporting').' &raquo;  '.__('Custom reporting'), 'image
 
 $reports = reports_get_reports();
 
-if (sizeof($reports) == 0) {
+if (count($reports) == 0) {
     echo "<div class='nf'>".__('There are no defined reportings').'</div>';
     return;
 }

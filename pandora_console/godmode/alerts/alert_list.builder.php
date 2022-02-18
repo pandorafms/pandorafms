@@ -30,6 +30,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 
 $pure = get_parameter('pure', 0);
 
+$table = new stdClass();
 $table->id = 'add_alert_table';
 $table->class = 'databox filters';
 $table->width = '100%';

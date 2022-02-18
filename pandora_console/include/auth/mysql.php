@@ -1391,8 +1391,16 @@ function safe_output_accute($string)
 }
 
 
-function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $access_attr, $ldap_admin_user, $ldap_admin_pass, $user)
-{
+function local_ldap_search(
+    $ldap_host,
+    $ldap_port=389,
+    $ldap_version=3,
+    $dn=null,
+    $access_attr=null,
+    $ldap_admin_user=null,
+    $ldap_admin_pass=null,
+    $user=null
+) {
     global $config;
 
     $filter = '';

@@ -331,7 +331,7 @@ $report = reporting_make_reporting_data(
     $period,
     'dinamic'
 );
-for ($i = 0; $i < sizeof($report['contents']); $i++) {
+for ($i = 0; $i < count($report['contents']); $i++) {
     $report['contents'][$i]['description'] = str_replace('&#x0d;&#x0a;', '<br/>', $report['contents'][$i]['description']);
 }
 

@@ -89,7 +89,11 @@ if (isset($_GET['loginhash']) === true) {
         $config['id_user'] = $loginhash_user;
     } else {
         include_once 'general/login_page.php';
-        db_pandora_audit('Logon Failed (loginhash', '', 'system');
+        db_pandora_audit(
+            AUDIT_LOG_USER_REGISTRATION,
+            'Loginhash failed',
+            'system'
+        );
         while (ob_get_length() > 0) {
             ob_end_flush();
         }
@@ -111,8 +115,8 @@ if (class_exists($auth_class) === false || $public_hash === false) {
 } else {
     if ($auth_class::validatePublicHash($public_hash) === false) {
         db_pandora_audit(
-            'Invalid public hash',
-            'Trying to access public dashboard'
+            AUDIT_LOG_USER_REGISTRATION,
+            'Trying to access public dashboard (Invalid public hash)'
         );
         include 'general/noaccess.php';
         exit;

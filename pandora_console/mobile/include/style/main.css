@@ -63,6 +63,15 @@ body {
 
 .ui-header .ui-title {
   font-size: 14px !important;
+  min-height: 1.1em;
+  text-align: center;
+  display: block;
+  margin: 0 30%;
+  padding: 0.7em 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  outline: 0 !important;
 }
 
 .ui-btn-inner {
@@ -1094,6 +1103,15 @@ li.ui-btn {
 
   .ui-header .ui-title {
     font-size: 18px !important;
+    min-height: 1.1em;
+    text-align: center;
+    display: block;
+    margin: 0 30%;
+    padding: 0.7em 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    outline: 0 !important;
   }
 
   * {
@@ -1165,59 +1183,58 @@ table.tactical_bars {
 
 /*INIT-----------Icons styles--------------------------------------- 1.3.1*/
 
-.ui-icon-tactical_view:after {
+.ui-icon-tactical_view {
   background-image: url(../../../images/op_monitoring.menu.png) !important;
-  background-position: unset !important;
   background-color: #333 !important;
-  background-size: 21px 21px !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-events:after {
+.ui-icon-events {
   background-image: url(../../../images/op_events.menu.png) !important;
-  background-position: unset !important;
   background-color: #333 !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-groups:after {
+.ui-icon-groups {
   background-image: url(../../../images/group.menu.png) !important;
   background-color: #333 !important;
-  background-size: 20px 20px !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-alerts:after {
+.ui-icon-alerts {
   background-image: url(../../../images/op_alerts.menu.png) !important;
-  background-position: unset !important;
   background-color: #333 !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-agents:after {
+.ui-icon-agents {
   background-image: url(../../../images/agent_mc.menu.png) !important;
-  background-position: unset !important;
   background-color: #333 !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-modules:after {
+.ui-icon-modules {
   background-image: url(../../../images/brick.menu.png) !important;
   background-color: #333 !important;
-  background-size: 20px 20px !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-network_maps:after {
+.ui-icon-network_maps {
   background-image: url(../../../images/op_network.menu.png) !important;
-  background-position: unset !important;
   background-color: #333 !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-visual_console:after {
+.ui-icon-visual_console {
   background-image: url(../../../images/visual_console.menu.png) !important;
   background-color: #333 !important;
-  background-size: 20px 20px !important;
+  background-size: 18px 18px !important;
 }
 
-.ui-icon-dashboard:after {
+.ui-icon-dashboard {
   background-image: url(../../../images/dashboard.menu.png) !important;
-  background-position: unset !important;
   background-color: #333 !important;
+  background-size: 18px 18px !important;
 }
 
 .ui-icon-tactical_view,
@@ -1260,7 +1277,8 @@ table.tactical_bars {
   .ui-icon-network_maps,
   .ui-icon-visual_console,
   .ui-icon-dashboard {
-    height: 28px !important;
+    height: 18px !important;
+    width: 18px !important;
     margin-top: 0px !important;
   }
 }
@@ -1275,7 +1293,8 @@ table.tactical_bars {
   .ui-icon-network_maps,
   .ui-icon-visual_console,
   .ui-icon-dashboard {
-    height: 32px !important;
+    height: 18px !important;
+    width: 18px !important;
   }
 }
 
@@ -1422,4 +1441,53 @@ div.nodata_container {
 .ui-listview > .ui-li-divider,
 .ui-listview > li > a.ui-btn {
   border-width: 0 !important;
+}
+
+.ui-page-active {
+  padding-top: 2.8em !important;
+}
+
+.ui-header-fixed {
+  top: -1px;
+  padding-top: 1px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  position: fixed;
+  z-index: 1000;
+}
+
+.header-button-left {
+  position: absolute !important;
+  top: 0em;
+  font-size: 12.5px !important;
+  margin: 0 !important;
+  margin-top: 1px !important;
+  left: 0.4em;
+  font-family: sans-serif !important;
+  padding: 0.5em 1em !important;
+}
+
+.header-button-right {
+  position: absolute !important;
+  top: 0em;
+  font-size: 12.5px !important;
+  margin: 0 !important;
+  margin-top: 1px !important;
+  right: 0.4em;
+  font-family: sans-serif !important;
+  padding: 0.5em 1em !important;
+}
+
+.ui-textinput-search {
+  border-radius: 0.6em 0.6em 0.6em 0.6em !important;
+}
+
+.ui-textinput-search input {
+  line-height: normal !important;
+}
+
+.ui-controlgroup {
+  padding: 0;
+  margin: 0.5em 0 !important;
 }

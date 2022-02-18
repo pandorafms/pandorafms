@@ -39,7 +39,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent view (Grouped)'
     );
     include 'general/noaccess.php';

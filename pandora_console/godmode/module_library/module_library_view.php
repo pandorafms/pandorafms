@@ -32,7 +32,10 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR')) {
     // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access Module Library View');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Module Library View'
+    );
     include 'general/noaccess.php';
     exit;
 }
@@ -156,8 +159,8 @@ var more_details = '<?php echo __('More details'); ?>';
 var total_modules_text = '<?php echo __('Total modules'); ?>';
 var view_web = '<?php echo __('View in Module Library'); ?>';
 var empty_result = '<?php echo __('No module found'); ?>';
-var error_get_token = '<?php echo __('Problem with authentication. Check your internet connection'); ?>'; 
-var invalid_user = '<?php echo __('Invalid username or password'); ?>'; 
+var error_get_token = '<?php echo __('Problem with authentication. Check your internet connection'); ?>';
+var invalid_user = '<?php echo __('Invalid username or password'); ?>';
 var error_main = '<?php echo __('Error loading Module Library'); ?>';
 var error_category = '<?php echo __('Error loading category'); ?>';
 var error_categories = '<?php echo __('Error loading categories'); ?>';

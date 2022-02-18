@@ -1672,10 +1672,15 @@ class NetworkMap
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
-                        $item['color'] = self::getColorByStatus(
-                            $node['status'],
-                            (bool) $node['id_module']
-                        );
+                        if (empty($node['status']) && empty($node['id_module']) && !empty($node['style']['id_networkmap'])) {
+                            $status_aux = get_status_color_networkmap_fictional_point($node['style']['id_networkmap']);
+                            $item['color'] = $status_aux;
+                        } else {
+                            $item['color'] = self::getColorByStatus(
+                                $node['status'],
+                                (bool) $node['id_module']
+                            );
+                        }
                     }
                 break;
             }
@@ -3559,7 +3564,7 @@ class NetworkMap
                 && !$networkmap_manage
             ) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access networkmap'
                 );
                 include 'general/noaccess.php';

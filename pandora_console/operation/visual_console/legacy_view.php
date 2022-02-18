@@ -72,7 +72,7 @@ if (isset($config['vc_refr']) && $config['vc_refr'] != 0) {
 // Get input parameter for layout id
 if (! $id_layout) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without id layout'
     );
     include 'general/noaccess.php';
@@ -83,7 +83,7 @@ $layout = db_get_row('tlayout', 'id', $id_layout);
 
 if (! $layout) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without id layout'
     );
     include 'general/noaccess.php';
@@ -105,7 +105,7 @@ $vconsole_manage = check_acl_restricted_all($config['id_user'], $id_group, 'VM')
 
 if (! $vconsole_read && !$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without group access'
     );
     include 'general/noaccess.php';

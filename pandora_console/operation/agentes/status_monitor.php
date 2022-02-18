@@ -36,7 +36,7 @@ if (! check_acl($config['id_user'], 0, 'AR')
     && ! check_acl($config['id_user'], 0, 'AM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';
@@ -1777,6 +1777,13 @@ $table->data[4][0] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you 
                         }
 
                         if (!is_snapshot_data($row['datos'])) {
+                            if ($tresholds === true || $graph_type === 'boolean') {
+                                unset($graph_params['histogram']);
+                            }
+
+                            $graph_params_str = http_build_query($graph_params);
+
+                            $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
                             $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
                         }
 

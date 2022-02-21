@@ -4255,7 +4255,9 @@ function ui_forced_public_url()
         $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
     }
 
-    if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
+    if (isset($_SERVER['REMOTE_ADDR']) === true
+        && in_array($_SERVER['REMOTE_ADDR'], $exclusions)
+    ) {
         return false;
     }
 
@@ -4362,7 +4364,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     } else {
         $protocol = 'http';
 
-        if ($_SERVER['SERVER_PORT'] != 80) {
+        if (($_SERVER['SERVER_PORT'] ?? 80) != 80) {
             $port = $_SERVER['SERVER_PORT'];
         }
     }
@@ -4387,10 +4389,10 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
 
             $proxy = true;
         } else {
-            $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
+            $fullurl = $protocol.'://'.($_SERVER['SERVER_NAME'] ?? '');
         }
     } else {
-        $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
+        $fullurl = $protocol.'://'.($_SERVER['SERVER_NAME'] ?? '');
     }
 
     // Using a different port than the standard.
@@ -6429,7 +6431,7 @@ function ui_print_comments($comments)
         $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
+    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
         $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
 

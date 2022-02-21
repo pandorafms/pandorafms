@@ -30,7 +30,7 @@ if (!$agents || !$searchAgents) {
         echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
     }
 } else {
-    $table = new StdClass();
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';

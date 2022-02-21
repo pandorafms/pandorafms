@@ -31,7 +31,7 @@ require_once $config['homedir'].'/include/functions.php';
  * @param string $active_tab Current tab or false for View page.
  * @param number $view       Id of incident. Show View tab.
  *
- * @return html Print tabs in header.
+ * @return string HTML code. Print tabs in header.
  */
 function integriaims_tabs($active_tab, $view=false)
 {
@@ -145,17 +145,31 @@ function integriaims_get_details($details, $detail_index=false)
 /**
  * Perform an API call to Integria IMS.
  *
- * @param string API host URL.
- * @param string User name.
- * @param string User password.
- * @param string API password.
- * @param string API Operation.
- * @param mixed String or array with parameters required by the API function.
+ * @param string|null $api_hostname               API host URL.
+ * @param string|null $user                       User name.
+ * @param string|null $user_pass                  User password.
+ * @param string|null $api_pass                   API password.
+ * @param string|null $operation                  API Operation.
+ * @param mixed       $params                     String or array with parameters required by the API function.
+ * @param mixed       $show_credentials_error_msg Show_credentials_error_msg.
+ * @param mixed       $return_type                Return_type.
+ * @param mixed       $token                      Token.
+ * @param mixed       $user_level_conf            User_level_conf.
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api_pass=null, $operation, $params='', $show_credentials_error_msg=false, $return_type='', $token='', $user_level_conf=null)
-{
+function integria_api_call(
+    $api_hostname=null,
+    $user=null,
+    $user_pass=null,
+    $api_pass=null,
+    $operation=null,
+    $params='',
+    $show_credentials_error_msg=false,
+    $return_type='',
+    $token='',
+    $user_level_conf=null
+) {
     global $config;
 
     if (is_metaconsole()) {
@@ -361,7 +375,7 @@ function get_array_from_csv_data_all($csv_data, &$array_values, $index=false)
  * @param string $priority       value of priority in Integria IMS.
  * @param string $priority_label text shown in color box.
  *
- * @return HTML  code to print the color box.
+ * @return string HTML code.  code to print the color box.
  */
 function ui_print_integria_incident_priority($priority, $priority_label)
 {

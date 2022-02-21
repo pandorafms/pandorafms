@@ -206,6 +206,8 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $select[0]['autorefresh_white_list']
         );
 
+        $header_autorefresh = '';
+        $header_autorefresh_counter = '';
         if ($config['legacy_vc']
             || ($_GET['sec2'] !== 'operation/visual_console/render_view')
             || (($_GET['sec2'] !== 'operation/visual_console/render_view')
@@ -900,6 +902,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         if ($_GET['refr']
             || (isset($do_refresh) === true && $do_refresh === true)
         ) {
+            $autorefresh_draw = false;
             if ($_GET['sec2'] == 'operation/events/events') {
                 $autorefresh_draw = true;
             }

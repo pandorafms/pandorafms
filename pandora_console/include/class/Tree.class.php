@@ -581,9 +581,11 @@ class Tree
     }
 
 
-    protected function processModule(&$module, $server=false, $all_groups)
+    protected function processModule(&$module, $server, $all_groups)
     {
         global $config;
+
+        $server = ($server ?? false);
 
         if (isset($module['children'])) {
             foreach ($module['children'] as $i => $children) {
@@ -734,10 +736,10 @@ class Tree
             // Info to be able to open the snapshot image new page.
             $module['snapshot'] = ui_get_snapshot_link(
                 [
-                    'id_module'   => $module['id'],
-                    'interval'    => $module['current_interval'],
-                    'module_name' => $module['name'],
-                    'id_node'     => $module['serverID'] ? $module['serverID'] : 0,
+                    'id_module'   => ($module['id'] ?? null),
+                    'interval'    => ($module['current_interval'] ?? null),
+                    'module_name' => ($module['name'] ?? null),
+                    'id_node'     => ((isset($module['serverID']) === true) ? $module['serverID'] : 0),
                 ],
                 true
             );
@@ -754,12 +756,13 @@ class Tree
         }
 
         $module_alerts = alerts_get_alerts_agent_module($module['id']);
-
         $module_alert_triggered = false;
 
-        foreach ($module_alerts as $module_alert) {
-            if ($module_alert['times_fired'] > 0) {
-                $module_alert_triggered = true;
+        if (is_array($module_alerts) === true) {
+            foreach ($module_alerts as $module_alert) {
+                if ($module_alert['times_fired'] > 0) {
+                    $module_alert_triggered = true;
+                }
             }
         }
 

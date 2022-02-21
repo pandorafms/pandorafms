@@ -218,8 +218,6 @@ abstract class WebSocketServer
 
         $this->sockets['m'] = $this->master;
         $this->stderr('Listening on: '.$addr.':'.$port);
-        $this->stderr('Master socket: '.$this->master."\n");
-
     }
 
 
@@ -353,7 +351,7 @@ abstract class WebSocketServer
     /**
      * Manage behaviour on socket error.
      *
-     * @param socket $socket Target socket.
+     * @param \socket $socket Target socket.
      *
      * @return void
      */
@@ -449,15 +447,15 @@ abstract class WebSocketServer
                 if ($socket == $this->master) {
                     // External to master connection. New client.
                     $client = socket_accept($socket);
-                    if ($client < 0) {
-                        $this->stderr('Failed: socket_accept()');
+                    if ((bool) $client !== true) {
+                        $this->stderr('Failed: socket_accept(), reason: ', socket_last_error());
                         continue;
                     } else {
-                        $this->connect($client);
-                        $this->stderr('Client connected. '.$client);
+                        $user = $this->connect($client);
+                        $this->stderr('Client connected. '.$user->id);
                     }
                 } else {
-                    if (!$socket) {
+                    if ((bool) $socket !== true) {
                         $this->disconnect($socket);
                         continue;
                     }
@@ -550,9 +548,9 @@ abstract class WebSocketServer
     /**
      * Register user (and its socket) into master.
      *
-     * @param Socket $socket Socket.
+     * @param \Socket $socket Socket.
      *
-     * @return void
+     * @return object
      */
     public function connect($socket)
     {
@@ -563,13 +561,15 @@ abstract class WebSocketServer
         $this->users[$user->id] = $user;
         $this->sockets[$user->id] = $socket;
         $this->connecting($user);
+
+        return $user;
     }
 
 
     /**
      * Disconnect socket from master.
      *
-     * @param Socket  $socket        Socket.
+     * @param \Socket $socket        Socket.
      * @param boolean $triggerClosed Also close.
      * @param integer $sockErrNo     Clear error.
      *
@@ -605,7 +605,7 @@ abstract class WebSocketServer
             if ($triggerClosed) {
                 $this->closed($user);
                 $this->stderr(
-                    'Client disconnected. '.$user->socket
+                    'Client disconnected. '.$user->id
                 );
                 socket_close($user->socket);
             } else {
@@ -630,6 +630,7 @@ abstract class WebSocketServer
      */
     public function doHandshake($user, $buffer)
     {
+        // WS RFC.
         $magicGUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
         $headers = [];
         $lines = explode("\n", $buffer);
@@ -644,6 +645,7 @@ abstract class WebSocketServer
             }
         }
 
+        $handshakeResponse = null;
         if (isset($headers['get'])) {
             $user->requestedResource = $headers['get'];
         } else {

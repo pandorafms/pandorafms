@@ -840,7 +840,7 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
     global $config;
 
     // Requesting remote data.
-    if (defined('METACONSOLE') && $connection_name != '') {
+    if (is_metaconsole() === true && $connection_name != '') {
         $data = metaconsole_call_remote_api($connection_name, 'netflow_get_summary', "$start_date|$end_date|".base64_encode(json_encode($filter)));
         return json_decode($data, true);
     }

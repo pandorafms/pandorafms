@@ -13810,7 +13810,7 @@ function api_get_netflow_get_top_N($trash1, $trash2, $params)
 // http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_summary&other=1348562410|1348648810|_base64_encode(json_encode($filter))&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
 function api_get_netflow_get_summary($discard_1, $discard_2, $params)
 {
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         return;
     }
 

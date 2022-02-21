@@ -322,6 +322,72 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate)
 
 
 /**
+ * Show a table with netflow top N data.
+ *
+ * @param array   $data        Netflow data.
+ * @param integer $total_bytes Total bytes count to calculate percent data.
+ *
+ * @return string HTML data table.
+ */
+function netflow_top_n_table(array $data, int $total_bytes)
+{
+    global $nfdump_date_format;
+
+    $values = [];
+    $table = new stdClass();
+    $table->class = 'w100p';
+    $table->cellspacing = 0;
+    $table->data = [];
+
+    $table->head = [];
+    $table->head[0] = '<b>'.__('Source IP').'</b>';
+    $table->head[1] = '<b>'.__('Destination IP').'</b>';
+    $table->head[2] = '<b>'.__('Bytes').'</b>';
+    $table->head[3] = '<b>'.__('% Traffic').'</b>';
+    $table->head[4] = '<b>'.__('Avg. Throughput').'</b>';
+    $table->style[0] = 'padding: 4px';
+
+    $i = 0;
+
+    foreach ($data as $value) {
+        $table->data[$i][0] = $value['ip_src'];
+        $table->data[$i][1] = $value['ip_dst'];
+        $table->data[$i][2] = network_format_bytes($value['bytes']);
+
+        $traffic = '-';
+
+        if ($total_bytes > 0) {
+            $traffic = sprintf(
+                '%.2f',
+                (($value['bytes'] / $total_bytes) * 100)
+            );
+        }
+
+        $table->data[$i][3] = $traffic.' %';
+
+        $units = [
+            'bps',
+            'Kbps',
+            'Mbps',
+            'Gbps',
+            'Tbps',
+        ];
+
+        $pow = floor((($value['bps'] > 0) ? log($value['bps']) : 0) / log(1024));
+        $pow = min($pow, (count($units) - 1));
+
+        $value['bps'] /= pow(1024, $pow);
+
+        $table->data[$i][4] = round($value['bps'], 2).' '.$units[$pow];
+
+        $i++;
+    }
+
+    return html_print_table($table, true);
+}
+
+
+/**
  * Show a table with a traffic summary.
  *
  * @param array $data Summary data.
@@ -392,6 +458,73 @@ function netflow_is_net($address)
     }
 
     return 0;
+}
+
+
+/**
+ * Returns netflow data for the given period in an array.
+ *
+ * @param string  $start_date      Period start date.
+ * @param string  $end_date        Period end date.
+ * @param array   $filter          Netflow filter.
+ * @param integer $max             Maximum number of aggregates.
+ * @param string  $connection_name Node name when data is get in meta.
+ *
+ * @return array An array with netflow stats.
+ */
+function netflow_get_top_N(
+    string $start_date,
+    string $end_date,
+    array $filter,
+    int $max,
+    string $connection_name=''
+) {
+    global $nfdump_date_format;
+
+    // Requesting remote data.
+    if (is_metaconsole() === true && empty($connection_name) === false) {
+        $data = metaconsole_call_remote_api(
+            $connection_name,
+            'netflow_get_top_N',
+            $start_date.'|'.$end_date.'|'.base64_encode(json_encode($filter)).'|'.$max
+        );
+
+        return json_decode($data, true);
+    }
+
+    $options = '-o csv -q -n '.$max.' -s record/bps -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $options_bps = '-o csv -q -n '.$max.' -s dstip/bps -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+
+    $command = netflow_get_command($options, $filter);
+    $command_bps = netflow_get_command($options_bps, $filter);
+
+    // Execute nfdump.
+    exec($command, $lines);
+    exec($command_bps, $lines_bps);
+
+    if (is_array($lines) === false || is_array($lines_bps) === false) {
+        return [];
+    }
+
+    $values = [];
+    $i = 0;
+
+    // Remove first line.
+    array_shift($lines_bps);
+
+    foreach ($lines as $line) {
+        $parsed_line = explode(',', $line);
+        $parsed_line_bps = explode(',', $lines_bps[$i]);
+
+        $values[$i]['ip_src'] = $parsed_line[3];
+        $values[$i]['ip_dst'] = $parsed_line[4];
+        $values[$i]['bytes'] = $parsed_line[12];
+        $values[$i]['bps'] = $parsed_line_bps[12];
+
+        $i++;
+    }
+
+    return $values;
 }
 
 
@@ -1051,6 +1184,7 @@ function netflow_get_chart_types()
         'netflow_area'         => __('Area graph'),
         'netflow_summary'      => __('Summary'),
         'netflow_data'         => __('Data table'),
+        'netflow_top_N'        => __('Top-N connections'),
         'netflow_mesh'         => __('Circular mesh'),
         'netflow_host_treemap' => __('Host detailed traffic'),
     ];
@@ -1218,6 +1352,54 @@ function netflow_draw_item(
             }
         break;
 
+        case 'netflow_top_N':
+            $data_summary = netflow_get_summary(
+                $start_date,
+                $end_date,
+                $filter,
+                $connection_name
+            );
+
+            if (empty($data_summary) === true) {
+                break;
+            }
+
+            $data_top_n = netflow_get_top_N(
+                $start_date,
+                $end_date,
+                $filter,
+                $max_aggregates,
+                $connection_name
+            );
+
+            if (empty($data_top_n) === true) {
+                break;
+            }
+
+            if ($output === 'HTML' || $output === 'PDF') {
+                $html = '<table class="w100p">';
+                $html .= '<tr>';
+                $html .= "<td class='w50p'>";
+                $html .= netflow_summary_table($data_summary);
+                $html .= '</td>';
+                $html .= '</tr>';
+                $html .= '<tr>';
+                $html .= "<td class='w100p'>";
+                $html .= netflow_top_n_table($data_top_n, $data_summary['totalbytes']);
+                $html .= '</td>';
+                $html .= '</tr>';
+                $html .= '</table>';
+
+                return $html;
+            } else if ($output === 'XML') {
+                $xml = '<aggregate>'.$aggregate."</aggregate>\n";
+                $xml .= '<resolution>'.$interval_length."</resolution>\n";
+                // Same as netflow_aggregate_area_xml.
+                $xml .= netflow_aggregate_area_xml($data_top_n);
+                return $xml;
+            }
+        break;
+
         case 'netflow_mesh':
             $data = netflow_get_relationships_raw_data(
                 $start_date,
@@ -1301,6 +1483,46 @@ function netflow_draw_item(
     if ($output === 'HTML' || $output === 'PDF') {
         return graph_nodata_image(300, 110, 'data');
     }
+}
+
+
+/**
+ * Get data of a netflow report item.
+ *
+ * @param string  $start_date      Period start date.
+ * @param string  $end_date        Period end date.
+ * @param array   $filter          Netflow filter.
+ * @param integer $max_aggregates  Maximum number of aggregates.
+ * @param string  $connection_name Node name when data is get in meta.
+ *
+ * @return array Netflow item data (summary and top N data).
+ */
+function netflow_get_item_data(
+    string $start_date,
+    string $end_date,
+    array $filter,
+    int $max_aggregates,
+    string $connection_name
+) {
+    $data_summary = netflow_get_summary(
+        $start_date,
+        $end_date,
+        $filter,
+        $connection_name
+    );
+
+    $data_top_n = netflow_get_top_N(
+        $start_date,
+        $end_date,
+        $filter,
+        $max_aggregates,
+        $connection_name
+    );
+
+    return [
+        'summary' => $data_summary,
+        'top_n'   => $data_top_n,
+    ];
 }
 
 

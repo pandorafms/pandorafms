@@ -901,6 +901,10 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Netflow'),
             'name'     => __('Netflow summary table'),
         ];
+        $types['netflow_top_N'] = [
+            'optgroup' => __('Netflow'),
+            'name'     => __('Netflow top-N connections'),
+        ];
     }
 
     if ($config['enterprise_installed'] && $template === false && !is_metaconsole()) {

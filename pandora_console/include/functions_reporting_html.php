@@ -326,6 +326,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'netflow_area':
             case 'netflow_data':
             case 'netflow_summary':
+            case 'netflow_top_N':
                 reporting_html_graph($table, $item);
             break;
 

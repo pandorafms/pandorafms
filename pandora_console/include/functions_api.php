@@ -13762,7 +13762,7 @@ function api_get_netflow_get_stats($discard_1, $discard_2, $params)
         return;
     }
 
-    // Parse function parameters
+    // Parse function parameters.
     $start_date = $params['data'][0];
     $end_date = $params['data'][1];
     $filter = json_decode(base64_decode($params['data'][2]), true);
@@ -13775,6 +13775,34 @@ function api_get_netflow_get_stats($discard_1, $discard_2, $params)
     $data = netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $unit, '', $address_resolution);
 
     returnData('json', $data);
+    return;
+}
+
+
+/**
+ *
+ * @param  $trash1       Don't use.
+ * @param  $trash2       Don't use.
+ * @param  array                  $params Call parameters.
+ * @return void
+ */
+function api_get_netflow_get_top_N($trash1, $trash2, $params)
+{
+    if (is_metaconsole() === true) {
+        return;
+    }
+
+    // Parse function parameters.
+    $start_date = $params['data'][0];
+    $end_date = $params['data'][1];
+    $filter = json_decode(base64_decode($params['data'][2]), true);
+    $max = $params['data'][3];
+
+    // Get netflow data.
+    $data = netflow_get_top_N($start_date, $end_date, $filter, $max, '');
+
+    returnData('json', $data);
+
     return;
 }
 

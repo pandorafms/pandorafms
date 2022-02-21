@@ -462,7 +462,7 @@ function netflow_is_net($address)
 
 
 /**
- * Returns netflow data for the given period in an array.
+ * Returns netflow top N connections for the given period in an array (based on total traffic).
  *
  * @param string  $start_date      Period start date.
  * @param string  $end_date        Period end date.
@@ -492,34 +492,28 @@ function netflow_get_top_N(
         return json_decode($data, true);
     }
 
-    $options = '-o csv -q -n '.$max.' -s record/bps -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-    $options_bps = '-o csv -q -n '.$max.' -s dstip/bps -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $options = '-o "fmt:%sap,%dap,%ibyt,%bps" -q -n '.$max.' -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 
     $command = netflow_get_command($options, $filter);
-    $command_bps = netflow_get_command($options_bps, $filter);
 
     // Execute nfdump.
     exec($command, $lines);
-    exec($command_bps, $lines_bps);
 
-    if (is_array($lines) === false || is_array($lines_bps) === false) {
+    if (is_array($lines) === false) {
         return [];
     }
 
     $values = [];
     $i = 0;
 
-    // Remove first line.
-    array_shift($lines_bps);
-
     foreach ($lines as $line) {
         $parsed_line = explode(',', $line);
-        $parsed_line_bps = explode(',', $lines_bps[$i]);
+        $parsed_line = array_map('trim', $parsed_line);
 
-        $values[$i]['ip_src'] = $parsed_line[3];
-        $values[$i]['ip_dst'] = $parsed_line[4];
-        $values[$i]['bytes'] = $parsed_line[12];
-        $values[$i]['bps'] = $parsed_line_bps[12];
+        $values[$i]['ip_src'] = $parsed_line[0];
+        $values[$i]['ip_dst'] = $parsed_line[1];
+        $values[$i]['bytes'] = $parsed_line[2];
+        $values[$i]['bps'] = $parsed_line[3];
 
         $i++;
     }

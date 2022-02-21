@@ -232,11 +232,15 @@ function fmModuleChange(uniqId, isMeta) {
       selection: showCommonModules
     },
     function(data) {
+      debugger;
       $("#filtered-module-modules-" + uniqId).html("");
       if (data) {
         jQuery.each(data, function(id, value) {
           var option = $("<option></option>");
           if (isMeta === 1) {
+            if (value["id_node"] == null || value["id_node"] == "") {
+              option.attr("value", id).html(value);
+            }
             option
               .attr(
                 "value",

@@ -245,8 +245,8 @@ if ($free_search != '') {
 			WHERE id_agente IN (
 				SELECT id_agente
 				FROM tagente
-				WHERE nombre COLLATE utf8_general_ci LIKE "%'.$free_search.'%") 
-                OR alias COLLATE utf8_general_ci LIKE "%'.$free_search.'%")'.')';
+				WHERE nombre LIKE "%'.$free_search.'%") 
+                OR alias LIKE "%'.$free_search.'%")'.')';
 } else {
     $whereAlertSimple = '';
 }

@@ -243,10 +243,10 @@ class Item extends CachedModel
         }
 
         $decodedData['agentDisabled'] = static::parseBool(
-            $data['agentDisabled']
+            ($data['agentDisabled'] ?? false)
         );
         $decodedData['moduleDisabled'] = static::parseBool(
-            $data['moduleDisabled']
+            ($data['moduleDisabled'] ?? false)
         );
 
         return $decodedData;
@@ -755,8 +755,9 @@ class Item extends CachedModel
     /**
      * Fetch a vc item data structure from the database using a filter.
      *
-     * @param array $filter Filter of the Visual Console Item.
-     * @param float $ratio  Ratio resize view.
+     * @param array      $filter     Filter of the Visual Console Item.
+     * @param float      $ratio      Ratio resize view.
+     * @param float|null $widthRatio Unknown.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
@@ -1097,8 +1098,8 @@ class Item extends CachedModel
         $baseUrl = \ui_get_full_url('index.php');
         $mobileUrl = \ui_get_full_url('mobile/index.php');
 
-        if ((bool) $data['agentDisabled'] === true
-            || (bool) $data['moduleDisabled'] === true
+        if ((bool) ($data['agentDisabled'] ?? null) === true
+            || (bool) ($data['moduleDisabled'] ?? null) === true
         ) {
             return null;
         }
@@ -1392,7 +1393,7 @@ class Item extends CachedModel
      *
      * @overrides Model::encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $result = [];
 
@@ -1811,7 +1812,7 @@ class Item extends CachedModel
 
 
     /**
-     * Insert or update an item in the database
+     * Update an item in the database
      *
      * @param array $data Unknown input data structure.
      *
@@ -1821,20 +1822,25 @@ class Item extends CachedModel
      */
     public function save(array $data=[]): int
     {
+        $data = ($data ?? $this->toArray());
+
         if (empty($data) === false) {
             if (empty($data['id']) === true) {
                 // Insert.
                 $save = static::encode($data);
 
                 $result = \db_process_sql_insert('tlayout_data', $save);
-                if ($result) {
+                if ($result !== false) {
                     $item = static::fromDB(['id' => $result]);
                     $item->setData($item->toArray());
                 }
             } else {
                 // Update.
-                $dataModelEncode = $this->encode($this->toArray());
-                $dataEncode = $this->encode($data);
+                $dataModelEncode = static::encode($this->toArray());
+                // Exception colorcloud...
+                $dataEncode = static::encode(
+                    array_merge($this->toArray(), $data)
+                );
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 
@@ -2209,7 +2215,7 @@ class Item extends CachedModel
      *
      * @return array Array with default values.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         global $config;
 
@@ -2253,7 +2259,7 @@ class Item extends CachedModel
      *
      * @return array
      */
-    public function getListImagesVC(?bool $service=false):array
+    public static function getListImagesVC(?bool $service=false):array
     {
         global $config;
 
@@ -2377,7 +2383,7 @@ class Item extends CachedModel
      *
      * @return array Inputs.
      */
-    public function inputsLinkedVisualConsole(array $values):array
+    public static function inputsLinkedVisualConsole(array $values):array
     {
         // LinkConsoleInputGroup.
         $fields = self::getAllVisualConsole($values['vCId']);

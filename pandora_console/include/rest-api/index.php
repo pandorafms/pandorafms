@@ -132,6 +132,11 @@ if ($getVisualConsole === true) {
         $item = VisualConsole::getItemFromDB($itemId);
     } catch (Throwable $e) {
         // Bad params.
+        echo $e->getMessage();
+        if (__DEBUG === 1) {
+            echo ' at '.$e->getFile().':'.$e->getLine();
+        }
+
         http_response_code(400);
         return;
     }
@@ -209,6 +214,11 @@ if ($getVisualConsole === true) {
             $item = VisualConsole::getItemFromDB($result);
         } catch (Throwable $e) {
             // Bad params.
+            echo $e->getMessage();
+            if (__DEBUG === 1) {
+                echo ' at '.$e->getFile().':'.$e->getLine();
+            }
+
             http_response_code(400);
             return;
         }
@@ -247,7 +257,7 @@ if ($getVisualConsole === true) {
     }
 
     $data = get_parameter('data');
-    $result = $item::delete($itemId);
+    $result = $item->delete($itemId);
     echo $result;
     return;
 } else if ($copyVisualConsoleItem === true) {
@@ -274,7 +284,7 @@ if ($getVisualConsole === true) {
     $class = VisualConsole::getItemClass((int) $data['type']);
     try {
         // Save the new item.
-        $result = $class::save($data);
+        $result = $class::create($data);
     } catch (\Throwable $th) {
         // There is no item in the database.
         echo false;

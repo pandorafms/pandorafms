@@ -473,12 +473,13 @@ class HTML
         bool $direct=false
     ) {
         global $config;
+        $text_color = '';
         if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $text_color = 'style="color: white"';
         }
 
         $output = '';
-        if ($input['hidden'] == 1) {
+        if (($input['hidden'] ?? null) == 1) {
             $class = ' hidden';
         } else {
             $class = '';
@@ -488,24 +489,24 @@ class HTML
             $class = $input['class'].$class;
         }
 
-        if (is_array($input['block_content']) === true) {
-            $direct = (bool) $input['direct'];
-            $toggle = (bool) $input['toggle'];
+        if (is_array(($input['block_content'] ?? null)) === true) {
+            $direct = (bool) ($input['direct'] ?? false);
+            $toggle = (bool) ($input['toggle'] ?? false);
 
             if (isset($input['label']) === true) {
                 $output .= '<span '.$text_color.'>'.$input['label'].'</span>';
             }
 
             // Print independent block of inputs.
-            $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<li id="li-'.($input['block_id'] ?? '').'" class="'.$class.'">';
 
-            if ($input['wrapper']) {
-                $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
+            if (isset($input['wrapper']) === true) {
+                $output .= '<'.$input['wrapper'].' id="'.($input['block_id'] ?? '').'" class="'.$class.'">';
             }
 
             if (!$direct) {
                 // Avoid encapsulation if input is direct => 1.
-                $output .= '<ul class="wizard '.$input['block_class'].'">';
+                $output .= '<ul class="wizard '.($input['block_class'] ?? '').'">';
             }
 
             $html = '';
@@ -544,15 +545,16 @@ class HTML
                 $output .= '</ul>';
             }
 
-            if ($input['wrapper']) {
+            if (isset($input['wrapper']) === true) {
                 $output .= '</'.$input['wrapper'].'>';
             }
 
             $output .= '</li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden'
-                && $input['arguments']['type'] != 'hidden_extended'
-                && $input['arguments']['type'] != 'datalist'
+            if (is_array(($input['arguments'] ?? false)) === true
+                && ($input['arguments']['type'] ?? false) != 'hidden'
+                && ($input['arguments']['type'] ?? false) != 'hidden_extended'
+                && ($input['arguments']['type'] ?? false) != 'datalist'
             ) {
                 // Raw content for attach at the start of the input.
                 if (isset($input['surround_start']) === true) {
@@ -560,7 +562,7 @@ class HTML
                 }
 
                 if (!$direct) {
-                    $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+                    $output .= '<li id="'.($input['id'] ?? '').'" class="'.$class.'">';
                 }
 
                 if (isset($input['label']) === true) {
@@ -569,7 +571,7 @@ class HTML
 
                 $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
-                $output .= $input['extra'];
+                $output .= ($input['extra'] ?? '');
                 if (!$direct) {
                     $output .= '</li>';
                 }
@@ -579,9 +581,9 @@ class HTML
                     $output .= $input['surround_end'];
                 }
             } else {
-                $output .= self::printInput($input['arguments']);
+                $output .= self::printInput(($input['arguments'] ?? []));
                 // Allow dynamic content.
-                $output .= $input['extra'];
+                $output .= ($input['extra'] ?? '');
             }
         }
 
@@ -773,13 +775,13 @@ class HTML
         bool $return=false,
         bool $print_white_box=false
     ) {
-        $form = $data['form'];
-        $inputs = $data['inputs'];
-        $rawInputs = $data['rawInputs'];
-        $js = $data['js'];
-        $rawjs = $data['js_block'];
-        $cb_function = $data['cb_function'];
-        $cb_args = $data['cb_args'];
+        $form = ($data['form'] ?? null);
+        $inputs = ($data['inputs'] ?? []);
+        $rawInputs = ($data['rawInputs'] ?? null);
+        $js = ($data['js'] ?? null);
+        $rawjs = ($data['js_block'] ?? null);
+        $cb_function = ($data['cb_function'] ?? null);
+        $cb_args = ($data['cb_args'] ?? null);
 
         $output_head = '';
         if (empty($data['pre-content']) === false) {
@@ -831,7 +833,7 @@ class HTML
             if (isset($cb_function) === true) {
                 call_user_func_array(
                     $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
+                    array_values((isset($cb_args) === true) ? $cb_args : [])
                 );
             }
         } catch (Exception $e) {
@@ -848,10 +850,12 @@ class HTML
         $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
-            if ($input['arguments']['type'] != 'submit') {
-                $output .= self::printBlock($input, true);
-            } else {
+            if (is_array(($input['arguments'] ?? null)) === true
+                && $input['arguments']['type'] === 'submit'
+            ) {
                 $output_submit .= self::printBlock($input, true);
+            } else {
+                $output .= self::printBlock($input, true);
             }
         }
 
@@ -913,7 +917,7 @@ class HTML
             if (isset($cb_function) === true) {
                 call_user_func_array(
                     $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
+                    array_values((isset($cb_args) === true) ? $cb_args : [])
                 );
             }
         } catch (Exception $e) {
@@ -1048,7 +1052,7 @@ class HTML
             if (isset($cb_function) === true) {
                 call_user_func_array(
                     $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
+                    array_values((isset($cb_args) === true) ? $cb_args : [])
                 );
             }
         } catch (Exception $e) {
@@ -1062,7 +1066,7 @@ class HTML
             if ($input['arguments']['type'] != 'submit') {
                 $output .= self::printBlockAsList($input, true);
             } else {
-                $output_submit .= self::printBlockAsList($input, true);
+                $output_submit = self::printBlockAsList($input, true);
             }
         }
 

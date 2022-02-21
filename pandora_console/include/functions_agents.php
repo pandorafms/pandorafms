@@ -1239,26 +1239,26 @@ function agents_get_group_agents(
 
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
-            $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
+            $filter[] = "(nombre LIKE '%$string%' OR direccion LIKE '%$string%')";
             unset($search['string']);
         }
 
         if (isset($search['name']) === true) {
             $name = io_safe_input($search['name']);
-            $filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "nombre LIKE '$name'";
             unset($search['name']);
         }
 
         if (isset($search['alias']) === true) {
             $name = io_safe_input($search['alias']);
-            $filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "alias LIKE '$name'";
             unset($search['alias']);
         }
 
         if (isset($search['aliasRegex']) === true) {
             $name = io_safe_input($search['aliasRegex']);
             $filter[] = sprintf(
-                'alias COLLATE utf8_general_ci REGEXP "%s"',
+                'alias REGEXP "%s"',
                 $name
             );
             unset($search['aliasRegex']);
@@ -1397,7 +1397,7 @@ function agents_get_group_agents(
             $key = $row['id_agente'];
         }
 
-        if ($row['id_server'] !== '') {
+        if (($row['id_server'] ?? '') !== '') {
             if (is_metaconsole()) {
                 $server_name = db_get_row_filter(
                     'tmetaconsole_setup',
@@ -1430,6 +1430,9 @@ function agents_get_group_agents(
 
 
 /**
+ * @deprecated use \PandoraFMS\Agent::searchModules
+ *
+ *
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's, by default is null and this mean that use the ids of agents in user's groups.
@@ -1552,7 +1555,7 @@ function agents_get_modules(
             // ----------------------------------------------------------
             foreach ($list_filter as $item) {
                 $field = $item['field'];
-                $value = $item['value'];
+                $value = (string) $item['value'];
 
                 // Check <> operator
                 $operatorDistin = false;
@@ -1716,16 +1719,12 @@ function agents_get_name($id_agent, $case='none')
         case 'upper':
         return mb_strtoupper($agent, 'UTF-8');
 
-            break;
         case 'lower':
         return mb_strtolower($agent, 'UTF-8');
 
-            break;
         case 'none':
         default:
         return ($agent);
-
-            break;
     }
 }
 
@@ -1812,23 +1811,37 @@ function agents_get_alias_array($array_ids)
 /**
  * Get alias of an agent (cached function).
  *
- * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none).
+ * @param integer|array $id_agent Agent id or array or box, also a boat.
+ * @param string        $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
-function agents_get_alias($id_agent, $case='none')
+function agents_get_alias($id_agent, string $case='none')
 {
-    global $config;
     // Prepare cache.
     static $cache = [];
-    if (empty($case)) {
+    if (empty($case) === true) {
         $case = 'none';
     }
 
+    $agent_alias = '';
+    if (is_array($id_agent) === true) {
+        foreach ($id_agent as $agg) {
+            $agent_alias .= agents_get_alias($agg, $case);
+        }
+
+        return $agent_alias;
+    }
+
+    if (isset($cache[$case]) === false) {
+        $cache[$case] = [];
+    }
+
     // Check cache.
-    if (!is_metaconsole()) {
-        if (isset($cache[$case][$id_agent])) {
+    if (is_metaconsole() === false) {
+        if (is_numeric($id_agent) === true && isset($cache[$case]) === true
+            && isset($cache[$case][$id_agent]) === true
+        ) {
             return $cache[$case][$id_agent];
         }
     }
@@ -1854,7 +1867,7 @@ function agents_get_alias($id_agent, $case='none')
         break;
     }
 
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         $cache[$case][$id_agent] = $alias;
     }
 

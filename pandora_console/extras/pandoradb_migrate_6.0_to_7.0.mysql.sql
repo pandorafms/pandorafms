@@ -1551,6 +1551,7 @@ ALTER TABLE `tusuario` MODIFY COLUMN `default_event_filter` int(10) unsigned NOT
 	DROP INDEX `fk_id_filter`;
 ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_user` VARCHAR(60);
 ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_pass` VARCHAR(45);
+ALTER TABLE `tusuario` ADD COLUMN `local_user` tinyint(1) unsigned NOT NULL DEFAULT 0;
 
 
 -- ---------------------------------------------------------------------
@@ -2187,6 +2188,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig` (
   `name` varchar(100) NOT NULL,
   `order` int(11) NOT NULL DEFAULT '0',
   `description` text,
+  `disabled` TINYINT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

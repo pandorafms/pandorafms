@@ -3354,8 +3354,8 @@ function get_um_url()
  */
 function config_return_in_bytes($val)
 {
-    $val = (int) trim($val);
     $last = strtolower($val[(strlen($val) - 1)]);
+    $val = (int) trim($val);
     switch ($last) {
         // The 'G' modifier is available since PHP 5.1.0.
         case 'g':

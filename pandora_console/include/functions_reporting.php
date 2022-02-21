@@ -1495,7 +1495,7 @@ function reporting_event_top_n(
     $return['type'] = 'top_n';
 
     if (empty($content['name'])) {
-        $content['name'] = __('Top-N connections');
+        $content['name'] = __('Top N');
     }
 
     $return['title'] = $content['name'];
@@ -5437,7 +5437,7 @@ function reporting_netflow(
             break;
 
             case 'netflow_top_N':
-                $content['name'] = __('Netflow Top N');
+                $content['name'] = __('Netflow top-N connections');
             break;
 
             default:

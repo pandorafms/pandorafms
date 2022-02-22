@@ -3395,3 +3395,112 @@ function alerts_get_templates_name_array($array_ids)
 
     return $result;
 }
+
+
+function default_events_calendar($id, $table)
+{
+    $result = [
+        'monday'    => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'tuesday'   => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'wednesday' => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'thursday'  => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'friday'    => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'saturday'  => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'sunday'    => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+    ];
+
+    $days = [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday',
+    ];
+
+    // Check Exists.
+    if (empty($id) === false) {
+        $sql_default_alert = sprintf(
+            'SELECT `id`,
+                `name`,
+                `time_from`,
+                `time_to`,
+                `monday`,
+                `tuesday`,
+                `wednesday`,
+                `thursday`,
+                `friday`,
+                `saturday`,
+                `sunday`,
+                `schedule`
+            FROM %s
+            WHERE id = %d',
+            $table,
+            $id
+        );
+
+        $r = db_get_row_sql($sql_default_alert);
+        if ($r != false) {
+            // Check Exist schedule.
+            if (empty($r['schedule']) === false) {
+                $result = json_decode(io_safe_output($r['schedule']), true);
+            } else {
+                // Compatibility mode old.
+                $result = [];
+                foreach ($days as $day) {
+                    if ((int) $r[$day] === 1) {
+                        $start = $r['time_from'];
+                        $to = $r['time_to'];
+                        if ($r['time_from'] === $r['time_to']) {
+                            $start = '00:00:00';
+                            $to = '00:00:00';
+                        }
+
+                        $result[$day][0] = [
+                            'start' => $start,
+                            'end'   => $to,
+                        ];
+                    }
+                }
+            }
+        }
+    }
+
+    return $result;
+}

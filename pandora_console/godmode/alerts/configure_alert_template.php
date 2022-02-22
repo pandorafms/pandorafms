@@ -61,50 +61,7 @@ if (defined('LAST_STEP') === false) {
 }
 
 // Default events calendar.
-$default_events_calendar = [
-    'monday'    => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'tuesday'   => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'wednesday' => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'thursday'  => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'friday'    => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'saturday'  => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'sunday'    => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-];
+$default_events_calendar = default_events_calendar($id, 'talert_templates');
 
 if ($duplicate_template === true) {
     $source_id = (int) get_parameter('source_id');
@@ -485,7 +442,6 @@ $type = '';
 $value = '';
 $max = '';
 $min = '';
-
 $schedule = json_encode(
     $default_events_calendar
 );
@@ -614,7 +570,9 @@ if ($id && ! $create_template) {
     $min = $template['min_value'];
     $matches = $template['matches_value'];
 
-    $schedule = $template['schedule'];
+    $schedule = json_encode(
+        $default_events_calendar
+    );
     $special_day = (int) $template['special_day'];
     $max_alerts = $template['max_alerts'];
     $min_alerts = $template['min_alerts'];

@@ -605,10 +605,7 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_alert_template_module` INT UNSIGNED NOT NULL,
-  `alert_mode` TINYINT NOT NULL,
-  `data` MEDIUMTEXT,
-  `extra_macros` TEXT,
+  `data` LONGTEXT,
   `utimestamp` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

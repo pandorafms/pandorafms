@@ -214,9 +214,14 @@ function fmAgentChange(uniqId) {
 function fmModuleChange(uniqId, isMeta) {
   var idModuleGroup = $("#filtered-module-module-group-" + uniqId).val();
   var idAgents = $("#filtered-module-agents-" + uniqId).val();
-  var showCommonModules = $(
+  var commonSelectorType = $(
     "#filtered-module-show-common-modules-" + uniqId
-  ).val();
+  ).attr("type");
+
+  var showCommonModules = +(
+    $("#filtered-module-show-common-modules-" + uniqId).prop("checked") == false
+  );
+
   jQuery.post(
     "ajax.php",
     {
@@ -227,11 +232,15 @@ function fmModuleChange(uniqId, isMeta) {
       selection: showCommonModules
     },
     function(data) {
+      debugger;
       $("#filtered-module-modules-" + uniqId).html("");
       if (data) {
         jQuery.each(data, function(id, value) {
           var option = $("<option></option>");
           if (isMeta === 1) {
+            if (value["id_node"] == null || value["id_node"] == "") {
+              option.attr("value", id).html(value);
+            }
             option
               .attr(
                 "value",

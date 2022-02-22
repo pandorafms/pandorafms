@@ -3726,7 +3726,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
  *
  * @return array
  */
-function get_same_modules($agents, $modules)
+function get_same_modules($agents, array $modules=[])
 {
     if (is_array($agents) === false || empty($agents) === true) {
         return [];
@@ -3791,7 +3791,8 @@ function get_same_modules_all($agents, $modules, $select_mode=true)
 
                 $carry[$explode[0]][] = $explode[1];
                 return $carry;
-            }
+            },
+            []
         );
 
         if ($select_mode === true) {
@@ -3802,7 +3803,8 @@ function get_same_modules_all($agents, $modules, $select_mode=true)
 
                     $carry[$explode[0]][] = $explode[1];
                     return $carry;
-                }
+                },
+                []
             );
         } else {
             $rows = db_get_all_rows_sql(
@@ -3831,7 +3833,7 @@ function get_same_modules_all($agents, $modules, $select_mode=true)
         $result = [];
         foreach ($agents as $tserver => $id_agents) {
             if (metaconsole_connect(null, $tserver) == NOERR) {
-                $same_modules = get_same_modules($id_agents, $modules[$tserver]);
+                $same_modules = get_same_modules($id_agents, ($modules[$tserver] ?? []));
                 foreach ($same_modules as $id_module) {
                     $result[] = $tserver.'|'.$id_module;
                 }

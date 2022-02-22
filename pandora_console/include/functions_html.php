@@ -961,7 +961,9 @@ function html_print_select(
         }
 
         $output .= '<script type="text/javascript">';
-        $output .= '$("#'.$id.'").select2();';
+        $output .= '$("#'.$id.'").select2({
+            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').'
+        });';
 
         if ($required !== false) {
             $require_message = __('Please select an item from this list.');
@@ -993,6 +995,79 @@ function html_print_select(
             });';
 
             $output .= '$("#'.$id.'").trigger("change");';
+
+            $output .= 'var count_shift_'.$id.' = 0;';
+            $output .= 'var shift_array_'.$id.' = [];';
+            $output .= 'var options_selecteds_'.$id.' = [];';
+            $output .= '$("#'.$id.'").on("select2:select", function (e) {
+                if (event.shiftKey) {
+                    shift_array_'.$id.'.push(e.params.data.element.index);
+                    count_shift_'.$id.'++;
+                }
+                if(count_shift_'.$id.' == 2 ){
+                    if(shift_array_'.$id.'[0] <= shift_array_'.$id.'[1]) {
+                        for (var i = shift_array_'.$id.'[0]; i <= shift_array_'.$id.'[1]; i++) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            options_selecteds_'.$id.'.push(option_value);
+                        }
+                    } else {
+                        for (var i = shift_array_'.$id.'[0]; i >= shift_array_'.$id.'[1]; i--) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            options_selecteds_'.$id.'.push(option_value);
+                        }
+                    }
+
+                    $("#'.$id.'").val(
+                        [
+                            ...$("#'.$id.'").val(),
+                            ...options_selecteds_'.$id.'
+                        ]
+                    );
+
+                    $("#'.$id.'").trigger("change");
+                    $("#'.$id.'").select2("close");
+                    count_shift_'.$id.' = 0;
+                    shift_array_'.$id.' = [];
+                    options_selecteds_'.$id.' = [];
+                }
+            });';
+
+            $output .= 'var delete_count_shift_'.$id.' = 0;';
+            $output .= 'var delete_shift_array_'.$id.' = [];';
+            $output .= 'var delete_options_selecteds_'.$id.' = [];';
+            $output .= '$("#'.$id.'").on("select2:unselect", function (e) {
+                if (event.shiftKey) {
+                    delete_shift_array_'.$id.'.push(e.params.data.element.index);
+                    delete_count_shift_'.$id.'++;
+                }
+                if(delete_count_shift_'.$id.' == 2 ){
+                    if(delete_shift_array_'.$id.'[0] <= delete_shift_array_'.$id.'[1]) {
+                        for (var i = delete_shift_array_'.$id.'[0]; i <= delete_shift_array_'.$id.'[1]; i++) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            delete_options_selecteds_'.$id.'.push(option_value);
+                        }
+                    } else {
+                        for (var i = delete_shift_array_'.$id.'[0]; i >= delete_shift_array_'.$id.'[1]; i--) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            delete_options_selecteds_'.$id.'.push(option_value);
+                        }
+                    }
+
+                    var result = [];
+                    $("#'.$id.'").val().forEach(function(value) {
+                        if (delete_options_selecteds_'.$id.'.includes(value) == false) {
+                            result.push(value);
+                        }
+                    });
+
+                    $("#'.$id.'").val(result);
+                    $("#'.$id.'").trigger("change");
+                    $("#'.$id.'").select2("close");
+                    delete_count_shift_'.$id.' = 0;
+                    delete_shift_array_'.$id.' = [];
+                    delete_options_selecteds_'.$id.' = [];
+                }
+            });';
 
             $output .= 'function checkMultipleAll(id){
                 if ($("#checkbox-"+id.id+"-check-all").is(":checked")) {

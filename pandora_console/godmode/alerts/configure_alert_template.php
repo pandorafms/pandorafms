@@ -370,7 +370,12 @@ function update_template($step)
 
         $result = alerts_update_alert_template($id, $values);
     } else if ($step == 2) {
-        $schedule = get_parameter('schedule');
+        $schedule = io_safe_output(get_parameter('schedule', []));
+        json_decode($schedule, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
         $special_day = (int) get_parameter('special_day');
         $threshold = (int) get_parameter('threshold');
         $max_alerts = (int) get_parameter('max_alerts');
@@ -389,12 +394,7 @@ function update_template($step)
         }
 
         $values = [
-            'schedule'                 => json_encode(
-                json_decode(
-                    io_safe_output($schedule),
-                    true
-                )
-            ),
+            'schedule'                 => $schedule,
             'special_day'              => $special_day,
             'time_threshold'           => $threshold,
             'id_alert_action'          => $default_action,

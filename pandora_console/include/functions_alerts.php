@@ -3397,6 +3397,14 @@ function alerts_get_templates_name_array($array_ids)
 }
 
 
+/**
+ * Default values events calendar templates.
+ *
+ * @param integer $id    ID.
+ * @param string  $table Name table.
+ *
+ * @return array Data Events.
+ */
 function default_events_calendar($id, $table)
 {
     $result = [

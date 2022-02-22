@@ -1243,6 +1243,11 @@ function agents_get_group_agents(
             unset($search['string']);
         }
 
+        if (isset($search['matchIds']) === true && is_array($search['matchIds']) === true) {
+            $filter[] = sprintf('id_agente IN (%s)', implode(', ', $search['matchIds']));
+            unset($search['matchIds']);
+        }
+
         if (isset($search['name']) === true) {
             $name = io_safe_input($search['name']);
             $filter[] = "nombre LIKE '$name'";
@@ -3223,8 +3228,8 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     $ni_by_agents = [];
     foreach ($agents as $agent) {
         $agent_id = (isset($agent['id_agente'])) ? $agent['id_agente'] : $agent;
-        $agent_group_id = $agent['id_grupo'];
-        $agent_name = $agent['alias'];
+        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : '';
+        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : '';
         $agent_interfaces = [];
 
         $accepted_module_types = [];

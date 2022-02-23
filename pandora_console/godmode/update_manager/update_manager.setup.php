@@ -307,7 +307,7 @@ $table->data[5][1] = html_print_input_password(
     true
 );
 
-$table->data[6][0] = __('Allow offline patches:');
+$table->data[6][0] = __('Allow no-consecutive patches:');
 $table->data[6][1] = html_print_switch(
     [
         'name'   => 'allow_offline_patches',

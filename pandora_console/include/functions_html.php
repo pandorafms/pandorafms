@@ -98,6 +98,13 @@ function hd($var, $file='', $oneline=false)
 }
 
 
+function dd($var)
+{
+    hd($var);
+    die();
+}
+
+
 /**
  * Encapsulation (ob) for debug print function.
  *
@@ -130,7 +137,10 @@ function html_f2str($function, $params)
 {
     ob_start();
 
-    call_user_func_array($function, $params);
+    call_user_func_array(
+        $function,
+        array_values(($params ?? []))
+    );
 
     return ob_get_clean();
 }
@@ -951,7 +961,9 @@ function html_print_select(
         }
 
         $output .= '<script type="text/javascript">';
-        $output .= '$("#'.$id.'").select2();';
+        $output .= '$("#'.$id.'").select2({
+            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').'
+        });';
 
         if ($required !== false) {
             $require_message = __('Please select an item from this list.');
@@ -983,6 +995,79 @@ function html_print_select(
             });';
 
             $output .= '$("#'.$id.'").trigger("change");';
+
+            $output .= 'var count_shift_'.$id.' = 0;';
+            $output .= 'var shift_array_'.$id.' = [];';
+            $output .= 'var options_selecteds_'.$id.' = [];';
+            $output .= '$("#'.$id.'").on("select2:select", function (e) {
+                if (event.shiftKey) {
+                    shift_array_'.$id.'.push(e.params.data.element.index);
+                    count_shift_'.$id.'++;
+                }
+                if(count_shift_'.$id.' == 2 ){
+                    if(shift_array_'.$id.'[0] <= shift_array_'.$id.'[1]) {
+                        for (var i = shift_array_'.$id.'[0]; i <= shift_array_'.$id.'[1]; i++) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            options_selecteds_'.$id.'.push(option_value);
+                        }
+                    } else {
+                        for (var i = shift_array_'.$id.'[0]; i >= shift_array_'.$id.'[1]; i--) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            options_selecteds_'.$id.'.push(option_value);
+                        }
+                    }
+
+                    $("#'.$id.'").val(
+                        [
+                            ...$("#'.$id.'").val(),
+                            ...options_selecteds_'.$id.'
+                        ]
+                    );
+
+                    $("#'.$id.'").trigger("change");
+                    $("#'.$id.'").select2("close");
+                    count_shift_'.$id.' = 0;
+                    shift_array_'.$id.' = [];
+                    options_selecteds_'.$id.' = [];
+                }
+            });';
+
+            $output .= 'var delete_count_shift_'.$id.' = 0;';
+            $output .= 'var delete_shift_array_'.$id.' = [];';
+            $output .= 'var delete_options_selecteds_'.$id.' = [];';
+            $output .= '$("#'.$id.'").on("select2:unselect", function (e) {
+                if (event.shiftKey) {
+                    delete_shift_array_'.$id.'.push(e.params.data.element.index);
+                    delete_count_shift_'.$id.'++;
+                }
+                if(delete_count_shift_'.$id.' == 2 ){
+                    if(delete_shift_array_'.$id.'[0] <= delete_shift_array_'.$id.'[1]) {
+                        for (var i = delete_shift_array_'.$id.'[0]; i <= delete_shift_array_'.$id.'[1]; i++) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            delete_options_selecteds_'.$id.'.push(option_value);
+                        }
+                    } else {
+                        for (var i = delete_shift_array_'.$id.'[0]; i >= delete_shift_array_'.$id.'[1]; i--) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            delete_options_selecteds_'.$id.'.push(option_value);
+                        }
+                    }
+
+                    var result = [];
+                    $("#'.$id.'").val().forEach(function(value) {
+                        if (delete_options_selecteds_'.$id.'.includes(value) == false) {
+                            result.push(value);
+                        }
+                    });
+
+                    $("#'.$id.'").val(result);
+                    $("#'.$id.'").trigger("change");
+                    $("#'.$id.'").select2("close");
+                    delete_count_shift_'.$id.' = 0;
+                    delete_shift_array_'.$id.' = [];
+                    delete_options_selecteds_'.$id.' = [];
+                }
+            });';
 
             $output .= 'function checkMultipleAll(id){
                 if ($("#checkbox-"+id.id+"-check-all").is(":checked")) {
@@ -1574,17 +1659,31 @@ function html_print_select_multiple_modules_filtered(array $data):string
         0 => __('Show common modules'),
         1 => __('Show all modules'),
     ];
-    $output .= html_print_input(
-        [
-            'label'    => __('Show common modules'),
-            'type'     => 'select',
-            'fields'   => $selection,
-            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
-            'selected' => $data['mShowCommonModules'],
-            'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+
+    if (true) {
+        $output .= html_print_input(
+            [
+
+                'label'    => __('Only common modules'),
+                'type'     => 'switch',
+                'value'    => 'checked',
+                'id'       => 'filtered-module-show-common-modules-'.$uniqId,
+                'return'   => true,
+                'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'  => __('Show common modules'),
+                'type'   => 'select',
+                'fields' => $selection,
+                'name'   => 'filtered-module-show-common-modules-'.$uniqId,
+                'return' => true,
+                'script' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     if ($data['mAgents'] !== null) {
         $all_modules = get_modules_agents(
@@ -2879,7 +2978,7 @@ function html_print_input_number(array $settings):string
                 $output .= $attribute.'="'.$attr_value.'" ';
             }
 
-            $output .= $function.'/>';
+            $output .= '/>';
         }
     }
 
@@ -4562,8 +4661,8 @@ function html_print_switch($attributes=[])
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
-    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value'] ?? false) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled'] ?? false) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -4585,9 +4684,9 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
-    $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+    $disabled_class = (bool) ($attributes['disabled'] ?? false) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
+    return "<label class='p-switch ".($attributes['container-class'] ?? '')."' style='".($attributes['style'] ?? '')."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";
@@ -4663,7 +4762,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     $output = '';
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
         $output .= '<label '.$style.' class="'.$data['label_class'].'">';
@@ -4688,7 +4787,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= ' class="'.$data['input_class'].'">';
     }
 
-    switch ($data['type']) {
+    switch (($data['type'] ?? null)) {
         case 'text':
             $output .= html_print_input_text(
                 $data['name'],
@@ -4741,15 +4840,15 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'text_extended':
             $output .= html_print_input_text_extended(
-                $data['name'],
-                $data['value'],
-                $data['id'],
-                $data['alt'],
-                $data['size'],
-                $data['maxlength'],
-                $data['disabled'],
-                $data['script'],
-                $data['attributes'],
+                ($data['name'] ?? null),
+                ($data['value'] ?? null),
+                ($data['id'] ?? null),
+                ($data['alt'] ?? null),
+                ($data['size'] ?? null),
+                ($data['maxlength'] ?? null),
+                ($data['disabled'] ?? null),
+                ($data['script'] ?? null),
+                ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
                 ((isset($data['function']) === true) ? $data['function'] : '')
@@ -4959,7 +5058,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'checkbox':
             $output .= html_print_checkbox(
                 $data['name'],
-                $data['value'],
+                ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
@@ -5256,7 +5355,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= '</'.$data['wrapper'].'>';
     }
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output .= '</'.$wrapper.'>';
         if (!$data['return']) {
             echo '</'.$wrapper.'>';

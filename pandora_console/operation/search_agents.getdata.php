@@ -189,10 +189,10 @@ if ($searchAgents) {
         $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%cd ".$stringSearchSQL."%%' OR
-            t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-            t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-            t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+        $search_sql = " t1.nombre LIKE '%%cd ".$stringSearchSQL."%%' OR
+            t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
+            t1.alias LIKE '%%".$stringSearchSQL."%%' OR
+            t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
             t1.id_agente = $aux";
 
         $idCount = count($id);
@@ -204,16 +204,16 @@ if ($searchAgents) {
             }
         }
     } else {
-        $search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-            t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-            t1.direccion COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-            t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-            t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%'";
+        $search_sql = " t1.nombre LIKE '%%".$stringSearchSQL."%%' OR
+            t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
+            t1.direccion LIKE '%%".$stringSearchSQL."%%' OR
+            t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
+            t1.alias LIKE '%%".$stringSearchSQL."%%'";
     }
 
     if ($has_secondary === true) {
         $search_sql .= " OR (tasg.id_group IS NOT NULL AND
-            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%'))";
+            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '%%".$stringSearchSQL."%%'))";
     }
 
     $sql = "

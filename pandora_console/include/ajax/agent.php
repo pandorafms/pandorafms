@@ -144,7 +144,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_agents = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_agents[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+            $filter_agents[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
@@ -173,7 +173,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_address = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_address[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND UPPER(direccion) LIKE "%'.$string.'%")';
+            $filter_address[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) NOT LIKE "%'.$string.'%" AND UPPER(direccion) LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
@@ -202,7 +202,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_description = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_description[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND UPPER(direccion) NOT LIKE "%'.$string.'%" AND UPPER(comentarios) LIKE "%'.$string.'%")';
+            $filter_description[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) NOT LIKE "%'.$string.'%" AND UPPER(direccion) NOT LIKE "%'.$string.'%" AND UPPER(comentarios) LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
@@ -284,7 +284,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     if (empty($string) === false) {
         // Get agents for only the alias.
         $filter_alias = $filter;
-        $filter_alias[] = '(alias COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+        $filter_alias[] = '(alias LIKE "%'.$string.'%")';
 
         $agents = db_get_all_rows_filter(
             'tmetaconsole_agent',
@@ -307,7 +307,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 
         // Get agents for only the name.
         $filter_agents = $filter;
-        $filter_agents[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+        $filter_agents[] = '(alias NOT LIKE "%'.$string.'%" AND nombre LIKE "%'.$string.'%")';
 
         $agents = db_get_all_rows_filter(
             'tmetaconsole_agent',
@@ -330,7 +330,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 
         // Get agents for only the address.
         $filter_address = $filter;
-        $filter_address[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
+        $filter_address[] = '(alias NOT LIKE "%'.$string.'%" AND nombre NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
 
         $agents = db_get_all_rows_filter(
             'tmetaconsole_agent',
@@ -353,7 +353,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 
         // Get agents for only the description.
         $filter_description = $filter;
-        $filter_description[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
+        $filter_description[] = '(alias NOT LIKE "%'.$string.'%" AND nombre NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
 
         $agents = db_get_all_rows_filter(
             'tmetaconsole_agent',

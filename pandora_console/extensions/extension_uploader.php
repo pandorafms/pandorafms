@@ -74,7 +74,7 @@ function extension_uploader_extensions()
         );
     }
 
-    $table = null;
+    $table = new stdClass();
 
     $table->width = '100%';
     $table->class = 'databox filters';

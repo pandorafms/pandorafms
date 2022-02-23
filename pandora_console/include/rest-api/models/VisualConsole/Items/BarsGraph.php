@@ -59,7 +59,7 @@ final class BarsGraph extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 
@@ -425,7 +425,7 @@ final class BarsGraph extends Item
             \metaconsole_restore_db();
         }
 
-        $imgbase64 = 'data:image/jpg;base64,';
+        $imgbase64 = 'data:image/png;base64,';
         $imgbase64 .= $graph;
 
         $data['html'] = $imgbase64;
@@ -554,7 +554,7 @@ final class BarsGraph extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);

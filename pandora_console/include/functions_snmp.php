@@ -441,7 +441,7 @@ function print_snmp_tags_active_filters($filter_resume=[])
         $title = isset($filter_resume['title']) ? __('Active filter').' ('.$filter_resume['title'].')' : __('Active filters');
     }
 
-    if (sizeof($filter_resume) > 0) {
+    if (count($filter_resume) > 0) {
         ui_print_tags_view($title, $tags_set);
     }
 }

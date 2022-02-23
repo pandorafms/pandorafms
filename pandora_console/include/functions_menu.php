@@ -395,7 +395,15 @@ function menu_print_menu(&$menu)
         }
 
         // Choose valid section (sec).
-        if (enterprise_hook('enterprise_acl', [$config['id_user'], $mainsec, $main['sec2']]) == false) {
+        if ((bool) enterprise_hook(
+            'enterprise_acl',
+            [
+                $config['id_user'],
+                $mainsec,
+                ($main['sec2'] ?? null),
+            ]
+        ) === false
+        ) {
             if ($count_sub_access > 0) {
                 // If any susection have access but main section not, we change main link to first subsection found
                 $main['sec2'] = $first_sub_sec2;

@@ -207,7 +207,7 @@ function form_upload(url, auth, current_package) {
           let server_update = res.server_update;
           let current_version = Math.round(parseFloat(current_package));
           let target_version = Math.round(parseFloat(current_package)) + 1;
-          let target_patch = Math.round(parseFloat(current_package)) + 0.1;
+          let target_patch = parseFloat(current_package) + 0.1;
 
           if (number_update === null) {
             umConfirm({
@@ -225,9 +225,9 @@ function form_upload(url, auth, current_package) {
               }
             });
           } else if (
-            Math.round(parseFloat(number_update)) != target_version &&
-            Math.round(parseFloat(number_update)) != target_patch &&
-            Math.round(parseFloat(number_update)) != current_version
+            parseFloat(number_update) != target_version &&
+            parseFloat(number_update) != target_patch &&
+            parseFloat(number_update) != current_version
           ) {
             if (ImSureWhatImDoing == undefined || ImSureWhatImDoing == false) {
               umConfirm({

@@ -205,7 +205,7 @@ function form_upload(url, auth, current_package) {
 
           let number_update = res.version;
           let server_update = res.server_update;
-          let current_version = Math.round(parseFloat(current_package));
+          let current_version = parseFloat(current_package);
           let target_version = Math.round(parseFloat(current_package)) + 1;
           let target_patch = parseFloat(current_package) + 0.1;
 

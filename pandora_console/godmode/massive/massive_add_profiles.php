@@ -31,7 +31,7 @@ check_login();
 
 if (!check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive profile addition'
     );
     include 'general/noaccess.php';
@@ -80,7 +80,7 @@ if ($create_profiles) {
                     // If the profile doesnt exist, we create it
                     if ($profile_data === false) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             'Added profile for user '.io_safe_input($user)
                         );
                         $return = profile_create_user_profile($user, $profile, $group);
@@ -95,7 +95,7 @@ if ($create_profiles) {
 
     if ($n_added > 0) {
         db_pandora_audit(
-            'Massive management',
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
             'Add profiles',
             false,
             false,
@@ -103,7 +103,7 @@ if ($create_profiles) {
         );
     } else {
         db_pandora_audit(
-            'Massive management',
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
             'Fail to try add profiles',
             false,
             false,
@@ -122,8 +122,7 @@ if ($table !== null) {
     html_print_table($table);
 }
 
-unset($table);
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->data = [];

@@ -121,7 +121,7 @@ class CalendarManager
         // ACL Check.
         if ((bool) check_acl($config['id_user'], 0, $this->access) !== true) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert calendar view'
             );
             include 'general/noaccess.php';
@@ -420,8 +420,8 @@ class CalendarManager
 
         if ($result === true) {
             db_pandora_audit(
-                'Special days list',
-                'Upload iCalendar '.$_FILES['ical_file']['name']
+                AUDIT_LOG_SYSTEM,
+                'Special Days. Upload iCalendar '.$_FILES['ical_file']['name']
             );
         }
 

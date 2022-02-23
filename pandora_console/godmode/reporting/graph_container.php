@@ -34,7 +34,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'RR') || enterprise_installed() === false) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Graph container'
     );
     include 'general/noaccess.php';

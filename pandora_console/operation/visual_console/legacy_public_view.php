@@ -68,7 +68,7 @@ $config['id_user'] = get_parameter('id_user');
 // Check input hash.
 if (User::validatePublicHash($hash) !== true) {
     db_pandora_audit(
-        'Invalid public visual console',
+        AUDIT_LOG_HACK_ATTEMPT,
         'Trying to access public visual console'
     );
     include 'general/noaccess.php';
@@ -79,7 +79,10 @@ $refr = (int) get_parameter('refr', $config['refr']);
 $layout = db_get_row('tlayout', 'id', $id_layout);
 
 if (! $layout) {
-    db_pandora_audit('ACL Violation', 'Trying to access visual console without id layout');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access visual console without id layout'
+    );
     include $config['homedir'].'/general/noaccess.php';
     exit;
 }

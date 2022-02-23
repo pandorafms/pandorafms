@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive agent deletion section'
     );
     include 'general/noaccess.php';
@@ -189,9 +189,15 @@ if ($update_agents) {
 
 
         if ($n_deleted > 0) {
-            db_pandora_audit('Massive management', 'Delete conf file '.$id_agent);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Delete conf file '.$id_agent
+            );
         } else {
-            db_pandora_audit('Massive management', 'Try to delete conf file '.$id_agent);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Try to delete conf file '.$id_agent
+            );
         }
 
 
@@ -310,10 +316,22 @@ if ($update_agents) {
 
 
     if ($result !== false) {
-        db_pandora_audit('Massive management', 'Update agent '.$id_agent, false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Update agent '.$id_agent,
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
         if (isset($id_agent)) {
-            db_pandora_audit('Massive management', 'Try to update agent '.$id_agent, false, false, json_encode($info));
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Try to update agent '.$id_agent,
+                false,
+                false,
+                json_encode($info)
+            );
         }
     }
 

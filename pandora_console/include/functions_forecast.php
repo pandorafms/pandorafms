@@ -33,7 +33,7 @@
 function forecast_projection_graph(
     $module_id,
     $period=SECONDS_2MONTHS,
-    $prediction_period,
+    $prediction_period=false,
     $max_value=false,
     $min_value=false,
     $csv=false,

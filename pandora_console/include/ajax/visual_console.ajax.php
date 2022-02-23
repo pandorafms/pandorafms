@@ -23,7 +23,7 @@ check_login();
 // Fix: IW was the old ACL to check for report editing, now is RW
 if (! check_acl($config['id_user'], 0, 'VR')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';

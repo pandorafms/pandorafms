@@ -108,7 +108,7 @@ if (is_ajax()) {
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -118,12 +118,7 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
 $update_template = (bool) get_parameter('update_template');
 $delete_template = (bool) get_parameter('delete_template');
 $pure = get_parameter('pure', 0);
-
-if (defined('METACONSOLE')) {
-    $sec = 'advanced';
-} else {
-    $sec = 'galertas';
-}
+$sec = (is_metaconsole() === true) ? 'advanced' : 'galertas';
 
 // This prevents to duplicate the header in
 // case delete_templete action is performed.
@@ -175,7 +170,7 @@ if ($delete_template) {
         if ($al_template['id_group'] == 0) {
             if (! check_acl($config['id_user'], 0, 'PM')) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Alert Management'
                 );
                 include 'general/noaccess.php';
@@ -217,7 +212,7 @@ if ($delete_template) {
                 }
             } else {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access Alert Management'
                 );
                 include 'general/noaccess.php';
@@ -242,12 +237,12 @@ if ($delete_template) {
 
     if ($result) {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Delete alert template #'.$id
         );
     } else {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Fail try to delete alert template #'.$id
         );
     }

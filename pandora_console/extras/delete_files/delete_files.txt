@@ -118,3 +118,5 @@ godmode/alerts/configure_alert_special_days.php
 godmode/admin_access_logs.php
 enterprise/extensions/backup/main.php
 enterprise/extensions/backup.php
+mobile/include/javascript/jquery.mobile-1.4.5.js
+mobile/include/style/jquery.mobile-1.4.5.css

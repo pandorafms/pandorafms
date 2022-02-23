@@ -41,7 +41,7 @@ enterprise_include_once('meta/include/functions_users_meta.php');
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access User Management'
     );
     include 'general/noaccess.php';
@@ -271,7 +271,7 @@ if ((bool) get_parameter('user_del', false) === true) {
 
         if ($result) {
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 __('Deleted user %s', io_safe_output($id_user))
             );
         }
@@ -292,7 +292,7 @@ if ((bool) get_parameter('user_del', false) === true) {
                     $result = delete_user($id_user);
                     if ($result) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             __('Deleted user %s from metaconsole', io_safe_input($id_user))
                         );
                     }
@@ -304,7 +304,7 @@ if ((bool) get_parameter('user_del', false) === true) {
                 // Log to the metaconsole too.
                 if ($result) {
                     db_pandora_audit(
-                        'User management',
+                        AUDIT_LOG_USER_MANAGEMENT,
                         __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
                     );
                 }

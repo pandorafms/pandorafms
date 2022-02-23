@@ -18,7 +18,7 @@ check_login();
 
 if (! check_acl($config['id_user'], $id_grupo, 'AW', $id_agente)) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access agent manager'
     );
     include 'general/noaccess.php';

@@ -225,8 +225,8 @@ function form_upload(url, auth, current_package) {
               }
             });
           } else if (
-            Math.round(parseFloat(number_update)) != target_version ||
-            Math.round(parseFloat(number_update)) != target_patch ||
+            Math.round(parseFloat(number_update)) != target_version &&
+            Math.round(parseFloat(number_update)) != target_patch &&
             Math.round(parseFloat(number_update)) != current_version
           ) {
             if (ImSureWhatImDoing == undefined || ImSureWhatImDoing == false) {

@@ -1,15 +1,33 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+/**
+ * Agents list view for mobile
+ *
+ * @category   Mobile
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 class Agents
 {
 
@@ -67,7 +85,7 @@ class Agents
 
                     $listAgents = $this->getListAgents($page, true);
 
-                    if (!empty($listAgents['agents'])) {
+                    if (empty($listAgents['agents']) === false) {
                         $end = 0;
 
                         $agents = [];
@@ -96,7 +114,7 @@ class Agents
         $system = System::getInstance();
         $user = User::getInstance();
 
-        // Default
+        // Default.
         $filters = [
             'free_search' => '',
             'status'      => -1,
@@ -104,7 +122,7 @@ class Agents
         ];
 
         $serialized_filters = (string) $system->getRequest('agents_filter');
-        if (!empty($serialized_filters)) {
+        if (empty($serialized_filters) === true) {
             $filters_unsafe = json_decode(base64_decode($serialized_filters, true), true);
             if ($filters_unsafe) {
                 $filters = $system->safeInput($filters_unsafe);
@@ -144,8 +162,8 @@ class Agents
             $filters['group'] = $this->group;
         }
 
-        if (!empty($filters)) {
-            // Store the filter
+        if (empty($filters) === false) {
+            // Store the filter.
             $this->serializedFilters = base64_encode(json_encode($system->safeOutput($filters)));
         }
     }
@@ -260,7 +278,7 @@ class Agents
 
         $search_sql = '';
 
-        if (!empty($this->free_search)) {
+        if (empty($this->free_search) === false) {
             $search_sql = " AND (
 				alias LIKE '%".$this->free_search."%'
 				OR nombre LIKE '%".$this->free_search."%'
@@ -461,15 +479,13 @@ class Agents
             "<script type=\"text/javascript\">
 				var load_more_rows = 1;
 				var page = 1;
-				
+
 				function custom_scroll() {
-					
 						if (load_more_rows) {
 							if ($(this).scrollTop() + $(this).height()
 								>= ($(document).height() - 100)) {
-								
 								load_more_rows = 0;
-								
+
 								postvars = {};
 								postvars[\"action\"] = \"ajax\";
 								postvars[\"parameter1\"] = \"agents\";
@@ -479,7 +495,7 @@ class Agents
 								postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
 								postvars[\"page\"] = page;
 								page++;
-								
+
 								$.post(\"index.php\",
 									postvars,
 									function (data) {
@@ -499,23 +515,26 @@ class Agents
 														\"<td class='cell_6'>\" + agent[8] + \"</td>\" +
 													\"</tr>\");
 												});
-											
+
 											load_more_rows = 1;
 											refresh_link_listener_list_agents();
 										}
-										
-										
 									},
 									\"json\");
+                                // Clean
+                                $('#loading_rows').remove();
 							}
 						}
 				}
-				
+
 				$(document).ready(function() {
+                    // Be sure of fill all of screen first.
+                    custom_scroll();
+
 					$(window).bind(\"scroll\", function () {
 						custom_scroll();
 					});
-					
+
 					$(window).on(\"touchmove\", function(event) {
 						custom_scroll();
 					});

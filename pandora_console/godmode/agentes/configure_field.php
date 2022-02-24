@@ -16,7 +16,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
-    db_pandora_audit('ACL Violation', 'Trying to access Group Management2');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Group Management'
+    );
     include 'general/noaccess.php';
     return;
 }

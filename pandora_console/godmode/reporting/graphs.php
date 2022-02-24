@@ -40,7 +40,7 @@ $report_m = check_acl($config['id_user'], 0, 'RM');
 
 if (!$report_r && !$report_w && !$report_m) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Inventory Module Management'
     );
     include 'general/noaccess.php';
@@ -155,17 +155,25 @@ if ($delete_graph) {
 
         $result = db_process_sql_delete('tgraph', ['id_graph' => $id]);
 
-        if ($result) {
-            db_pandora_audit('Report management', "Delete graph #$id");
-            $result = ui_print_success_message(__('Successfully deleted'));
-        } else {
-            db_pandora_audit('Report management', "Fail try to delete graph #$id");
-            $result = ui_print_error_message(__('Not deleted. Error deleting data'));
-        }
+        $auditMessage = ($result === true) ? 'Delete graph' : 'Fail try to delete graph';
+
+        ui_print_result_message(
+            $result,
+            __('Successfully deleted'),
+            __('Not deleted. Error deleting data')
+        );
+
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            sprintf('%s #%s', $auditMessage, $id)
+        );
 
         echo $result;
     } else {
-        db_pandora_audit('ACL Violation', 'Trying to delete a graph from access graph builder');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to delete a graph from access graph builder'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -191,12 +199,14 @@ if ($multiple_delete) {
         $result = false;
     }
 
+    $auditMessage = ($result === true) ? 'Multiple delete graph' : 'Fail try to delete graphs';
+
     $str_ids = implode(',', $ids);
-    if ($result) {
-        db_pandora_audit('Report management', "Multiple delete graph: $str_ids");
-    } else {
-        db_pandora_audit('Report management', "Fail try to delete graphs: $str_ids");
-    }
+
+    db_pandora_audit(
+        AUDIT_LOG_REPORT_MANAGEMENT,
+        sprintf('%s: %s', $auditMessage, $str_ids)
+    );
 
     ui_print_result_message(
         $result,
@@ -366,7 +376,7 @@ $table_aux = new stdClass();
                         false,
                         false,
                         '',
-                        'class="check_deletemrgn_lft_2px"',
+                        'class="check_delete mrgn_lft_2px"',
                         true
                     );
                 }

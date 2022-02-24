@@ -133,8 +133,9 @@ final class StaticGraph extends Item
     /**
      * Fetch a vc item data structure from the database using a filter.
      *
-     * @param array      $filter Filter of the Visual Console Item.
-     * @param float|null $ratio  Ratio.
+     * @param array      $filter     Filter of the Visual Console Item.
+     * @param float|null $ratio      Ratio.
+     * @param float|null $widthRatio Width ratio.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \InvalidArgumentException When an agent Id cannot be found.
@@ -160,7 +161,7 @@ final class StaticGraph extends Item
         include_once $config['homedir'].'/include/functions_io.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
         include_once $config['homedir'].'/include/functions_modules.php';
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
@@ -231,7 +232,7 @@ final class StaticGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
         if ($width === 0 || $height === 0) {
-            if (isset($imagePath) && $imagePath !== false) {
+            if (isset($imagePath) === true && $imagePath !== false) {
                 $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
                 if ($ratio != 0) {
                     $data['width'] = ($sizeImage[0] * $ratio);
@@ -271,7 +272,9 @@ final class StaticGraph extends Item
                 || ($isBooleanModule && $showLastValueTooltip !== 'default')
             ) {
                 if (\is_numeric($value)) {
-                    $imgTitle .= __('Last value: ').\remove_right_zeros(\number_format((float) $value, (int) $config['graph_precision']));
+                    $imgTitle .= __('Last value: ').\remove_right_zeros(
+                        \number_format((float) $value, (int) $config['graph_precision'])
+                    );
                 } else {
                     $imgTitle .= __('Last value: ').$value;
                 }
@@ -300,7 +303,7 @@ final class StaticGraph extends Item
      *
      * @return array Of inputs.
      *
-     * @throws Exception On error.
+     * @throws \Exception On error.
      */
     public static function getFormInputs(array $values): array
     {
@@ -311,7 +314,7 @@ final class StaticGraph extends Item
         $inputs = Item::getFormInputs($values);
 
         if (is_array($inputs) !== true) {
-            throw new Exception(
+            throw new \Exception(
                 '[StaticGraph]::getFormInputs parent class return is not an array'
             );
         }

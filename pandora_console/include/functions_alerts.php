@@ -1060,39 +1060,6 @@ function alerts_get_alert_template_time_to($id_alert_template)
 
 
 /**
- * Get alert template in weekday format.
- *
- * @param int Id of an alert template.
- *
- * @return mixed Alert template in weekday format or false if something goes wrong.
- */
-function alerts_get_alert_template_weekdays($id_alert_template)
-{
-    $alert = alerts_get_alert_template($id_alert_template);
-
-    if ($alert === false) {
-        return false;
-    }
-
-    $retval = [];
-    $days = [
-        'monday',
-        'tuesday',
-        'wednesday',
-        'thursday',
-        'friday',
-        'saturday',
-        'sunday',
-    ];
-    foreach ($days as $day) {
-        $retval[$day] = (bool) $alert[$day];
-    }
-
-    return $retval;
-}
-
-
-/**
  * Get recovery_notify of talert_templates table.
  *
  * @param int Id of an alert template.
@@ -2574,9 +2541,14 @@ function alerts_normalize_actions_escalation($escalation)
             $any_greater_than = true;
         }
 
-        $n = count($escalation[$k]);
-        if ($n > $max_elements) {
-            $max_elements = $n;
+        if (isset($escalation[$k]) === true
+            && empty($escalation[$k]) === false
+            && is_array($escalation[$k]) === true
+        ) {
+            $n = count($escalation[$k]);
+            if ($n > $max_elements) {
+                $max_elements = $n;
+            }
         }
     }
 
@@ -2645,7 +2617,7 @@ function alerts_ui_update_or_create_actions($update=true)
             if ($al_action['id_group'] == 0) {
                 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'LM')) {
                     db_pandora_audit(
-                        'ACL Violation',
+                        AUDIT_LOG_ACL_VIOLATION,
                         'Trying to access Alert Management'
                     );
                     include 'general/noaccess.php';
@@ -2745,7 +2717,7 @@ function alerts_ui_update_or_create_actions($update=true)
 
     if ($result) {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             $update ? 'Update alert action #'.$id : 'Create alert action #'.$result,
             false,
             false,
@@ -2753,7 +2725,7 @@ function alerts_ui_update_or_create_actions($update=true)
         );
     } else {
         db_pandora_audit(
-            'Command management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             $update ? 'Fail try to update alert action #'.$id : 'Fail try to create alert action',
             false,
             false,
@@ -3420,6 +3392,123 @@ function alerts_get_templates_name_array($array_ids)
         },
         []
     );
+
+    return $result;
+}
+
+
+/**
+ * Default values events calendar templates.
+ *
+ * @param integer $id    ID.
+ * @param string  $table Name table.
+ *
+ * @return array Data Events.
+ */
+function default_events_calendar($id, $table)
+{
+    $result = [
+        'monday'    => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'tuesday'   => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'wednesday' => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'thursday'  => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'friday'    => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'saturday'  => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+        'sunday'    => [
+            [
+                'start' => '00:00:00',
+                'end'   => '00:00:00',
+            ],
+        ],
+    ];
+
+    $days = [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday',
+    ];
+
+    // Check Exists.
+    if (empty($id) === false) {
+        $sql_default_alert = sprintf(
+            'SELECT `id`,
+                `name`,
+                `time_from`,
+                `time_to`,
+                `monday`,
+                `tuesday`,
+                `wednesday`,
+                `thursday`,
+                `friday`,
+                `saturday`,
+                `sunday`,
+                `schedule`
+            FROM %s
+            WHERE id = %d',
+            $table,
+            $id
+        );
+
+        $r = db_get_row_sql($sql_default_alert);
+        if ($r != false) {
+            // Check Exist schedule.
+            if (empty($r['schedule']) === false) {
+                $result = json_decode(io_safe_output($r['schedule']), true);
+            } else {
+                // Compatibility mode old.
+                $result = [];
+                foreach ($days as $day) {
+                    if ((int) $r[$day] === 1) {
+                        $start = $r['time_from'];
+                        $to = $r['time_to'];
+                        if ($r['time_from'] === $r['time_to']) {
+                            $start = '00:00:00';
+                            $to = '00:00:00';
+                        }
+
+                        $result[$day][0] = [
+                            'start' => $start,
+                            'end'   => $to,
+                        ];
+                    }
+                }
+            }
+        }
+    }
 
     return $result;
 }

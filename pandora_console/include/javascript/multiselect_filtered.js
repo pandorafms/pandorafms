@@ -214,9 +214,14 @@ function fmAgentChange(uniqId) {
 function fmModuleChange(uniqId, isMeta) {
   var idModuleGroup = $("#filtered-module-module-group-" + uniqId).val();
   var idAgents = $("#filtered-module-agents-" + uniqId).val();
-  var showCommonModules = $(
+  var commonSelectorType = $(
     "#filtered-module-show-common-modules-" + uniqId
-  ).val();
+  ).attr("type");
+
+  var showCommonModules = +(
+    $("#filtered-module-show-common-modules-" + uniqId).prop("checked") == false
+  );
+
   jQuery.post(
     "ajax.php",
     {
@@ -227,11 +232,15 @@ function fmModuleChange(uniqId, isMeta) {
       selection: showCommonModules
     },
     function(data) {
+      debugger;
       $("#filtered-module-modules-" + uniqId).html("");
       if (data) {
         jQuery.each(data, function(id, value) {
           var option = $("<option></option>");
-          if (isMeta === true) {
+          if (isMeta === 1) {
+            if (value["id_node"] == null || value["id_node"] == "") {
+              option.attr("value", id).html(value);
+            }
             option
               .attr(
                 "value",
@@ -250,4 +259,51 @@ function fmModuleChange(uniqId, isMeta) {
     },
     "json"
   );
+}
+
+// Function to search in agents select.
+function searchAgent(uniqId) {
+  // Declare variables
+  var agents = $("#filtered-module-agents-" + uniqId + " option");
+
+  // Loop through all list items, and hide those who don't match the search query
+  agents.each(function() {
+    var filter = $("#text-agent-searchBar-modules")
+      .val()
+      .toUpperCase();
+
+    if (
+      $(this)
+        .text()
+        .toUpperCase()
+        .indexOf(filter) > -1
+    ) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
+}
+
+// Function to search in modules select.
+function searchModule(uniqId) {
+  // Declare variables
+  var modules = $("#filtered-module-modules-" + uniqId + " option");
+
+  // Loop through all list items, and hide those who don't match the search query
+  modules.each(function() {
+    var filter = $("#text-module-searchBar-modules")
+      .val()
+      .toUpperCase();
+    if (
+      $(this)
+        .text()
+        .toUpperCase()
+        .indexOf(filter) > -1
+    ) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
 }

@@ -1672,10 +1672,15 @@ class NetworkMap
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
-                        $item['color'] = self::getColorByStatus(
-                            $node['status'],
-                            (bool) $node['id_module']
-                        );
+                        if (empty($node['status']) && empty($node['id_module']) && !empty($node['style']['id_networkmap'])) {
+                            $status_aux = get_status_color_networkmap_fictional_point($node['style']['id_networkmap']);
+                            $item['color'] = $status_aux;
+                        } else {
+                            $item['color'] = self::getColorByStatus(
+                                $node['status'],
+                                (bool) $node['id_module']
+                            );
+                        }
                     }
                 break;
             }
@@ -2430,6 +2435,13 @@ class NetworkMap
             $this->map['height'] = $this->mapOptions['height'];
         }
 
+        if (is_string($this->map['filter']) === true) {
+            $this->map['filter'] = json_decode($this->map['filter'], true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->map['filter'] = [];
+            }
+        }
+
         $this->map['filter']['z_dash'] = $this->mapOptions['z_dash'];
 
         if (is_array($graph) === true) {
@@ -2634,11 +2646,10 @@ class NetworkMap
             'MW'
         );
 
-        $simulate = false;
         if (isset($networkmap['__simulated']) === false) {
             if ($this->widget) {
                 $networkmap['filter'] = $this->mapOptions;
-            } else {
+            } else if (is_string($networkmap['filter']) === true) {
                 $networkmap['filter'] = json_decode(
                     $networkmap['filter'],
                     true
@@ -2651,7 +2662,6 @@ class NetworkMap
             ];
             $holding_area_title = __('Holding Area');
         } else {
-            $simulate = true;
             $holding_area_title = '';
             $networkmap['filter']['holding_area'] = [
                 0,
@@ -2667,7 +2677,7 @@ class NetworkMap
         html_print_input_hidden('product_name', get_product_name());
         html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
 
-        $output .= '<script type="text/javascript">
+        $output = '<script type="text/javascript">
     ////////////////////////////////////////////////////////////////////
     // VARS FROM THE DB
     ////////////////////////////////////////////////////////////////////
@@ -3559,7 +3569,7 @@ class NetworkMap
                 && !$networkmap_manage
             ) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access networkmap'
                 );
                 include 'general/noaccess.php';

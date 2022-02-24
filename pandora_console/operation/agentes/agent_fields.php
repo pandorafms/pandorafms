@@ -27,7 +27,7 @@ if ($id_agente === -1) {
 
 if (! check_acl($config['id_user'], $agent['id_grupo'], 'AR')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent General Information'
     );
     include_once 'general/noaccess.php';

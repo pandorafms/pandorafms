@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.759 Build 220125";
+my $version = "7.0NG.760 Build 220224";
 
 # Pandora server configuration
 my %conf;
@@ -1033,10 +1033,60 @@ sub pandora_delete_old_session_data {
 }
 
 ###############################################################################
+# Delete old data from the history database.
+###############################################################################
+sub pandoradb_history ($$) {
+	my ($conf, $dbh) = @_;
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my $ulimit_access_timestamp = time() - 86400;
+	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
+
+	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
+
+	# Delete old numeric data.
+	if ($conf->{'_days_purge'} > 0) {
+		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
+	} else {
+		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
+	}
+
+	# Delete old string data.
+	$conf->{'_string_purge'} = 7 unless defined($conf->{'_string_purge'});
+	if ($conf->{'_string_purge'} > 0) {
+		$ulimit_access_timestamp = time() - 86400;
+		$ulimit_timestamp = time() - (86400 * $conf->{'_string_purge'});
+		pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
+	} else {
+		log_message ('PURGE', 'string_purge is set to 0. Old string data will not be deleted.');
+	}
+
+	# Delete old events.
+	if ($conf->{'_event_purge'} > 0) {
+		log_message ('PURGE', "Deleting events older than " . $conf->{'_event_purge'} . " days from tevento.", '');
+
+		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
+		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tevento WHERE utimestamp < ?", $event_limit);
+		while($events_to_delete > 0) {
+			db_delete_limit($dbh, 'tevento', "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
+			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
+				
+			# Mark the progress.
+			log_message ('', ".");
+				
+			# Do not overload the MySQL server.
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+
+	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
+}
+
+###############################################################################
 # Main
 ###############################################################################
 sub pandoradb_main ($$$;$) {
-	my ($conf, $dbh, $history_dbh, $running_in_history) = @_;
+	my ($conf, $dbh, $history_dbh) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
@@ -1059,8 +1109,7 @@ sub pandoradb_main ($$$;$) {
 
 	# Only active database should be compacted. Disabled for historical database.
 	# Compact on if enable and DaysCompact are below DaysPurge 
-	if (!$running_in_history
-		&& ($conf->{'_onlypurge'} == 0)
+	if (($conf->{'_onlypurge'} == 0)
 		&& ($conf->{'_days_compact'} < $conf->{'_days_purge'})
 	) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
@@ -1181,13 +1230,8 @@ if (defined($history_dbh)) {
 	# Keep base settings.
 	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};
 
-	# Re-launch maintenance process for historical database.
-	pandoradb_main(
-		$h_conf,
-		$history_dbh,
-		undef,
-		1 # Disable certain funcionality while runningn in historical database.
-	);
+	# Launch maintenance process for historical database.
+	pandoradb_history($h_conf, $history_dbh);
 
 	# Handle partitions.
 	enterprise_hook('handle_partitions', [$h_conf, $history_dbh]);

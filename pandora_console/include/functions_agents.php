@@ -272,7 +272,10 @@ function agents_create_agent(
         agents_add_address($id_agent, $ip_address);
     }
 
-    db_pandora_audit('Agent management', 'New agent '.$name.' created');
+    db_pandora_audit(
+        AUDIT_LOG_AGENT_MANAGEMENT,
+        'New agent '.$name.' created'
+    );
 
     return $id_agent;
 }
@@ -1221,32 +1224,41 @@ function agents_get_group_agents(
             }
         }
 
+        if ((isset($search['disabled']) === true
+            && $search['disabled'] === 2)
+            || (isset($filter['disabled']) === true
+            && $filter['disabled'] === 2)
+        ) {
+            unset($search['disabled']);
+            unset($filter['disabled']);
+        }
+
         if (isset($search['all_agents'])) {
             unset($search['all_agents']);
         }
 
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
-            $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
+            $filter[] = "(nombre LIKE '%$string%' OR direccion LIKE '%$string%')";
             unset($search['string']);
         }
 
         if (isset($search['name']) === true) {
             $name = io_safe_input($search['name']);
-            $filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "nombre LIKE '$name'";
             unset($search['name']);
         }
 
         if (isset($search['alias']) === true) {
             $name = io_safe_input($search['alias']);
-            $filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "alias LIKE '$name'";
             unset($search['alias']);
         }
 
         if (isset($search['aliasRegex']) === true) {
             $name = io_safe_input($search['aliasRegex']);
             $filter[] = sprintf(
-                'alias COLLATE utf8_general_ci REGEXP "%s"',
+                'alias REGEXP "%s"',
                 $name
             );
             unset($search['aliasRegex']);
@@ -1313,16 +1325,19 @@ function agents_get_group_agents(
             }
         }
 
-        if (is_metaconsole() && isset($search['id_server'])) {
-            $filter['id_tmetaconsole_setup'] = $search['id_server'];
+        if (is_metaconsole() === true
+            && isset($search['id_server']) === true
+            && empty($search['id_server']) === false
+        ) {
+            $filter['ta.id_tmetaconsole_setup'] = $search['id_server'];
 
             if ($filter['id_tmetaconsole_setup'] == 0) {
                 // All nodes.
                 unset($filter['id_tmetaconsole_setup']);
             }
-
-            unset($search['id_server']);
         }
+
+        unset($search['id_server']);
 
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
@@ -1336,7 +1351,7 @@ function agents_get_group_agents(
 
     $filter['order'] = 'alias';
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
         if ($meta_fields === true) {
@@ -1382,7 +1397,7 @@ function agents_get_group_agents(
             $key = $row['id_agente'];
         }
 
-        if ($row['id_server'] !== '') {
+        if (($row['id_server'] ?? '') !== '') {
             if (is_metaconsole()) {
                 $server_name = db_get_row_filter(
                     'tmetaconsole_setup',
@@ -1415,6 +1430,9 @@ function agents_get_group_agents(
 
 
 /**
+ * @deprecated use \PandoraFMS\Agent::searchModules
+ *
+ *
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's, by default is null and this mean that use the ids of agents in user's groups.
@@ -1537,7 +1555,7 @@ function agents_get_modules(
             // ----------------------------------------------------------
             foreach ($list_filter as $item) {
                 $field = $item['field'];
-                $value = $item['value'];
+                $value = (string) $item['value'];
 
                 // Check <> operator
                 $operatorDistin = false;
@@ -1701,16 +1719,12 @@ function agents_get_name($id_agent, $case='none')
         case 'upper':
         return mb_strtoupper($agent, 'UTF-8');
 
-            break;
         case 'lower':
         return mb_strtolower($agent, 'UTF-8');
 
-            break;
         case 'none':
         default:
         return ($agent);
-
-            break;
     }
 }
 
@@ -1797,23 +1811,37 @@ function agents_get_alias_array($array_ids)
 /**
  * Get alias of an agent (cached function).
  *
- * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none).
+ * @param integer|array $id_agent Agent id or array or box, also a boat.
+ * @param string        $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
-function agents_get_alias($id_agent, $case='none')
+function agents_get_alias($id_agent, string $case='none')
 {
-    global $config;
     // Prepare cache.
     static $cache = [];
-    if (empty($case)) {
+    if (empty($case) === true) {
         $case = 'none';
     }
 
+    $agent_alias = '';
+    if (is_array($id_agent) === true) {
+        foreach ($id_agent as $agg) {
+            $agent_alias .= agents_get_alias($agg, $case);
+        }
+
+        return $agent_alias;
+    }
+
+    if (isset($cache[$case]) === false) {
+        $cache[$case] = [];
+    }
+
     // Check cache.
-    if (!is_metaconsole()) {
-        if (isset($cache[$case][$id_agent])) {
+    if (is_metaconsole() === false) {
+        if (is_numeric($id_agent) === true && isset($cache[$case]) === true
+            && isset($cache[$case][$id_agent]) === true
+        ) {
             return $cache[$case][$id_agent];
         }
     }
@@ -1839,7 +1867,7 @@ function agents_get_alias($id_agent, $case='none')
         break;
     }
 
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         $cache[$case][$id_agent] = $alias;
     }
 
@@ -2104,7 +2132,7 @@ function agents_delete_address($id_agent, $ip_address)
 
     $agent_name = agents_get_name($id_agent, '');
     db_pandora_audit(
-        'Agent management',
+        AUDIT_LOG_AGENT_MANAGEMENT,
         "Deleted IP $ip_address from agent '$agent_name'"
     );
 
@@ -2572,12 +2600,12 @@ function agents_delete_agent($id_agents, $disableACL=false)
             error_log($e->getMessage().' in '.$e->getFile().':'.$e->getLine());
         }
 
-        // The status of the module
+        // The status of the module.
         db_process_delete_temp('tagente_estado', 'id_agente', $id_agent);
 
         // The actual modules, don't put anything based on
         // DONT Delete this, just mark for deletion
-        // db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);
+        // db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);.
         db_process_sql_update(
             'tagente_modulo',
             [
@@ -2591,11 +2619,11 @@ function agents_delete_agent($id_agents, $disableACL=false)
         // Access entries
         // Dont delete here, this records are deleted in daily script
         // db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
-        // Delete agent policies
+        // Delete agent policies.
         enterprise_include_once('include/functions_policies.php');
         enterprise_hook('policies_delete_agent', [$id_agent]);
 
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             // Delete agent in networkmap.
             enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
@@ -2634,12 +2662,12 @@ function agents_delete_agent($id_agents, $disableACL=false)
             );
         }
 
-        // tagente_datos_inc
-        // Dont delete here, this records are deleted later, in database script
+        // Tagente_datos_inc.
+        // Dont delete here, this records are deleted later, in database script.
         // db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules, true);
-        // Delete remote configuration
-        if (enterprise_installed()) {
-            if (isset($config['remote_config'])) {
+        // Delete remote configuration.
+        if (enterprise_installed() === true) {
+            if (isset($config['remote_config']) === true) {
                 enterprise_include_once('include/functions_config_agents.php');
                 if (enterprise_hook('config_agents_has_remote_configuration', [$id_agent])) {
                     $agent_name = agents_get_name($id_agent);
@@ -2647,47 +2675,45 @@ function agents_delete_agent($id_agents, $disableACL=false)
                     $agent_alias = io_safe_output(agents_get_alias($id_agent));
                     $agent_md5 = md5($agent_name, false);
 
-                    // Agent remote configuration editor
+                    // Agent remote configuration editor.
                     $file_name = $config['remote_config'].'/conf/'.$agent_md5.'.conf';
 
                     $error = !@unlink($file_name);
 
-                    if (!$error) {
+                    if ((bool) $error === false) {
                         $file_name = $config['remote_config'].'/md5/'.$agent_md5.'.md5';
                         $error = !@unlink($file_name);
-                    }
-
-                    if ($error) {
+                    } else {
                         db_pandora_audit(
-                            'Agent management',
-                            "Error: Deleted agent $agent_alias, the error is in the delete conf or md5."
+                            AUDIT_LOG_AGENT_MANAGEMENT,
+                            sprintf('Error: Deleted agent %s, the error is in the delete conf or md5.', $agent_alias)
                         );
                     }
                 }
             }
         }
 
-        // And at long last, the agent
+        // And at long last, the agent.
         db_process_delete_temp('tagente', 'id_agente', $id_agent);
 
         db_process_sql('delete from ttag_module where id_agente_modulo in (select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.')');
 
         db_pandora_audit(
-            'Agent management',
-            "Deleted agent $agent_alias"
+            AUDIT_LOG_AGENT_MANAGEMENT,
+            sprintf('Deleted agent %s', $agent_alias)
         );
 
-        // Delete the agent from the metaconsole cache
+        // Delete the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
 
-        // Break the loop on error
-        if ($error) {
+        // Break the loop on error.
+        if ((bool) $error === true) {
             break;
         }
     }
 
-    if ($error) {
+    if ((bool) $error === true) {
         return false;
     } else {
         return true;

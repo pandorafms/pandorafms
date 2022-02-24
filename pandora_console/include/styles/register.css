@@ -44,6 +44,29 @@ input[type="button"].submit-next:hover {
   background: #82b92e;
 }
 
+input[type="submit"].submit-warning,
+button.submit-warning.ui-button.ui-corner-all.ui-widget,
+input[type="button"].submit-warning {
+  color: #c9d511;
+  border: 1px solid #c9d511;
+  background: #fff;
+  padding: 5px;
+  font-size: 1.3em;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  text-align: center;
+  height: 30px;
+  width: auto;
+  min-width: 90px;
+}
+
+input[type="submit"].submit-warning:hover,
+button.submit-warning.ui-button.ui-corner-all.ui-widget:hover,
+input[type="button"].submit-warning:hover {
+  color: #fff;
+  background: #c9d511;
+}
+
 div.submit_buttons_container {
   position: relative;
   margin: 10px auto 0px;

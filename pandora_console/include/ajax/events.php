@@ -47,7 +47,7 @@ if (! check_acl($config['id_user'], 0, 'ER')
     && ! check_acl($config['id_user'], 0, 'EM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     include 'general/noaccess.php';
@@ -1176,12 +1176,15 @@ if ($dialogue_event_response) {
     $prompt = '<br>> ';
     switch ($event_response['type']) {
         case 'command':
+            $display_command = (bool) $event_response['display_command'];
+            $command_str = ($display_command === true) ? $command : '';
+
             if ($massive) {
                 echo "<div class='left'>";
                 echo $prompt.sprintf(
                     '(Event #'.$event_id.') '.__(
                         'Executing command: %s',
-                        $command
+                        $command_str
                     )
                 );
                 echo '</div><br>';
@@ -1214,7 +1217,7 @@ if ($dialogue_event_response) {
             } else {
                 echo "<div class='left'>";
 
-                echo $prompt."Executing command: $command";
+                echo $prompt."Executing command: $command_str";
                 echo '</div><br>';
 
                 echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';

@@ -353,6 +353,8 @@ if (is_ajax()) {
         $selection_mode = get_parameter('selection_mode', 'common') == 'all';
         $status_modulo = (int) get_parameter('status_module', -1);
         $tags_selected = (array) get_parameter('tags', []);
+        $truncate_agent_names = (bool) get_parameter('truncate_agent_names');
+
         $names = select_agents_for_module_group(
             $nameModules,
             $selection_mode,
@@ -489,7 +491,7 @@ if (is_ajax()) {
         }
 
         if (!empty($module_name)) {
-            $filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%".$module_name."%'";
+            $filter .= " AND t1.nombre LIKE '%".$module_name."%'";
         }
 
         // Status selector.
@@ -790,6 +792,8 @@ if (is_ajax()) {
 
         $safe_name = (bool) get_parameter('safe_name', false);
 
+        $truncate_module_names = (bool) get_parameter('truncate_module_names');
+
         // Filter.
         $filter = [];
         if ($disabled !== -1) {
@@ -943,6 +947,16 @@ if (is_ajax()) {
             }
 
             $agent_modules = $new_elements;
+        }
+
+        if ($truncate_module_names === true) {
+            $agent_modules = array_map(
+                function ($item) {
+                    $item['safe_name'] = ui_print_truncate_text($item['safe_name'], 'module_medium');
+                    return $item;
+                },
+                $agent_modules
+            );
         }
 
         echo json_encode($agent_modules);
@@ -1260,7 +1274,7 @@ $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
 if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente)) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access (read) to agent '.agents_get_name($id_agente)
     );
     include 'general/noaccess.php';
@@ -1353,7 +1367,9 @@ $agent_interfaces = agents_get_network_interfaces(
     ['id_agente' => $id_agente]
 );
 
-if (is_array($agent_interfaces[$id_agente]['interfaces']) !== true
+if (isset($agent_interfaces) !== true
+    || isset($agent_interfaces[$id_agente]) !== true
+    || is_array($agent_interfaces[$id_agente]['interfaces']) !== true
     || is_object($agent_interfaces[$id_agente]['interfaces']) !== true
 ) {
     $agent_interfaces_count = 0;
@@ -1660,26 +1676,24 @@ if ($tab == 'external_tools') {
 }
 
 $onheader = [
-    'manage'             => $managetab,
-    'main'               => $maintab,
-    'alert'              => $alerttab,
-    'interface'          => $interfacetab,
-    'inventory'          => $inventorytab,
-    'collection'         => $collectiontab,
-    'gis'                => $gistab,
-    'custom'             => $custom_fields,
-    'graphs'             => $graphs,
-    'policy'             => $policyTab,
-    'ux_console'         => $ux_console_tab,
-    'wux_console'        => $wux_console_tab,
-    'url_route_analyzer' => $url_route_analyzer_tab,
-    'sap_view'           => $saptab,
-    'ncm_view'           => $ncm_tab,
-    'external_tools'     => $external_tools,
+    'manage'             => ($managetab ?? null),
+    'main'               => ($maintab ?? null),
+    'alert'              => ($alerttab ?? null),
+    'interface'          => ($interfacetab ?? null),
+    'inventory'          => ($inventorytab ?? null),
+    'collection'         => ($collectiontab ?? null),
+    'gis'                => ($gistab ?? null),
+    'custom'             => ($custom_fields ?? null),
+    'graphs'             => ($graphs ?? null),
+    'policy'             => ($policyTab ?? null),
+    'ux_console'         => ($ux_console_tab ?? null),
+    'wux_console'        => ($wux_console_tab ?? null),
+    'url_route_analyzer' => ($url_route_analyzer_tab ?? null),
+    'sap_view'           => ($saptab ?? null),
+    'ncm_view'           => ($ncm_tab ?? null),
+    'external_tools'     => ($external_tools ?? null),
+    'incident'           => ($incidenttab ?? null),
 ];
-
-
-$onheader['incident'] = $incidenttab;
 
 
 if ($agent['url_address'] != '') {

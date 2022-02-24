@@ -160,7 +160,7 @@ class CredentialStore extends Wizard
 
         if (! check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access credential store'
             );
 
@@ -453,7 +453,8 @@ class CredentialStore extends Wizard
                     $item['extra_2'] = io_output_password($item['extra_2']);
                     $carry[$item['identifier']] = $item['identifier'];
                     return $carry;
-                }
+                },
+                []
             );
 
             return $return;

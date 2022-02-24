@@ -69,13 +69,17 @@ if (isset($_GET['direct']) && $_GET['direct']) {
         db_logon($nick, $_SERVER['REMOTE_ADDR']);
         $_SESSION['id_usuario'] = $nick;
         $config['id_user'] = $nick;
-        // Remove everything that might have to do with people's passwords or logins
+        // Remove everything that might have to do with people's passwords or logins.
         unset($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
     } else {
-        // User not known
+        // User not known.
         $login_failed = true;
         include_once 'general/login_page.php';
-        db_pandora_audit('Logon Failed', 'Invalid login: '.$nick, $nick);
+        db_pandora_audit(
+            AUDIT_LOG_USER_REGISTRATION,
+            'Invalid login: '.$nick,
+            $nick
+        );
         exit;
     }
 } else {

@@ -105,7 +105,7 @@ $is_err = false;
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access User Management'
     );
     include 'general/noaccess.php';
@@ -124,7 +124,7 @@ if (is_ajax()) {
         $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
 
         db_pandora_audit(
-            'User management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Deleted profile for user '.io_safe_output($id2),
             false,
             false,
@@ -147,7 +147,7 @@ if (is_ajax()) {
 
             if ($result) {
                 db_pandora_audit(
-                    'User management',
+                    AUDIT_LOG_USER_MANAGEMENT,
                     __('Deleted user %s', io_safe_output($id_user))
                 );
             }
@@ -169,7 +169,7 @@ if (is_ajax()) {
                     $result = delete_user($id_user);
                     if ($result) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             __('Deleted user %s from metaconsole', io_safe_output($id_user))
                         );
                     }
@@ -180,7 +180,7 @@ if (is_ajax()) {
                     // Log to the metaconsole too
                     if ($result) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
                         );
                     }
@@ -285,6 +285,7 @@ if ($new_user && $config['admin_can_add_user']) {
     $user_info['language'] = 'default';
     $user_info['timezone'] = '';
     $user_info['not_login'] = false;
+    $user_info['local_user'] = false;
     $user_info['strict_acl'] = false;
     $user_info['session_time'] = 0;
     $user_info['middlename'] = 0;
@@ -370,6 +371,7 @@ if ($create_user) {
     }
 
     $values['not_login'] = (bool) get_parameter('not_login', false);
+    $values['local_user'] = (bool) get_parameter('local_user', false);
     $values['middlename'] = get_parameter('middlename', 0);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
@@ -450,7 +452,7 @@ if ($create_user) {
         }
 
         db_pandora_audit(
-            'User management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Created user '.io_safe_output($id),
             false,
             false,
@@ -493,7 +495,7 @@ if ($create_user) {
                         $no_hierarchy = $profile['hierarchy'];
 
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             'Added profile for user '.io_safe_output($id2),
                             false,
                             false,
@@ -571,6 +573,7 @@ if ($update_user) {
     }
 
     $values['not_login'] = (bool) get_parameter('not_login', false);
+    $values['local_user'] = (bool) get_parameter('local_user', false);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
 
@@ -702,7 +705,7 @@ if ($update_user) {
 
 
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Updated user '.io_safe_output($id),
                 false,
                 false,
@@ -771,7 +774,7 @@ if ($add_profile && empty($json_profile)) {
     $tags = implode(',', $tags);
 
     db_pandora_audit(
-        'User management',
+        AUDIT_LOG_USER_MANAGEMENT,
         'Added profile for user '.io_safe_output($id2),
         false,
         false,
@@ -808,7 +811,7 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     $result = db_get_all_rows_sql($sql);
     if ($result == false && $user_info['is_admin'] == false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
         );
         include 'general/noaccess.php';
@@ -1212,6 +1215,18 @@ $not_login .= html_print_checkbox_switch(
     true
 ).'</div>';
 
+$local_user = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Local user').'</p>';
+$local_user .= ui_print_help_tip(
+    __('The user with local authentication enabled will always use local authentication.'),
+    true
+);
+$local_user .= html_print_checkbox_switch(
+    'local_user',
+    1,
+    $user_info['local_user'],
+    true
+).'</div>';
+
 $session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
 $session_time .= ui_print_help_tip(
     __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
@@ -1379,7 +1394,7 @@ if ($id != '' && !$is_err) {
 echo '<div id="user_form">
 <div class="user_edit_first_row">
     <div class="edit_user_info white_box">'.$div_user_info.'</div>  
-    <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
+    <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
     <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$double_authentication.'</div>

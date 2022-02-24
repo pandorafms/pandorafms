@@ -190,6 +190,8 @@ sub data_consumer ($$) {
   }
 
   eval {
+    local $SIG{__DIE__};
+
     my @subnets = split(/,/, safe_output($task->{'subnet'}));
     my @communities = split(/,/, safe_output($task->{'snmp_community'}));
     my @auth_strings = ();

@@ -82,7 +82,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
             SELECT *
             FROM tgrupo
             WHERE id_grupo IN ('.$user_groups_ids.')
-            ORDER BY nombre COLLATE utf8_general_ci ASC'
+            ORDER BY nombre ASC'
         );
     }
 

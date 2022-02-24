@@ -40,7 +40,7 @@ if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';

@@ -890,7 +890,7 @@ function modules_create_agent_module(
         } else {
             db_process_sql(
                 'UPDATE tagente
-                SET total_count=total_count+1, notinit_count=notinit_count+1
+                SET total_count=total_count+1, notinit_count=notinit_count+1, update_module_count=1
                 WHERE id_agente='.(int) $id_agent
             );
         }
@@ -1080,14 +1080,23 @@ function modules_get_agentmodule($id_agentmodule)
 }
 
 
-function modules_get_table_data($id_agent_module)
+/**
+ * Gets data table for agent module
+ *
+ * @param  integer|null $id_agent_module Id agentmodule.
+ * @param  integer|null $id_type         Id module type.
+ * @return void
+ */
+function modules_get_table_data(?int $id_agent_module, ?int $id_type)
 {
-    $id_type = db_get_value(
-        'id_tipo_modulo',
-        'tagente_modulo',
-        'id_agente_modulo',
-        $id_agent_module
-    );
+    if ($id_type === null) {
+        $id_type = db_get_value(
+            'id_tipo_modulo',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $id_agent_module
+        );
+    }
 
     $name_type = db_get_value('nombre', 'ttipo_modulo', 'id_tipo', $id_type);
 
@@ -3717,7 +3726,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
  *
  * @return array
  */
-function get_same_modules($agents, $modules)
+function get_same_modules($agents, array $modules=[])
 {
     if (is_array($agents) === false || empty($agents) === true) {
         return [];
@@ -3782,7 +3791,8 @@ function get_same_modules_all($agents, $modules, $select_mode=true)
 
                 $carry[$explode[0]][] = $explode[1];
                 return $carry;
-            }
+            },
+            []
         );
 
         if ($select_mode === true) {
@@ -3793,7 +3803,8 @@ function get_same_modules_all($agents, $modules, $select_mode=true)
 
                     $carry[$explode[0]][] = $explode[1];
                     return $carry;
-                }
+                },
+                []
             );
         } else {
             $rows = db_get_all_rows_sql(
@@ -3822,7 +3833,7 @@ function get_same_modules_all($agents, $modules, $select_mode=true)
         $result = [];
         foreach ($agents as $tserver => $id_agents) {
             if (metaconsole_connect(null, $tserver) == NOERR) {
-                $same_modules = get_same_modules($id_agents, $modules[$tserver]);
+                $same_modules = get_same_modules($id_agents, ($modules[$tserver] ?? []));
                 foreach ($same_modules as $id_module) {
                     $result[] = $tserver.'|'.$id_module;
                 }

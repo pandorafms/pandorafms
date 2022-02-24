@@ -18,13 +18,14 @@ include_javascript_d3();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';
     return;
 }
 
+$table = new stdClass();
 $table->id = 'network_component';
 $table->width = '100%';
 $table->class = 'databox';
@@ -36,6 +37,7 @@ if (!enterprise_installed()) {
     $table->colspan[0][1] = 3;
 }
 
+$table_simple = new stdClass();
 $table_simple->colspan[7][1] = 4;
 $table_simple->colspan[8][1] = 4;
 $table_simple->colspan[9][1] = 4;

@@ -84,6 +84,13 @@ class Manager
      */
     private $authCode;
 
+    /**
+     * Allow install offline packages not following current version.
+     *
+     * @var boolean
+     */
+    private $allowOfflinePatches = false;
+
 
     /**
      * Undocumented function
@@ -142,6 +149,10 @@ class Manager
 
         if ($mode === self::MODE_OFFLINE) {
             $settings['offline'] = true;
+        }
+
+        if (isset($settings['allowOfflinePatches']) === true) {
+            $this->allowOfflinePatches = (bool) $settings['allowOfflinePatches'];
         }
 
         $this->umc = new Client($settings);
@@ -228,18 +239,19 @@ class Manager
         View::render(
             'offline',
             [
-                'version'  => $this->umc->getVersion(),
-                'mr'       => $this->umc->getMR(),
-                'error'    => $this->umc->getLastError(),
-                'asset'    => function ($rp) {
+                'version'             => $this->umc->getVersion(),
+                'mr'                  => $this->umc->getMR(),
+                'error'               => $this->umc->getLastError(),
+                'asset'               => function ($rp) {
                     echo $this->getUrl($rp);
                 },
-                'authCode' => $this->authCode,
-                'ajax'     => $this->ajaxUrl,
-                'ajaxPage' => $this->ajaxPage,
-                'progress' => $this->umc->getUpdateProgress(),
-                'running'  => $this->umc->isRunning(),
-                'insecure' => $this->umc->isInsecure(),
+                'authCode'            => $this->authCode,
+                'ajax'                => $this->ajaxUrl,
+                'ajaxPage'            => $this->ajaxPage,
+                'progress'            => $this->umc->getUpdateProgress(),
+                'running'             => $this->umc->isRunning(),
+                'insecure'            => $this->umc->isInsecure(),
+                'allowOfflinePatches' => $this->allowOfflinePatches,
             ]
         );
     }

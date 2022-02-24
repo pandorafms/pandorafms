@@ -533,10 +533,10 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = sprintf(
-            ' AND ( nombre 
-			 LIKE "%%%s%%" OR alias 
-			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%" 
-			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")',
+            ' AND ( nombre
+			 LIKE "%%%s%%" OR alias
+			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%"))',
             $search,
             $search,
             $search,
@@ -586,9 +586,16 @@ $sql = sprintf(
     $user_groups_to_sql,
     $search_sql
 );
+hd('INICIO user_groups_to_sql', true);
+hd($user_groups_to_sql, true);
+hd('FINAL user_groups_to_sql', true);
+hd('INICIO search_sql', true);
+hd($search_sql, true);
+hd('FINAL search_sql', true);
 
+hd($sql, true);
 $total_agents = db_get_sql($sql);
-
+hd($total_agents, true);
 $sql = sprintf(
     'SELECT *
 	FROM tagente LEFT JOIN tagent_secondary_group tasg

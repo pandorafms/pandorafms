@@ -4211,3 +4211,17 @@ CREATE TABLE IF NOT EXISTS `tncm_firmware` (
   `path` TEXT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
+-- Table `tbackup`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tbackup` (
+  `id` SERIAL,
+  `utimestamp` BIGINT DEFAULT 0,
+  `filename` VARCHAR(512) DEFAULT '',
+  `id_user` VARCHAR(60) DEFAULT '',
+  `description` MEDIUMTEXT,
+  `pid` INT UNSIGNED DEFAULT 0,
+  `filepath` VARCHAR(512) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

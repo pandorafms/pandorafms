@@ -567,7 +567,7 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
 
     $tree = $groups;
     foreach ($groups as $key => $group) {
-        if ($group === 'None') {
+        if ($group === __('None')) {
             continue;
         }
 

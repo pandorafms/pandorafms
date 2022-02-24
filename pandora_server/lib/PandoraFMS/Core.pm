@@ -551,7 +551,11 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		return $status if ($alert->{$DayNames[$wday]} != 1);
 	}
 
-	my $schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+	my $schedule;
+	if (defined($alert->{'schedule'} && $alert->{'schedule'} != '')) {
+		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+	}
+
 	if (defined($schedule)) {
 		# New behaviour.
 		return $status unless defined($schedule) && ref $schedule eq "HASH";

@@ -289,11 +289,16 @@ if (is_array($config) === true
     && (bool) $config['history_db_enabled'] === true
 ) {
     ob_start();
+    $password = $config['history_db_pass'];
+    if (function_exists('io_output_password') === true) {
+        $password = io_output_password($config['history_db_pass']);
+    }
+
     $dbhHistory = db_connect(
         $config['history_db_host'],
         $config['history_db_name'],
         $config['history_db_user'],
-        io_output_password($config['history_db_pass']),
+        $password,
         $config['history_db_port']
     );
     ob_get_clean();
@@ -312,6 +317,11 @@ $insecure = false;
 $pandora_url = ui_get_full_url('godmode/um_client', false, false, false);
 
 if (is_array($config) === true) {
+    $allowOfflinePatches = false;
+    if (isset($config['allow_offline_patches']) === true) {
+        $allowOfflinePatches = (bool) $config['allow_offline_patches'];
+    }
+
     if (isset($config['secure_update_manager']) === false) {
         $config['secure_update_manager'] = null;
     }
@@ -425,6 +435,7 @@ $ui = new Manager(
         'remote_config'          => $remote_config,
         'propagate_updates'      => $is_metaconsole,
         'proxy'                  => $proxy,
+        'allowOfflinePatches'    => $allowOfflinePatches,
         'set_maintenance_mode'   => function () {
             if (function_exists('config_update_value') === true) {
                 config_update_value('maintenance_mode', 1);

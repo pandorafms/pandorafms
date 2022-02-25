@@ -311,13 +311,14 @@ class TreeGroup extends Tree
 
         $table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
         $table_sec = is_metaconsole() ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
+        $only_disabled = (is_metaconsole() === true) ? (int) $this->filter['show_disabled'] : 0;
 
         $sql_model = "SELECT %s FROM
             (
                 SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
                     FROM $table ta
                     $module_search_inner
-                    WHERE ta.disabled = 0
+                    WHERE ta.disabled = $only_disabled
                         %s
                         $agent_search_filter
                         $agent_status_filter
@@ -330,7 +331,7 @@ class TreeGroup extends Tree
                     FROM $table ta INNER JOIN $table_sec tasg
                         ON ta.id_agente = tasg.id_agent
                     $module_search_inner
-                    WHERE ta.disabled = 0
+                    WHERE ta.disabled = $only_disabled
                         %s
                         $agent_search_filter
                         $agent_status_filter

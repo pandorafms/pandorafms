@@ -2,6 +2,8 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  min-height: 750px;
+  height: 100%;
 }
 
 .normal {
@@ -24,6 +26,10 @@
   fill: #4a83f3;
 }
 
+.hover {
+  cursor: pointer;
+}
+
 .hover:hover {
   filter: brightness(1.5);
   stroke-width: 0.009;
@@ -34,4 +40,68 @@
   fill: none;
   stroke-width: 0.03;
   stroke: black;
+}
+
+body.pure {
+  height: 100%;
+}
+
+div#main_pure {
+  height: 100%;
+}
+
+div#heatmap-controls {
+  position: fixed;
+  top: 30px;
+  right: 20px;
+  width: 350px;
+  background-color: #ececec;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+div#heatmap-controls div#menu_tab {
+  margin: 0px;
+}
+
+div#heatmap-controls ul.white-box-content {
+  background-color: #ececec;
+  border: 0px;
+}
+
+div#heatmap-controls div.heatmap-title,
+div#heatmap-controls div.heatmap-refr {
+  margin-top: 15px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+div#heatmap-controls div.heatmap-refr > div {
+  display: inline;
+}
+
+.refr-form {
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+.label-dialog {
+  width: 30%;
+  font-weight: bold;
+}
+
+.div-dialog {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+}
+
+.polyline {
+  fill: none;
+  stroke: black;
+  stroke-width: 0.05;
 }

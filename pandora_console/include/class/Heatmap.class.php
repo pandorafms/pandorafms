@@ -67,6 +67,27 @@ class Heatmap
      */
     protected $refresh = null;
 
+    /**
+     * Heatmap width.
+     *
+     * @var integer
+     */
+    protected $width = null;
+
+    /**
+     * Heatmap height.
+     *
+     * @var integer
+     */
+    protected $height = null;
+
+    /**
+     * Heatmap search.
+     *
+     * @var string
+     */
+    protected $search = null;
+
 
     /**
      * Constructor function
@@ -75,22 +96,31 @@ class Heatmap
      * @param array   $filter   Heatmap filter.
      * @param string  $randomId Heatmap random id.
      * @param integer $refresh  Heatmap refresh.
+     * @param integer $width    Width.
+     * @param integer $height   Height.
+     * @param string  $search   Heatmap search.
      */
     public function __construct(
         int $type=0,
         array $filter=[],
         string $randomId=null,
-        int $refresh=300
+        int $refresh=300,
+        int $width=0,
+        int $height=0,
+        string $search=null
     ) {
         $this->type = $type;
         $this->filter = $filter;
         (empty($randomId) === true) ? $this->randomId = uniqid() : $this->randomId = $randomId;
         $this->refresh = $refresh;
+        $this->width = $width;
+        $this->height = $height;
+        $this->search = $search;
     }
 
 
     /**
-     * Show .
+     * Run.
      *
      * @return void
      */
@@ -114,6 +144,7 @@ class Heatmap
                 'type'     => $this->type,
                 'filter'   => $this->filter,
                 'refresh'  => $this->refresh,
+                'search'   => $this->search,
             ],
         ];
 
@@ -121,13 +152,16 @@ class Heatmap
         ?>
             <script type="text/javascript">
                 $(document).ready(function() {
-                    const randomId = '<?php echo 'div_'.$this->randomId; ?>';
+                    const randomId = '<?php echo $this->randomId; ?>';
                     const refresh = '<?php echo $this->refresh; ?>';
+                    let setting = <?php echo json_encode($settings); ?>;
+                    setting['data']['height'] = $(`#div_${randomId}`).height();
+                    setting['data']['width'] = $(`#div_${randomId}`).width();
 
                     // Initial charge.
                     ajaxRequest(
-                        randomId,
-                        <?php echo json_encode($settings); ?>
+                        `div_${randomId}`,
+                        setting
                     );
 
                     // Refresh.
@@ -135,28 +169,69 @@ class Heatmap
                         function() {
                             refreshMap();
                         },
-                        (refresh * 10)
+                        (refresh * 1000)
                     );
+
+                    function refreshMap() {
+                        $.ajax({
+                            type: 'GET',
+                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                            data: {
+                                page: "operation/heatmap",
+                                method: 'getDataJson',
+                                randomId: randomId,
+                                type: '<?php echo $this->type; ?>',
+                                refresh: '<?php echo $this->refresh; ?>'
+                            },
+                            dataType: 'json',
+                            success: function(data) {
+                                const total = Object.keys(data).length;
+                                if (total === $(`#svg_${randomId} rect`).length) {
+                                    // Object to array.
+                                    let lista = Object.values(data);
+                                    // randomly sort.
+                                    lista = lista.sort(function() {return Math.random() - 0.5});
+
+                                    const countPerSecond = total / refresh;
+
+                                    let cont = 0;
+                                    let limit = countPerSecond - 1;
+
+                                    const timer = setInterval(
+                                        function() {
+                                            while (cont <= limit) {
+                                                if ($(`#${randomId}_${lista[cont]['id']}`).hasClass(`${lista[cont]['status']}`)) {
+                                                    let test = $(`#${randomId}_${lista[cont]['id']}`).css("filter");
+                                                    if (test !== 'none') {
+                                                        // console.log(test)
+                                                        // console.log(test.match('/(\d+\.\d|\d)/'));
+                                                    } else {
+                                                        $(`#${randomId}_${lista[cont]['id']}`).css("filter", "brightness(1.1)");
+                                                    }
+                                                } else {
+                                                    $(`#${randomId}_${lista[cont]['id']}`).removeClass("normal critical warning unknown");
+                                                    $(`#${randomId}_${lista[cont]['id']}`).addClass(`${lista[cont]['status']}`);
+                                                    $(`#${randomId}_${lista[cont]['id']}`).css("filter", "brightness(1)");
+                                                }
+
+                                                cont++;
+                                            }
+                                            limit = limit + countPerSecond;
+                                        },
+                                        1000
+                                    );
+
+                                    setTimeout(
+                                        function(){
+                                            clearInterval(timer);
+                                        },
+                                        (refresh * 1000)
+                                    );
+                                }
+                            }
+                        });
+                    }
                 });
-
-
-                function refreshMap() {
-                    $.ajax({
-                        type: 'GET',
-                        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                        data: {
-                            page: "operation/heatmap",
-                            method: 'getDataJson',
-                            randomId: '<?php echo $this->randomId; ?>',
-                            type: '<?php echo $this->type; ?>',
-                            refresh: '<?php echo $this->refresh; ?>'
-                        },
-                        dataType: 'json',
-                        success: function(data) {
-                            console.log(data);
-                        }
-                    });
-                };
             </script>
         <?php
         echo '</div>';
@@ -203,21 +278,38 @@ class Heatmap
 
 
     /**
+     * Getter for randomId
+     *
+     * @return string
+     */
+    public function getRandomId()
+    {
+        return $this->randomId;
+    }
+
+
+    /**
      * Get all agents
      *
      * @return array
      */
     protected function getAllAgents()
     {
+        $filter['disabled'] = 0;
+
+        if (empty($this->search) === false) {
+            $filter['search'] = ' AND alias LIKE "%'.$this->search.'%"';
+        }
+
+        if (empty($this->filter) === false) {
+            $filter['id_grupo'] = current($this->filter);
+        }
+
         // All agents.
         $result = agents_get_agents(
+            $filter,
             [
-                'disabled' => 0,
-                // 'search_custom' => $search_sql_custom,
-                // 'search'        => $search_sql,
-            ],
-            [
-                'id_agente',
+                'id_agente as id',
                 'alias',
                 'id_grupo',
                 'normal_count',
@@ -237,7 +329,7 @@ class Heatmap
 
         $agents = [];
         // Agent status.
-        foreach ($result as $agent) {
+        foreach ($result as $key => $agent) {
             if ($agent['total_count'] === 0 || $agent['total_count'] === $agent['notinit_count']) {
                 $status = 'notinit';
             } else if ($agent['critical_count'] > 0) {
@@ -250,26 +342,18 @@ class Heatmap
                 $status = 'normal';
             }
 
-            $agents[$agent['id_agente']] = $agent;
-            $agents[$agent['id_agente']]['status'] = $status;
+            $agents[$key] = $agent;
+            $agents[$key]['status'] = $status;
         }
-
-        $status = [
-            'normal',
-            'critical',
-            'warning',
-            'unknown',
-            'normal',
-        ];
 
         // -------------------Agent generator--------------------
         $a = 1;
         $agents = [];
-        $total = 1000;
+        $total = 1010;
         while ($a <= $total) {
-            $agents[$a]['id_agente'] = $a;
+            $agents[$a]['id'] = $a;
             $agents[$a]['status'] = $this->statusColour(rand(4, 0));
-            $agents[$a]['id_grupo'] = ceil($a / 10);
+            $agents[$a]['id_grupo'] = ceil($a / 20);
             $a++;
         }
 
@@ -287,12 +371,12 @@ class Heatmap
     {
         $return = $this->getAllAgents();
         echo json_encode($return);
-        return;
+        return '';
     }
 
 
     /**
-     * Get colour by status
+     * Get class by status
      *
      * @param integer $status Status.
      *
@@ -330,14 +414,15 @@ class Heatmap
     /**
      * Get max. number of y-axis
      *
-     * @param integer $total Total.
+     * @param integer $total    Total.
+     * @param float   $relation Aspect relation.
      *
      * @return integer
      */
-    protected function getYAxis(int $total)
+    protected function getYAxis(int $total, float $relation)
     {
-        $yAxis = ceil(sqrt(($total / 2)));
-        return (integer) $yAxis;
+        $yAxis = sqrt(($total / $relation));
+        return $yAxis;
 
     }
 
@@ -369,83 +454,179 @@ class Heatmap
             break;
         }
 
-        $Yaxis = $this->getYAxis(count($result));
-        $Xaxis = ($Yaxis * 2);
+        $scale = ($this->width / $this->height);
+
+        $Yaxis = $this->getYAxis(count($result), $scale);
+        $Xaxis = (int) ceil($Yaxis * $scale);
+        $Yaxis = ceil($Yaxis);
+
         $viewBox = sprintf(
             '0 0 %d %d',
             $Xaxis,
             $Yaxis
         );
 
-        echo '<svg id="svg_'.$this->randomId.'" width=95% viewBox="'.$viewBox.'">';
+        echo '<svg id="svg_'.$this->randomId.'" width="'.$this->width.'" 
+            height="'.$this->height.'" viewBox="'.$viewBox.'">';
 
+        $groups = [];
         $contX = 0;
         $contY = 0;
-        // $auxdata = 0;
-        // $auxY = 0;
-        foreach ($result as $key => $value) {
-            echo '<rect id="'.$value['id_agente'].'" 
-                class="'.$value['status'].' hover" 
+        foreach ($result as $value) {
+            echo '<rect id="'.$this->randomId.'_'.$value['id'].'" class="'.$value['status'].' hover"
                 width="1" height="1" x ="'.$contX.' "y="'.$contY.'" />';
 
-            // Top.
-            // if ($auxdata !== $value['id_grupo'] || $contY === 0) {
-            // if ($auxdata !== $value['id_grupo']) {
-            // $auxdata = $value['id_grupo'];
-            // $auxY = 1;
-            // }
-            // $point = sprintf(
-            // '%d,%d %d,%d',
-            // $contX,
-            // $contY,
-            // ($contX + 1),
-            // $contY
-            // );
-            // echo '<polygon class="group" points="'.$point.'" />';
-            // }
-            // Left.
-            // if ($contX === 0 || $auxY === 1) {
-            // $point = sprintf(
-            // '%d,%d %d,%d',
-            // $contX,
-            // $contY,
-            // $contX,
-            // ($contY + 1)
-            // );
-            // echo '<polygon class="group" points="'.$point.'" />';
-            // }
-            // Bottom.
-            // if (($contY + 1) === $Yaxis) {
-            // $point = sprintf(
-            // '%d,%d %d,%d',
-            // $contX,
-            // ($contY + 1),
-            // ($contX + 1),
-            // ($contY + 1)
-            // );
-            // echo '<polygon class="group" points="'.$point.'" />';
-            // }
-            // Right.
-            // if (($contX + 1) === $Xaxis) {
-            // hd('entra');
-            // $point = sprintf(
-            // '%d,%d %d,%d',
-            // ($contX + 1),
-            // $contY,
-            // ($contX + 1),
-            // ($contY + 1)
-            // );
-            // echo '<polygon class="group" points="'.$point.'" />';
-            // }
-            $contY++;
-            if ($contY === $Yaxis) {
-                $contX++;
-                $contY = 0;
-                $auxY = 0;
+            $contX++;
+            if ($contX >= $Xaxis) {
+                $contY++;
+                $contX = 0;
+            }
+
+            if (empty($groups[$value['id_grupo']]) === true) {
+                $groups[$value['id_grupo']] = 1;
+            } else {
+                $groups[$value['id_grupo']] += 1;
+            }
+        }
+
+        ?>
+            <script type="text/javascript">
+                $('rect').click(function() {
+                    const type = <?php echo $this->type; ?>;
+                    const hash = '<?php echo $this->randomId; ?>';
+                    const id = this.id.replace(`${hash}_`, '');
+
+                    $("#info_dialog").dialog({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        closeOnEscape: true,
+                        height: 400,
+                        width: 430,
+                        title: '<?php echo __('Info'); ?>',
+                        open: function() {
+                            $.ajax({
+                                type: 'GET',
+                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                                data: {
+                                    page: "include/ajax/heatmap.ajax",
+                                    getInfo: 1,
+                                    type: type,
+                                    id: id,
+                                },
+                                dataType: 'html',
+                                success: function(data) {
+                                    $('#info_dialog').empty();
+                                    $('#info_dialog').append(data);
+                                }
+                            });
+                        },
+                    });
+                });
+            </script>
+        <?php
+        $x_back = 0;
+        $y_back = 0;
+        echo '<polyline points="0,0 0,1" class="polyline" />';
+        echo '<polyline points="'.$contX.','.$contY.' '.$contX.','.($contY + 1).'" class="polyline" />';
+        echo '<polyline points="'.$contX.','.$contY.' '.$Xaxis.','.$contY.'" class="polyline" />';
+        foreach ($groups as $group) {
+            if (($x_back + $group) <= $Xaxis) {
+                $x_position = ($x_back + $group);
+                $y_position = $y_back;
+
+                $points = sprintf(
+                    '%d,%d %d,%d %d,%d %d,%d',
+                    $x_position,
+                    $y_back,
+                    $x_back,
+                    $y_back,
+                    $x_back,
+                    ($y_position + 1),
+                    $x_position,
+                    ($y_position + 1)
+                );
+
+                echo '<polyline points="'.$points.'" class="polyline" />';
+
+                $x_back = $x_position;
+                if ($x_position === $Xaxis) {
+                    $points = sprintf(
+                        '%d,%d %d,%d',
+                        $x_position,
+                        $y_back,
+                        $x_position,
+                        ($y_back + 1)
+                    );
+
+                    echo '<polyline points="'.$points.'" class="polyline" />';
+
+                    $y_back ++;
+                    $x_back = 0;
+                }
+            } else {
+                $round = (int) floor(($x_back + $group) / $Xaxis);
+                $y_position = ($round + $y_back);
+
+                // Top of the first line.
+                $points = sprintf(
+                    '%d,%d %d,%d %d,%d',
+                    $x_back,
+                    ($y_back + 1),
+                    $x_back,
+                    $y_back,
+                    $Xaxis,
+                    $y_back
+                );
+
+                echo '<polyline points="'.$points.'" class="polyline" />';
+
+                if ($round === 1) {
+                    // One line.
+                    $x_position = (($x_back + $group) - $Xaxis);
+
+                    // Bottom of last line.
+                    $points = sprintf(
+                        '%d,%d %d,%d',
+                        0,
+                        ($y_position + 1),
+                        $x_position,
+                        ($y_position + 1)
+                    );
+
+                    echo '<polyline points="'.$points.'" class="polyline" />';
+                } else {
+                    // Two or more lines.
+                    $x_position = (($x_back + $group) - ($Xaxis * $round));
+                    if ($x_position === 0) {
+                        $x_position = $Xaxis;
+                    }
+
+                    // Bottom of last line.
+                    $points = sprintf(
+                        '%d,%d %d,%d',
+                        0,
+                        ($y_position + 1),
+                        $x_position,
+                        ($y_position + 1)
+                    );
+
+                    echo '<polyline points="'.$points.'" class="polyline" />';
+                }
+
+                if ($x_position === $Xaxis) {
+                    $x_position = 0;
+                }
+
+                $x_back = $x_position;
+                $y_back = $y_position;
             }
         }
 
         echo '</svg>';
+
+        // Dialog.
+        echo '<div id="info_dialog" style="padding:15px" class="invisible"></div>';
     }
 
 

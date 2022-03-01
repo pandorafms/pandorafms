@@ -39,7 +39,7 @@ BEGIN {
 
 	use File::Copy;
 	use Scalar::Util qw(looks_like_number);
-	use lib '/usr/lib/perl5';
+	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	################################################################################
 	# Erase blank spaces before and after the string
@@ -312,7 +312,7 @@ BEGIN {
 		$YAML = 1;
 	}
 
-	use lib '/usr/lib/perl5';
+	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	our @ISA = ("Exporter");
 	our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
@@ -1003,7 +1003,7 @@ use IO::Socket;
 use Sys::Syslog;
 use Time::Local;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 # Agent XML data
 my $Xml;

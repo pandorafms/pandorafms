@@ -30,7 +30,7 @@ use HTML::Entities;
 use POSIX qw(strftime);
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;

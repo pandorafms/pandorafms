@@ -552,7 +552,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	}
 
 	my $schedule;
-	if (defined($alert->{'schedule'}) && $alert->{'schedule'} != '') {
+	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
 		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
 	}
 

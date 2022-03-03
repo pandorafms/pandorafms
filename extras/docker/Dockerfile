@@ -21,8 +21,6 @@ RUN cd /tmp/pandorafms/pandora_agents/unix && \
 # Set the server's name in Apache's configuration file to avoid warnings.
 RUN sed -i "s/#ServerName.*/ServerName localhost:80/" /etc/httpd/conf/httpd.conf
 
-COPY my.cnf /etc/my.cnf
-
 # Install the Pandora FMS Console.
 RUN rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql && \
     mkdir -p /var/log/mysql/ && chown mysql. /var/log/mysql && \
@@ -30,7 +28,7 @@ RUN rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql && \
     sudo -u mysql mysqld --initialize --explicit_defaults_for_timestamp && \
     sudo -u mysql mysqld --daemonize & \
     sleep 15 && \
-    mysql_default_pass=$(cat /var/log/mysql/mysqld.log | grep "temporary password" | awk '{print $NF}')  && \
+    mysql_default_pass=$(cat /var/log/mysqld.log | grep "temporary password" | awk '{print $NF}')  && \
     mysqladmin -u root -p"$mysql_default_pass" --user=root password 'pandora' && \
     httpd -k start && \
     cp -r /tmp/pandorafms/pandora_console /var/www/html && \

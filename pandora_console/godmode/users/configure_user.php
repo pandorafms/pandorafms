@@ -324,6 +324,16 @@ if ($create_user) {
 
     $user_is_admin = (int) get_parameter('is_admin', 0);
 
+    if (users_is_admin() === false && $user_is_admin !== 0) {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to create with administrator privileges to user by non administrator user '.$config['id_user'],
+        );
+
+        include 'general/noaccess.php';
+        exit;
+    }
+
     $values = [];
     $values['id_user'] = (string) get_parameter('id_user');
     $values['fullname'] = (string) get_parameter('fullname');
@@ -537,6 +547,16 @@ if ($update_user) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+
+    if (users_is_admin() === false && (bool) $values['is_admin'] !== false) {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to add administrator privileges to user by non administrator user '.$config['id_user'],
+        );
+
+        include 'general/noaccess.php';
+        exit;
+    }
 
     // eHorus user level conf.
     $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);

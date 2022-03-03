@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.760 Build 220302";
+my $version = "7.0NG.760 Build 220303";
 
 # Pandora server configuration
 my %conf;

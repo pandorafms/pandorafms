@@ -5,7 +5,8 @@ ARG BRANCH=develop
 ARG DB_PASS=pandora
 
 # Clone the Pandora FMS repo.
-RUN git clone --depth 1 -b "$BRANCH" https://github.com/pandorafms/pandorafms.git /tmp/pandorafms
+RUN git clone --depth 1 -b "$BRANCH" https://github.com/pandorafms/pandorafms.git /tmp/pandorafms || \
+    git clone --depth 1 https://github.com/pandorafms/pandorafms.git /tmp/pandorafms 
 
 # Install the Pandora FMS Server.
 RUN cd /tmp/pandorafms/pandora_server && \

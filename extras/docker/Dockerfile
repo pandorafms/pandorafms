@@ -1,4 +1,4 @@
-FROM pandorafms/pandorafms-base
+FROM pandorafms/pandorafms-base:centos7
 
 # Build variables.
 ARG BRANCH=develop

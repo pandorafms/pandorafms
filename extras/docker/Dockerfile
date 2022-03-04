@@ -27,7 +27,7 @@ RUN rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql && \
     chown mysql. -R /var/lib/mysql && \
     sudo -u mysql mysqld --initialize --explicit_defaults_for_timestamp && \
     sudo -u mysql mysqld --daemonize & \
-    sleep 15 && \
+    sleep 50 && \
     mysql_default_pass=$(cat /var/log/mysqld.log | grep "temporary password" | awk '{print $NF}')  && \
     mysqladmin -u root -p"$mysql_default_pass" --user=root password 'pandora' && \
     httpd -k start && \

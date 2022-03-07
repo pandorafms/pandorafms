@@ -323,7 +323,7 @@ html_print_image(
 echo "<div id='tree-controller-recipient'>";
 echo '</div>';
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     echo '</div>';
 }
 
@@ -331,7 +331,7 @@ enterprise_hook('close_meta_frame');
 
 ?>
 
-<?php if (!is_metaconsole()) { ?>
+<?php if (is_metaconsole() === false) { ?>
 <script type="text/javascript" src="include/javascript/fixed-bottom-box.js"></script>
 <?php } else { ?>
 <script type="text/javascript" src="../../include/javascript/fixed-bottom-box.js"></script>
@@ -341,12 +341,12 @@ enterprise_hook('close_meta_frame');
     var treeController = TreeController.getController();
 
     processTreeSearch();
-    
+
     $("form#tree_search").submit(function(e) {
         e.preventDefault();
         processTreeSearch();
     });
-    
+
     function processTreeSearch () {
         // Clear the tree
         if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)

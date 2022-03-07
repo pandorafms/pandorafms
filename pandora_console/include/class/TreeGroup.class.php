@@ -390,36 +390,28 @@ class TreeGroup extends Tree
             $groups[$group['id']] = $group;
         }
 
-        // Build the module hierarchy
+        // Build the module hierarchy.
         foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+            if (isset($groups[$id]['parent']) === true && ($groups[$id]['parent'] != 0)) {
                 $parent = $groups[$id]['parent'];
-                // Parent exists
-                if (!isset($groups[$parent]['children'])) {
+                // Parent exists.
+                if (isset($groups[$parent]['children']) === true) {
                     $groups[$parent]['children'] = [];
                 }
 
-                // Store a reference to the group into the parent
+                // Store a reference to the group into the parent.
                 $groups[$parent]['children'][] = &$groups[$id];
-                // This group was introduced into a parent
+                // This group was introduced into a parent.
                 $groups[$id]['have_parent'] = true;
             }
         }
 
-        // Sort the children groups
+        // Sort the children groups.
         foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['children'])) {
+            if (isset($groups[$id]['children']) === true) {
                 usort($groups[$id]['children'], ['Tree', 'cmpSortNames']);
             }
         }
-
-        // Filter groups and eliminates the reference to children groups out of her parent
-        $groups = array_filter(
-            $groups,
-            function ($group) {
-                return !($group['have_parent'] ?? false);
-            }
-        );
 
         return array_values($groups);
     }

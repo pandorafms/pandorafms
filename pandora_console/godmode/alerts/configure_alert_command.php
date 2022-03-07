@@ -345,7 +345,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_values,
         '',
         55,
-        255,
+        1000,
         true,
         false,
         false,

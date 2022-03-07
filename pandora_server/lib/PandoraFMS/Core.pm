@@ -145,7 +145,7 @@ if (!$@) {
 }
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::DB;
 use PandoraFMS::Config;
@@ -551,31 +551,48 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		return $status if ($alert->{$DayNames[$wday]} != 1);
 	}
 
-	my $schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
-
-	return $status unless defined($schedule) && ref $schedule eq "HASH";
-
-	return $status unless defined($schedule->{$DayNames[$wday]});
-
-	return $status unless ref($schedule->{$DayNames[$wday]}) eq "ARRAY";
-
-	my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
-
-	#
-	# Check time slots
-	#
-	my $inSlot = 0;
-	foreach my $timeBlock (@{$schedule->{$DayNames[$wday]}}) {
-		if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
-			# All day.
-			$inSlot = 1;
-		} elsif ($timeBlock->{'start'} le $time && $timeBlock->{'end'} ge $time) {
-			# In range.
-			$inSlot = 1;
-		}
+	my $schedule;
+	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
+		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
 	}
 
-	return $status if $inSlot eq 0;
+	if (defined($schedule)) {
+		# New behaviour.
+		return $status unless defined($schedule) && ref $schedule eq "HASH";
+
+		return $status unless defined($schedule->{$DayNames[$wday]});
+
+		return $status unless ref($schedule->{$DayNames[$wday]}) eq "ARRAY";
+
+		my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
+
+		#
+		# Check time slots
+		#
+		my $inSlot = 0;
+		foreach my $timeBlock (@{$schedule->{$DayNames[$wday]}}) {
+			if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
+				# All day.
+				$inSlot = 1;
+			} elsif ($timeBlock->{'start'} le $time && $timeBlock->{'end'} ge $time) {
+				# In range.
+				$inSlot = 1;
+			}
+		}
+
+		return $status if $inSlot eq 0;
+	} else {
+		# Old behaviour.
+		# Check time slot
+		my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
+		if (($alert->{'time_from'} ne $alert->{'time_to'})) {
+			if ($alert->{'time_from'} lt $alert->{'time_to'}) {
+				return $status if (($time le $alert->{'time_from'}) || ($time ge $alert->{'time_to'}));
+			} else {
+				return $status if (($time le $alert->{'time_from'}) && ($time ge $alert->{'time_to'}));
+			}
+		}
+	}
 	
 	# Check time threshold
 	my $limit_utimestamp = $alert->{'last_reference'} + $alert->{'time_threshold'};
@@ -776,10 +793,12 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
-			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
+		if ($pa_config->{'alertserver'} == 1) {
+			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
+				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
-			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh,
+				$timestamp, 0, $extra_macros, $is_correlated_alert);
 		}
 		return;
 	}
@@ -820,8 +839,9 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
-			pandora_queue_alert($pa_config, $dbh, $data, $alert, 1, $extra_macros);
+		if ($pa_config->{'alertserver'} == 1) {
+			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
+				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
 				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
@@ -837,7 +857,7 @@ Execute the given alert.
 
 =cut
 ##########################################################################
-sub pandora_execute_alert ($$$$$$$$$;$$) {
+sub pandora_execute_alert {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $forced_alert,
 		$extra_macros, $is_correlated_alert) = @_;
@@ -1081,17 +1101,15 @@ Queue the given alert for execution.
 
 =cut
 ##########################################################################
-sub pandora_queue_alert ($$$$$;$) {
-	my ($pa_config, $dbh, $data, $alert, $alert_mode, $extra_macros) = @_;
-	my $json_macros = '{}';
+sub pandora_queue_alert ($$$) {
+	my ($pa_config, $dbh, $arguments) = @_;
 
-	eval {
-		local $SIG{__DIE__};
-		$json_macros = encode_json($extra_macros);
-	};
+	my $json_arguments = PandoraFMS::Tools::p_encode_json($pa_config, $arguments);
 
-	db_do ($dbh, "INSERT INTO talert_execution_queue (id_alert_template_module, data, alert_mode, extra_macros, utimestamp)
-		VALUES (?, ?, ?, ?, ?)", $alert->{'id_template_module'}, $data, $alert_mode, $json_macros, time());
+	$json_arguments = encode_base64($json_arguments);
+
+	db_do ($dbh, "INSERT INTO talert_execution_queue (data, utimestamp)
+		VALUES (?, ?)", $json_arguments, time());
 }
 
 ##########################################################################
@@ -5521,6 +5539,9 @@ sub pandora_process_policy_queue ($) {
 				sleep ($pa_config->{'server_threshold'});
 				next;
 			}
+
+			# Refresh policy agents.
+			enterprise_hook('pandora_apply_policy_groups', [$pa_config, $dbh]);
 
 			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
 			next unless (defined ($operation) && $operation ne '');

@@ -181,7 +181,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
     {
         // Load the conf.
         try {
-            $this->conf = new \Config('client/conf/test.ini');
+            $this->conf = new \Config(__DIR__.'/../conf/test.ini');
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }

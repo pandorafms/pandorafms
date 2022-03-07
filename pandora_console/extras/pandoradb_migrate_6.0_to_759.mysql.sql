@@ -213,6 +213,20 @@ CREATE TABLE IF NOT EXISTS `tpolicy_groups` (
 	UNIQUE (`id_policy`, `id_group`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tpolicy_group_agents`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
+    `id` SERIAL,
+    `id_policy` INT UNSIGNED,
+    `id_agent` INT UNSIGNED,
+	`direct` TINYINT UNSIGNED DEFAULT 0,
+    FOREIGN KEY (`id_policy`) REFERENCES `tpolicies`(`id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`)
+        ON DELETE CASCADE ON UPDATE CASCADE		
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
@@ -4124,14 +4138,11 @@ ALTER TABLE `tperfil` ADD COLUMN `network_config_management`tinyint(1) NOT NULL 
 -- Table `talert_execution_queue`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
-	`id` int(10) unsigned NOT NULL auto_increment,
-	`id_alert_template_module` int(10) unsigned NOT NULL,
-	`alert_mode` tinyint(1) NOT NULL,
-	`data` mediumtext NOT NULL,
-	`extra_macros` text,
-	`utimestamp` bigint(20) NOT NULL default '0',
-	PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `data` LONGTEXT,
+  `utimestamp` BIGINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 UPDATE `tlanguage` SET `name` = 'Deutsch' WHERE `id_language` = 'de';
 

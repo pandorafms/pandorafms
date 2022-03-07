@@ -4,22 +4,159 @@
   justify-content: center;
   min-height: 750px;
   height: 100%;
+  align-items: center;
 }
 
-.normal {
+.normal_10 {
   fill: #82b92e;
 }
 
-.critical {
+.normal_9 {
+  fill: #89be38;
+}
+
+.normal_8 {
+  fill: #8dc13d;
+}
+
+.normal_7 {
+  fill: #90c342;
+}
+
+.normal_6 {
+  fill: #97c84c;
+}
+
+.normal_5 {
+  fill: #9dcc55;
+}
+
+.normal_4 {
+  fill: #a4d15f;
+}
+
+.normal_3 {
+  fill: #aad569;
+}
+
+.normal_2 {
+  fill: #b1da73;
+}
+
+.normal_1 {
+  fill: #b7de7c;
+}
+
+.normal {
+  fill: #c0e28d;
+}
+
+.critical_10 {
   fill: #e63c52;
 }
 
-.warning {
+.critical_9 {
+  fill: #e8475c;
+}
+
+.critical_8 {
+  fill: #e95266;
+}
+
+.critical_7 {
+  fill: #ea586b;
+}
+
+.critical_6 {
+  fill: #eb5d70;
+}
+
+.critical_5 {
+  fill: #ec6879;
+}
+
+.critical_4 {
+  fill: #ee7383;
+}
+
+.critical_3 {
+  fill: #ef7e8c;
+}
+
+.critical_2 {
+  fill: #f08996;
+}
+
+.critical_1 {
+  fill: #f1939f;
+}
+
+.critical {
+  fill: #f3a5af;
+}
+
+.warning_10 {
   fill: #f3b200;
 }
 
-.unknown {
+.warning_9 {
+  fill: #f5b70e;
+}
+
+.warning_8 {
+  fill: #f6ba15;
+}
+
+.warning_7 {
+  fill: #f6bc1c;
+}
+
+.warning_6 {
+  fill: #f8c12a;
+}
+
+.warning_5 {
+  fill: #f9c638;
+}
+
+.warning_4 {
+  fill: #fbcb46;
+}
+
+.warning_3 {
+  fill: #fcd054;
+}
+
+.warning_2 {
+  fill: #fed562;
+}
+
+.warning_1 {
+  fill: #ffd970;
+}
+
+.warning {
+  fill: #ffde85;
+}
+
+.unknown_10,
+.unknown_9,
+.unknown_8,
+.unknown_7 {
   fill: #b2b2b2;
+}
+
+.unknown_6,
+.unknown_5,
+.unknown_4,
+.unknown_3 {
+  fill: #c2c2c2;
+}
+
+.unknown_2,
+.unknown_1,
+.unknown {
+  fill: #cccccc;
 }
 
 .notinit {
@@ -98,6 +235,17 @@ div#heatmap-controls div.heatmap-refr > div {
   flex-direction: row;
   justify-content: left;
   align-items: center;
+}
+
+.title-dialog {
+  width: 40%;
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+.info-dialog {
+  width: 60%;
+  font-weight: bold;
 }
 
 .polyline {

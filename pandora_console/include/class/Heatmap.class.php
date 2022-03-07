@@ -88,6 +88,13 @@ class Heatmap
      */
     protected $search = null;
 
+    /**
+     * Heatmap group.
+     *
+     * @var integer
+     */
+    protected $group = null;
+
 
     /**
      * Constructor function
@@ -99,6 +106,7 @@ class Heatmap
      * @param integer $width    Width.
      * @param integer $height   Height.
      * @param string  $search   Heatmap search.
+     * @param integer $group    Heatmap group.
      */
     public function __construct(
         int $type=0,
@@ -107,7 +115,8 @@ class Heatmap
         int $refresh=300,
         int $width=0,
         int $height=0,
-        string $search=null
+        string $search=null,
+        int $group=1
     ) {
         $this->type = $type;
         $this->filter = $filter;
@@ -116,6 +125,7 @@ class Heatmap
         $this->width = $width;
         $this->height = $height;
         $this->search = $search;
+        $this->group = $group;
     }
 
 
@@ -145,6 +155,7 @@ class Heatmap
                 'filter'   => $this->filter,
                 'refresh'  => $this->refresh,
                 'search'   => $this->search,
+                'group'    => $this->group,
             ],
         ];
 
@@ -155,7 +166,7 @@ class Heatmap
                     const randomId = '<?php echo $this->randomId; ?>';
                     const refresh = '<?php echo $this->refresh; ?>';
                     let setting = <?php echo json_encode($settings); ?>;
-                    setting['data']['height'] = $(`#div_${randomId}`).height();
+                    setting['data']['height'] = $(`#div_${randomId}`).height() + 10;
                     setting['data']['width'] = $(`#div_${randomId}`).width();
 
                     // Initial charge.
@@ -180,8 +191,11 @@ class Heatmap
                                 page: "operation/heatmap",
                                 method: 'getDataJson',
                                 randomId: randomId,
-                                type: '<?php echo $this->type; ?>',
-                                refresh: '<?php echo $this->refresh; ?>'
+                                type: setting['data']['type'],
+                                refresh: setting['data']['refresh'],
+                                filter: setting['data']['filter'],
+                                search: setting['data']['search'],
+                                group: setting['data']['group']
                             },
                             dataType: 'json',
                             success: function(data) {
@@ -200,19 +214,8 @@ class Heatmap
                                     const timer = setInterval(
                                         function() {
                                             while (cont <= limit) {
-                                                if ($(`#${randomId}_${lista[cont]['id']}`).hasClass(`${lista[cont]['status']}`)) {
-                                                    let test = $(`#${randomId}_${lista[cont]['id']}`).css("filter");
-                                                    if (test !== 'none') {
-                                                        // console.log(test)
-                                                        // console.log(test.match('/(\d+\.\d|\d)/'));
-                                                    } else {
-                                                        $(`#${randomId}_${lista[cont]['id']}`).css("filter", "brightness(1.1)");
-                                                    }
-                                                } else {
-                                                    $(`#${randomId}_${lista[cont]['id']}`).removeClass("normal critical warning unknown");
-                                                    $(`#${randomId}_${lista[cont]['id']}`).addClass(`${lista[cont]['status']}`);
-                                                    $(`#${randomId}_${lista[cont]['id']}`).css("filter", "brightness(1)");
-                                                }
+                                                $(`#${randomId}_${lista[cont]['id']}`).removeClass();
+                                                $(`#${randomId}_${lista[cont]['id']}`).addClass(`${lista[cont]['status']} hover`);
 
                                                 cont++;
                                             }
@@ -297,35 +300,27 @@ class Heatmap
     {
         $filter['disabled'] = 0;
 
+        $alias = '';
         if (empty($this->search) === false) {
-            $filter['search'] = ' AND alias LIKE "%'.$this->search.'%"';
+            $alias = ' AND alias LIKE "%'.$this->search.'%"';
         }
 
-        if (empty($this->filter) === false) {
+        $id_grupo = '';
+        if (empty($this->filter) === false && current($this->filter) != 0) {
             $filter['id_grupo'] = current($this->filter);
+            $id_grupo = ' AND id_grupo = '.current($this->filter);
         }
 
         // All agents.
-        $result = agents_get_agents(
-            $filter,
-            [
-                'id_agente as id',
-                'alias',
-                'id_grupo',
-                'normal_count',
-                'warning_count',
-                'critical_count',
-                'unknown_count',
-                'notinit_count',
-                'total_count',
-                'fired_count',
-            ],
-            'AR',
-            [
-                'field' => 'id_grupo,id_agente',
-                'order' => 'ASC',
-            ]
+        $sql = sprintf(
+            'SELECT DISTINCT id_agente as id,alias,id_grupo,normal_count,warning_count,critical_count, unknown_count,notinit_count,total_count,fired_count,
+            (SELECT last_status_change FROM tagente_estado WHERE id_agente = tagente.id_agente ORDER BY last_status_change DESC LIMIT 1) AS last_status_change
+            FROM tagente WHERE `disabled` = 0 %s %s ORDER BY id_grupo,id_agente ASC',
+            $alias,
+            $id_grupo
         );
+
+        $result = db_get_all_rows_sql($sql);
 
         $agents = [];
         // Agent status.
@@ -342,23 +337,259 @@ class Heatmap
                 $status = 'normal';
             }
 
+            if ($agent['last_status_change'] != 0) {
+                $seconds = (time() - $agent['last_status_change']);
+
+                if ($seconds >= SECONDS_1DAY) {
+                    $status .= '_10';
+                } else if ($seconds >= 77760) {
+                    $status .= '_9';
+                } else if ($seconds >= 69120) {
+                    $status .= '_8';
+                } else if ($seconds >= 60480) {
+                    $status .= '_7';
+                } else if ($seconds >= 51840) {
+                    $status .= '_6';
+                } else if ($seconds >= 43200) {
+                    $status .= '_5';
+                } else if ($seconds >= 34560) {
+                    $status .= '_4';
+                } else if ($seconds >= 25920) {
+                    $status .= '_3';
+                } else if ($seconds >= 17280) {
+                    $status .= '_2';
+                } else if ($seconds >= 8640) {
+                    $status .= '_1';
+                }
+            }
+
             $agents[$key] = $agent;
             $agents[$key]['status'] = $status;
         }
 
-        // -------------------Agent generator--------------------
-        $a = 1;
-        $agents = [];
-        $total = 1010;
-        while ($a <= $total) {
-            $agents[$a]['id'] = $a;
-            $agents[$a]['status'] = $this->statusColour(rand(4, 0));
-            $agents[$a]['id_grupo'] = ceil($a / 20);
-            $a++;
+        return $agents;
+    }
+
+
+    /**
+     * Get all modules
+     *
+     * @return array
+     */
+    protected function getAllModulesByGroup()
+    {
+        $filter_group = '';
+        if (empty($this->filter) === false && current($this->filter) != -1) {
+            $filter_group = 'AND am.id_module_group ='.current($this->filter);
         }
 
-        // -------------------------------------------
-        return $agents;
+        $filter_name = '';
+        if (empty($this->search) === false) {
+            $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
+        }
+
+        // All modules.
+        $sql = sprintf(
+            'SELECT am.id_agente_modulo AS id, ae.known_status AS `status`, am.id_module_group AS id_grupo, ae.last_status_change FROM tagente_modulo am
+            INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
+            WHERE am.disabled = 0 %s %s GROUP BY am.id_module_group, am.id_agente_modulo',
+            $filter_group,
+            $filter_name
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        // Module status.
+        foreach ($result as $key => $module) {
+            $status = '';
+            switch ($module['status']) {
+                case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                case 1:
+                case 100:
+                    $status = 'critical';
+                break;
+
+                case AGENT_MODULE_STATUS_NORMAL:
+                case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                case 0:
+                case 300:
+                    $status = 'normal';
+                break;
+
+                case AGENT_MODULE_STATUS_WARNING:
+                case AGENT_MODULE_STATUS_WARNING_ALERT:
+                case 2:
+                case 200:
+                    $status = 'warning';
+                break;
+
+                default:
+                case AGENT_MODULE_STATUS_UNKNOWN:
+                case 3:
+                    $status = 'unknown';
+                break;
+                case AGENT_MODULE_STATUS_NOT_INIT:
+                case 5:
+                    $status = 'notinit';
+                break;
+            }
+
+            if ($module['last_status_change'] != 0) {
+                $seconds = (time() - $module['last_status_change']);
+
+                if ($seconds >= SECONDS_1DAY) {
+                    $status .= '_10';
+                } else if ($seconds >= 77760) {
+                    $status .= '_9';
+                } else if ($seconds >= 69120) {
+                    $status .= '_8';
+                } else if ($seconds >= 60480) {
+                    $status .= '_7';
+                } else if ($seconds >= 51840) {
+                    $status .= '_6';
+                } else if ($seconds >= 43200) {
+                    $status .= '_5';
+                } else if ($seconds >= 34560) {
+                    $status .= '_4';
+                } else if ($seconds >= 25920) {
+                    $status .= '_3';
+                } else if ($seconds >= 17280) {
+                    $status .= '_2';
+                } else if ($seconds >= 8640) {
+                    $status .= '_1';
+                }
+            }
+
+            $result[$key]['status'] = $status;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get all modules
+     *
+     * @return array
+     */
+    protected function getAllModulesByTag()
+    {
+        $filter_tag = '';
+        if (empty($this->filter) === false && $this->filter[0] !== '0') {
+            foreach ($this->filter as $key => $value) {
+                $filter_tag .= ' AND tm.id_tag ='.$value;
+            }
+        }
+
+        $filter_name = '';
+        if (empty($this->search) === false) {
+            $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
+        }
+
+        // All modules.
+        $sql = sprintf(
+            'SELECT ae.id_agente_modulo AS id, ae.known_status AS `status`, tm.id_tag AS id_grupo, ae.last_status_change FROM tagente_estado ae 
+            INNER JOIN ttag_module tm ON tm.id_agente_modulo = ae.id_agente_modulo
+            WHERE 1=1 %s %s GROUP BY tm.id_tag, ae.id_agente_modulo',
+            $filter_tag,
+            $filter_name
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        // Module status.
+        foreach ($result as $key => $module) {
+            $status = '';
+            switch ($module['status']) {
+                case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                case 1:
+                case 100:
+                    $status = 'critical';
+                break;
+
+                case AGENT_MODULE_STATUS_NORMAL:
+                case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                case 0:
+                case 300:
+                    $status = 'normal';
+                break;
+
+                case AGENT_MODULE_STATUS_WARNING:
+                case AGENT_MODULE_STATUS_WARNING_ALERT:
+                case 2:
+                case 200:
+                    $status = 'warning';
+                break;
+
+                default:
+                case AGENT_MODULE_STATUS_UNKNOWN:
+                case 3:
+                    $status = 'unknown';
+                break;
+                case AGENT_MODULE_STATUS_NOT_INIT:
+                case 5:
+                    $status = 'notinit';
+                break;
+            }
+
+            if ($module['last_status_change'] != 0) {
+                $seconds = (time() - $module['last_status_change']);
+
+                if ($seconds >= SECONDS_1DAY) {
+                    $status .= '_10';
+                } else if ($seconds >= 77760) {
+                    $status .= '_9';
+                } else if ($seconds >= 69120) {
+                    $status .= '_8';
+                } else if ($seconds >= 60480) {
+                    $status .= '_7';
+                } else if ($seconds >= 51840) {
+                    $status .= '_6';
+                } else if ($seconds >= 43200) {
+                    $status .= '_5';
+                } else if ($seconds >= 34560) {
+                    $status .= '_4';
+                } else if ($seconds >= 25920) {
+                    $status .= '_3';
+                } else if ($seconds >= 17280) {
+                    $status .= '_2';
+                } else if ($seconds >= 8640) {
+                    $status .= '_1';
+                }
+            }
+
+            $result[$key]['status'] = $status;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * GetData
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        switch ($this->type) {
+            case 2:
+                $data = $this->getAllModulesByGroup();
+            break;
+
+            case 1:
+                $data = $this->getAllModulesByTag();
+            break;
+
+            case 0:
+            default:
+                $data = $this->getAllAgents();
+            break;
+        }
+
+        return $data;
     }
 
 
@@ -369,7 +600,7 @@ class Heatmap
      */
     public function getDataJson()
     {
-        $return = $this->getAllAgents();
+        $return = $this->getData();
         echo json_encode($return);
         return '';
     }
@@ -447,12 +678,7 @@ class Heatmap
      */
     public function showHeatmap()
     {
-        switch ($this->type) {
-            case 0:
-            default:
-                $result = $this->getAllAgents();
-            break;
-        }
+        $result = $this->getData();
 
         $scale = ($this->width / $this->height);
 
@@ -466,7 +692,7 @@ class Heatmap
             $Yaxis
         );
 
-        echo '<svg id="svg_'.$this->randomId.'" width="'.$this->width.'" 
+        echo '<svg id="svg_'.$this->randomId.'" width="'.$this->width.'"
             height="'.$this->height.'" viewBox="'.$viewBox.'">';
 
         $groups = [];
@@ -525,101 +751,187 @@ class Heatmap
                 });
             </script>
         <?php
-        $x_back = 0;
-        $y_back = 0;
-        echo '<polyline points="0,0 0,1" class="polyline" />';
-        echo '<polyline points="'.$contX.','.$contY.' '.$contX.','.($contY + 1).'" class="polyline" />';
-        echo '<polyline points="'.$contX.','.$contY.' '.$Xaxis.','.$contY.'" class="polyline" />';
-        foreach ($groups as $group) {
-            if (($x_back + $group) <= $Xaxis) {
-                $x_position = ($x_back + $group);
-                $y_position = $y_back;
+        if (count($groups) > 1 && $this->group === 1) {
+            $x_back = 0;
+            $y_back = 0;
 
-                $points = sprintf(
-                    '%d,%d %d,%d %d,%d %d,%d',
-                    $x_position,
-                    $y_back,
-                    $x_back,
-                    $y_back,
-                    $x_back,
-                    ($y_position + 1),
-                    $x_position,
-                    ($y_position + 1)
-                );
+            echo '<polyline points="0,0 '.$Xaxis.',0" class="polyline" />';
+            foreach ($groups as $key => $group) {
+                $name = '';
+                switch ($this->type) {
+                    case 2:
+                        $name = modules_get_modulegroup_name($key);
+                    break;
 
-                echo '<polyline points="'.$points.'" class="polyline" />';
+                    case 1:
+                        $name = tags_get_name($key);
+                    break;
 
-                $x_back = $x_position;
-                if ($x_position === $Xaxis) {
-                    $points = sprintf(
-                        '%d,%d %d,%d',
-                        $x_position,
-                        $y_back,
-                        $x_position,
-                        ($y_back + 1)
-                    );
-
-                    echo '<polyline points="'.$points.'" class="polyline" />';
-
-                    $y_back ++;
-                    $x_back = 0;
+                    case 0:
+                    default:
+                        $name = groups_get_name($key);
+                    break;
                 }
-            } else {
-                $round = (int) floor(($x_back + $group) / $Xaxis);
-                $y_position = ($round + $y_back);
 
-                // Top of the first line.
-                $points = sprintf(
-                    '%d,%d %d,%d %d,%d',
-                    $x_back,
-                    ($y_back + 1),
-                    $x_back,
-                    $y_back,
-                    $Xaxis,
-                    $y_back
-                );
+                if (($x_back + $group) <= $Xaxis) {
+                    $x_position = ($x_back + $group);
+                    $y_position = $y_back;
 
-                echo '<polyline points="'.$points.'" class="polyline" />';
+                    if ($y_back === 0 && $x_back === 0) {
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            $x_back,
+                            $y_back,
+                            $x_back,
+                            ($y_back + 1)
+                        );
 
-                if ($round === 1) {
-                    // One line.
-                    $x_position = (($x_back + $group) - $Xaxis);
-
-                    // Bottom of last line.
-                    $points = sprintf(
-                        '%d,%d %d,%d',
-                        0,
-                        ($y_position + 1),
-                        $x_position,
-                        ($y_position + 1)
-                    );
-
-                    echo '<polyline points="'.$points.'" class="polyline" />';
-                } else {
-                    // Two or more lines.
-                    $x_position = (($x_back + $group) - ($Xaxis * $round));
-                    if ($x_position === 0) {
-                        $x_position = $Xaxis;
+                        echo '<polyline points="'.$points.'" class="polyline" />';
                     }
 
-                    // Bottom of last line.
                     $points = sprintf(
-                        '%d,%d %d,%d',
-                        0,
+                        '%d,%d %d,%d %d,%d',
+                        $x_back,
                         ($y_position + 1),
                         $x_position,
-                        ($y_position + 1)
+                        ($y_position + 1),
+                        $x_position,
+                        $y_back
                     );
 
                     echo '<polyline points="'.$points.'" class="polyline" />';
-                }
 
-                if ($x_position === $Xaxis) {
-                    $x_position = 0;
-                }
+                    // Name.
+                    echo '<text x="'.((($x_position - $x_back) / 2) + $x_back).'" y="'.($y_position + 1).'"
+                        dominant-baseline="middle" style="font-size:0.4">'.$name.'</text>';
 
-                $x_back = $x_position;
-                $y_back = $y_position;
+                    $x_back = $x_position;
+                    if ($x_position === $Xaxis) {
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            $x_position,
+                            $y_back,
+                            $x_position,
+                            ($y_back + 1)
+                        );
+
+                        echo '<polyline points="'.$points.'" class="polyline" />';
+
+                        $y_back++;
+                        $x_back = 0;
+                    }
+                } else {
+                    $round = (int) floor(($x_back + $group) / $Xaxis);
+                    $y_position = ($round + $y_back);
+
+                    if ($round === 1) {
+                        // One line.
+                        $x_position = (($x_back + $group) - $Xaxis);
+
+                        if ($x_position <= $x_back) {
+                            // Bottom line.
+                            $points = sprintf(
+                                '%d,%d %d,%d',
+                                $x_back,
+                                $y_position,
+                                $Xaxis,
+                                ($y_position)
+                            );
+
+                            echo '<polyline points="'.$points.'" class="polyline" />';
+                        }
+
+                        // Bottom of last line.
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            0,
+                            ($y_position + 1),
+                            $x_position,
+                            ($y_position + 1)
+                        );
+
+                        echo '<polyline points="'.$points.'" class="polyline" />';
+
+                        // Name.
+                        echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
+                            dominant-baseline="middle" style="font-size:0.4">'.$name.'</text>';
+
+                        // Bottom-right of last line.
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            $x_position,
+                            ($y_position),
+                            $x_position,
+                            ($y_position + 1)
+                        );
+
+                        echo '<polyline points="'.$points.'" class="polyline" />';
+
+                        if ($x_position > $x_back) {
+                            // Bottom-top of last line.
+                            $points = sprintf(
+                                '%d,%d %d,%d',
+                                $x_position,
+                                ($y_position),
+                                $Xaxis,
+                                ($y_position)
+                            );
+
+                            echo '<polyline points="'.$points.'" class="polyline" />';
+                        }
+                    } else {
+                        // Two or more lines.
+                        $x_position = (($x_back + $group) - ($Xaxis * $round));
+
+                        if ($x_position === 0) {
+                            $x_position = $Xaxis;
+                        }
+
+                        // Bottom of last line.
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            0,
+                            ($y_position + 1),
+                            $x_position,
+                            ($y_position + 1)
+                        );
+
+                        echo '<polyline points="'.$points.'" class="polyline" />';
+
+                        // Bottom-right of last line.
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            $x_position,
+                            ($y_position),
+                            $x_position,
+                            ($y_position + 1)
+                        );
+
+                        echo '<polyline points="'.$points.'" class="polyline" />';
+
+                        // Name.
+                        echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
+                            dominant-baseline="middle" style="font-size:0.4">'.$name.'</text>';
+
+                        // Bottom-top of last line.
+                        $points = sprintf(
+                            '%d,%d %d,%d',
+                            $x_position,
+                            ($y_position),
+                            $Xaxis,
+                            ($y_position)
+                        );
+
+                        echo '<polyline points="'.$points.'" class="polyline" />';
+                    }
+
+                    if ($x_position === $Xaxis) {
+                        $x_position = 0;
+                    }
+
+                    $x_back = $x_position;
+                    $y_back = $y_position;
+                }
             }
         }
 

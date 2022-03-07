@@ -40,6 +40,7 @@ if (is_ajax() === true) {
     if ($getFilters === true) {
         $refresh = get_parameter('refresh', 30);
         $search = get_parameter('search', '');
+        $group = get_parameter('group', true);
 
         echo '<form id="form_dialog" method="post">';
             echo '<div class="div-dialog">';
@@ -91,6 +92,11 @@ if (is_ajax() === true) {
                     'margin-top: 3px;width:70%'
                 );
             echo '</div>';
+
+            echo '<div class="div-dialog">';
+                echo '<p class="label-dialog">'.__('Show groups').'</p>';
+                echo html_print_checkbox('group', 1, $group, true);
+            echo '</div>';
         echo '</form>';
     }
 
@@ -121,11 +127,8 @@ if (is_ajax() === true) {
                     echo html_print_select_from_sql(
                         'SELECT id_tag, name
                         FROM ttag
-                        WHERE id_tag NOT IN (
-                            SELECT a.id_tag
-                            FROM ttag a, ttag_module b
-                            WHERE a.id_tag = b.id_tag)
-                            ORDER BY name',
+                        WHERE id_tag
+                        ORDER BY name',
                         'filter[]',
                         $filter,
                         '',
@@ -146,12 +149,8 @@ if (is_ajax() === true) {
                         echo html_print_select_from_sql(
                             'SELECT id_tag, name
                             FROM ttag
-                            WHERE id_tag IN ('.implode(',', $id_user_tags).') AND
-                                id_tag NOT IN (
-                                SELECT a.id_tag
-                                FROM ttag a, ttag_module b
-                                WHERE a.id_tag = b.id_tag)
-                                ORDER BY name',
+                            WHERE id_tag IN ('.implode(',', $id_user_tags).')
+                            ORDER BY name',
                             'filter[]',
                             $filter,
                             '',
@@ -168,11 +167,8 @@ if (is_ajax() === true) {
                         echo html_print_select_from_sql(
                             'SELECT id_tag, name
                             FROM ttag
-                            WHERE id_tag NOT IN (
-                                SELECT a.id_tag
-                                FROM ttag a, ttag_module b
-                                WHERE a.id_tag = b.id_tag)
-                                ORDER BY name',
+                            WHERE id_tag
+                            ORDER BY name',
                             'filter[]',
                             $filter,
                             '',
@@ -191,6 +187,8 @@ if (is_ajax() === true) {
 
             case 2:
                 $module_groups = modules_get_modulegroups();
+                // $module_groups[0] = _('Not assigned');
+                // hd(current($filter));
                 echo '<p class="label-dialog">'.__('Module group').'</p>';
                 echo html_print_select(
                     $module_groups,
@@ -198,13 +196,18 @@ if (is_ajax() === true) {
                     $filter,
                     '',
                     _('Not assigned'),
-                    '',
+                    0,
                     true,
                     false,
                     false,
                     '',
                     false,
-                    'width: 70%'
+                    'width: 70%',
+                    false,
+                    false,
+                    false,
+                    '',
+                    true
                 );
             break;
         }
@@ -216,9 +219,72 @@ if (is_ajax() === true) {
         $id = get_parameter('id', 0);
         switch ($type) {
             case 2:
+                $data = db_get_row('tagente_modulo', 'id_agente_modulo', $id);
+                // Nombre.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Module name').'</p>';
+                echo '<a class="info-dialog">'.$data['nombre'].'</a>';
+                echo '</div>';
+
+                // Descripcion.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Description').'</p>';
+                echo '<p class="info-dialog">'.$data['descripcion'].'</p>';
+                echo '</div>';
+
+                // Agent.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Agent').'</p>';
+                echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$data['id_agente'].'"
+                    class="info-dialog" target="_blank">'.agents_get_alias($data['id_agente']).'</a>';
+                echo '</div>';
+
+                // Group.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Group').'</p>';
+                echo '<p class="info-dialog">'.modules_get_modulegroup_name($data['id_module_group']).'</p>';
+                echo '</div>';
             break;
 
             case 1:
+                $data = db_get_row('tagente_modulo', 'id_agente_modulo', $id);
+                // Nombre.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Module name').'</p>';
+                echo '<a class="info-dialog">'.$data['nombre'].'</a>';
+                echo '</div>';
+
+                // Descripcion.
+                echo '<div class="div-dialog">';
+                echo '<p sclass="title-dialog">'.__('Description').'</p>';
+                echo '<p class="info-dialog">'.$data['descripcion'].'</p>';
+                echo '</div>';
+
+                // Agent.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Agent').'</p>';
+                echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$data['id_agente'].'"
+                    class="info-dialog" target="_blank">'.agents_get_alias($data['id_agente']).'</a>';
+                echo '</div>';
+
+                // Group.
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Group').'</p>';
+                echo '<p class="info-dialog">'.modules_get_modulegroup_name($data['id_module_group']).'</p>';
+                echo '</div>';
+
+                // Tag.
+                $tags = db_get_all_rows_sql('SELECT id_tag FROM ttag_module WHERE id_agente_modulo ='.$id);
+                $tags_name = '';
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Tag').'</p>';
+                foreach ($tags as $key => $tag) {
+                    $tags_name .= tags_get_name($tag['id_tag']).', ';
+                }
+
+                $tags_name = trim($tags_name, ', ');
+                echo '<p class="info-dialog">'.$tags_name.'</p>';
+                echo '</div>';
             break;
 
             case 0:
@@ -227,32 +293,33 @@ if (is_ajax() === true) {
 
                 // Alias.
                 echo '<div class="div-dialog">';
-                echo '<p style="width:40%;font-weight: bold;padding-left: 20px;">'.__('Agent').'</p>';
-                echo '<a style="width:60%;font-weight: bold;">'.$data['alias'].'</a>';
+                echo '<p class="title-dialog">'.__('Agent').'</p>';
+                echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$data['id_agente'].'"
+                    class="info-dialog" target="_blank">'.$data['alias'].'</a>';
                 echo '</div>';
 
                 // Ip.
                 echo '<div class="div-dialog">';
-                echo '<p style="width:40%;font-weight: bold;padding-left: 20px;">'.__('IP').'</p>';
-                echo '<p style="width:60%;font-weight: bold;">'.$data['direccion'].'</p>';
+                echo '<p class="title-dialog">'.__('IP').'</p>';
+                echo '<p class="info-dialog">'.$data['direccion'].'</p>';
                 echo '</div>';
 
                 // OS.
                 echo '<div class="div-dialog">';
-                echo '<p style="width:40%;font-weight: bold;padding-left: 20px;">'.__('OS').'</p>';
-                echo '<p style="width:60%;font-weight: bold;">'.ui_print_os_icon($data['id_os'], true, true).'</p>';
+                echo '<p class="title-dialog">'.__('OS').'</p>';
+                echo '<p class="info-dialog">'.ui_print_os_icon($data['id_os'], true, true).'</p>';
                 echo '</div>';
 
                 // Description.
                 echo '<div class="div-dialog">';
-                echo '<p style="width:40%;font-weight: bold;padding-left: 20px;">'.__('Description').'</p>';
-                echo '<p style="width:60%;font-weight: bold;">'.$data['comentarios'].'</p>';
+                echo '<p class="title-dialog">'.__('Description').'</p>';
+                echo '<p class="info-dialog">'.$data['comentarios'].'</p>';
                 echo '</div>';
 
                 // Group.
                 echo '<div class="div-dialog">';
-                echo '<p style="width:40%;font-weight: bold;padding-left: 20px;">'.__('Group').'</p>';
-                echo '<p style="width:60%;font-weight: bold;">'.groups_get_name($data['id_grupo']).'</p>';
+                echo '<p class="title-dialog">'.__('Group').'</p>';
+                echo '<p class="info-dialog">'.groups_get_name($data['id_grupo']).'</p>';
                 echo '</div>';
 
                 // Events.
@@ -260,7 +327,7 @@ if (is_ajax() === true) {
                 echo graph_graphic_agentevents(
                     $id,
                     100,
-                    40,
+                    80,
                     SECONDS_1DAY,
                     '',
                     true,

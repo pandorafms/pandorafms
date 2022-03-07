@@ -50,11 +50,16 @@ $height = get_parameter('height', 0);
 $width = get_parameter('width', 0);
 $search = get_parameter('search', '');
 $filter = get_parameter('filter', []);
-
 if (is_array($filter) === false) {
     $filter = explode(',', $filter);
 }
 
+$group_sent = (bool) get_parameter('group_sent');
+if ($group_sent === true) {
+    $group = (int) get_parameter('group');
+} else {
+    $group = (int) get_parameter('group', true);
+}
 
 $is_ajax = is_ajax();
 if ($is_ajax === false && $pure === false) {
@@ -84,11 +89,39 @@ if ($is_ajax === false && $pure === false) {
         ]
     ).'</a>';
 
+    $header_name = __('Heatmap view');
+    switch ($type) {
+        case 2:
+            if (current($filter) == 0) {
+                $header_name .= ' - '.__('Module group').': '.__('Not assigned');
+            } else {
+                $header_name .= ' - '.__('Module group').': '.modules_get_modulegroup_name(current($filter));
+            }
+        break;
 
+        case 1:
+            $tags_name = '';
+            foreach ($filter as $key => $tag) {
+                $tags_name .= tags_get_name($tag).', ';
+            }
+
+            $tags_name = trim($tags_name, ', ');
+            $header_name .= ' - '.__('Tag').': '.$tags_name;
+        break;
+
+        case 0:
+        default:
+            if (current($filter) == 0) {
+                $header_name .= ' - '.__('Group').': '.__('All');
+            } else {
+                $header_name .= ' - '.__('Group').': '.groups_get_name(current($filter));
+            }
+        break;
+    }
 
     // Header.
     ui_print_standard_header(
-        __('Heatmap view'),
+        $header_name,
         '',
         false,
         '',
@@ -170,7 +203,14 @@ if ($is_ajax === false && $pure === true) {
     );
 
     echo '<a href="'.$urlNoFull.'">';
-    echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode'), 'class' => 'invert_filter']);
+    echo html_print_image(
+        'images/normal_screen.png',
+        true,
+        [
+            'title' => __('Back to normal mode'),
+            'class' => 'invert_filter',
+        ]
+    );
     echo '</a>';
     echo '</li>';
 
@@ -185,7 +225,7 @@ if ($is_ajax === false && $pure === true) {
 // Control call flow.
 try {
     // Heatmap construct.
-    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search);
+    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group);
 } catch (Exception $e) {
     if (is_ajax() === true) {
         echo json_encode(['error' => '[Heatmap]'.$e->getMessage() ]);
@@ -265,6 +305,7 @@ if ($is_ajax === true) {
                             type: '<?php echo $type; ?>',
                             refresh: '<?php echo $refresh; ?>',
                             search: '<?php echo $search; ?>',
+                            group: '<?php echo $group; ?>',
                         },
                         dataType: 'html',
                         success: function(data) {

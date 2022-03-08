@@ -4166,10 +4166,23 @@ function events_get_response_target(
     }
 
     // Parse the event custom data.
-    if (!empty($event['custom_data'])) {
+    if (empty($event['custom_data']) === false) {
         $custom_data = json_decode(base64_decode($event['custom_data']));
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
+        }
+
+        if (strpos($target, '_customdata_json_') !== false) {
+            $target = str_replace('_customdata_json_', json_encode($custom_data), $target);
+        }
+
+        if (strpos($target, '_customdata_text_') !== false) {
+            $text = '';
+            foreach ($custom_data as $key => $value) {
+                $text .= $key.': '.$value.PHP_EOL;
+            }
+
+            $target = str_replace('_customdata_text_', $text, $target);
         }
     }
 

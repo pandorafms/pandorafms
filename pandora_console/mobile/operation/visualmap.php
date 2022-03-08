@@ -153,7 +153,7 @@ class Visualmap
             $ui->retrieveViewPort();
         }
 
-        $this->height -= 39;
+        $this->height -= 30;
 
         $this->visualmap = db_get_row(
             'tlayout',

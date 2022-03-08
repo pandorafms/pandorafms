@@ -95,6 +95,7 @@ class User implements PublicLogin
                 );
                 if ($user_in_db !== false) {
                     $config['id_usuario'] = $user_in_db;
+                    $config['id_user'] = $user_in_db;
 
                     // Originally at api.php.
                     if (session_status() === PHP_SESSION_NONE) {
@@ -113,6 +114,25 @@ class User implements PublicLogin
 
         return null;
 
+    }
+
+
+    /**
+     * Process login
+     *
+     * @param array|null $data Data.
+     *
+     * @return boolean
+     */
+    public static function login(?array $data)
+    {
+        $user = new self($data);
+
+        if ($user === null) {
+            return false;
+        }
+
+        return true;
     }
 
 

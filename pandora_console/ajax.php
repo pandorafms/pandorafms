@@ -107,24 +107,33 @@ $auth_class = io_safe_output(
     get_parameter('auth_class', 'PandoraFMS\User')
 );
 
+$page = (string) get_parameter('page');
+$page = safe_url_extraclean($page);
+$page .= '.php';
 $public_hash = get_parameter('auth_hash', false);
 $public_login = false;
-// Check user.
-if (class_exists($auth_class) === false || $public_hash === false) {
-    check_login();
-} else {
-    if ($auth_class::validatePublicHash($public_hash) === false) {
-        db_pandora_audit(
-            AUDIT_LOG_USER_REGISTRATION,
-            'Trying to access public dashboard (Invalid public hash)'
-        );
-        include 'general/noaccess.php';
-        exit;
-    }
 
-    // OK. Simulated user log in. If you want to use your own auth_class
-    // remember to set $config['force_instant_logout'] to true to avoid
-    // persistent user login.
+
+if (false === ((bool) get_parameter('doLogin', false) === true
+    && $page === 'include/rest-api/index.php')
+) {
+    // Check user.
+    if (class_exists($auth_class) === false || $public_hash === false) {
+        check_login();
+    } else {
+        if ($auth_class::validatePublicHash($public_hash) === false) {
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Trying to access public dashboard (Invalid public hash)'
+            );
+            include 'general/noaccess.php';
+            exit;
+        }
+
+        // OK. Simulated user log in. If you want to use your own auth_class
+        // remember to set $config['force_instant_logout'] to true to avoid
+        // persistent user login.
+    }
 }
 
 ob_start();
@@ -136,9 +145,6 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true) {
 
 $config['remote_addr'] = $_SERVER['REMOTE_ADDR'];
 
-$page = (string) get_parameter('page');
-$page = safe_url_extraclean($page);
-$page .= '.php';
 $config['id_user'] = $_SESSION['id_usuario'];
 $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {

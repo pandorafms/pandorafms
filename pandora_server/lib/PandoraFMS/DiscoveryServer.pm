@@ -33,7 +33,7 @@ use File::Basename qw(dirname);
 use File::Copy;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -190,6 +190,8 @@ sub data_consumer ($$) {
   }
 
   eval {
+    local $SIG{__DIE__};
+
     my @subnets = split(/,/, safe_output($task->{'subnet'}));
     my @communities = split(/,/, safe_output($task->{'snmp_community'}));
     my @auth_strings = ();

@@ -177,10 +177,11 @@ class Visualmaps
             __('Visual consoles'),
             $ui->createHeaderButton(
                 [
-                    'icon' => 'back',
-                    'pos'  => 'left',
-                    'text' => __('Back'),
-                    'href' => 'index.php?page=home',
+                    'icon'  => 'ui-icon-back',
+                    'pos'   => 'left',
+                    'text'  => __('Back'),
+                    'href'  => 'index.php?page=home',
+                    'class' => 'header-button-left',
                 ]
             )
         );

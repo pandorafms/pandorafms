@@ -556,7 +556,7 @@ class ConsoleSupervisor
         ) {
             // Process user targets.
             $insertion_string = '';
-            $users_sql = 'INSERT INTO tnotification_user(id_mensaje,id_user)';
+            $users_sql = 'INSERT IGNORE INTO tnotification_user(id_mensaje,id_user)';
             foreach ($this->targetUsers as $user) {
                 $insertion_string .= sprintf(
                     '(%d,"%s")',
@@ -590,7 +590,7 @@ class ConsoleSupervisor
         ) {
             // Process group targets.
             $insertion_string = '';
-            $groups_sql = 'INSERT INTO tnotification_group(id_mensaje,id_group)';
+            $groups_sql = 'INSERT IGNORE INTO tnotification_group(id_mensaje,id_group)';
             foreach ($this->targetGroups as $group) {
                 $insertion_string .= sprintf(
                     '(%d,"%s")',
@@ -659,15 +659,17 @@ class ConsoleSupervisor
             $_cache_targets = [];
         }
 
-        if ($_cache_targets[$key] !== null) {
+        if (isset($_cache_targets[$key]) === true
+            && $_cache_targets[$key] !== null
+        ) {
             $targets = $_cache_targets[$key];
         } else {
             $targets = get_notification_source_targets(
                 $source_id,
                 $data['type']
             );
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
+            $this->targetGroups = ($targets['groups'] ?? null);
+            $this->targetUsers = ($targets['users'] ?? null);
 
             $_cache_targets[$key] = $targets;
         }
@@ -2436,7 +2438,7 @@ class ConsoleSupervisor
 
         // Only ask for messages once every 2 hours.
         $future = (time() + 2 * SECONDS_1HOUR);
-        config_update_value('last_um_check', $future);
+        config_update_value('last_um_check', $future, true);
 
         $messages = update_manager_get_messages();
         if (is_array($messages) === true) {

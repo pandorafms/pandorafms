@@ -125,10 +125,11 @@ class Agent
                 sprintf('%s', $agent_alias),
                 $ui->createHeaderButton(
                     [
-                        'icon' => 'back',
-                        'pos'  => 'left',
-                        'text' => __('Back'),
-                        'href' => 'index.php?page=agents'.$agents_filter_q_param,
+                        'icon'  => 'ui-icon-back',
+                        'pos'   => 'left',
+                        'text'  => __('Back'),
+                        'href'  => 'index.php?page=agents'.$agents_filter_q_param,
+                        'class' => 'header-button-left',
                     ]
                 )
             );

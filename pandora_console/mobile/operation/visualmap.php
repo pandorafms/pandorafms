@@ -278,10 +278,11 @@ class Visualmap
             ),
             $ui->createHeaderButton(
                 [
-                    'icon' => 'back',
-                    'pos'  => 'left',
-                    'text' => __('Back'),
-                    'href' => 'index.php?page=visualmaps',
+                    'icon'  => 'ui-icon-back',
+                    'pos'   => 'left',
+                    'text'  => __('Back'),
+                    'href'  => 'index.php?page=visualmaps',
+                    'class' => 'header-button-left',
                 ]
             )
         );

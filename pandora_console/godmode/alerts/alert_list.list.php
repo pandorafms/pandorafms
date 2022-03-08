@@ -22,7 +22,7 @@ if (! check_acl($config['id_user'], 0, 'LW')
     && ! check_acl($config['id_user'], 0, 'LM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';

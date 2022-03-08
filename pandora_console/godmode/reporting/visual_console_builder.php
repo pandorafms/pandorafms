@@ -31,6 +31,7 @@
 global $config;
 global $statusProcessInDB;
 
+use PandoraFMS\Agent;
 use PandoraFMS\User;
 
 check_login();
@@ -95,7 +96,7 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
     // The visual console should exist.
     if (empty($visualConsole)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access report builder'
         );
         include 'general/noaccess.php';
@@ -111,7 +112,7 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
     $vconsole_manage = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VM');
 } else {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -121,7 +122,7 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
 // This section is only to manage the visual console
 if (!$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -173,7 +174,7 @@ switch ($activeTab) {
                 // The user should have permissions on the new group
                 if (!$vconsole_write_new && !$vconsole_manage_new) {
                     db_pandora_audit(
-                        'ACL Violation',
+                        AUDIT_LOG_ACL_VIOLATION,
                         'Trying to access report builder'
                     );
                     include 'general/noaccess.php';
@@ -271,7 +272,10 @@ switch ($activeTab) {
                 }
 
                 if ($upload_file && !$uploadOK) {
-                    db_pandora_audit('Visual console builder', $error_message);
+                    db_pandora_audit(
+                        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                        $error_message
+                    );
                     break;
                 }
 
@@ -288,24 +292,30 @@ switch ($activeTab) {
                         }
 
                         if ($result !== false) {
-                            db_pandora_audit('Visual console builder', "Update visual console #$idVisualConsole");
+                            db_pandora_audit(
+                                AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                                sprintf('Update visual console #%s', $idVisualConsole)
+                            );
                             $action = 'edit';
                             $statusProcessInDB = [
                                 'flag'    => true,
                                 'message' => ui_print_success_message(__('Successfully update.'), '', true),
                             ];
 
-                            // Return the updated visual console
+                            // Return the updated visual console.
                             $visualConsole = db_get_row_filter(
                                 'tlayout',
                                 ['id' => $idVisualConsole]
                             );
                             // Update the ACL
-                            // $vconsole_read = $vconsole_read_new;
+                            // $vconsole_read = $vconsole_read_new;.
                             $vconsole_write = $vconsole_write_new;
                             $vconsole_manage = $vconsole_manage_new;
                         } else {
-                            db_pandora_audit('Visual console builder', "Fail update visual console #$idVisualConsole");
+                            db_pandora_audit(
+                                AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                                sprintf('Fail update visual console #%s', $idVisualConsole)
+                            );
                             $statusProcessInDB = [
                                 'flag'    => false,
                                 'message' => ui_print_error_message(__('Could not be update.'), '', true),
@@ -321,24 +331,30 @@ switch ($activeTab) {
                         }
 
                         if ($idVisualConsole !== false) {
-                            db_pandora_audit('Visual console builder', "Create visual console #$idVisualConsole");
+                            db_pandora_audit(
+                                AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                                sprintf('Create visual console #%s', $idVisualConsole)
+                            );
                             $action = 'edit';
                             $statusProcessInDB = [
                                 'flag'    => true,
                                 'message' => ui_print_success_message(__('Successfully created.'), '', true),
                             ];
 
-                            // Return the updated visual console
+                            // Return the updated visual console.
                             $visualConsole = db_get_row_filter(
                                 'tlayout',
                                 ['id' => $idVisualConsole]
                             );
                             // Update the ACL
-                            // $vconsole_read = $vconsole_read_new;
+                            // $vconsole_read = $vconsole_read_new;.
                             $vconsole_write = $vconsole_write_new;
                             $vconsole_manage = $vconsole_manage_new;
                         } else {
-                            db_pandora_audit('Visual console builder', 'Fail try to create visual console');
+                            db_pandora_audit(
+                                AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+                                'Fail try to create visual console'
+                            );
                             $statusProcessInDB = [
                                 'flag'    => false,
                                 'message' => ui_print_error_message(__('Could not be created.'), '', true),
@@ -615,44 +631,30 @@ switch ($activeTab) {
                         'message' => $message,
                     ];
                 } else {
-                    // One item per module
-                    if (empty($name_modules)) {
-                        $statusProcessInDB = [
-                            'flag'    => true,
-                            'message' => ui_print_error_message(
-                                __('No modules selected'),
-                                '',
-                                true
-                            ),
-                        ];
-                    } else {
-                        if (defined('METACONSOLE')) {
-                            $agents_ids = [];
-                            foreach ($id_agents as $id_agent_id) {
-                                $server_and_agent = explode('|', $id_agent_id);
+                    if (is_metaconsole() === true) {
+                        $agents_ids = [];
+                        foreach ($id_agents as $id_agent_id) {
+                            $server_and_agent = explode('|', $id_agent_id);
 
-                                $agents_ids[] = $server_and_agent[1];
-                            }
-
-                            $rows = db_get_all_rows_filter(
-                                'tmetaconsole_agent',
-                                ['id_tagente' => $agents_ids]
-                            );
-
-                            $agents = [];
-                            foreach ($rows as $row) {
-                                $agents[$row['id_tmetaconsole_setup']][] = $row['id_tagente'];
-                            }
-                        } else {
-                            $agents[0] = $id_agents;
+                            $agents_ids[] = $server_and_agent[1];
                         }
+
+                        $rows = db_get_all_rows_filter(
+                            'tmetaconsole_agent',
+                            ['id_tagente' => $agents_ids]
+                        );
+
+                        $agents = [];
+                        foreach ($rows as $row) {
+                            $agents[$row['id_tmetaconsole_setup']][] = $row['id_tagente'];
+                        }
+                    } else {
+                        $agents[0] = $id_agents;
                     }
 
-
-
                     foreach ($agents as $id_server => $id_agents) {
-                        // Any module
-                        if ($name_modules[0] == '0') {
+                        // Any module.
+                        if (empty($name_modules) === true || $name_modules[0] === '0') {
                             $message .= visual_map_process_wizard_add_agents(
                                 $id_agents,
                                 $image,
@@ -690,19 +692,14 @@ switch ($activeTab) {
                             } else {
                                 foreach ($name_modules as $mod) {
                                     foreach ($id_agents as $ag) {
-                                        $id_module = agents_get_modules(
-                                            $ag,
-                                            ['id_agente_modulo'],
-                                            ['nombre' => $mod]
-                                        );
+                                        $agent = new Agent($ag);
+                                        $id_module = $agent->searchModules(
+                                            ['nombre' => $mod],
+                                            1
+                                        )->toArray()['id_agente_modulo'];
 
-
-
-                                        if (empty($id_module)) {
+                                        if (empty($id_module) === true) {
                                             continue;
-                                        } else {
-                                            $id_module = reset($id_module);
-                                            $id_module = $id_module['id_agente_modulo'];
                                         }
 
                                         $id_modules[] = $id_module;

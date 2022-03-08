@@ -30,7 +30,7 @@ ui_require_javascript_file('calendar');
 check_login();
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     include 'general/noaccess.php';

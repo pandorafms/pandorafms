@@ -22,7 +22,7 @@ use warnings;
 use DBI;
 use Carp qw/croak/;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::Tools;
 
 #use Data::Dumper;
@@ -555,6 +555,7 @@ sub get_agentmodule_status_str($$$) {
 			FROM tagente_estado
 			WHERE id_agente_modulo = ?', $agent_module_id);
 	
+	return 'N/A' unless defined($status);
 	return 'Normal' if ($status == 0);
 	return 'Critical' if ($status == 1);
 	return 'Warning' if ($status == 2);

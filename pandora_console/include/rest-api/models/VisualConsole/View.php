@@ -30,7 +30,7 @@
 namespace Models\VisualConsole;
 use Models\VisualConsole\Container as VisualConsole;
 
-define('__DEBUG', 0);
+define('__DEBUG', 1);
 
 global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
@@ -262,6 +262,9 @@ class View extends \HTML
     public function processForm()
     {
         global $config;
+
+        $result = null;
+
         // Inserted data in new item.
         $vCId = \get_parameter('vCId', 0);
         $type = \get_parameter('type', null);
@@ -552,11 +555,12 @@ class View extends \HTML
             try {
                 // Save the new item.
                 $data['id_layout'] = $vCId;
-                $itemId = $class::save($data);
+                $itemId = $class::create($data);
             } catch (\Exception $e) {
                 // Bad params.
+                echo $e->getMessage();
                 if (__DEBUG === 1) {
-                    error_log($e->getMessage());
+                    echo '<pre>'.$e->getTraceAsString().'</pre>';
                 }
 
                 http_response_code(400);
@@ -569,8 +573,9 @@ class View extends \HTML
                 $result = $item->toArray();
             } catch (\Exception $e) {
                 // Bad params.
+                echo $e->getMessage();
                 if (__DEBUG === 1) {
-                    error_log($e->getMessage());
+                    echo '<pre>'.$e->getTraceAsString().'</pre>';
                 }
 
                 http_response_code(400);
@@ -582,8 +587,9 @@ class View extends \HTML
                 $item = VisualConsole::getItemFromDB($itemId);
             } catch (\Exception $e) {
                 // Bad params.
+                echo $e->getMessage();
                 if (__DEBUG === 1) {
-                    error_log($e->getMessage());
+                    echo '<pre>'.$e->getTraceAsString().'</pre>';
                 }
 
                 http_response_code(400);
@@ -601,7 +607,7 @@ class View extends \HTML
 
             if (!$aclRead && !$aclWrite && !$aclManage) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access visual console without group access'
                 );
                 http_response_code(403);
@@ -618,7 +624,7 @@ class View extends \HTML
 
                 if (!$aclRead && !$aclWrite && !$aclManage) {
                     db_pandora_audit(
-                        'ACL Violation',
+                        AUDIT_LOG_ACL_VIOLATION,
                         'Trying to access visual console without group access'
                     );
                     http_response_code(403);
@@ -649,6 +655,7 @@ class View extends \HTML
      * Returns a popup for networkLink viewer.
      *
      * @return void
+     * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
      */
     public function networkLinkPopup()
     {

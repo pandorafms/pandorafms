@@ -205,7 +205,7 @@ class Manager implements PublicLogin
         } else {
             if (self::validatePublicHash($hash) === false) {
                 db_pandora_audit(
-                    'Invalid public hash',
+                    AUDIT_LOG_HACK_ATTEMPT,
                     'Trying to access public dashboard'
                 );
                 include 'general/noaccess.php';
@@ -572,12 +572,12 @@ class Manager implements PublicLogin
         // Audit.
         if ($result !== 0) {
             \db_pandora_audit(
-                'Dashboard management',
+                AUDIT_LOG_DASHBOARD_MANAGEMENT,
                 'Delete dashboard #'.$this->dashboardId
             );
         } else {
             \db_pandora_audit(
-                'Dashboard management',
+                AUDIT_LOG_DASHBOARD_MANAGEMENT,
                 'Fail try to delete dashboard #'.$this->dashboardId
             );
         }

@@ -33,7 +33,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
         if ($mobile === true) {
             $output .= '
                 <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.js').'"></script>
-                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.4.5.js').'"></script>';
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.5.0-rc1.js').'"></script>';
         }
 
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
@@ -745,7 +745,7 @@ function flot_slicesbar_graph(
             'server_id'          => $server_id,
         ];
 
-        $graph = '<img src="data:image/jpg;base64,';
+        $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
         $graph .= '" />';
 

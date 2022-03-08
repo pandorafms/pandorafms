@@ -352,11 +352,11 @@ class Agent extends Entity
 
         $cps = 0;
 
-        if (is_array($direct_parents) === false) {
+        if (is_array(($direct_parents ?? null)) === false) {
             $direct_parents = [];
         }
 
-        if (is_array($mc_parents) === false) {
+        if (is_array(($mc_parents ?? null)) === false) {
             $mc_parents = [];
         }
 
@@ -549,7 +549,8 @@ class Agent extends Entity
      * @param array   $filter Filters.
      * @param integer $limit  Limit search results.
      *
-     * @return array Of PandoraFMS\Module Modules found.
+     * @return array|Module Of PandoraFMS\Module Modules
+     * found or Module found is limit 1.
      */
     public function searchModules(array $filter, int $limit=0)
     {
@@ -577,7 +578,10 @@ class Agent extends Entity
         } else {
             // Search in db.
             $return = Module::search($filter, $limit);
-            if (is_array($return) === false) {
+
+            if (is_array($return) === false
+                && is_object($return) === false
+            ) {
                 return [];
             }
 

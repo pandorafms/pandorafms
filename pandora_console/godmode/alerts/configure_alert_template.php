@@ -43,7 +43,7 @@ if (is_metaconsole() === true) {
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -61,50 +61,7 @@ if (defined('LAST_STEP') === false) {
 }
 
 // Default events calendar.
-$default_events_calendar = [
-    'monday'    => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'tuesday'   => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'wednesday' => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'thursday'  => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'friday'    => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'saturday'  => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-    'sunday'    => [
-        [
-            'start' => '00:00:00',
-            'end'   => '00:00:00',
-        ],
-    ],
-];
+$default_events_calendar = default_events_calendar($id, 'talert_templates');
 
 if ($duplicate_template === true) {
     $source_id = (int) get_parameter('source_id');
@@ -172,7 +129,7 @@ if ($a_template !== false) {
             }
         } else {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert Management'
             );
             include 'general/noaccess.php';
@@ -218,9 +175,15 @@ if ($duplicate_template) {
     $id = alerts_duplicate_alert_template($source_id, $a_template['id_group']);
 
     if ($id) {
-        db_pandora_audit('Template alert management', 'Duplicate alert template '.$source_id.' clone to '.$id);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Duplicate alert template '.$source_id.' clone to '.$id
+        );
     } else {
-        db_pandora_audit('Template alert management', 'Fail try to duplicate alert template '.$source_id);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail try to duplicate alert template '.$source_id
+        );
     }
 
     ui_print_result_message(
@@ -364,7 +327,12 @@ function update_template($step)
 
         $result = alerts_update_alert_template($id, $values);
     } else if ($step == 2) {
-        $schedule = get_parameter('schedule');
+        $schedule = io_safe_output(get_parameter('schedule', []));
+        json_decode($schedule, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
         $special_day = (int) get_parameter('special_day');
         $threshold = (int) get_parameter('threshold');
         $max_alerts = (int) get_parameter('max_alerts');
@@ -383,12 +351,7 @@ function update_template($step)
         }
 
         $values = [
-            'schedule'                 => json_encode(
-                json_decode(
-                    io_safe_output($schedule),
-                    true
-                )
-            ),
+            'schedule'                 => $schedule,
             'special_day'              => $special_day,
             'time_threshold'           => $threshold,
             'id_alert_action'          => $default_action,
@@ -420,7 +383,7 @@ function update_template($step)
 
     if ($result) {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Update alert template #'.$id,
             false,
             false,
@@ -428,7 +391,7 @@ function update_template($step)
         );
     } else {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Fail try to update alert template #'.$id,
             false,
             false,
@@ -479,7 +442,6 @@ $type = '';
 $value = '';
 $max = '';
 $min = '';
-
 $schedule = json_encode(
     $default_events_calendar
 );
@@ -544,7 +506,7 @@ if ($create_template) {
 
     if ($result) {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Create alert template #'.$result,
             false,
             false,
@@ -552,7 +514,7 @@ if ($create_template) {
         );
     } else {
         db_pandora_audit(
-            'Template alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             'Fail try to create alert template',
             false,
             false,
@@ -608,7 +570,9 @@ if ($id && ! $create_template) {
     $min = $template['min_value'];
     $matches = $template['matches_value'];
 
-    $schedule = $template['schedule'];
+    $schedule = json_encode(
+        $default_events_calendar
+    );
     $special_day = (int) $template['special_day'];
     $max_alerts = $template['max_alerts'];
     $min_alerts = $template['min_alerts'];

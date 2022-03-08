@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive agent deletion section'
     );
     include 'general/noaccess.php';
@@ -189,9 +189,15 @@ if ($update_agents) {
 
 
         if ($n_deleted > 0) {
-            db_pandora_audit('Massive management', 'Delete conf file '.$id_agent);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Delete conf file '.$id_agent
+            );
         } else {
-            db_pandora_audit('Massive management', 'Try to delete conf file '.$id_agent);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Try to delete conf file '.$id_agent
+            );
         }
 
 
@@ -212,14 +218,9 @@ if ($update_agents) {
         $old_interval_value = db_get_value_filter('intervalo', 'tagente', ['id_agente' => $id_agent]);
 
         if (!empty($values)) {
-            $group_old = false;
             $disabled_old = false;
             if ($values['id_grupo'] || isset($values['disabled'])) {
                 $values_old = db_get_row_filter('tagente', ['id_agente' => $id_agent], ['id_grupo', 'disabled']);
-                if ($values_old['id_grupo']) {
-                    $group_old = $values_old['id_grupo'];
-                }
-
                 if (isset($values['disabled'])) {
                     $disabled_old = $values_old['disabled'];
                 }
@@ -266,74 +267,6 @@ if ($update_agents) {
                 // Validate alerts for disabled agents.
                 if ($values['disabled'] == 1) {
                     alerts_validate_alert_agent($id_agent);
-                }
-            }
-
-            if ($group_old || $result) {
-                if ($group_old && $group_old != null) {
-                    $tpolicy_group_old = db_get_all_rows_sql(
-                        'SELECT id_policy FROM tpolicy_groups 
-						WHERE id_group = '.$group_old
-                    );
-                } else {
-                    $tpolicy_group_old = db_get_all_rows_sql('SELECT id_policy FROM tpolicy_groups');
-                }
-
-                if ($tpolicy_group_old) {
-                    foreach ($tpolicy_group_old as $key => $value) {
-                        $tpolicy_agents_old = db_get_sql(
-                            'SELECT * FROM tpolicy_agents 
-							WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agent
-                        );
-
-                        if ($tpolicy_agents_old) {
-                            $result2 = db_process_sql_update(
-                                'tpolicy_agents',
-                                ['pending_delete' => 1],
-                                [
-                                    'id_agent'  => $id_agent,
-                                    'id_policy' => $value['id_policy'],
-                                ]
-                            );
-                        }
-                    }
-                }
-
-                if ($values['id_grupo'] && $values['id_grupo'] != null) {
-                    $tpolicy_group_new = db_get_all_rows_sql(
-                        'SELECT id_policy FROM tpolicy_groups 
-						WHERE id_group = '.$values['id_grupo']
-                    );
-                } else {
-                    $tpolicy_group_new = db_get_all_rows_sql('SELECT id_policy FROM tpolicy_groups');
-                }
-
-                if ($tpolicy_group_new) {
-                    foreach ($tpolicy_group_new as $key => $value) {
-                        $tpolicy_agents_new = db_get_sql(
-                            'SELECT * FROM tpolicy_agents 
-							WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agent
-                        );
-
-                        if (!$tpolicy_agents_new) {
-                            db_process_sql_insert(
-                                'tpolicy_agents',
-                                [
-                                    'id_policy' => $value['id_policy'],
-                                    'id_agent'  => $id_agent,
-                                ]
-                            );
-                        } else {
-                            $result3 = db_process_sql_update(
-                                'tpolicy_agents',
-                                ['pending_delete' => 0],
-                                [
-                                    'id_agent'  => $id_agent,
-                                    'id_policy' => $value['id_policy'],
-                                ]
-                            );
-                        }
-                    }
                 }
             }
         }
@@ -383,10 +316,22 @@ if ($update_agents) {
 
 
     if ($result !== false) {
-        db_pandora_audit('Massive management', 'Update agent '.$id_agent, false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Update agent '.$id_agent,
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
         if (isset($id_agent)) {
-            db_pandora_audit('Massive management', 'Try to update agent '.$id_agent, false, false, json_encode($info));
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Try to update agent '.$id_agent,
+                false,
+                false,
+                json_encode($info)
+            );
         }
     }
 

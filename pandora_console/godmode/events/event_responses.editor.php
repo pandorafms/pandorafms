@@ -17,7 +17,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
@@ -43,7 +43,7 @@ if ($event_response_id > 0) {
     // ACL check for event response edition.
     if (!check_acl_restricted_all($config['id_user'], $event_response['id_group'], 'PM')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Group Management'
         );
         include 'general/noaccess.php';

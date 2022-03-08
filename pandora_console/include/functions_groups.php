@@ -567,20 +567,19 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
 
     $tree = $groups;
     foreach ($groups as $key => $group) {
-        if ($group['id_grupo'] == 0) {
+        if (is_array($group) === false || (int) $group['id_grupo'] === 0) {
             continue;
         }
 
         // If the user has ACLs on a gruop but not in his father,
-        // we consider it as a son of group "all"
-        if (!isset($groups[$group['parent']])) {
+        // we consider it as a son of group "all".
+        if (isset($groups[$group['parent']]) === false) {
             $group['parent'] = 0;
         }
 
-        if (is_array($tree[$group['parent']]) === false) {
-            $str = $tree[$group['parent']];
+        if (is_array(($tree[$group['parent']] ?? null)) === false) {
             $tree[$group['parent']] = [
-                'nombre'   => $tree[$group['parent']],
+                'nombre'   => ($tree[$group['parent']] ?? ''),
                 'id_grupo' => $group['parent'],
             ];
         }
@@ -590,7 +589,7 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
     }
 
     // Depends on the All group we give different format.
-    if (isset($groups[0])) {
+    if (isset($groups[0]) === true) {
         $tree = [$tree[0]];
     } else {
         $tree = $tree[0]['branch'];
@@ -1837,8 +1836,12 @@ function groups_get_tree(&$groups, $parent=false)
 }
 
 
-function groups_get_tree_good(&$groups, $parent=false, &$childs)
+function groups_get_tree_good(&$groups, $parent, &$childs)
 {
+    if (isset($parent) === false) {
+        $parent = false;
+    }
+
     $return = [];
 
     foreach ($groups as $id => $group) {
@@ -1886,8 +1889,15 @@ function groups_get_tree_keys($groups, &$group_keys)
 }
 
 
-function group_get_data($id_user=false, $user_strict=false, $acltags, $returnAllGroup=false, $mode='group', $agent_filter=[], $module_filter=[])
-{
+function group_get_data(
+    $id_user=false,
+    $user_strict=false,
+    $acltags=[],
+    $returnAllGroup=false,
+    $mode='group',
+    $agent_filter=[],
+    $module_filter=[]
+) {
     global $config;
     if ($id_user == false) {
         $id_user = $config['id_user'];
@@ -1914,7 +1924,7 @@ function group_get_data($id_user=false, $user_strict=false, $acltags, $returnAll
 			SELECT *
 			FROM tgrupo
 			WHERE id_grupo IN ('.$user_groups_ids.')
-			ORDER BY nombre COLLATE utf8_general_ci ASC'
+			ORDER BY nombre ASC'
         );
     }
 

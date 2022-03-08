@@ -40,7 +40,7 @@ $agent_w = check_acl($config['id_user'], 0, 'AW');
 $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 if (!$agent_a && !$agent_w) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access SNMP Console'
     );
     include 'general/noaccess.php';

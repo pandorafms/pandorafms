@@ -18,7 +18,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -30,6 +30,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 
 $pure = get_parameter('pure', 0);
 
+$table = new stdClass();
 $table->id = 'add_alert_table';
 $table->class = 'databox filters';
 $table->width = '100%';

@@ -18,53 +18,29 @@ $searchMaps = check_acl($config['id_user'], 0, 'VR');
 $maps = false;
 $totalMaps = 0;
 
-if ($searchMaps) {
+if ((bool) $searchMaps === true) {
     $user_groups = users_get_groups($config['id_user'], 'AR', true);
     $id_user_groups = array_keys($user_groups);
     $id_user_groups_str = implode(',', $id_user_groups);
 
-    if (empty($id_user_groups)) {
+    if (empty($id_user_groups) === true) {
         return;
     }
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $sql = "SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
-					FROM tlayout tl
-					LEFT JOIN tlayout_data tld
-						ON tl.id = tld.id_layout
-					WHERE tl.name LIKE '%$stringSearchSQL%'
-						AND tl.id_group IN ($id_user_groups_str)
-					GROUP BY tl.id, tl.name, tl.id_group";
-        break;
-
-        case 'oracle':
-            $sql = "SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
-					FROM tlayout tl
-					LEFT JOIN tlayout_data tld
-						ON tl.id = tld.id_layout
-					WHERE upper(tl.name) LIKE '%".strtolower($stringSearchSQL)."%'
-						AND tl.id_group IN ($id_user_groups_str)
-					GROUP BY tl.id, tl.name, tl.id_group";
-        break;
-    }
+    $sql = sprintf(
+        'SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
+         FROM tlayout tl
+         LEFT JOIN tlayout_data tld
+           ON tl.id = tld.id_layout
+         WHERE tl.name LIKE "%%%s%%" 
+           AND tl.id_group IN (%s)
+           GROUP BY tl.id, tl.name, tl.id_group',
+        $stringSearchSQL,
+        $id_user_groups_str
+    );
 
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
-        break;
-
-        case 'oracle':
-            $set = [];
-            $set['limit'] = $config['block_size'];
-            $set['offset'] = (int) get_parameter('offset');
-
-            $sql = oracle_recode_query($sql, $set);
-        break;
-    }
+    $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
 
     $maps = db_process_sql($sql);
 

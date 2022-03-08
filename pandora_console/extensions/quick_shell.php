@@ -34,6 +34,31 @@ require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
 
 
 /**
+ * Undocumented function
+ *
+ * @param string $url    Url.
+ * @param array  $params Params.
+ *
+ * @return mixed Result
+ */
+function curl(string $url, array $params)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+    $get_result = curl_exec($ch);
+
+    curl_close($ch);
+
+    return $get_result;
+}
+
+
+/**
  * Show Quick Shell interface.
  *
  * @return void
@@ -46,7 +71,7 @@ function quickShell()
 
     if (check_acl($config['id_user'], 0, 'PM') === false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Profile Management'
         );
         include 'general/noaccess.php';
@@ -110,7 +135,7 @@ function quickShell()
         // No username provided, ask for it.
         $wiz = new Wizard();
 
-        $test = file_get_contents($ws_url, false, $context);
+        $test = curl($ws_url, []);
         if ($test === false) {
             ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
             $wiz->printForm(
@@ -210,7 +235,7 @@ function quickShell()
 
     // If rediretion is enabled, we will try to connect using
     // http:// or https:// endpoint.
-    $test = get_headers($ws_url, null, $context);
+    $test = get_headers($ws_url, false, $context);
     if ($test === false) {
         if (empty($wiz) === true) {
             $wiz = new Wizard();

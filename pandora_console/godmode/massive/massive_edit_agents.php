@@ -216,7 +216,7 @@ if ($update_agents) {
     }
 
     $n_edited = 0;
-    $result = false;
+    $result = [];
     foreach ($id_agents as $id_agent) {
         $old_interval_value = db_get_value_filter('intervalo', 'tagente', ['id_agente' => $id_agent]);
 
@@ -234,20 +234,20 @@ if ($update_agents) {
                 $values['safe_mode_module'] = $id_module_safe[$id_agent];
             }
 
-            $result = db_process_sql_update(
+            $result[$id_agent]['db'] = db_process_sql_update(
                 'tagente',
                 $values,
                 ['id_agente' => $id_agent]
             );
 
-            if ($result && $config['metaconsole_agent_cache'] == 1) {
+            if ($result[$id_agent]['db'] && $config['metaconsole_agent_cache'] == 1) {
                 $server_name['server_name'] = db_get_sql('SELECT server_name FROM tagente WHERE id_agente ='.$id_agent);
                 // Force an update of the agent cache.
                 $result_metaconsole = agent_update_from_cache($id_agent, $values, $server_name);
             }
 
             // Update the configuration files.
-            if ($result && ($old_interval_value != $values['intervalo']) && !empty($values['intervalo'])) {
+            if ($result[$id_agent]['db'] && ($old_interval_value != $values['intervalo']) && !empty($values['intervalo'])) {
                 enterprise_hook(
                     'config_agents_update_config_token',
                     [
@@ -291,7 +291,7 @@ if ($update_agents) {
 
                 if ($old_value === false) {
                     // Create custom field if not exist.
-                    $result = db_process_sql_insert(
+                    $result[$id_agent]['fields'][$field['id_field']] = db_process_sql_insert(
                         'tagent_custom_data',
                         [
                             'id_field'    => $key,
@@ -301,7 +301,7 @@ if ($update_agents) {
                     );
                 } else {
                     if ($old_value[0]['description'] !== $value) {
-                        $result = db_process_sql_update(
+                        $result[$id_agent]['fields'][$field['id_field']] = db_process_sql_update(
                             'tagent_custom_data',
                             ['description' => $value],
                             [
@@ -318,45 +318,156 @@ if ($update_agents) {
         if (empty($secondary_groups_added) === false
             || empty($secondary_groups_removed) === false
         ) {
-            $result = enterprise_hook(
+            $result[$id_agent]['secondary'] = enterprise_hook(
                 'agents_update_secondary_groups',
                 [
                     $id_agent,
                     $secondary_groups_added,
                     $secondary_groups_removed,
+                    true,
                 ]
             );
         }
 
-        $n_edited += (int) $result;
-    }
-
-    if ($result !== false) {
-        db_pandora_audit(
-            AUDIT_LOG_MASSIVE_MANAGEMENT,
-            'Update agent '.$id_agent,
-            false,
-            false,
-            json_encode($info)
-        );
-    } else {
-        if (isset($id_agent) === true) {
+        if ($result['db'] !== false) {
             db_pandora_audit(
                 AUDIT_LOG_MASSIVE_MANAGEMENT,
-                'Try to update agent '.$id_agent,
+                'Update agent '.$id_agent,
                 false,
                 false,
                 json_encode($info)
             );
+        } else {
+            if (isset($id_agent) === true) {
+                db_pandora_audit(
+                    AUDIT_LOG_MASSIVE_MANAGEMENT,
+                    'Try to update agent '.$id_agent,
+                    false,
+                    false,
+                    json_encode($info)
+                );
+            }
         }
     }
 
+    $ret = [];
+    foreach ($result as $id_agent => $item) {
+        if ($item['db'] !== false) {
+            $ret['db']['edited'] += 1;
+            $ret['db']['edited_agent'][] = $id_agent;
+        } else {
+            $ret['db']['failed'] += 1;
+            $ret['db']['failed_agent'][] = $id_agent;
+        }
 
-    ui_print_result_message(
-        $result !== false,
-        __('Agents updated successfully (%d)', $n_edited),
-        __('Agents cannot be updated (maybe there was no field to update)')
-    );
+        if (isset($item['fields']) === true
+            && empty($item['fields']) === false
+        ) {
+            foreach ($item['fields'] as $kfield => $vfield) {
+                if ($vfield !== false) {
+                    $ret['fields'][$id_agent]['edited'] += 1;
+                    $ret['fields'][$id_agent]['edited_field'][] = $kfield;
+                } else {
+                    $ret['fields'][$id_agent]['failed'] += 1;
+                    $ret['fields'][$id_agent]['failed_field'][] = $kfield;
+                }
+            }
+        }
+
+        if (isset($item['secondary']) === true
+            && empty($item['secondary']) === false
+        ) {
+            foreach ($item['secondary'] as $type_action => $values_secondary) {
+                foreach ($values_secondary as $kgr => $vgr) {
+                    if ($vgr !== false) {
+                        $ret['secondary'][$type_action][$id_agent]['edited'] += 1;
+                        $ret['secondary'][$type_action][$id_agent]['edited_gr'][] = $kgr;
+                    } else {
+                        $ret['secondary'][$type_action][$id_agent]['failed'] += 1;
+                        $ret['secondary'][$type_action][$id_agent]['failed_gr'][] = $kgr;
+                    }
+                }
+            }
+        }
+    }
+
+    foreach ($ret as $type => $ret_val) {
+        switch ($type) {
+            case 'db':
+                if (isset($ret_val['edited']) === true
+                    && $ret_val['edited'] > 0
+                ) {
+                    ui_print_success_message(
+                        __(
+                            'Agents updated successfully (%d)',
+                            $ret_val['edited'],
+                            implode(
+                                ',',
+                                $ret_val['edited_agent']
+                            )
+                        )
+                    );
+                }
+
+                if (isset($ret_val['failed']) === true
+                    && $ret_val['failed'] > 0
+                ) {
+                    ui_print_error_message(
+                        __(
+                            'Agents cannot be updated (%d), ids (%s)',
+                            $ret_val['failed'],
+                            implode(',', $ret_val['failed_agent'])
+                        )
+                    );
+                }
+            break;
+
+            case 'fields':
+                $str = '';
+                foreach ($ret_val as $kag => $vag) {
+                    if (isset($vag['failed']) === true
+                        && $vag['failed'] > 0
+                    ) {
+                        $str .= __(
+                            'Agent ID: %s cannot be updated custom fields (%s)',
+                            $kag,
+                            implode(',', $vag['failed_field'])
+                        ).'<br>';
+                    }
+                }
+
+                if (empty($str) === false) {
+                    ui_print_error_message($str);
+                }
+            break;
+
+            case 'secondary':
+                $str = '';
+                foreach ($ret_val as $type => $values_secondary) {
+                    foreach ($values_secondary as $kag => $vag) {
+                        if (isset($vag['failed']) === true
+                            && $vag['failed'] > 0
+                        ) {
+                            $str .= __(
+                                'Agent ID: %s cannot be updated %s secondary groups (%s)',
+                                $kag,
+                                $type,
+                                implode(',', $vag['failed_gr'])
+                            ).'<br>';
+                        }
+                    }
+                }
+
+                if (empty($str) === false) {
+                    ui_print_error_message($str);
+                }
+            break;
+
+            default:
+                // Not posible.
+            break;
+        }
+    }
 }
 
 $id_group = 0;

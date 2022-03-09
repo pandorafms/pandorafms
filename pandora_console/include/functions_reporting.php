@@ -730,6 +730,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'agent_module_status':
+                $report['contents'][] = reporting_agent_module_status(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'alert_report_actions':
                 $report['contents'][] = reporting_alert_report_actions(
                     $report,
@@ -2849,6 +2856,136 @@ function reporting_agent_module($report, $content)
     if ($config['metaconsole']) {
         metaconsole_restore_db();
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Agents module status
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_agent_module_status($report, $content)
+{
+    global $config;
+    $return['type'] = 'agent_module_status';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Agent/Modules Status');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $group_name = groups_get_name($content['id_group'], true);
+    if ($content['id_module_group'] == 0) {
+        $module_group_name = __('All');
+    } else {
+        $module_group_name = db_get_value(
+            'name',
+            'tmodule_group',
+            'id_mg',
+            $content['id_module_group']
+        );
+    }
+
+    $return['subtitle'] = $group_name.' - '.$module_group_name;
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+
+    $return['data'] = [];
+
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $agents = json_decode(
+        io_safe_output(
+            base64_decode($external_source['id_agents'])
+        ),
+        true
+    );
+
+    $modules = json_decode(
+        io_safe_output(
+            base64_decode($external_source['module'])
+        ),
+        true
+    );
+
+    if (is_metaconsole() === true) {
+        $agents_per_node = [];
+        $modules_per_node = [];
+
+        if (empty($agents) === false) {
+            foreach ($agents as $value) {
+                $agent_array = explode('|', $value);
+                $agents_per_node[$agent_array[0]][] = $agent_array[1];
+            }
+        }
+
+        if (empty($modules) === false) {
+            foreach ($modules as $value) {
+                $module_array = explode('|', $value);
+                $modules_per_node[$module_array[0]][] = $module_array[1];
+            }
+        }
+
+        if (empty($agents_per_node) === false) {
+            foreach ($agents_per_node as $server => $agents) {
+                $connection = metaconsole_get_connection_by_id($server);
+                if (metaconsole_connect($connection) != NOERR) {
+                    continue;
+                }
+
+                $res[$connection['server_name']] = get_status_data_agent_modules(
+                    $content['id_group'],
+                    $agents,
+                    $modules_per_node[$server]
+                );
+
+                metaconsole_restore_db();
+            }
+        } else {
+            $metaconsole_connections = metaconsole_get_connection_names();
+            // For all nodes.
+            if (isset($metaconsole_connections) === true
+                && is_array($metaconsole_connections) === true
+            ) {
+                foreach ($metaconsole_connections as $metaconsole) {
+                    // Get server connection data.
+                    $server_data = metaconsole_get_connection($metaconsole);
+
+                    // Establishes connection.
+                    if (metaconsole_load_external_db($server_data) !== NOERR) {
+                        continue;
+                    }
+
+                    $res[$server_data['server_name']] = get_status_data_agent_modules(
+                        $content['id_group'],
+                        $agents,
+                        $modules
+                    );
+
+                    metaconsole_restore_db();
+                }
+            }
+        }
+    } else {
+        $res['node'] = get_status_data_agent_modules(
+            $content['id_group'],
+            $agents,
+            $modules
+        );
+    }
+
+    $return['data'] = $res;
 
     return reporting_check_structure_content($return);
 }

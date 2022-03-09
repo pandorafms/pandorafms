@@ -750,6 +750,7 @@ function agents_get_agents_selected($group)
                 'id_tmetaconsole_setup',
                 'id_agente',
                 'alias',
+                'server_name',
             ],
             'AR',
             [
@@ -764,7 +765,7 @@ function agents_get_agents_selected($group)
         $all = array_reduce(
             $all,
             function ($carry, $item) {
-                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['alias'];
+                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
                 return $carry;
             },
             []
@@ -4184,4 +4185,79 @@ function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups
     }
 
     return $agents;
+}
+
+
+/**
+ * Agent Module status and data
+ *
+ * @param integer $id_group Group
+ * @param array   $agents   Agents filter.
+ * @param array   $modules  Modules filter.
+ *
+ * @return array Result.
+ */
+function get_status_data_agent_modules($id_group, $agents=[], $modules=[])
+{
+    $slq_filter_group = '';
+    if (empty($id_group) === false) {
+        $slq_filter_group = sprintf(
+            ' AND tagente.id_grupo = %d',
+            $id_group
+        );
+    }
+
+    $slq_filter_agent = '';
+    if (empty($agents) === false) {
+        $slq_filter_agent = sprintf(
+            ' AND tagente_modulo.id_agente IN (%s)',
+            implode(',', $agents)
+        );
+    }
+
+    $slq_filter_module = '';
+    if (empty($modules) === false) {
+        $slq_filter_module = sprintf(
+            ' AND tagente_modulo.id_agente_modulo IN (%s)',
+            implode(',', $modules)
+        );
+    }
+
+    $sql = sprintf(
+        'SELECT tagente_modulo.id_agente_modulo as id_agent_module,
+            tagente_modulo.nombre as name_module,
+            tagente_modulo.unit as unit_module,
+            tagente_modulo.id_agente as id_agent,
+            tagente_estado.datos as data_module,
+            tagente_estado.timestamp as data_time_module,
+            tagente_estado.estado as status_module,
+            tagente.alias as name_agent,
+            tagente.id_grupo as id_group,
+            tgrupo.nombre as name_group
+        FROM tagente_modulo
+        INNER JOIN tagente_estado
+            ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+        INNER JOIN tagente
+            ON tagente_modulo.id_agente = tagente.id_agente
+        LEFT JOIN tagent_secondary_group
+            ON tagente.id_agente = tagent_secondary_group.id_agent
+        INNER JOIN tgrupo
+            ON tagente.id_grupo = tgrupo.id_grupo
+        WHERE 1=1
+            %s
+            %s
+            %s
+            ',
+        $slq_filter_group,
+        $slq_filter_agent,
+        $slq_filter_module
+    );
+
+    $res = db_get_all_rows_sql($sql);
+
+    if ($res === false) {
+        $res = [];
+    }
+
+    return $res;
 }

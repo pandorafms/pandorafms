@@ -2737,10 +2737,11 @@ function ui_print_status_image(
 /**
  * Returns html code to print a shape for a module.
  *
- * @param integer $status Module status.
- * @param boolean $return True or false.
- * @param string  $class  Custom class or use defined.
- * @param string  $title  Custom title or inherit from module status.
+ * @param integer $status      Module status.
+ * @param boolean $return      True or false.
+ * @param string  $class       Custom class or use defined.
+ * @param string  $title       Custom title or inherit from module status.
+ * @param string  $div_content Content.
  *
  * @return string HTML code for shape.
  */
@@ -2748,7 +2749,8 @@ function ui_print_module_status(
     $status,
     $return=false,
     $class='status_rounded_rectangles',
-    $title=null
+    $title=null,
+    $div_content=''
 ) {
     $color = modules_get_color_status($status, true);
     if ($title === null) {
@@ -2758,7 +2760,7 @@ function ui_print_module_status(
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
     $output .= ' forced_title" data-title="'.$title.'" title="';
-    $output .= $title.'" data-use_title_for_force_title="1"></div>';
+    $output .= $title.'" data-use_title_for_force_title="1">'.$div_content.'</div>';
 
     if ($return === false) {
         echo $output;

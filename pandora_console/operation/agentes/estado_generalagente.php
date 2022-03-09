@@ -67,7 +67,7 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent General Information'
     );
     include_once 'general/noaccess.php';

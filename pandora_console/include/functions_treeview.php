@@ -546,7 +546,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Agent General Information'
         );
         include_once 'general/noaccess.php';

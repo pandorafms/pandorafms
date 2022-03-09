@@ -43,7 +43,7 @@ $is_metaconsole = is_metaconsole();
 
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access map builder'
     );
     include 'general/noaccess.php';

@@ -59,7 +59,7 @@ $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m ==
 
 if (!$event_a && !$event_w && !$event_m) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     include 'general/noaccess.php';

@@ -228,7 +228,7 @@ class DiscoveryTaskList extends HTML
 
         if (! check_acl($config['id_user'], 0, 'AW')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access recon task viewer'
             );
             include 'general/noaccess.php';
@@ -269,7 +269,7 @@ class DiscoveryTaskList extends HTML
 
         if (!$this->aclMulticheck('RR|RW|RM|PM')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access recon task viewer'
             );
             include 'general/noaccess.php';
@@ -332,7 +332,7 @@ class DiscoveryTaskList extends HTML
 
         if (! check_acl($config['id_user'], 0, 'RM')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access recon task viewer'
             );
             include 'general/noaccess.php';
@@ -373,7 +373,7 @@ class DiscoveryTaskList extends HTML
 
         if (! check_acl($config['id_user'], 0, 'AW')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access recon task viewer'
             );
             include 'general/noaccess.php';
@@ -415,7 +415,7 @@ class DiscoveryTaskList extends HTML
 
         if (! check_acl($config['id_user'], 0, 'AW')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access recon task viewer'
             );
             include 'general/noaccess.php';
@@ -1254,7 +1254,7 @@ class DiscoveryTaskList extends HTML
      *
      * @param array $task Task.
      *
-     * @return html code with summary.
+     * @return string HTML code. code with summary.
      */
     private function progressTaskSummary($task)
     {

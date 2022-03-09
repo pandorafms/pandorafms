@@ -18,7 +18,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'DM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Database Management'
     );
     include 'general/noaccess.php';

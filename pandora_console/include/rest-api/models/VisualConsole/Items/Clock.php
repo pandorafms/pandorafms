@@ -27,7 +27,7 @@ final class Clock extends Item
      *
      * @return string Return color.
      */
-    protected function encodeColor(array $data): ?string
+    protected static function encodeColor(array $data): ?string
     {
         $color = null;
         if (isset($data['color']) === true) {
@@ -51,7 +51,7 @@ final class Clock extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 
@@ -385,7 +385,7 @@ final class Clock extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         if (isset($values['isLinkEnabled']) === false) {
             $values['isLinkEnabled'] = false;

@@ -32,7 +32,10 @@ if (!isset($_SESSION['id_usuario'])) {
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
-    db_pandora_audit('ACL Violation', 'Trying to access audit CSV export');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access audit CSV export'
+    );
     include 'general/noaccess.php';
     exit;
 }

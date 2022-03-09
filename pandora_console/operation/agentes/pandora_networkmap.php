@@ -40,7 +40,7 @@ $networkmaps_manage = (bool) check_acl($config['id_user'], 0, 'MM');
 
 if ($networkmaps_read === false && $networkmaps_write === false && $networkmaps_manage === false) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access networkmap'
     );
     include $config['homedir'].'/general/noaccess.php';
@@ -76,7 +76,7 @@ if ($save_empty_networkmap === true) {
 
     if ($networkmap_write === false && $networkmap_manage === false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access networkmap'
         );
         include 'general/noaccess.php';
@@ -113,7 +113,7 @@ if ($save_empty_networkmap === true) {
 
     if (!$networkmap_write && !$networkmap_manage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access networkmap'
         );
         include 'general/noaccess.php';
@@ -164,7 +164,7 @@ if ($save_empty_networkmap === true) {
 
     if (!$networkmap_write && !$networkmap_manage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access networkmap'
         );
         include 'general/noaccess.php';
@@ -228,7 +228,7 @@ if ($new_networkmap || $save_networkmap) {
             return;
         } else {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             include 'general/noaccess.php';
@@ -247,7 +247,7 @@ if ($new_networkmap || $save_networkmap) {
 
         if ($networkmap_write === false && $networkmap_manage === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             include 'general/noaccess.php';
@@ -341,7 +341,7 @@ if ($new_networkmap || $save_networkmap) {
 
         if ($networkmap_write === false && $networkmap_manage === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             include 'general/noaccess.php';
@@ -409,7 +409,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
     // Networkmap id required
     if (empty($id)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access networkmap'
         );
         include 'general/noaccess.php';
@@ -421,7 +421,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
     if ($id_group_map_old === false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to accessnode graph builder'
         );
         include 'general/noaccess.php';
@@ -433,7 +433,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
     if ($networkmap_write === false && $networkmap_manage === false) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access networkmap'
         );
         include 'general/noaccess.php';
@@ -453,7 +453,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         if ($networkmap_write === false && $networkmap_manage === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             include 'general/noaccess.php';

@@ -30,7 +30,6 @@
 global $config;
 
 enterprise_include('godmode/agentes/configurar_agente.php');
-enterprise_include('include/functions_policies.php');
 enterprise_include_once('include/functions_modules.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
@@ -70,7 +69,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
 
     if (!$access_granted) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access agent manager'
         );
         include 'general/noaccess.php';
@@ -198,7 +197,10 @@ if ($create_agent) {
     $grupo = (int) get_parameter_post('grupo');
 
     if ((bool) check_acl($config['id_user'], $grupo, 'AW') === false) {
-        db_pandora_audit('ACL Violation', 'Trying to access agent manager');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access agent manager'
+        );
         include $config['homedir'].'/general/noaccess.php';
         return;
     }
@@ -304,23 +306,6 @@ if ($create_agent) {
 
             $agent_created_ok = true;
 
-            $tpolicy_group_old = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $old_group) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $id_agente,
-                        ]
-                    );
-                }
-            }
-
             $info = '{"Name":"'.$nombre_agente.'",
 				"IP":"'.$direccion_agente.'",
 				"Group":"'.$grupo.'",
@@ -352,7 +337,7 @@ if ($create_agent) {
 
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Created agent '.$unsafe_alias,
                 false,
                 true,
@@ -1113,12 +1098,6 @@ if ($update_agent) {
             // Force an update of the agent cache.
         }
 
-        $group_old = db_get_sql('SELECT id_grupo FROM tagente WHERE id_agente ='.$id_agente);
-        $tpolicy_group_old = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$group_old
-        );
-
         $result = db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
 
         if ($result === false && $update_custom_result == false) {
@@ -1157,59 +1136,6 @@ if ($update_agent) {
                 }
             }
 
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $value) {
-                    $tpolicy_agents_old = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-						WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agente
-                    );
-
-                    if ($tpolicy_agents_old) {
-                        $result2 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 1],
-                            [
-                                'id_agent'  => $id_agente,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
-            $tpolicy_group = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group) {
-                foreach ($tpolicy_group as $key => $value) {
-                    $tpolicy_agents = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-						WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agente
-                    );
-
-                    if (!$tpolicy_agents) {
-                        db_process_sql_insert(
-                            'tpolicy_agents',
-                            [
-                                'id_policy' => $value['id_policy'],
-                                'id_agent'  => $id_agente,
-                            ]
-                        );
-                    } else {
-                        $result3 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 0],
-                            [
-                                'id_agent'  => $id_agente,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
             $info = '{
 				"id_agente":"'.$id_agente.'",
 				"alias":"'.$alias.'",
@@ -1242,7 +1168,7 @@ if ($update_agent) {
 
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Updated agent '.io_safe_output($alias),
                 false,
                 false,
@@ -1258,7 +1184,10 @@ if ($id_agente) {
     // This has been done in the beginning of the page, but if an agent was created, this id might change.
     $id_grupo = agents_get_agent_group($id_agente);
     if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') && !check_acl_one_of_groups($config['id_user'], $all_groups, 'AD')) {
-        db_pandora_audit('ACL Violation', 'Trying to admin an agent without access');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to admin an agent without access'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -1318,7 +1247,7 @@ if ($update_module || $create_module) {
 
     if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to create a module without admin rights'
         );
         include 'general/noaccess.php';
@@ -1802,7 +1731,7 @@ if ($update_module) {
         $edit_module = true;
 
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
@@ -1826,7 +1755,7 @@ if ($update_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
 
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Updated module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             false,
@@ -1988,7 +1917,7 @@ if ($create_module) {
         $edit_module = true;
         $moduletype = $id_module;
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
@@ -2013,7 +1942,7 @@ if ($create_module) {
 
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             true,
@@ -2048,12 +1977,12 @@ if ($enable_module) {
     $success_action = $result;
     if ($result === NOERR) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
@@ -2083,12 +2012,12 @@ if ($disable_module) {
 
     if ($result === NOERR) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
@@ -2132,7 +2061,7 @@ if ($delete_module) {
 
     if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to delete a module without admin rights'
         );
         include 'general/noaccess.php';
@@ -2142,7 +2071,7 @@ if ($delete_module) {
 
     if (empty($module_data) || $id_borrar_modulo < 1) {
         db_pandora_audit(
-            'HACK Attempt',
+            AUDIT_LOG_HACK_ATTEMPT,
             'Expected variable from form is not correct'
         );
         include 'general/noaccess.php';
@@ -2164,7 +2093,7 @@ if ($delete_module) {
 
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Deleted module '".io_safe_output($module_data['nombre'])."' for agent ".io_safe_output($agent['alias'])
         );
     }
@@ -2205,12 +2134,12 @@ if (!empty($duplicate_module)) {
 
     if ($result) {
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Duplicate module '".$id_duplicate_module."' for agent ".$agent['alias'].' with the new id for clon '.$result
         );
     } else {
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Fail to try duplicate module '".$id_duplicate_module."' for agent ".$agent['alias']
         );
     }
@@ -2224,9 +2153,15 @@ if ($enable_module) {
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
-        db_pandora_audit('Module management', 'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     } else {
-        db_pandora_audit('Module management', 'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     }
 
     ui_print_result_message(
@@ -2243,9 +2178,15 @@ if ($disable_module) {
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
-        db_pandora_audit('Module management', 'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     } else {
-        db_pandora_audit('Module management', 'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     }
 
     ui_print_result_message(

@@ -58,7 +58,10 @@ function mainInsertData()
     ui_print_page_header(__('Insert data'), 'images/extensions.png', false, '', true, '');
 
     if (! check_acl($config['id_user'], 0, 'AW') && ! is_user_admin($config['id_user'])) {
-        db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Setup Management'
+        );
         include 'general/noaccess.php';
         return;
     }

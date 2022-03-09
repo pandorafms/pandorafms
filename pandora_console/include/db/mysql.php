@@ -1269,9 +1269,11 @@ function mysql_db_process_sql_delete($table, $where, $where_join='AND')
  * @param  string   $sql
  * @return mixed The row or false in error.
  */
-function mysql_db_get_all_row_by_steps_sql($new=true, &$result, $sql=null)
+function mysql_db_get_all_row_by_steps_sql($new, &$result, $sql=null)
 {
     global $config;
+
+    $new = ($new ?? true);
 
     if ($config['mysqli'] === true) {
         if ($new == true) {

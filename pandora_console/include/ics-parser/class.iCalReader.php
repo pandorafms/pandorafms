@@ -273,11 +273,11 @@ class ICal
                 $formatted = array();
                 foreach ($properties as $property) {
                     preg_match_all('~[^\r\n";]+(?:"[^"\\\]*(?:\\\.[^"\\\]*)*"[^\r\n";]*)*~', $property, $attributes); // Match semicolon separator outside of quoted substrings
-                    $attributes = (sizeof($attributes) == 0) ? array($property) : reset($attributes); // Remove multi-dimensional array and use the first key
+                    $attributes = (count($attributes) == 0) ? array($property) : reset($attributes); // Remove multi-dimensional array and use the first key
 
                     foreach ($attributes as $attribute) {
                         preg_match_all('~[^\r\n"=]+(?:"[^"\\\]*(?:\\\.[^"\\\]*)*"[^\r\n"=]*)*~', $attribute, $values); // Match equals sign separator outside of quoted substrings
-                        $value = (sizeof($values) == 0) ? NULL : reset($values); // Remove multi-dimensional array and use the first key
+                        $value = (count($values) == 0) ? NULL : reset($values); // Remove multi-dimensional array and use the first key
 
                         if (is_array($value) && isset($value[1])) {
                             $formatted[$value[0]] = trim($value[1], '"'); // Remove double quotes from beginning and end only
@@ -598,7 +598,7 @@ class ICal
                         }
                         break;
 
-                    $events = (isset($count_orig) && sizeof($events) > $count_orig) ? array_slice($events, 0, $count_orig) : $events; // Ensure we abide by COUNT if defined
+                    $events = (isset($count_orig) && count($events) > $count_orig) ? array_slice($events, 0, $count_orig) : $events; // Ensure we abide by COUNT if defined
                 }
             }
         }

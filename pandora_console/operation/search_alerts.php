@@ -23,6 +23,7 @@ $searchAlerts = check_acl($config['id_user'], 0, 'AR');
 if ($alerts === false || $totalAlerts == 0 || !$searchAlerts) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';

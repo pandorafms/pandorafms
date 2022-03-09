@@ -34,7 +34,7 @@ use threads::shared;
 use JSON;
 use Encode qw/decode_utf8 encode_utf8/;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::Sendmail;
 
 # New in 3.2. Used to sendmail internally, without external scripts
@@ -126,6 +126,7 @@ our @EXPORT = qw(
 	is_offline
 	is_empty
 	is_in_array
+	array_diff
 	add_hashes
 	to_number
 	clean_blank
@@ -869,6 +870,19 @@ sub is_in_array {
 }
 
 ################################################################################
+# Check if a value is in an array
+################################################################################
+sub array_diff($$) {
+	my ($a, $b) = @_;
+
+	my %diff;
+	@diff{ @{$a} } = @{$a};
+	delete @diff{ @{$b} };
+
+	return keys %diff;
+}
+
+################################################################################
 # Mix hashses
 ################################################################################
 sub add_hashes {
@@ -1130,9 +1144,9 @@ sub enterprise_hook ($$) {
 	my $output = eval { &$func (@args); };
 
 	# Discomment to debug.
-	if ($@) {
-		print STDERR $@;
-	}
+	#if ($@) {
+	#	print STDERR $@;
+	#}
 
 	# Check for errors
 	#return undef if ($@);
@@ -2640,7 +2654,7 @@ sub p_encode_json {
 	};
 	if ($@){
 		if (defined($data)) {
-			logger($pa_config, 'Failed to encode data: '.$@, 5);
+			logger($pa_config, 'Failed to encode data: '.$@, 1);
 		}
 	}
 

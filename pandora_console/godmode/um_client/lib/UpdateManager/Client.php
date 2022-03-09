@@ -1582,7 +1582,10 @@ class Client
                 ) {
                     // When PharData failes because of no space left on device
                     // a PHP Notice is received instead of a PharData\Exception.
-                    throw new \Exception(error_get_last());
+                    $err = error_get_last();
+                    if ($err !== null) {
+                        throw new \Exception($err['message']);
+                    }
                 }
             } catch (\Exception $e) {
                 error_reporting($er);

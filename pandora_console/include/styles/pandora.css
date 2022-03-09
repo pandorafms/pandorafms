@@ -142,6 +142,10 @@ body {
   font-family: "lato";
 }
 
+body.body-report {
+  display: block;
+}
+
 input,
 textarea {
   padding: 5px;
@@ -8439,6 +8443,10 @@ div.stat-win-spinner img {
   font-size: 12px;
 }
 
+.fc-col-header-cell-cushion {
+  color: #fff;
+}
+
 .stat_win_histogram {
   width: 95%;
   margin: 0 auto;
@@ -8468,6 +8476,22 @@ div#err_msg_centralised img {
 div#err_msg_centralised {
   display: flex;
   flex-direction: row;
+}
+
+.tooltipevent {
+  background: #fff;
+  position: absolute;
+  z-index: 10001;
+  top: 0px;
+  right: 0px;
+  border: 2px solid #82b92e;
+  border-radius: 5px;
+  padding: 5px;
+  width: 70px;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 #select_multiple_modules_filtered > div {
@@ -8505,4 +8529,9 @@ div#err_msg_centralised {
   max-width: 250px;
   width: 95%;
   height: 95%;
+}
+
+.resume_calendar_map {
+  width: 90%;
+  margin: 0 auto;
 }

@@ -47,7 +47,7 @@ if (is_ajax()) {
         $string = (string) get_parameter('q');
         // Field q is what autocomplete plugin gives.
         $filter = [];
-        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
+        $filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
         $filter[] = 'id_agente != '.$id_agent;
 
         $agents = agents_get_agents(
@@ -154,7 +154,10 @@ ui_require_javascript_file('openlayers.pandora');
 $new_agent = (empty($id_agente)) ? true : false;
 
 if (! isset($id_agente) && ! $new_agent) {
-    db_pandora_audit('ACL Violation', 'Trying to access agent manager witout an agent');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access agent manager witout an agent'
+    );
     include 'general/noaccess.php';
     return;
 }

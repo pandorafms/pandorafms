@@ -128,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-            $version = '7.0NG.759';
-            $build = '220203';
+            $version = '7.0NG.760';
+            $build = '220309';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -328,7 +328,7 @@ function parse_mysqli_dump($connection, $url)
                 $query .= $sql_line;
                 if (preg_match("/;[\040]*\$/", $sql_line)) {
                     if (!$result = mysqli_query($connection, $query)) {
-                        echo mysqli_error();
+                        echo mysqli_error($connection);
                         // Uncomment for debug
                         echo "<i><br>$query<br></i>";
                         return 0;

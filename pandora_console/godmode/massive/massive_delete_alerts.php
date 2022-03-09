@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive alert deletion'
     );
     include 'general/noaccess.php';
@@ -190,10 +190,10 @@ function process_manage_delete($id_alert_template, $id_agents, $module_names)
         );
 
         if ($success) {
-            $contsuccess ++;
+            $contsuccess++;
         }
 
-        $conttotal ++;
+        $conttotal++;
     }
 
     ui_print_result_message(
@@ -223,9 +223,21 @@ if ($delete) {
     ];
 
     if ($result) {
-        db_pandora_audit('Massive management', 'Delete alert ', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Delete alert ',
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
-        db_pandora_audit('Massive management', 'Fail try to delete alert', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to delete alert',
+            false,
+            false,
+            json_encode($info)
+        );
     }
 }
 

@@ -549,7 +549,7 @@ if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
             );
 
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Re-link module '.$id_agent_module
             );
         }
@@ -562,7 +562,10 @@ if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
             __('Module will be unlinked in the next application')
         );
 
-        db_pandora_audit('Agent management', 'Unlink module '.$id_agent_module);
+        db_pandora_audit(
+            AUDIT_LOG_AGENT_MANAGEMENT,
+            'Unlink module '.$id_agent_module
+        );
     }
 }
 
@@ -582,7 +585,7 @@ if ($__code_from !== 'policies') {
 
     if (!$tag_acl) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access agent manager'
         );
         include 'general/noaccess.php';

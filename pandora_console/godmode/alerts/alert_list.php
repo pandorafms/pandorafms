@@ -21,7 +21,7 @@ if (! check_acl($config['id_user'], 0, 'LW')
     && ! check_acl($config['id_user'], 0, 'LM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -146,7 +146,7 @@ if ($create_alert) {
         $unsafe_agent_alias = io_safe_output($agent_alias);
         if ($id) {
             db_pandora_audit(
-                'Alert management',
+                AUDIT_LOG_ALERT_MANAGEMENT,
                 "Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'",
                 false,
                 false,
@@ -154,7 +154,7 @@ if ($create_alert) {
             );
         } else {
             db_pandora_audit(
-                'Alert management',
+                AUDIT_LOG_ALERT_MANAGEMENT,
                 "Fail Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
             );
         }
@@ -217,12 +217,12 @@ if ($delete_alert) {
 
     if ($result) {
         db_pandora_audit(
-            'Alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             "Deleted alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
         );
     } else {
         db_pandora_audit(
-            'Alert management',
+            AUDIT_LOG_ALERT_MANAGEMENT,
             "Fail to deleted alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
         );
     }
@@ -255,9 +255,15 @@ if ($add_action) {
     $result = alerts_add_alert_agent_module_action($id_alert_module, $id_action, $values);
 
     if ($result) {
-        db_pandora_audit('Alert management', 'Add action '.$id_action.' in  alert '.$id_alert_module);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Add action '.$id_action.' in  alert '.$id_alert_module
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to add action '.$id_action.' in alert '.$id_alert_module);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to add action '.$id_action.' in alert '.$id_alert_module
+        );
     }
 
     $messageAction = ui_print_result_message(
@@ -290,9 +296,15 @@ if ($update_action) {
 
     $result = alerts_update_alert_agent_module_action($id_module_action, $values);
     if ($result) {
-        db_pandora_audit('Alert management', 'Update action '.$id_action.' in  alert '.$id_alert_module);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Update action '.$id_action.' in  alert '.$id_alert_module
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to updated action '.$id_action.' in alert '.$id_alert_module);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to updated action '.$id_action.' in alert '.$id_alert_module
+        );
     }
 
     $messageAction = ui_print_result_message(
@@ -311,9 +323,15 @@ if ($delete_action) {
     $result = alerts_delete_alert_agent_module_action($id_action);
 
     if ($result) {
-        db_pandora_audit('Alert management', 'Delete action '.$id_action.' in alert '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Delete action '.$id_action.' in alert '.$id_alert
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to delete action '.$id_action.' in alert '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to delete action '.$id_action.' in alert '.$id_alert
+        );
     }
 
     $messageAction = ui_print_result_message(
@@ -332,9 +350,15 @@ if ($enable_alert) {
     $result = alerts_agent_module_disable($id_alert, false);
 
     if ($result) {
-        db_pandora_audit('Alert management', 'Enable  '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Enable  '.$id_alert
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to enable '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to enable '.$id_alert
+        );
     }
 
     $messageAction = ui_print_result_message(
@@ -353,9 +377,15 @@ if ($disable_alert) {
     $result = alerts_agent_module_disable($id_alert, true);
 
     if ($result) {
-        db_pandora_audit('Alert management', 'Disable  '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Disable  '.$id_alert
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to disable '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to disable '.$id_alert
+        );
     }
 
     $messageAction = ui_print_result_message(
@@ -374,9 +404,15 @@ if ($standbyon_alert) {
     $result = alerts_agent_module_standby($id_alert, true);
 
     if ($result) {
-        db_pandora_audit('Alert management', 'Standby  '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Standby  '.$id_alert
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to standby '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to standby '.$id_alert
+        );
     }
 
     $messageAction = ui_print_result_message(
@@ -395,9 +431,15 @@ if ($standbyoff_alert) {
     $result = alerts_agent_module_standby($id_alert, false);
 
     if ($result) {
-        db_pandora_audit('Alert management', 'Standbyoff  '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Standbyoff  '.$id_alert
+        );
     } else {
-        db_pandora_audit('Alert management', 'Fail to standbyoff '.$id_alert);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail to standbyoff '.$id_alert
+        );
     }
 
     $messageAction = ui_print_result_message(

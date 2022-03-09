@@ -42,6 +42,8 @@ pidof_pandora () {
 	elif [ "$OS_NAME" = "SunOS" ]
 	then
 		ZONENAME_CMD="/bin/zonename"
+		# Has to be run from sources. The binary version inserts blanks between
+		# $DAEMON  and $PANDORA_PATH.
 		TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-20`
 		if [ -x $ZONENAME_CMD ]
 		then
@@ -59,7 +61,7 @@ pidof_pandora () {
 	then
 		# Virtuozzo/OpenVZ
 		local _pid _ctid _pids
-		_pids=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
+		_pids=`ps -Af | grep "$DAEMON" | grep "$PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 		[ "$_pids" ] && for _pid in $_pids
 		do
 			_ctid=`/usr/sbin/vzpid $_pid | awk '$1 == '$_pid' { print $2 }'`
@@ -71,9 +73,9 @@ pidof_pandora () {
 		done
 	elif [ "$OS_NAME" = "AIX" ]; then
 		# AIX
-		PANDORA_PID=`ps -ef | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
+		PANDORA_PID=`ps -ef | grep "$DAEMON" | grep "$PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 	else
-		PANDORA_PID=`ps -Afw | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
+		PANDORA_PID=`ps -Afw | grep "$DAEMON" | grep "$PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 	fi
 	
 	echo $PANDORA_PID

@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 use File::Basename;
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::PluginTools;
 use PandoraFMS::Omnishell;
 

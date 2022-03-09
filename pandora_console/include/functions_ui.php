@@ -3618,6 +3618,15 @@ function ui_print_datatable(array $parameters)
         ui_require_javascript_file('buttons.html5.min');
         ui_require_javascript_file('buttons.print.min');
     } else {
+        // Load datatable.min.css.
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/js/datatables.min.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(

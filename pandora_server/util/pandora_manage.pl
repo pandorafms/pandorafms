@@ -24,7 +24,7 @@ use LWP::Simple;
 use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.760 Build 220222";
+my $version = "7.0NG.760 Build 220309";
 
 # save program name for logging
 my $progname = basename($0);

@@ -533,10 +533,10 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = sprintf(
-            ' AND ( nombre 
-			 LIKE "%%%s%%" OR alias 
-			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%" 
-			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")',
+            ' AND ( nombre
+			 LIKE "%%%s%%" OR alias
+			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%"))',
             $search,
             $search,
             $search,

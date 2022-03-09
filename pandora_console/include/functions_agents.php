@@ -750,6 +750,7 @@ function agents_get_agents_selected($group)
                 'id_tmetaconsole_setup',
                 'id_agente',
                 'alias',
+                'server_name',
             ],
             'AR',
             [
@@ -764,7 +765,7 @@ function agents_get_agents_selected($group)
         $all = array_reduce(
             $all,
             function ($carry, $item) {
-                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['alias'];
+                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
                 return $carry;
             },
             []

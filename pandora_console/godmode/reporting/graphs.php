@@ -376,7 +376,7 @@ $table_aux = new stdClass();
                         false,
                         false,
                         '',
-                        'class="check_deletemrgn_lft_2px"',
+                        'class="check_delete mrgn_lft_2px"',
                         true
                     );
                 }

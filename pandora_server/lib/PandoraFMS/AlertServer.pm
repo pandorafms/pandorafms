@@ -1,8 +1,8 @@
 package PandoraFMS::AlertServer;
-##########################################################################
+################################################################################
 # Pandora FMS Alert Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
-##########################################################################
+################################################################################
 # Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
@@ -15,7 +15,7 @@ package PandoraFMS::AlertServer;
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##########################################################################
+################################################################################
 
 use strict;
 use warnings;
@@ -24,6 +24,7 @@ use threads;
 use threads::shared;
 use Thread::Semaphore;
 
+use MIME::Base64;
 use JSON;
 use POSIX qw(strftime);
 
@@ -47,9 +48,9 @@ my $AlertSem :shared;
 my %Alerts :shared;
 my $EventRef :shared = 0;
 
-########################################################################################
+################################################################################
 # Alert Server class constructor.
-########################################################################################
+################################################################################
 sub new ($$$) {
 	my ($class, $config, $dbh) = @_;
 
@@ -69,9 +70,9 @@ sub new ($$$) {
     return $self;
 }
 
-###############################################################################
+################################################################################
 # Run.
-###############################################################################
+################################################################################
 sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
@@ -81,9 +82,9 @@ sub run ($) {
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
 
-###############################################################################
+################################################################################
 # Data producer.
-###############################################################################
+################################################################################
 sub data_producer ($) {
 	my $self = shift;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
@@ -120,14 +121,16 @@ sub data_producer ($) {
 	return @tasks;
 }
 
-###############################################################################
+################################################################################
 # Data consumer.
-###############################################################################
+################################################################################
 sub data_consumer ($$) {
 	my ($self, $task_id) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 
 	eval {{
+		local $SIG{__DIE__};
+
 		# Get the alert from the queue.
 		my $task = get_db_single_row ($dbh, 'SELECT * FROM talert_execution_queue WHERE id = ?', $task_id);
 		if (! defined ($task)) {
@@ -135,42 +138,40 @@ sub data_consumer ($$) {
 			last 0;
 		}
 
-		# Get the alert data.
-		my $alert = get_db_single_row ($dbh, 'SELECT talert_template_modules.id as id_template_module,
-			talert_template_modules.*, talert_templates.*
-			FROM talert_template_modules, talert_templates
-			WHERE talert_template_modules.id_alert_template = talert_templates.id
-			AND talert_template_modules.id = ?', $task->{'id_alert_template_module'});
-		if (! defined ($alert)) {
-			logger($pa_config, "Alert ID " . $task->{'id_alert_template_module'} . " not found.", 10);
-			last;
+		my $args = PandoraFMS::Tools::p_decode_json(
+			$pa_config,
+			decode_base64($task->{'data'})
+		);
+
+		if (ref $args ne "ARRAY") {
+			die ('Invalid alert queued');
 		}
 
-		# Get the agent and module associated with the alert
-		my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
-		if (! defined ($module)) {
-			logger($pa_config, "Module ID " . $alert->{'id_agent_module'} . " not found for alert ID " . $alert->{'id_template_module'} . ".", 10);
-			last;
-		}
-		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
-		if (! defined ($agent)) {
-			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found for module ID " . $module->{'id_agente_modulo'} . " alert ID " . $alert->{'id_template_module'} . ".", 10);
-			last;
-		}
+		my @args = @{$args};
 
-		# Execute the alert.
-		pandora_execute_alert ($pa_config, $task->{'data'}, $agent, $module, $alert, $task->{'alert_mode'},
-			$dbh, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 0, decode_json($task->{'extra_macros'}));
+		# You cannot code a DBI object into JSON, use current.
+		my $execution_args = [
+			$pa_config,
+			@args[0..4],
+			$dbh,
+			@args[5..$#args]
+		];
+
+		# Execute.
+		PandoraFMS::Core::pandora_execute_alert(@$execution_args);
 	}};
+	if ($@) {
+		logger ($pa_config,"[ERROR] Executing alert ".$@, 0);
+	}
 
 	# Remove the alert from the queue and unlock.
 	db_do($dbh, 'DELETE FROM talert_execution_queue WHERE id=?', $task_id);
 	alert_unlock($pa_config, $task_id);
 }
 
-##########################################################################
+################################################################################
 # Get a lock on the given alert. Return 1 on success, 0 otherwise.
-##########################################################################
+################################################################################
 sub alert_lock {
 	my ($pa_config, $alert, $locked_alerts) = @_;
 
@@ -186,9 +187,9 @@ sub alert_lock {
 	return 1;
 }
 
-##########################################################################
+################################################################################
 # Remove the lock on the given alert.
-##########################################################################
+################################################################################
 sub alert_unlock {
 	my ($pa_config, $alert) = @_;
 

@@ -374,23 +374,6 @@ echo '</form>';
 echo '<td>';
 echo '</tr></table>';
 
-$order_collation = '';
-switch ($config['dbtype']) {
-    case 'mysql':
-        $order_collation = '';
-        $order_collation = 'COLLATE utf8_general_ci';
-    break;
-
-    case 'postgresql':
-    case 'oracle':
-        $order_collation = '';
-    break;
-
-    default:
-        // Default.
-    break;
-}
-
 $selected = true;
 $selectNameUp = false;
 $selectNameDown = false;
@@ -405,7 +388,7 @@ switch ($sortField) {
                 $selectRemoteUp = $selected;
                 $order = [
                     'field'  => 'remote ',
-                    'field2' => 'nombre '.$order_collation,
+                    'field2' => 'nombre ',
                     'order'  => 'ASC',
                 ];
             break;
@@ -414,7 +397,7 @@ switch ($sortField) {
                 $selectRemoteDown = $selected;
                 $order = [
                     'field'  => 'remote ',
-                    'field2' => 'nombre '.$order_collation,
+                    'field2' => 'nombre ',
                     'order'  => 'DESC',
                 ];
             break;
@@ -430,8 +413,8 @@ switch ($sortField) {
             case 'up':
                 $selectNameUp = $selected;
                 $order = [
-                    'field'  => 'alias '.$order_collation,
-                    'field2' => 'alias '.$order_collation,
+                    'field'  => 'alias ',
+                    'field2' => 'alias ',
                     'order'  => 'ASC',
                 ];
             break;
@@ -439,8 +422,8 @@ switch ($sortField) {
             case 'down':
                 $selectNameDown = $selected;
                 $order = [
-                    'field'  => 'alias '.$order_collation,
-                    'field2' => 'alias '.$order_collation,
+                    'field'  => 'alias ',
+                    'field2' => 'alias ',
                     'order'  => 'DESC',
                 ];
             break;
@@ -457,7 +440,7 @@ switch ($sortField) {
                 $selectOsUp = $selected;
                 $order = [
                     'field'  => 'id_os',
-                    'field2' => 'alias '.$order_collation,
+                    'field2' => 'alias ',
                     'order'  => 'ASC',
                 ];
             break;
@@ -466,7 +449,7 @@ switch ($sortField) {
                 $selectOsDown = $selected;
                 $order = [
                     'field'  => 'id_os',
-                    'field2' => 'alias '.$order_collation,
+                    'field2' => 'alias ',
                     'order'  => 'DESC',
                 ];
             break;
@@ -483,7 +466,7 @@ switch ($sortField) {
                 $selectGroupUp = $selected;
                 $order = [
                     'field'  => 'id_grupo',
-                    'field2' => 'alias '.$order_collation,
+                    'field2' => 'alias ',
                     'order'  => 'ASC',
                 ];
             break;
@@ -492,7 +475,7 @@ switch ($sortField) {
                 $selectGroupDown = $selected;
                 $order = [
                     'field'  => 'id_grupo',
-                    'field2' => 'alias '.$order_collation,
+                    'field2' => 'alias ',
                     'order'  => 'DESC',
                 ];
             break;
@@ -511,8 +494,8 @@ switch ($sortField) {
         $selectGroupUp = '';
         $selectGroupDown = '';
         $order = [
-            'field'  => 'alias '.$order_collation,
-            'field2' => 'alias '.$order_collation,
+            'field'  => 'alias ',
+            'field2' => 'alias ',
             'order'  => 'ASC',
         ];
     break;
@@ -520,30 +503,45 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != '') {
-    $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
-	INNER JOIN taddress_agent ON
-	taddress.id_a = taddress_agent.id_a
-	WHERE taddress.ip LIKE '%$search%'";
+    $sql = sprintf(
+        'SELECT DISTINCT taddress_agent.id_agent FROM taddress
+	     INNER JOIN taddress_agent ON
+	     taddress.id_a = taddress_agent.id_a
+	     WHERE taddress.ip LIKE "%%%s%%"',
+        $search
+    );
 
     $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = ' AND ( LOWER(nombre) '.$order_collation."
-			LIKE LOWER('%$search%') OR tagente.id_agente = $aux";
-        if (count($id) >= 2) {
-            for ($i = 1; $i < count($id); $i++) {
+        $search_sql = sprintf(
+            ' AND ( `nombre` LIKE "%%%s%%" OR tagente.id_agente = %d',
+            $search,
+            $aux
+        );
+        $nagent_count = count($id);
+        if ($nagent_count >= 2) {
+            for ($i = 1; $i < $nagent_count; $i++) {
                 $aux = $id[$i]['id_agent'];
-                $search_sql .= " OR tagente.id_agente = $aux";
+                $search_sql .= sprintf(
+                    ' OR tagente.id_agente = %d',
+                    $aux
+                );
             }
         }
 
         $search_sql .= ')';
     } else {
-        $search_sql = ' AND ( nombre '.$order_collation."
-			LIKE LOWER('%$search%') OR alias ".$order_collation."
-			LIKE LOWER('%$search%') OR comentarios ".$order_collation." LIKE LOWER('%$search%') 
-			OR EXISTS (SELECT * FROM tagent_custom_data 
-			WHERE id_agent = id_agente AND description LIKE '%$search%'))";
+        $search_sql = sprintf(
+            ' AND ( nombre
+			 LIKE "%%%s%%" OR alias
+			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%"))',
+            $search,
+            $search,
+            $search,
+            $search
+        );
     }
 }
 

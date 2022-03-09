@@ -706,7 +706,7 @@ final class NetworkLink extends Model
      *
      * @overrides Model::encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $result = [];
         $result['type'] = NETWORK_LINK;

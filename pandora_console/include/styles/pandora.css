@@ -142,6 +142,10 @@ body {
   font-family: "lato";
 }
 
+body.body-report {
+  display: block;
+}
+
 input,
 textarea {
   padding: 5px;

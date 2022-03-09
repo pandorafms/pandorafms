@@ -312,7 +312,7 @@ function networkmap_generate_dot(
     $filter['disabled'] = 0;
 
     if (empty($text_filter) === false) {
-        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$text_filter.'%")';
+        $filter[] = '(nombre LIKE "%'.$text_filter.'%")';
     }
 
     /*

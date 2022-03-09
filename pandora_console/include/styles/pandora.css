@@ -1520,10 +1520,6 @@ div.title_line {
 }
 /* End - Breadcrum */
 
-#menu_tab {
-  margin-right: 10px;
-}
-
 #menu_tab .mn,
 #menu_tab ul,
 #menu_tab .mn ul {
@@ -2369,6 +2365,12 @@ a.autorefresh_txt,
 @media screen and (max-width: 1300px) {
   .header_right > div {
     padding-left: 10px;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .menu_hide ul {
+    display: none;
   }
 }
 

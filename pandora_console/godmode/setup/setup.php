@@ -330,7 +330,13 @@ ui_print_page_header(
     false,
     $help_header,
     true,
-    $buttons
+    $buttons,
+    false,
+    '',
+    GENERIC_SIZE_TEXT,
+    '',
+    '',
+    true
 );
 
 if (isset($config['error_config_update_config'])) {

@@ -31,6 +31,7 @@ global $config;
 
 enterprise_include('godmode/agentes/configurar_agente.php');
 enterprise_include_once('include/functions_modules.php');
+enterprise_include_once('include/functions_config_agents.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');

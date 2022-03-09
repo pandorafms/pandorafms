@@ -262,7 +262,8 @@ if ($filemanager) {
             'index.php?sec=gservers&sec2=godmode/servers/plugin'.$chunck_url.'&plugin_command=[FILE_FULLPATH]&id_plugin='.$id_plugin,
             true,
             0775,
-            false
+            false,
+            ['all' => true]
         );
     }
 

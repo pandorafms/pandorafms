@@ -5092,6 +5092,17 @@ input:checked + .p-slider:before {
   margin-top: 10px;
 }
 
+#upload_file #upload_file_input_full {
+  width: 100%;
+  border: 1px solid #cbcbcb;
+  border-radius: 2px;
+  padding: 5px 0;
+}
+
+#upload_file_input_full input#file-file::-webkit-file-upload-button {
+  margin-left: 5px;
+}
+
 .file_table_modal_active {
   background-color: #fff;
   border: 1px solid #e6e6e6;

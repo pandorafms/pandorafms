@@ -93,6 +93,10 @@ if (!$action_update_url_update_manager) {
         'update_manager_proxy_password',
         $config['update_manager_proxy_password']
     );
+    $allow_offline_patches = get_parameter_switch(
+        'allow_offline_patches',
+        $config['allow_offline_patches']
+    );
 
     if ($action_update_url_update_manager) {
         $result = config_update_value(
@@ -134,6 +138,13 @@ if (!$action_update_url_update_manager) {
             );
         }
 
+        if ($result) {
+            $result = config_update_value(
+                'allow_offline_patches',
+                $allow_offline_patches
+            );
+        }
+
         if ($result && license_free()) {
             $result = config_update_value(
                 'identification_reminder',
@@ -154,6 +165,7 @@ if (!$action_update_url_update_manager) {
     $update_manager_proxy_port = get_parameter('update_manager_proxy_port', '');
     $update_manager_proxy_user = get_parameter('update_manager_proxy_user', '');
     $update_manager_proxy_password = get_parameter('update_manager_proxy_password', '');
+    $allow_offline_patches = get_parameter_switch('allow_offline_patches', false);
 
 
     if ($action_update_url_update_manager) {
@@ -193,6 +205,13 @@ if (!$action_update_url_update_manager) {
             $result = config_update_value(
                 'secure_update_manager',
                 io_safe_input($secure_update_manager ?? 0)
+            );
+        }
+
+        if ($result) {
+            $result = config_update_value(
+                'allow_offline_patches',
+                $allow_offline_patches
             );
         }
 
@@ -288,33 +307,39 @@ $table->data[5][1] = html_print_input_password(
     true
 );
 
+$table->data[6][0] = __('Allow no-consecutive patches:');
+$table->data[6][1] = html_print_switch(
+    [
+        'name'   => 'allow_offline_patches',
+        'value'  => $allow_offline_patches,
+        'return' => true,
+    ]
+);
 
-$table->data[6][0] = __('Registration ID:');
-$table->data[6][1] = '<i>'.$config['pandora_uid'].'</i>';
+$table->data[7][0] = __('Registration ID:');
+$table->data[7][1] = '<i>'.$config['pandora_uid'].'</i>';
 
 if (update_manager_verify_registration() === true && users_is_admin()) {
-    $table->data[7][0] = __('Cancel registration:');
-    $table->data[7][1] = '<a href="';
+    $table->data[8][0] = __('Cancel registration:');
+    $table->data[8][1] = '<a href="';
     if ((bool) is_metaconsole() === true) {
-        $table->data[7][1] .= ui_get_full_url(
+        $table->data[8][1] .= ui_get_full_url(
             'index.php?sec=advanced&sec2=advanced/metasetup&pure=0&tab=update_manager_setup&um_disconnect_console=1'
         );
     } else {
-        $table->data[7][1] .= ui_get_full_url(
+        $table->data[8][1] .= ui_get_full_url(
             'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=setup&um_disconnect_console=1'
         );
     }
 
-    $table->data[7][1] .= '" onclick="if(confirm(\'Are you sure?\')) {return true;} else { return false; }">'.__('Unregister').'</a>';
+    $table->data[8][1] .= '" onclick="if(confirm(\'Are you sure?\')) {return true;} else { return false; }">'.__('Unregister').'</a>';
 }
-
-
 
 if (license_free()) {
     $config['identification_reminder'] = isset($config['identification_reminder']) ? $config['identification_reminder'] : 1;
-    $table->data[8][0] = __('Pandora FMS community reminder').ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
-    $table->data[8][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 1, '', $config['identification_reminder'], true).'&nbsp;&nbsp;';
-    $table->data[8][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 0, '', $config['identification_reminder'], true);
+    $table->data[9][0] = __('Pandora FMS community reminder').ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
+    $table->data[9][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 1, '', $config['identification_reminder'], true).'&nbsp;&nbsp;';
+    $table->data[9][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 0, '', $config['identification_reminder'], true);
 }
 
 html_print_input_hidden('action_update_url_update_manager', 1);

@@ -22,7 +22,7 @@ use POSIX qw(strftime);
 use Time::Local;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.760";
-my $pandora_build = "220217";
+my $pandora_build = "220310";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -1388,8 +1388,13 @@ sub pandora_start_log ($){
 
 	# Dump all errors to errorlog
 	open (STDERR, ">> " . $pa_config->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
-	my $mode = 0664;
+	
+	my $file_mode = (stat($pa_config->{'errorlog_file'}))[2] & 0777;
+	my $min_mode = 0664;
+	my $mode = $file_mode | $min_mode;
+
 	chmod $mode, $pa_config->{'errorlog_file'};
+	
 	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . " Starting " . pandora_get_initial_product_name() . " Server. Error logging activated.\n";
 }
 

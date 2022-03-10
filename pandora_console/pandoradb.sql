@@ -605,10 +605,7 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_alert_template_module` INT UNSIGNED NOT NULL,
-  `alert_mode` TINYINT NOT NULL,
-  `data` MEDIUMTEXT,
-  `extra_macros` TEXT,
+  `data` LONGTEXT,
   `utimestamp` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1289,6 +1286,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `login_blocked` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_access` ENUM('basic','advanced') DEFAULT 'basic',
   `not_login` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `local_user` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_agents_manager` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_assigned_server` INT UNSIGNED NOT NULL DEFAULT 0,
   `metaconsole_access_node` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -2582,6 +2580,21 @@ CREATE TABLE IF NOT EXISTS `tpolicy_groups` (
   UNIQUE (`id_policy`, `id_group`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
+
+-- -----------------------------------------------------
+-- Table `tpolicy_group_agents`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
+    `id` SERIAL,
+    `id_policy` INT UNSIGNED,
+    `id_agent` INT UNSIGNED,
+	`direct` TINYINT UNSIGNED DEFAULT 0,
+    FOREIGN KEY (`id_policy`) REFERENCES `tpolicies`(`id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`)
+        ON DELETE CASCADE ON UPDATE CASCADE		
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
@@ -3670,7 +3683,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig` (
   `name` VARCHAR(100) NOT NULL,
   `order` INT NOT NULL DEFAULT 0,
   `description` TEXT,
-  `disabled` TINYINT DEFAULT 0,
+
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

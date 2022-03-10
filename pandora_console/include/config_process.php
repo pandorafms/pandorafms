@@ -20,7 +20,7 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC220217';
+$build_version = 'PC220310';
 $pandora_version = 'v7.0NG.760';
 
 // Do not overwrite default timezone set if defined.
@@ -310,4 +310,16 @@ if (isset($_SESSION['meny_type']) === true && empty($_SESSION['menu_type']) === 
     $config['menu_type'] = $_SESSION['menu_type'];
 } else {
     $config['menu_type'] = 'classic';
+}
+
+
+// Log.
+if (isset($config['console_log_enabled']) === true
+    && $config['console_log_enabled'] == 1
+) {
+    ini_set('log_errors', true);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', false);
+    ini_set('error_log', '');
 }

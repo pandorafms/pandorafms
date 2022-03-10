@@ -30,8 +30,8 @@
 global $config;
 
 enterprise_include('godmode/agentes/configurar_agente.php');
-enterprise_include('include/functions_policies.php');
 enterprise_include_once('include/functions_modules.php');
+enterprise_include('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');
@@ -306,23 +306,6 @@ if ($create_agent) {
             }
 
             $agent_created_ok = true;
-
-            $tpolicy_group_old = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $old_group) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $id_agente,
-                        ]
-                    );
-                }
-            }
 
             $info = '{"Name":"'.$nombre_agente.'",
 				"IP":"'.$direccion_agente.'",
@@ -1117,12 +1100,6 @@ if ($update_agent) {
             // Force an update of the agent cache.
         }
 
-        $group_old = db_get_sql('SELECT id_grupo FROM tagente WHERE id_agente ='.$id_agente);
-        $tpolicy_group_old = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$group_old
-        );
-
         $result = db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
 
         if ($result === false && $update_custom_result == false) {
@@ -1158,59 +1135,6 @@ if ($update_agent) {
                 // Validate alerts for disabled agents.
                 if ($disabled) {
                     alerts_validate_alert_agent($id_agente);
-                }
-            }
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $value) {
-                    $tpolicy_agents_old = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-						WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agente
-                    );
-
-                    if ($tpolicy_agents_old) {
-                        $result2 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 1],
-                            [
-                                'id_agent'  => $id_agente,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
-            $tpolicy_group = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group) {
-                foreach ($tpolicy_group as $key => $value) {
-                    $tpolicy_agents = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-						WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agente
-                    );
-
-                    if (!$tpolicy_agents) {
-                        db_process_sql_insert(
-                            'tpolicy_agents',
-                            [
-                                'id_policy' => $value['id_policy'],
-                                'id_agent'  => $id_agente,
-                            ]
-                        );
-                    } else {
-                        $result3 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 0],
-                            [
-                                'id_agent'  => $id_agente,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
                 }
             }
 

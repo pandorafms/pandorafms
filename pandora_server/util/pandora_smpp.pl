@@ -5,7 +5,7 @@ use warnings;
 
 use Net::SMPP;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::PluginTools qw(read_configuration);
 
 my $HELP =<<EO_H;

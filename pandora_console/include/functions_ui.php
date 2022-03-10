@@ -2737,10 +2737,11 @@ function ui_print_status_image(
 /**
  * Returns html code to print a shape for a module.
  *
- * @param integer $status Module status.
- * @param boolean $return True or false.
- * @param string  $class  Custom class or use defined.
- * @param string  $title  Custom title or inherit from module status.
+ * @param integer $status      Module status.
+ * @param boolean $return      True or false.
+ * @param string  $class       Custom class or use defined.
+ * @param string  $title       Custom title or inherit from module status.
+ * @param string  $div_content Content.
  *
  * @return string HTML code for shape.
  */
@@ -2748,7 +2749,8 @@ function ui_print_module_status(
     $status,
     $return=false,
     $class='status_rounded_rectangles',
-    $title=null
+    $title=null,
+    $div_content=''
 ) {
     $color = modules_get_color_status($status, true);
     if ($title === null) {
@@ -2758,7 +2760,7 @@ function ui_print_module_status(
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
     $output .= ' forced_title" data-title="'.$title.'" title="';
-    $output .= $title.'" data-use_title_for_force_title="1"></div>';
+    $output .= $title.'" data-use_title_for_force_title="1">'.$div_content.'</div>';
 
     if ($return === false) {
         echo $output;
@@ -3618,6 +3620,15 @@ function ui_print_datatable(array $parameters)
         ui_require_javascript_file('buttons.html5.min');
         ui_require_javascript_file('buttons.print.min');
     } else {
+        // Load datatable.min.css.
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/js/datatables.min.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -4255,7 +4266,9 @@ function ui_forced_public_url()
         $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
     }
 
-    if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
+    if (isset($_SERVER['REMOTE_ADDR']) === true
+        && in_array($_SERVER['REMOTE_ADDR'], $exclusions)
+    ) {
         return false;
     }
 
@@ -4362,7 +4375,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     } else {
         $protocol = 'http';
 
-        if ($_SERVER['SERVER_PORT'] != 80) {
+        if (($_SERVER['SERVER_PORT'] ?? 80) != 80) {
             $port = $_SERVER['SERVER_PORT'];
         }
     }
@@ -4387,10 +4400,10 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
 
             $proxy = true;
         } else {
-            $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
+            $fullurl = $protocol.'://'.($_SERVER['SERVER_NAME'] ?? '');
         }
     } else {
-        $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
+        $fullurl = $protocol.'://'.($_SERVER['SERVER_NAME'] ?? '');
     }
 
     // Using a different port than the standard.
@@ -6429,7 +6442,7 @@ function ui_print_comments($comments)
         $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
+    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
         $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
 

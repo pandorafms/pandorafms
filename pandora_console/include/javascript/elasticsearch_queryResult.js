@@ -11,6 +11,7 @@ view.setShowPrintMargin(false);
 
 $("#submit-execute_query").click(function() {
   view.setValue("");
+  let text;
   let selectText = editor.getSelectedText();
   if (selectText === "") {
     let allText = editor.getValue();
@@ -20,11 +21,11 @@ $("#submit-execute_query").click(function() {
 
     allText = allText.split("\n").join("");
     allText = allText.concat("\n");
-    var text = allText.match("(GET|PUT|POST)(.*?)({.*?}.*?)?(GET|POST|PUT|\n)");
+    text = allText.match("(GET|PUT|POST)(.*?)({.*?}.*?)?(GET|POST|PUT|\n)");
   } else {
     selectText = selectText.split("\n").join("");
     selectText = selectText.concat("\n");
-    var text = selectText.match("(GET|PUT|POST)(.*?)({.*?}.*?)?(\n)");
+    text = selectText.match("(GET|PUT|POST)(.*?)({.*?}.*?)?(\n)");
   }
 
   if (

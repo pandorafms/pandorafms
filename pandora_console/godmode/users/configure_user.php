@@ -327,7 +327,7 @@ if ($create_user) {
     if (users_is_admin() === false && $user_is_admin !== 0) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
-            'Trying to create with administrator privileges to user by non administrator user '.$config['id_user'],
+            'Trying to create with administrator privileges to user by non administrator user '.$config['id_user']
         );
 
         include 'general/noaccess.php';
@@ -551,7 +551,7 @@ if ($update_user) {
     if (users_is_admin() === false && (bool) $values['is_admin'] !== false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
-            'Trying to add administrator privileges to user by non administrator user '.$config['id_user'],
+            'Trying to add administrator privileges to user by non administrator user '.$config['id_user']
         );
 
         include 'general/noaccess.php';

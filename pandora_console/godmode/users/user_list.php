@@ -268,7 +268,7 @@ if ($delete_user === true) {
     if (users_is_admin($id_user) === true && users_is_admin() === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
-            'Trying to delete admininstrator user by non administrator user '.$config['id_user'],
+            'Trying to delete admininstrator user by non administrator user '.$config['id_user']
         );
 
         include 'general/noaccess.php';
@@ -347,7 +347,7 @@ if ($delete_user === true) {
     if (users_is_admin($id_user) === true && users_is_admin() === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
-            'Trying to disable admininstrator user by non administrator user '.$config['id_user'],
+            'Trying to disable admininstrator user by non administrator user '.$config['id_user']
         );
 
         include 'general/noaccess.php';

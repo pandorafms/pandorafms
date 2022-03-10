@@ -11199,7 +11199,7 @@ function reporting_get_stats_users($data)
             $users = get_users('', ['disabled' => 0], ['id_user', 'is_admin']);
         } else {
             foreach ($group_um as $group => $value) {
-                $users = array_merge($users, users_get_users_by_group($group, $value));
+                $users = array_merge($users, users_get_users_by_group($group, $value, false));
             }
         }
     }

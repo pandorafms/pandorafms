@@ -81,6 +81,7 @@ class User
 
     public function isLogged()
     {
+        global $config;
         $system = System::getInstance();
 
         $autologin = $system->getRequest('autologin', false);
@@ -89,6 +90,33 @@ class User
             $password = $system->getRequest('password', null);
 
             $this->login($user, $password);
+        } else {
+            if (isset($_GET['loginhash']) === true) {
+                // Hash login process.
+                $loginhash_data = get_parameter('loginhash_data', '');
+                $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
+                if ($config['loginhash_pwd'] != ''
+                    && $loginhash_data == md5(
+                        $loginhash_user.io_output_password(
+                            $config['loginhash_pwd']
+                        )
+                    )
+                ) {
+                    $this->login($loginhash_user, $config['loginhash_pwd']);
+                } else {
+                    include_once 'general/login_page.php';
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_REGISTRATION,
+                        'Loginhash failed',
+                        'system'
+                    );
+                    while (ob_get_length() > 0) {
+                        ob_end_flush();
+                    }
+
+                    exit('</html>');
+                }
+            }
         }
 
         return $this->logged;

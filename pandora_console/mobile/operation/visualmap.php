@@ -429,9 +429,9 @@ class Visualmap
 
         $output .= '$( window ).on( "orientationchange", function( event )';
         $output .= ' { window.location.href = "';
-        $output .= ui_get_full_url(
-            '/mobile/index.php?page=visualmap&id='.$visualConsoleId
-        );
+        $output .= ui_get_full_url('/');
+        $output .= (is_metaconsole() === true) ? '../../' : '';
+        $output .= 'mobile/index.php?page=visualmap&id='.$visualConsoleId;
         $output .= '" });';
 
         $output .= '</script>';

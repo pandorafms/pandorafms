@@ -47,20 +47,40 @@ require_once $config['homedir'].'/include/functions_gis.php';
 require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_config_agents.php');
 
-if (is_ajax()) {
-    $get_n_conf_files = (bool) get_parameter('get_n_conf_files');
-    if ($get_n_conf_files) {
+if (is_ajax() === true) {
+    $get_n_conf_files = (bool) get_parameter('get_n_conf_files', false);
+    $groups_secondary_selected = (bool) get_parameter('groups_secondary_selected', false);
+
+    if ($get_n_conf_files === true) {
         $id_agents = get_parameter('id_agents');
         $cont = 0;
         foreach ($id_agents as $id_agent) {
             $name = agents_get_name($id_agent);
             $agent_md5 = md5($name);
-            if (file_exists($config['remote_config'].'/md5/'.$agent_md5.'.md5')) {
+            if (file_exists($config['remote_config'].'/md5/'.$agent_md5.'.md5') === true) {
                 $cont++;
             }
         }
 
         echo $cont;
+        return;
+    }
+
+    if ($groups_secondary_selected === true) {
+        $groups = get_parameter('groups', []);
+        $groups_selected = get_parameter('groups_selected', []);
+        hd($groups, true);
+        hd($groups_selected, true);
+
+        $user_groups = users_get_groups($config['user'], 'AR', false);
+        $ret = [];
+        foreach ($user_groups as $id_gr => $name_group) {
+            if (in_array($id_gr, $groups) === false) {
+                $ret[$id_gr] = $name_group;
+            }
+        }
+
+        echo json_encode($ret);
         return;
     }
 }
@@ -782,28 +802,57 @@ $table->data[0][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255,
 
 // Secondary Groups.
 if (enterprise_installed() === true) {
-    $table->data['secondary_groups_added'][0] = __('Secondary groups added');
-    $table->data['secondary_groups_added'][1] = html_print_select_agent_secondary(
-        $agent,
-        $id_agente,
-        [
-            'container'   => true,
-            'id_form'     => 'form_agent',
-            'extra_id'    => '_added',
-            'only_select' => true,
-        ]
+    $groups = users_get_groups($config['id_user'], 'AW', false);
+    $table->data['secondary_groups_added'][0] = __('Add secondary groups');
+    $table->data['secondary_groups_added'][1] = html_print_select(
+        $groups,
+        'secondary_groups_added[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 500px; max-width: 500px; max-height: 100px',
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
     );
 
-    $table->data['seconsary_groups_removed'][0] = __('Secondary groups remove');
-    $table->data['seconsary_groups_removed'][1] = html_print_select_agent_secondary(
-        $agent,
-        $id_agente,
-        [
-            'container'   => true,
-            'id_form'     => 'form_agent',
-            'extra_id'    => '_removed',
-            'only_select' => true,
-        ]
+    $table->data['secondary_groups_removed'][0] = __('Add secondary groups');
+    $table->data['secondary_groups_removed'][1] = html_print_select(
+        $groups,
+        'secondary_groups_removed[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 500px; max-width: 500px; max-height: 100px',
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
     );
 }
 
@@ -1165,25 +1214,26 @@ $(document).ready (function () {
         jQuery.each ($("#id_agents option:selected"), function (i, val) {
             idAgents.push($(val).val());
         });
-        jQuery.post ("ajax.php",
-                {"page" : "godmode/massive/massive_edit_agents",
+        jQuery.post (
+            "ajax.php",
+            {
+                "page" : "godmode/massive/massive_edit_agents",
                 "get_n_conf_files" : 1,
                 "id_agents[]" : idAgents
-                },
-                function (data, status) {
-                    if (data == 0) { 
-                        $("#delete_configurations").attr("style", "display: none");
-                        $("#not_available_configurations").attr("style", "");
-                    }
-                    else {
-                        $("#n_configurations").text(data);
-                        $("#not_available_configurations").attr("style", "display: none");
-                        $("#delete_configurations").attr("style", "");
-                    }
-                },
-                "json"
-            );
-        
+            },
+            function (data, status) {
+                if (data == 0) {
+                    $("#delete_configurations").attr("style", "display: none");
+                    $("#not_available_configurations").attr("style", "");
+                }
+                else {
+                    $("#n_configurations").text(data);
+                    $("#not_available_configurations").attr("style", "display: none");
+                    $("#delete_configurations").attr("style", "");
+                }
+            },
+            "json"
+        );
         $("#form_agents").attr("style", "");
 
         if($("#safe_mode_change").val() == 1) {
@@ -1223,8 +1273,41 @@ $(document).ready (function () {
 
     disabled = 2;
 
-    //$("#id_group").trigger("change");
+    $("#status_agents").change(function() {
+        $("#id_group").trigger("change");
+    });
 
+    $("#secondary_groups_added").change(
+        function() {
+            var groups = $("#secondary_groups_added").val();
+            var groups_selected = $("#secondary_groups_removed").val();
+            jQuery.post (
+                "ajax.php",
+                {
+                    "page" : "godmode/massive/massive_edit_agents",
+                    "groups_secondary_selected" : 1,
+                    "groups" : groups
+                },
+                function (data, status) {
+                    $('#secondary_groups_removed').empty();
+                    $('#secondary_groups_removed').val(null).trigger("change");
+                    if($.type(data) === "object"){
+                        jQuery.each (data, function (id, value) {
+                            option = $("<option></option>").attr("value", id).html(value);
+                            if (inArray(id, groups_selected) === true) {
+                                option.attr("selected", true);
+                            }
+                            $("#secondary_groups_removed").append(option).trigger("change");
+                        });
+                    } else {
+                        option = $("<option></option>").attr("value", '').html('None');
+                        $("#secondary_groups_removed").append(option).trigger("change");
+                    }
+                },
+                "json"
+            );
+        }
+    );
 });
 
 function changeIcons() {

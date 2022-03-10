@@ -11186,11 +11186,29 @@ function reporting_get_stats_users($data)
 
     $tdata = [];
     $tdata[0] = html_print_image('images/user.png', true, ['title' => __('Defined users'), 'class' => 'invert_filter']);
-    $user_groups = users_get_strict_mode_groups($config['id_user'], false);
-    if (array_key_exists(0, $user_groups)) {
-        $users = users_get_user_users($config['id_user'], 'AR', true);
+    $user_is_admin = users_is_admin();
+
+    $users = [];
+
+    if ($user_is_admin) {
+        $users = get_users('', ['disabled' => 0], ['id_user', 'is_admin']);
     } else {
-        $users = users_get_user_users($config['id_user'], 'AR', false);
+        $group_um = users_get_groups_UM($config['id_user']);
+        // 0 is the group 'all'.
+        if (isset($group_um[0])) {
+            $users = get_users('', ['disabled' => 0], ['id_user', 'is_admin']);
+        } else {
+            foreach ($group_um as $group => $value) {
+                $users = array_merge($users, users_get_users_by_group($group, $value, false));
+            }
+        }
+    }
+
+    foreach ($users as $user_id => $user_info) {
+        // If user is not admin then don't display admin users.
+        if ($user_is_admin === false && (bool) $user_info['is_admin'] === true) {
+            unset($users[$user_id]);
+        }
     }
 
     $tdata[1] = count($users);

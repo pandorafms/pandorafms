@@ -15,7 +15,7 @@ use threads::shared;
 use File::Path qw(rmtree);
 
 # Default lib dir for Pandora FMS RPM and DEB packages.
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;

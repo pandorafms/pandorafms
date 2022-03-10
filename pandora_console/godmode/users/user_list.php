@@ -260,9 +260,21 @@ if (is_metaconsole() === true) {
 
 
 $disable_user = get_parameter('disable_user', false);
-if ((bool) get_parameter('user_del', false) === true) {
+$delete_user = (bool) get_parameter('user_del', false);
+
+if ($delete_user === true) {
     // Delete user.
     $id_user = get_parameter('delete_user', 0);
+    if (users_is_admin($id_user) === true && users_is_admin() === false) {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to delete admininstrator user by non administrator user '.$config['id_user']
+        );
+
+        include 'general/noaccess.php';
+        exit;
+    }
+
     // Only allow delete user if is not the actual user.
     if ($id_user != $config['id_user']) {
         $user_row = users_get_user_by_id($id_user);
@@ -332,6 +344,16 @@ if ((bool) get_parameter('user_del', false) === true) {
     // Disable_user.
     $id_user = get_parameter('id', 0);
 
+    if (users_is_admin($id_user) === true && users_is_admin() === false) {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to disable admininstrator user by non administrator user '.$config['id_user']
+        );
+
+        include 'general/noaccess.php';
+        exit;
+    }
+
     if ($id_user !== 0) {
         $result = users_disable($id_user, $disable_user);
     } else {
@@ -353,9 +375,9 @@ if ((bool) get_parameter('user_del', false) === true) {
     }
 }
 
-$filter_group = (int) get_parameter('filter_group', 0);
-$filter_search = get_parameter('filter_search', '');
-$search = (bool) get_parameter('search', false);
+        $filter_group = (int) get_parameter('filter_group', 0);
+        $filter_search = get_parameter('filter_search', '');
+        $search = (bool) get_parameter('search', false);
 
 if (($filter_group == 0) && ($filter_search == '')) {
     $search = false;
@@ -664,7 +686,7 @@ foreach ($info as $user_id => $user_info) {
 
                 if ($total_profile == 0 && count($user_profiles) >= 5) {
                     $data[4] .= '<span onclick="showGroups()" class="pdd_l_15px">
-                    '.html_print_image(
+            '.html_print_image(
                         'images/zoom.png',
                         true,
                         [
@@ -855,20 +877,21 @@ if ($is_management_allowed === true) {
     }
 }
 
+
 echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
 echo '<script type="text/javascript">
 function showGroups(){
-    var groups_list = document.getElementById("groups_list");
+var groups_list = document.getElementById("groups_list");
 
-    if(groups_list.style.display == "none"){
-        document.querySelectorAll("[id=groups_list]").forEach(element=> 
-        element.style.display = "block");
-    }else{
-        document.querySelectorAll("[id=groups_list]").forEach(element=> 
-        element.style.display = "none");
-    };
+if(groups_list.style.display == "none"){
+    document.querySelectorAll("[id=groups_list]").forEach(element=> 
+    element.style.display = "block");
+}else{
+    document.querySelectorAll("[id=groups_list]").forEach(element=> 
+    element.style.display = "none");
+};
 }
 </script>';

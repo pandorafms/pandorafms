@@ -777,8 +777,10 @@ function users_get_groups_UM($id_user)
 /**
  * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
  *
- * @param  string User id
- * @param  boolean        $disabled Return also disabled users
+ * @param string  $id_group User id.
+ * @param boolean $um       Um.
+ * @param boolean $disabled Reurn also disabled users.
+ *
  * @return array Return .
  */
 function users_get_users_by_group($id_group, $um=false, $disabled=true)

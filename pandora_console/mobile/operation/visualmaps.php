@@ -203,7 +203,7 @@ class Visualmaps
         $system = System::getInstance();
         $ui = Ui::getInstance();
 
-        $visualmaps = visual_map_get_user_layouts();
+        $visualmaps = visual_map_get_user_layouts(false, false, false, true, true);
 
         if (empty($visualmaps) === true) {
             $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');

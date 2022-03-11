@@ -829,7 +829,7 @@ if (enterprise_installed() === true) {
         true
     );
 
-    $table->data['secondary_groups_removed'][0] = __('Add secondary groups');
+    $table->data['secondary_groups_removed'][0] = __('Remove secondary groups');
     $table->data['secondary_groups_removed'][1] = html_print_select(
         $groups,
         'secondary_groups_removed[]',

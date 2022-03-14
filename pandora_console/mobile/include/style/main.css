@@ -1348,6 +1348,12 @@ span.nobold * {
   border-radius: 50%;
 }
 
+.status_small_rectangles {
+  width: 20px;
+  height: 10px;
+  display: inline-block;
+}
+
 .ui-content .ui-listview,
 .ui-panel-inner > .ui-listview {
   margin: 0 !important;

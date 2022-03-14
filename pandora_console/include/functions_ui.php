@@ -2878,8 +2878,6 @@ function ui_print_status_sets(
         $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
-    $options['style'] .= 'width: 100%;';
-
     if (isset($options['class']) === true) {
         $options['class'] = $options['class'];
     }

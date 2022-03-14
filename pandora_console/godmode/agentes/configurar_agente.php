@@ -985,7 +985,6 @@ if ($update_agent) {
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
 
-
     if ($fields === false) {
         $fields = [];
     }

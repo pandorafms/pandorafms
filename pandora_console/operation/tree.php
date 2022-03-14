@@ -45,6 +45,8 @@ $group_id      = (int) get_parameter('group_id');
 $tag_id        = (int) get_parameter('tag_id');
 $strict_acl    = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 $serach_hirearchy = (bool) get_parameter('searchHirearchy', false);
+$show_disabled = get_parameter('show_disabled', false);
+
 // ---------------------Tabs -------------------------------------------
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
@@ -249,6 +251,10 @@ $row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_
 if (is_metaconsole() === true) {
     $table->data[] = $row;
     $row = [];
+    $row[] = __('Show only disabled');
+    $row[] = html_print_checkbox('show_disabled', $show_disabled, false, true);
+    $table->data[] = $row;
+    $row = [];
 }
 
 $row[] = html_print_submit_button(__('Filter'), 'uptbutton', false, 'class="sub search"', true);
@@ -388,6 +394,13 @@ enterprise_hook('close_meta_frame');
         else{
             parameters['filter']['show_not_init_modules'] = 0;
             $('#hidden-show_not_init_modules_hidden').val(0);
+        }
+
+        if($("#checkbox-show_disabled").is(':checked')){
+            parameters['filter']['show_disabled'] = 1;
+        }
+        else{
+            parameters['filter']['show_disabled'] = 0;
         }
 
         $.ajax({

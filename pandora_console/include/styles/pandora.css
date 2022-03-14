@@ -7678,6 +7678,11 @@ div.graph div.legend table {
   float: left;
 }
 
+#table3-secondary_groups_added .select2-container,
+#table3-secondary_groups_removed .select2-container {
+  width: 100% !important;
+}
+
 .ux_console_module {
   float: left;
   width: 98%;

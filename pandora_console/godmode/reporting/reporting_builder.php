@@ -3556,25 +3556,6 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 }
 
 if ($resultOperationDB !== null) {
-    $err = '';
-    switch ($_POST['type']) {
-        case 'custom_graph':
-            $err .= 'You must enter custom graph';
-        break;
-
-        case 'SLA':
-            $err .= 'You must enter some character in SLA limit field';
-        default:
-            $err .= '';
-        break;
-    }
-
-    ui_print_result_message(
-        $resultOperationDB,
-        __('Successfull action'),
-        __('Unsuccessful action<br><br>'.$err)
-    );
-
     if ($action == 'update') {
         $buttons[$activeTab]['active'] = false;
         $activeTab = 'list_items';
@@ -3602,6 +3583,25 @@ if ($resultOperationDB !== null) {
             );
         }
     }
+
+    $err = '';
+    switch ($_POST['type']) {
+        case 'custom_graph':
+            $err .= 'You must enter custom graph';
+        break;
+
+        case 'SLA':
+            $err .= 'You must enter some character in SLA limit field';
+        default:
+            $err .= '';
+        break;
+    }
+
+    ui_print_result_message(
+        $resultOperationDB,
+        __('Successfull action'),
+        __('Unsuccessful action<br><br>'.$err)
+    );
 }
 
 switch ($activeTab) {

@@ -5734,3 +5734,198 @@ function html_print_select_search(
         echo $output;
     }
 }
+
+
+/**
+ * Print html select for agents secondary.
+ *
+ * @param integer $agent     Agent.
+ * @param integer $id_agente Id Agent.
+ * @param array   $options   Array options.
+ *
+ * @return string Html output.
+ */
+function html_print_select_agent_secondary($agent, $id_agente, $options=[])
+{
+    ui_require_css_file('agent_manager');
+    ui_require_javascript_file('pandora_agents');
+
+    if (empty($options) === '' || isset($options['id_form']) === false) {
+        $options['id_form'] = 'form_agent';
+    }
+
+    if (empty($options) === '' || isset($options['extra_id']) === false) {
+        $options['extra_id'] = '';
+    }
+
+    if (empty($options) === '' || isset($options['only_select']) === false) {
+        $options['only_select'] = false;
+    }
+
+    $secondary_groups_selected = enterprise_hook(
+        'agents_get_secondary_groups',
+        [$id_agente]
+    );
+
+    $name = 'secondary_groups'.$options['extra_id'];
+    if ($options['only_select'] === true) {
+        $name = 'secondary_groups'.$options['extra_id'].'[]';
+    }
+
+    $adv_secondary_groups_left = html_print_select_groups(
+        // Id_user.
+        // Use the current user to select the groups.
+        false,
+        // Privilege.
+        // ACL permission.
+        'AR',
+        // ReturnAllGroup.
+        // Not all group.
+        false,
+        // Name.
+        // HTML id.
+        $name,
+        // Selected.
+        // No select any by default.
+        '',
+        // Script.
+        // Javascript onChange code.
+        '',
+        // Nothing.
+        // Do not user no selected value.
+        false,
+        // Nothing_value.
+        // Do not use no selected value.
+        0,
+        // Return.
+        // Return HTML (not echo).
+        true,
+        // Multiple.
+        // Multiple selection.
+        true,
+        // Sort.
+        // Sorting by default.
+        true,
+        // Class.
+        // CSS classnames (default).
+        '',
+        // Disabled.
+        // Not disabled (default).
+        false,
+        // Style.
+        // Inline styles (default).
+        'min-width:170px;',
+        // Option_style.
+        // Option style select (default).
+        false,
+        // Id_group.
+        // Do not truncate the users tree (default).
+        false,
+        // Keys_field.
+        // Key to get as value (default).
+        'id_grupo',
+        // Strict_user.
+        // Not strict user (default).
+        false,
+        // Delete_groups.
+        // Do not show the primary group in this selection.
+        array_merge(
+            (empty($secondary_groups_selected['plain']) === false) ? $secondary_groups_selected['plain'] : [],
+            [$agent['id_grupo']]
+        )
+        // Include_groups.
+        // Size.
+        // Simple_multiple_options.
+    );
+
+    if ($options['only_select'] === false) {
+        $dictionary = base64_encode(
+            json_encode(
+                [
+                    'primary_group' => __('Primary group cannot be secondary too.'),
+                    'strNone'       => __('None'),
+                ]
+            )
+        );
+
+        $adv_secondary_groups_arrows = html_print_input_image(
+            'add_secondary',
+            'images/darrowright_green.png',
+            1,
+            '',
+            true,
+            [
+                'id'      => 'right_autorefreshlist'.$options['extra_id'],
+                'title'   => __('Add secondary groups'),
+                'onclick' => 'agent_manager_add_secondary_groups(event, '.$id_agente.',\''.$options['extra_id'].'\', \''.$options['id_form'].'\', \''.$dictionary.'\');',
+            ]
+        );
+
+        $adv_secondary_groups_arrows .= html_print_input_image(
+            'remove_secondary',
+            'images/darrowleft_green.png',
+            1,
+            '',
+            true,
+            [
+                'id'      => 'left_autorefreshlist'.$options['extra_id'],
+                'title'   => __('Remove secondary groups'),
+                'onclick' => 'agent_manager_remove_secondary_groups(event, '.$id_agente.',\''.$options['extra_id'].'\', \''.$options['id_form'].'\', \''.$dictionary.'\');',
+            ]
+        );
+
+        $adv_secondary_groups_right .= html_print_select(
+        // Values.
+            $secondary_groups_selected['for_select'],
+            // HTML id.
+            'secondary_groups_selected'.$options['extra_id'],
+            // Selected.
+            '',
+            // Javascript onChange code.
+            '',
+            // Nothing selected.
+            false,
+            // Nothing selected.
+            0,
+            // Return HTML (not echo).
+            true,
+            // Multiple selection.
+            true,
+            // Sort.
+            true,
+            // Class.
+            '',
+            // Disabled.
+            false,
+            // Style.
+            'min-width:170px;'
+        );
+
+        $output = '';
+        if (isset($options['container']) === true
+            && $options['container'] === true
+        ) {
+            $output = '<div class="secondary_groups_list">';
+        }
+
+        $output .= '<div class="sg_source">';
+        $output .= $adv_secondary_groups_left;
+        $output .= '</div>';
+        $output .= '<div class="secondary_group_arrows">';
+        $output .= $adv_secondary_groups_arrows;
+        $output .= '</div>';
+        $output .= '<div class="sg_target">';
+        $output .= $adv_secondary_groups_right;
+        $output .= '</div>';
+
+        if (isset($options['container']) === true
+            && $options['container'] === true
+        ) {
+            $output .= '</div>';
+        }
+    } else {
+        $output .= $adv_secondary_groups_left;
+    }
+
+    return $output;
+}

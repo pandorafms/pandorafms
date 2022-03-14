@@ -521,7 +521,7 @@ function configure_modules_form() {
           );
         }
 
-        if (tags != "") {
+        if (tags != "" && tags != undefined && tangs != null) {
           tags = tags.split(",");
 
           // Fill the selected tags box with select ones

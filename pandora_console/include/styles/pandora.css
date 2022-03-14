@@ -875,6 +875,9 @@ select:-internal-list-box {
 .invisible_important {
   display: none !important;
 }
+.invisible_events {
+  display: none;
+}
 
 .visible {
   display: block;

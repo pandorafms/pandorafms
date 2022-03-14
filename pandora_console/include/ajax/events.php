@@ -1578,14 +1578,14 @@ if ($get_extended_event) {
 
     $comments = '<div id="extended_event_comments_page" class="extended_event_pages"></div>';
 
-    $notifications = '<div id="notification_comment_error" class="invisible">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
-    $notifications .= '<div id="notification_comment_success" class="invisible">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_error" class="invisible">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_success" class="invisible">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_error" class="invisible">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_success" class="invisible">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications = '<div id="notification_comment_error" class="invisible_events">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
+    $notifications .= '<div id="notification_comment_success" class="invisible_events">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_error" class="invisible_events">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_success" class="invisible_events">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_error" class="invisible_events">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_success" class="invisible_events">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
 
-    $loading = '<div id="response_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</div>';
+    $loading = '<div id="response_loading" class="invisible_events">'.html_print_image('images/spinner.gif', true).'</div>';
 
     $i = 0;
     $tab['general'] = $i++;

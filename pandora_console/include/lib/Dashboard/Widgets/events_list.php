@@ -502,6 +502,7 @@ class EventsListWidget extends Widget
 
         \ui_require_css_file('events', 'include/styles/', true);
         \ui_require_css_file('tables', 'include/styles/', true);
+        \ui_require_javascript_file('pandora_events', 'include/javascript/', true);
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
         $this->values['tagsId'] = explode(',', $this->values['tagsId'][0]);

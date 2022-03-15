@@ -4596,7 +4596,7 @@ function ui_print_page_header(
     $numChars=GENERIC_SIZE_TEXT,
     $alias='',
     $breadcrumbs='',
-    $hide_left_small=false,
+    $hide_left_small=false
 ) {
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {

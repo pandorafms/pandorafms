@@ -4267,6 +4267,10 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['onchange'])) {
             $output .= ' onchange="'.$options['onchange'].'"';
         }
+
+        if (isset($options['style']) === true) {
+            $output .= ' style="'.$options['style'].'"';
+        }
     }
 
     $output .= ' />';

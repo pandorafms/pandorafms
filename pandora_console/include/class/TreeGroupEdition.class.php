@@ -135,7 +135,7 @@ class TreeGroupEdition extends TreeGroup
         $groups = array_filter(
             $groups,
             function ($group) {
-                return !$group['have_parent'];
+                return !($group['have_parent'] ?? false);
             }
         );
 

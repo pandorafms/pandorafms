@@ -98,6 +98,13 @@ function hd($var, $file='', $oneline=false)
 }
 
 
+function dd($var)
+{
+    hd($var);
+    die();
+}
+
+
 /**
  * Encapsulation (ob) for debug print function.
  *
@@ -130,7 +137,10 @@ function html_f2str($function, $params)
 {
     ob_start();
 
-    call_user_func_array($function, $params);
+    call_user_func_array(
+        $function,
+        array_values(($params ?? []))
+    );
 
     return ob_get_clean();
 }
@@ -951,7 +961,9 @@ function html_print_select(
         }
 
         $output .= '<script type="text/javascript">';
-        $output .= '$("#'.$id.'").select2();';
+        $output .= '$("#'.$id.'").select2({
+            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').'
+        });';
 
         if ($required !== false) {
             $require_message = __('Please select an item from this list.');
@@ -983,6 +995,79 @@ function html_print_select(
             });';
 
             $output .= '$("#'.$id.'").trigger("change");';
+
+            $output .= 'var count_shift_'.$id.' = 0;';
+            $output .= 'var shift_array_'.$id.' = [];';
+            $output .= 'var options_selecteds_'.$id.' = [];';
+            $output .= '$("#'.$id.'").on("select2:select", function (e) {
+                if (event.shiftKey) {
+                    shift_array_'.$id.'.push(e.params.data.element.index);
+                    count_shift_'.$id.'++;
+                }
+                if(count_shift_'.$id.' == 2 ){
+                    if(shift_array_'.$id.'[0] <= shift_array_'.$id.'[1]) {
+                        for (var i = shift_array_'.$id.'[0]; i <= shift_array_'.$id.'[1]; i++) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            options_selecteds_'.$id.'.push(option_value);
+                        }
+                    } else {
+                        for (var i = shift_array_'.$id.'[0]; i >= shift_array_'.$id.'[1]; i--) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            options_selecteds_'.$id.'.push(option_value);
+                        }
+                    }
+
+                    $("#'.$id.'").val(
+                        [
+                            ...$("#'.$id.'").val(),
+                            ...options_selecteds_'.$id.'
+                        ]
+                    );
+
+                    $("#'.$id.'").trigger("change");
+                    $("#'.$id.'").select2("close");
+                    count_shift_'.$id.' = 0;
+                    shift_array_'.$id.' = [];
+                    options_selecteds_'.$id.' = [];
+                }
+            });';
+
+            $output .= 'var delete_count_shift_'.$id.' = 0;';
+            $output .= 'var delete_shift_array_'.$id.' = [];';
+            $output .= 'var delete_options_selecteds_'.$id.' = [];';
+            $output .= '$("#'.$id.'").on("select2:unselect", function (e) {
+                if (event.shiftKey) {
+                    delete_shift_array_'.$id.'.push(e.params.data.element.index);
+                    delete_count_shift_'.$id.'++;
+                }
+                if(delete_count_shift_'.$id.' == 2 ){
+                    if(delete_shift_array_'.$id.'[0] <= delete_shift_array_'.$id.'[1]) {
+                        for (var i = delete_shift_array_'.$id.'[0]; i <= delete_shift_array_'.$id.'[1]; i++) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            delete_options_selecteds_'.$id.'.push(option_value);
+                        }
+                    } else {
+                        for (var i = delete_shift_array_'.$id.'[0]; i >= delete_shift_array_'.$id.'[1]; i--) {
+                            var option_value = $("#'.$id.' option").eq(i).val();
+                            delete_options_selecteds_'.$id.'.push(option_value);
+                        }
+                    }
+
+                    var result = [];
+                    $("#'.$id.'").val().forEach(function(value) {
+                        if (delete_options_selecteds_'.$id.'.includes(value) == false) {
+                            result.push(value);
+                        }
+                    });
+
+                    $("#'.$id.'").val(result);
+                    $("#'.$id.'").trigger("change");
+                    $("#'.$id.'").select2("close");
+                    delete_count_shift_'.$id.' = 0;
+                    delete_shift_array_'.$id.' = [];
+                    delete_options_selecteds_'.$id.' = [];
+                }
+            });';
 
             $output .= 'function checkMultipleAll(id){
                 if ($("#checkbox-"+id.id+"-check-all").is(":checked")) {
@@ -1574,17 +1659,31 @@ function html_print_select_multiple_modules_filtered(array $data):string
         0 => __('Show common modules'),
         1 => __('Show all modules'),
     ];
-    $output .= html_print_input(
-        [
-            'label'    => __('Show common modules'),
-            'type'     => 'select',
-            'fields'   => $selection,
-            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
-            'selected' => $data['mShowCommonModules'],
-            'return'   => true,
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+
+    if (true) {
+        $output .= html_print_input(
+            [
+
+                'label'    => __('Only common modules'),
+                'type'     => 'switch',
+                'value'    => 'checked',
+                'id'       => 'filtered-module-show-common-modules-'.$uniqId,
+                'return'   => true,
+                'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'  => __('Show common modules'),
+                'type'   => 'select',
+                'fields' => $selection,
+                'name'   => 'filtered-module-show-common-modules-'.$uniqId,
+                'return' => true,
+                'script' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     if ($data['mAgents'] !== null) {
         $all_modules = get_modules_agents(
@@ -2320,6 +2419,7 @@ function html_print_input_text_extended(
         'autocomplete',
         'form',
         'list',
+        'pattern',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" autocomplete="'.$autocomplete.'"');
@@ -2604,13 +2704,16 @@ function html_print_input_password(
  *
  * The element will have an id like: "text-$name"
  *
- * @param string  $name      Input name.
- * @param string  $value     Input value.
- * @param string  $alt       Alternative HTML string (invalid - not used).
- * @param integer $size      Size of the input (optional).
- * @param integer $maxlength Maximum length allowed (optional).
- * @param boolean $return    Whether to return an output string or echo now (optional, echo by default).
- * @param boolean $disabled  Disable the button (optional, button enabled by default).
+ * @param string      $name        Input name.
+ * @param string      $value       Input value.
+ * @param string      $alt         Alternative HTML string (invalid - not used).
+ * @param integer     $size        Size of the input (optional).
+ * @param integer     $maxlength   Maximum length allowed (optional).
+ * @param boolean     $return      Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean     $disabled    Disable the button (optional, button enabled by default).
+ * @param string|null $list        Some stuff.
+ * @param string|null $placeholder Some stuff.
+ * @param string|null $pattern     Some stuff.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2633,7 +2736,8 @@ function html_print_input_text(
     $onKeyUp='',
     $disabled=false,
     $list='',
-    $placeholder=null
+    $placeholder=null,
+    $pattern=null
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2680,6 +2784,10 @@ function html_print_input_text(
 
     if ($list !== null) {
         $attr['placeholder'] = $placeholder;
+    }
+
+    if ($pattern !== null) {
+        $attr['pattern'] = $pattern;
     }
 
     return html_print_input_text_extended(
@@ -2870,7 +2978,7 @@ function html_print_input_number(array $settings):string
                 $output .= $attribute.'="'.$attr_value.'" ';
             }
 
-            $output .= $function.'/>';
+            $output .= '/>';
         }
     }
 
@@ -4159,6 +4267,10 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['onchange'])) {
             $output .= ' onchange="'.$options['onchange'].'"';
         }
+
+        if (isset($options['style']) === true) {
+            $output .= ' style="'.$options['style'].'"';
+        }
     }
 
     $output .= ' />';
@@ -4553,8 +4665,8 @@ function html_print_switch($attributes=[])
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
-    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value'] ?? false) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled'] ?? false) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -4576,9 +4688,9 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
-    $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+    $disabled_class = (bool) ($attributes['disabled'] ?? false) ? ' p-slider-disabled' : '';
 
-    return "<label class='p-switch ".$attributes['container-class']."' style='".$attributes['style']."'>
+    return "<label class='p-switch ".($attributes['container-class'] ?? '')."' style='".($attributes['style'] ?? '')."'>
 			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider".$disabled_class."'></span>
 		</label>";
@@ -4654,7 +4766,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     $output = '';
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
         $output .= '<label '.$style.' class="'.$data['label_class'].'">';
@@ -4679,7 +4791,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= ' class="'.$data['input_class'].'">';
     }
 
-    switch ($data['type']) {
+    switch (($data['type'] ?? null)) {
         case 'text':
             $output .= html_print_input_text(
                 $data['name'],
@@ -4700,7 +4812,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['list']) === true) ? $data['list'] : ''),
-                ((isset($data['placeholder']) === true) ? $data['placeholder'] : '')
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : ''),
+                ((isset($data['pattern']) === true) ? $data['pattern'] : null)
             );
         break;
 
@@ -4731,15 +4844,15 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'text_extended':
             $output .= html_print_input_text_extended(
-                $data['name'],
-                $data['value'],
-                $data['id'],
-                $data['alt'],
-                $data['size'],
-                $data['maxlength'],
-                $data['disabled'],
-                $data['script'],
-                $data['attributes'],
+                ($data['name'] ?? null),
+                ($data['value'] ?? null),
+                ($data['id'] ?? null),
+                ($data['alt'] ?? null),
+                ($data['size'] ?? null),
+                ($data['maxlength'] ?? null),
+                ($data['disabled'] ?? null),
+                ($data['script'] ?? null),
+                ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
                 ((isset($data['function']) === true) ? $data['function'] : '')
@@ -4827,7 +4940,13 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['modal']) === true) ? $data['modal'] : false),
                 ((isset($data['message']) === true) ? $data['message'] : ''),
-                ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['truncate_size']) === true) ? $data['truncate_size'] : false),
+                ((isset($data['select2_enable']) === true) ? $data['select2_enable'] : true),
+                ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
+                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false)
             );
         break;
 
@@ -4949,7 +5068,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'checkbox':
             $output .= html_print_checkbox(
                 $data['name'],
-                $data['value'],
+                ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
@@ -5246,7 +5365,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         $output .= '</'.$data['wrapper'].'>';
     }
 
-    if ($data['label'] && $input_only === false) {
+    if (($data['label'] ?? false) && $input_only === false) {
         $output .= '</'.$wrapper.'>';
         if (!$data['return']) {
             echo '</'.$wrapper.'>';
@@ -5618,4 +5737,199 @@ function html_print_select_search(
     } else {
         echo $output;
     }
+}
+
+
+/**
+ * Print html select for agents secondary.
+ *
+ * @param integer $agent     Agent.
+ * @param integer $id_agente Id Agent.
+ * @param array   $options   Array options.
+ *
+ * @return string Html output.
+ */
+function html_print_select_agent_secondary($agent, $id_agente, $options=[])
+{
+    ui_require_css_file('agent_manager');
+    ui_require_javascript_file('pandora_agents');
+
+    if (empty($options) === '' || isset($options['id_form']) === false) {
+        $options['id_form'] = 'form_agent';
+    }
+
+    if (empty($options) === '' || isset($options['extra_id']) === false) {
+        $options['extra_id'] = '';
+    }
+
+    if (empty($options) === '' || isset($options['only_select']) === false) {
+        $options['only_select'] = false;
+    }
+
+    $secondary_groups_selected = enterprise_hook(
+        'agents_get_secondary_groups',
+        [$id_agente]
+    );
+
+    $name = 'secondary_groups'.$options['extra_id'];
+    if ($options['only_select'] === true) {
+        $name = 'secondary_groups'.$options['extra_id'].'[]';
+    }
+
+    $adv_secondary_groups_left = html_print_select_groups(
+        // Id_user.
+        // Use the current user to select the groups.
+        false,
+        // Privilege.
+        // ACL permission.
+        'AR',
+        // ReturnAllGroup.
+        // Not all group.
+        false,
+        // Name.
+        // HTML id.
+        $name,
+        // Selected.
+        // No select any by default.
+        '',
+        // Script.
+        // Javascript onChange code.
+        '',
+        // Nothing.
+        // Do not user no selected value.
+        false,
+        // Nothing_value.
+        // Do not use no selected value.
+        0,
+        // Return.
+        // Return HTML (not echo).
+        true,
+        // Multiple.
+        // Multiple selection.
+        true,
+        // Sort.
+        // Sorting by default.
+        true,
+        // Class.
+        // CSS classnames (default).
+        '',
+        // Disabled.
+        // Not disabled (default).
+        false,
+        // Style.
+        // Inline styles (default).
+        'min-width:170px;',
+        // Option_style.
+        // Option style select (default).
+        false,
+        // Id_group.
+        // Do not truncate the users tree (default).
+        false,
+        // Keys_field.
+        // Key to get as value (default).
+        'id_grupo',
+        // Strict_user.
+        // Not strict user (default).
+        false,
+        // Delete_groups.
+        // Do not show the primary group in this selection.
+        array_merge(
+            (empty($secondary_groups_selected['plain']) === false) ? $secondary_groups_selected['plain'] : [],
+            [$agent['id_grupo']]
+        )
+        // Include_groups.
+        // Size.
+        // Simple_multiple_options.
+    );
+
+    if ($options['only_select'] === false) {
+        $dictionary = base64_encode(
+            json_encode(
+                [
+                    'primary_group' => __('Primary group cannot be secondary too.'),
+                    'strNone'       => __('None'),
+                ]
+            )
+        );
+
+        $adv_secondary_groups_arrows = html_print_input_image(
+            'add_secondary',
+            'images/darrowright_green.png',
+            1,
+            '',
+            true,
+            [
+                'id'      => 'right_autorefreshlist'.$options['extra_id'],
+                'title'   => __('Add secondary groups'),
+                'onclick' => 'agent_manager_add_secondary_groups(event, '.$id_agente.',\''.$options['extra_id'].'\', \''.$options['id_form'].'\', \''.$dictionary.'\');',
+            ]
+        );
+
+        $adv_secondary_groups_arrows .= html_print_input_image(
+            'remove_secondary',
+            'images/darrowleft_green.png',
+            1,
+            '',
+            true,
+            [
+                'id'      => 'left_autorefreshlist'.$options['extra_id'],
+                'title'   => __('Remove secondary groups'),
+                'onclick' => 'agent_manager_remove_secondary_groups(event, '.$id_agente.',\''.$options['extra_id'].'\', \''.$options['id_form'].'\', \''.$dictionary.'\');',
+            ]
+        );
+
+        $adv_secondary_groups_right .= html_print_select(
+        // Values.
+            $secondary_groups_selected['for_select'],
+            // HTML id.
+            'secondary_groups_selected'.$options['extra_id'],
+            // Selected.
+            '',
+            // Javascript onChange code.
+            '',
+            // Nothing selected.
+            false,
+            // Nothing selected.
+            0,
+            // Return HTML (not echo).
+            true,
+            // Multiple selection.
+            true,
+            // Sort.
+            true,
+            // Class.
+            '',
+            // Disabled.
+            false,
+            // Style.
+            'min-width:170px;'
+        );
+
+        $output = '';
+        if (isset($options['container']) === true
+            && $options['container'] === true
+        ) {
+            $output = '<div class="secondary_groups_list">';
+        }
+
+        $output .= '<div class="sg_source">';
+        $output .= $adv_secondary_groups_left;
+        $output .= '</div>';
+        $output .= '<div class="secondary_group_arrows">';
+        $output .= $adv_secondary_groups_arrows;
+        $output .= '</div>';
+        $output .= '<div class="sg_target">';
+        $output .= $adv_secondary_groups_right;
+        $output .= '</div>';
+
+        if (isset($options['container']) === true
+            && $options['container'] === true
+        ) {
+            $output .= '</div>';
+        }
+    } else {
+        $output .= $adv_secondary_groups_left;
+    }
+
+    return $output;
 }

@@ -21,7 +21,7 @@ $id_report = (int) get_parameter('id');
 
 if (! $id_report) {
     db_pandora_audit(
-        'HACK Attempt',
+        AUDIT_LOG_HACK_ATTEMPT,
         'Trying to access report viewer withoud ID'
     );
     include 'general/noaccess.php';
@@ -36,7 +36,10 @@ enterprise_include_once('include/functions_reporting.php');
 
 
 if (!reporting_user_can_see_report($id_report)) {
-    db_pandora_audit('ACL Violation', 'Trying to access report viewer');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access report viewer'
+    );
     include 'general/noaccess.php';
     exit;
 }
@@ -328,7 +331,7 @@ $report = reporting_make_reporting_data(
     $period,
     'dinamic'
 );
-for ($i = 0; $i < sizeof($report['contents']); $i++) {
+for ($i = 0; $i < count($report['contents']); $i++) {
     $report['contents'][$i]['description'] = str_replace('&#x0d;&#x0a;', '<br/>', $report['contents'][$i]['description']);
 }
 

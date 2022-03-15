@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.759
+# Version 7.0NG.760
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -662,8 +662,8 @@ wuxserver 0
 # Force closing previous sessions on remote wux_host, only for Selenium Grid server 3.
 #clean_wux_sessions 1
 
-# Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
-syslogserver 1
+# Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY) disabled by default.
+syslogserver 0
 
 # Full path to syslog's output file (PANDORA FMS ENTERPRISE ONLY).
 syslog_file /var/log/messages

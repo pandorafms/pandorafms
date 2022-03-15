@@ -67,7 +67,7 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent General Information'
     );
     include_once 'general/noaccess.php';
@@ -365,7 +365,7 @@ $data[1] = ui_progress(
     ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto']))).' s',
     [
         'page'     => 'operation/agentes/ver_agente',
-        'interval' => (100 / $agent['intervalo']),
+        'interval' => (empty($agent['intervalo']) === true) ? 0 : (100 / $agent['intervalo']),
         'data'     => [
             'id_agente'       => $id_agente,
             'refresh_contact' => 1,

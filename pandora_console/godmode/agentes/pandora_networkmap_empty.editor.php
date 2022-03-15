@@ -73,7 +73,7 @@ if ($edit_networkmap) {
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access networkmap'
             );
             include 'general/noaccess.php';

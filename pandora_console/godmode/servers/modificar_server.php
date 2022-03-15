@@ -21,7 +21,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Server Management'
     );
     include 'general/noaccess.php';
@@ -46,6 +46,8 @@ if (isset($_GET['server'])) {
     if ($row['exec_proxy'] == 1) {
         $exec_server_enable = __('Yes');
     }
+
+    $table = new stdClass();
 
     $table->cellpadding = 4;
     $table->cellspacing = 4;

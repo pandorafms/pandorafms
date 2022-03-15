@@ -293,7 +293,7 @@ class AgentWizard extends HTML
 
         if (!check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
             );
 
@@ -543,11 +543,6 @@ class AgentWizard extends HTML
             enterprise_include_once('include/functions_satellite.php');
             // Get the servers.
             $rows = get_proxy_servers();
-
-            // Check if satellite server has remote configuration enabled.
-            $satellite_remote = config_agents_has_remote_configuration(
-                $this->idAgent
-            );
 
             // Generate a list with allowed servers.
             if (isset($rows) === true && is_array($rows) === true) {
@@ -1386,8 +1381,26 @@ class AgentWizard extends HTML
             $modulesActivated = $tmp;
         }
 
-        foreach (array_keys($data) as $k) {
-            foreach ($modulesActivated as $key => $value) {
+        /*
+         * Before changing anything inside those loops take in mind, if you
+         * change the module definition at interface level, those are the
+         * values wich will be applied to final module.
+         *
+         * There is no 'parse first default then specific' or similar.
+         *
+         * $modulesActivated has the modules to be created with the information
+         * retrieved from those specific modules.
+         *
+         * Only inherites from 'default' if you made no changes on module
+         * definition (at javascript level before calling this function).
+         */
+
+        foreach ($modulesActivated as $key => $value) {
+            foreach (array_keys($data) as $k) {
+                if (isset($data[$k]) === false || $data[$k] === '') {
+                    continue;
+                }
+
                 $valueStr = preg_replace('/\//', '\/', $value);
 
                 if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false
@@ -1401,114 +1414,151 @@ class AgentWizard extends HTML
 
                     if ($data['wizard_section'] === 'snmp_interfaces_explorer') {
                         if (isset($data['module-active-'.$key]) === false
-                            || $data['module-active-'.$key] == 0
+                            || (bool) $data['module-active-'.$key] === false
                         ) {
-                            if (empty(preg_match('/module-name-set/', $k)) === false) {
+                            if (preg_match('/module-name-set/', $k) > 0) {
                                 $result[$value]['name'] = $data['module-default_name-'.$key];
-                            } else if (empty(preg_match('/module-description-set/', $k)) === false) {
-                                $result[$value]['description'] = $data['module-default_description-'.$key];
-                            } else if (empty(preg_match('/module-value/', $k)) === false) {
-                                $result[$value]['value'] = $data['module-value-'.$key];
-                            } else if (empty(preg_match('/module-macros/', $k)) === false) {
-                                $result[$value]['macros'] = $data['module-macros-'.$key];
-                                continue;
-                            } else if (empty(preg_match('/module-id_plugin/', $k)) === false) {
-                                $result[$value]['id_plugin'] = $data['module-id_plugin-'.$key];
-                                continue;
-                            } else if (empty(preg_match('/module-id_modulo/', $k)) === false) {
-                                $result[$value]['id_modulo'] = $data['module-id_modulo-'.$key];
-                                continue;
-                            } else if (empty(preg_match('/module-unit/', $k)) === false) {
-                                $result[$value]['unit'] = $data['module-unit-'.$key];
-                                continue;
-                            } else if (empty(preg_match('/module-warning-min/', $k)) === false) {
-                                $result[$value]['warningMin'] = $data['module-warning-min-0_0-0'];
-                                continue;
-                            } else if (empty(preg_match('/module-warning-max/', $k)) === false) {
-                                $result[$value]['warningMax'] = $data['module-warning-max-0_0-0'];
-                                continue;
-                            } else if (empty(preg_match('/module-critical-min/', $k)) === false) {
-                                $result[$value]['criticalMin'] = $data['module-critical-min-0_0-0'];
-                                continue;
-                            } else if (empty(preg_match('/module-critical-max/', $k)) === false) {
-                                $result[$value]['criticalMax'] = $data['module-critical-max-0_0-0'];
-                                continue;
-                            } else if (empty(preg_match('/module-critical-inv/', $k)) === false) {
-                                if (isset($data['module-critical-inv-0_0-0'])) {
-                                    $result[$value]['criticalInv'] = $data['module-critical-inv-0_0-0_sent'];
-                                }
-
-                                continue;
-                            } else if (empty(preg_match('/module-warning-inv/', $k)) === false) {
-                                if (isset($data['module-warning-inv-0_0-0'])) {
-                                    $result[$value]['warningInv'] = $data['module-warning-inv-0_0-0_sent'];
-                                }
-
-                                continue;
-                            } else if (empty(preg_match('/module-warning-perc/', $k)) === false) {
-                                if (isset($data['module-warning-perc-0_0-0'])) {
-                                    $result[$value]['warningPerc'] = $data['module-warning-perc-0_0-0_sent'];
-                                }
-
-                                continue;
-                            } else if (empty(preg_match('/module-critical-perc/', $k)) === false) {
-                                if (isset($data['module-critical-perc-0_0-0'])) {
-                                    $result[$value]['criticalPerc'] = $data['module-critical-perc-0_0-0_sent'];
-                                }
-
                                 continue;
                             }
 
-                            preg_match('/^(.*).*?_(\d+)-+(\d+)$/', $k, $matches);
-                            $k = $matches[1].'_'.$matches[2].'-'.$matches[3];
+                            if (preg_match('/module-description-set/', $k) > 0) {
+                                $result[$value]['description'] = $data['module-description-set-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-value/', $k) > 0) {
+                                $result[$value]['value'] = $data['module-value-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-macros/', $k) > 0) {
+                                $result[$value]['macros'] = $data['module-macros-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-id_plugin/', $k) > 0) {
+                                $result[$value]['id_plugin'] = $data['module-id_plugin-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-id_modulo/', $k) > 0) {
+                                $result[$value]['id_modulo'] = $data['module-id_modulo-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-unit/', $k) > 0) {
+                                $result[$value]['unit'] = $data['module-unit-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-warning-min/', $k) > 0
+                                && '' !== $data['module-warning-min-'.$key]
+                            ) {
+                                $result[$value]['warningMin'] = $data['module-warning-min-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-warning-max/', $k) > 0
+                                && '' !== $data['module-warning-max-'.$key]
+                            ) {
+                                $result[$value]['warningMax'] = $data['module-warning-max-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-critical-min/', $k) > 0
+                                && '' !== $data['module-critical-min-'.$key]
+                            ) {
+                                $result[$value]['criticalMin'] = $data['module-critical-min-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-critical-max/', $k) > 0
+                                && '' !== $data['module-critical-max-'.$key]
+                            ) {
+                                $result[$value]['criticalMax'] = $data['module-critical-max-'.$key];
+                                continue;
+                            }
+
+                            if (preg_match('/module-critical-inv/', $k) > 0
+                                && isset($data['module-critical-inv-'.$key]) === true
+                            ) {
+                                $result[$value]['criticalInv'] = $data['module-critical-inv-'.$key.'_sent'];
+                                continue;
+                            }
+
+                            if (preg_match('/module-warning-inv/', $k) > 0
+                                && isset($data['module-warning-inv-'.$key]) === true
+                            ) {
+                                $result[$value]['warningInv'] = $data['module-warning-inv-'.$key.'_sent'];
+                                continue;
+                            }
+
+                            if (preg_match('/module-warning-perc/', $k) > 0
+                                && isset($data['module-warning-perc-'.$key]) === true
+                            ) {
+                                $result[$value]['warningPerc'] = $data['module-warning-perc-'.$key.'_sent'];
+                                continue;
+                            }
+
+                            if (preg_match('/module-critical-perc/', $k) > 0
+                                && isset($data['module-critical-perc-'.$key]) === true
+                            ) {
+                                $result[$value]['criticalPerc'] = $data['module-critical-perc-'.$key.'_sent'];
+                                continue;
+                            }
+
+                            if (preg_match('/^(.*).*?_(\d+)-+(\d+)$/', $k, $matches) > 0) {
+                                $k = $matches[1].'_'.$matches[2].'-'.$matches[3];
+                            }
                         } else {
-                            if (empty(preg_match('/module-value/', $k)) === false) {
+                            if (preg_match('/module-value/', $k) > 0
+                                && empty($data[$k]) === false
+                            ) {
                                 $result[$value]['value'] = $data[$k];
                             }
                         }
                     }
 
-                    if (empty(preg_match('/-'.$valueStr.'_sent$/', $k)) === false) {
-                        continue;
-                    }
-
-                    if (empty(preg_match('/module-warning-min/', $k)) === false) {
+                    // Specific customization only if switch is active.
+                    if (preg_match('/module-warning-min/', $k) > 0) {
                         $result[$value]['warningMin'] = $data[$k];
-                    } else if (empty(preg_match('/module-warning-max/', $k)) === false) {
+                    } else if (preg_match('/module-warning-max/', $k) > 0) {
                         $result[$value]['warningMax'] = $data[$k];
-                    } else if (empty(preg_match('/module-critical-min/', $k)) === false) {
+                    } else if (preg_match('/module-critical-min/', $k) > 0) {
                         $result[$value]['criticalMin'] = $data[$k];
-                    } else if (empty(preg_match('/module-critical-max/', $k)) === false) {
+                    } else if (preg_match('/module-critical-max/', $k) > 0) {
                         $result[$value]['criticalMax'] = $data[$k];
-                    } else if (empty(preg_match('/module-critical-inv/', $k)) === false) {
+                    } else if (preg_match('/module-critical-inv/', $k) > 0) {
                         $result[$value]['criticalInv'] = $data[$k.'_sent'];
-                    } else if (empty(preg_match('/module-warning-inv/', $k)) === false) {
+                    } else if (preg_match('/module-warning-inv/', $k) > 0) {
                         $result[$value]['warningInv'] = $data[$k.'_sent'];
-                    } else if (empty(preg_match('/module-warning-perc/', $k)) === false) {
+                    } else if (preg_match('/module-warning-perc/', $k) > 0) {
                         $result[$value]['warningPerc'] = $data[$k.'_sent'];
-                    } else if (empty(preg_match('/module-critical-perc/', $k)) === false) {
+                    } else if (preg_match('/module-critical-perc/', $k) > 0) {
                          $result[$value]['criticalPerc'] = $data[$k.'_sent'];
-                    } else if (empty(preg_match('/module-type/', $k)) === false) {
+                    } else if (preg_match('/module-type/', $k) > 0) {
                         $result[$value]['moduleType'] = $data[$k];
-                    } else if (empty(preg_match('/module-unit/', $k)) === false) {
+                    } else if (preg_match('/module-unit/', $k) > 0) {
                         $result[$value]['unit'] = $data[$k];
-                    } else if (empty(preg_match('/module-scan_type/', $k)) === false) {
+                    } else if (preg_match('/module-scan_type/', $k) > 0) {
                         $result[$value]['scan_type'] = (int) $data[$k];
-                    } else if (empty(preg_match('/module-execution_type/', $k)) === false) {
+                    } else if (preg_match('/module-execution_type/', $k) > 0) {
                         $result[$value]['execution_type'] = (int) $data[$k];
-                    } else if (($data['wizard_section'] !== 'snmp_interfaces_explorer') && (empty(preg_match('/module-value/', $k)) === false)) {
+                    } else if (($data['wizard_section'] !== 'snmp_interfaces_explorer')
+                        && preg_match('/module-value/', $k) > 0
+                    ) {
                         $result[$value]['value'] = $data[$k];
-                    } else if (empty(preg_match('/module-macros/', $k)) === false) {
+                    } else if (preg_match('/module-macros/', $k) > 0) {
                         $result[$value]['macros'] = $data[$k];
-                    } else if (empty(preg_match('/module-name-oid/', $k)) === false) {
+                    } else if (preg_match('/module-name-oid/', $k) > 0) {
                         $result[$value]['nameOid'] = $data[$k];
-                    } else if (empty(preg_match('/module-query_class/', $k)) === false) {
+                    } else if (preg_match('/module-query_class/', $k) > 0) {
                         $result[$value]['queryClass'] = $data[$k];
-                    } else if (empty(preg_match('/module-query_key_field/', $k)) === false) {
+                    } else if (preg_match('/module-query_key_field/', $k) > 0) {
                         $result[$value]['queryKeyField'] = $data[$k];
-                    } else if (empty(preg_match('/module-scan_filters/', $k)) === false) {
+                    } else if (preg_match('/module-scan_filters/', $k) > 0) {
                         $result[$value]['scanFilters'] = $data[$k];
-                    } else if (empty(preg_match('/module-query_filters/', $k)) === false) {
+                    } else if (preg_match('/module-query_filters/', $k) > 0) {
                         $result[$value]['queryFilters'] = $data[$k];
                     } else {
                         $result[$value][$k] = $data[$k];
@@ -5971,19 +6021,19 @@ class AgentWizard extends HTML
 
                 if($(checkbox).prop('checked', true)) {
                    if(checkbox_name.match(/warning-inv/gm) !== null) {
-                        $('#checkbox-module-warning-perc-'+uniqueId).prop('checked', false);
+                        $('#checkbox-module-warning-perc-'+uniqueId.replace('/','\\/')).prop('checked', false);
                    }
 
                    if(checkbox_name.match(/critical-inv/gm) !== null) {
-                        $('#checkbox-module-critical-perc-'+uniqueId).prop('checked', false);
+                        $('#checkbox-module-critical-perc-'+uniqueId.replace('/','\\/')).prop('checked', false);
                     }
 
                     if(checkbox_name.match(/warning-perc/gm) !== null) {
-                        $('#checkbox-module-warning-inv-'+uniqueId).prop('checked', false);
+                        $('#checkbox-module-warning-inv-'+uniqueId.replace('/','\\/')).prop('checked', false);
                     }
 
                     if(checkbox_name.match(/critical-perc/gm) !== null) {
-                        $('#checkbox-module-critical-inv-'+uniqueId).prop('checked', false);
+                        $('#checkbox-module-critical-inv-'+uniqueId.replace('/','\\/')).prop('checked', false);
                     }
                 }
 

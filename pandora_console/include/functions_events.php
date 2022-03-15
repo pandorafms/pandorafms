@@ -779,19 +779,19 @@ function events_get_all(
         );
     }
 
-    if (isset($filter['date_to'])
-        && !empty($filter['date_to'])
-        && $filter['date_to'] != '0000-00-00'
+    if (isset($filter['date_to']) === true
+        && empty($filter['date_to']) === false
+        && $filter['date_to'] !== '0000-00-00'
     ) {
         $date_to = $filter['date_to'];
     }
 
-    if (isset($filter['time_to'])) {
+    if (isset($filter['time_to']) === true) {
         $time_to = (empty($filter['time_to']) === true) ? '23:59:59' : $filter['time_to'];
     }
 
-    if (isset($date_to)) {
-        if (!isset($time_to)) {
+    if (isset($date_to) === true) {
+        if (isset($time_to) === false) {
             $time_to = '23:59:59';
         }
 
@@ -802,8 +802,8 @@ function events_get_all(
         );
     }
 
-    if (!isset($from)) {
-        if (isset($filter['event_view_hr']) && ($filter['event_view_hr'] > 0)) {
+    if (isset($from) === false) {
+        if (isset($filter['event_view_hr']) === true && ($filter['event_view_hr'] > 0)) {
             $sql_filters[] = sprintf(
                 ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
                 $filter['event_view_hr']
@@ -811,20 +811,20 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['id_agent']) && $filter['id_agent'] > 0) {
+    if (isset($filter['id_agent']) === true && $filter['id_agent'] > 0) {
         $sql_filters[] = sprintf(
             ' AND te.id_agente = %d ',
             $filter['id_agent']
         );
     }
 
-    if (!empty($filter['event_type']) && $filter['event_type'] != 'all') {
-        if ($filter['event_type'] == 'warning'
-            || $filter['event_type'] == 'critical'
-            || $filter['event_type'] == 'normal'
+    if (empty($filter['event_type']) === false && $filter['event_type'] !== 'all') {
+        if ($filter['event_type'] === 'warning'
+            || $filter['event_type'] === 'critical'
+            || $filter['event_type'] === 'normal'
         ) {
             $sql_filters[] = ' AND event_type LIKE "%'.$filter['event_type'].'%"';
-        } else if ($filter['event_type'] == 'not_normal') {
+        } else if ($filter['event_type'] === 'not_normal') {
             $sql_filters[] = ' AND (event_type LIKE "%warning%"
               OR event_type LIKE "%critical%"
               OR event_type LIKE "%unknown%")';
@@ -833,9 +833,9 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['severity']) && $filter['severity'] > 0) {
-        if (is_array($filter['severity'])) {
-            if (!in_array(-1, $filter['severity'])) {
+    if (isset($filter['severity']) === true && $filter['severity'] > 0) {
+        if (is_array($filter['severity']) === true) {
+            if (in_array(-1, $filter['severity']) === false) {
                 $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
                 if ($not_normal !== false) {
                     unset($filter['severity'][$not_normal]);
@@ -858,7 +858,7 @@ function events_get_all(
                         $filter['severity'][] = EVENT_CRIT_CRITICAL;
                     }
 
-                    if (!empty($filter['severity'])) {
+                    if (empty($filter['severity']) === false) {
                         $filter['severity'] = implode(',', $filter['severity']);
                         $sql_filters[] = sprintf(
                             ' AND criticity IN (%s)',
@@ -1015,7 +1015,7 @@ function events_get_all(
         $EW_groups = users_get_groups($config['id_user'], 'EW', true, true);
     }
 
-    if (!$user_is_admin && !users_can_manage_group_all('ER')) {
+    if (!$user_is_admin && users_can_manage_group_all('ER') === false) {
         // Get groups where user have ER grants.
         $sql_filters[] = sprintf(
             ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
@@ -1038,14 +1038,14 @@ function events_get_all(
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
     $conditionMetaconsole = '';
-    if (is_metaconsole() && $nodeConnected === false) {
+    if ((is_metaconsole() === true) && ($nodeConnected === false)) {
         $tagente_table = 'tmetaconsole_agent';
         $tagente_field = 'id_tagente';
         $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
     }
 
     // Agent alias.
-    if (!empty($filter['agent_alias'])) {
+    if (empty($filter['agent_alias']) === false) {
         $agent_join_filters[] = sprintf(
             ' AND ta.alias = "%s" ',
             $filter['agent_alias']
@@ -1053,7 +1053,7 @@ function events_get_all(
     }
 
     // Free search.
-    if (!empty($filter['search'])) {
+    if (empty($filter['search']) === false) {
         if (isset($config['dbconnection']->server_version)
             && $config['dbconnection']->server_version > 50600
         ) {
@@ -1071,23 +1071,23 @@ function events_get_all(
                 OR lower(te.evento) like lower("%%%s%%")
                 OR lower(te.user_comment) like lower("%%%s%%")
                 OR lower(te.id_extra) like lower("%%%s%%")
-                OR lower(te.source) like lower("%%%s%%") 
+                OR lower(te.source) like lower("%%%s%%")
                 OR lower('.$custom_data_search.') like lower("%%%s%%") )',
             array_fill(0, 7, $filter['search'])
         );
     }
 
     // Id extra.
-    if (!empty($filter['id_extra'])) {
+    if (empty($filter['id_extra']) === false) {
         $sql_filters[] = sprintf(
             ' AND lower(te.id_extra) like lower("%%%s%%") ',
             $filter['id_extra']
         );
     }
 
-    if (is_metaconsole() && $nodeConnected === false) {
+    if ((is_metaconsole() === true) && ($nodeConnected === false)) {
         // Id source event.
-        if (!empty($filter['id_source_event'])) {
+        if (empty($filter['id_source_event']) === false) {
             $sql_filters[] = sprintf(
                 ' AND lower(te.id_source_event) like lower("%%%s%%") ',
                 $filter['id_source_event']
@@ -1096,7 +1096,7 @@ function events_get_all(
     }
 
     // User comment.
-    if (!empty($filter['user_comment'])) {
+    if (empty($filter['user_comment']) === false) {
         // For filter field.
         $sql_filters[] = sprintf(
             ' AND lower(te.user_comment) like lower("%%%s%%") ',
@@ -1111,7 +1111,7 @@ function events_get_all(
     }
 
     // Source.
-    if (!empty($filter['source'])) {
+    if (empty($filter['source']) === false) {
         $sql_filters[] = sprintf(
             ' AND lower(te.source) like lower("%%%s%%") ',
             $filter['source']
@@ -1119,7 +1119,7 @@ function events_get_all(
     }
 
     // Validated or in process by.
-    if (!empty($filter['id_user_ack'])) {
+    if (empty($filter['id_user_ack']) === false) {
         $sql_filters[] = sprintf(
             ' AND te.id_usuario like lower("%%%s%%") ',
             $filter['id_user_ack']
@@ -1128,13 +1128,13 @@ function events_get_all(
 
     $tag_names = [];
     // With following tags.
-    if (!empty($filter['tag_with'])) {
+    if (empty($filter['tag_with']) === false) {
         $tag_with = base64_decode($filter['tag_with']);
         $tags = json_decode($tag_with, true);
-        if (is_array($tags) && !in_array('0', $tags)) {
+        if (is_array($tags) === true && in_array('0', $tags) === false) {
             if (!$user_is_admin) {
                 $getUserTags = tags_get_tags_for_module_search();
-                // Prevent false value for array_flip
+                // Prevent false value for array_flip.
                 if ($getUserTags === false) {
                     $getUserTags = [];
                 }
@@ -1152,7 +1152,7 @@ function events_get_all(
 
             $_tmp = '';
             foreach ($tags as $id_tag) {
-                if (!isset($tags_names[$id_tag])) {
+                if (isset($tags_names[$id_tag]) === false) {
                     $tags_names[$id_tag] = tags_get_name($id_tag);
                 }
 
@@ -1182,18 +1182,22 @@ function events_get_all(
                     $tags_names[$id_tag]
                 );
 
-                $_tmp .= ') ';
+                if ($tags[0] === $id_tag) {
+                    $_tmp .= ')) ';
+                } else {
+                    $_tmp .= ') ';
+                }
             }
 
-            $sql_filters[] = $_tmp.')';
+            $sql_filters[] = $_tmp;
         }
     }
 
     // Without following tags.
-    if (!empty($filter['tag_without'])) {
+    if (empty($filter['tag_without']) === false) {
         $tag_without = base64_decode($filter['tag_without']);
         $tags = json_decode($tag_without, true);
-        if (is_array($tags) && !in_array('0', $tags)) {
+        if (is_array($tags) === true && in_array('0', $tags) === false) {
             if (!$user_is_admin) {
                 $user_tags = array_flip(tags_get_tags_for_module_search());
                 if ($user_tags != null) {
@@ -1208,7 +1212,7 @@ function events_get_all(
             }
 
             foreach ($tags as $id_tag) {
-                if (!isset($tags_names[$id_tag])) {
+                if (isset($tags_names[$id_tag]) === false) {
                     $tags_names[$id_tag] = tags_get_name($id_tag);
                 }
 
@@ -1903,7 +1907,10 @@ function events_delete_event(
 
         if (check_acl($config['id_user'], $event_group, 'EM') == 0) {
             // Check ACL.
-            db_pandora_audit('ACL Violation', 'Attempted deleting event #'.$event);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted deleting event #'.$event
+            );
             $errors++;
         } else {
             $ret = db_process_sql_delete($table_event, ['id_evento' => $event]);
@@ -1911,7 +1918,10 @@ function events_delete_event(
             if (!$ret) {
                 $errors++;
             } else {
-                db_pandora_audit('Event deleted', 'Deleted event #'.$event);
+                db_pandora_audit(
+                    AUDIT_LOG_ALERT_MANAGEMENT,
+                    'Deleted event #'.$event
+                );
                 // ACL didn't fail nor did return.
                 continue;
             }
@@ -1995,7 +2005,10 @@ function events_change_status(
         }
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
-            db_pandora_audit('ACL Violation', 'Attempted updating event #'.$id);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
 
             unset($id_event[$k]);
         }
@@ -2106,7 +2119,10 @@ function events_change_owner(
         }
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
-            db_pandora_audit('ACL Violation', 'Attempted updating event #'.$id);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
             unset($id_event[$k]);
         }
     }
@@ -2221,7 +2237,10 @@ function events_comment(
         }
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
-            db_pandora_audit('ACL Violation', 'Attempted updating event #'.$id);
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
 
             unset($id_event[$k]);
         }
@@ -3003,7 +3022,8 @@ function events_get_group_events_steps(
  * @param boolean $id_server                   Id_server.
  * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
- * @return array An array with all the events happened.
+ * @return array|false An array with all the events happened. False if something
+ *                     failed.
  */
 function events_get_agent(
     $id_agent,
@@ -4163,6 +4183,28 @@ function events_get_response_target(
         $target = str_replace(
             '_command_timeout_',
             $event_response['command_timeout'],
+            $target
+        );
+    }
+
+    if (strpos($target, '_owner_username_') !== false) {
+        if (empty($event['owner_user']) === false) {
+            $fullname = users_get_user_by_id($event['owner_user']);
+            $target = str_replace(
+                '_owner_username_',
+                io_safe_output($fullname['fullname']),
+                $target
+            );
+        } else {
+            $target = str_replace('_owner_username_', __('N/A'), $target);
+        }
+    }
+
+    if (strpos($target, '_current_username_') !== false) {
+        $fullname = users_get_user_by_id($config['id_user']);
+        $target = str_replace(
+            '_current_username_',
+            io_safe_output($fullname['fullname']),
             $target
         );
     }
@@ -7566,6 +7608,28 @@ function events_get_field_value_by_event_id(
     // This will replace the macro with the current logged user.
     if (strpos($value, '_current_user_') !== false) {
         $value = str_replace('_current_user_', $config['id_user'], $value);
+    }
+
+    if (strpos($value, '_owner_username_') !== false) {
+        if (empty($event['owner_user']) === false) {
+            $fullname = users_get_user_by_id($event['owner_user']);
+            $value = str_replace(
+                '_owner_username_',
+                io_safe_output($fullname['fullname']),
+                $value
+            );
+        } else {
+            $value = str_replace('_owner_username_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_current_username_') !== false) {
+        $fullname = users_get_user_by_id($config['id_user']);
+        $value = str_replace(
+            '_current_username_',
+            io_safe_output($fullname['fullname']),
+            $value
+        );
     }
 
     return $value;

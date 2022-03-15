@@ -103,7 +103,7 @@ final class Container extends Model
      *
      * @overrides Model::encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $result = [];
         return $result;

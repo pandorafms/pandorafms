@@ -630,7 +630,7 @@ function configure_modules_form() {
 
     moduletype = $("#hidden-moduletype").val();
     if (moduletype == 5) {
-      if ($("#prediction_module").val() == null) {
+      if ($("#id_modules").val() === null) {
         $("#prediction_module").focus();
         $("#message").showMessage(no_prediction_module_lang);
         return false;

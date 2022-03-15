@@ -230,7 +230,7 @@ final class Line extends Model
      *
      * @overrides Model::encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $result = [];
         $result['type'] = LINE_ITEM;
@@ -409,8 +409,8 @@ final class Line extends Model
                 }
             } else {
                 // Update.
-                $dataModelEncode = $this->encode($this->toArray());
-                $dataEncode = $this->encode($data);
+                $dataModelEncode = static::encode($this->toArray());
+                $dataEncode = static::encode($data);
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 

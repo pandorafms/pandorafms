@@ -78,7 +78,7 @@ final class Group extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 
@@ -406,7 +406,8 @@ final class Group extends Item
         $html .= '<div class="group-item-title">';
         $html .= $groupName;
         $html .= '</div>';
-        $html .= '<div class="group-item-info" style="padding:0%;width: 96%">';
+        $html .= '<div class="group-item-info" style="padding:0%;width: 100%;justify-content:center">';
+        $html .= '<div style="width:90%;display:flex;flex-direction:row;flex-wrap:wrap;padding:1%">';
         // Critical.
         $html .= '<div class="group-item-info-container">';
         $html .= '<div class="value-style red_background">';
@@ -436,6 +437,7 @@ final class Group extends Item
         $html .= '<div class="name-style">'.__('Unknown').'</div>';
         $html .= '</div>';
 
+        $html .= '</div>';
         $html .= '</div>';
         $html .= '</div>';
 

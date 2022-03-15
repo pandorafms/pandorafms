@@ -19,6 +19,7 @@ if ($helps === false || !$searchHelps) {
         'https://pandorafms.com/manual/start?do=search&id=start&q='.$config['search_keywords']
     )."</div>\n";
 } else {
+    $table = new stdClass();
     $table->width = '98%';
     $table->class = 'databox';
 

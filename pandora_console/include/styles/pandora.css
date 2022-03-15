@@ -142,6 +142,10 @@ body {
   font-family: "lato";
 }
 
+body.body-report {
+  display: block;
+}
+
 input,
 textarea {
   padding: 5px;
@@ -5088,6 +5092,17 @@ input:checked + .p-slider:before {
   margin-top: 10px;
 }
 
+#upload_file #upload_file_input_full {
+  width: 100%;
+  border: 1px solid #cbcbcb;
+  border-radius: 2px;
+  padding: 5px 0;
+}
+
+#upload_file_input_full input#file-file::-webkit-file-upload-button {
+  margin-left: 5px;
+}
+
 .file_table_modal_active {
   background-color: #fff;
   border: 1px solid #e6e6e6;
@@ -6034,7 +6049,6 @@ form#modal_form_feedback input[type="email"] {
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
   margin-bottom: 4px;
@@ -7675,6 +7689,11 @@ div.graph div.legend table {
   float: left;
 }
 
+#table3-secondary_groups_added .select2-container,
+#table3-secondary_groups_removed .select2-container {
+  width: 100% !important;
+}
+
 .ux_console_module {
   float: left;
   width: 98%;
@@ -8439,6 +8458,10 @@ div.stat-win-spinner img {
   font-size: 12px;
 }
 
+.fc-col-header-cell-cushion {
+  color: #fff;
+}
+
 .stat_win_histogram {
   width: 95%;
   margin: 0 auto;
@@ -8468,6 +8491,22 @@ div#err_msg_centralised img {
 div#err_msg_centralised {
   display: flex;
   flex-direction: row;
+}
+
+.tooltipevent {
+  background: #fff;
+  position: absolute;
+  z-index: 10001;
+  top: 0px;
+  right: 0px;
+  border: 2px solid #82b92e;
+  border-radius: 5px;
+  padding: 5px;
+  width: 70px;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 #select_multiple_modules_filtered > div {
@@ -8505,4 +8544,9 @@ div#err_msg_centralised {
   max-width: 250px;
   width: 95%;
   height: 95%;
+}
+
+.resume_calendar_map {
+  width: 90%;
+  margin: 0 auto;
 }

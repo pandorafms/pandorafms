@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive module update'
     );
     include 'general/noaccess.php';
@@ -187,9 +187,21 @@ if ($update) {
 
     $info = '{"Modules":"'.implode(',', $modules_).'","Agents":"'.implode(',', $agents_).'"}';
     if ($success > 0) {
-        db_pandora_audit('Massive management', 'Edit module', false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Edit module',
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit('Massive management', 'Fail try to edit module', false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to edit module',
+            false,
+            false,
+            $info
+        );
     }
 }
 
@@ -1369,6 +1381,7 @@ $(document).ready (function () {
         var params = {
             "page" : "operation/agentes/ver_agente",
             "get_agent_modules_json" : 1,
+            "truncate_module_names": 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
             "safe_name" : 1
@@ -1396,7 +1409,7 @@ $(document).ready (function () {
             params,
             function (data, status) {
                 jQuery.each (data, function (id, value) {
-                    option = $("<option></option>").attr("value", value["nombre"]).html(value["safe_name"]);
+                    option = $("<option></option>").attr({value: value["nombre"], title: value["nombre"]}).html(value["safe_name"]);
                     $("#module_name").append (option);
                 });
                 hideSpinner();

@@ -777,10 +777,13 @@ function users_get_groups_UM($id_user)
 /**
  * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
  *
- * @param  string User id
+ * @param string  $id_group User id.
+ * @param boolean $um       Um.
+ * @param boolean $disabled Reurn also disabled users.
+ *
  * @return array Return .
  */
-function users_get_users_by_group($id_group, $um=false)
+function users_get_users_by_group($id_group, $um=false, $disabled=true)
 {
     $sql = sprintf(
         "SELECT tusuario.* FROM tusuario 
@@ -788,6 +791,10 @@ function users_get_users_by_group($id_group, $um=false)
         AND tusuario_perfil.id_grupo = '%s'",
         $id_group
     );
+
+    if ($disabled === false) {
+        $sql .= 'WHERE tusuario.disabled = 0';
+    }
 
     $users = db_get_all_rows_sql($sql);
     $return = [];

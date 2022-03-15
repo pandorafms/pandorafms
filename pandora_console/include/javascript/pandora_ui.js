@@ -495,6 +495,53 @@ function confirmDialog(settings) {
     );
   }
 
+  var buttons = [
+    {
+      id: "cancel_btn_dialog",
+      text: settings.cancelText
+        ? settings.cancelText
+        : settings.strCancelButton,
+      class:
+        hideCancelButton +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+      click: function() {
+        if (typeof settings.notCloseOnDeny == "undefined") {
+          $(this).dialog("close");
+          $(this).remove();
+        }
+        if (typeof settings.onDeny == "function") settings.onDeny();
+      }
+    },
+    {
+      text: settings.strOKButton,
+      class:
+        hideOkButton +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+      click: function() {
+        $(this).dialog("close");
+        if (typeof settings.onAccept == "function") settings.onAccept();
+        $(this).remove();
+      }
+    }
+  ];
+
+  if (settings.newButton != undefined) {
+    var newButton = {
+      text: settings.newButton.text,
+      class:
+        settings.newButton.class +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-warning",
+      click: function() {
+        $(this).dialog("close");
+        if (typeof settings.newButton.onFunction == "function")
+          settings.newButton.onFunction();
+        $(this).remove();
+      }
+    };
+
+    buttons.unshift(newButton);
+  }
+
   $("#confirm_" + randomStr);
   $("#confirm_" + randomStr)
     .dialog({
@@ -504,35 +551,7 @@ function confirmDialog(settings) {
       width: settings.size,
       maxHeight: settings.maxHeight,
       modal: true,
-      buttons: [
-        {
-          id: "cancel_btn_dialog",
-          text: settings.cancelText
-            ? settings.cancelText
-            : settings.strCancelButton,
-          class:
-            hideCancelButton +
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-          click: function() {
-            if (typeof settings.notCloseOnDeny == "undefined") {
-              $(this).dialog("close");
-              $(this).remove();
-            }
-            if (typeof settings.onDeny == "function") settings.onDeny();
-          }
-        },
-        {
-          text: settings.strOKButton,
-          class:
-            hideOkButton +
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-          click: function() {
-            $(this).dialog("close");
-            if (typeof settings.onAccept == "function") settings.onAccept();
-            $(this).remove();
-          }
-        }
-      ]
+      buttons: buttons
     })
     .show();
 }
@@ -558,28 +577,34 @@ function confirmDialog(settings) {
  */
 // eslint-disable-next-line no-unused-vars
 function generalShowMsg(data, idMsg) {
-  var title = "Response";
-  var text = data;
-  var failed = false;
+  var title = data.title[data.error];
+  var text = data.text[data.error];
+  var failed = !data.error;
 
-  if (typeof data == "object") {
-    title = data.title || "Response";
-    text = data.text || data.error || data.result;
-    failed = failed || data.error;
-  }
+  if (typeof data.error != "number") {
+    title = "Response";
+    text = data;
+    failed = false;
 
-  if (failed) {
-    title = "Error";
-    text = data.error;
-  }
+    if (typeof data == "object") {
+      title = data.title || "Response";
+      text = data.text || data.error || data.result;
+      failed = data.failed || data.error;
+    }
 
-  if (idMsg == null) {
-    idMsg = uniqId();
-  }
+    if (failed) {
+      title = "Error";
+      text = data.error;
+    }
 
-  if ($("#" + idMsg).length === 0) {
-    $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
-    $("#" + idMsg).empty();
+    if (idMsg == null) {
+      idMsg = uniqId();
+    }
+
+    if ($("#" + idMsg).length === 0) {
+      $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+      $("#" + idMsg).empty();
+    }
   }
 
   $("#" + idMsg).empty();

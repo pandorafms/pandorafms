@@ -31,7 +31,7 @@ check_login();
 
 if (!check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive profile addition'
     );
     include 'general/noaccess.php';
@@ -64,6 +64,40 @@ require_once $config['homedir'].'/include/functions_users.php';
 
 $create_profiles = (int) get_parameter('create_profiles');
 
+// Get users and groups user can manage to check and for selectors.
+$group_um = users_get_groups_UM($config['id_user']);
+
+$users_profiles = '';
+$users_order = [
+    'field' => 'id_user',
+    'order' => 'ASC',
+];
+
+$info_users = [];
+// Is admin.
+if (users_is_admin()) {
+    $info_users = users_get_info($users_order, 'id_user');
+    // has PM permission.
+} else if (check_acl($config['id_user'], 0, 'PM')) {
+    $info_users = users_get_info($users_order, 'id_user');
+    foreach ($info_users as $id_user => $value) {
+        if (users_is_admin($id_user)) {
+            unset($info_users[$value]);
+        }
+    }
+} else {
+    $info = [];
+    foreach ($group_um as $group => $value) {
+        $info = array_merge($info, users_get_users_by_group($group, $value));
+    }
+
+    foreach ($info as $key => $value) {
+        if (!$value['is_admin']) {
+            $info_users[$key] = $value['id_user'];
+        }
+    }
+}
+
 if ($create_profiles) {
     $profiles_id = get_parameter('profiles_id', -1);
     $groups_id = get_parameter('groups_id', -1);
@@ -74,13 +108,47 @@ if ($create_profiles) {
         $result = false;
     } else {
         foreach ($profiles_id as $profile) {
+             // Check profiles permissions for non admin user.
+            if (is_user_admin($config['user_id']) === false) {
+                $user_profiles = profile_get_profiles(
+                    [
+                        'pandora_management' => '<> 1',
+                        'db_management'      => '<> 1',
+                    ]
+                );
+
+                if (array_search((int) $profile, array_keys($user_profiles)) === false) {
+                    db_pandora_audit(
+                        AUDIT_LOG_ACL_VIOLATION,
+                        'Trying to add administrator profile whith standar user for user '.io_safe_input($user)
+                    );
+                    exit;
+                }
+            }
+
             foreach ($groups_id as $group) {
+                if (check_acl($config['id_user'], $group, 'UM') === false) {
+                    db_pandora_audit(
+                        AUDIT_LOG_ACL_VIOLATION,
+                        'Trying to add profile group without permission for user '.io_safe_input($user)
+                    );
+                    exit;
+                }
+
                 foreach ($users_id as $user) {
+                    if (array_search($user, $info_users) === false) {
+                        db_pandora_audit(
+                            AUDIT_LOG_ACL_VIOLATION,
+                            'Trying to edit user without permission for user '.io_safe_input($user)
+                        );
+                        exit;
+                    }
+
                     $profile_data = db_get_row_filter('tusuario_perfil', ['id_usuario' => $user, 'id_perfil' => $profile, 'id_grupo' => $group]);
                     // If the profile doesnt exist, we create it
                     if ($profile_data === false) {
                         db_pandora_audit(
-                            'User management',
+                            AUDIT_LOG_USER_MANAGEMENT,
                             'Added profile for user '.io_safe_input($user)
                         );
                         $return = profile_create_user_profile($user, $profile, $group);
@@ -95,7 +163,7 @@ if ($create_profiles) {
 
     if ($n_added > 0) {
         db_pandora_audit(
-            'Massive management',
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
             'Add profiles',
             false,
             false,
@@ -103,7 +171,7 @@ if ($create_profiles) {
         );
     } else {
         db_pandora_audit(
-            'Massive management',
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
             'Fail to try add profiles',
             false,
             false,
@@ -122,8 +190,7 @@ if ($table !== null) {
     html_print_table($table);
 }
 
-unset($table);
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->data = [];
@@ -143,7 +210,6 @@ $table->size[2] = '33%';
 $data = [];
 $data[0] = '<form method="post" id="form_profiles" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
 
-$group_um = users_get_groups_UM($config['id_user']);
 
 $display_all_group = true;
 if (check_acl($config['id_user'], 0, 'PM')) {
@@ -206,36 +272,6 @@ $data[1] = html_print_select_groups(
 $data[2] = '<span id="alerts_loading" class="invisible">';
 $data[2] .= html_print_image('images/spinner.png', true);
 $data[2] .= '</span>';
-$users_profiles = '';
-$users_order = [
-    'field' => 'id_user',
-    'order' => 'ASC',
-];
-
-$info_users = [];
-// Is admin.
-if (users_is_admin()) {
-    $info_users = users_get_info($users_order, 'id_user');
-    // has PM permission.
-} else if (check_acl($config['id_user'], 0, 'PM')) {
-    $info_users = users_get_info($users_order, 'id_user');
-    foreach ($info_users as $id_user => $value) {
-        if (users_is_admin($id_user)) {
-            unset($info_users[$value]);
-        }
-    }
-} else {
-    $info = [];
-    foreach ($group_um as $group => $value) {
-        $info = array_merge($info, users_get_users_by_group($group, $value));
-    }
-
-    foreach ($info as $key => $value) {
-        if (!$value['is_admin']) {
-            $info_users[$key] = $value['id_user'];
-        }
-    }
-}
 
 $data[2] .= html_print_select(
     $info_users,

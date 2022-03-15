@@ -1215,71 +1215,59 @@ function dashboardLoadVC(settings) {
   // Add the datetime when the item was received.
   var receivedAt = new Date();
 
-  var beforeUpdate = function() {};
-  if (settings.mobile == undefined || settings.mobile !== true) {
-    beforeUpdate = function(items, visualConsole, props) {
-      // Add the datetime when the item was received.
-      items.map(function(item) {
-        item["receivedAt"] = receivedAt;
-        return item;
-      });
+  var beforeUpdate = function(items, visualConsole, props) {
+    var ratio_visualconsole = props.height / props.width;
+    var ratio_w = settings.size.width / props.width;
+    var ratio_h = settings.size.height / props.height;
 
-      var ratio_visualconsole = props.height / props.width;
-      props.width = settings.size.width;
-      props.height = settings.size.width * ratio_visualconsole;
+    props.width = settings.size.width;
+    props.height = settings.size.width * ratio_visualconsole;
 
+    var ratio = ratio_w;
+    if (settings.mobile != undefined && settings.mobile === true) {
+      if (props.height < props.width) {
+        if (props.height > settings.size.height) {
+          ratio = ratio_h;
+          props.height = settings.size.height;
+          props.width = settings.size.height / ratio_visualconsole;
+        }
+      }
+    } else {
       if (props.height > settings.size.height) {
+        ratio = ratio_h;
         props.height = settings.size.height;
         props.width = settings.size.height / ratio_visualconsole;
       }
+    }
 
-      // Update the data structure.
-      visualConsole.props = props;
+    $.ajax({
+      method: "post",
+      url: settings.baseUrl + "ajax.php",
+      data: {
+        page: settings.page,
+        load_css_cv: 1,
+        uniq: settings.uniq,
+        ratio: ratio
+      },
+      dataType: "html",
+      success: function(css) {
+        $("#css_cv_" + settings.uniq)
+          .empty()
+          .append(css);
 
-      // Update the items.
-      visualConsole.updateElements(items);
-    };
-  } else {
-    beforeUpdate = function(items, visualConsole, props) {
-      var ratio_visualconsole = props.height / props.width;
-      var ratio_t = settings.size.width / props.width;
-      var ratio_h = settings.size.height / props.height;
-      props.width = settings.size.width;
-      props.height = settings.size.width * ratio_visualconsole;
+        // Add the datetime when the item was received.
+        items.map(function(item) {
+          item["receivedAt"] = receivedAt;
+          return item;
+        });
 
-      if (props.height > settings.size.height) {
-        ratio_t = ratio_h;
-        props.height = settings.size.height;
-        props.width = settings.size.height / ratio_visualconsole;
-      }
+        // Update the data structure.
+        visualConsole.props = props;
 
-      $.ajax({
-        method: "post",
-        url: "../ajax.php",
-        data: {
-          page: settings.page,
-          load_css_cv: 1,
-          uniq: settings.cellId,
-          ratio: ratio_t
-        },
-        dataType: "html",
-        success: function(css) {
-          $("#css_cv_" + settings.cellId)
-            .empty()
-            .append(css);
+        // Update the items.
+        visualConsole.updateElements(items);
 
-          // Add the datetime when the item was received.
-          items.map(function(item) {
-            item["receivedAt"] = receivedAt;
-            return item;
-          });
-
-          // Update the data structure.
-          visualConsole.props = props;
-
-          // Update the items.
-          visualConsole.updateElements(items);
-
+        if (settings.mobile != undefined && settings.mobile === true) {
           // Update Url.
           var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
           var replacement = "$1" + props.id + "$2";
@@ -1300,13 +1288,13 @@ function dashboardLoadVC(settings) {
                 props.id;
             });
           }
-        },
-        error: function(error) {
-          console.error(error);
         }
-      });
-    };
-  }
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
+  };
 
   var handleUpdate = function() {
     //Remove spinner change VC.
@@ -1342,7 +1330,10 @@ function dashboardLoadVC(settings) {
     beforeUpdate,
     settings.size,
     settings.id_user,
-    settings.hash
+    settings.hash,
+    settings.mobile != undefined && settings.mobile === true
+      ? "mobile"
+      : "dashboard"
   );
 }
 

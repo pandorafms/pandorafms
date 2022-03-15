@@ -304,20 +304,8 @@ class Visualmap
             'height' => $this->height,
         ];
 
+        $ratio_t = $visualConsole->adjustToViewport($size, 'mobile');
         $visualConsoleData = $visualConsole->toArray();
-        $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
-        $ratio_t = ($size['width'] / $visualConsoleData['width']);
-        $ratio_h = ($size['height'] / $visualConsoleData['height']);
-
-        $visualConsoleData['width'] = $size['width'];
-        $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
-
-        if ($visualConsoleData['height'] > $size['height']) {
-            $ratio_t = $ratio_h;
-
-            $visualConsoleData['height'] = $size['height'];
-            $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);
-        }
 
         $uniq = uniqid();
 
@@ -325,7 +313,6 @@ class Visualmap
         // Style.
         $style = 'width:'.$visualConsoleData['width'].'px;';
         $style .= 'height:'.$visualConsoleData['height'].'px;';
-        $style .= 'background-size: cover;';
 
         // Class.
         $class = 'visual-console-container-dashboard c-'.$uniq;
@@ -369,7 +356,7 @@ class Visualmap
 
         $visualConsoleItems = array_reduce(
             $visualConsoleItems,
-            function ($carry, $item) use ($ratio_t) {
+            function ($carry, $item) {
                 $carry[] = $item->toArray();
                 return $carry;
             },
@@ -385,6 +372,7 @@ class Visualmap
                 'ratio'   => $ratio_t,
                 'size'    => $size,
                 'cellId'  => $uniq,
+                'uniq'    => $uniq,
                 'mobile'  => true,
             ]
         );

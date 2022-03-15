@@ -33,7 +33,8 @@ function createVisualConsole(
   beforeUpdate,
   size,
   id_user,
-  hash
+  hash,
+  mode = ""
 ) {
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
@@ -53,6 +54,7 @@ function createVisualConsole(
           size,
           id_user,
           hash,
+          mode,
           function(error, data) {
             if (error) {
               //Remove spinner change VC.
@@ -670,7 +672,15 @@ function createVisualConsole(
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
+function loadVisualConsoleData(
+  baseUrl,
+  vcId,
+  size,
+  id_user,
+  hash,
+  mode,
+  callback
+) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var vcJqXHR = null;
@@ -759,6 +769,7 @@ function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
         visualConsoleId: vcId,
         id_user: typeof id_user == undefined ? id_user : null,
         auth_hash: typeof hash == undefined ? hash : null,
+        mode: mode,
         widthScreen: widthScreen
       },
       "json"

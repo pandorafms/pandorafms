@@ -458,6 +458,312 @@ div.label strong span {
   z-index: 999;
 }
 
-/*.termframe{
-	background-color: #82b92e;
-}*/
+.visual_font_size_4pt,
+.visual_font_size_4pt > em,
+.visual_font_size_4pt > strong,
+.visual_font_size_4pt > strong > span,
+.visual_font_size_4pt > span,
+.visual_font_size_4pt > strong > em,
+.visual_font_size_4pt > em > strong,
+.visual_font_size_4pt em span,
+.visual_font_size_4pt span em {
+  font-size: 4pt;
+  line-height: 4pt;
+}
+.visual_font_size_6pt,
+.visual_font_size_6pt > em,
+.visual_font_size_6pt > strong,
+.visual_font_size_6pt > strong > span,
+.visual_font_size_6pt > span,
+.visual_font_size_6pt > strong > em,
+.visual_font_size_6pt > em > strong,
+.visual_font_size_6pt em span,
+.visual_font_size_6pt span em {
+  font-size: 6pt;
+  line-height: 6pt;
+}
+.visual_font_size_8pt,
+.visual_font_size_8pt > em,
+.visual_font_size_8pt > strong,
+.visual_font_size_8pt > strong > span,
+.visual_font_size_8pt > span,
+.visual_font_size_8pt > strong > em,
+.visual_font_size_8pt > em > strong,
+.visual_font_size_8pt em span,
+.visual_font_size_8pt span em {
+  font-size: 8pt;
+  line-height: 8pt;
+}
+.visual_font_size_10pt,
+.visual_font_size_10pt > em,
+.visual_font_size_10pt > strong,
+.visual_font_size_10pt > strong > span,
+.visual_font_size_10pt > span,
+.visual_font_size_10pt > strong > em,
+.visual_font_size_10pt > em > strong,
+.visual_font_size_10pt em span,
+.visual_font_size_10pt span em {
+  font-size: 10pt;
+  line-height: 10pt;
+}
+.visual_font_size_12pt,
+.visual_font_size_12pt > em,
+.visual_font_size_12pt > strong,
+.visual_font_size_12pt > strong > span,
+.visual_font_size_12pt > span,
+.visual_font_size_12pt > strong > em,
+.visual_font_size_12pt > em > strong,
+.visual_font_size_12pt em span,
+.visual_font_size_12pt span em {
+  font-size: 12pt;
+  line-height: 12pt;
+}
+.visual_font_size_14pt,
+.visual_font_size_14pt > em,
+.visual_font_size_14pt > strong,
+.visual_font_size_14pt > strong > span,
+.visual_font_size_14pt > span,
+.visual_font_size_14pt > strong > em,
+.visual_font_size_14pt > em > strong,
+.visual_font_size_14pt em span,
+.visual_font_size_14pt span em {
+  font-size: 14pt;
+  line-height: 14pt;
+}
+.visual_font_size_18pt,
+.visual_font_size_18pt > em,
+.visual_font_size_18pt > strong,
+.visual_font_size_18pt > strong > span,
+.visual_font_size_18pt > span,
+.visual_font_size_18pt > strong > em,
+.visual_font_size_18pt > em > strong,
+.visual_font_size_18pt em span,
+.visual_font_size_18pt span em {
+  font-size: 18pt;
+  line-height: 18pt;
+}
+
+.visual_font_size_24pt,
+.visual_font_size_24pt > em,
+.visual_font_size_24pt > strong,
+.visual_font_size_24pt > strong > span,
+.visual_font_size_24pt > span,
+.visual_font_size_24pt > strong > em,
+.visual_font_size_24pt > em > strong,
+.visual_font_size_24pt em span,
+.visual_font_size_24pt span em {
+  font-size: 24pt;
+  line-height: 24pt;
+}
+.visual_font_size_28pt,
+.visual_font_size_28pt > em,
+.visual_font_size_28pt > strong,
+.visual_font_size_28pt > strong > span,
+.visual_font_size_28pt > span,
+.visual_font_size_28pt > strong > em,
+.visual_font_size_28pt > em > strong,
+.visual_font_size_28pt em span,
+.visual_font_size_28pt span em {
+  font-size: 28pt;
+  line-height: 28pt;
+}
+.visual_font_size_36pt,
+.visual_font_size_36pt > em,
+.visual_font_size_36pt > strong,
+.visual_font_size_36pt > strong > span,
+.visual_font_size_36pt > span,
+.visual_font_size_36pt > strong > em,
+.visual_font_size_36pt > em > strong,
+.visual_font_size_36pt em span,
+.visual_font_size_36pt span em {
+  font-size: 36pt;
+  line-height: 36pt;
+}
+.visual_font_size_48pt,
+.visual_font_size_48pt > em,
+.visual_font_size_48pt > strong,
+.visual_font_size_48pt > strong > span,
+.visual_font_size_48pt > span,
+.visual_font_size_48pt > strong > em,
+.visual_font_size_48pt > em > strong,
+.visual_font_size_48pt em span,
+.visual_font_size_48pt span em {
+  font-size: 48pt;
+  line-height: 48pt;
+}
+.visual_font_size_60pt,
+.visual_font_size_60pt > em,
+.visual_font_size_60pt > strong,
+.visual_font_size_60pt > strong > span,
+.visual_font_size_60pt > span,
+.visual_font_size_60pt > strong > em,
+.visual_font_size_60pt > em > strong,
+.visual_font_size_60pt em span,
+.visual_font_size_60pt span em {
+  font-size: 60pt;
+  line-height: 60pt;
+}
+.visual_font_size_72pt,
+.visual_font_size_72pt > em,
+.visual_font_size_72pt > strong,
+.visual_font_size_72pt > strong > span,
+.visual_font_size_72pt > span,
+.visual_font_size_72pt > strong > em,
+.visual_font_size_72pt > em > strong,
+.visual_font_size_72pt em span,
+.visual_font_size_72pt span em {
+  font-size: 72pt;
+  line-height: 72pt;
+}
+
+.visual_font_size_84pt,
+.visual_font_size_84pt > em,
+.visual_font_size_84pt > strong,
+.visual_font_size_84pt > strong > span,
+.visual_font_size_84pt > span,
+.visual_font_size_84pt > strong > em,
+.visual_font_size_84pt > em > strong,
+.visual_font_size_84pt em span,
+.visual_font_size_84pt span em {
+  font-size: 84pt;
+  line-height: 84pt;
+}
+
+.visual_font_size_96pt,
+.visual_font_size_96pt > em,
+.visual_font_size_96pt > strong,
+.visual_font_size_96pt > strong > span,
+.visual_font_size_96pt > span,
+.visual_font_size_96pt > strong > em,
+.visual_font_size_96pt > em > strong,
+.visual_font_size_96pt em span,
+.visual_font_size_96pt span em {
+  font-size: 96pt;
+  line-height: 96pt;
+}
+
+.visual_font_size_116pt,
+.visual_font_size_116pt > em,
+.visual_font_size_116pt > strong,
+.visual_font_size_116pt > strong > span,
+.visual_font_size_116pt > span,
+.visual_font_size_116pt > strong > em,
+.visual_font_size_116pt > em > strong,
+.visual_font_size_116pt em span,
+.visual_font_size_116pt span em {
+  font-size: 116pt;
+  line-height: 116pt;
+}
+
+.visual_font_size_128pt,
+.visual_font_size_128pt > em,
+.visual_font_size_128pt > strong,
+.visual_font_size_128pt > strong > span,
+.visual_font_size_128pt > span,
+.visual_font_size_128pt > strong > em,
+.visual_font_size_128pt > em > strong,
+.visual_font_size_128pt em span,
+.visual_font_size_128pt span em {
+  font-size: 128pt;
+  line-height: 128pt;
+}
+
+.visual_font_size_140pt,
+.visual_font_size_140pt > em,
+.visual_font_size_140pt > strong,
+.visual_font_size_140pt > strong > span,
+.visual_font_size_140pt > span,
+.visual_font_size_140pt > strong > em,
+.visual_font_size_140pt > em > strong,
+.visual_font_size_140pt em span,
+.visual_font_size_140pt span em {
+  font-size: 140pt;
+  line-height: 140pt;
+}
+
+.visual_font_size_154pt,
+.visual_font_size_154pt > em,
+.visual_font_size_154pt > strong,
+.visual_font_size_154pt > strong > span,
+.visual_font_size_154pt > span,
+.visual_font_size_154pt > strong > em,
+.visual_font_size_154pt > em > strong,
+.visual_font_size_154pt em span,
+.visual_font_size_154pt span em {
+  font-size: 154pt;
+  line-height: 154pt;
+}
+
+.visual_font_size_196pt,
+.visual_font_size_196pt > em,
+.visual_font_size_196pt > strong,
+.visual_font_size_196pt > strong > span,
+.visual_font_size_196pt > span,
+.visual_font_size_196pt > strong > em,
+.visual_font_size_196pt > em > strong,
+.visual_font_size_196pt em span,
+.visual_font_size_196pt span em {
+  font-size: 196pt;
+  line-height: 196pt;
+}
+
+.resize_visual_font_size_8pt,
+.resize_visual_font_size_8pt > em,
+.resize_visual_font_size_8pt > strong,
+.resize_visual_font_size_8pt > strong > span,
+.resize_visual_font_size_8pt > span,
+.resize_visual_font_size_8pt > strong > em,
+.resize_visual_font_size_8pt > em > strong,
+.visual_font_size_8pt em span,
+.visual_font_size_8pt span em {
+  font-size: 4pt;
+  line-height: 4pt;
+}
+.resize_visual_font_size_14pt,
+.resize_visual_font_size_14pt > em,
+.resize_visual_font_size_14pt > strong,
+.resize_visual_font_size_14pt > strong > span,
+.resize_visual_font_size_14pt > span,
+.resize_visual_font_size_14pt > strong > em,
+.resize_visual_font_size_14pt > em > strong,
+.visual_font_size_14pt em span,
+.visual_font_size_14pt span em {
+  font-size: 7pt;
+  line-height: 7pt;
+}
+.resize_visual_font_size_24pt,
+.resize_visual_font_size_24pt > em,
+.resize_visual_font_size_24pt > strong,
+.resize_visual_font_size_24pt > strong > span,
+.resize_visual_font_size_24pt > span,
+.resize_visual_font_size_24pt > strong > em,
+.resize_visual_font_size_24pt > em > strong,
+.visual_font_size_14pt em span,
+.visual_font_size_14pt span em {
+  font-size: 12pt;
+  line-height: 12pt;
+}
+.resize_visual_font_size_36pt,
+.resize_visual_font_size_36pt > em,
+.resize_visual_font_size_36pt > strong,
+.resize_visual_font_size_36pt > strong > span,
+.resize_visual_font_size_36pt > span,
+.resize_visual_font_size_36pt > strong > em,
+.resize_visual_font_size_36pt > em > strong,
+.visual_font_size_36pt em span,
+.visual_font_size_36pt span em {
+  font-size: 18pt;
+  line-height: 18pt;
+}
+.resize_visual_font_size_72pt,
+.resize_visual_font_size_72pt > em,
+.resize_visual_font_size_72pt > strong,
+.resize_visual_font_size_72pt > strong > span,
+.resize_visual_font_size_72pt > span,
+.resize_visual_font_size_72pt > strong > em,
+.resize_visual_font_size_72pt > em > strong,
+.visual_font_size_72pt em span,
+.visual_font_size_72pt span em {
+  font-size: 36pt;
+  line-height: 36pt;
+}

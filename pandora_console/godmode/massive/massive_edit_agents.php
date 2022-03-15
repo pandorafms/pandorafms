@@ -69,8 +69,6 @@ if (is_ajax() === true) {
     if ($groups_secondary_selected === true) {
         $groups = get_parameter('groups', []);
         $groups_selected = get_parameter('groups_selected', []);
-        hd($groups, true);
-        hd($groups_selected, true);
 
         $user_groups = users_get_groups($config['user'], 'AR', false);
         $ret = [];

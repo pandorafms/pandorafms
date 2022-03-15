@@ -558,9 +558,23 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
           const divSpinner = document.createElement("div");
           divSpinner.className = "visual-console-spinner";
           divParent.appendChild(divSpinner);
-          const containerVC = document.getElementById(
-            "visual-console-container"
-          );
+          let path = e.composedPath();
+          let containerId = "visual-console-container";
+          for (let index = 0; index < path.length; index++) {
+            const element = path[index] as HTMLInputElement;
+            if (
+              element.id != undefined &&
+              element.id != null &&
+              element.id != ""
+            ) {
+              if (element.id.includes(containerId) === true) {
+                containerId = element.id;
+                break;
+              }
+            }
+          }
+
+          const containerVC = document.getElementById(containerId);
           if (containerVC != null) {
             containerVC.classList.add("is-updating");
             containerVC.appendChild(divParent);

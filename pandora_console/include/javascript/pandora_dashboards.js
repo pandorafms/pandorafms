@@ -1215,59 +1215,109 @@ function dashboardLoadVC(settings) {
   // Add the datetime when the item was received.
   var receivedAt = new Date();
 
-  var beforeUpdate = function(items, visualConsole, props) {
-    // Add the datetime when the item was received.
-    items.map(function(item) {
-      item["receivedAt"] = receivedAt;
-      return item;
-    });
+  var beforeUpdate = function() {};
+  if (settings.mobile == undefined || settings.mobile !== true) {
+    beforeUpdate = function(items, visualConsole, props) {
+      // Add the datetime when the item was received.
+      items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+      });
 
-    var ratio_visualconsole = props.height / props.width;
+      var ratio_visualconsole = props.height / props.width;
+      props.width = settings.size.width;
+      props.height = settings.size.width * ratio_visualconsole;
 
-    props.width = settings.size.width;
-    props.height = settings.size.width * ratio_visualconsole;
+      if (props.height > settings.size.height) {
+        props.height = settings.size.height;
+        props.width = settings.size.height / ratio_visualconsole;
+      }
 
-    if (props.height > settings.size.height) {
-      props.height = settings.size.height;
-      props.width = settings.size.height / ratio_visualconsole;
-    }
+      // Update the data structure.
+      visualConsole.props = props;
 
-    // Update the data structure.
-    visualConsole.props = props;
-    // Update the items.
-    visualConsole.updateElements(items);
-  };
+      // Update the items.
+      visualConsole.updateElements(items);
+    };
+  } else {
+    beforeUpdate = function(items, visualConsole, props) {
+      var ratio_visualconsole = props.height / props.width;
+      var ratio_t = settings.size.width / props.width;
+      var ratio_h = settings.size.height / props.height;
+      props.width = settings.size.width;
+      props.height = settings.size.width * ratio_visualconsole;
 
-  var handleUpdate = function(prevProps, newProps) {
-    if (!newProps) return;
+      if (props.height > settings.size.height) {
+        ratio_t = ratio_h;
+        props.height = settings.size.height;
+        props.width = settings.size.height / ratio_visualconsole;
+      }
 
+      $.ajax({
+        method: "post",
+        url: "../ajax.php",
+        data: {
+          page: settings.page,
+          load_css_cv: 1,
+          uniq: settings.cellId,
+          ratio: ratio_t
+        },
+        dataType: "html",
+        success: function(css) {
+          $("#css_cv_" + settings.cellId)
+            .empty()
+            .append(css);
+
+          // Add the datetime when the item was received.
+          items.map(function(item) {
+            item["receivedAt"] = receivedAt;
+            return item;
+          });
+
+          // Update the data structure.
+          visualConsole.props = props;
+
+          // Update the items.
+          visualConsole.updateElements(items);
+
+          // Update Url.
+          var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
+          var replacement = "$1" + props.id + "$2";
+
+          var regex_hash = /(hash=)[^&]+(&?)/gi;
+          var replacement_hash = "$1" + props.hash + "$2";
+
+          // Change the URL (if the browser has support).
+          if ("history" in window) {
+            var href = window.location.href.replace(regex, replacement);
+            href = href.replace(regex_hash, replacement_hash);
+            window.history.replaceState({}, document.title, href);
+
+            $(window).on("orientationchange", function() {
+              window.location.href =
+                settings.baseUrl +
+                "mobile/index.php?page=visualmap&id=" +
+                props.id;
+            });
+          }
+        },
+        error: function(error) {
+          console.error(error);
+        }
+      });
+    };
+  }
+
+  var handleUpdate = function() {
     //Remove spinner change VC.
-    document
-      .getElementById("visual-console-container" + settings.cellId)
-      .classList.remove("is-updating");
+    container.classList.remove("is-updating");
 
-    var div = document
-      .getElementById("visual-console-container" + settings.cellId)
-      .querySelector(".div-visual-console-spinner");
+    var div = container.querySelector(".div-visual-console-spinner");
 
     if (div !== null) {
       var parent = div.parentElement;
       if (parent !== null) {
         parent.removeChild(div);
-      }
-    }
-
-    // Change the links.
-    if (prevProps && prevProps.id !== newProps.id) {
-      var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
-      var replacement = "$1" + newProps.id + "$2";
-
-      // Tab links.
-      var menuLinks = document.querySelectorAll("div#menu_tab a");
-      if (menuLinks !== null) {
-        menuLinks.forEach(function(menuLink) {
-          menuLink.href = menuLink.href.replace(regex, replacement);
-        });
       }
     }
   };

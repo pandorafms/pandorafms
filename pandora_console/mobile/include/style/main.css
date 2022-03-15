@@ -1102,7 +1102,7 @@ li.ui-btn {
   }
 
   .ui-header .ui-title {
-    font-size: 18px !important;
+    font-size: 14px;
     min-height: 1.1em;
     text-align: center;
     display: block;
@@ -1112,10 +1112,6 @@ li.ui-btn {
     overflow: hidden;
     white-space: nowrap;
     outline: 0 !important;
-  }
-
-  * {
-    font-size: 18px !important;
   }
 
   .event_name {
@@ -1444,7 +1440,7 @@ div.nodata_container {
 }
 
 .ui-page-active {
-  padding-top: 2.8em !important;
+  padding-top: 3.2em !important;
 }
 
 .ui-header-fixed {

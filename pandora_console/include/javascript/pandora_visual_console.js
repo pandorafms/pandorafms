@@ -56,13 +56,9 @@ function createVisualConsole(
           function(error, data) {
             if (error) {
               //Remove spinner change VC.
-              document
-                .getElementById("visual-console-container")
-                .classList.remove("is-updating");
+              container.classList.remove("is-updating");
 
-              var div = document
-                .getElementById("visual-console-container")
-                .querySelector(".div-visual-console-spinner");
+              var div = container.querySelector(".div-visual-console-spinner");
 
               if (div !== null) {
                 var parent = div.parentElement;
@@ -105,6 +101,7 @@ function createVisualConsole(
 
                   // Update the data structure.
                   visualConsole.props = props;
+
                   // Update the items.
                   visualConsole.updateElements(items);
                 }

@@ -96,13 +96,13 @@ if ($getVisualConsole === true) {
         $visualConsoleData = $visualConsole->toArray();
         $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
         $ratio = ($size['width'] / $visualConsoleData['width']);
-        $radio_h = ($size['height'] / $visualConsoleData['height']);
+        $ratio_h = ($size['height'] / $visualConsoleData['height']);
 
         $visualConsoleData['width'] = $size['width'];
         $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
 
         if ($visualConsoleData['height'] > $size['height']) {
-            $ratio = $radio_h;
+            $ratio = $ratio_h;
 
             $visualConsoleData['height'] = $size['height'];
             $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);

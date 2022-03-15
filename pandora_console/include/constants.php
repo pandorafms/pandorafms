@@ -788,6 +788,7 @@ define('AUDIT_LOG_MASSIVE_MANAGEMENT', 'Massive operation management');
 define('AUDIT_LOG_POLICY_MANAGEMENT', 'Policy management');
 define('AUDIT_LOG_AGENT_REMOTE_MANAGEMENT', 'Agent remote configuration');
 define('AUDIT_LOG_FILE_COLLECTION', 'File collection');
+define('AUDIT_LOG_FILE_MANAGER', 'File manager');
 define('AUDIT_LOG_ALERT_MANAGEMENT', 'Alert management');
 define('AUDIT_LOG_ALERT_CORRELATION_MANAGEMENT', 'Alert correlation management');
 define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
@@ -796,3 +797,58 @@ define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
 define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');
 define('AUDIT_LOG_SERVICE_MANAGEMENT', 'Service management');
 define('AUDIT_LOG_INCIDENT_MANAGEMENT', 'Incident management');
+
+// MIMEs.
+define(
+    'MIME_TYPES',
+    [
+        'txt'  => 'text/plain',
+        'htm'  => 'text/html',
+        'html' => 'text/html',
+        'php'  => 'text/html',
+        'css'  => 'text/css',
+        'js'   => 'application/javascript',
+        'json' => 'application/json',
+        'xml'  => 'application/xml',
+        'swf'  => 'application/x-shockwave-flash',
+        'flv'  => 'video/x-flv',
+        // Images.
+        'png'  => 'image/png',
+        'jpe'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'jpg'  => 'image/jpeg',
+        'gif'  => 'image/gif',
+        'bmp'  => 'image/bmp',
+        'ico'  => 'image/vnd.microsoft.icon',
+        'tiff' => 'image/tiff',
+        'tif'  => 'image/tiff',
+        'svg'  => 'image/svg+xml',
+        'svgz' => 'image/svg+xml',
+        // Archives.
+        'zip'  => 'application/zip',
+        'rar'  => 'application/x-rar-compressed',
+        'exe'  => 'application/x-msdownload',
+        'msi'  => 'application/x-msdownload',
+        'cab'  => 'application/vnd.ms-cab-compressed',
+        'gz'   => 'application/x-gzip',
+        'gz'   => 'application/x-bzip2',
+        // Audio/Video.
+        'mp3'  => 'audio/mpeg',
+        'qt'   => 'video/quicktime',
+        'mov'  => 'video/quicktime',
+        // Adobe.
+        'pdf'  => 'application/pdf',
+        'psd'  => 'image/vnd.adobe.photoshop',
+        'ai'   => 'application/postscript',
+        'eps'  => 'application/postscript',
+        'ps'   => 'application/postscript',
+        // MS Office.
+        'doc'  => 'application/msword',
+        'rtf'  => 'application/rtf',
+        'xls'  => 'application/vnd.ms-excel',
+        'ppt'  => 'application/vnd.ms-powerpoint',
+        // Open Source Office files.
+        'odt'  => 'application/vnd.oasis.opendocument.text',
+        'ods'  => 'application/vnd.oasis.opendocument.spreadsheet',
+    ]
+);

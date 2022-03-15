@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,69 +48,22 @@ if (function_exists('mime_content_type') === false) {
      */
     function mime_content_type(string $filename)
     {
-        $mime_types = [
-            'txt'  => 'text/plain',
-            'htm'  => 'text/html',
-            'html' => 'text/html',
-            'php'  => 'text/html',
-            'css'  => 'text/css',
-            'js'   => 'application/javascript',
-            'json' => 'application/json',
-            'xml'  => 'application/xml',
-            'swf'  => 'application/x-shockwave-flash',
-            'flv'  => 'video/x-flv',
-            // Images.
-            'png'  => 'image/png',
-            'jpe'  => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'jpg'  => 'image/jpeg',
-            'gif'  => 'image/gif',
-            'bmp'  => 'image/bmp',
-            'ico'  => 'image/vnd.microsoft.icon',
-            'tiff' => 'image/tiff',
-            'tif'  => 'image/tiff',
-            'svg'  => 'image/svg+xml',
-            'svgz' => 'image/svg+xml',
-            // Archives.
-            'zip'  => 'application/zip',
-            'rar'  => 'application/x-rar-compressed',
-            'exe'  => 'application/x-msdownload',
-            'msi'  => 'application/x-msdownload',
-            'cab'  => 'application/vnd.ms-cab-compressed',
-            'gz'   => 'application/x-gzip',
-            'gz'   => 'application/x-bzip2',
-            // Audio/Video.
-            'mp3'  => 'audio/mpeg',
-            'qt'   => 'video/quicktime',
-            'mov'  => 'video/quicktime',
-            // Adobe.
-            'pdf'  => 'application/pdf',
-            'psd'  => 'image/vnd.adobe.photoshop',
-            'ai'   => 'application/postscript',
-            'eps'  => 'application/postscript',
-            'ps'   => 'application/postscript',
-            // MS Office.
-            'doc'  => 'application/msword',
-            'rtf'  => 'application/rtf',
-            'xls'  => 'application/vnd.ms-excel',
-            'ppt'  => 'application/vnd.ms-powerpoint',
-            // Open Source Office files.
-            'odt'  => 'application/vnd.oasis.opendocument.text',
-            'ods'  => 'application/vnd.oasis.opendocument.spreadsheet',
-        ];
-
         $ext_fields = explode('.', $filename);
         $ext = array_pop($ext_fields);
         $ext = strtolower($ext);
-        if (array_key_exists($ext, $mime_types) === true) {
-            return $mime_types[$ext];
+        if (array_key_exists($ext, MIME_TYPES) === true) {
+            return MIME_TYPES[$ext];
         } else if (function_exists('finfo_open') === true) {
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
             return $mimetype;
         } else {
-            error_log('Warning: Cannot find finfo_open function. Fileinfo extension is not enabled. Please add "extension=fileinfo.so" or "extension=fileinfo.dll" in your php.ini');
+            db_pandora_audit(
+                AUDIT_LOG_FILE_MANAGER,
+                'Warning: Cannot find finfo_open function. Fileinfo extension is not enabled. Please add "extension=fileinfo.so" or "extension=fileinfo.dll" in your php.ini'
+            );
+
             return 'unknown';
         }
     }
@@ -129,10 +82,12 @@ require_once $config['homedir'].'/vendor/autoload.php';
  * @param boolean $upload_file_or_zip     Upload file or zip.
  * @param string  $default_real_directory String with default directory.
  * @param string  $destination_directory  String with destination directory.
+ * @param array   $filterFilesType        If come filled, filter uploaded files with this extensions.
  *
+ * @throws Exception Exception.
  * @return void
  */
-function upload_file($upload_file_or_zip, $default_real_directory, $destination_directory)
+function upload_file($upload_file_or_zip, $default_real_directory, $destination_directory, $filterFilesType=[])
 {
     global $config;
     $config['filemanager'] = [];
@@ -179,13 +134,24 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
                 // controlled by corresponding .htaccess).
                 $config['filemanager']['message'] = ui_print_error_message(__('Security error'));
             } else {
+                $result = false;
                 // Copy file to directory and change name.
                 $nombre_archivo = sprintf('%s/%s', $real_directory, $filename);
-
                 try {
-                    $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
+                    $mimeContentType = mime_content_type($_FILES['file']['tmp_name']);
+
+                    if (empty($filterFilesType) === true || in_array($mimeContentType, $filterFilesType) === true) {
+                        $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
+                    } else {
+                        $error_message = 'The uploaded file is not allowed. Only gif, png or jpg files can be uploaded.';
+                        throw new Exception(__($error_message));
+                    }
                 } catch (Exception $ex) {
-                    $result = false;
+                    db_pandora_audit(
+                        AUDIT_LOG_FILE_MANAGER,
+                        'Error Uploading files: '.$ex->getMessage()
+                    );
+                    $config['filemanager']['message'] = ui_print_error_message(__('Upload error').': '.$ex->getMessage());
                 }
 
                 if ($result === true) {
@@ -203,8 +169,6 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
                     $config['filemanager']['correct_upload_file'] = 1;
                     // Delete temporal file.
                     unlink($_FILES['file']['tmp_name']);
-                } else {
-                    $config['filemanager']['message'] = ui_print_error_message(__('Upload error'));
                 }
             }
         }
@@ -496,7 +460,7 @@ function filemanager_read_recursive_dir($dir, $relative_path='', $add_empty_dirs
  * @param boolean $download_button     The flag to show download button, by default false.
  * @param string  $umask               The umask as hex values to set the new files or updload.
  * @param boolean $homedir_filemanager Homedir filemanager.
- * @param boolean $allowCreateText     If true, 'Create Text' button will be shown.
+ * @param array   $options             Associative array. ['all' => true] will show all options. Check function for valid options.
  */
 function filemanager_file_explorer(
     $real_directory,
@@ -509,7 +473,7 @@ function filemanager_file_explorer(
     $download_button=false,
     $umask='',
     $homedir_filemanager=false,
-    $allowCreateText=true
+    $options=[]
 ) {
     global $config;
 
@@ -517,6 +481,9 @@ function filemanager_file_explorer(
     $real_directory = str_replace('\\', '/', $real_directory);
     $relative_directory = str_replace('\\', '/', $relative_directory);
     $father = str_replace('\\', '/', $father);
+    // Options.
+    $allowZipFiles = (isset($options['all']) === true) || ((isset($options['allowZipFiles']) === true) && ($options['allowZipFiles'] === true));
+    $allowCreateText = (isset($options['all']) === true) || ((isset($options['allowCreateText']) === true) && ($options['allowCreateText'] === true));
 
     if ($homedir_filemanager === false) {
         $homedir_filemanager = $config['homedir'];
@@ -530,7 +497,7 @@ function filemanager_file_explorer(
             actions_dialog('create_folder');
             $("#create_folder").css("display", "block");
             check_opened_dialog('create_folder');
-        }      
+        }
         <?php if ($allowCreateText === true) : ?>
         function show_create_text_file() {
             actions_dialog('create_text_file');
@@ -542,7 +509,7 @@ function filemanager_file_explorer(
             actions_dialog('upload_file');
             $("#upload_file").css("display", "block");
             check_opened_dialog('upload_file');
-        }   
+        }
 
         function check_opened_dialog(check_opened){
             if(check_opened !== 'create_folder'){
@@ -579,11 +546,11 @@ function filemanager_file_explorer(
                 case 'upload_file':
                 title_action = "<?php echo __('Upload Files'); ?>";
                     break;
-                                    
+
                 default:
                     break;
             }
-         
+
             $('#'+action)
             .dialog({
                 title: title_action,
@@ -839,15 +806,86 @@ function filemanager_file_explorer(
 
             $tabs_dialog .= '</ul>';
 
-            echo '<div id="create_folder" class="invisible">'.$tabs_dialog.'
-            <form method="post" action="'.$url.'">'.html_print_input_text('dirname', '', '', 30, 255, true).html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('create_dir', 1, true).html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true).'</form></div>';
+            // Create folder section.
+            $createFolderElements = $tabs_dialog;
+            $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
+            $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
+            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
+            $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
+            $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
+            $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
+            $createFolderElements .= html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true);
+            $createFolderElements .= '</form>';
 
-            echo '<div id="upload_file" class="invisible"> '.$tabs_dialog.'
-            <form method="post" action="'.$url.'" enctype="multipart/form-data">'.ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true).html_print_input_file('file', true, false).html_print_input_hidden('umask', $umask, true).html_print_checkbox('decompress', 1, false, true).__('Decompress').html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('upload_file_or_zip', 1, true).'</form></div>';
+            html_print_div(
+                [
+                    'id'      => 'create_folder',
+                    'class'   => 'invisible',
+                    'content' => $createFolderElements,
+                ]
+            );
 
+            // Upload file section.
+            $uploadFileElements = $tabs_dialog;
+            $uploadFileElements .= sprintf('<form method="POST" action="%s" enctype="multipart/form-data">', $url);
+            $uploadFileElements .= html_print_input_hidden('umask', $umask, true);
+
+            if ($allowZipFiles === true) {
+                $uploadFileElements .= ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true);
+                $uploadFileElements .= html_print_input_file('file', true, false);
+                $uploadFileElements .= html_print_checkbox('decompress', 1, false, true).__('Decompress');
+                $uploadFileElements .= html_print_input_hidden('upload_file_or_zip', 1, true);
+            } else {
+                $uploadFileElements .= html_print_div(
+                    [
+                        'id'      => 'upload_file_input_full',
+                        'content' => html_print_input_file(
+                            'file',
+                            true,
+                            [ 'style' => 'border:0; padding:0; width:100%' ]
+                        ),
+                    ],
+                    true
+                );
+                $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
+            }
+
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true);
+            $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
+            $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
+            $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
+            $uploadFileElements .= html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true);
+
+            $uploadFileElements .= '</form>';
+
+            html_print_div(
+                [
+                    'id'      => 'upload_file',
+                    'class'   => 'invisible',
+                    'content' => $uploadFileElements,
+                ]
+            );
+
+            // Create text section.
             if ($allowCreateText === true) {
-                echo ' <div id="create_text_file" class="invisible">'.$tabs_dialog.'
-                <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
+                $createTextElements = $tabs_dialog;
+                $createTextElements .= '<form method="post" action="'.$url.'">';
+                $createTextElements .= html_print_input_text('name_file', '', '', 30, 50, true);
+                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true);
+                $createTextElements .= html_print_input_hidden('real_directory', $real_directory, true);
+                $createTextElements .= html_print_input_hidden('directory', $relative_directory, true);
+                $createTextElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
+                $createTextElements .= html_print_input_hidden('umask', $umask, true);
+                $createTextElements .= html_print_input_hidden('create_text_file', 1, true);
+                $createTextElements .= '</form>';
+
+                html_print_div(
+                    [
+                        'id'      => 'create_text_file',
+                        'class'   => 'invisible',
+                        'content' => $createTextElements,
+                    ]
+                );
             }
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";

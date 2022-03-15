@@ -2713,16 +2713,15 @@ function ui_print_status_image(
         $imagepath = $path;
     }
 
-    if ($imagepath == 'images/status_sets/default') {
+    if ($imagepath === 'images/status_sets/default') {
         $image_with_css = true;
     }
-
-    $imagepath .= '/'.$type;
 
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
         return ui_print_status_sets($type, $title, $return, $shape_status, $extra_info);
     } else {
+        $imagepath .= '/'.$type;
         if ($options === false) {
             $options = [];
         }
@@ -2871,7 +2870,7 @@ function ui_print_status_sets(
         $options = [];
     }
 
-    if (isset($options['style'])) {
+    if (isset($options['style']) === true) {
         $options['style'] .= ' display: inline-block;';
     } else {
         $options['style'] = 'display: inline-block;';
@@ -2881,15 +2880,15 @@ function ui_print_status_sets(
         $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
-    if (isset($options['class'])) {
+    if (isset($options['class']) === true) {
         $options['class'] = $options['class'];
     }
 
-    if ($title != '') {
-        $options['title'] = empty($extra_info) ? $title : $title.'&#10'.$extra_info;
-        $options['data-title'] = empty($extra_info) ? $title : $title.'<br>'.$extra_info;
+    if (empty($title) === false) {
+        $options['title'] = (empty($extra_info) === true) ? $title : $title.'&#10'.$extra_info;
+        $options['data-title'] = (empty($extra_info) === true) ? $title : $title.'<br>'.$extra_info;
         $options['data-use_title_for_force_title'] = 1;
-        if (isset($options['class'])) {
+        if (isset($options['class']) === true) {
             $options['class'] .= ' forced_title';
         } else {
             $options['class'] = 'forced_title';
@@ -2901,15 +2900,13 @@ function ui_print_status_sets(
         $output .= $k.'="'.$v.'"';
     }
 
-    $output .= '>';
-    $output .= '</div>';
+    $output .= '>&nbsp;</div>';
 
     if ($return === false) {
         echo $output;
+    } else {
+        return $output;
     }
-
-    return $output;
-
 }
 
 

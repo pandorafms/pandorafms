@@ -188,6 +188,20 @@ class Visualmaps
         $ui->showFooter(false);
         $ui->beginContent();
             $this->listVisualmapsHtml();
+
+        $output = '<script type="text/javascript">';
+        $output .= 'function loadVisualConsole(id) {';
+        $output .= ' var dimensions = "&width="+$(window).width();';
+        $output .= ' dimensions += "&height="+$(window).height();';
+        $output .= ' window.location.href = "';
+        $output .= ui_get_full_url('/', false, false, false);
+        $output .= 'mobile/index.php?page=visualmap&id="';
+        $output .= '+id+dimensions;';
+        $output .= '};';
+        $output .= '</script>';
+
+        $ui->contentAddHtml($output);
+
         $ui->endContent();
         $ui->showPage();
     }
@@ -214,8 +228,8 @@ class Visualmaps
             $table->id = 'list_visualmaps';
             foreach ($visualmaps as $map) {
                 $link = '<a class="ui-link" data-ajax="false" ';
-                $link .= ' href="index.php?page=visualmap&id=';
-                $link .= $map['id'].'">'.io_safe_output($map['name']).'</a>';
+                $link .= ' href="#" onclick="loadVisualConsole(';
+                $link .= $map['id'].')">'.io_safe_output($map['name']).'</a>';
 
                 $row = $link;
                 $row .= ui_print_group_icon(

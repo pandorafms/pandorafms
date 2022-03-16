@@ -141,11 +141,7 @@ class Visualmap
         if (empty($this->width) === true
             && empty($this->height) === true
         ) {
-            // Reload forcing user to send width and height.
-            $ui = Ui::getInstance();
-            $ui->retrieveViewPort();
-            $this->show_visualmap();
-            return;
+            $this->show_fail_acl();
         }
 
         // Padding.
@@ -208,29 +204,7 @@ class Visualmap
      */
     public function ajax(string $parameter2='')
     {
-        $system = System::getInstance();
-        $this->checkVisualmapACL($this->visualmap['id_group']);
-        if ((bool) $this->validAcl === false) {
-            $this->show_fail_acl();
-        } else {
-            switch ($parameter2) {
-                case 'render_map':
-                    $map_id = $system->getRequest('map_id', '0');
-                    $width = $system->getRequest('width', '400');
-                    $height = $system->getRequest('height', '400');
-                    visual_map_print_visual_map(
-                        $map_id,
-                        false,
-                        true,
-                        $width,
-                        $height
-                    );
-                exit;
-
-                default:
-                exit;
-            }
-        }
+        return;
     }
 
 
@@ -385,11 +359,15 @@ class Visualmap
             $output .= "$('.container-center').css('transform', 'rotate(90deg)');";
         }
 
-        $output .= '$( window ).on( "orientationchange", function( event )';
-        $output .= ' { window.location.href = "';
+        $output .= '$( window ).on( "orientationchange", function( event ) {';
+        $output .= ' $(".container-center").empty();';
+        $output .= ' $.mobile.loading("show");';
+        $output .= ' var dimensions = "&width="+$(window).height();';
+        $output .= ' dimensions += "&height="+$(window).width();';
+        $output .= ' window.location.href = "';
         $output .= ui_get_full_url('/', false, false, false);
         $output .= 'mobile/index.php?page=visualmap&id='.$visualConsoleId;
-        $output .= '" });';
+        $output .= '"+dimensions; });';
 
         $output .= '</script>';
 

@@ -389,7 +389,7 @@ ul li {
 
 .button_collapse {
   margin-top: auto;
-  height: 38px;
+  min-height: 38px;
   background-color: #505050;
   text-align: center;
   color: #fff;
@@ -427,7 +427,6 @@ ul li {
 }
 
 .button_classic {
-  width: 215px;
   background-image: url(../../images/button_collapse_menu.png);
   background-repeat: no-repeat;
   background-position: center;
@@ -440,7 +439,7 @@ ul li {
 }
 
 /* Menu height: 601px, 720px, 735px */
-@media screen and (max-height: 720px) {
+@media screen and (max-height: 750px) {
   .menu li,
   .menu li a,
   .menu li div {
@@ -448,7 +447,7 @@ ul li {
   }
 }
 
-@media screen and (max-height: 735px) {
+@media screen and (max-height: 750px) {
   .operation {
     padding-top: 10px;
   }

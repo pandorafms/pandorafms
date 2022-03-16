@@ -36,30 +36,32 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         ).'</div>';
 
         // ======= Servers List ===============================================
-        $servers_list = '<div id="servers_list">';
-        $servers = [];
-        $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
-        if ($servers['all'] != 0) {
-            $servers['up'] = (int) servers_check_status();
-            $servers['down'] = ($servers['all'] - $servers['up']);
-            if ($servers['up'] == 0) {
-                // All Servers down or no servers at all.
-                $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
-            } else if ($servers['down'] != 0) {
-                // Some servers down.
-                $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
-            } else {
-                // All servers up.
-                $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
-            }
+        if ((bool) check_acl($config['id_user'], 0, 'AW') !== false) {
+            $servers_list = '<div id="servers_list">';
+            $servers = [];
+            $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+            if ($servers['all'] != 0) {
+                $servers['up'] = (int) servers_check_status();
+                $servers['down'] = ($servers['all'] - $servers['up']);
+                if ($servers['up'] == 0) {
+                    // All Servers down or no servers at all.
+                    $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
+                } else if ($servers['down'] != 0) {
+                    // Some servers down.
+                    $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
+                } else {
+                    // All servers up.
+                    $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
+                }
 
-            unset($servers);
-            // Since this is the header, we don't like to trickle down variables.
-            $servers_check_img_link = '<a class="white" href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60">';
-             $servers_check_img_link .= $servers_check_img;
-             $servers_check_img_link .= '</a>';
-        };
-        $servers_list .= $servers_check_img_link.'</div>';
+                unset($servers);
+                // Since this is the header, we don't like to trickle down variables.
+                $servers_check_img_link = '<a class="white" href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60">';
+                 $servers_check_img_link .= $servers_check_img;
+                 $servers_check_img_link .= '</a>';
+            };
+            $servers_list .= $servers_check_img_link.'</div>';
+        }
 
 
 

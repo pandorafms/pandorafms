@@ -365,7 +365,7 @@ $data[1] = ui_progress(
     ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto']))).' s',
     [
         'page'     => 'operation/agentes/ver_agente',
-        'interval' => (100 / $agent['intervalo']),
+        'interval' => (empty($agent['intervalo']) === true) ? 0 : (100 / $agent['intervalo']),
         'data'     => [
             'id_agente'       => $id_agente,
             'refresh_contact' => 1,

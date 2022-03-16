@@ -10,7 +10,7 @@ use POSIX qw (strftime floor);
 use Sys::Hostname;
 use Time::HiRes  qw(gettimeofday tv_interval);
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 # Pandora Modules.
 use PandoraFMS::Config;

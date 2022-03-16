@@ -158,7 +158,9 @@ class CredentialStore extends Wizard
         // Check access.
         check_login();
 
-        if (! check_acl($config['id_user'], 0, 'AR')) {
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === false
+            || (bool) check_acl($config['id_user'], 0, 'UM') === false
+        ) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access credential store'

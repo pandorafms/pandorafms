@@ -49,6 +49,7 @@ if (is_ajax()) {
     $get_agent_modules_json = (bool) get_parameter('get_agent_modules_json');
     $get_agent_status_tooltip = (bool) get_parameter('get_agent_status_tooltip');
     $get_agents_group_json = (bool) get_parameter('get_agents_group_json');
+    $get_agents_also_interfaces = (bool) get_parameter('get_agents_also_interfaces');
     $get_modules_group_json = (bool) get_parameter('get_modules_group_json');
     $filter_modules_group_json = (bool) get_parameter('filter_modules_group_json');
     $get_modules_group_value_name_json = (bool) get_parameter('get_modules_group_value_name_json');
@@ -103,15 +104,15 @@ if (is_ajax()) {
         // Build filter.
         $filter = [];
 
-        if (!empty($id_os)) {
+        if (empty($id_os) === false) {
             $filter['id_os'] = $id_os;
         }
 
-        if (!empty($agent_name)) {
+        if (empty($agent_name) === false) {
             $filter['nombre'] = '%'.$agent_name.'%';
         }
 
-        if (!empty($agent_alias)) {
+        if (empty($agent_alias) === false) {
             $filter['alias'] = '%'.$agent_alias.'%';
         }
 
@@ -147,6 +148,20 @@ if (is_ajax()) {
             }
         }
 
+        if ($get_agents_also_interfaces === true) {
+            $listAgentsWithIface = db_get_all_rows_sql("SELECT DISTINCT id_agente FROM tagente_modulo WHERE nombre LIKE '%_ifOperStatus'");
+            if (empty($listAgentsWithIface) === false) {
+                $filter['matchIds'] = array_reduce(
+                    $listAgentsWithIface,
+                    function ($carry, $item) {
+                        $carry[] = $item['id_agente'];
+                        return $carry;
+                    },
+                    []
+                );
+            }
+        }
+
         // Perform search.
         $agents = agents_get_group_agents(
             // Id_group.
@@ -171,7 +186,7 @@ if (is_ajax()) {
             (bool) is_metaconsole()
         );
 
-        if (empty($agents)) {
+        if (empty($agents) === true) {
             $agents = [];
         }
 

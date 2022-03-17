@@ -318,7 +318,7 @@ sub pandora_purgedb ($$) {
 	} else {
 		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
 			"'sql_graph_pie'", "'database_serialized'", "'sql'", "'inventory'", "'inventory_changes'",
-			"'netflow_area'", "'netflow_data'", "'netflow_summary'");
+			"'netflow_area'", "'netflow_data'", "'netflow_summary'", "'netflow_top_N'");
 		my $blacklist_types_str = join(',', @blacklist_types);
 		
 		# Deleted modules

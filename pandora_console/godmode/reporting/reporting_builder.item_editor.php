@@ -868,6 +868,7 @@ switch ($action) {
                 case 'netflow_area':
                 case 'netflow_data':
                 case 'netflow_summary':
+                case 'netflow_top_N':
                     $netflow_filter = $item['text'];
                     // Filter.
                     $period = $item['period'];
@@ -6574,6 +6575,16 @@ function chooseType() {
             break;
 
         case 'netflow_summary':
+            $("#row_netflow_filter").show();
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_max_values").show();
+            $("#row_resolution").show();
+            $("#row_servers").show();
+            $("#row_historical_db_check").hide();
+            break;
+
+        case 'netflow_top_N':
             $("#row_netflow_filter").show();
             $("#row_description").show();
             $("#row_period").show();

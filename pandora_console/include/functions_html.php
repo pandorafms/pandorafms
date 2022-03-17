@@ -1697,13 +1697,19 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = [];
     }
 
+    if (is_array($data['mModules']) === false) {
+        $result = explode(((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ','), $data['mModules']);
+    } else {
+        $result = $data['mModules'];
+    }
+
     $output .= html_print_input(
         [
             'label'    => __('Modules'),
             'type'     => 'select',
             'fields'   => $all_modules,
             'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => explode((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ',', $data['mModules']),
+            'selected' => $result,
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',

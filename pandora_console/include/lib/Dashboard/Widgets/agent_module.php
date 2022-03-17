@@ -200,6 +200,10 @@ class AgentModuleWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::decoders($decoder);
 
+        if (isset($decoder['mTypeShow']) === true) {
+            $values['mTypeShow'] = $decoder['mTypeShow'];
+        }
+
         if (isset($decoder['mGroup']) === true) {
             $values['mGroup'] = $decoder['mGroup'];
         }
@@ -246,6 +250,25 @@ class AgentModuleWidget extends Widget
             'label' => __('Filter modules'),
         ];
 
+        // Type show.
+        $show_select = [
+            0 => __('Show module status'),
+            1 => __('Show module data'),
+        ];
+
+        $inputs[] = [
+            'class'     => 'flex flex-row',
+            'label'     => __('Information to be show'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $show_select,
+                'name'     => 'filtered-type-show-'.$this->cellId,
+                'return'   => true,
+                'id'       => 'filtered-type-show-'.$this->cellId,
+                'selected' => $this->values['mTypeShow'],
+            ],
+        ];
+
         $return_all_group = false;
 
         if (users_can_manage_group_all('RM') || $this->values['mGroup'] == 0) {
@@ -284,6 +307,10 @@ class AgentModuleWidget extends Widget
     {
         // Retrieve global - common inputs.
         $values = parent::getPost();
+
+        $values['mTypeShow'] = \get_parameter(
+            'filtered-type-show-'.$this->cellId
+        );
 
         $values['mGroup'] = \get_parameter(
             'filtered-module-group-'.$this->cellId
@@ -743,9 +770,11 @@ class AgentModuleWidget extends Widget
                         }
                     }
                 } else {
-                    $modules = $agent->searchModules(
-                        ['nombre' => array_keys($reduceAllModules)]
-                    );
+                    if (empty($reduceAllModules) === false) {
+                        $modules = $agent->searchModules(
+                            ['nombre' => array_keys($reduceAllModules)]
+                        );
+                    }
                 }
 
                 $visualData[$agent_id]['modules'] = $reduceAllModules;
@@ -765,7 +794,10 @@ class AgentModuleWidget extends Widget
             }
         }
 
-        $allModules = array_keys($reduceAllModules);
+        if (empty($reduceAllModules) === false) {
+            $allModules = array_keys($reduceAllModules);
+        }
+
         if ($allModules === null) {
             $allModules = [];
         }

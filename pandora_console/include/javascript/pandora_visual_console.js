@@ -1469,7 +1469,7 @@ function linkedVisualConsoleTypeChange() {
 function imageVCChange(baseUrl, vcId, only) {
   var nameImg = document.getElementById("imageSrc").value;
   if (nameImg == 0) {
-    $("#li-image-item").empty();
+    $("#li-image-item label").empty();
     return;
   }
 
@@ -1503,8 +1503,8 @@ function imageVCChange(baseUrl, vcId, only) {
       }
     }
 
-    $("#li-image-item").empty();
-    $("#li-image-item").append(data);
+    $("#li-image-item label").empty();
+    $("#li-image-item label").append(data);
     return;
   };
 

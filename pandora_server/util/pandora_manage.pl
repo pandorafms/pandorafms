@@ -4301,9 +4301,6 @@ sub cli_create_event() {
 		
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
-		# Base64 encode custom data
-		$custom_data = encode_base64 ($custom_data, '');
-
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
 			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 

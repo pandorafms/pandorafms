@@ -183,6 +183,29 @@ try {
                         );
                     break;
 
+                    case 'custom_data':
+                        $custom_data_array = json_decode(
+                            $row[$key],
+                            true
+                        );
+
+                        $custom_data = '';
+                        $separator = ($config['csv_divider'] === ';') ? ',' : ';';
+
+                        if ($custom_data_array !== null) {
+                            array_walk(
+                                $custom_data_array,
+                                function (&$value, $field) {
+                                    $value = $field.'='.$value;
+                                }
+                            );
+
+                            $custom_data = implode($separator, $custom_data_array);
+                        }
+
+                        echo io_safe_output($custom_data);
+                    break;
+
                     default:
                         echo io_safe_output($row[$key]);
                     break;

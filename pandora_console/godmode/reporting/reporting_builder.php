@@ -1753,6 +1753,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -2553,6 +2554,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );

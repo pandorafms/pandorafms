@@ -81,41 +81,20 @@ class User
 
     public function isLogged()
     {
-        global $config;
         $system = System::getInstance();
 
+        $loginhash = $system->getRequest('loginhash', null);
         $autologin = $system->getRequest('autologin', false);
-        if ($autologin) {
+        if ($autologin !== false) {
             $user = $system->getRequest('user', null);
             $password = $system->getRequest('password', null);
-
             $this->login($user, $password);
         } else {
-            if (isset($_GET['loginhash']) === true) {
+            if (empty($loginhash) === false) {
                 // Hash login process.
-                $loginhash_data = get_parameter('loginhash_data', '');
-                $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
-                if ($config['loginhash_pwd'] != ''
-                    && $loginhash_data == md5(
-                        $loginhash_user.io_output_password(
-                            $config['loginhash_pwd']
-                        )
-                    )
-                ) {
-                    $this->login($loginhash_user, $config['loginhash_pwd']);
-                } else {
-                    include_once 'general/login_page.php';
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_REGISTRATION,
-                        'Loginhash failed',
-                        'system'
-                    );
-                    while (ob_get_length() > 0) {
-                        ob_end_flush();
-                    }
-
-                    exit('</html>');
-                }
+                $loginhash_data = $system->getRequest('loginhash_data', null);
+                $loginhash_user = str_rot13($system->getRequest('loginhash_user', null));
+                $this->login($loginhash_user, null, $loginhash_data);
             }
         }
 
@@ -123,9 +102,40 @@ class User
     }
 
 
-    public function login($user=null, $password=null)
+    public function login($user=null, $password=null, $loginhash_data='')
     {
+        global $config;
         $system = System::getInstance();
+
+        if (empty($loginhash_data) === false) {
+            if ($config['loginhash_pwd'] != ''
+                && $loginhash_data == md5(
+                    $user.io_output_password(
+                        $config['loginhash_pwd']
+                    )
+                )
+            ) {
+                $this->logged = true;
+                $this->user = $user;
+                $this->loginTime = time();
+                $this->errorLogin = false;
+                $this->saveLogin();
+            } else {
+                include_once 'general/login_page.php';
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Loginhash failed',
+                    'system'
+                );
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
+                }
+
+                exit('</html>');
+            }
+
+            return $this->logged;
+        }
 
         if ($system->getConfig('auth', 'mysql') === 'saml') {
             if ((bool) $system->getRequest('saml', false) === true) {

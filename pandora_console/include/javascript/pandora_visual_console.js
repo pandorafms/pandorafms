@@ -42,8 +42,17 @@ function createVisualConsole(
   var visualConsole = null;
   var asyncTaskManager = new AsyncTaskManager();
 
-  function updateVisualConsole(visualConsoleId, updateInterval, tts) {
+  function updateVisualConsole(
+    visualConsoleId,
+    updateInterval,
+    tts,
+    dimensions
+  ) {
     if (tts == null) tts = 0; // Time to start.
+
+    if (dimensions != undefined && dimensions != null && dimensions != "") {
+      size = dimensions;
+    }
 
     asyncTaskManager.add(
       "visual-console",
@@ -93,7 +102,7 @@ function createVisualConsole(
                 var receivedAt = new Date();
                 var prevProps = visualConsole.props;
                 if (beforeUpdate) {
-                  beforeUpdate(items, visualConsole, props);
+                  beforeUpdate(items, visualConsole, props, size);
                 } else {
                   // Add the datetime when the item was received.
                   items.map(function(item) {
@@ -457,6 +466,11 @@ function createVisualConsole(
         // Update interval disabled. Cancel possible pending tasks.
         asyncTaskManager.cancel("visual-console");
         asyncTaskManager.cancel("visual-console-start");
+      }
+    },
+    changeDimensionsVc: function(dimensions, interval) {
+      if (dimensions != null) {
+        updateVisualConsole(visualConsole.props.id, interval, null, dimensions);
       }
     },
     createItem: function(typeString) {

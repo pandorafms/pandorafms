@@ -170,7 +170,7 @@ $table->data[2][0] = __('Background');
 $table->data[2][1] = html_print_select(
     $backgrounds_list,
     'background',
-    $background,
+    io_safe_output($background),
     '',
     'None',
     'None.png',

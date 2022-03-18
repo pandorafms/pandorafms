@@ -1493,3 +1493,15 @@ div.nodata_container {
   padding: 0;
   margin: 0.5em 0 !important;
 }
+
+.div-visual-console-spinner {
+  opacity: 1 !important;
+}
+
+.cv-overflow {
+  overflow: hidden !important;
+}
+
+.visual-console-container-dashboard a:visited {
+  color: inherit !important;
+}

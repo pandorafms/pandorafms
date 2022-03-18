@@ -1208,35 +1208,39 @@ function refresh_pagination_callback(
 
 // eslint-disable-next-line no-unused-vars
 function dashboardLoadVC(settings) {
+  var headerMobileFix = 40;
+
   var container = document.getElementById(
     "visual-console-container-" + settings.cellId
   );
 
+  var interval = 300 * 1000;
+
   // Add the datetime when the item was received.
   var receivedAt = new Date();
 
-  var beforeUpdate = function(items, visualConsole, props) {
+  var beforeUpdate = function(items, visualConsole, props, size) {
     var ratio_visualconsole = props.height / props.width;
-    var ratio_w = settings.size.width / props.width;
-    var ratio_h = settings.size.height / props.height;
+    var ratio_w = size.width / props.width;
+    var ratio_h = size.height / props.height;
 
-    props.width = settings.size.width;
-    props.height = settings.size.width * ratio_visualconsole;
+    props.width = size.width;
+    props.height = size.width * ratio_visualconsole;
 
     var ratio = ratio_w;
     if (settings.mobile != undefined && settings.mobile === true) {
       if (props.height < props.width) {
-        if (props.height > settings.size.height) {
+        if (props.height > size.height) {
           ratio = ratio_h;
-          props.height = settings.size.height;
-          props.width = settings.size.height / ratio_visualconsole;
+          props.height = size.height;
+          props.width = size.height / ratio_visualconsole;
         }
       }
     } else {
-      if (props.height > settings.size.height) {
+      if (props.height > size.height) {
         ratio = ratio_h;
-        props.height = settings.size.height;
-        props.width = settings.size.height / ratio_visualconsole;
+        props.height = size.height;
+        props.width = size.height / ratio_visualconsole;
       }
     }
 
@@ -1275,18 +1279,32 @@ function dashboardLoadVC(settings) {
           var regex_hash = /(hash=)[^&]+(&?)/gi;
           var replacement_hash = "$1" + props.hash + "$2";
 
+          var regex_width = /(width=)[^&]+(&?)/gi;
+          var replacement_width = "$1" + size.width + "$2";
+
+          var regex_height = /(height=)[^&]+(&?)/gi;
+          var replacement_height =
+            "$1" + (size.height + headerMobileFix) + "$2";
+
           // Change the URL (if the browser has support).
           if ("history" in window) {
             var href = window.location.href.replace(regex, replacement);
             href = href.replace(regex_hash, replacement_hash);
+            href = href.replace(regex_width, replacement_width);
+            href = href.replace(regex_height, replacement_height);
             window.history.replaceState({}, document.title, href);
+          }
+          //Remove spinner change VC.
+          container.classList.remove("is-updating");
+          container.classList.remove("cv-overflow");
 
-            $(window).on("orientationchange", function() {
-              window.location.href =
-                settings.baseUrl +
-                "mobile/index.php?page=visualmap&id=" +
-                props.id;
-            });
+          var div = container.querySelector(".div-visual-console-spinner");
+
+          if (div !== null) {
+            var parent = div.parentElement;
+            if (parent !== null) {
+              parent.removeChild(div);
+            }
           }
         }
       },
@@ -1297,17 +1315,7 @@ function dashboardLoadVC(settings) {
   };
 
   var handleUpdate = function() {
-    //Remove spinner change VC.
-    container.classList.remove("is-updating");
-
-    var div = container.querySelector(".div-visual-console-spinner");
-
-    if (div !== null) {
-      var parent = div.parentElement;
-      if (parent !== null) {
-        parent.removeChild(div);
-      }
-    }
+    return;
   };
 
   settings.items.map(function(item) {
@@ -1320,12 +1328,12 @@ function dashboardLoadVC(settings) {
     return item;
   });
 
-  createVisualConsole(
+  var visualConsoleManager = createVisualConsole(
     container,
     settings.props,
     settings.items,
     settings.baseUrl,
-    300 * 1000,
+    interval,
     handleUpdate,
     beforeUpdate,
     settings.size,
@@ -1335,6 +1343,41 @@ function dashboardLoadVC(settings) {
       ? "mobile"
       : "dashboard"
   );
+
+  $(window).on("orientationchange", function() {
+    $(container).width($(window).height());
+    $(container).height($(window).width() - headerMobileFix);
+    //Remove spinner change VC.
+    container.classList.remove("is-updating");
+    container.classList.remove("cv-overflow");
+
+    var div = container.querySelector(".div-visual-console-spinner");
+
+    if (div !== null) {
+      var parent = div.parentElement;
+      if (parent !== null) {
+        parent.removeChild(div);
+      }
+    }
+
+    container.classList.add("is-updating");
+    container.classList.add("cv-overflow");
+    const divParent = document.createElement("div");
+    divParent.className = "div-visual-console-spinner";
+
+    const divSpinner = document.createElement("div");
+    divSpinner.className = "visual-console-spinner";
+
+    divParent.appendChild(divSpinner);
+    container.appendChild(divParent);
+
+    var dimensions = {
+      width: $(window).height(),
+      height: $(window).width() - 40
+    };
+
+    visualConsoleManager.changeDimensionsVc(dimensions, interval);
+  });
 }
 
 // eslint-disable-next-line no-unused-vars

@@ -141,12 +141,13 @@ class Visualmap
         if (empty($this->width) === true
             && empty($this->height) === true
         ) {
-            $this->show_fail_acl();
+            // Reload forcing user to send width and height.
+            $ui = Ui::getInstance();
+            $ui->retrieveViewPort();
         }
 
-        // Padding.
+        // Header.
         $this->height -= 40;
-        $this->width -= 0;
 
         $this->visualmap = db_get_row(
             'tlayout',
@@ -348,30 +349,12 @@ class Visualmap
                 'cellId'  => $uniq,
                 'uniq'    => $uniq,
                 'mobile'  => true,
+                'vcId'    => $visualConsoleId,
             ]
         );
 
-        $output .= '<script type="text/javascript">';
-        $output .= '$(document).ready(function () {';
-        $output .= 'dashboardLoadVC('.$settings.')';
-        $output .= '});';
-        if ($this->rotate === true) {
-            $output .= "$('.container-center').css('transform', 'rotate(90deg)');";
-        }
-
-        $output .= '$( window ).on( "orientationchange", function( event ) {';
-        $output .= ' $(".container-center").empty();';
-        $output .= ' $.mobile.loading("show");';
-        $output .= ' var dimensions = "&width="+$(window).height();';
-        $output .= ' dimensions += "&height="+$(window).width();';
-        $output .= ' window.location.href = "';
-        $output .= ui_get_full_url('/', false, false, false);
-        $output .= 'mobile/index.php?page=visualmap&id='.$visualConsoleId;
-        $output .= '"+dimensions; });';
-
-        $output .= '</script>';
-
         $ui->contentAddHtml($output);
+        $ui->loadVc($settings, $visualConsoleId);
 
         $javascript = ob_get_clean();
         $ui->contentAddHtml($javascript);

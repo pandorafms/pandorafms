@@ -4139,7 +4139,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 
             if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
+            } else if ($warning_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else {
                 return VISUAL_MAP_STATUS_NORMAL;

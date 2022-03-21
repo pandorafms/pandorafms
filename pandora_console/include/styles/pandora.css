@@ -7667,6 +7667,10 @@ div.graph div.legend table {
   line-height: 25px;
 }
 
+.container-fluid {
+  padding: 0;
+}
+
 .pandora_logs {
   width: 98%;
   float: right;

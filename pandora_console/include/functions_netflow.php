@@ -1510,26 +1510,25 @@ function netflow_get_item_data(
 
     switch ($type_netflow) {
         case 'netflow_top_N':
-            /*
-                $data_summary = netflow_get_summary(
+            $data_summary = netflow_get_summary(
                 $start_date,
                 $end_date,
                 $filter,
                 $connection_name
-                );
+            );
 
-                $data_top_n = netflow_get_top_N(
+            $data_top_n = netflow_get_top_N(
                 $start_date,
                 $end_date,
                 $filter,
                 $max_aggregates,
                 $connection_name
-                );
+            );
 
-                $data = [
+            $data = [
                 'summary' => $data_summary,
                 'top_n'   => $data_top_n,
-            ];*/
+            ];
         break;
 
         case 'netflow_summary':

@@ -5648,60 +5648,42 @@ function reporting_netflow(
     );
 
     if ($type_netflow === 'netflow_top_N') {
-        // Always aggregate by destination port.
+        // Aggregate by destination port.
         $filter['aggregate'] = 'dstport';
+    }
 
-        switch ($type) {
-            case 'dinamic':
-            case 'static':
-                $return['chart'] = netflow_draw_item(
-                    ($report['datetime'] - $content['period']),
-                    $report['datetime'],
-                    $content['top_n'],
-                    $type_netflow,
-                    $filter,
-                    $content['top_n_value'],
-                    $content['server_name'],
-                    (($pdf === true) ? 'PDF' : 'HTML')
-                );
-            break;
+    switch ($type) {
+        case 'dinamic':
+        case 'static':
+            $return['chart'] = netflow_draw_item(
+                ($report['datetime'] - $content['period']),
+                $report['datetime'],
+                $content['top_n'],
+                $type_netflow,
+                $filter,
+                $content['top_n_value'],
+                $content['server_name'],
+                (($pdf === true) ? 'PDF' : 'HTML')
+            );
+        break;
 
-            case 'data':
-                $return['data'] = netflow_get_item_data(
-                    ($report['datetime'] - $content['period']),
-                    $report['datetime'],
-                    $filter,
-                    $content['top_n_value'],
-                    $content['server_name']
-                );
-            break;
+        case 'data':
+            $data = netflow_get_item_data(
+                ($report['datetime'] - $content['period']),
+                $report['datetime'],
+                $content['top_n'],
+                $type_netflow,
+                $filter,
+                $content['top_n_value'],
+                $content['server_name']
+            );
 
-            default:
-                // Nothing to do.
-            break;
-        }
-    } else {
-        switch ($type) {
-            case 'dinamic':
-            case 'static':
-            case 'data':
-                $return['chart'] = netflow_draw_item(
-                    ($report['datetime'] - $content['period']),
-                    $report['datetime'],
-                    $content['top_n'],
-                    $type_netflow,
-                    $filter,
-                    $content['top_n_value'],
-                    $content['server_name'],
-                    $pdf ? 'PDF' : 'HTML'
-                );
-            break;
+            $return['data'] = (array_key_exists('data', $data) === true) ? $data['data'] : $data;
+        break;
 
-            case 'data':
-            default:
-                // Nothing to do.
-            break;
-        }
+        default:
+            // Nothing to do.
+        break;
     }
 
     $return['subtitle'] = netflow_generate_subtitle_report(

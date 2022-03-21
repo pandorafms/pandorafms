@@ -226,11 +226,6 @@ function process_user_login_remote($login, $pass, $api=false)
     switch ($config['auth']) {
         // LDAP
         case 'ldap':
-            // Use local authentication if user is global admin.
-            if (is_user_admin($login) === true) {
-                return false;
-            }
-
             $sr = ldap_process_user_login($login, $pass);
 
             if (!$sr) {
@@ -240,11 +235,6 @@ function process_user_login_remote($login, $pass, $api=false)
 
         // Active Directory
         case 'ad':
-            // Use local authentication if user is global admin.
-            if (is_user_admin($login) === true) {
-                return false;
-            }
-
             if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
                 return false;

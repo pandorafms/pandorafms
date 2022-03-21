@@ -145,7 +145,7 @@ if (!$@) {
 }
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::DB;
 use PandoraFMS::Config;
@@ -552,7 +552,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	}
 
 	my $schedule;
-	if (defined($alert->{'schedule'} && $alert->{'schedule'} != '')) {
+	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
 		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
 	}
 
@@ -5539,6 +5539,9 @@ sub pandora_process_policy_queue ($) {
 				sleep ($pa_config->{'server_threshold'});
 				next;
 			}
+
+			# Refresh policy agents.
+			enterprise_hook('pandora_apply_policy_groups', [$pa_config, $dbh]);
 
 			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
 			next unless (defined ($operation) && $operation ne '');

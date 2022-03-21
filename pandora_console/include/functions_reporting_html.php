@@ -326,6 +326,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'netflow_area':
             case 'netflow_data':
             case 'netflow_summary':
+            case 'netflow_top_N':
                 reporting_html_graph($table, $item);
             break;
 
@@ -375,6 +376,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'agent_module':
                 reporting_html_agent_module($table, $item);
+            break;
+
+            case 'agent_module_status':
+                reporting_html_agent_module_status($table, $item);
             break;
 
             case 'alert_report_actions':
@@ -1995,6 +2000,125 @@ function reporting_html_agent_module($table, $item)
         $table_data .= '</div>';
 
         $table->data['agent_module']['cell'] = $table_data;
+    }
+}
+
+
+/**
+ * Html report agent modules status.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Pdf output.
+ *
+ * @return mixed
+ */
+function reporting_html_agent_module_status($table, $item, $pdf=0)
+{
+    global $config;
+
+    $return_pdf = '';
+
+    if (empty($item['data']) === true) {
+        if ($pdf !== 0) {
+            $return_pdf .= __('No items');
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = __('No items');
+        }
+    } else {
+        $table_info = new stdClass();
+        $table_info->width = '99%';
+
+        $table_info->align = [];
+        if (is_metaconsole() === true) {
+            $table_info->align['server'] = 'left';
+        }
+
+        $table_info->align['name_group'] = 'left';
+        $table_info->align['name_agent'] = 'left';
+        $table_info->align['name_module'] = 'left';
+        $table_info->align['status_module'] = 'left';
+        $table_info->align['data_module'] = 'left';
+        $table_info->align['data_time_module'] = 'left';
+
+        $table_info->headstyle = [];
+        if (is_metaconsole() === true) {
+            $table_info->headstyle['server'] = 'text-align: left';
+        }
+
+        $table_info->headstyle['name_group'] = 'text-align: left';
+        $table_info->headstyle['name_agent'] = 'text-align: left';
+        $table_info->headstyle['name_module'] = 'text-align: left';
+        $table_info->headstyle['status_module'] = 'text-align: left';
+        $table_info->headstyle['data_module'] = 'text-align: left';
+        $table_info->headstyle['data_time_module'] = 'text-align: left';
+
+        $table_info->head = [];
+        if (is_metaconsole() === true) {
+            $table_info->head['server'] = __('Server');
+        }
+
+        $table_info->head['name_agent'] = __('Agent');
+        $table_info->head['name_module'] = __('Module');
+        $table_info->head['name_group'] = __('Group');
+        $table_info->head['status_module'] = __('Status');
+        $table_info->head['data_module'] = __('Data');
+        $table_info->head['data_time_module'] = __('Last time');
+
+        $table_info->data = [];
+
+        foreach ($item['data'] as $server => $info) {
+            foreach ($info as $data) {
+                $row = [];
+                if (is_metaconsole() === true) {
+                    $row['server'] = $server;
+                }
+
+                $row['name_agent'] = $data['name_agent'];
+                $row['name_module'] = $data['name_module'];
+                $row['name_group'] = $data['name_group'];
+                $row['status_module'] = ui_print_module_status(
+                    $data['status_module'],
+                    true,
+                    'status_rounded_rectangles',
+                    null,
+                    ($pdf === 1) ? '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' : ''
+                );
+
+                if (is_numeric($data['data_module']) === true) {
+                    $row['data_module'] = remove_right_zeros(
+                        number_format(
+                            $data['data_module'],
+                            $config['graph_precision']
+                        )
+                    );
+                } else {
+                    $row['data_module'] = (empty($data['data_module']) === true) ? '--' : $data['data_module'];
+                }
+
+                $row['data_module'] .= $data['unit_module'];
+                $row['data_time_module'] = $data['data_time_module'];
+
+                $table_info->data[] = $row;
+            }
+        }
+
+        if ($pdf !== 0) {
+            $table_info->title = $item['title'];
+            $table_info->titleclass = 'title_table_pdf';
+            $table_info->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table_info, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table_info, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 

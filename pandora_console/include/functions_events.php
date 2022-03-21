@@ -4166,10 +4166,23 @@ function events_get_response_target(
     }
 
     // Parse the event custom data.
-    if (!empty($event['custom_data'])) {
+    if (empty($event['custom_data']) === false) {
         $custom_data = json_decode(base64_decode($event['custom_data']));
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
+        }
+
+        if (strpos($target, '_customdata_json_') !== false) {
+            $target = str_replace('_customdata_json_', json_encode($custom_data), $target);
+        }
+
+        if (strpos($target, '_customdata_text_') !== false) {
+            $text = '';
+            foreach ($custom_data as $key => $value) {
+                $text .= $key.': '.$value.PHP_EOL;
+            }
+
+            $target = str_replace('_customdata_text_', $text, $target);
         }
     }
 
@@ -4183,6 +4196,28 @@ function events_get_response_target(
         $target = str_replace(
             '_command_timeout_',
             $event_response['command_timeout'],
+            $target
+        );
+    }
+
+    if (strpos($target, '_owner_username_') !== false) {
+        if (empty($event['owner_user']) === false) {
+            $fullname = users_get_user_by_id($event['owner_user']);
+            $target = str_replace(
+                '_owner_username_',
+                io_safe_output($fullname['fullname']),
+                $target
+            );
+        } else {
+            $target = str_replace('_owner_username_', __('N/A'), $target);
+        }
+    }
+
+    if (strpos($target, '_current_username_') !== false) {
+        $fullname = users_get_user_by_id($config['id_user']);
+        $target = str_replace(
+            '_current_username_',
+            io_safe_output($fullname['fullname']),
             $target
         );
     }
@@ -7586,6 +7621,28 @@ function events_get_field_value_by_event_id(
     // This will replace the macro with the current logged user.
     if (strpos($value, '_current_user_') !== false) {
         $value = str_replace('_current_user_', $config['id_user'], $value);
+    }
+
+    if (strpos($value, '_owner_username_') !== false) {
+        if (empty($event['owner_user']) === false) {
+            $fullname = users_get_user_by_id($event['owner_user']);
+            $value = str_replace(
+                '_owner_username_',
+                io_safe_output($fullname['fullname']),
+                $value
+            );
+        } else {
+            $value = str_replace('_owner_username_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_current_username_') !== false) {
+        $fullname = users_get_user_by_id($config['id_user']);
+        $value = str_replace(
+            '_current_username_',
+            io_safe_output($fullname['fullname']),
+            $value
+        );
     }
 
     return $value;

@@ -120,3 +120,7 @@ enterprise/extensions/backup/main.php
 enterprise/extensions/backup.php
 mobile/include/javascript/jquery.mobile-1.4.5.js
 mobile/include/style/jquery.mobile-1.4.5.css
+enterprise/extensions/backup/backup.js
+enterprise/extensions/backup/sql/backup.sql
+enterprise/extensions/backup/sql/backup.oracle.sql
+enterprise/extensions/backup/sql/backup.postgreSQL.sql

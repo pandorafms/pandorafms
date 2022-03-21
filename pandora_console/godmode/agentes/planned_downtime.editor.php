@@ -639,20 +639,20 @@ $table->data[5][1] = "
             <tr><td>".ui_get_using_system_timezone_warning().'</td></tr>
             <tr>
                 <td>'.__('Type Periodicity:').'&nbsp;'.html_print_select(
-    [
-        'weekly'  => __('Weekly'),
-        'monthly' => __('Monthly'),
-    ],
-    'type_periodicity',
-    $type_periodicity,
-    'change_type_periodicity();',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
+                [
+                    'weekly'  => __('Weekly'),
+                    'monthly' => __('Monthly'),
+                ],
+                'type_periodicity',
+                $type_periodicity,
+                'change_type_periodicity();',
+                '',
+                0,
+                true,
+                false,
+                true,
+                '',
+                $disabled_in_execution
 )."</td>
             </tr>
             <tr>
@@ -672,31 +672,31 @@ $table->data[5][1] = "
                         <tr>
                             <td>".__('From day:').'</td>
                             <td>'.html_print_select(
-    $days,
-    'periodically_day_from',
-    $periodically_day_from,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
+                                $days,
+                                'periodically_day_from',
+                                $periodically_day_from,
+                                '',
+                                '',
+                                0,
+                                true,
+                                false,
+                                true,
+                                '',
+                                $disabled_in_execution
 ).'</td>
                             <td>'.__('To day:').'</td>
                             <td>'.html_print_select(
-    $days,
-    'periodically_day_to',
-    $periodically_day_to,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
+                                $days,
+                                'periodically_day_to',
+                                $periodically_day_to,
+                                '',
+                                '',
+                                0,
+                                true,
+                                false,
+                                true,
+                                '',
+                                $disabled_in_execution
 ).'</td>
                             <td>'.ui_print_help_tip(__('The end day must be higher than the start day'), true).'</td>
                         </tr>
@@ -705,26 +705,26 @@ $table->data[5][1] = "
                         <tr>
                             <td>'.__('From hour:').'</td>
                             <td>'.html_print_input_text(
-    'periodically_time_from',
-    $periodically_time_from,
-    '',
-    7,
-    7,
-    true,
-    $disabled_in_execution
+                                'periodically_time_from',
+                                $periodically_time_from,
+                                '',
+                                7,
+                                7,
+                                true,
+                                $disabled_in_execution
 ).ui_print_help_tip(
     __('The end time must be higher than the start time'),
     true
 ).'</td>
                             <td>'.__('To hour:').'</td>
                             <td>'.html_print_input_text(
-    'periodically_time_to',
-    $periodically_time_to,
-    '',
-    7,
-    7,
-    true,
-    $disabled_in_execution
+                                'periodically_time_to',
+                                $periodically_time_to,
+                                '',
+                                7,
+                                7,
+                                true,
+                                $disabled_in_execution
 ).ui_print_help_tip(
     __('The end time must be higher than the start time'),
     true
@@ -1008,13 +1008,13 @@ $table->data['module'][1] = "
                 <td class='cell_delete_button' style='text-align: right; width:10%;' id=''>".'<a class="link_delete"
                         onclick="if(!confirm(\''.__('Are you sure?').'\')) return false;"
                         href="">'.html_print_image(
-    'images/cross.png',
-    true,
-    [
-        'border' => '0',
-        'alt'    => __('Delete'),
-        'class'  => 'invert_filter',
-    ]
+                            'images/cross.png',
+                            true,
+                            [
+                                'border' => '0',
+                                'alt'    => __('Delete'),
+                                'class'  => 'invert_filter',
+                            ]
 ).'</a>'."</td>
             </tr>
             <tr class='datos2' id='add_modules_row'>

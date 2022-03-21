@@ -1214,3 +1214,7 @@ input[type="image"] {
 .databox_color {
   background-color: transparent !important;
 }
+
+.mono {
+  font-family: source-code, mono, monospace;
+}

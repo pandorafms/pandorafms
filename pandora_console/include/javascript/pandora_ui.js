@@ -577,28 +577,34 @@ function confirmDialog(settings) {
  */
 // eslint-disable-next-line no-unused-vars
 function generalShowMsg(data, idMsg) {
-  var title = "Response";
-  var text = data;
-  var failed = false;
+  var title = data.title[data.error];
+  var text = data.text[data.error];
+  var failed = !data.error;
 
-  if (typeof data == "object") {
-    title = data.title || "Response";
-    text = data.text || data.error || data.result;
-    failed = failed || data.error;
-  }
+  if (typeof data.error != "number") {
+    title = "Response";
+    text = data;
+    failed = false;
 
-  if (failed) {
-    title = "Error";
-    text = data.error;
-  }
+    if (typeof data == "object") {
+      title = data.title || "Response";
+      text = data.text || data.error || data.result;
+      failed = data.failed || data.error;
+    }
 
-  if (idMsg == null) {
-    idMsg = uniqId();
-  }
+    if (failed) {
+      title = "Error";
+      text = data.error;
+    }
 
-  if ($("#" + idMsg).length === 0) {
-    $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
-    $("#" + idMsg).empty();
+    if (idMsg == null) {
+      idMsg = uniqId();
+    }
+
+    if ($("#" + idMsg).length === 0) {
+      $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+      $("#" + idMsg).empty();
+    }
   }
 
   $("#" + idMsg).empty();

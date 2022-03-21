@@ -27,7 +27,7 @@ use File::Path qw(rmtree);
 use Time::HiRes qw(usleep);
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Core;
 use PandoraFMS::Tools;
@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.760 Build 220228";
+my $version = "7.0NG.760 Build 220321";
 
 # Pandora server configuration
 my %conf;
@@ -318,7 +318,7 @@ sub pandora_purgedb ($$) {
 	} else {
 		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
 			"'sql_graph_pie'", "'database_serialized'", "'sql'", "'inventory'", "'inventory_changes'",
-			"'netflow_area'", "'netflow_data'", "'netflow_summary'");
+			"'netflow_area'", "'netflow_data'", "'netflow_summary'", "'netflow_top_N'");
 		my $blacklist_types_str = join(',', @blacklist_types);
 		
 		# Deleted modules

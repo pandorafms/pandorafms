@@ -606,6 +606,18 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'netflow_top_N':
+                $report['contents'][] = reporting_netflow(
+                    $report,
+                    $content,
+                    $type,
+                    $force_width_chart,
+                    $force_height_chart,
+                    'netflow_top_N',
+                    $pdf
+                );
+            break;
+
             case 'monitor_report':
                 $report['contents'][] = reporting_monitor_report(
                     $report,
@@ -725,6 +737,13 @@ function reporting_make_reporting_data(
 
             case 'agent_module':
                 $report['contents'][] = reporting_agent_module(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'agent_module_status':
+                $report['contents'][] = reporting_agent_module_status(
                     $report,
                     $content
                 );
@@ -2849,6 +2868,136 @@ function reporting_agent_module($report, $content)
     if ($config['metaconsole']) {
         metaconsole_restore_db();
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Agents module status
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_agent_module_status($report, $content)
+{
+    global $config;
+    $return['type'] = 'agent_module_status';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Agent/Modules Status');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $group_name = groups_get_name($content['id_group'], true);
+    if ($content['id_module_group'] == 0) {
+        $module_group_name = __('All');
+    } else {
+        $module_group_name = db_get_value(
+            'name',
+            'tmodule_group',
+            'id_mg',
+            $content['id_module_group']
+        );
+    }
+
+    $return['subtitle'] = $group_name.' - '.$module_group_name;
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+
+    $return['data'] = [];
+
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $agents = json_decode(
+        io_safe_output(
+            base64_decode($external_source['id_agents'])
+        ),
+        true
+    );
+
+    $modules = json_decode(
+        io_safe_output(
+            base64_decode($external_source['module'])
+        ),
+        true
+    );
+
+    if (is_metaconsole() === true) {
+        $agents_per_node = [];
+        $modules_per_node = [];
+
+        if (empty($agents) === false) {
+            foreach ($agents as $value) {
+                $agent_array = explode('|', $value);
+                $agents_per_node[$agent_array[0]][] = $agent_array[1];
+            }
+        }
+
+        if (empty($modules) === false) {
+            foreach ($modules as $value) {
+                $module_array = explode('|', $value);
+                $modules_per_node[$module_array[0]][] = $module_array[1];
+            }
+        }
+
+        if (empty($agents_per_node) === false) {
+            foreach ($agents_per_node as $server => $agents) {
+                $connection = metaconsole_get_connection_by_id($server);
+                if (metaconsole_connect($connection) != NOERR) {
+                    continue;
+                }
+
+                $res[$connection['server_name']] = get_status_data_agent_modules(
+                    $content['id_group'],
+                    $agents,
+                    $modules_per_node[$server]
+                );
+
+                metaconsole_restore_db();
+            }
+        } else {
+            $metaconsole_connections = metaconsole_get_connection_names();
+            // For all nodes.
+            if (isset($metaconsole_connections) === true
+                && is_array($metaconsole_connections) === true
+            ) {
+                foreach ($metaconsole_connections as $metaconsole) {
+                    // Get server connection data.
+                    $server_data = metaconsole_get_connection($metaconsole);
+
+                    // Establishes connection.
+                    if (metaconsole_load_external_db($server_data) !== NOERR) {
+                        continue;
+                    }
+
+                    $res[$server_data['server_name']] = get_status_data_agent_modules(
+                        $content['id_group'],
+                        $agents,
+                        $modules
+                    );
+
+                    metaconsole_restore_db();
+                }
+            }
+        }
+    } else {
+        $res['node'] = get_status_data_agent_modules(
+            $content['id_group'],
+            $agents,
+            $modules
+        );
+    }
+
+    $return['data'] = $res;
 
     return reporting_check_structure_content($return);
 }
@@ -5432,6 +5581,10 @@ function reporting_netflow(
             $return['type'] = 'netflow_summary';
         break;
 
+        case 'netflow_top_N':
+            $return['type'] = 'netflow_top_N';
+        break;
+
         default:
             $return['type'] = 'unknown';
         break;
@@ -5449,6 +5602,10 @@ function reporting_netflow(
 
             case 'netflow_data':
                 $content['name'] = __('Netflow Data');
+            break;
+
+            case 'netflow_top_N':
+                $content['name'] = __('Netflow top-N connections');
             break;
 
             default:
@@ -5490,26 +5647,61 @@ function reporting_netflow(
         true
     );
 
-    switch ($type) {
-        case 'dinamic':
-        case 'static':
-        case 'data':
-            $return['chart'] = netflow_draw_item(
-                ($report['datetime'] - $content['period']),
-                $report['datetime'],
-                $content['top_n'],
-                $type_netflow,
-                $filter,
-                $content['top_n_value'],
-                $content['server_name'],
-                $pdf ? 'PDF' : 'HTML'
-            );
-        break;
+    if ($type_netflow === 'netflow_top_N') {
+        // Always aggregate by destination port.
+        $filter['aggregate'] = 'dstport';
 
-        case 'data':
-        default:
-            // Nothing to do.
-        break;
+        switch ($type) {
+            case 'dinamic':
+            case 'static':
+                $return['chart'] = netflow_draw_item(
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    $content['top_n'],
+                    $type_netflow,
+                    $filter,
+                    $content['top_n_value'],
+                    $content['server_name'],
+                    (($pdf === true) ? 'PDF' : 'HTML')
+                );
+            break;
+
+            case 'data':
+                $return['data'] = netflow_get_item_data(
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    $filter,
+                    $content['top_n_value'],
+                    $content['server_name']
+                );
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    } else {
+        switch ($type) {
+            case 'dinamic':
+            case 'static':
+            case 'data':
+                $return['chart'] = netflow_draw_item(
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    $content['top_n'],
+                    $type_netflow,
+                    $filter,
+                    $content['top_n_value'],
+                    $content['server_name'],
+                    $pdf ? 'PDF' : 'HTML'
+                );
+            break;
+
+            case 'data':
+            default:
+                // Nothing to do.
+            break;
+        }
     }
 
     $return['subtitle'] = netflow_generate_subtitle_report(
@@ -11049,11 +11241,29 @@ function reporting_get_stats_users($data)
 
     $tdata = [];
     $tdata[0] = html_print_image('images/user.png', true, ['title' => __('Defined users'), 'class' => 'invert_filter']);
-    $user_groups = users_get_strict_mode_groups($config['id_user'], false);
-    if (array_key_exists(0, $user_groups)) {
-        $users = users_get_user_users($config['id_user'], 'AR', true);
+    $user_is_admin = users_is_admin();
+
+    $users = [];
+
+    if ($user_is_admin) {
+        $users = get_users('', ['disabled' => 0], ['id_user', 'is_admin']);
     } else {
-        $users = users_get_user_users($config['id_user'], 'AR', false);
+        $group_um = users_get_groups_UM($config['id_user']);
+        // 0 is the group 'all'.
+        if (isset($group_um[0])) {
+            $users = get_users('', ['disabled' => 0], ['id_user', 'is_admin']);
+        } else {
+            foreach ($group_um as $group => $value) {
+                $users = array_merge($users, users_get_users_by_group($group, $value, false));
+            }
+        }
+    }
+
+    foreach ($users as $user_id => $user_info) {
+        // If user is not admin then don't display admin users.
+        if ($user_is_admin === false && (bool) $user_info['is_admin'] === true) {
+            unset($users[$user_id]);
+        }
     }
 
     $tdata[1] = count($users);

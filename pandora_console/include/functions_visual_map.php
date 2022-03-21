@@ -4550,6 +4550,7 @@ function visual_map_load_client_resources()
  */
 function css_label_styles_visual_console($uniq, $ratio=1)
 {
+    global $config;
     $output = '';
     // Horrible trick! due to the use of tinyMCE
     // it is necessary to modify specific classes of each
@@ -4578,7 +4579,7 @@ function css_label_styles_visual_console($uniq, $ratio=1)
     $output .= '.c-'.$uniq.' .visual_font_size_140pt, .c-'.$uniq.' .visual_font_size_140pt * { font-size: '.(140 * $ratio).'pt !important; line-height:'.(140 * ($ratio)).'pt !important; }';
     $output .= '.c-'.$uniq.' .visual_font_size_154pt, .c-'.$uniq.' .visual_font_size_154pt * { font-size: '.(154 * $ratio).'pt !important; line-height:'.(154 * ($ratio)).'pt !important; }';
     $output .= '.c-'.$uniq.' .visual_font_size_196pt, .c-'.$uniq.' .visual_font_size_196pt * { font-size: '.(196 * $ratio).'pt !important; line-height:'.(196 * ($ratio)).'pt !important; }';
-    $output .= '.c-'.$uniq.' .flot-text, .c-'.$uniq.' .flot-text * { font-size: '.(8 * $ratio).'pt !important; line-height:'.(8 * ($ratio)).'pt !important; }';
+    $output .= '.c-'.$uniq.' .flot-text, .c-'.$uniq.' .flot-text * { font-size: '.(($config['font_size'] - 2) * $ratio).'pt !important; line-height:'.(($config['font_size'] - 2) * ($ratio)).'pt !important; }';
     $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.time {font-size: '.(50 * $ratio).'px !important; line-height: '.(50 * $ratio).'px !important;}';
     $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.date {font-size: '.(25 * $ratio).'px !important; line-height: '.(25 * $ratio).'px !important;}';
     $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.timezone {font-size: '.(25 * $ratio).'px !important; line-height: '.(25 * $ratio).'px !important;}';

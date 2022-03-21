@@ -660,20 +660,23 @@ $tip = ui_print_help_tip(
     ),
     true
 );
-$table_other->data[$i][0] = __('PhantomJS cache cleanup ').$tip;
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'     => 'select',
-        'name'     => 'phantomjs_cache_interval',
-        'return'   => true,
-        'fields'   => [
-            PHANTOM_CACHE_CLEANUP_ONCE   => __('No scheduled'),
-            PHANTOM_CACHE_CLEANUP_WEEKLY => __('Each week'),
-            PHANTOM_CACHE_CLEANUP_DAILY  => __('Each day'),
-        ],
-        'selected' => ($config['phantomjs_cache_interval'] ?? PHANTOM_CACHE_CLEANUP_ONCE),
-    ]
-);
+
+if (enterprise_installed() === true) {
+    $table_other->data[$i][0] = __('PhantomJS cache cleanup ').$tip;
+    $table_other->data[$i++][1] = html_print_input(
+        [
+            'type'     => 'select',
+            'name'     => 'phantomjs_cache_interval',
+            'return'   => true,
+            'fields'   => [
+                PHANTOM_CACHE_CLEANUP_ONCE   => __('No scheduled'),
+                PHANTOM_CACHE_CLEANUP_WEEKLY => __('Each week'),
+                PHANTOM_CACHE_CLEANUP_DAILY  => __('Each day'),
+            ],
+            'selected' => ($config['phantomjs_cache_interval'] ?? PHANTOM_CACHE_CLEANUP_ONCE),
+        ]
+    );
+}
 
 echo '<form id="form_setup" method="post">';
 

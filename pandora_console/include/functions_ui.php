@@ -4640,11 +4640,14 @@ function ui_print_page_header(
     }
 
     $buffer .= '<span>';
+    $buffer .= '<span class="breadcrumbs-title">';
     if (empty($alias)) {
         $buffer .= ui_print_truncate_text($title, $numChars);
     } else {
         $buffer .= ui_print_truncate_text($alias, $numChars);
     }
+
+    $buffer .= '</span>';
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "

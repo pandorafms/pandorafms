@@ -1306,6 +1306,12 @@ function dashboardLoadVC(settings) {
               parent.removeChild(div);
             }
           }
+
+          // View title.
+          var title = document.querySelector(".ui-title");
+          if (title !== null) {
+            title.textContent = visualConsole.props.name;
+          }
         }
       },
       error: function(error) {

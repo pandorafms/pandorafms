@@ -651,7 +651,7 @@ function initialiceLayout(data) {
           url: data.url,
           data: {
             page: data.page,
-            method: "drawWidget",
+            method: "drawCell",
             dashboardId: data.dashboardId,
             cellId: cellId,
             newWidth: newWidth,
@@ -1329,6 +1329,29 @@ function dashboardShowEventDialog(settings) {
           close: function() {
             //$("#refrcounter").countdown("resume");
             //$("div.vc-countdown").countdown("resume");
+            debugger;
+            $.ajax({
+              method: "post",
+              url: settings.ajaxUrl,
+              data: {
+                page: "operation/dashboard/dashboard",
+                method: "drawWidget",
+                dashboardId: settings.dashboardId,
+                cellId: settings.cellId,
+                widgetId: settings.widgetId,
+                redraw: 1
+              },
+              success: function(dataWidget) {
+                // Widget empty and reload.
+                $("#widget-" + settings.cellId + " .content-widget").empty();
+                $("#widget-" + settings.cellId + " .content-widget").append(
+                  dataWidget
+                );
+              },
+              error: function(error) {
+                console.error(error);
+              }
+            });
           },
           overlay: {
             opacity: 0.5,

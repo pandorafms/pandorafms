@@ -5008,6 +5008,8 @@ function events_page_general($event)
     $event_st = events_display_status($event['estado']);
 
     $data = [];
+
+    $table_general->rowid[7] = 'general_status';
     $data[0] = __('Status');
     $data[1] = $event_st['title'];
     $data[2] = html_print_image($event_st['img'], true);

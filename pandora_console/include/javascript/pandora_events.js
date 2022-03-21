@@ -504,7 +504,7 @@ function event_change_status(event_ids) {
       if ($("#notification_status_error").length) {
         $("#notification_status_error").hide();
       }
-
+      debugger;
       if (data.status == "status_ok") {
         if (typeof dt_events !== "undefined") {
           dt_events.draw(false);
@@ -519,6 +519,13 @@ function event_change_status(event_ids) {
             "N/A"
           );
         }
+
+        $("#general_status")
+          .find(".general_status")
+          .text(data.status_title);
+        $("#general_status")
+          .find("img")
+          .attr("src", data.status_img);
       } else {
         $("#notification_status_error").show();
       }

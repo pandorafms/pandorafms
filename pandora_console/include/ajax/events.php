@@ -1269,10 +1269,14 @@ if ($change_status) {
     );
 
     if ($return !== false) {
+        $event_st = events_display_status($new_status);
+
         echo json_encode(
             [
-                'status' => 'status_ok',
-                'user'   => db_get_value(
+                'status_title' => $event_st['title'],
+                'status_img'   => html_print_image($event_st['img'], true, false, true),
+                'status'       => 'status_ok',
+                'user'         => db_get_value(
                     'fullname',
                     'tusuario',
                     'id_user',

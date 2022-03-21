@@ -718,16 +718,19 @@ class EventsListWidget extends Widget
 
                 $settings = json_encode(
                     [
-                        'event'   => $event,
-                        'page'    => 'include/ajax/events',
-                        'cellId'  => $this->cellId,
-                        'ajaxUrl' => \ui_get_full_url(
+                        'event'       => $event,
+                        'page'        => 'include/ajax/events',
+                        'cellId'      => $this->cellId,
+                        'ajaxUrl'     => \ui_get_full_url(
                             'ajax.php',
                             false,
                             false,
                             false
                         ),
-                        'result'  => false,
+                        'result'      => false,
+                        'dashboardId' => $this->dashboardId,
+                        'widgetId'    => $this->widgetId,
+                        'cellId'      => $this->cellId,
                     ]
                 );
 

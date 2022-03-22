@@ -239,7 +239,7 @@ class Visualmaps
                     [
                         'icon'  => '',
                         'pos'   => 'right',
-                        'text'  => __('All visualmaps'),
+                        'text'  => __('All visual consoles'),
                         'href'  => 'index.php?page=visualmaps&favourite=0',
                         'class' => '',
                     ]
@@ -251,7 +251,7 @@ class Visualmaps
                     [
                         'icon'  => '',
                         'pos'   => 'right',
-                        'text'  => __('Favourite visualmaps'),
+                        'text'  => __('Favourite visual consoles'),
                         'href'  => 'index.php?page=visualmaps&favourite=1',
                         'class' => '',
                     ]

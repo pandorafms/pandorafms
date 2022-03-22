@@ -20,7 +20,7 @@ enterprise_hook('open_meta_frame');
 
 if (!check_acl($config['id_user'], 0, 'EW') && !check_acl($config['id_user'], 0, 'EM') && ! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event manage'
     );
     include 'general/noaccess.php';

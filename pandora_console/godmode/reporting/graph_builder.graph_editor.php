@@ -20,7 +20,7 @@ $report_m = check_acl($config['id_user'], 0, 'RM');
 
 if (!$report_w && !$report_m) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access graph builder'
     );
     include 'general/noaccess.php';

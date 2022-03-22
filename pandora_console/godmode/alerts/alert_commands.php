@@ -21,7 +21,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -538,9 +538,20 @@ if ($create_command) {
     }
 
     if ($result) {
-        db_pandora_audit('Command management', 'Create alert command #'.$result, false, false, $info);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Create alert command #'.$result,
+            false,
+            false,
+            $info
+        );
     } else {
-        db_pandora_audit('Command management', 'Fail try to create alert command', false, false);
+        db_pandora_audit(
+            AUDIT_LOG_ALERT_MANAGEMENT,
+            'Fail try to create alert command',
+            false,
+            false
+        );
     }
 
     // Show errors.
@@ -570,7 +581,7 @@ if ($delete_command) {
     // Internal commands cannot be deleted.
     if (alerts_get_alert_command_internal($id)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         include 'general/noaccess.php';
@@ -579,11 +590,14 @@ if ($delete_command) {
 
     $result = alerts_delete_alert_command($id);
 
-    if ($result) {
-        db_pandora_audit('Command management', 'Delete alert command #'.$id);
-    } else {
-        db_pandora_audit('Command management', 'Fail try to delete alert command #'.$id);
-    }
+    $auditMessage = ((bool) $result === true)
+    ? sprintf('Delete alert command #%s', $id)
+    : sprintf('Fail try to delete alert command #%s', $id);
+
+    db_pandora_audit(
+        AUDIT_LOG_ALERT_MANAGEMENT,
+        $auditMessage
+    );
 
     ui_print_result_message(
         $result,

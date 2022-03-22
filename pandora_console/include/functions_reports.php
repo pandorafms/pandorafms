@@ -797,6 +797,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         }
     }
 
+    $types['agent_module_status'] = [
+        'optgroup' => __('Grouped'),
+        'name'     => __('Agents/Modules status'),
+    ];
+
     // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [
@@ -901,6 +906,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         $types['netflow_summary'] = [
             'optgroup' => __('Netflow'),
             'name'     => __('Netflow summary table'),
+        ];
+        $types['netflow_top_N'] = [
+            'optgroup' => __('Netflow'),
+            'name'     => __('Netflow top-N connections'),
         ];
     }
 

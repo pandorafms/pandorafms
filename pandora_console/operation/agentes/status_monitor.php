@@ -36,7 +36,7 @@ if (! check_acl($config['id_user'], 0, 'AR')
     && ! check_acl($config['id_user'], 0, 'AM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';
@@ -311,10 +311,10 @@ if ($moduletype != '') {
 
 // Freestring selector.
 if ($ag_freestring != '') {
-    $sql_conditions .= ' AND (tagente.nombre COLLATE utf8_general_ci '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
-		OR tagente.alias COLLATE utf8_general_ci '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
-		OR tagente_modulo.nombre COLLATE utf8_general_ci '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
-		OR tagente_modulo.descripcion COLLATE utf8_general_ci '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\')';
+    $sql_conditions .= ' AND (tagente.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
+		OR tagente.alias '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
+		OR tagente_modulo.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
+		OR tagente_modulo.descripcion '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\')';
 }
 
 // Status selector.

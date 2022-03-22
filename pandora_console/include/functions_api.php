@@ -1535,10 +1535,6 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'disabled',
         ]
     );
-    $tpolicy_group_old = db_get_all_rows_sql(
-        'SELECT id_policy FROM tpolicy_groups
-            WHERE id_group = '.$values_old['id_grupo']
-    );
 
     $return = db_process_sql_update(
         'tagente',
@@ -1576,59 +1572,6 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
                     $disabled,
                 ]
             );
-        }
-
-        if ($tpolicy_group_old) {
-            foreach ($tpolicy_group_old as $key => $value) {
-                $tpolicy_agents_old = db_get_sql(
-                    'SELECT * FROM tpolicy_agents 
-                    WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agent
-                );
-
-                if ($tpolicy_agents_old) {
-                    $result2 = db_process_sql_update(
-                        'tpolicy_agents',
-                        ['pending_delete' => 1],
-                        [
-                            'id_agent'  => $id_agent,
-                            'id_policy' => $value['id_policy'],
-                        ]
-                    );
-                }
-            }
-        }
-
-        $tpolicy_group = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups 
-            WHERE id_group = '.$idGroup
-        );
-
-        if ($tpolicy_group) {
-            foreach ($tpolicy_group as $key => $value) {
-                $tpolicy_agents = db_get_sql(
-                    'SELECT * FROM tpolicy_agents 
-                    WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agent
-                );
-
-                if (!$tpolicy_agents) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $value['id_policy'],
-                            'id_agent'  => $id_agent,
-                        ]
-                    );
-                } else {
-                    $result3 = db_process_sql_update(
-                        'tpolicy_agents',
-                        ['pending_delete' => 0],
-                        [
-                            'id_agent'  => $id_agent,
-                            'id_policy' => $value['id_policy'],
-                        ]
-                    );
-                }
-            }
         }
     }
 
@@ -1829,11 +1772,6 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
             ]
         );
 
-        $tpolicy_group_old = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups
-                WHERE id_group = '.$values_old['id_grupo']
-        );
-
         $return = db_process_sql_update(
             'tagente',
             $fields,
@@ -1860,59 +1798,6 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
                         $field['disabled'],
                     ]
                 );
-            }
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $value) {
-                    $tpolicy_agents_old = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-                        WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$agent
-                    );
-
-                    if ($tpolicy_agents_old) {
-                        $result2 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 1],
-                            [
-                                'id_agent'  => $agent,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
-            $tpolicy_group = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-                WHERE id_group = '.$field['id_grupo']
-            );
-
-            if ($tpolicy_group) {
-                foreach ($tpolicy_group as $key => $value) {
-                    $tpolicy_agents = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-                        WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$agent
-                    );
-
-                    if (!$tpolicy_agents) {
-                        db_process_sql_insert(
-                            'tpolicy_agents',
-                            [
-                                'id_policy' => $value['id_policy'],
-                                'id_agent'  => $agent,
-                            ]
-                        );
-                    } else {
-                        $result3 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 0],
-                            [
-                                'id_agent'  => $agent,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
             }
         }
     }
@@ -2066,23 +1951,6 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
                 agents_add_address($id_agente, $direccion_agente);
             }
 
-            $tpolicy_group_old = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-                WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $old_group) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $id_agente,
-                        ]
-                    );
-                }
-            }
-
             $info = '{"Name":"'.$nombre_agente.'",
                 "IP":"'.$direccion_agente.'",
                 "Group":"'.$grupo.'",
@@ -2099,7 +1967,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
 
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Created agent '.$unsafe_alias,
                 false,
                 true,
@@ -12365,27 +12233,27 @@ function api_set_update_user_profile_info($id_profile, $thrash1, $other, $return
     }
 
     $values = [
-        'name'                => $other['data'][0] == '' ? $profile['name'] : (string) $other['data'][0],
-        'agent_view'          => $other['data'][1] == '' ? $profile['agent_view'] : (bool) $other['data'][1] ? 1 : 0,
-        'agent_edit'          => $other['data'][2] == '' ? $profile['agent_edit'] : (bool) $other['data'][2] ? 1 : 0,
-        'agent_disable'       => $other['data'][3] == '' ? $profile['agent_disable'] : (bool) $other['data'][3] ? 1 : 0,
-        'alert_edit'          => $other['data'][4] == '' ? $profile['alert_edit'] : (bool) $other['data'][4] ? 1 : 0,
-        'alert_management'    => $other['data'][5] == '' ? $profile['alert_management'] : (bool) $other['data'][5] ? 1 : 0,
-        'user_management'     => $other['data'][6] == '' ? $profile['user_management'] : (bool) $other['data'][6] ? 1 : 0,
-        'db_management'       => $other['data'][7] == '' ? $profile['db_management'] : (bool) $other['data'][7] ? 1 : 0,
-        'event_view'          => $other['data'][8] == '' ? $profile['event_view'] : (bool) $other['data'][8] ? 1 : 0,
-        'event_edit'          => $other['data'][9] == '' ? $profile['event_edit'] : (bool) $other['data'][9] ? 1 : 0,
-        'event_management'    => $other['data'][10] == '' ? $profile['event_management'] : (bool) $other['data'][10] ? 1 : 0,
-        'report_view'         => $other['data'][11] == '' ? $profile['report_view'] : (bool) $other['data'][11] ? 1 : 0,
-        'report_edit'         => $other['data'][12] == '' ? $profile['report_edit'] : (bool) $other['data'][12] ? 1 : 0,
-        'report_management'   => $other['data'][13] == '' ? $profile['report_management'] : (bool) $other['data'][13] ? 1 : 0,
-        'map_view'            => $other['data'][14] == '' ? $profile['map_view'] : (bool) $other['data'][14] ? 1 : 0,
-        'map_edit'            => $other['data'][15] == '' ? $profile['map_edit'] : (bool) $other['data'][15] ? 1 : 0,
-        'map_management'      => $other['data'][16] == '' ? $profile['map_management'] : (bool) $other['data'][16] ? 1 : 0,
-        'vconsole_view'       => $other['data'][17] == '' ? $profile['vconsole_view'] : (bool) $other['data'][17] ? 1 : 0,
-        'vconsole_edit'       => $other['data'][18] == '' ? $profile['vconsole_edit'] : (bool) $other['data'][18] ? 1 : 0,
-        'vconsole_management' => $other['data'][19] == '' ? $profile['vconsole_management'] : (bool) $other['data'][19] ? 1 : 0,
-        'pandora_management'  => $other['data'][20] == '' ? $profile['pandora_management'] : (bool) $other['data'][20] ? 1 : 0,
+        'name'                => ($other['data'][0] == '') ? $profile['name'] : (string) $other['data'][0],
+        'agent_view'          => ($other['data'][1] == '') ? $profile['agent_view'] : ((bool) $other['data'][1] ? 1 : 0),
+        'agent_edit'          => ($other['data'][2] == '') ? $profile['agent_edit'] : ((bool) $other['data'][2] ? 1 : 0),
+        'agent_disable'       => ($other['data'][3] == '') ? $profile['agent_disable'] : ((bool) $other['data'][3] ? 1 : 0),
+        'alert_edit'          => ($other['data'][4] == '') ? $profile['alert_edit'] : ((bool) $other['data'][4] ? 1 : 0),
+        'alert_management'    => ($other['data'][5] == '') ? $profile['alert_management'] : ((bool) $other['data'][5] ? 1 : 0),
+        'user_management'     => ($other['data'][6] == '') ? $profile['user_management'] : ((bool) $other['data'][6] ? 1 : 0),
+        'db_management'       => ($other['data'][7] == '') ? $profile['db_management'] : ((bool) $other['data'][7] ? 1 : 0),
+        'event_view'          => ($other['data'][8] == '') ? $profile['event_view'] : ((bool) $other['data'][8] ? 1 : 0),
+        'event_edit'          => ($other['data'][9] == '') ? $profile['event_edit'] : ((bool) $other['data'][9] ? 1 : 0),
+        'event_management'    => ($other['data'][10] == '') ? $profile['event_management'] : ((bool) $other['data'][10] ? 1 : 0),
+        'report_view'         => ($other['data'][11] == '') ? $profile['report_view'] : ((bool) $other['data'][11] ? 1 : 0),
+        'report_edit'         => ($other['data'][12] == '') ? $profile['report_edit'] : ((bool) $other['data'][12] ? 1 : 0),
+        'report_management'   => ($other['data'][13] == '') ? $profile['report_management'] : ((bool) $other['data'][13] ? 1 : 0),
+        'map_view'            => ($other['data'][14] == '') ? $profile['map_view'] : ((bool) $other['data'][14] ? 1 : 0),
+        'map_edit'            => ($other['data'][15] == '') ? $profile['map_edit'] : ((bool) $other['data'][15] ? 1 : 0),
+        'map_management'      => ($other['data'][16] == '') ? $profile['map_management'] : ((bool) $other['data'][16] ? 1 : 0),
+        'vconsole_view'       => ($other['data'][17] == '') ? $profile['vconsole_view'] : ((bool) $other['data'][17] ? 1 : 0),
+        'vconsole_edit'       => ($other['data'][18] == '') ? $profile['vconsole_edit'] : ((bool) $other['data'][18] ? 1 : 0),
+        'vconsole_management' => ($other['data'][19] == '') ? $profile['vconsole_management'] : ((bool) $other['data'][19] ? 1 : 0),
+        'pandora_management'  => ($other['data'][20] == '') ? $profile['pandora_management'] : ((bool) $other['data'][20] ? 1 : 0),
     ];
 
     $return = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
@@ -13762,7 +13630,7 @@ function api_get_netflow_get_stats($discard_1, $discard_2, $params)
         return;
     }
 
-    // Parse function parameters
+    // Parse function parameters.
     $start_date = $params['data'][0];
     $end_date = $params['data'][1];
     $filter = json_decode(base64_decode($params['data'][2]), true);
@@ -13779,10 +13647,38 @@ function api_get_netflow_get_stats($discard_1, $discard_2, $params)
 }
 
 
+/**
+ *
+ * @param  $trash1       Don't use.
+ * @param  $trash2       Don't use.
+ * @param  array                  $params Call parameters.
+ * @return void
+ */
+function api_get_netflow_get_top_N($trash1, $trash2, $params)
+{
+    if (is_metaconsole() === true) {
+        return;
+    }
+
+    // Parse function parameters.
+    $start_date = $params['data'][0];
+    $end_date = $params['data'][1];
+    $filter = json_decode(base64_decode($params['data'][2]), true);
+    $max = $params['data'][3];
+
+    // Get netflow data.
+    $data = netflow_get_top_N($start_date, $end_date, $filter, $max, '');
+
+    returnData('json', $data);
+
+    return;
+}
+
+
 // http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_summary&other=1348562410|1348648810|_base64_encode(json_encode($filter))&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
 function api_get_netflow_get_summary($discard_1, $discard_2, $params)
 {
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         return;
     }
 
@@ -15083,21 +14979,30 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3)
 
             $id_module = modules_create_agent_module($id_agent, $values_module['nombre'], $values_module, true);
             if ($id_module === false) {
-                db_pandora_audit('Report management', "Failed to create cluster status module in cluster $name (#$id_agent)");
+                db_pandora_audit(
+                    AUDIT_LOG_REPORT_MANAGEMENT,
+                    "Failed to create cluster status module in cluster $name (#$id_agent)"
+                );
             }
         }
 
-        if ($id_cluster !== false) {
-            db_pandora_audit('Report management', "Created cluster $name (#$id_cluster)");
-        } else {
-            db_pandora_audit('Report management', "Failed to create cluster $name");
-        }
+        $auditMessageCluster = ((bool) $id_cluster === true)
+                                                            ? sprintf('Created new cluster %s (#%s)', $name, $id_cluster)
+                                                            : sprintf('Failed to create cluster %s ', $name);
 
-        if ($id_agent !== false) {
-            db_pandora_audit('Report management', "Created new cluster agent $name (#$id_agent)");
-        } else {
-            db_pandora_audit('Report management', "Failed to create cluster agent $name");
-        }
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            $auditMessageCluster
+        );
+
+        $auditMessageAgent = ((bool) $id_agent === true)
+                                                        ? sprintf('Created new cluster agent %s (#%s)', $name, $id_agent)
+                                                        : sprintf('Failed to create cluster agent %s ', $name);
+
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            $auditMessageAgent
+        );
 
         if ($id_cluster !== false) {
             returnData(
@@ -15222,9 +15127,15 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 );
 
                 if ($tcluster_module !== false) {
-                    db_pandora_audit('Report management', 'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']);
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']
+                    );
                 } else {
-                    db_pandora_audit('Report management', 'Failed to assign AA item module to cluster '.$element['name']);
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'Failed to assign AA item module to cluster '.$element['name']
+                    );
                 }
             } else if ($element['type'] == 'AP') {
                 $id_agent = db_get_value_sql('SELECT id_agent FROM tcluster WHERE id = '.$element['id_cluster']);
@@ -15287,9 +15198,15 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3)
                 );
 
                 if ($tcluster_balanced_module !== false) {
-                    db_pandora_audit('Report management', 'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']);
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'Module #'.$element['name'].' assigned to cluster #'.$element['id_cluster']
+                    );
                 } else {
-                    db_pandora_audit('Report management', 'The module could not be assigned to the cluster');
+                    db_pandora_audit(
+                        AUDIT_LOG_REPORT_MANAGEMENT,
+                        'The module could not be assigned to the cluster'
+                    );
                 }
             }
         }
@@ -16675,16 +16592,32 @@ function api_set_access_process($thrash1, $thrash2, $other, $returnType)
                 }
             } else {
                 // There is no administrator user who has logged in since then to log us in.
-                db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Logged in '.$other['data'][3].' node '.$other['data'][2],
+                    $other['data'][0]
+                );
                 returnData('string', ['type' => 'string', 'data' => 'free']);
             }
         } else if ($other['data'][1] == 'logout') {
             // The administrator user wants to log out
-            db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Logout from '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
         } else if ($other['data'][1] == 'exclude') {
             // The administrator user has ejected another administrator user who was logged in
-            db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
-            db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $audit_concurrence[0]['id_usuario']);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Logged in '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Logout from '.$other['data'][3].' node '.$other['data'][2],
+                $audit_concurrence[0]['id_usuario']
+            );
         }
         // The admin user is trying to browse
         else if ($other['data'][1] == 'browse') {
@@ -16704,23 +16637,39 @@ function api_set_access_process($thrash1, $thrash2, $other, $returnType)
             }
         } else if ($other['data'][1] == 'cancelled') {
             // The administrator user tries to log in having another administrator logged in, but instead of expelling him he cancels his log in.
-            db_pandora_audit($other['data'][3].' cancelled access', 'Cancelled access in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Cancelled access in '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
             returnData('string', ['type' => 'string', 'data' => 'cancelled']);
         }
     } else {
         if ($other['data'][4] == 1) {
             // The user trying to log in is not an administrator and is not allowed no admin access
-            db_pandora_audit($other['data'][3].' denied access', 'Denied access to non-admin user '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Denied access to non-admin user '.$other['data'][3].' node '.$other['data'][2],
+                $other['data'][0]
+            );
             returnData('string', ['type' => 'string', 'data' => 'denied']);
         } else {
             // The user trying to log in is not an administrator and is allowed no admin access
             if ($other['data'][1] == 'login') {
                 // The user trying to login is not admin, can enter without concurrent use filter
-                db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Logged in '.$other['data'][3].' node '.$other['data'][2],
+                    $other['data'][0]
+                );
                 returnData('string', ['type' => 'string', 'data' => 'free']);
             } else if ($other['data'][1] == 'logout') {
                 // The user trying to logoff is not admin
-                db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    'Logout from '.$other['data'][3].' node '.$other['data'][2],
+                    $other['data'][0]
+                );
             } else if ($other['data'][1] == 'browse') {
                 // The user trying to browse in an app page is not admin, can enter without concurrent use filter
                 returnData('string', ['type' => 'string', 'data' => 'free']);
@@ -16760,7 +16709,7 @@ function api_get_traps($thrash1, $thrash2, $other, $returnType)
         $sql .= ' and status = 0';
     }
 
-    if (sizeof($other['data']) == 0) {
+    if (count($other['data']) == 0) {
         $sql = 'SELECT * from ttrap';
     }
 

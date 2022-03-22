@@ -281,12 +281,13 @@ if (is_user_admin($id)) {
     $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
 }
 
-if ($view_mode === false) {
-    $table->rowspan[0][2] = 3;
-} else {
-    $table->rowspan[0][2] = 2;
+if (isset($table) === true) {
+    if ($view_mode === false) {
+        $table->rowspan = [0 => [2 => 3]];
+    } else {
+        $table->rowspan = [0 => [2 => 2]];
+    }
 }
-
 
 $email = '<div class="label_select_simple">'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', ['class' => 'input', 'placeholder' => __('E-mail')], true).'</div>';
 

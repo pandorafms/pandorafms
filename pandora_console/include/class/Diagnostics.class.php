@@ -38,6 +38,8 @@ require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
 class Diagnostics extends Wizard
 {
 
+    const INNODB_FLUSH_LOG_AT_TRX_COMMIT = 2;
+
     /**
      * Ajax controller page.
      *
@@ -797,8 +799,8 @@ class Diagnostics extends Wizard
                     case 'innodb_flush_log_at_trx_commit':
                         $name = __('InnoDB flush log at trx-commit');
                         $value = $item['Value'];
-                        $status = ($item['Value'] == 2) ? 1 : 0;
-                        $message = __('Recommended Value').' 2';
+                        $status = ((int) $item['Value'] === self::INNODB_FLUSH_LOG_AT_TRX_COMMIT) ? 1 : 0;
+                        $message = __('Recommended Value %d', self::INNODB_FLUSH_LOG_AT_TRX_COMMIT);
                     break;
 
                     case 'innodb_lock_wait_timeout':

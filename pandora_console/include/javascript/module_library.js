@@ -14,6 +14,7 @@ Variables from PHP:
 - error_search
 */
 
+const REMOTE_MODULE_LIBRARY_URI = "https://pandorafms.com/library/";
 $(document).ready(function() {
   // Save categories in sessionStorage to avoid making the request to the API many times.
   function set_local_categories() {
@@ -100,8 +101,7 @@ $(document).ready(function() {
   // Get all categories from Module library.
   function get_all_categories() {
     $.ajax({
-      url:
-        "https://pandorafms.com/library/wp-json/wp/v2/categories?per_page=100",
+      url: REMOTE_MODULE_LIBRARY_URI + "wp-json/wp/v2/categories?per_page=100",
       type: "GET",
       cache: false,
       crossDomain: true,
@@ -127,10 +127,9 @@ $(document).ready(function() {
 
     var api_url = "";
     if (selector == "search") {
-      api_url = "https://pandorafms.com/library/wp-json/wp/v2/posts?search=";
+      api_url = REMOTE_MODULE_LIBRARY_URI + "wp-json/wp/v2/posts?search=";
     } else if (selector == "category") {
-      api_url =
-        "https://pandorafms.com/library/wp-json/wp/v2/posts/?categories=";
+      api_url = REMOTE_MODULE_LIBRARY_URI + "wp-json/wp/v2/posts/?categories=";
     }
 
     $.ajax({
@@ -238,7 +237,7 @@ $(document).ready(function() {
 /* Print main page */
 function library_main() {
   $.ajax({
-    url: "https://pandorafms.com/library/wp-json/wp/v2/pages/121",
+    url: REMOTE_MODULE_LIBRARY_URI + "wp-json/wp/v2/pages/121",
     type: "GET",
     cache: false,
     crossDomain: true,
@@ -286,6 +285,8 @@ function library_main() {
       clean_page.splice(0, 1);
 
       $.each(clean_page, function(i, v) {
+        // Clean et_pb_blurb WP tags.
+        v = v.replace(/([\[et_pb_blurb].*[\]](?=[A-z]))/g, "");
         var main_category = $(
           "#library_main_content div.library_main_category:nth-child(" + i + ")"
         );
@@ -314,7 +315,7 @@ function library_main() {
 // Get all data from one category. This is necessary to get the category name.
 function get_category(id) {
   $.ajax({
-    url: "https://pandorafms.com/library/wp-json/wp/v2/categories/" + id,
+    url: REMOTE_MODULE_LIBRARY_URI + "wp-json/wp/v2/categories/" + id,
     type: "GET",
     cache: false,
     contentType: "application/json",

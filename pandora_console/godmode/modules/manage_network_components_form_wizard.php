@@ -19,7 +19,10 @@ include_javascript_d3();
 if (!check_acl($config['id_user'], 0, 'PM')
     && !check_acl($config['id_user'], 0, 'AW')
 ) {
-    db_pandora_audit('ACL Violation', 'Trying to access Agent Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Agent Management'
+    );
     include 'general/noaccess.php';
     return;
 }

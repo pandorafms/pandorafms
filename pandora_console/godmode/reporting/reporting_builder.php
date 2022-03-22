@@ -64,7 +64,7 @@ function dialog_message(message_id) {
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
                 $('.check_delete').each(function(){
-                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);
                 });
             }
             else{
@@ -128,7 +128,7 @@ $report_m = check_acl($config['id_user'], 0, 'RM');
 $access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
 if (!$report_r && !$report_w && !$report_m) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -172,7 +172,7 @@ if ($action === 'edit' && $idReport > 0) {
         && ! check_acl_restricted_all($config['id_user'], $report_group, 'RM')
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access report builder'
         );
         include 'general/noaccess.php';
@@ -263,7 +263,7 @@ if ($idReport != 0) {
 
         if (!$delete_report_bypass) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access report builder'
             );
             include 'general/noaccess.php';
@@ -625,7 +625,7 @@ switch ($action) {
                         $delete = true;
                         // Owner can delete.
                     } else {
-                        $delete = check_acl(
+                        $delete = (bool) check_acl(
                             $config['id_user'],
                             $report['id_group'],
                             'RM'
@@ -646,9 +646,9 @@ switch ($action) {
                 break;
             }
 
-            if (! $delete && !empty($type_access_selected)) {
+            if ($delete === false && empty($type_access_selected) === false) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access report builder deletion'
                 );
                 include 'general/noaccess.php';
@@ -656,17 +656,12 @@ switch ($action) {
             }
 
             $result = reports_delete_report($idReport);
-            if ($result !== false) {
-                db_pandora_audit(
-                    'Report management',
-                    'Delete report #'.$idReport
-                );
-            } else {
-                db_pandora_audit(
-                    'Report management',
-                    'Fail try to delete report #'.$idReport
-                );
-            }
+            $auditMessage = ($result !== false) ? 'Delete report' : 'Fail try to delete report';
+
+            db_pandora_audit(
+                AUDIT_LOG_REPORT_MANAGEMENT,
+                sprintf('%s #%s', $auditMessage, $idReport)
+            );
 
             ui_print_result_message(
                 $result,
@@ -721,9 +716,9 @@ switch ($action) {
                 break;
             }
 
-            if (! $copy && !empty($type_access_selected)) {
+            if (! $copy && empty($type_access_selected) === false) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access report builder copy'
                 );
                 include 'general/noaccess.php';
@@ -731,17 +726,11 @@ switch ($action) {
             }
 
             $result = reports_copy_report($idReport);
-            if ($result !== false) {
-                db_pandora_audit(
-                    'Report management',
-                    'Copy report #'.$idReport
-                );
-            } else {
-                db_pandora_audit(
-                    'Report management',
-                    'Fail try to copy report #'.$idReport
-                );
-            }
+            $auditMessage = ((bool) $result === true) ? 'Copy report' : 'Fail try to copy report';
+            db_pandora_audit(
+                AUDIT_LOG_REPORT_MANAGEMENT,
+                sprintf('%s #%s', $auditMessage, $idReport)
+            );
 
             ui_print_result_message(
                 $result,
@@ -949,7 +938,7 @@ switch ($action) {
                 $table->head[$next] = __('Private');
                 $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
                 $table->size[$next] = '2%';
-                if (defined('METACONSOLE')) {
+                if (is_metaconsole() === true) {
                     $table->align[$next] = '';
                 } else {
                     $table->align[$next] = 'left';
@@ -963,7 +952,7 @@ switch ($action) {
 
                 $next++;
                 $op_column = false;
-                if (!defined('METACONSOLE')) {
+                if (is_metaconsole() === false) {
                     $op_column = true;
                     $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox(
                         'all_delete',
@@ -978,6 +967,8 @@ switch ($action) {
                 // $table->size = array ();
                 $table->size[$next] = '10%';
                 $table->align[$next] = 'right';
+            } else {
+                $table->size[1] = '40%';
             }
 
             $columnview = false;
@@ -1277,7 +1268,7 @@ switch ($action) {
             || check_acl($config['id_user'], 0, 'RM')
         ) {
             echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-            if (defined('METACONSOLE')) {
+            if (is_metaconsole() === true) {
                 echo '<div class="action-buttons w100p">';
             } else {
                 echo '<div class="action-buttons w100p">';
@@ -1421,23 +1412,17 @@ switch ($action) {
                             ['id_report' => $idReport]
                         );
 
-                        if ($resultOperationDB !== false) {
-                            db_pandora_audit(
-                                'Report management',
-                                'Update report #'.$idReport
-                            );
-                        } else {
-                            db_pandora_audit(
-                                'Report management',
-                                'Fail try to update report #'.$idReport
-                            );
-                        }
+                        $auditMessage = ($resultOperationDB === true) ? 'Update report' : 'Fail try to update report';
+                        db_pandora_audit(
+                            AUDIT_LOG_REPORT_MANAGEMENT,
+                            sprintf('%s #%s', $auditMessage, $idReport)
+                        );
                     } else {
                         $resultOperationDB = false;
                     }
 
                     $action = 'edit';
-                } else if ($action == 'save') {
+                } else if ($action === 'save') {
                     if ($reportName != '' && $idGroupReport != '') {
                         // This flag allow to differentiate
                         // between normal console and metaconsole reports.
@@ -1482,17 +1467,11 @@ switch ($action) {
                             ]
                         );
 
-                        if ($idOrResult !== false) {
-                            db_pandora_audit(
-                                'Report management',
-                                'Create report #'.$idOrResult
-                            );
-                        } else {
-                            db_pandora_audit(
-                                'Report management',
-                                'Fail try to create report'
-                            );
-                        }
+                        $auditMessage = ((bool) $idOrResult === true) ? sprintf('Create report #%s', $idOrResult) : 'Fail try to create report';
+                        db_pandora_audit(
+                            AUDIT_LOG_REPORT_MANAGEMENT,
+                            $auditMessage
+                        );
                     } else {
                         $idOrResult = false;
                     }
@@ -1676,6 +1655,7 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
+                            case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 
@@ -1773,6 +1753,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -2477,6 +2458,7 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
+                            case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 
@@ -2572,6 +2554,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -3575,25 +3558,6 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 }
 
 if ($resultOperationDB !== null) {
-    $err = '';
-    switch ($_POST['type']) {
-        case 'custom_graph':
-            $err .= 'You must enter custom graph';
-        break;
-
-        case 'SLA':
-            $err .= 'You must enter some character in SLA limit field';
-        default:
-            $err .= '';
-        break;
-    }
-
-    ui_print_result_message(
-        $resultOperationDB,
-        __('Successfull action'),
-        __('Unsuccessful action<br><br>'.$err)
-    );
-
     if ($action == 'update') {
         $buttons[$activeTab]['active'] = false;
         $activeTab = 'list_items';
@@ -3621,6 +3585,25 @@ if ($resultOperationDB !== null) {
             );
         }
     }
+
+    $err = '';
+    switch ($_POST['type']) {
+        case 'custom_graph':
+            $err .= 'You must enter custom graph';
+        break;
+
+        case 'SLA':
+            $err .= 'You must enter some character in SLA limit field';
+        default:
+            $err .= '';
+        break;
+    }
+
+    ui_print_result_message(
+        $resultOperationDB,
+        __('Successfull action'),
+        __('Unsuccessful action<br><br>'.$err)
+    );
 }
 
 switch ($activeTab) {

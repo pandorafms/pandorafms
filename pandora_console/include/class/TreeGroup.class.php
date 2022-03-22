@@ -262,7 +262,7 @@ class TreeGroup extends Tree
         $groups = array_filter(
             $groups,
             function ($group) {
-                return !$group['have_parent'];
+                return !($group['have_parent'] ?? false);
             }
         );
         // Propagate child counters to her parents.
@@ -311,13 +311,14 @@ class TreeGroup extends Tree
 
         $table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
         $table_sec = is_metaconsole() ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
+        $only_disabled = (is_metaconsole() === true) ? (int) $this->filter['show_disabled'] : 0;
 
         $sql_model = "SELECT %s FROM
             (
                 SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
                     FROM $table ta
                     $module_search_inner
-                    WHERE ta.disabled = 0
+                    WHERE ta.disabled = $only_disabled
                         %s
                         $agent_search_filter
                         $agent_status_filter
@@ -330,7 +331,7 @@ class TreeGroup extends Tree
                     FROM $table ta INNER JOIN $table_sec tasg
                         ON ta.id_agente = tasg.id_agent
                     $module_search_inner
-                    WHERE ta.disabled = 0
+                    WHERE ta.disabled = $only_disabled
                         %s
                         $agent_search_filter
                         $agent_status_filter
@@ -390,36 +391,28 @@ class TreeGroup extends Tree
             $groups[$group['id']] = $group;
         }
 
-        // Build the module hierarchy
+        // Build the module hierarchy.
         foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+            if (isset($groups[$id]['parent']) === true && ($groups[$id]['parent'] != 0)) {
                 $parent = $groups[$id]['parent'];
-                // Parent exists
-                if (!isset($groups[$parent]['children'])) {
+                // Parent exists.
+                if (isset($groups[$parent]['children']) === true) {
                     $groups[$parent]['children'] = [];
                 }
 
-                // Store a reference to the group into the parent
+                // Store a reference to the group into the parent.
                 $groups[$parent]['children'][] = &$groups[$id];
-                // This group was introduced into a parent
+                // This group was introduced into a parent.
                 $groups[$id]['have_parent'] = true;
             }
         }
 
-        // Sort the children groups
+        // Sort the children groups.
         foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['children'])) {
+            if (isset($groups[$id]['children']) === true) {
                 usort($groups[$id]['children'], ['Tree', 'cmpSortNames']);
             }
         }
-
-        // Filter groups and eliminates the reference to children groups out of her parent
-        $groups = array_filter(
-            $groups,
-            function ($group) {
-                return !$group['have_parent'];
-            }
-        );
 
         return array_values($groups);
     }
@@ -489,6 +482,10 @@ class TreeGroup extends Tree
             }
 
             foreach ($groups[$id]['counters'] as $type => $value) {
+                if (isset($all_counters[$type]) === false) {
+                    $all_counters[$type] = 0;
+                }
+
                 $all_counters[$type] += $value;
             }
         }

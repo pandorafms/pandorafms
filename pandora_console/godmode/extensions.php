@@ -17,7 +17,7 @@ global $config;
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access extensions list'
     );
     include 'general/noaccess.php';
@@ -27,7 +27,7 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 // Header
 ui_print_page_header(__('Extensions').' &raquo; '.__('Defined extensions'), 'images/extensions.png', false, '', true, '');
 
-if (sizeof($config['extensions']) == 0) {
+if (count($config['extensions']) == 0) {
     $extensions = extensions_get_extension_info();
     if (empty($extensions)) {
         echo '<h3>'.__('There are no extensions defined').'</h3>';

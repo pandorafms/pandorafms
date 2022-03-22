@@ -15,7 +15,10 @@ global $config;
 
 if (is_ajax()) {
     if (! check_acl($config['id_user'], 0, 'ER')) {
-        db_pandora_audit('ACL Violation', 'Trying to access event viewer');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access event viewer'
+        );
         return;
     }
 

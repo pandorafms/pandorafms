@@ -33,7 +33,7 @@ check_login();
 
 if (check_acl($config['id_user'], 0, 'AR') === false) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';
@@ -176,6 +176,7 @@ function load_agents_selector(group) {
         {
             "page" : "operation/agentes/ver_agente",
             "get_agents_group_json" : 1,
+            "get_agents_also_interfaces" : 1,
             "id_group" : group,
             "privilege" : "AW",
             "keys_prefix" : "_",
@@ -216,6 +217,7 @@ $("#checkbox-recursion").change (function () {
     jQuery.post ("ajax.php",
         {"page" : "operation/agentes/ver_agente",
             "get_agents_group_json" : 1,
+            "get_agents_also_interfaces" : 1,
             "id_group" :     $("#group_id").val(),
             "privilege" : "AW",
             "keys_prefix" : "_",
@@ -226,7 +228,6 @@ $("#checkbox-recursion").change (function () {
             $("#module").html('');
             jQuery.each (data, function (id, value) {
                 id = id.substring(1);
-                
                 option = $("<option></option>")
                     .attr ("value", value["id_agente"])
                     .html (value["alias"]);

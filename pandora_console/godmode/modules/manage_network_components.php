@@ -34,7 +34,7 @@ enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';
@@ -415,7 +415,7 @@ if ($is_management_allowed === true && $create_component) {
 
     if ($id === false || !$id) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail try to create remote component'
         );
 
@@ -431,7 +431,10 @@ if ($is_management_allowed === true && $create_component) {
         return;
     }
 
-    db_pandora_audit('Module management', 'Create network component #'.$id);
+    db_pandora_audit(
+        AUDIT_LOG_MODULE_MANAGEMENT,
+        'Create network component #'.$id
+    );
     ui_print_success_message(__('Created successfully'));
     $id = 0;
 }
@@ -516,7 +519,7 @@ if ($is_management_allowed === true && $update_component) {
 
     if ($result === false || !$result) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail try to update network component #'.$id
         );
         ui_print_error_message(__('Could not be updated'));
@@ -524,7 +527,10 @@ if ($is_management_allowed === true && $update_component) {
         return;
     }
 
-    db_pandora_audit('Module management', 'Update network component #'.$id);
+    db_pandora_audit(
+        AUDIT_LOG_MODULE_MANAGEMENT,
+        'Update network component #'.$id
+    );
     ui_print_success_message(__('Updated successfully'));
 
     $id = 0;
@@ -535,17 +541,11 @@ if ($is_management_allowed === true && $delete_component) {
 
     $result = network_components_delete_network_component($id);
 
-    if ($result) {
-        db_pandora_audit(
-            'Module management',
-            'Delete network component #'.$id
-        );
-    } else {
-        db_pandora_audit(
-            'Module management',
-            'Fail try to delete network component #'.$id
-        );
-    }
+    $auditMessage = ((bool) $result === true) ? 'Delete network component' : 'Fail try to delete network component';
+    db_pandora_audit(
+        AUDIT_LOG_MODULE_MANAGEMENT,
+        sprintf('%s #%s', $auditMessage, $id)
+    );
 
     ui_print_result_message(
         $result,
@@ -567,17 +567,11 @@ if ($is_management_allowed === true && $multiple_delete) {
     }
 
     $str_ids = implode(',', $ids);
-    if ($result) {
-        db_pandora_audit(
-            'Module management',
-            'Multiple delete network component:'.$str_ids
-        );
-    } else {
-        db_pandora_audit(
-            'Module management',
-            'Fail try to delete network component:'.$str_ids
-        );
-    }
+    $auditMessage = ((bool) $result === true) ? 'Multiple delete network component' : 'Fail try to delete multiple network component';
+    db_pandora_audit(
+        AUDIT_LOG_MODULE_MANAGEMENT,
+        sprintf('%s :%s', $auditMessage, $str_ids)
+    );
 
     ui_print_result_message(
         $result,
@@ -737,8 +731,7 @@ if ($components === false) {
     $components = [];
 }
 
-unset($table);
-
+$table = new stdClass();
 $table->width = '100%';
 $table->head = [];
 $table->class = 'info_table';

@@ -267,6 +267,7 @@ class AgentModuleWidget extends Widget
                 'mShowSelectedOtherGroups' => true,
                 'mReturnAllGroup'          => $return_all_group,
                 'mMetaFields'              => ((bool) is_metaconsole()),
+                'commonModulesSwitch'      => true,
             ],
         ];
 

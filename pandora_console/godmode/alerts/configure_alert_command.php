@@ -1,17 +1,34 @@
 <?php
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars.
+/**
+ * Configure Alert commands
+ *
+ * @category   Alert management
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
@@ -23,7 +40,7 @@ enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -52,7 +69,10 @@ if ($id > 0) {
     $alert = alerts_get_alert_command($id);
 
     if ($alert['internal'] || !check_acl_restricted_all($config['id_user'], $alert['id_group'], 'PM')) {
-        db_pandora_audit('ACL Violation', 'Trying to access Alert Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Alert Management'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -87,17 +107,17 @@ if ($update_command) {
     $values['description'] = $description;
     $values['id_group'] = $id_group;
     // Only for Metaconsole. Save the previous name for synchronizing.
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $values['previous_name'] = db_get_value('name', 'talert_commands', 'id', $id);
     }
 
     // Check it the new name is used in the other command.
     $id_check = db_get_value('id', 'talert_commands', 'name', $name);
     if (($id_check != $id) && (!empty($id_check))) {
-        $result = '';
+        $result = false;
     } else {
-        $result = alerts_update_alert_command($id, $values);
-        if ($result) {
+        $result = (bool) alerts_update_alert_command($id, $values);
+        if ($result === true) {
             $info = '{"Name":"'.$name.'","Command":"'.$command.'","Description":"'.$description.' '.$info_fields.'"}';
             $alert['fields_values'] = io_json_mb_encode($fields_values);
             $alert['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
@@ -109,11 +129,15 @@ if ($update_command) {
         }
     }
 
-    if ($result) {
-        db_pandora_audit('Command management', 'Update alert command #'.$id, false, false, $info);
-    } else {
-        db_pandora_audit('Command management', 'Fail to update alert command #'.$id, false, false);
-    }
+    $auditMessage = ((bool) $result === true) ? 'Update alert command' : 'Fail to update alert command';
+
+    db_pandora_audit(
+        AUDIT_LOG_ALERT_MANAGEMENT,
+        sprintf('%s #%s', $auditMessage, $id),
+        false,
+        false,
+        $info
+    );
 
     ui_print_result_message(
         $result,
@@ -130,7 +154,7 @@ $fields_descriptions = '';
 $fields_values = '';
 $id_group = 0;
 if ($id) {
-    if (!$result) {
+    if ($result === false) {
         $alert = alerts_get_alert_command($id);
     }
 
@@ -321,7 +345,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_values,
         '',
         55,
-        255,
+        1000,
         true,
         false,
         false,

@@ -68,7 +68,7 @@ if (is_ajax()) {
             $modules = [];
         }
 
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->head[0] = __('Network Components');
         $table->data = [];
@@ -82,7 +82,7 @@ if (is_ajax()) {
             echo '<br />';
         }
 
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->head[0] = __('Agent');
         $table->head[1] = __('Module');
@@ -113,7 +113,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Plugin Management'
     );
     include 'general/noaccess.php';
@@ -262,7 +262,8 @@ if ($filemanager) {
             'index.php?sec=gservers&sec2=godmode/servers/plugin'.$chunck_url.'&plugin_command=[FILE_FULLPATH]&id_plugin='.$id_plugin,
             true,
             0775,
-            false
+            false,
+            ['all' => true]
         );
     }
 

@@ -82,7 +82,7 @@ if ($user_tag_array) {
     foreach ($tag_param_validate as $key => $value) {
         if (!in_array($value, $user_tag_array)) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert view'
             );
             include 'general/noaccess.php';
@@ -135,7 +135,10 @@ if ($idAgent != 0) {
     }
 
     if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && !check_acl_one_of_groups($config['id_user'], $id_group, 'AW')) {
-        db_pandora_audit('ACL Violation', 'Trying to access alert view');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access alert view'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -157,7 +160,10 @@ if ($idAgent != 0) {
     $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 
     if (!$agent_a && !$agent_w) {
-        db_pandora_audit('ACL Violation', 'Trying to access alert view');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access alert view'
+        );
         include 'general/noaccess.php';
         return;
     }
@@ -239,8 +245,8 @@ if ($free_search != '') {
 			WHERE id_agente IN (
 				SELECT id_agente
 				FROM tagente
-				WHERE nombre COLLATE utf8_general_ci LIKE "%'.$free_search.'%") 
-                OR alias COLLATE utf8_general_ci LIKE "%'.$free_search.'%")'.')';
+				WHERE nombre LIKE "%'.$free_search.'%") 
+                OR alias LIKE "%'.$free_search.'%")'.')';
 } else {
     $whereAlertSimple = '';
 }

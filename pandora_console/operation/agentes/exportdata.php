@@ -213,6 +213,7 @@ if (!empty($export_btn) && !empty($module)) {
 if (empty($export_btn) || $show_form) {
     echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form" id="export_form">';
 
+    $table = new stdClass();
     $table->width = '100%';
     $table->border = 0;
     $table->cellspacing = 3;

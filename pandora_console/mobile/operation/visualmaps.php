@@ -74,6 +74,13 @@ class Visualmaps
      */
     private $type = 0;
 
+    /**
+     * CV favourites.
+     *
+     * @var boolean
+     */
+    private $favourite = true;
+
 
     /**
      * Builder.
@@ -215,9 +222,42 @@ class Visualmaps
     private function listVisualmapsHtml()
     {
         $system = System::getInstance();
+        $this->favourite = (bool) $system->getRequest('favourite', true);
         $ui = Ui::getInstance();
 
-        $visualmaps = visual_map_get_user_layouts(false, false, false, true, true);
+        $visualmaps = visual_map_get_user_layouts(
+            false,
+            false,
+            false,
+            true,
+            $this->favourite
+        );
+
+        if ($this->favourite === true) {
+            $ui->contentAddHtml(
+                $ui->createButton(
+                    [
+                        'icon'  => '',
+                        'pos'   => 'right',
+                        'text'  => __('All visualmaps'),
+                        'href'  => 'index.php?page=visualmaps&favourite=0',
+                        'class' => '',
+                    ]
+                )
+            );
+        } else {
+            $ui->contentAddHtml(
+                $ui->createButton(
+                    [
+                        'icon'  => '',
+                        'pos'   => 'right',
+                        'text'  => __('Favourite visualmaps'),
+                        'href'  => 'index.php?page=visualmaps&favourite=1',
+                        'class' => '',
+                    ]
+                )
+            );
+        }
 
         if (empty($visualmaps) === true) {
             $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');

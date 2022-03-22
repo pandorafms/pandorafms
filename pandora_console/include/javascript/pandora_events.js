@@ -504,7 +504,7 @@ function event_change_status(event_ids) {
       if ($("#notification_status_error").length) {
         $("#notification_status_error").hide();
       }
-      debugger;
+
       if (data.status == "status_ok") {
         if (typeof dt_events !== "undefined") {
           dt_events.draw(false);

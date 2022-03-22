@@ -669,6 +669,12 @@ class EventsListWidget extends Widget
                 true
             );
 
+            $output .= \html_print_input_hidden(
+                'delete_confirm_message',
+                __('Are you sure?'),
+                true
+            );
+
             $table = new \StdClass;
             $table->class = 'widget_groups_status databox';
             $table->cellspacing = '1';

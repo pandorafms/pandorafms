@@ -1588,6 +1588,8 @@ if ($get_extended_event) {
     $notifications .= '<div id="notification_status_success" class="invisible_events">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
     $notifications .= '<div id="notification_owner_error" class="invisible_events">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
     $notifications .= '<div id="notification_owner_success" class="invisible_events">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_delete_error" class="invisible_events">'.ui_print_error_message(__('Error deleting event'), '', true).'</div>';
+
 
     $loading = '<div id="response_loading" class="invisible_events">'.html_print_image('images/spinner.gif', true).'</div>';
 

@@ -3752,7 +3752,7 @@ function events_page_responses($event, $childrens_ids=[])
         $data = [];
         $data[0] = __('Delete event');
         $data[1] = '';
-        $data[2] = '<form method="post">';
+        $data[2] = '<form id="event_responses_delete" method="post">';
         $data[2] .= html_print_button(
             __('Delete event'),
             'delete_button',

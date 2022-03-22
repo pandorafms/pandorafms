@@ -651,7 +651,7 @@ function initialiceLayout(data) {
           url: data.url,
           data: {
             page: data.page,
-            method: "drawCell",
+            method: "drawWidget",
             dashboardId: data.dashboardId,
             cellId: cellId,
             newWidth: newWidth,
@@ -1326,10 +1326,35 @@ function dashboardShowEventDialog(settings) {
           resizable: true,
           draggable: true,
           modal: true,
+          create: function() {
+            $("#button-delete_button").removeAttr("onclick");
+            $("#button-delete_button").click(function() {
+              var confirm_message = $("#hidden-delete_confirm_message").val();
+              if (confirm(confirm_message) == false) {
+                return false;
+              }
+              $.ajax({
+                method: "post",
+                url: settings.ajaxUrl,
+                data: {
+                  page: "include/ajax/events",
+                  delete_event: 1,
+                  id_evento: settings.event.id_evento,
+                  filter: []
+                },
+                success: function() {
+                  $("#notification_delete_error").show();
+                  $("#event_details_window").dialog("close");
+                },
+                error: function(error) {
+                  console.error(error);
+                }
+              });
+            });
+          },
           close: function() {
             //$("#refrcounter").countdown("resume");
             //$("div.vc-countdown").countdown("resume");
-            debugger;
             $.ajax({
               method: "post",
               url: settings.ajaxUrl,

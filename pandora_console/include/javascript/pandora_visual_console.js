@@ -33,7 +33,8 @@ function createVisualConsole(
   beforeUpdate,
   size,
   id_user,
-  hash
+  hash,
+  mode = ""
 ) {
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
@@ -41,8 +42,17 @@ function createVisualConsole(
   var visualConsole = null;
   var asyncTaskManager = new AsyncTaskManager();
 
-  function updateVisualConsole(visualConsoleId, updateInterval, tts) {
+  function updateVisualConsole(
+    visualConsoleId,
+    updateInterval,
+    tts,
+    dimensions
+  ) {
     if (tts == null) tts = 0; // Time to start.
+
+    if (dimensions != undefined && dimensions != null && dimensions != "") {
+      size = dimensions;
+    }
 
     asyncTaskManager.add(
       "visual-console",
@@ -53,16 +63,13 @@ function createVisualConsole(
           size,
           id_user,
           hash,
+          mode,
           function(error, data) {
             if (error) {
               //Remove spinner change VC.
-              document
-                .getElementById("visual-console-container")
-                .classList.remove("is-updating");
+              container.classList.remove("is-updating");
 
-              var div = document
-                .getElementById("visual-console-container")
-                .querySelector(".div-visual-console-spinner");
+              var div = container.querySelector(".div-visual-console-spinner");
 
               if (div !== null) {
                 var parent = div.parentElement;
@@ -95,7 +102,7 @@ function createVisualConsole(
                 var receivedAt = new Date();
                 var prevProps = visualConsole.props;
                 if (beforeUpdate) {
-                  beforeUpdate(items, visualConsole, props);
+                  beforeUpdate(items, visualConsole, props, size);
                 } else {
                   // Add the datetime when the item was received.
                   items.map(function(item) {
@@ -105,6 +112,7 @@ function createVisualConsole(
 
                   // Update the data structure.
                   visualConsole.props = props;
+
                   // Update the items.
                   visualConsole.updateElements(items);
                 }
@@ -460,6 +468,11 @@ function createVisualConsole(
         asyncTaskManager.cancel("visual-console-start");
       }
     },
+    changeDimensionsVc: function(dimensions, interval) {
+      if (dimensions != null) {
+        updateVisualConsole(visualConsole.props.id, interval, null, dimensions);
+      }
+    },
     createItem: function(typeString) {
       var type;
       switch (typeString) {
@@ -673,7 +686,15 @@ function createVisualConsole(
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
+function loadVisualConsoleData(
+  baseUrl,
+  vcId,
+  size,
+  id_user,
+  hash,
+  mode,
+  callback
+) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var vcJqXHR = null;
@@ -762,6 +783,7 @@ function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
         visualConsoleId: vcId,
         id_user: typeof id_user == undefined ? id_user : null,
         auth_hash: typeof hash == undefined ? hash : null,
+        mode: mode,
         widthScreen: widthScreen
       },
       "json"

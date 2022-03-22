@@ -221,6 +221,12 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             if (title !== null) {
                 title.textContent = newProps.name;
             }
+
+            // Fullscreen Meta view title.
+            var titleMeta = document.querySelector("div.vc-title-meta");
+            if (titleMeta !== null) {
+                titleMeta.textContent = newProps.name;
+            }
         }
 
         // Change the links.

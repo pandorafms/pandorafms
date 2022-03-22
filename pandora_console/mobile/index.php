@@ -170,6 +170,8 @@ switch ($action) {
             case 'visualmap':
                 $visualmap = new Visualmap();
                 $visualmap->ajax($parameter2);
+            break;
+
             case 'tactical':
                 $tactical = new Tactical();
                 $tactical->ajax($parameter2);

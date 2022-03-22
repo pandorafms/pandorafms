@@ -1271,6 +1271,17 @@ function dashboardLoadVC(settings) {
         // Update the items.
         visualConsole.updateElements(items);
 
+        //Remove spinner change VC.
+        container.classList.remove("is-updating");
+        var div = container.querySelector(".div-visual-console-spinner");
+
+        if (div !== null) {
+          var parent = div.parentElement;
+          if (parent !== null) {
+            parent.removeChild(div);
+          }
+        }
+
         if (settings.mobile != undefined && settings.mobile === true) {
           // Update Url.
           var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
@@ -1294,18 +1305,8 @@ function dashboardLoadVC(settings) {
             href = href.replace(regex_height, replacement_height);
             window.history.replaceState({}, document.title, href);
           }
-          //Remove spinner change VC.
-          container.classList.remove("is-updating");
+
           container.classList.remove("cv-overflow");
-
-          var div = container.querySelector(".div-visual-console-spinner");
-
-          if (div !== null) {
-            var parent = div.parentElement;
-            if (parent !== null) {
-              parent.removeChild(div);
-            }
-          }
 
           // View title.
           var title = document.querySelector(".ui-title");

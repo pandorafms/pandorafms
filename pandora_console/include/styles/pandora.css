@@ -2368,12 +2368,6 @@ a.autorefresh_txt,
   }
 }
 
-@media only screen and (max-width: 1200px) {
-  .menu_hide ul {
-    display: none;
-  }
-}
-
 .disabled_module {
   color: #aaa;
 }

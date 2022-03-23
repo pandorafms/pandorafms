@@ -323,8 +323,6 @@ switch ($section) {
     break;
 }
 
-// Put header inside div for special sizing.(No right margin).
-echo '<div id="header_configuration" style="width: calc(100% + 3em);">';
 // Header.
 ui_print_page_header(
     __('Configuration').$subpage,
@@ -338,9 +336,8 @@ ui_print_page_header(
     GENERIC_SIZE_TEXT,
     '',
     '',
-    true,
+    true
 );
-echo '</div>';
 
 if (isset($config['error_config_update_config'])) {
     if ($config['error_config_update_config']['correct'] == false) {

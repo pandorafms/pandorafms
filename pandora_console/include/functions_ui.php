@@ -4632,12 +4632,7 @@ function ui_print_page_header(
         $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
     }
 
-    if ($hide_left_small !== true) {
-        $buffer .= '<div id="menu_tab_left">';
-    } else {
-        $buffer .= '<div id="menu_tab_left" class="menu_hide">';
-    }
-
+    $buffer .= '<div id="menu_tab_left">';
     $buffer .= '<ul class="mn"><li class="'.$type.'">';
 
     if (strpos($title, 'Monitoring » Services »') != -1) {
@@ -4732,6 +4727,31 @@ function ui_print_page_header(
     }
 
     $buffer .= '</div>';
+
+    if ($hide_left_small) {
+        $buffer .= '<script>
+        $(window).resize(function () {
+            hideLeftHeader()
+        });
+
+        $(document).ready(function () {
+           hideLeftHeader();
+        });
+
+        function hideLeftHeader() {
+            var right_width = 0;
+            $("#menu_tab").find("li").each(function(index) {
+                right_width += parseInt($(this).outerWidth(), 10);
+            });
+          
+            if($("#menu_tab").outerWidth() < right_width) {
+                $("#menu_tab_left").children().hide()
+            } else {
+                $("#menu_tab_left").children().show();
+            }
+        }
+    </script>';
+    }
 
     if (!$return) {
         echo $buffer;

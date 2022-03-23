@@ -611,7 +611,7 @@ ui_require_css_file('form');
         if (prevProps && prevProps.name != newProps.name) {
             // View title.
             var title = document.querySelector(
-                "div#menu_tab_frame_view > div#menu_tab_left span"
+                ".breadcrumbs-title"
             );
             if (title !== null) {
                 title.textContent = newProps.name;
@@ -621,7 +621,12 @@ ui_require_css_file('form');
             if (fullscreenTitle !== null) {
                 fullscreenTitle.textContent = newProps.name;
             }
-            // TODO: Change the metaconsole title.
+
+            // Fullscreen Meta view title.
+            var fullscreenTitleMeta = document.querySelector("div.vc-title-meta");
+            if (fullscreenTitleMeta !== null) {
+                fullscreenTitleMeta.textContent = newProps.name;
+            }
         }
 
         // Change the links.

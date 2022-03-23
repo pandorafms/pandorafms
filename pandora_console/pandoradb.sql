@@ -4039,6 +4039,7 @@ CREATE TABLE IF NOT EXISTS `tipam_vlan` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(250) NOT NULL,
   `description` TEXT,
+  `custom_id` bigint(20) UNSIGNED DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4224,5 +4225,19 @@ CREATE TABLE IF NOT EXISTS `tncm_firmware` (
   `vendor` BIGINT UNSIGNED,
   `models` TEXT,
   `path` TEXT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
+-- Table `tbackup`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tbackup` (
+  `id` SERIAL,
+  `utimestamp` BIGINT DEFAULT 0,
+  `filename` VARCHAR(512) DEFAULT '',
+  `id_user` VARCHAR(60) DEFAULT '',
+  `description` MEDIUMTEXT,
+  `pid` INT UNSIGNED DEFAULT 0,
+  `filepath` VARCHAR(512) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

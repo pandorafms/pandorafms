@@ -790,12 +790,11 @@ class Ui
         echo '		<title>'.$this->title."</title>\n";
         echo "		<meta charset='UTF-8' />\n";
         echo "		<meta name='viewport' content='width=device-width, initial-scale=1'>\n";
+        echo '      <link rel="icon" href="'.ui_get_full_url('/').ui_get_favicon().'" type="image/ico" />'."\n";
+        echo '      <link rel="shortcut icon" href="'.ui_get_full_url('/').ui_get_favicon().'" type="image/x-icon" />'."\n";
         echo "		<link rel='stylesheet' href='include/style/main.css' />\n";
-        // echo "        <link rel='stylesheet' href='include/style/jquery.mobile-1.4.5.css' />\n";
         echo "		<link rel='stylesheet' href='include/style/jquery.mobile-1.5.0-rc1.min.css' />\n";
-        // echo "        <script src='include/javascript/jquery.js.bakc'></script>\n";
         echo "		<script src='include/javascript/jquery.js'></script>\n";
-        // echo "        <script src='include/javascript/jquery.mobile-1.4.5.js'></script>\n";
         echo "		<script src='include/javascript/jquery.mobile-1.5.0-rc1.js'></script>\n";
         echo "		<script src='../include/javascript/pandora.js'></script>\n";
         echo "		<script src='../include/javascript/pandora_ui.js'></script>\n";
@@ -983,6 +982,30 @@ class Ui
 
         <?php
 
+    }
+
+
+    /**
+     * Load VC.
+     *
+     * @param string  $settings        Json object.
+     * @param integer $visualConsoleId Id.
+     *
+     * @return void Output script.
+     */
+    public function loadVc($settings, $visualConsoleId)
+    {
+        $this->contentAddHtml(
+            '<script type="text/javascript">
+            var settings = '.$settings.';
+            var fullUrl = "'.ui_get_full_url('/', false, false, false).'";
+            var visualConsoleId = '.$visualConsoleId.';
+
+            $(document).ready(function () {
+                dashboardLoadVC(settings);
+            });
+        </script>'
+        );
     }
 
 

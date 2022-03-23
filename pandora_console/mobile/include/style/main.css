@@ -1102,7 +1102,7 @@ li.ui-btn {
   }
 
   .ui-header .ui-title {
-    font-size: 18px !important;
+    font-size: 14px;
     min-height: 1.1em;
     text-align: center;
     display: block;
@@ -1112,10 +1112,6 @@ li.ui-btn {
     overflow: hidden;
     white-space: nowrap;
     outline: 0 !important;
-  }
-
-  * {
-    font-size: 18px !important;
   }
 
   .event_name {
@@ -1348,6 +1344,12 @@ span.nobold * {
   border-radius: 50%;
 }
 
+.status_small_rectangles {
+  width: 20px;
+  height: 10px;
+  display: inline-block;
+}
+
 .ui-content .ui-listview,
 .ui-panel-inner > .ui-listview {
   margin: 0 !important;
@@ -1444,7 +1446,7 @@ div.nodata_container {
 }
 
 .ui-page-active {
-  padding-top: 2.8em !important;
+  padding-top: 3.2em !important;
 }
 
 .ui-header-fixed {
@@ -1490,4 +1492,16 @@ div.nodata_container {
 .ui-controlgroup {
   padding: 0;
   margin: 0.5em 0 !important;
+}
+
+.div-visual-console-spinner {
+  opacity: 1 !important;
+}
+
+.cv-overflow {
+  overflow: hidden !important;
+}
+
+.visual-console-container-dashboard a:visited {
+  color: inherit !important;
 }

@@ -66,8 +66,8 @@ sub new ($$$) {
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, ALERTSERVER, \&PandoraFMS::AlertServer::data_producer, \&PandoraFMS::AlertServer::data_consumer, $dbh);
 
-    bless $self, $class;
-    return $self;
+	bless $self, $class;
+	return $self;
 }
 
 ################################################################################
@@ -91,6 +91,24 @@ sub data_producer ($) {
 
 	my @tasks;
 	my @rows;
+
+	my $n_servers = get_db_value($dbh,
+		'SELECT COUNT(*) FROM `tserver` WHERE `server_type` = ? AND `status` = 1',
+		ALERTSERVER
+	);
+
+	my $i = 0;
+	my %servers = map { $_->{'name'} => $i++; } get_db_rows($dbh,
+		'SELECT `name` FROM `tserver` WHERE `server_type` = ? AND `status` = 1 ORDER BY `name` ASC',
+		ALERTSERVER
+	);
+
+	if ($n_servers eq 0) {
+		$n_servers = 1;
+	}
+
+	# Retrieve alerts to be evaluated.
+	my $server_type_id = $servers{$pa_config->{'servername'}};
 	
 	# Make a local copy of locked alerts.
 	$AlertSem->down ();
@@ -98,9 +116,14 @@ sub data_producer ($) {
 	$AlertSem->up ();
 
 	# Check the execution queue.
-	if (pandora_is_master($pa_config) == 1) {
-		@rows = get_db_rows ($dbh, 'SELECT id, utimestamp FROM talert_execution_queue ORDER BY utimestamp ASC');
-	}
+	my $sql = sprintf(
+		'SELECT id, utimestamp FROM talert_execution_queue
+		 WHERE `id` %% %d = %d ORDER BY utimestamp ASC',
+		$n_servers,
+		$server_type_id
+	);
+
+	@rows = get_db_rows($dbh, $sql);
 
 	# Queue alerts.
 	foreach my $row (@rows) {

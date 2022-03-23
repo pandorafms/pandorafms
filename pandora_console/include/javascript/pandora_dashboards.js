@@ -1208,68 +1208,121 @@ function refresh_pagination_callback(
 
 // eslint-disable-next-line no-unused-vars
 function dashboardLoadVC(settings) {
+  var headerMobileFix = 40;
+
   var container = document.getElementById(
     "visual-console-container-" + settings.cellId
   );
 
+  var interval = 300 * 1000;
+
   // Add the datetime when the item was received.
   var receivedAt = new Date();
 
-  var beforeUpdate = function(items, visualConsole, props) {
-    // Add the datetime when the item was received.
-    items.map(function(item) {
-      item["receivedAt"] = receivedAt;
-      return item;
-    });
-
+  var beforeUpdate = function(items, visualConsole, props, size) {
     var ratio_visualconsole = props.height / props.width;
+    var ratio_w = size.width / props.width;
+    var ratio_h = size.height / props.height;
 
-    props.width = settings.size.width;
-    props.height = settings.size.width * ratio_visualconsole;
+    props.width = size.width;
+    props.height = size.width * ratio_visualconsole;
 
-    if (props.height > settings.size.height) {
-      props.height = settings.size.height;
-      props.width = settings.size.height / ratio_visualconsole;
+    var ratio = ratio_w;
+    if (settings.mobile != undefined && settings.mobile === true) {
+      if (props.height < props.width) {
+        if (props.height > size.height) {
+          ratio = ratio_h;
+          props.height = size.height;
+          props.width = size.height / ratio_visualconsole;
+        }
+      }
+    } else {
+      if (props.height > size.height) {
+        ratio = ratio_h;
+        props.height = size.height;
+        props.width = size.height / ratio_visualconsole;
+      }
     }
 
-    // Update the data structure.
-    visualConsole.props = props;
-    // Update the items.
-    visualConsole.updateElements(items);
+    $.ajax({
+      method: "post",
+      url: settings.baseUrl + "ajax.php",
+      data: {
+        page: settings.page,
+        load_css_cv: 1,
+        uniq: settings.uniq,
+        ratio: ratio
+      },
+      dataType: "html",
+      success: function(css) {
+        $("#css_cv_" + settings.uniq)
+          .empty()
+          .append(css);
+
+        // Add the datetime when the item was received.
+        items.map(function(item) {
+          item["receivedAt"] = receivedAt;
+          return item;
+        });
+
+        // Update the data structure.
+        visualConsole.props = props;
+
+        // Update the items.
+        visualConsole.updateElements(items);
+
+        //Remove spinner change VC.
+        container.classList.remove("is-updating");
+        var div = container.querySelector(".div-visual-console-spinner");
+
+        if (div !== null) {
+          var parent = div.parentElement;
+          if (parent !== null) {
+            parent.removeChild(div);
+          }
+        }
+
+        if (settings.mobile != undefined && settings.mobile === true) {
+          // Update Url.
+          var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
+          var replacement = "$1" + props.id + "$2";
+
+          var regex_hash = /(hash=)[^&]+(&?)/gi;
+          var replacement_hash = "$1" + props.hash + "$2";
+
+          var regex_width = /(width=)[^&]+(&?)/gi;
+          var replacement_width = "$1" + size.width + "$2";
+
+          var regex_height = /(height=)[^&]+(&?)/gi;
+          var replacement_height =
+            "$1" + (size.height + headerMobileFix) + "$2";
+
+          // Change the URL (if the browser has support).
+          if ("history" in window) {
+            var href = window.location.href.replace(regex, replacement);
+            href = href.replace(regex_hash, replacement_hash);
+            href = href.replace(regex_width, replacement_width);
+            href = href.replace(regex_height, replacement_height);
+            window.history.replaceState({}, document.title, href);
+          }
+
+          container.classList.remove("cv-overflow");
+
+          // View title.
+          var title = document.querySelector(".ui-title");
+          if (title !== null) {
+            title.textContent = visualConsole.props.name;
+          }
+        }
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
   };
 
-  var handleUpdate = function(prevProps, newProps) {
-    if (!newProps) return;
-
-    //Remove spinner change VC.
-    document
-      .getElementById("visual-console-container" + settings.cellId)
-      .classList.remove("is-updating");
-
-    var div = document
-      .getElementById("visual-console-container" + settings.cellId)
-      .querySelector(".div-visual-console-spinner");
-
-    if (div !== null) {
-      var parent = div.parentElement;
-      if (parent !== null) {
-        parent.removeChild(div);
-      }
-    }
-
-    // Change the links.
-    if (prevProps && prevProps.id !== newProps.id) {
-      var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
-      var replacement = "$1" + newProps.id + "$2";
-
-      // Tab links.
-      var menuLinks = document.querySelectorAll("div#menu_tab a");
-      if (menuLinks !== null) {
-        menuLinks.forEach(function(menuLink) {
-          menuLink.href = menuLink.href.replace(regex, replacement);
-        });
-      }
-    }
+  var handleUpdate = function() {
+    return;
   };
 
   settings.items.map(function(item) {
@@ -1282,18 +1335,56 @@ function dashboardLoadVC(settings) {
     return item;
   });
 
-  createVisualConsole(
+  var visualConsoleManager = createVisualConsole(
     container,
     settings.props,
     settings.items,
     settings.baseUrl,
-    300 * 1000,
+    interval,
     handleUpdate,
     beforeUpdate,
     settings.size,
     settings.id_user,
-    settings.hash
+    settings.hash,
+    settings.mobile != undefined && settings.mobile === true
+      ? "mobile"
+      : "dashboard"
   );
+
+  $(window).on("orientationchange", function() {
+    $(container).width($(window).height());
+    $(container).height($(window).width() - headerMobileFix);
+    //Remove spinner change VC.
+    container.classList.remove("is-updating");
+    container.classList.remove("cv-overflow");
+
+    var div = container.querySelector(".div-visual-console-spinner");
+
+    if (div !== null) {
+      var parent = div.parentElement;
+      if (parent !== null) {
+        parent.removeChild(div);
+      }
+    }
+
+    container.classList.add("is-updating");
+    container.classList.add("cv-overflow");
+    const divParent = document.createElement("div");
+    divParent.className = "div-visual-console-spinner";
+
+    const divSpinner = document.createElement("div");
+    divSpinner.className = "visual-console-spinner";
+
+    divParent.appendChild(divSpinner);
+    container.appendChild(divParent);
+
+    var dimensions = {
+      width: $(window).height(),
+      height: $(window).width() - 40
+    };
+
+    visualConsoleManager.changeDimensionsVc(dimensions, interval);
+  });
 }
 
 // eslint-disable-next-line no-unused-vars

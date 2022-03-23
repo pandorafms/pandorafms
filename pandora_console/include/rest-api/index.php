@@ -115,25 +115,15 @@ if ($getVisualConsole === true) {
 
     $width = get_parameter('widthScreen', 0);
 
+    $mode = get_parameter('mode', '');
+
     $ratio = 0;
     if (isset($size) === true
         && is_array($size) === true
         && empty($size) === false
     ) {
+        $ratio = $visualConsole->adjustToViewport($size, $mode);
         $visualConsoleData = $visualConsole->toArray();
-        $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
-        $ratio = ($size['width'] / $visualConsoleData['width']);
-        $radio_h = ($size['height'] / $visualConsoleData['height']);
-
-        $visualConsoleData['width'] = $size['width'];
-        $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
-
-        if ($visualConsoleData['height'] > $size['height']) {
-            $ratio = $radio_h;
-
-            $visualConsoleData['height'] = $size['height'];
-            $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);
-        }
     }
 
     $widthRatio = 0;

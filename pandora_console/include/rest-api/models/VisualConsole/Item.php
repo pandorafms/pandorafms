@@ -1197,7 +1197,12 @@ class Item extends CachedModel
                         'operation/visual_console/view',
                         ['id' => $vcId],
                         // No autologin from the public view.
-                        !$config['public_view']
+                        !$config['public_view'],
+                        $mobile_navigation,
+                        [
+                            'page' => 'visualmap',
+                            'id'   => $vcId,
+                        ]
                     );
                 } catch (\Throwable $ignored) {
                     return null;
@@ -1244,15 +1249,15 @@ class Item extends CachedModel
                             'sec2'      => 'operation/agentes/status_monitor',
                             'id_module' => $moduleId,
                         ];
-                    }
 
-                    if ($mobile_navigation === true) {
-                        return $mobileUrl.'?'.http_build_query(
-                            [
-                                'page' => 'module_graph',
-                                'id'   => $moduleId,
-                            ]
-                        );
+                        if ($mobile_navigation === true) {
+                            return $mobileUrl.'?'.http_build_query(
+                                [
+                                    'page' => 'module_graph',
+                                    'id'   => $moduleId,
+                                ]
+                            );
+                        }
                     }
 
                     return $baseUrl.'?'.http_build_query($queryParams);
@@ -1308,7 +1313,12 @@ class Item extends CachedModel
                                 'operation/agentes/status_monitor',
                                 ['id_module' => $moduleId],
                                 // No autologin from the public view.
-                                !$config['public_view']
+                                !$config['public_view'],
+                                $mobile_navigation,
+                                [
+                                    'id'   => $moduleId,
+                                    'page' => 'module_graph',
+                                ]
                             );
                         }
                     } catch (\Throwable $ignored) {
@@ -1368,7 +1378,12 @@ class Item extends CachedModel
                             'operation/agentes/ver_agente',
                             ['id_agente' => $agentId],
                             // No autologin from the public view.
-                            !$config['public_view']
+                            !$config['public_view'],
+                            $mobile_navigation,
+                            [
+                                'id'   => $agentId,
+                                'page' => 'agent',
+                            ]
                         );
                     } catch (\Throwable $ignored) {
                         return null;

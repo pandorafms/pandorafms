@@ -653,7 +653,8 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Graphs'),
         'name'     => __('Custom graph'),
     ];
-    // Only pandora managers have access to the whole database
+
+    // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql_graph_vbar'] = [
             'optgroup' => __('Graphs'),
@@ -711,7 +712,7 @@ function reports_get_report_types($template=false, $not_editor=false)
             'name'     => __('Hourly S.L.A.'),
         ];
 
-        if (!$config['metaconsole'] && !$template) {
+        if ($template === false) {
             $types['SLA_services'] = [
                 'optgroup' => __('SLA'),
                 'name'     => __('Services S.L.A.'),
@@ -795,6 +796,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             ];
         }
     }
+
+    $types['agent_module_status'] = [
+        'optgroup' => __('Grouped'),
+        'name'     => __('Agents/Modules status'),
+    ];
 
     // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
@@ -900,6 +906,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         $types['netflow_summary'] = [
             'optgroup' => __('Netflow'),
             'name'     => __('Netflow summary table'),
+        ];
+        $types['netflow_top_N'] = [
+            'optgroup' => __('Netflow'),
+            'name'     => __('Netflow top-N connections'),
         ];
     }
 

@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Synchronizer;
+
 global $config;
 
 
@@ -743,6 +745,7 @@ switch ($action) {
                 break;
 
                 case 'agent_module':
+                case 'agent_module_status':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
 
@@ -867,6 +870,7 @@ switch ($action) {
                 case 'netflow_area':
                 case 'netflow_data':
                 case 'netflow_summary':
+                case 'netflow_top_N':
                     $netflow_filter = $item['text'];
                     // Filter.
                     $period = $item['period'];
@@ -3837,7 +3841,12 @@ function print_SLA_list($width, $action, $idItem=null)
                                 [$item['id_agent_module']]
                             );
                             echo '<td class="sla_list_service_col">';
-                            echo printSmallFont($nameService);
+                            if ($meta && $server_name != '') {
+                                echo $server_name.' &raquo; '.$nameService;
+                            } else {
+                                echo $nameService;
+                            }
+
                             echo '</th>';
                         }
 
@@ -3984,8 +3993,8 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <?php
                             }
 
-                            if (enterprise_installed()
-                                && $report_item_type == 'SLA_services'
+                            if (enterprise_installed() === true
+                                && $report_item_type === 'SLA_services'
                             ) {
                                 enterprise_include_once(
                                     'include/functions_services.php'
@@ -4004,8 +4013,9 @@ function print_SLA_list($width, $action, $idItem=null)
                                         ],
                                     ]
                                 );
-                                if (!empty($services_tmp)
-                                    && $services_tmp != ENTERPRISE_NOT_HOOK
+
+                                if (empty($services_tmp) === false
+                                    && $services_tmp !== ENTERPRISE_NOT_HOOK
                                 ) {
                                     foreach ($services_tmp as $service) {
                                         $check_module_sla = modules_check_agentmodule_exists(
@@ -4014,10 +4024,85 @@ function print_SLA_list($width, $action, $idItem=null)
                                         $check_module_sla_value = modules_check_agentmodule_exists(
                                             $service['sla_value_id_module']
                                         );
-                                        if ($check_module_sla
-                                            && $check_module_sla_value
+
+                                        if ($check_module_sla === true
+                                            && $check_module_sla_value === true
                                         ) {
                                             $services[$service['id']] = $service['name'];
+                                        }
+                                    }
+                                }
+
+                                if (is_metaconsole() === true) {
+                                    $sc = new Synchronizer();
+                                    $node_services = $sc->apply(
+                                        function ($node) {
+                                            try {
+                                                $node->connect();
+
+                                                $services_tmp = enterprise_hook(
+                                                    'services_get_services',
+                                                    [
+                                                        false,
+                                                        [
+                                                            'id',
+                                                            'name',
+                                                            'description',
+                                                            'sla_id_module',
+                                                            'sla_value_id_module',
+                                                        ],
+                                                    ]
+                                                );
+
+                                                $all_services = [];
+                                                if (empty($services_tmp) === false
+                                                    && $services_tmp !== ENTERPRISE_NOT_HOOK
+                                                ) {
+                                                    foreach ($services_tmp as $service) {
+                                                        $check_module_sla = modules_check_agentmodule_exists(
+                                                            $service['sla_id_module']
+                                                        );
+                                                        $check_module_sla_value = modules_check_agentmodule_exists(
+                                                            $service['sla_value_id_module']
+                                                        );
+
+                                                        if ($check_module_sla === true
+                                                            && $check_module_sla_value === true
+                                                        ) {
+                                                            $all_services[$service['id']] = $service;
+                                                        }
+                                                    }
+                                                }
+
+                                                $node->disconnect();
+                                            } catch (\Exception $e) {
+                                                $all_services = false;
+                                            }
+
+                                            if ($all_services !== false) {
+                                                return array_reduce(
+                                                    $all_services,
+                                                    function ($carry, $item) use ($node) {
+                                                        $carry[] = [
+                                                            'id'   => $node->id().'|'.$item['id'],
+                                                            'name' => io_safe_output(
+                                                                $node->server_name().' &raquo; '.$item['name']
+                                                            ),
+                                                        ];
+                                                        return $carry;
+                                                    },
+                                                    []
+                                                );
+                                            }
+
+                                            return [];
+                                        },
+                                        false
+                                    );
+
+                                    foreach ($node_services as $ns) {
+                                        foreach ($ns as $k => $ser) {
+                                            $services[$ser['id']] = $ser['name'];
                                         }
                                     }
                                 }
@@ -4744,6 +4829,7 @@ $(document).ready (function () {
 
         switch (type){
             case 'agent_module':
+            case 'agent_module_status':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
@@ -4878,6 +4964,7 @@ $(document).ready (function () {
         }
         switch (type){
             case 'agent_module':
+            case 'agent_module_status':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
@@ -5330,6 +5417,11 @@ function addSLARow() {
     var slaMax = $("input[name=sla_max]").val();
     var slaLimit = $("input[name=sla_limit]").val();
     var serviceId = $("select#id_service>option:selected").val();
+    if(serviceId != '' && serviceId.split('|').length > 1 ) {
+        var ids = serviceId.split('|');
+        serverId = ids[0];
+        serviceId = ids[1];
+    }
     var serviceName = $("select#id_service>option:selected").text();
 
     if ((((idAgent != '') && (idAgent > 0))
@@ -6345,9 +6437,10 @@ function chooseType() {
             break;
 
         case 'agent_module':
+            $("#row_module_group").show();
+        case 'agent_module_status':
             $("#row_description").show();
             $("#row_group").show();
-            $("#row_module_group").show();
             $("#select_agent_modules").show();
             $("#agents_modules_row").show();
             $("#modules_row").show();
@@ -6570,6 +6663,16 @@ function chooseType() {
             break;
 
         case 'netflow_summary':
+            $("#row_netflow_filter").show();
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_max_values").show();
+            $("#row_resolution").show();
+            $("#row_servers").show();
+            $("#row_historical_db_check").hide();
+            break;
+
+        case 'netflow_top_N':
             $("#row_netflow_filter").show();
             $("#row_description").show();
             $("#row_period").show();

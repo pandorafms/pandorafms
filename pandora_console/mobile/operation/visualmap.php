@@ -126,13 +126,6 @@ class Visualmap
         $this->id = (int) $system->getRequest('id', 0);
         $this->width = (int) $system->getRequest('width', 0);
         $this->height = (int) $system->getRequest('height', 0);
-
-        if ($this->width < $this->height) {
-            $w = $this->width;
-            $this->width = $this->height;
-            $this->height = $w;
-            $this->rotate = true;
-        }
     }
 
 
@@ -153,7 +146,8 @@ class Visualmap
             $ui->retrieveViewPort();
         }
 
-        $this->height -= 39;
+        // Header.
+        $this->height -= 40;
 
         $this->visualmap = db_get_row(
             'tlayout',
@@ -211,29 +205,7 @@ class Visualmap
      */
     public function ajax(string $parameter2='')
     {
-        $system = System::getInstance();
-        $this->checkVisualmapACL($this->visualmap['id_group']);
-        if ((bool) $this->validAcl === false) {
-            $this->show_fail_acl();
-        } else {
-            switch ($parameter2) {
-                case 'render_map':
-                    $map_id = $system->getRequest('map_id', '0');
-                    $width = $system->getRequest('width', '400');
-                    $height = $system->getRequest('height', '400');
-                    visual_map_print_visual_map(
-                        $map_id,
-                        false,
-                        true,
-                        $width,
-                        $height
-                    );
-                exit;
-
-                default:
-                exit;
-            }
-        }
+        return;
     }
 
 
@@ -307,20 +279,8 @@ class Visualmap
             'height' => $this->height,
         ];
 
+        $ratio_t = $visualConsole->adjustToViewport($size, 'mobile');
         $visualConsoleData = $visualConsole->toArray();
-        $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
-        $ratio_t = ($size['width'] / $visualConsoleData['width']);
-        $radio_h = ($size['height'] / $visualConsoleData['height']);
-
-        $visualConsoleData['width'] = $size['width'];
-        $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
-
-        if ($visualConsoleData['height'] > $size['height']) {
-            $ratio_t = $radio_h;
-
-            $visualConsoleData['height'] = $size['height'];
-            $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);
-        }
 
         $uniq = uniqid();
 
@@ -328,7 +288,6 @@ class Visualmap
         // Style.
         $style = 'width:'.$visualConsoleData['width'].'px;';
         $style .= 'height:'.$visualConsoleData['height'].'px;';
-        $style .= 'background-size: cover;';
 
         // Class.
         $class = 'visual-console-container-dashboard c-'.$uniq;
@@ -366,42 +325,13 @@ class Visualmap
             $ratio_t
         );
 
-        // Horrible trick! due to the use of tinyMCE
-        // it is necessary to modify specific classes of each
-        // of the visual consoles.
-        $output .= '<style type="text/css">';
-        $output .= '.c-'.$uniq.', .c-'.$uniq.' *:not(.parent_graph p table tr td span) { font-size: '.(8 * $ratio_t).'pt; line-height:'.(8 * ($ratio_t) * 1.5).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_4pt, .c-'.$uniq.' .visual_font_size_4pt * { font-size: '.(4 * $ratio_t).'pt; line-height:'.(4 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_6pt, .c-'.$uniq.' .visual_font_size_6pt * { font-size: '.(6 * $ratio_t).'pt; line-height:'.(6 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_8pt, .c-'.$uniq.' .visual_font_size_8pt * { font-size: '.(8 * $ratio_t).'pt; line-height:'.(8 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_10pt, .c-'.$uniq.' .visual_font_size_10pt * { font-size: '.(10 * $ratio_t).'pt; line-height:'.(10 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_12pt, .c-'.$uniq.' .visual_font_size_12pt * { font-size: '.(12 * $ratio_t).'pt; line-height:'.(12 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_14pt, .c-'.$uniq.' .visual_font_size_14pt * { font-size: '.(14 * $ratio_t).'pt; line-height:'.(14 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_18pt, .c-'.$uniq.' .visual_font_size_18pt * { font-size: '.(18 * $ratio_t).'pt; line-height:'.(18 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_24pt, .c-'.$uniq.' .visual_font_size_24pt * { font-size: '.(24 * $ratio_t).'pt; line-height:'.(24 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_28pt, .c-'.$uniq.' .visual_font_size_28pt * { font-size: '.(28 * $ratio_t).'pt; line-height:'.(28 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_36pt, .c-'.$uniq.' .visual_font_size_36pt * { font-size: '.(36 * $ratio_t).'pt; line-height:'.(36 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_48pt, .c-'.$uniq.' .visual_font_size_48pt * { font-size: '.(48 * $ratio_t).'pt; line-height:'.(48 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_60pt, .c-'.$uniq.' .visual_font_size_60pt * { font-size: '.(60 * $ratio_t).'pt; line-height:'.(60 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_72pt, .c-'.$uniq.' .visual_font_size_72pt * { font-size: '.(72 * $ratio_t).'pt; line-height:'.(72 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_84pt, .c-'.$uniq.' .visual_font_size_84pt * { font-size: '.(84 * $ratio_t).'pt; line-height:'.(84 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_96pt, .c-'.$uniq.' .visual_font_size_96pt * { font-size: '.(96 * $ratio_t).'pt; line-height:'.(96 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_116pt, .c-'.$uniq.' .visual_font_size_116pt * { font-size: '.(116 * $ratio_t).'pt; line-height:'.(116 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_128pt, .c-'.$uniq.' .visual_font_size_128pt * { font-size: '.(128 * $ratio_t).'pt; line-height:'.(128 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_140pt, .c-'.$uniq.' .visual_font_size_140pt * { font-size: '.(140 * $ratio_t).'pt; line-height:'.(140 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_154pt, .c-'.$uniq.' .visual_font_size_154pt * { font-size: '.(154 * $ratio_t).'pt; line-height:'.(154 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_196pt, .c-'.$uniq.' .visual_font_size_196pt * { font-size: '.(196 * $ratio_t).'pt; line-height:'.(196 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .flot-text, .c-'.$uniq.' .flot-text * { font-size: '.(8 * $ratio_t).'pt !important; line-height:'.(8 * ($ratio_t)).'pt !important; }';
-        $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.time {font-size: '.(50 * $ratio_t).'px !important; line-height: '.(50 * $ratio_t).'px !important;}';
-        $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.date {font-size: '.(25 * $ratio_t).'px !important; line-height: '.(25 * $ratio_t).'px !important;}';
-        $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.timezone {font-size: '.(25 * $ratio_t).'px !important; line-height: '.(25 * $ratio_t).'px !important;}';
-        $output .= '.c-'.$uniq.' .visual-console-item .donut-graph * {font-size: '.(8 * $ratio_t).'px !important; line-height: '.(8 * $ratio_t).'px !important;}';
-        $output .= '.c-'.$uniq.' .visual-console-item .donut-graph g rect {width:'.(25 * $ratio_t).' !important; height: '.(15 * $ratio_t).' !important;}';
+        $output .= '<style id="css_cv_'.$uniq.'" type="text/css">';
+        $output .= css_label_styles_visual_console($uniq, $ratio_t);
         $output .= '</style>';
 
         $visualConsoleItems = array_reduce(
             $visualConsoleItems,
-            function ($carry, $item) use ($ratio_t) {
+            function ($carry, $item) {
                 $carry[] = $item->toArray();
                 return $carry;
             },
@@ -413,36 +343,18 @@ class Visualmap
                 'props'   => $visualConsoleData,
                 'items'   => $visualConsoleItems,
                 'baseUrl' => ui_get_full_url('/', false, false, false),
+                'page'    => 'include/ajax/visual_console.ajax',
                 'ratio'   => $ratio_t,
                 'size'    => $size,
                 'cellId'  => $uniq,
+                'uniq'    => $uniq,
+                'mobile'  => true,
+                'vcId'    => $visualConsoleId,
             ]
         );
 
-        $output .= '<script type="text/javascript">';
-        $output .= '$(document).ready(function () {';
-        $output .= 'dashboardLoadVC('.$settings.')';
-        $output .= '});';
-        if ($this->rotate === true) {
-            $output .= "$('.container-center').css('transform', 'rotate(90deg)');";
-        }
-
-        $output .= '$( window ).on( "orientationchange", function( event )';
-        $output .= ' { window.location.href = "';
-        $output .= ui_get_full_url(
-            '/mobile/index.php?page=visualmap&id='.$visualConsoleId
-        );
-        $output .= '" });';
-
-        $output .= '</script>';
-
         $ui->contentAddHtml($output);
-
-        // Load Visual Console Items.
-        $visualConsoleItems = VisualConsole::getItemsFromDB(
-            $visualConsoleId,
-            $aclUserGroups
-        );
+        $ui->loadVc($settings, $visualConsoleId);
 
         $javascript = ob_get_clean();
         $ui->contentAddHtml($javascript);

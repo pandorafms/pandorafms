@@ -891,6 +891,25 @@ function config_update_config()
                     if (config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'), true) === false) {
                         $error_update[] = __('SNMP walk binary path (fallback for v1)');
                     }
+
+                    $pjs = get_parameter('phantomjs_cache_interval');
+                    switch ($pjs) {
+                        case $config['phantomjs_cache_interval']:
+                        default;
+                            // No changes.
+                        break;
+
+                        case PHANTOM_CACHE_CLEANUP_ONCE:
+                        case PHANTOM_CACHE_CLEANUP_DAILY:
+                        case PHANTOM_CACHE_CLEANUP_WEEKLY:
+                            enterprise_hook('phantomjs_cache_interval_schedule', [$pjs]);
+                        break;
+                    }
+
+                    if (config_update_value('phantomjs_cache_interval', get_parameter('phantomjs_cache_interval'), true) === false
+                    ) {
+                        $error_update[] = __('PhantomJS cache interval');
+                    }
                 break;
 
                 case 'vis':

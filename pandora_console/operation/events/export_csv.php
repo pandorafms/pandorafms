@@ -227,6 +227,10 @@ try {
                             array_walk(
                                 $custom_data_array,
                                 function (&$value, $field) {
+                                    if (is_array($value) === true) {
+                                        $value = '['.implode(',', $value).']';
+                                    }
+
                                     $value = $field.'='.$value;
                                 }
                             );

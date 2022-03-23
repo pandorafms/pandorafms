@@ -638,7 +638,7 @@ class HTML
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div class="flex mrgn_btn_25px wrap">';
+                    $output .= '<div class="flex wrap">';
                     if (!isset($input['extra'])) {
                         $output .= '<div class="w50p">';
                     }

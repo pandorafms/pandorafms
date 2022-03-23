@@ -743,6 +743,7 @@ switch ($action) {
                 break;
 
                 case 'agent_module':
+                case 'agent_module_status':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
 
@@ -867,6 +868,7 @@ switch ($action) {
                 case 'netflow_area':
                 case 'netflow_data':
                 case 'netflow_summary':
+                case 'netflow_top_N':
                     $netflow_filter = $item['text'];
                     // Filter.
                     $period = $item['period'];
@@ -4744,6 +4746,7 @@ $(document).ready (function () {
 
         switch (type){
             case 'agent_module':
+            case 'agent_module_status':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
@@ -4878,6 +4881,7 @@ $(document).ready (function () {
         }
         switch (type){
             case 'agent_module':
+            case 'agent_module_status':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
                 var modules_multiple = $('#module').val();
@@ -6345,9 +6349,10 @@ function chooseType() {
             break;
 
         case 'agent_module':
+            $("#row_module_group").show();
+        case 'agent_module_status':
             $("#row_description").show();
             $("#row_group").show();
-            $("#row_module_group").show();
             $("#select_agent_modules").show();
             $("#agents_modules_row").show();
             $("#modules_row").show();
@@ -6570,6 +6575,16 @@ function chooseType() {
             break;
 
         case 'netflow_summary':
+            $("#row_netflow_filter").show();
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_max_values").show();
+            $("#row_resolution").show();
+            $("#row_servers").show();
+            $("#row_historical_db_check").hide();
+            break;
+
+        case 'netflow_top_N':
             $("#row_netflow_filter").show();
             $("#row_description").show();
             $("#row_period").show();

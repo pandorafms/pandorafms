@@ -81,6 +81,8 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
             echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
             if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
                 echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+            } else {
+                echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
             }
         }
         ?>
@@ -100,7 +102,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
             $last_data = preg_replace('/>/', '&gt;', $last_data);
             $last_data = preg_replace('/\n/i', '<br>', $last_data);
             $last_data = preg_replace('/\s/i', '&nbsp;', $last_data);
-            echo "<div id='result_div' class='result_div'>";
+            echo "<div id='result_div' class='result_div mono'>";
             echo $last_data;
             echo '</div>';
             ?>

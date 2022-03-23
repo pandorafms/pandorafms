@@ -167,8 +167,10 @@ class Tree
      */
     protected function getDisabledFilter()
     {
+        $only_disabled = (is_metaconsole() === true) ? (int) $this->filter['show_disabled'] : 0;
+
         if (empty($this->filter['showDisabled'])) {
-            return ' tam.disabled = 0 AND ta.disabled = 0';
+            return ' tam.disabled = 0 AND ta.disabled = '.$only_disabled;
         }
 
         return ' 1 = 1';

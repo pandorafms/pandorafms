@@ -389,7 +389,10 @@ class ModuleStatusWidget extends Widget
             'class'         => 'flex-row flex-end w100p',
             'direct'        => 1,
             'block_content' => [
-                ['label' => $image],
+                [
+                    'label'     => $image,
+                    'arguments' => ['type' => 'image-item'],
+                ],
             ],
         ];
 

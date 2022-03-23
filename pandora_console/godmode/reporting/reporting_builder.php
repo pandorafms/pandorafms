@@ -938,7 +938,7 @@ switch ($action) {
                 $table->head[$next] = __('Private');
                 $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
                 $table->size[$next] = '2%';
-                if (defined('METACONSOLE')) {
+                if (is_metaconsole() === true) {
                     $table->align[$next] = '';
                 } else {
                     $table->align[$next] = 'left';
@@ -952,7 +952,7 @@ switch ($action) {
 
                 $next++;
                 $op_column = false;
-                if (!defined('METACONSOLE')) {
+                if (is_metaconsole() === false) {
                     $op_column = true;
                     $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox(
                         'all_delete',
@@ -967,6 +967,8 @@ switch ($action) {
                 // $table->size = array ();
                 $table->size[$next] = '10%';
                 $table->align[$next] = 'right';
+            } else {
+                $table->size[1] = '40%';
             }
 
             $columnview = false;
@@ -1266,7 +1268,7 @@ switch ($action) {
             || check_acl($config['id_user'], 0, 'RM')
         ) {
             echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-            if (defined('METACONSOLE')) {
+            if (is_metaconsole() === true) {
                 echo '<div class="action-buttons w100p">';
             } else {
                 echo '<div class="action-buttons w100p">';
@@ -1653,6 +1655,7 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
+                            case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 
@@ -1750,6 +1753,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -2454,6 +2458,7 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
+                            case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text');
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
 
@@ -2549,6 +2554,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -3552,25 +3558,6 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 }
 
 if ($resultOperationDB !== null) {
-    $err = '';
-    switch ($_POST['type']) {
-        case 'custom_graph':
-            $err .= 'You must enter custom graph';
-        break;
-
-        case 'SLA':
-            $err .= 'You must enter some character in SLA limit field';
-        default:
-            $err .= '';
-        break;
-    }
-
-    ui_print_result_message(
-        $resultOperationDB,
-        __('Successfull action'),
-        __('Unsuccessful action<br><br>'.$err)
-    );
-
     if ($action == 'update') {
         $buttons[$activeTab]['active'] = false;
         $activeTab = 'list_items';
@@ -3598,6 +3585,25 @@ if ($resultOperationDB !== null) {
             );
         }
     }
+
+    $err = '';
+    switch ($_POST['type']) {
+        case 'custom_graph':
+            $err .= 'You must enter custom graph';
+        break;
+
+        case 'SLA':
+            $err .= 'You must enter some character in SLA limit field';
+        default:
+            $err .= '';
+        break;
+    }
+
+    ui_print_result_message(
+        $resultOperationDB,
+        __('Successfull action'),
+        __('Unsuccessful action<br><br>'.$err)
+    );
 }
 
 switch ($activeTab) {

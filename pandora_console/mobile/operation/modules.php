@@ -1,15 +1,33 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+/**
+ * Modules list view for mobile
+ *
+ * @category   Mobile
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 class Modules
 {
 
@@ -106,7 +124,7 @@ class Modules
         }
 
         if (isset($filters['status'])) {
-            $this->status = $filters['status'];
+            $this->status = (int) $filters['status'];
         }
 
         if (isset($filters['name'])) {
@@ -143,7 +161,7 @@ class Modules
         }
 
         $this->status = $system->getRequest('status', __('Status'));
-        if (($this->status === __('Status')) || ($this->status == AGENT_MODULE_STATUS_ALL)) {
+        if (($this->status === __('Status')) || ((int) $this->status === AGENT_MODULE_STATUS_ALL)) {
             $this->status = AGENT_MODULE_STATUS_ALL;
         } else {
             $this->default = false;
@@ -390,33 +408,26 @@ class Modules
         }
 
         // Part SQL fro Status
-        if ($this->status == AGENT_MODULE_STATUS_NORMAL) {
-            // Normal
-            $sql_conditions .= ' AND tagente_estado.estado = 0 
+        if ((int) $this->status == AGENT_MODULE_STATUS_NORMAL) {
+            // Normal.
+            $sql_conditions .= ' AND tagente_estado.estado = 0
 			AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) ';
-        } else if ($this->status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-            // Critical
+        } else if ((int) $this->status === AGENT_MODULE_STATUS_CRITICAL_BAD) {
+            // Critical.
             $sql_conditions .= ' AND tagente_estado.estado = 1 AND utimestamp > 0';
-        } else if ($this->status == AGENT_MODULE_STATUS_WARNING) {
-            // Warning
+        } else if ((int) $this->status === AGENT_MODULE_STATUS_WARNING) {
+            // Warning.
             $sql_conditions .= ' AND tagente_estado.estado = 2 AND utimestamp > 0';
-        } else if ($this->status == AGENT_MODULE_STATUS_NOT_NORMAL) {
-            // Not normal
+        } else if ((int) $this->status === AGENT_MODULE_STATUS_NOT_NORMAL) {
+            // Not normal.
             $sql_conditions .= ' AND tagente_estado.estado <> 0';
-        } else if ($this->status == AGENT_MODULE_STATUS_UNKNOWN) {
-            // Unknown
+        } else if ((int) $this->status === AGENT_MODULE_STATUS_UNKNOWN) {
+            // Unknown.
             $sql_conditions .= ' AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0';
-        } else if ($this->status == AGENT_MODULE_STATUS_NOT_INIT) {
-            // Not init
+        } else if ((int) $this->status === AGENT_MODULE_STATUS_NOT_INIT) {
+            // Not init.
             $sql_conditions .= ' AND tagente_estado.utimestamp = 0
 				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)';
-        }
-
-        if ($this->status != AGENT_MODULE_STATUS_NOT_INIT) {
-            // When filter is not "not init"
-            // Not show not init modules. It's only operation view
-            $sql_conditions .= ' AND (tagente_estado.utimestamp != 0
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
         }
 
         if ($this->tag > 0) {
@@ -435,7 +446,7 @@ class Modules
 					SELECT ttag_module.id_tag
 					FROM ttag_module
 					WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo))
-			AS tags, 
+			AS tags,
 			tagente_modulo.id_agente_modulo,
 			tagente.intervalo AS agent_interval,
 			tagente.nombre AS agent_name,
@@ -476,6 +487,7 @@ class Modules
 				ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo'.$sql_conditions_all;
 
         $sql_limit = 'ORDER BY tagente.nombre ASC ';
+
         if (!$this->all_modules) {
             $sql_limit = ' LIMIT '.(int) ($page * $system->getPageSize()).','.(int) $system->getPageSize();
         }

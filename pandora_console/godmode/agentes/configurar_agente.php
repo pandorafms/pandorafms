@@ -31,6 +31,8 @@ global $config;
 
 enterprise_include('godmode/agentes/configurar_agente.php');
 enterprise_include_once('include/functions_modules.php');
+enterprise_include_once('include/functions_config_agents.php');
+enterprise_include('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');
@@ -983,7 +985,6 @@ if ($update_agent) {
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
-
 
     if ($fields === false) {
         $fields = [];
@@ -2001,6 +2002,7 @@ if ($disable_module) {
             io_safe_output($module_name),
         ]
     );
+
     // Force disable.
     $disabled = 1;
 

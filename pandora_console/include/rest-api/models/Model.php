@@ -213,6 +213,61 @@ abstract class Model
     }
 
 
+    /**
+     * Calculate ratio for mobile.
+     *
+     * @param array  $size Size viewport.
+     * @param string $mode Mode calculate (dashboard or mobile).
+     *
+     * @return float Ratio.
+     */
+    public function adjustToViewport($size, $mode='')
+    {
+        $ratio_visualconsole = $this->getRatio();
+        $ratio_w = ($size['width'] / $this->data['width']);
+        $ratio_h = ($size['height'] / $this->data['height']);
+
+        $this->data['width'] = $size['width'];
+        $this->data['height'] = ($size['width'] * $ratio_visualconsole);
+
+        $ratio = $ratio_w;
+        if ($mode === 'mobile') {
+            if ($this->data['height'] < $this->data['width']) {
+                if ($this->data['height'] > $size['height']) {
+                    $ratio = $ratio_h;
+                    $this->data['height'] = $size['height'];
+                    $this->data['width'] = ($size['height'] / $ratio_visualconsole);
+                }
+            }
+        } else {
+            if ($this->data['height'] > $size['height']) {
+                $ratio = $ratio_h;
+                $this->data['height'] = $size['height'];
+                $this->data['width'] = ($size['height'] / $ratio_visualconsole);
+            }
+        }
+
+        return $ratio;
+    }
+
+
+    /**
+     * Calculate ratio
+     *
+     * @return float Ratio.
+     */
+    public function getRatio()
+    {
+        if (isset($this->data['width']) === false
+            || empty($this->data['width']) === true
+        ) {
+            return null;
+        }
+
+        return ($this->data['height'] / $this->data['width']);
+    }
+
+
     /*
      * -------------
      * - UTILITIES -

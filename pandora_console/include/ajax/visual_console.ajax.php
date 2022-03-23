@@ -37,6 +37,7 @@ $ajax = true;
 $render_map = (bool) get_parameter('render_map', false);
 $graph_javascript = (bool) get_parameter('graph_javascript', false);
 $force_remote_check = (bool) get_parameter('force_remote_check', false);
+$load_css_cv = (bool) get_parameter('load_css_cv', false);
 
 if ($render_map) {
     $width = (int) get_parameter('width', '400');
@@ -87,5 +88,14 @@ if ($force_remote_check) {
         }
     }
 
+    return;
+}
+
+if ($load_css_cv === true) {
+    $uniq = get_parameter('uniq', 0);
+    $ratio = get_parameter('ratio', 0);
+
+    $output = css_label_styles_visual_console($uniq, $ratio);
+    echo $output;
     return;
 }

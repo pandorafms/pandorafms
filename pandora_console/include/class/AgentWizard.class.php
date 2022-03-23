@@ -544,11 +544,6 @@ class AgentWizard extends HTML
             // Get the servers.
             $rows = get_proxy_servers();
 
-            // Check if satellite server has remote configuration enabled.
-            $satellite_remote = config_agents_has_remote_configuration(
-                $this->idAgent
-            );
-
             // Generate a list with allowed servers.
             if (isset($rows) === true && is_array($rows) === true) {
                 foreach ($rows as $row) {

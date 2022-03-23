@@ -11,6 +11,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
+
 function dbmanager_query($sql, &$error, $dbconnection)
 {
     global $config;
@@ -88,6 +91,10 @@ function dbmgr_extension_main()
 
     global $config;
 
+    if (is_metaconsole() === true) {
+        open_meta_frame();
+    }
+
     if (!is_user_admin($config['id_user'])) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
@@ -98,11 +105,59 @@ function dbmgr_extension_main()
     }
 
     $sql = (string) get_parameter('sql');
+    $node_id = (int) get_parameter('node_id', -1);
 
     ui_print_page_header(__('Database interface'), 'images/gm_db.png', false, false, true);
 
-    echo '<div class="notify">';
-    echo __(
+    if (is_metaconsole() === true) {
+        $img = '../../images/warning_modern.png';
+    } else {
+        $img = 'images/warning_modern.png';
+    }
+
+    $msg = '<div id="err_msg_centralised">'.html_print_image(
+        $img,
+        true
+    );
+    $msg .= '<div>'.__(
+        'Warning, you are accessing the database directly. You can leave the system inoperative if you run an inappropriate SQL statement'
+    ).'</div></div>';
+
+    $warning_message = '<script type="text/javascript">
+        $(document).ready(function () {
+            infoMessage({
+                title: \''.__('Warning').'\',
+                text: \''.$msg.'\'    ,
+                simple: true,
+            })
+        })
+    </script>';
+
+    if (empty($sql) === true) {
+        echo $warning_message;
+    }
+
+    echo "<form method='post' action=''>";
+
+    $table = new stdClass();
+    $table->id = 'db_interface';
+    $table->class = 'databox';
+    $table->width = '100%';
+    $table->data = [];
+    $table->head = [];
+    $table->colspan = [];
+    $table->rowstyle = [];
+
+    $table->colspan[0][0] = 2;
+    $table->colspan[1][0] = 2;
+    $table->rowspan[2][0] = 3;
+
+    $table->rowclass[0] = 'notify';
+    $table->rowclass[3] = 'pdd_5px';
+    $table->rowclass[3] = 'flex-content-right';
+    $table->rowclass[4] = 'flex-content-right';
+
+    $data[0][0] = __(
         "This is an advanced extension to interface with %s database directly from WEB console
 		using native SQL sentences. Please note that <b>you can damage</b> your %s installation
 		if you don't know </b>exactly</b> what are you are doing,
@@ -113,19 +168,59 @@ function dbmgr_extension_main()
         get_product_name(),
         get_product_name()
     );
-    echo '</div>';
 
-    echo '<br />';
-    echo "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
+    $data[1][0] = "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
 
-    echo '<br /><br />';
-    echo "<form method='post' action=''>";
-    html_print_textarea('sql', 5, 50, html_entity_decode($sql, ENT_QUOTES));
-    echo '<br />';
-    echo '<div class="action-buttons w100p">';
-    echo '<br />';
-    html_print_submit_button(__('Execute SQL'), '', false, 'class="sub next"');
-    echo '</div>';
+    \enterprise_include_once('include/functions_metaconsole.php');
+    $servers = \metaconsole_get_servers();
+    if (is_array($servers) === true) {
+        $servers = array_reduce(
+            $servers,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['server_name'];
+                return $carry;
+            }
+        );
+    } else {
+        $servers = [];
+    }
+
+    $data[2][0] = html_print_textarea(
+        'sql',
+        5,
+        50,
+        html_entity_decode($sql, ENT_QUOTES),
+        '',
+        true
+    );
+
+    if (is_metaconsole() === true) {
+        $data[3][2] = html_print_input(
+            [
+                'name'          => 'node_id',
+                'type'          => 'select',
+                'fields'        => $servers,
+                'selected'      => $node_id,
+                'nothing'       => __('This metaconsole'),
+                'nothing_value' => -1,
+                'return'        => true,
+                'label'         => _('Select query target'),
+            ]
+        );
+    }
+
+    $data[4][2] = '<div class="action-buttons w100p">';
+    $data[4][2] .= html_print_submit_button(
+        __('Execute SQL'),
+        '',
+        false,
+        'class="sub next"',
+        true
+    );
+    $data[4][2] .= '</div>';
+
+    $table->data = $data;
+    html_print_table($table);
     echo '</form>';
 
     // Processing SQL Code
@@ -137,10 +232,29 @@ function dbmgr_extension_main()
     echo '<hr />';
     echo '<br />';
 
-    $dbconnection = $config['dbconnection'];
-    $error = '';
-
-    $result = dbmanager_query($sql, $error, $dbconnection);
+    try {
+        if (\is_metaconsole() === true && $node_id !== -1) {
+            $node = new Node($node_id);
+                $dbconnection = @get_dbconnection(
+                    [
+                        'dbhost' => $node->dbhost(),
+                        'dbport' => $node->dbport(),
+                        'dbname' => $node->dbname(),
+                        'dbuser' => $node->dbuser(),
+                        'dbpass' => $node->dbpass(),
+                    ]
+                );
+                $error = '';
+                $result = dbmanager_query($sql, $error, $dbconnection);
+        } else {
+            $dbconnection = $config['dbconnection'];
+            $error = '';
+            $result = dbmanager_query($sql, $error, $dbconnection);
+        }
+    } catch (\Exception $e) {
+        $error = __('Error querying database node');
+        $result = false;
+    }
 
     if ($result === false) {
         echo '<strong>An error has occured when querying the database.</strong><br />';
@@ -181,8 +295,28 @@ function dbmgr_extension_main()
 
     html_print_table($table);
     echo '</div>';
+
+    if (is_metaconsole()) {
+        close_meta_frame();
+    }
+
 }
 
+
+if (is_metaconsole() === true) {
+    // This adds a option in the operation menu.
+    extensions_add_meta_menu_option(
+        'DB interface',
+        'PM',
+        'gextensions',
+        'database.png',
+        'v1r1',
+        'gdbman'
+    );
+
+    extensions_add_meta_function('dbmgr_extension_main');
+} else {
+}
 
 // This adds a option in the operation menu
 extensions_add_godmode_menu_option(__('DB interface'), 'PM', 'gextensions', 'dbmanager/icon.png', 'v1r1', 'gdbman');

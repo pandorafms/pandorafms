@@ -1872,111 +1872,115 @@ function reporting_html_agent_module($table, $item)
                     $table_data .= "<td class='bg_dd;'></td>";
                 } else {
                     $table_data .= "<td class='center bg_ddd'>";
-                    switch ($module) {
-                        default:
-                        case AGENT_STATUS_NORMAL:
-                            $table_data .= ui_print_status_image(
-                                'module_ok.png',
-                                __(
-                                    '%s in %s : NORMAL',
-                                    $module_name,
-                                    $row['agent_name']
-                                ),
-                                true,
-                                [
-                                    'width'  => '20px',
-                                    'height' => '20px',
-                                ],
-                                'images/status_sets/default/'
-                            );
-                        break;
+                    if (isset($row['show_type']) === true && $row['show_type'] === '1') {
+                        $table_data .= $module;
+                    } else {
+                        switch ($module) {
+                            case AGENT_STATUS_CRITICAL:
+                                $table_data .= ui_print_status_image(
+                                    'module_critical.png',
+                                    __(
+                                        '%s in %s : CRITICAL',
+                                        $module_name,
+                                        $row['agent_name']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ],
+                                    'images/status_sets/default/'
+                                );
+                            break;
 
-                        case AGENT_STATUS_CRITICAL:
-                            $table_data .= ui_print_status_image(
-                                'module_critical.png',
-                                __(
-                                    '%s in %s : CRITICAL',
-                                    $module_name,
-                                    $row['agent_name']
-                                ),
-                                true,
-                                [
-                                    'width'  => '20px',
-                                    'height' => '20px',
-                                ],
-                                'images/status_sets/default/'
-                            );
-                        break;
+                            case AGENT_STATUS_WARNING:
+                                $table_data .= ui_print_status_image(
+                                    'module_warning.png',
+                                    __(
+                                        '%s in %s : WARNING',
+                                        $module_name,
+                                        $row['agent_name']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ],
+                                    'images/status_sets/default/'
+                                );
+                            break;
 
-                        case AGENT_STATUS_WARNING:
-                            $table_data .= ui_print_status_image(
-                                'module_warning.png',
-                                __(
-                                    '%s in %s : WARNING',
-                                    $module_name,
-                                    $row['agent_name']
-                                ),
-                                true,
-                                [
-                                    'width'  => '20px',
-                                    'height' => '20px',
-                                ],
-                                'images/status_sets/default/'
-                            );
-                        break;
+                            case AGENT_STATUS_UNKNOWN:
+                                $table_data .= ui_print_status_image(
+                                    'module_unknown.png',
+                                    __(
+                                        '%s in %s : UNKNOWN',
+                                        $module_name,
+                                        $row['agent_name']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ],
+                                    'images/status_sets/default/'
+                                );
+                            break;
 
-                        case AGENT_STATUS_UNKNOWN:
-                            $table_data .= ui_print_status_image(
-                                'module_unknown.png',
-                                __(
-                                    '%s in %s : UNKNOWN',
-                                    $module_name,
-                                    $row['agent_name']
-                                ),
-                                true,
-                                [
-                                    'width'  => '20px',
-                                    'height' => '20px',
-                                ],
-                                'images/status_sets/default/'
-                            );
-                        break;
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                                $table_data .= ui_print_status_image(
+                                    'module_alertsfired.png',
+                                    __(
+                                        '%s in %s : ALERTS FIRED',
+                                        $module_name,
+                                        $row['agent_name']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ],
+                                    'images/status_sets/default/'
+                                );
+                            break;
 
-                        case AGENT_MODULE_STATUS_NORMAL_ALERT:
-                        case AGENT_MODULE_STATUS_WARNING_ALERT:
-                        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                            $table_data .= ui_print_status_image(
-                                'module_alertsfired.png',
-                                __(
-                                    '%s in %s : ALERTS FIRED',
-                                    $module_name,
-                                    $row['agent_name']
-                                ),
-                                true,
-                                [
-                                    'width'  => '20px',
-                                    'height' => '20px',
-                                ],
-                                'images/status_sets/default/'
-                            );
-                        break;
+                            case 4:
+                                $table_data .= ui_print_status_image(
+                                    'module_no_data.png',
+                                    __(
+                                        '%s in %s : Not initialize',
+                                        $module_name,
+                                        $row['agent_name']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ],
+                                    'images/status_sets/default/'
+                                );
+                            break;
 
-                        case 4:
-                            $table_data .= ui_print_status_image(
-                                'module_no_data.png',
-                                __(
-                                    '%s in %s : Not initialize',
-                                    $module_name,
-                                    $row['agent_name']
-                                ),
-                                true,
-                                [
-                                    'width'  => '20px',
-                                    'height' => '20px',
-                                ],
-                                'images/status_sets/default/'
-                            );
-                        break;
+                            default:
+                            case AGENT_STATUS_NORMAL:
+                                $table_data .= ui_print_status_image(
+                                    'module_ok.png',
+                                    __(
+                                        '%s in %s : NORMAL',
+                                        $module_name,
+                                        $row['agent_name']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ],
+                                    'images/status_sets/default/'
+                                );
+                            break;
+                        }
                     }
 
                     $table_data .= '</td>';
@@ -1986,18 +1990,19 @@ function reporting_html_agent_module($table, $item)
 
         $table_data .= '</table>';
 
-        $table_data .= "<div class='legend_basic w96p'>";
-
-        $table_data .= '<table>';
-        $table_data .= "<tr><td colspan='2' class='pdd_b_10px'><b>".__('Legend').'</b></td></tr>';
-        $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module has fired alerts').'</td></tr>';
-        $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module has a critical status').'</td></tr>';
-        $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module has a warning status').'</td></tr>';
-        $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module has a normal status').'</td></tr>';
-        $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module has an unknown status').'</td></tr>';
-        $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__("Cell turns grey when the module is in 'not initialize' status").'</td></tr>';
-        $table_data .= '</table>';
-        $table_data .= '</div>';
+        if (isset($row['show_type']) === false) {
+            $table_data .= "<div class='legend_basic w96p'>";
+            $table_data .= '<table>';
+            $table_data .= "<tr><td colspan='2' class='pdd_b_10px'><b>".__('Legend').'</b></td></tr>';
+            $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module has fired alerts').'</td></tr>';
+            $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module has a critical status').'</td></tr>';
+            $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module has a warning status').'</td></tr>';
+            $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module has a normal status').'</td></tr>';
+            $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module has an unknown status').'</td></tr>';
+            $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__("Cell turns grey when the module is in 'not initialize' status").'</td></tr>';
+            $table_data .= '</table>';
+            $table_data .= '</div>';
+        }
 
         $table->data['agent_module']['cell'] = $table_data;
     }

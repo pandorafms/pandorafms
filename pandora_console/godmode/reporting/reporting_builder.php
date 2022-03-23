@@ -1677,6 +1677,7 @@ switch ($action) {
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+                                $es['show_type'] = get_parameter('show_type', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -2480,6 +2481,7 @@ switch ($action) {
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+                                $es['show_type'] = get_parameter('show_type', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;

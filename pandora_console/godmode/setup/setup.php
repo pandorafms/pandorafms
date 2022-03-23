@@ -338,7 +338,7 @@ ui_print_page_header(
     GENERIC_SIZE_TEXT,
     '',
     '',
-    true,
+    true
 );
 echo '</div>';
 

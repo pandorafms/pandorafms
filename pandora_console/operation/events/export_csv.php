@@ -228,7 +228,7 @@ try {
                                 $custom_data_array,
                                 function (&$value, $field) {
                                     if (is_array($value) === true) {
-                                        $value = '['.implode(',', $value).']';
+                                        $value = '['.implode($separator, $value).']';
                                     }
 
                                     $value = $field.'='.$value;

@@ -851,7 +851,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
         'images/csv.png',
         true,
         [
@@ -942,7 +942,6 @@ if ($pure) {
         );
     } else {
         unset($onheader['rss']);
-        unset($onheader['csv']);
         unset($onheader['sound_event']);
         unset($onheader['fullscreen']);
         ui_meta_print_header(__('Events'), $section_string, $onheader);

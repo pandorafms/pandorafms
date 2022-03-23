@@ -4186,7 +4186,7 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data,$force_create_agent,$c_instructions,$w_instructions,$u_instructions, $use_alias) = @ARGV[2..20];
+	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data,$force_create_agent,$c_instructions,$w_instructions,$u_instructions,$use_alias,$server_id) = @ARGV[2..21];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
@@ -4251,11 +4251,8 @@ sub cli_create_event() {
 			
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
-			# Base64 encode custom data
-			$custom_data = encode_base64 ($custom_data, '');
-
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data, undef, undef, $server_id);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4302,7 +4299,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data, undef, undef, $server_id);
 
 	}
 }
@@ -7602,7 +7599,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 19, 16);
+			param_check($ltotal, 20, 17);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {

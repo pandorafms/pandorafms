@@ -2429,9 +2429,6 @@ function events_create_event(
         $source = get_product_name();
     }
 
-    $custom_data = base64_decode($custom_data);
-    $custom_data = mysql_escape_string_sql($custom_data);
-
     $table_events = 'tevento';
     if (is_metaconsole()) {
         $table_events = 'tmetaconsole_event';

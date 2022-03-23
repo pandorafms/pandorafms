@@ -504,9 +504,9 @@ $table_other->style[0] = 'font-weight: bold';
 
 $table_other->size[0] = '70%';
 $table_other->size[1] = '30%';
-
-$table_other->data[1][0] = __('Item limit for realtime reports');
-$table_other->data[1][1] = html_print_input_text(
+$i = 0;
+$table_other->data[$i][0] = __('Item limit for realtime reports');
+$table_other->data[$i++][1] = html_print_input_text(
     'report_limit',
     $config['report_limit'],
     '',
@@ -515,8 +515,8 @@ $table_other->data[1][1] = html_print_input_text(
     true
 );
 
-$table_other->data[2][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table_other->data[2][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
+$table_other->data[$i++][1] = html_print_input_text(
     'step_compact',
     $config['step_compact'],
     '',
@@ -535,8 +535,8 @@ $intervals[SECONDS_1WEEK] = __('Last week');
 $intervals[SECONDS_2WEEK] = __('2 weeks');
 $intervals[SECONDS_1MONTH] = __('Last month');
 
-$table_other->data[3][0] = __('Default hours for event view');
-$table_other->data[3][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Default hours for event view');
+$table_other->data[$i++][1] = html_print_input_text(
     'event_view_hr',
     $config['event_view_hr'],
     '',
@@ -545,16 +545,16 @@ $table_other->data[3][1] = html_print_input_text(
     true
 );
 
-$table_other->data[5][0] = __('Use realtime statistics');
-$table_other->data[5][1] = html_print_checkbox_switch(
+$table_other->data[$i][0] = __('Use realtime statistics');
+$table_other->data[$i++][1] = html_print_checkbox_switch(
     'realtimestats',
     1,
     $config['realtimestats'],
     true
 );
 
-$table_other->data[6][0] = __('Batch statistics period (secs)');
-$table_other->data[6][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Batch statistics period (secs)');
+$table_other->data[$i++][1] = html_print_input_text(
     'stats_interval',
     $config['stats_interval'],
     '',
@@ -563,11 +563,11 @@ $table_other->data[6][1] = html_print_input_text(
     true
 );
 
-$table_other->data[7][0] = __('Use agent access graph');
-$table_other->data[7][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true);
+$table_other->data[$i][0] = __('Use agent access graph');
+$table_other->data[$i++][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true);
 
-$table_other->data[8][0] = __('Max. recommended number of files in attachment directory');
-$table_other->data[8][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Max. recommended number of files in attachment directory');
+$table_other->data[$i++][1] = html_print_input_text(
     'num_files_attachment',
     $config['num_files_attachment'],
     '',
@@ -576,11 +576,11 @@ $table_other->data[8][1] = html_print_input_text(
     true
 );
 
-$table_other->data[9][0] = __('Delete not init modules');
-$table_other->data[9][1] = html_print_checkbox_switch('delete_notinit', 1, $config['delete_notinit'], true);
+$table_other->data[$i][0] = __('Delete not init modules');
+$table_other->data[$i++][1] = html_print_checkbox_switch('delete_notinit', 1, $config['delete_notinit'], true);
 
-$table_other->data[10][0] = __('Big Operation Step to purge old data');
-$table_other->data[10][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Big Operation Step to purge old data');
+$table_other->data[$i++][1] = html_print_input_text(
     'big_operation_step_datos_purge',
     $config['big_operation_step_datos_purge'],
     '',
@@ -589,8 +589,8 @@ $table_other->data[10][1] = html_print_input_text(
     true
 );
 
-$table_other->data[11][0] = __('Small Operation Step to purge old data');
-$table_other->data[11][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Small Operation Step to purge old data');
+$table_other->data[$i++][1] = html_print_input_text(
     'small_operation_step_datos_purge',
     $config['small_operation_step_datos_purge'],
     '',
@@ -599,8 +599,8 @@ $table_other->data[11][1] = html_print_input_text(
     true
 );
 
-$table_other->data[12][0] = __('Graph container - Max. Items');
-$table_other->data[12][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Graph container - Max. Items');
+$table_other->data[$i++][1] = html_print_input_text(
     'max_graph_container',
     $config['max_graph_container'],
     '',
@@ -609,8 +609,8 @@ $table_other->data[12][1] = html_print_input_text(
     true
 );
 
-$table_other->data[13][0] = __('Events response max. execution');
-$table_other->data[13][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Events response max. execution');
+$table_other->data[$i++][1] = html_print_input_text(
     'max_execution_event_response',
     $config['max_execution_event_response'],
     '',
@@ -619,8 +619,8 @@ $table_other->data[13][1] = html_print_input_text(
     true
 );
 
-$table_other->data[14][0] = __('Row limit in csv log');
-$table_other->data[14][1] = html_print_input_text(
+$table_other->data[$i][0] = __('Row limit in csv log');
+$table_other->data[$i++][1] = html_print_input_text(
     'row_limit_csv',
     $config['row_limit_csv'],
     '',
@@ -629,8 +629,8 @@ $table_other->data[14][1] = html_print_input_text(
     true
 );
 
-$table_other->data[15][0] = __('SNMP walk binary');
-$table_other->data[15][1] = html_print_input_text(
+$table_other->data[$i][0] = __('SNMP walk binary');
+$table_other->data[$i++][1] = html_print_input_text(
     'snmpwalk',
     $config['snmpwalk'],
     '',
@@ -643,8 +643,8 @@ $tip = ui_print_help_tip(
     __('SNMP bulk walk is not able to request V1 SNMP, this option will be used instead (by default snmpwalk, slower).'),
     true
 );
-$table_other->data[16][0] = __('SNMP walk binary (fallback)').$tip;
-$table_other->data[16][1] = html_print_input_text(
+$table_other->data[$i][0] = __('SNMP walk binary (fallback)').$tip;
+$table_other->data[$i++][1] = html_print_input_text(
     'snmpwalk_fallback',
     $config['snmpwalk_fallback'],
     '',
@@ -652,6 +652,31 @@ $table_other->data[16][1] = html_print_input_text(
     10,
     true
 );
+
+$tip = ui_print_help_tip(
+    __(
+        '%s web2image cache system cleanup. It is always cleaned up after perform an upgrade',
+        get_product_name()
+    ),
+    true
+);
+
+if (enterprise_installed() === true) {
+    $table_other->data[$i][0] = __('PhantomJS cache cleanup ').$tip;
+    $table_other->data[$i++][1] = html_print_input(
+        [
+            'type'     => 'select',
+            'name'     => 'phantomjs_cache_interval',
+            'return'   => true,
+            'fields'   => [
+                PHANTOM_CACHE_CLEANUP_ONCE   => __('No scheduled'),
+                PHANTOM_CACHE_CLEANUP_WEEKLY => __('Each week'),
+                PHANTOM_CACHE_CLEANUP_DAILY  => __('Each day'),
+            ],
+            'selected' => ($config['phantomjs_cache_interval'] ?? PHANTOM_CACHE_CLEANUP_ONCE),
+        ]
+    );
+}
 
 echo '<form id="form_setup" method="post">';
 

@@ -351,7 +351,10 @@ final class StaticGraph extends Item
                 'class'         => 'flex-row flex-end w100p',
                 'direct'        => 1,
                 'block_content' => [
-                    ['label' => $images],
+                    [
+                        'label'     => $images,
+                        'arguments' => ['type' => 'image-item'],
+                    ],
                 ],
             ];
 

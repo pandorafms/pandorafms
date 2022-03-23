@@ -1040,6 +1040,7 @@ function adjustTextUnits(name) {
         "selected",
         true
       );
+      $("#" + name + "_units").trigger("change");
       $("#text-" + name + "_text").val(restPrev);
       unitsSelected = true;
     }
@@ -1048,7 +1049,9 @@ function adjustTextUnits(name) {
   });
 
   if (unitsSelected == false) {
+    //$("#" + name + "_units option:last").prop("selected", true);
     $("#" + name + "_units option:last").prop("selected", true);
+    $("#" + name + "_units").trigger("change");
     $("#text-" + name + "_text").val(restPrev);
   }
 

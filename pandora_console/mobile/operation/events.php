@@ -734,23 +734,29 @@ class Events
         // --------------Fill the SQL POST-------------------------------
         $sql_post = ' WHERE 1=1 ';
 
-        switch ($this->status) {
-            case 0:
-            case 1:
-            case 2:
-                $sql_post .= ' AND estado = '.$this->status;
-            break;
+        if ($this->status != null) {
+            switch ($this->status) {
+                case 0:
+                case 1:
+                case 2:
+                    $sql_post .= ' AND estado = '.$this->status;
+                break;
 
-            case 3:
-                $sql_post .= ' AND (estado = 0 OR estado = 2)';
-            break;
+                case 3:
+                    $sql_post .= ' AND (estado = 0 OR estado = 2)';
+                break;
+
+                default:
+                    // Not posible.
+                break;
+            }
         }
 
         if ($this->free_search != '') {
             $sql_post .= " AND evento LIKE '%".io_safe_input($this->free_search)."%'";
         }
 
-        if ($this->severity != -1) {
+        if ($this->severity != null && $this->severity != -1) {
             switch ($this->severity) {
                 case EVENT_CRIT_WARNING_OR_CRITICAL:
                     $sql_post .= ' AND (criticity = '.EVENT_CRIT_WARNING.' OR 

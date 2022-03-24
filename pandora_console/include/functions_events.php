@@ -352,13 +352,14 @@ function events_get_column_names($fields, $table_alias=false)
 /**
  * Validates all events matching target filter.
  *
- * @param integer $id_evento Master event.
- * @param array   $filter    Optional. Filter options.
- * @param boolean $history   Apply on historical table.
+ * @param integer $id_evento  Master event.
+ * @param array   $filter     Optional. Filter options.
+ * @param boolean $history    Apply on historical table.
+ * @param boolean $force_node Force node table.
  *
  * @return integer Events validated or false if error.
  */
-function events_delete($id_evento, $filter=null, $history=false)
+function events_delete($id_evento, $filter=null, $history=false, $force_node=false)
 {
     if (!isset($id_evento) || $id_evento <= 0) {
         return false;
@@ -368,7 +369,10 @@ function events_delete($id_evento, $filter=null, $history=false)
         $filter = ['group_rep' => 0];
     }
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = events_get_events_table(
+        ($force_node === false) ? is_metaconsole() : false,
+        $history
+    );
 
     switch ($filter['group_rep']) {
         case '0':

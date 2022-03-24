@@ -670,6 +670,12 @@ class EventsListWidget extends Widget
             );
 
             $output .= \html_print_input_hidden(
+                'meta',
+                is_metaconsole(),
+                true
+            );
+
+            $output .= \html_print_input_hidden(
                 'delete_confirm_message',
                 __('Are you sure?'),
                 true
@@ -737,6 +743,7 @@ class EventsListWidget extends Widget
                         'dashboardId' => $this->dashboardId,
                         'widgetId'    => $this->widgetId,
                         'cellId'      => $this->cellId,
+                        'node_id'     => $this->nodeId,
                     ]
                 );
 

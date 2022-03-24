@@ -1313,7 +1313,8 @@ function dashboardShowEventDialog(settings) {
       dialog_page: "",
       meta: 0,
       history: 0,
-      filter: []
+      filter: [],
+      node_id: settings.node_id
     },
     dataType: "html",
     success: function(data) {
@@ -1339,6 +1340,7 @@ function dashboardShowEventDialog(settings) {
                 data: {
                   page: "include/ajax/events",
                   delete_event: 1,
+                  node_id: settings.node_id,
                   id_evento: settings.event.id_evento,
                   filter: []
                 },

@@ -1,6 +1,7 @@
 START TRANSACTION;
 
 ALTER TABLE `tipam_vlan` ADD COLUMN `custom_id` bigint(20) unsigned DEFAULT NULL;
+ALTER TABLE `tuser_task_scheduled`ADD COLUMN `enabled` TINYINT UNSIGNED NOT NULL DEFAULT 1;:
 
 UPDATE `tuser_task` SET `parameters` = 'a:3:{i:0;a:2:{s:11:"description";s:11:"Description";s:4:"type";s:4:"text";}i:1;a:3:{s:11:"description";s:20:"Save to disk in path";s:4:"type";s:6:"string";s:13:"default_value";s:21:"_%_ATTACHMENT_PATH_%_";}i:2;a:3:{s:11:"description";s:14:"Active backups";s:4:"type";s:6:"number";s:13:"default_value";i:3;}}' WHERE `function_name` = 'cron_task_do_backup';
 

@@ -13441,6 +13441,9 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['id_extra'] = '';
         }
 
+        $custom_data = base64_decode($values['custom_data']);
+        $custom_data = mysql_escape_string_sql($custom_data);
+
         $return = events_create_event(
             $values['event'],
             $values['id_grupo'],
@@ -13456,7 +13459,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['unknown_instructions'],
             $values['source'],
             $values['tags'],
-            $values['custom_data'],
+            $custom_data,
             $values['server_id'],
             $values['id_extra']
         );

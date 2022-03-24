@@ -397,7 +397,7 @@ function mainAgentsModules()
         1 => __('Show module data'),
     ];
 
-    $filter_type_label = '<b>'.__('Information to be show').'</b>';
+    $filter_type_label = '<b>'.__('Information to be shown').'</b>';
     $filter_type = html_print_select($show_select, 'show_type', $show_type, '', '', 0, true, false, false, '', false, 'min-width: 180px;');
 
     // Groups.

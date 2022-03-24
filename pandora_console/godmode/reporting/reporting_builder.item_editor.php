@@ -1839,7 +1839,7 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_type_show" class="datos">
-            <td class="bolder"><?php echo __('Information to be show'); ?></td>
+            <td class="bolder"><?php echo __('Information to be shown'); ?></td>
             <td>
                 <?php
                 $show_select = [

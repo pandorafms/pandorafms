@@ -258,7 +258,7 @@ class AgentModuleWidget extends Widget
 
         $inputs[] = [
             'class'     => 'flex flex-row',
-            'label'     => __('Information to be show'),
+            'label'     => __('Information to be shown'),
             'arguments' => [
                 'type'     => 'select',
                 'fields'   => $show_select,

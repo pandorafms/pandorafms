@@ -328,3 +328,43 @@ function convert_array_multi($array, $glue)
     $result = substr($result, 0, (0 - strlen($glue)));
     return $result;
 }
+
+
+/**
+ * Evaluate if the chars of coming variable has in the range stablished.
+ *
+ * @param string $string String for be evaluated.
+ * @param array  $ranges Ranges for valid chars. Min: [ x <= Y ] Max: [ Y > x ].
+ * Example of valid ranges: [ '32:126', '150:188' ].
+ *
+ * @return boolean.
+ */
+function evaluate_ascii_valid_string(string $string='', array $ranges=[ '33:38', '40:126' ])
+{
+    if (empty($string) === true) {
+        return false;
+    }
+
+    $countChars = strlen($string);
+    // Let's explore all the chars.
+    for ($i = 0; $i < $countChars; $i++) {
+        // Get ascii number of the char.
+        $asciiNumber = ord($string[$i]);
+        // Check in all ranges.
+        $rangeValidation = false;
+        foreach ($ranges as $range) {
+            list($minRangeValue, $maxRangeValue) = explode(':', $range, 2);
+            // Check if is in range.
+            if ($asciiNumber > (int) $minRangeValue && $asciiNumber < (int) $maxRangeValue) {
+                $rangeValidation = true;
+            }
+        }
+
+        // None of the ranges was validated.
+        if ($rangeValidation === false) {
+            return false;
+        }
+    }
+
+    return true;
+}

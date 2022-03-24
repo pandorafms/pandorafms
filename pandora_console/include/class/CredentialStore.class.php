@@ -623,11 +623,13 @@ class CredentialStore extends Wizard
             $error = __('You must select a group where store this key!');
         } else if (empty($product) === true) {
             $error = __('You must specify a product type');
-        } else if (empty($username) === true && (empty($password) === true)) {
+        } else if (empty($username) === true || (empty($password) === true)) {
             $error = __('You must specify a username and/or password');
+        } else if (evaluate_ascii_valid_string(io_safe_output($identifier)) === false) {
+            $error = __('Identifier with forbidden characters. Check the documentation.');
         }
 
-        if (isset($error)) {
+        if (isset($error) === true) {
             $this->ajaxMsg('error', $error);
             exit;
         }
@@ -1277,7 +1279,7 @@ class CredentialStore extends Wizard
             });
 
         }
-    
+
         /**
          * Delete selected key
          */

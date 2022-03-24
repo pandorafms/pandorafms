@@ -1037,6 +1037,7 @@ sub limpia_cadena {
 ################################################################################
 sub clean_blank {
 	my $input = $_[0];
+	return $input unless defined($input);
 	$input =~ s/^\s+//g;
 	$input =~ s/\s+$//g;
 	return $input;

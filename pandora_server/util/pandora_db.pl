@@ -245,6 +245,9 @@ sub pandora_purgedb ($$) {
 	else {
 		log_message ('PURGE', 'trap_purge is set to 0. Old SNMP traps will not be deleted.');
 	}
+
+	# Cleanup policy groups pointing to non-existing policies.
+	enterprise_hook('pandora_policy_group_cleanup', [$dbh]);
 	
 	# Delete policy queue data
 	enterprise_hook("pandora_purge_policy_queue", [$dbh, $conf]);

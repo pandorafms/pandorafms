@@ -16,6 +16,7 @@ enterprise_include('include/functions_metaconsole.php');
 use Models\VisualConsole\Container as VisualConsole;
 use Models\VisualConsole\View as Viewer;
 use Models\VisualConsole\Item as Item;
+use PandoraFMS\User;
 
 $method = get_parameter('method');
 if ($method) {
@@ -35,6 +36,7 @@ if ($method) {
 $visualConsoleId = (int) get_parameter('visualConsoleId');
 $getVisualConsole = (bool) get_parameter('getVisualConsole');
 $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
+$doLogin = (bool) get_parameter('doLogin');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $createVisualConsoleItem = (bool) get_parameter('createVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
@@ -52,6 +54,31 @@ $serviceListVisualConsole = (bool) get_parameter(
 $loadtabs = (bool) get_parameter('loadtabs');
 
 ob_clean();
+
+if ($doLogin === true) {
+    $id_user = get_parameter('id_user', '');
+    $password = get_parameter('password', '');
+
+    if (User::login(
+        [
+            'id_usuario' => $id_user,
+            'password'   => $password,
+        ]
+    ) === true
+    ) {
+        echo json_encode(['auth_hash' => User::generatePublicHash()]);
+    } else {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to login using invalid credentials'
+        );
+        http_response_code(403);
+        return;
+    }
+
+    return;
+}
+
 
 if ($visualConsoleId) {
     // Retrieve the visual console.

@@ -1383,8 +1383,6 @@ if ($get_extended_event) {
     $event = io_safe_output(get_parameter('event', false));
     $filter = get_parameter('filter', false);
 
-    $event = io_safe_output($event);
-
     if ($event === false) {
         return;
     }

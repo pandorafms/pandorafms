@@ -242,7 +242,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate)
  *
  * @return string HTML data table.
  */
-function netflow_data_table($data, $start_date, $end_date, $aggregate)
+function netflow_data_table($data, $start_date, $end_date, $aggregate, $pdf=false)
 {
     global $nfdump_date_format;
 
@@ -265,8 +265,12 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate)
 
     $values = [];
     $table = new stdClass();
-    $table->size = ['100%'];
-    $table->class = 'databox';
+
+    if ($pdf === false) {
+        $table->size = ['100%'];
+    }
+
+    $table->class = 'databox w100p';
     $table->cellspacing = 0;
     $table->data = [];
 
@@ -1279,7 +1283,7 @@ function netflow_draw_item(
 
             if ($output === 'HTML' || $output === 'PDF') {
                 $html = "<div class='w100p overflow'>";
-                $html .= netflow_data_table($data, $start_date, $end_date, $aggregate);
+                $html .= netflow_data_table($data, $start_date, $end_date, $aggregate, $output === 'PDF');
                 $html .= '</div>';
 
                 return $html;
@@ -1485,6 +1489,8 @@ function netflow_draw_item(
  *
  * @param string  $start_date      Period start date.
  * @param string  $end_date        Period end date.
+ * @param mixed   $interval_length Resolution points or hourly or daily.
+ * @param string  $type_netflow    Period end date.
  * @param array   $filter          Netflow filter.
  * @param integer $max_aggregates  Maximum number of aggregates.
  * @param string  $connection_name Node name when data is get in meta.
@@ -1494,77 +1500,80 @@ function netflow_draw_item(
 function netflow_get_item_data(
     string $start_date,
     string $end_date,
+    $interval_length,
+    string $type_netflow,
     array $filter,
     int $max_aggregates,
     string $connection_name
 ) {
-    $data_summary = netflow_get_summary(
-        $start_date,
-        $end_date,
-        $filter,
-        $connection_name
-    );
+    $data = [];
 
-    $data_top_n = netflow_get_top_N(
-        $start_date,
-        $end_date,
-        $filter,
-        $max_aggregates,
-        $connection_name
-    );
+    switch ($type_netflow) {
+        case 'netflow_top_N':
+            $data_summary = netflow_get_summary(
+                $start_date,
+                $end_date,
+                $filter,
+                $connection_name
+            );
 
-    return [
-        'summary' => $data_summary,
-        'top_n'   => $data_top_n,
-    ];
-}
+            $data_top_n = netflow_get_top_N(
+                $start_date,
+                $end_date,
+                $filter,
+                $max_aggregates,
+                $connection_name
+            );
 
+            $data = [
+                'summary' => $data_summary,
+                'top_n'   => $data_top_n,
+            ];
+        break;
 
-/**
- * Render an aggregated area chart as an XML.
- *
- * @param array $data Netflow data.
- *
- * @return void XML is echoed.
- */
-function netflow_aggregate_area_xml($data)
-{
-    // Print source information.
-    if (isset($data['sources'])) {
-        echo "<aggregates>\n";
-        foreach ($data['sources'] as $source => $discard) {
-            echo '<aggregate>'.$source."</aggregate>\n";
-        }
+        case 'netflow_summary':
+            $aggregate = $filter['aggregate'];
 
-        echo "</aggregates>\n";
+            $data_summary = netflow_get_summary(
+                $start_date,
+                $end_date,
+                $filter,
+                $connection_name
+            );
 
-        // Print flow information.
-        echo "<flows>\n";
-        foreach ($data['data'] as $timestamp => $flow) {
-            echo "<flow>\n";
-            echo '  <timestamp>'.$timestamp."</timestamp>\n";
-            echo "  <aggregates>\n";
-            foreach ($flow as $source => $data) {
-                echo '    <aggregate>'.$source."</aggregate>\n";
-                echo '    <data>'.$data."</data>\n";
-            }
+            $data_stats = netflow_get_stats(
+                $start_date,
+                $end_date,
+                $filter,
+                $aggregate,
+                $max_aggregates,
+                true,
+                $connection_name
+            );
 
-            echo "  </aggregates>\n";
-            echo "</flow>\n";
-        }
+            $data = [
+                'summary' => $data_summary,
+                'stats'   => $data_stats,
+            ];
+        break;
 
-        echo "</flows>\n";
-    } else {
-        echo "<flows>\n";
-        foreach ($data as $timestamp => $flow) {
-            echo "<flow>\n";
-            echo '  <timestamp>'.$timestamp."</timestamp>\n";
-            echo '  <data>'.$flow['data']."</data>\n";
-            echo "</flow>\n";
-        }
+        default:
+            $aggregate = $filter['aggregate'];
 
-        echo "</flows>\n";
+            $data = netflow_get_data(
+                $start_date,
+                $end_date,
+                $interval_length,
+                $filter,
+                $aggregate,
+                $max_aggregates,
+                true,
+                $connection_name
+            );
+        break;
     }
+
+    return $data;
 }
 
 

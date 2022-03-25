@@ -174,6 +174,7 @@ if ($create) {
     }
 }
 
+$table = new stdClass();
 $table->id = 'table1';
 $table->width = '100%';
 $table->border = 0;

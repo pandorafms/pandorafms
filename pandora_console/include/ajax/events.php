@@ -1380,8 +1380,10 @@ if ($change_owner) {
 if ($get_extended_event) {
     global $config;
 
-    $event = get_parameter('event', false);
+    $event = io_safe_output(get_parameter('event', false));
     $filter = get_parameter('filter', false);
+
+    $event = io_safe_output($event);
 
     if ($event === false) {
         return;

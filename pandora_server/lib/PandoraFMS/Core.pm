@@ -5626,6 +5626,51 @@ sub pandora_process_policy_queue ($) {
 				}
 				
 			}
+			elsif($operation->{'operation'} eq 'apply_group') {
+				my $array_pointer_gr = enterprise_hook(
+					'get_policy_groups',
+					[
+						$dbh,
+						$operation->{'id_policy'}
+					]
+				);
+
+				my $policy_name = enterprise_hook(
+					'get_policy_name',
+					[
+						$dbh,
+						$operation->{'id_policy'}
+					]
+				);
+
+				foreach my $group (@{$array_pointer_gr}) {
+					my $group_name = get_group_name($dbh, $group->{'id_group'});
+					if ($group->{'pending_delete'} == 1) {
+						logger($pa_config,
+							"[INFO] Deleting pending group " . $group_name . " from policy ".$policy_name, 10);
+
+						enterprise_hook(
+							'pandora_delete_group_from_policy',
+							[
+								$dbh,
+								$pa_config,
+								$group->{'id_policy'},
+								$group->{'id_group'}
+							]
+						);
+						next;
+					}
+				}
+
+				enterprise_hook(
+					'pandora_apply_group_policy',
+					[
+						$operation->{'id_policy'},
+						$operation->{'id_agent'},
+						$dbh
+					]
+				);
+			}
 			elsif($operation->{'operation'} eq 'delete') {
 				if($operation->{'id_agent'} == 0) {
 					enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);

@@ -436,7 +436,7 @@ class AgentModuleWidget extends Widget
         array $visualData,
         array $allModules
     ):string {
-        $style = 'display:flex; width:100%; margin: 10px;';
+        $style = 'display:flex; width:96%; margin-top: 10px;';
         $table_data = '<div style="'.$style.'">';
         $table_data .= '<table class="widget_agent_module transparent mrgn_0px" cellpadding="1" cellspacing="0" border="0">';
 

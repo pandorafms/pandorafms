@@ -120,9 +120,17 @@ $table_remote->data['ehorus_test'] = $row;
 echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-    html_print_image('include/ehorus/images/ehorus-logo.png');
+    html_print_image(
+        'include/ehorus/images/ehorus-logo.png',
+        false,
+        ['class' => 'w400px']
+    );
 } else {
-    html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+    html_print_image(
+        'include/ehorus/images/ehorus-logo-grey.png',
+        false,
+        ['class' => 'w400px']
+    );
 }
 
 echo '</a>';

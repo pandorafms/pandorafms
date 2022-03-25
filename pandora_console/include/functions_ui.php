@@ -4577,19 +4577,19 @@ function ui_print_standard_header(
 /**
  * Return a standard page header (Pandora FMS 3.1 version)
  *
- * @param string  $title       Title.
- * @param string  $icon        Icon path.
- * @param boolean $return      Return (false will print using a echo).
- * @param boolean $help        Help (Help ID to print the Help link).
- * @param boolean $godmode     Godmode (false = operation mode).
- * @param string  $options     Options (HTML code for make tabs or just a brief
- * info string.
- * @param mixed   $modal       Modal.
- * @param mixed   $message     Message.
- * @param mixed   $numChars    NumChars.
- * @param mixed   $alias       Alias.
- * @param mixed   $breadcrumbs Breadcrumbs.
- *
+ * @param  string  $title           Title.
+ * @param  string  $icon            Icon path.
+ * @param  boolean $return          Return (false will print using a echo).
+ * @param  boolean $help            Help (Help ID to print the Help link).
+ * @param  boolean $godmode         Godmode (false = operation mode).
+ * @param  string  $options         Options (HTML code for make tabs or just a brief
+ *     info string.
+ * @param  mixed   $modal           Modal.
+ * @param  mixed   $message         Message.
+ * @param  mixed   $numChars        NumChars.
+ * @param  mixed   $alias           Alias.
+ * @param  mixed   $breadcrumbs     Breadcrumbs.
+ * @param  boolean $hide_left_small Hide title id screen is small.
  * @return string Header HTML
  */
 function ui_print_page_header(
@@ -4603,7 +4603,8 @@ function ui_print_page_header(
     $message='',
     $numChars=GENERIC_SIZE_TEXT,
     $alias='',
-    $breadcrumbs=''
+    $breadcrumbs='',
+    $hide_left_small=false
 ) {
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
@@ -4632,7 +4633,6 @@ function ui_print_page_header(
     }
 
     $buffer .= '<div id="menu_tab_left">';
-
     $buffer .= '<ul class="mn"><li class="'.$type.'">';
 
     if (strpos($title, 'Monitoring » Services »') != -1) {
@@ -4727,6 +4727,31 @@ function ui_print_page_header(
     }
 
     $buffer .= '</div>';
+
+    if ($hide_left_small) {
+        $buffer .= '<script>
+        $(window).resize(function () {
+            hideLeftHeader()
+        });
+
+        $(document).ready(function () {
+           hideLeftHeader();
+        });
+
+        function hideLeftHeader() {
+            var right_width = 0;
+            $("#menu_tab").find("li").each(function(index) {
+                right_width += parseInt($(this).outerWidth(), 10);
+            });
+          
+            if($("#menu_tab").outerWidth() < right_width) {
+                $("#menu_tab_left").children().hide()
+            } else {
+                $("#menu_tab_left").children().show();
+            }
+        }
+    </script>';
+    }
 
     if (!$return) {
         echo $buffer;

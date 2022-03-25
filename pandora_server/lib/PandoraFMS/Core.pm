@@ -2321,7 +2321,7 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 }
 
 ########################################################################
-=head2 C<< pandora_planned_downtime_set_quiet_elements (I<$pa_config>, I<$dbh>, <$id_downtime>) >> 
+=head2 C<< pandora_planned_downtime_unset_disabled_elements (I<$pa_config>, I<$dbh>, <$id_downtime>) >> 
 
 Start the planned downtime, the once type. 
 
@@ -3310,7 +3310,11 @@ sub pandora_create_module ($$$$$$$$$$) {
 }
 
 ##########################################################################
-## Delete a module given its id.
+=head2 C<< pandora_delete_module (I<$dbh>, I<$module_id>, I<$conf>) >> 
+
+Delete a module given its id.
+
+=cut
 ##########################################################################
 sub pandora_delete_module ($$;$) {
 	my ($dbh, $module_id, $conf) = @_;
@@ -3568,7 +3572,11 @@ sub pandora_get_config_value ($$) {
 
 
 ##########################################################################
-## Get credential from credential store
+=head2 C<< pandora_get_credential (I<$dbh>, I<$identifier>) >>
+
+ Get credential from credential store
+
+=cut
 ##########################################################################
 sub pandora_get_credential ($$$) {
 	my ($pa_config, $dbh, $identifier) = @_;
@@ -5441,7 +5449,7 @@ sub pandora_server_statistics ($$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
+=head2 C<< pandora_process_event_replication (I<$pa_config>) >>
 
 Process groups statistics for statistics table
 
@@ -6005,7 +6013,7 @@ sub pandora_sample_agent ($) {
 }
 
 ##########################################################################
-=head2 C<< set_master (I<$pa_config>, I<$dbh>) >> 
+=head2 C<< pandora_set_master (I<$pa_config>, I<$dbh>) >> 
 
 Set the current master server.
 
@@ -6024,7 +6032,7 @@ sub pandora_set_master ($$) {
 }
 
 ##########################################################################
-=head2 C<< is_master (I<$pa_config>) >> 
+=head2 C<< pandora_is_master (I<$pa_config>) >> 
 
 Returns 1 if this server is the current master, 0 otherwise.
 
@@ -6241,7 +6249,7 @@ sub pandora_disable_autodisable_agents ($$) {
 }
 
 ##########################################################################
-=head2 C<< get_module_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< pandora_get_module_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of module tags in the format: |tag|tag| ... |tag|
 
@@ -6269,7 +6277,7 @@ sub pandora_get_module_tags ($$$) {
 }
 
 ##########################################################################
-=head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< pandora_get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of module tags in the format: |url|url| ... |url|
 
@@ -6296,7 +6304,7 @@ sub pandora_get_module_url_tags ($$$) {
 }
 
 ##########################################################################
-=head2 C<< get_module_email_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< pandora_get_module_email_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of email module tags in the format: email,email,...,email
 
@@ -6325,7 +6333,7 @@ sub pandora_get_module_email_tags ($$$) {
 }
 
 ##########################################################################
-=head2 C<< get_module_phone_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< pandora_get_module_phone_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of phone module tags in the format: phone,phone,...,phone
 
@@ -6355,7 +6363,11 @@ sub pandora_get_module_phone_tags ($$$) {
 
 
 ##########################################################################
-# Mark an agent for module status count update.
+=head2 C<< pandora_mark_agent_for_module_update (I<$dbh>, I<$agent_id>) >>
+
+Mark an agent for module status count update.
+
+=cut
 ##########################################################################
 sub pandora_mark_agent_for_module_update ($$) {
 	my ($dbh, $agent_id) = @_;
@@ -6365,7 +6377,11 @@ sub pandora_mark_agent_for_module_update ($$) {
 }
 
 ##########################################################################
-# Mark an agent for fired alert count update.
+=head2 C<< pandora_mark_agent_for_alert_update (I<$dbh>, I<$agent_id>) >>
+
+Mark an agent for fired alert count update.
+
+=cut
 ##########################################################################
 sub pandora_mark_agent_for_alert_update ($$) {
 	my ($dbh, $agent_id) = @_;
@@ -6375,14 +6391,22 @@ sub pandora_mark_agent_for_alert_update ($$) {
 }
 
 ##########################################################################
-# Set or unset silent mode.
+=head2 C<< pandora_set_event_storm_protection (I<$EventStormProtection>) >>
+
+Set or unset silent mode.
+
+=cut
 ##########################################################################
 sub pandora_set_event_storm_protection ($) {
 	$EventStormProtection = shift;
 }
 
 ##########################################################################
-# Update the module status count of an agent.
+=head2 C<< pandora_update_agent_module_count (I<$pa_config>, I<$dbh>, I<$agent_id>) >>
+
+Update the module status count of an agent.
+
+=cut
 ##########################################################################
 sub pandora_update_agent_module_count ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
@@ -6420,7 +6444,11 @@ sub pandora_update_agent_module_count ($$$) {
 }
 
 ##########################################################################
-# Update the fired alert count of an agent.
+=head2 C<< pandora_update_agent_alert_count (I<$pa_config>, I<$dbh>, I<$agent_id>) >>
+
+Update the fired alert count of an agent.
+
+=cut
 ##########################################################################
 sub pandora_update_agent_alert_count ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
@@ -6434,7 +6462,11 @@ sub pandora_update_agent_alert_count ($$$) {
 }
 
 ##########################################################################
-# Update the secondary group cache.
+=head2 C<< pandora_update_secondary_groups_cache (I<$pa_config>, I<$dbh>, I<$agent_id>) >>
+
+Update the secondary group cache.
+
+=cut
 ##########################################################################
 sub pandora_update_secondary_groups_cache ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
@@ -6446,8 +6478,12 @@ sub pandora_update_secondary_groups_cache ($$$) {
 }
 
 ########################################################################
-# SUB pandora_get_os (string)
-# Detect OS using a string, and return id_os
+=head2 C<< pandora_get_os (I<$dbh>, I<$os>) >>
+
+SUB pandora_get_os (string)
+Detect OS using a string, and return id_os
+
+=cut
 ########################################################################
 sub pandora_get_os ($$) {
 	my ($dbh, $os) = @_;
@@ -6928,7 +6964,7 @@ sub safe_mode($$$$$$) {
 }
 
 ##########################################################################
-=head2 C<< safe_mode_modules_update (I<$pa_config>, I<$agent>, I<$dbh>) >> 
+=head2 C<< pandora_safe_mode_modules_update (I<$pa_config>, I<$agent>, I<$dbh>) >> 
 
 Check if agent safe module is critical and turn all modules to disabled.
 
@@ -6952,8 +6988,10 @@ sub pandora_safe_mode_modules_update {
 
 ##########################################################################
 
-=head2 C<< message_set_targets (I<$dbh>, I<$pa_config>, I<$notification_id>, I<$users>, I<$groups>) >>
-Set targets for given messaje (users and groups in hash ref)
+=head2 C<< notification_set_targets (I<$dbh>, I<$pa_config>, I<$notification_id>, I<$users>, I<$groups>) >>
+
+Set targets for given message (users and groups in hash ref)
+
 =cut
 
 ##########################################################################

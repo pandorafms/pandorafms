@@ -1,6 +1,53 @@
 {
     "packages": [
         {
+            "name": "articapfms/update_manager_client",
+            "version": "v1.0.1",
+            "version_normalized": "1.0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/articaST/updatemanager.git",
+                "reference": "c3206367fc362d823835cb2f72363db78901a2e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/articaST/updatemanager/zipball/c3206367fc362d823835cb2f72363db78901a2e3",
+                "reference": "c3206367fc362d823835cb2f72363db78901a2e3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5.14",
+                "squizlabs/php_codesniffer": "^3.6"
+            },
+            "time": "2022-03-28T10:16:13+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "UpdateManager\\": "lib/UpdateManager"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "fbsanchez",
+                    "email": "fborja.sanchez@pandorafms.com"
+                }
+            ],
+            "description": "Artica PFMS Update Manager Client",
+            "support": {
+                "issues": "https://github.com/articaST/updatemanager/issues",
+                "source": "https://github.com/articaST/updatemanager/tree/v1.0.1"
+            },
+            "install-path": "../articapfms/update_manager_client"
+        },
+        {
             "name": "doctrine/lexer",
             "version": "1.2.2",
             "version_normalized": "1.2.2.0",

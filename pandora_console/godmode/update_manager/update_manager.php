@@ -25,7 +25,7 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
-require_once __DIR__.'/../um_client/vendor/autoload.php';
+require_once $config['homedir'].'/vendor/autoload.php';
 
 $php_version = phpversion();
 $php_version_array = explode('.', $php_version);

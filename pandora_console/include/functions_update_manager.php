@@ -29,7 +29,7 @@
 // Begin.
 global $config;
 
-require_once $config['homedir'].'/godmode/um_client/vendor/autoload.php';
+require_once $config['homedir'].'/vendor/autoload.php';
 
 
 /**

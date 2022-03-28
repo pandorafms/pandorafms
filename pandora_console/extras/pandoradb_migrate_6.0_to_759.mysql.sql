@@ -1664,7 +1664,8 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 ALTER TABLE `tagente` MODIFY COLUMN `remote` tinyint(1) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `cascade_protection_module` int(10) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `update_secondary_groups` tinyint(1) NOT NULL DEFAULT '0',
-	MODIFY COLUMN `alias` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+	MODIFY COLUMN `alias` varchar(600) NOT NULL DEFAULT '',
+	MODIFY COLUMN `nombre` varchar(600) NOT NULL DEFAULT '',
 	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------

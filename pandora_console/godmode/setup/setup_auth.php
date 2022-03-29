@@ -198,6 +198,136 @@ if (is_ajax()) {
                     true
                 );
                 $table->data['ldap_admin_pass'] = $row;
+
+                // Enable/disable secondary ldap.
+                // Set default value.
+                set_unless_defined($config['secondary_ldap_enabled'], false);
+
+                $row = [];
+                $row['name'] = __('Enable secondary LDAP');
+                $row['control'] .= html_print_checkbox_switch(
+                    'secondary_ldap_enabled',
+                    1,
+                    $config['secondary_ldap_enabled'],
+                    true,
+                    false,
+                    'showAndHide()'
+                );
+
+                $table->data['secondary_ldap_enabled'] = $row;
+                $row = [];
+
+                // LDAP server.
+                $row = [];
+                $row['name'] = __('Secondary LDAP server');
+                $row['control'] = html_print_input_text(
+                    'ldap_server_secondary',
+                    $config['ldap_server_secondary'],
+                    '',
+                    30,
+                    100,
+                    true
+                );
+                $table->data['ldap_server_secondary'] = $row;
+
+                // LDAP port.
+                $row = [];
+                $row['name'] = __('Secondary LDAP port');
+                $row['control'] = html_print_input_text(
+                    'ldap_port_secondary',
+                    $config['ldap_port_secondary'],
+                    '',
+                    10,
+                    100,
+                    true
+                );
+                $table->data['ldap_port_secondary'] = $row;
+
+                // LDAP version.
+                $ldap_versions = [
+                    1 => 'LDAPv1',
+                    2 => 'LDAPv2',
+                    3 => 'LDAPv3',
+                ];
+                $row = [];
+                $row['name'] = __('Secondary LDAP version');
+                $row['control'] = html_print_select(
+                    $ldap_versions,
+                    'ldap_version_secondary',
+                    $config['ldap_version_secondary'],
+                    '',
+                    '',
+                    0,
+                    true
+                );
+                $table->data['ldap_version_secondary'] = $row;
+
+                // Start TLS.
+                $row = [];
+                $row['name'] = __('Secondary start TLS');
+                $row['control'] = html_print_checkbox_switch(
+                    'ldap_start_tls_secondary',
+                    1,
+                    $config['ldap_start_tls_secondary'],
+                    true
+                );
+                $table->data['ldap_start_tls_secondary'] = $row;
+
+                // Base DN.
+                $row = [];
+                $row['name'] = __('Secondary Base DN');
+                $row['control'] = html_print_input_text(
+                    'ldap_base_dn_secondary',
+                    $config['ldap_base_dn_secondary'],
+                    '',
+                    60,
+                    100,
+                    true
+                );
+                $table->data['ldap_base_dn_secondary'] = $row;
+
+                // Login attribute.
+                $row = [];
+                $row['name'] = __('Secondary Login attribute');
+                $row['control'] = html_print_input_text(
+                    'ldap_login_attr_secondary',
+                    $config['ldap_login_attr_secondary'],
+                    '',
+                    60,
+                    100,
+                    true
+                );
+                $table->data['ldap_login_attr_secondary'] = $row;
+
+                // Admin LDAP login.
+                $row = [];
+                $row['name'] = __('Admin secondary LDAP login');
+                $row['control'] = html_print_input_text(
+                    'ldap_admin_login_secondary',
+                    $config['ldap_admin_login_secondary'],
+                    '',
+                    60,
+                    100,
+                    true
+                );
+                $table->data['ldap_admin_login_secondary'] = $row;
+
+                // Admin LDAP password.
+                $row = [];
+                $row['name'] = __('Admin secondary LDAP password');
+                $row['control'] = html_print_input_password(
+                    'ldap_admin_pass_secondary',
+                    io_output_password($config['ldap_admin_pass_secondary']),
+                    $alt = '',
+                    60,
+                    100,
+                    true
+                );
+                $row['control'] .= ui_print_reveal_password(
+                    'ldap_admin_pass_secondary',
+                    true
+                );
+                $table->data['ldap_admin_pass_secondary'] = $row;
             break;
 
             case 'pandora':
@@ -354,6 +484,12 @@ echo '</form>';
             } else {
                 $('#table1-2FA_all_users').hide();
         }
+
+        if ($('input[type=checkbox][name=secondary_ldap_enabled]:checked').val() == 1) {
+            $("tr[id*='ldap_'][id$='_secondary']").show();
+        } else {
+                $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+        }
     }
     $( document ).ready(function() {   
 
@@ -370,6 +506,7 @@ echo '</form>';
             success: function(data) {
                 $('.table_result_auth').remove();
                 $('#table_auth_result').append(data);
+                showAndHide();
             }
         });
     }).change();

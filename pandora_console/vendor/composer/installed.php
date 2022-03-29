@@ -11,12 +11,12 @@
     ),
     'versions' => array(
         'articapfms/update_manager_client' => array(
-            'pretty_version' => 'v1.0.1',
-            'version' => '1.0.1.0',
+            'pretty_version' => 'v1.0.2',
+            'version' => '1.0.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../articapfms/update_manager_client',
             'aliases' => array(),
-            'reference' => 'c3206367fc362d823835cb2f72363db78901a2e3',
+            'reference' => 'f9dfed615a571311f54370a2e6a045ed0559b95b',
             'dev_requirement' => false,
         ),
         'doctrine/lexer' => array(

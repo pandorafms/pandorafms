@@ -190,6 +190,13 @@ class Client
     private $updates;
 
     /**
+     * Available LTS updates.
+     *
+     * @var array
+     */
+    private $updatesLTS;
+
+    /**
      * Where is installed the product files.
      *
      * @var string
@@ -280,6 +287,20 @@ class Client
      */
     private $lockfile;
 
+    /**
+     * Search for long term support updates only.
+     *
+     * @var boolean
+     */
+    private $lts;
+
+    /**
+     * Function to be called after each package upgrade.
+     *
+     * @var callable|null
+     */
+    private $postUpdateFN;
+
 
     /**
      * Constructor.
@@ -303,6 +324,11 @@ class Client
      *                             - password
      *                             - host
      *                             - port
+     *                             - lts
+     *                             - postUpdateFN: function to be called after each upgrade.
+     *                                             will receive 2 parameters, version and string
+     *                                             containing 'server' if server upgrade or 'console'
+     *                                             if console upgrade was performed.
      *
      *                             (*) mandatory
      *                             (**) Optionally, set full url instead host-port-endpoint.
@@ -323,6 +349,7 @@ class Client
         $this->registrationCode = '';
         $this->license = '';
         $this->updates = [];
+        $this->updatesLTS = [];
         $this->dbh = null;
         $this->dbhHistory = null;
         $this->MR = 0;
@@ -338,6 +365,8 @@ class Client
         $this->timezone = null;
         $this->propagateUpdates = false;
         $this->offline = false;
+        $this->lts = false;
+        $this->postUpdateFN = null;
 
         if (is_array($settings) === true) {
             if (isset($settings['homedir']) === true) {
@@ -417,6 +446,16 @@ class Client
 
             if (isset($settings['MR']) === true) {
                 $this->MR = $settings['MR'];
+            }
+
+            if (isset($settings['lts']) === true) {
+                $this->lts = $settings['lts'];
+            }
+
+            if (isset($settings['on_update']) === true
+                && is_callable($settings['on_update']) === true
+            ) {
+                $this->postUpdateFN = $settings['on_update'];
             }
 
             if (isset($settings['endpoint']) === true) {
@@ -745,6 +784,7 @@ class Client
             'limit_count'     => $this->limitCount,
             'language'        => $this->language,
             'timezone'        => $this->timezone,
+            'lts'             => $this->lts,
             // Retrocompatibility token.
             'version'         => $pandora_version,
             'puid'            => $this->registrationCode,
@@ -816,6 +856,43 @@ class Client
 
 
     /**
+     * Translate Open and Enterprise oum updates into rigth format.
+     *
+     * @param array   $updates Raw updates retrieved from UMS.
+     * @param boolean $lts     LTS updates or generic.
+     *
+     * @return array Translated updates.
+     */
+    private function translateUpdatePackages(array $updates, bool $lts)
+    {
+        $lts_ones = $this->updatesLTS;
+        return array_reduce(
+            $updates,
+            function ($carry, $item) use ($lts, $lts_ones) {
+                if (is_array($item) !== true
+                    && preg_match('/([\d\.\d]+?)\.tar/', $item, $matches) > 0
+                ) {
+                    $carry[] = [
+                        'version'     => $matches[1],
+                        'file_name'   => $item,
+                        'description' => '',
+                        'lts'         => ($lts === true) ? $lts : isset($lts_ones[$matches[1]]),
+                    ];
+                } else {
+                    $carry[] = array_merge(
+                        $item,
+                        ['lts' => ($lts === true) ? $lts : isset($lts_ones[$item['version']])]
+                    );
+                }
+
+                return $carry;
+            },
+            []
+        );
+    }
+
+
+    /**
      * Retrieves a list of updates available in target UMS.
      *
      * @return array|null Results:
@@ -824,6 +901,7 @@ class Client
      *     'version'     => Version id.
      *     'file_name'   => File name.
      *     'description' => description.
+     *     'lts'         => Lts update or not.
      *   ]
      * ];
      */
@@ -831,33 +909,56 @@ class Client
     {
         $this->nextUpdate = null;
         if (empty($this->updates) === true) {
-            $rc = $this->post([ 'action' => 'newer_packages' ]);
+            $rc = $this->post(
+                [
+                    'action'    => 'newer_packages',
+                    'arguments' => ['lts' => true],
+                ]
+            );
 
             if (is_array($rc) !== true) {
                 // Propagate last error from request.
                 return null;
             }
 
-            // Translate respone.
-            $this->updates = array_reduce(
-                $rc,
+            // Translate response.
+            $updates = $this->translateUpdatePackages($rc, true);
+            $lts_updates = $updates;
+            $this->updatesLTS = array_reduce(
+                $updates,
                 function ($carry, $item) {
-                    $matches = [];
-                    if (is_array($item) !== true
-                        && preg_match('/([\d\.\d]+?)\.tar/', $item, $matches) > 0
-                    ) {
-                        $carry[] = [
-                            'version'     => $matches[1],
-                            'file_name'   => $item,
-                            'description' => '',
-                        ];
-                    } else {
-                        $carry[] = $item;
-                    }
-
+                    $carry[$item['version']] = 1;
                     return $carry;
                 },
                 []
+            );
+
+            $rc = $this->post(
+                [
+                    'action'    => 'newer_packages',
+                    'arguments' => ['lts' => false],
+                ]
+            );
+
+            if (is_array($rc) !== true) {
+                // Propagate last error from request.
+                return null;
+            }
+
+            // Translate response.
+            $all_updates = $this->translateUpdatePackages($rc, false);
+
+            $this->updates = $all_updates;
+        } else {
+            $lts_updates = array_filter(
+                $this->updates,
+                function ($item) {
+                    if ($item['lts'] === true) {
+                        return true;
+                    }
+
+                    return false;
+                }
             );
         }
 
@@ -869,6 +970,10 @@ class Client
                     break;
                 }
             }
+        }
+
+        if ($this->lts === true) {
+            return $lts_updates;
         }
 
         return $this->updates;
@@ -1441,8 +1546,8 @@ class Client
         $er = error_reporting();
         error_reporting(E_ALL ^ E_NOTICE);
         set_error_handler(
-            function ($errno, $errstr) {
-                throw new \Exception($errstr, $errno);
+            function ($errno, $errstr, $at, $line) {
+                throw new \Exception($errstr.' '.$at.':'.$line, $errno);
             },
             (E_ALL ^ E_NOTICE)
         );
@@ -1457,7 +1562,10 @@ class Client
 
             // 1. List updates and get next one.
             $this->notify(0, 'Retrieving updates.');
-            $updates = $this->listUpdates();
+            // Reload if needed.
+            $this->listUpdates();
+            // Work over all upgrades not LTS only.
+            $updates = $this->updates;
             $nextUpdate = null;
 
             if (is_array($updates) === true) {
@@ -1779,21 +1887,80 @@ class Client
             $this->updateLocalDatabase();
         }
 
+        if (is_callable($this->postUpdateFN) === true) {
+            call_user_func(
+                $this->postUpdateFN,
+                $this->currentPackage,
+                'console'
+            );
+        }
+
         $this->unlock();
         return true;
     }
 
 
     /**
-     * Update product to latest version available.
+     * Return next LTS version available.
+     *
+     * @return string|null Next version string or null if no version present.
+     */
+    public function getNextLTSVersion():?string
+    {
+        $lts = $this->listUpdates();
+        if ($lts === null) {
+            return null;
+        }
+
+        $target = array_shift($lts);
+
+        return $target['version'];
+    }
+
+
+    /**
+     * Return latest LTS version available.
+     *
+     * @return string|null Latest version string or null if no version present.
+     */
+    public function getLastLTSVersion():?string
+    {
+        $lts = $this->listUpdates();
+        if ($lts === null) {
+            return null;
+        }
+
+        $target = array_pop($lts);
+
+        return $target['version'];
+    }
+
+
+    /**
+     * Update product to latest version available or target if specified.
+     *
+     * @param string|null $target_version Target version if needed.
      *
      * @return string Last version reached.
      */
-    public function updateLastVersion():string
+    public function updateLastVersion(?string $target_version=null):string
     {
         $this->percentage = 0;
         $this->listUpdates();
-        $total_updates = count($this->updates);
+
+        if ($target_version !== null) {
+            // Update to target version.
+            $total_updates = 0;
+            foreach ($this->updates as $update) {
+                $total_updates++;
+                if ($update['version'] === $target_version) {
+                    break;
+                }
+            }
+        } else {
+            // All updates.
+            $total_updates = count($this->updates);
+        }
 
         if ($total_updates > 0) {
             $pct = (90 / $total_updates);
@@ -1804,6 +1971,11 @@ class Client
                 if ($rc === false) {
                     // Failed to upgrade to next version.
                     break;
+                }
+
+                if ($this->nextUpdate === $target_version) {
+                    // Reached end.
+                    $rc = null;
                 }
 
                 // If rc is null, latest version available is applied.
@@ -2052,6 +2224,15 @@ class Client
         // Success.
         $this->notify(100, 'Server update scheduled.');
         $this->lastError = null;
+
+        if (is_callable($this->postUpdateFN) === true) {
+            call_user_func(
+                $this->postUpdateFN,
+                $this->currentPackage,
+                'server'
+            );
+        }
+
         return true;
     }
 

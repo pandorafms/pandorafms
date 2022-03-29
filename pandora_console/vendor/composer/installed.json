@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "articapfms/update_manager_client",
-            "version": "v1.0.1",
-            "version_normalized": "1.0.1.0",
+            "version": "v1.0.2",
+            "version_normalized": "1.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/articaST/updatemanager.git",
-                "reference": "c3206367fc362d823835cb2f72363db78901a2e3"
+                "reference": "f9dfed615a571311f54370a2e6a045ed0559b95b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/articaST/updatemanager/zipball/c3206367fc362d823835cb2f72363db78901a2e3",
-                "reference": "c3206367fc362d823835cb2f72363db78901a2e3",
+                "url": "https://api.github.com/repos/articaST/updatemanager/zipball/f9dfed615a571311f54370a2e6a045ed0559b95b",
+                "reference": "f9dfed615a571311f54370a2e6a045ed0559b95b",
                 "shasum": ""
             },
             "require": {
@@ -22,7 +22,7 @@
                 "phpunit/phpunit": "^8.5.14",
                 "squizlabs/php_codesniffer": "^3.6"
             },
-            "time": "2022-03-28T10:16:13+00:00",
+            "time": "2022-03-29T17:09:05+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -43,7 +43,7 @@
             "description": "Artica PFMS Update Manager Client",
             "support": {
                 "issues": "https://github.com/articaST/updatemanager/issues",
-                "source": "https://github.com/articaST/updatemanager/tree/v1.0.1"
+                "source": "https://github.com/articaST/updatemanager/tree/v1.0.2"
             },
             "install-path": "../articapfms/update_manager_client"
         },

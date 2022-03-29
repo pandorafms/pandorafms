@@ -100,6 +100,13 @@ class Manager
      */
     private $composer = false;
 
+    /**
+     * Working in LTS mode.
+     *
+     * @var boolean
+     */
+    private $lts = false;
+
 
     /**
      * Undocumented function
@@ -125,6 +132,7 @@ class Manager
         $this->ajaxUrl = '#';
         $this->mode = self::MODE_ONLINE;
         $this->composer = $composer;
+        $this->lts = false;
 
         if (empty($public_url) === false) {
             $this->publicUrl = $public_url;
@@ -163,6 +171,10 @@ class Manager
 
         if ($mode === self::MODE_OFFLINE) {
             $settings['offline'] = true;
+        }
+
+        if (isset($settings['lts']) === true) {
+            $this->lts = $settings['lts'];
         }
 
         if (isset($settings['allowOfflinePatches']) === true) {
@@ -355,7 +367,13 @@ class Manager
             // Execute target action.
             switch ($_REQUEST['action']) {
                 case 'nextUpdate':
-                    $result = $this->umc->updateNextVersion();
+                    if ($this->lts === true) {
+                        $next_version = $this->umc->getNextLTSVersion();
+                        $result = $this->umc->updateLastVersion($next_version);
+                    } else {
+                        $result = $this->umc->updateNextVersion();
+                    }
+
                     if ($result !== true) {
                         $error = $this->umc->getLastError();
                     }
@@ -368,9 +386,11 @@ class Manager
                 break;
 
                 case 'latestUpdate':
-                    $result = $this->umc->updateLastVersion();
-                    if ($result !== true) {
-                        $error = $this->umc->getLastError();
+                    if ($this->lts === true) {
+                        $latest_version = $this->umc->getLastLTSVersion();
+                        $result = $this->umc->updateLastVersion($latest_version);
+                    } else {
+                        $result = $this->umc->updateLastVersion();
                     }
 
                     $return = [

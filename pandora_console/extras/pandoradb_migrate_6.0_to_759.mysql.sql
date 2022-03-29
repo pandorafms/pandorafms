@@ -1543,6 +1543,8 @@ ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
 ALTER TABLE `tevent_filter` ADD COLUMN `time_from` TIME NULL;
 ALTER TABLE `tevent_filter` ADD COLUMN `time_to` TIME NULL;
+ALTER TABLE `tevent_filter` ADD COLUMN `custom_data` VARCHAR(500) DEFAULT '';
+ALTER TABLE `tevent_filter` ADD COLUMN `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`

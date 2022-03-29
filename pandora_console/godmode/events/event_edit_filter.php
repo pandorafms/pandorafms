@@ -89,6 +89,8 @@ if ($id) {
     $tag_without_base64 = base64_encode($tag_without_json_clean);
 
     $filter_only_alert = $filter['filter_only_alert'];
+    $custom_data = $filter['custom_data'];
+    $custom_data_filter_type = $filter['custom_data_filter_type'];
 
     if ($id_agent_module != 0) {
         $text_module = modules_get_agentmodule_name($id_agent_module);
@@ -165,30 +167,34 @@ if ($update || $create) {
     $tag_without_json = io_safe_input(base64_decode($tag_without_base64));
 
     $filter_only_alert = get_parameter('filter_only_alert', '');
+    $custom_data = get_parameter('custom_data', '');
+    $custom_data_filter_type = get_parameter('custom_data_filter_type', '');
 
     $values = [
-        'id_name'           => $id_name,
-        'id_group_filter'   => $id_group_filter,
-        'id_group'          => $id_group,
-        'event_type'        => $event_type,
-        'severity'          => $severity,
-        'status'            => $status,
-        'search'            => $search,
-        'text_agent'        => $text_agent,
-        'id_agent_module'   => $id_agent_module,
-        'id_agent'          => $id_agent,
-        'pagination'        => $pagination,
-        'event_view_hr'     => $event_view_hr,
-        'id_user_ack'       => $id_user_ack,
-        'group_rep'         => $group_rep,
-        'tag_with'          => $tag_with_json,
-        'tag_without'       => $tag_without_json,
-        'date_from'         => $date_from,
-        'date_to'           => $date_to,
-        'source'            => $source,
-        'id_extra'          => $id_extra,
-        'user_comment'      => $user_comment,
-        'filter_only_alert' => $filter_only_alert,
+        'id_name'                 => $id_name,
+        'id_group_filter'         => $id_group_filter,
+        'id_group'                => $id_group,
+        'event_type'              => $event_type,
+        'severity'                => $severity,
+        'status'                  => $status,
+        'search'                  => $search,
+        'text_agent'              => $text_agent,
+        'id_agent_module'         => $id_agent_module,
+        'id_agent'                => $id_agent,
+        'pagination'              => $pagination,
+        'event_view_hr'           => $event_view_hr,
+        'id_user_ack'             => $id_user_ack,
+        'group_rep'               => $group_rep,
+        'tag_with'                => $tag_with_json,
+        'tag_without'             => $tag_without_json,
+        'date_from'               => $date_from,
+        'date_to'                 => $date_to,
+        'source'                  => $source,
+        'id_extra'                => $id_extra,
+        'user_comment'            => $user_comment,
+        'filter_only_alert'       => $filter_only_alert,
+        'custom_data'             => $custom_data,
+        'custom_data_filter_type' => $custom_data_filter_type,
     ];
 
     $severity = explode(',', $severity);
@@ -627,9 +633,26 @@ $table->data[23][1] = html_print_input_text('id_extra', $id_extra, '', 11, 255, 
 $table->data[24][0] = '<b>'.__('Comment').'</b>';
 $table->data[24][1] = html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
 
+$table->data[25][0] = '<b>'.__('Custom data filter type').'</b>';
+$table->data[25][1] = html_print_select(
+    [
+        '0' => __('Filter custom data by name field'),
+        '1' => __('Filter custom data by value field'),
+    ],
+    'custom_data_filter_type',
+    $custom_data_filter_type,
+    '',
+    false,
+    '',
+    true
+);
+
+$table->data[26][0] = '<b>'.__('Custom data').'</b>';
+$table->data[26][1] = html_print_input_text('custom_data', $custom_data, '', 35, 255, true);
+
 if (is_metaconsole()) {
-    $table->data[25][0] = '<b>'.__('Id souce event').'</b>';
-    $table->data[25][1] = html_print_input_text(
+    $table->data[27][0] = '<b>'.__('Id souce event').'</b>';
+    $table->data[27][1] = html_print_input_text(
         'id_source_event',
         $id_source_event,
         '',

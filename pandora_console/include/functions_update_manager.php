@@ -216,10 +216,10 @@ function update_manager_get_config_values()
         'language'          => $config['language'],
         'timezone'          => $config['timezone'],
         'proxy'             => [
-            'host'     => $config['update_manager_proxy_host'],
-            'port'     => $config['update_manager_proxy_port'],
-            'user'     => $config['update_manager_proxy_user'],
-            'password' => $config['update_manager_proxy_password'],
+            'host'     => ($config['update_manager_proxy_host'] ?? null),
+            'port'     => ($config['update_manager_proxy_port'] ?? null),
+            'user'     => ($config['update_manager_proxy_user'] ?? null),
+            'password' => ($config['update_manager_proxy_password'] ?? null),
         ],
     ];
 }
@@ -268,4 +268,19 @@ function rrmdir($dir)
     } else {
         unlink($dir);
     }
+}
+
+
+/**
+ * Keeps an history of upgrades.
+ *
+ * @param string $version Version installed.
+ * @param string $type    Package type (server|console).
+ * @param string $mode    Installation style (offline|online).
+ *
+ * @return void
+ */
+function register_upgrade($version, $type, $mode)
+{
+    error_log(__('Installed %s version (%s) %s', $version, $type, $mode));
 }

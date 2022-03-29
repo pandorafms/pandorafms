@@ -35,6 +35,7 @@
 global $config;
 
 require_once $config['homedir'].'/vendor/autoload.php';
+require_once $config['homedir'].'/include/functions_update_manager.php';
 
 use PandoraFMS\Enterprise\Metaconsole\Synchronizer;
 use UpdateManager\UI\Manager;
@@ -412,6 +413,9 @@ $ui = new Manager(
         },
         'clear_maintenance_mode' => function () {
             config_update_value('maintenance_mode', 0);
+        },
+        'on_update'              => function ($version, $type) use ($mode) {
+            register_upgrade($version, $type, $mode);
         },
     ],
     $mode,

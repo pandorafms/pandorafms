@@ -1262,6 +1262,25 @@ input.datos {
 .bg_caca {
   background-color: #cacaca;
 }
+
+.bg_th {
+  background-color: #efeff0 !important;
+  color: #000;
+  font-weight: bold;
+}
+
+.border_table {
+  border-collapse: collapse !important;
+}
+
+.border_th {
+  border-bottom: 2px solid #bfbfbf !important;
+}
+
+.border_tr {
+  border: 1px solid #dbdbdb !important;
+}
+
 /* margins */
 .mgn-lf-50 {
   margin-left: 50px;

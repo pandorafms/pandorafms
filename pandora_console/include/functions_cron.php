@@ -1,23 +1,32 @@
 <?php
 /**
- * PHP Linux cron functions.
+ * Cron Functions.
  *
- * @package    Linux cron functions.
- * @subpackage Backend functions.
+ * @category   Utils
+ * @package    Pandora FMS Community
+ * @subpackage Cron
+ * @version    1.0.0
+ * @license    See below
  *
- * Pandora FMS- http://pandorafms.com
- * ==================================================
- * Copyright (c) 20012 Artica Soluciones Tecnologicas
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the  GNU Lesser General Public License
- * as published by the Free Software Foundation; version 2
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ * ============================================================================
  */
 
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/functions_db.php';
@@ -402,9 +411,9 @@ function cron_list_table()
     global $config;
 
     $read_perms = check_acl($config['id_user'], 0, 'RR');
-    $write_perms = check_acl($config['id_user'], 0, 'RW');
-    $manage_perms = check_acl($config['id_user'], 0, 'RM');
-    $manage_pandora = check_acl($config['id_user'], 0, 'PM');
+    $write_perms = (bool) check_acl($config['id_user'], 0, 'RW');
+    $manage_perms = (bool) check_acl($config['id_user'], 0, 'RM');
+    $manage_pandora = (bool) check_acl($config['id_user'], 0, 'PM');
 
     $url = 'index.php?extension_in_menu=gservers&sec=extensions&sec2=enterprise/extensions/cron&';
 
@@ -443,7 +452,7 @@ function cron_list_table()
     }
 
     if ($defined_tasks !== false) {
-        echo '<h2>'.__('Scheduled jobs').'</h2>';
+        echo '<h2>'.__('Scheduled jobssss').'</h2>';
 
         $table = new stdClass();
         $table->class = 'databox data';
@@ -474,17 +483,28 @@ function cron_list_table()
                 case 'cron_task_generate_csv_log':
                 case 'cron_task_call_user_function':
                     // Ignore.
-                    $data[0]  = '<a href="'.$url;
-                    $data[0] .= 'force_run=1&id_console_task='.$task['id'].'">';
-                    $data[0] .= html_print_image(
-                        'images/target.png',
-                        true,
-                        [
-                            'title' => __('Force run'),
-                            'class' => 'invert_filter',
-                        ]
-                    );
-                    $data[0] .= '</a>';
+                    if ((bool) $task['enabled'] === true) {
+                        $data[0] = html_print_anchor(
+                            [
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_console_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
+                        );
+                    } else {
+                        $data[0] = '';
+                    }
 
                     $data[1] = $task['id_usuario'];
                     $data[2] = db_get_value(
@@ -501,18 +521,25 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_generate_report':
-                    if ($write_perms || $manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true && ($write_perms === true || $manage_pandora === true)) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -549,18 +576,25 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_generate_report_by_template':
-                    if ($write_perms || $manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true && ($write_perms === true || $manage_pandora === true)) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -634,18 +668,25 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_execute_custom_script':
-                    if ($manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -663,18 +704,25 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_save_report_to_disk':
-                    if ($write_perms || $manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -702,18 +750,25 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_save_xml_report_to_disk':
-                    if ($write_perms || $manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true && ($write_perms === true || $manage_pandora === true)) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -734,22 +789,28 @@ function cron_list_table()
                     $data[2] .= '&id='.$args[0]."'>".$report['name'].'</a>';
                     $data[2] .= '<br>- '.__('Path').': '.$path.'</a>';
                     $data[2] .= '<br>- '.__('Report type').': '.$report_type;
-
                 break;
 
                 case 'cron_task_do_backup':
-                    if ($manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true && $manage_pandora === true) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -765,18 +826,25 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_generate_csv_log':
-                    if ($manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
+                    if ((bool) $task['enabled'] === true && $manage_pandora === true) {
+                        $data[0] = html_print_anchor(
                             [
-                                'title' => __('Force run'),
-                                'class' => 'invert_filter',
-                            ]
+                                'href'    => sprintf(
+                                    '%sforce_run=1&id_user_task=%s',
+                                    $url,
+                                    $task['id']
+                                ),
+                                'content' => html_print_image(
+                                    'images/target.png',
+                                    true,
+                                    [
+                                        'title' => __('Force run'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ),
+                            ],
+                            true
                         );
-                        $data[0] .= '</a>';
                     } else {
                         $data[0] = '';
                     }
@@ -859,6 +927,26 @@ function cron_list_table()
                     $data[7] .= '</a>';
                 }
             }
+
+            $data[7] .= html_print_anchor(
+                [
+                    'href'    => sprintf(
+                        '%stoggle_console_task=%s&id_user_task=%s',
+                        $url,
+                        ((bool) $task['enabled'] === true) ? '0' : '1',
+                        $task['id']
+                    ),
+                    'content' => html_print_image(
+                        ((bool) $task['enabled'] === true) ? 'images/lightbulb.png' : 'images/lightbulb_off.png',
+                        true,
+                        [
+                            'title' => ((bool) $task['enabled'] === true) ? __('Disable task') : __('Enable task'),
+                            'class' => 'invert_filter',
+                        ]
+                    ),
+                ],
+                true
+            );
 
             array_push($table->data, $data);
         }

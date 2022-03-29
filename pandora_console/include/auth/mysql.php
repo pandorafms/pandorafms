@@ -1452,7 +1452,7 @@ function local_ldap_search(
 
     $dn = " -b '".$dn."'";
 
-        $shell_ldap_search = explode("\n", shell_exec('ldapsearch -LLL -o ldif-wrap=no -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"'));
+    $shell_ldap_search = explode("\n", shell_exec('ldapsearch -LLL -o ldif-wrap=no -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"'));
     foreach ($shell_ldap_search as $line) {
         $values = explode('=>', $line);
         if (!empty($values[0]) && !empty($values[1])) {

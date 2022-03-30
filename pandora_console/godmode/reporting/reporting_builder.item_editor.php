@@ -1856,7 +1856,7 @@ $class = 'databox filters';
                     0,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     'min-width: 180px'

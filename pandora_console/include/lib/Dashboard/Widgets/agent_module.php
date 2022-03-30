@@ -265,7 +265,7 @@ class AgentModuleWidget extends Widget
                 'name'     => 'filtered-type-show-'.$this->cellId,
                 'return'   => true,
                 'id'       => 'filtered-type-show-'.$this->cellId,
-                'selected' => $this->values['mTypeShow'],
+                'selected' => ($this->values['mTypeShow'] === null) ? 0 : $this->values['mTypeShow'],
             ],
         ];
 

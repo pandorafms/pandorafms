@@ -535,8 +535,12 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
 
     $sub['godmode/update_manager/update_manager&tab=online']['text'] = __('Update Manager online');
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';
+
     $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Update Manager options');
     $sub['godmode/update_manager/update_manager&tab=setup']['id'] = 'Options';
+
+    $sub['godmode/update_manager/update_manager&tab=history']['text'] = __('Update Manager journal');
+    $sub['godmode/update_manager/update_manager&tab=history']['id'] = 'Journal';
 
     $menu_godmode['messages']['sub'] = $sub;
 }

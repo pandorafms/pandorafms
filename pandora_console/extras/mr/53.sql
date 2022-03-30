@@ -15,5 +15,17 @@ CREATE TABLE IF NOT EXISTS `tbackup` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+DROP TABLE `tupdate`;
+DROP TABLE `tupdate_package`;
+DROP TABLE `tupdate_journal`;
+
+CREATE TABLE `tupdate_journal` (
+  `id` SERIAL,
+  `utimestamp` BIGINT DEFAULT 0,
+  `version` VARCHAR(25) DEFAULT '',
+  `type` VARCHAR(25) DEFAULT '',
+  `origin` VARCHAR(25) DEFAULT '',
+  `id_user` VARCHAR(250) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 COMMIT;

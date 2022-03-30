@@ -15,7 +15,7 @@ global $config;
 
 check_login();
 // The ajax is in
-// include/ajax/update_manager.ajax.php
+// include/ajax/update_manager.php
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -37,19 +37,31 @@ $tab = get_parameter('tab', 'online');
 
 $buttons['setup'] = [
     'active' => ($tab == 'setup') ? true : false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url(
+        'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup'
+    ).'">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options'), 'class' => 'invert_filter']).'</a>',
+];
+
+$buttons['history'] = [
+    'active' => ($tab == 'history') ? true : false,
+    'text'   => '<a href="'.ui_get_full_url(
+        'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=histo'
+    ).'ry">'.html_print_image('images/gm_db.png', true, ['title' => __('Journal'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['offline'] = [
     'active' => ($tab == 'offline') ? true : false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url(
+        'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offli'
+    ).'ne">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['online'] = [
     'active' => ($tab == 'online') ? true : false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url(
+        'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=onlin'
+    ).'e">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager'), 'class' => 'invert_filter']).'</a>',
 ];
-
 
 switch ($tab) {
     case 'setup':
@@ -76,6 +88,10 @@ ui_print_page_header(
 );
 
 switch ($tab) {
+    case 'history':
+        include $config['homedir'].'/godmode/update_manager/update_manager.history.php';
+    break;
+
     case 'setup':
         include $config['homedir'].'/godmode/update_manager/update_manager.setup.php';
     break;

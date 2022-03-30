@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use UpdateManager\UI\Manager;
+
 // Begin.
 global $config;
 
@@ -282,5 +284,28 @@ function rrmdir($dir)
  */
 function register_upgrade($version, $type, $mode)
 {
-    error_log(__('Installed %s version (%s) %s', $version, $type, $mode));
+    global $config;
+
+    $origin = 'unknown';
+    if ($mode === Manager::MODE_OFFLINE) {
+        $origin = 'offline';
+    } else if ($mode === Manager::MODE_ONLINE) {
+        $origin = 'online';
+    }
+
+    db_pandora_audit(
+        AUDIT_LOG_UMC,
+        'System updated to '.$version.' ('.$type.') from '.$origin
+    );
+
+    db_process_sql_insert(
+        'tupdate_journal',
+        [
+            'version'    => $version,
+            'type'       => $type,
+            'origin'     => $origin,
+            'id_user'    => $config['id_user'],
+            'utimestamp' => time(),
+        ]
+    );
 }

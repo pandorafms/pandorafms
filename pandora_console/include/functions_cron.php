@@ -452,7 +452,7 @@ function cron_list_table()
     }
 
     if ($defined_tasks !== false) {
-        echo '<h2>'.__('Scheduled jobssss').'</h2>';
+        echo '<h2>'.__('Scheduled jobs').'</h2>';
 
         $table = new stdClass();
         $table->class = 'databox data';

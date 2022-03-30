@@ -237,7 +237,7 @@ our $OS = $^O;
 our $OS_VERSION = "unknown";
 our $DEVNULL = '/dev/null';
 if ($OS eq 'linux') {
-	$OS_VERSION = `lsb_release -sd 2>/dev/null`;
+	$OS_VERSION = `cat /etc/*ease|grep PRETTY| cut -f 2 -d= | tr -d '"' 2>/dev/null`;
 } elsif ($OS eq 'aix') {
 	$OS_VERSION = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
 } elsif ($OS =~ /win/i) {

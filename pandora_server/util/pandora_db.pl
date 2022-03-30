@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.760 Build 220328";
+my $version = "7.0NG.760 Build 220330";
 
 # Pandora server configuration
 my %conf;
@@ -46,6 +46,9 @@ my $BIG_OPERATION_STEP = 100;	# 100 is default
 # Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
 #Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
 my $SMALL_OPERATION_STEP = 1000;	# 1000 is default
+
+# Timeout for lock acquisition.
+my $LOCK_TIMEOUT = 60;
 
 # FLUSH in each IO 
 $| = 1;
@@ -1082,6 +1085,10 @@ sub pandoradb_history ($$) {
 		log_message ('', "\n");
 	}
 
+	# Update tconfig with last time of database maintance time (now)
+	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
+	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
+
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
 
@@ -1214,10 +1221,18 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Get a lock on dbname.
+# Set the lock name for pandora_db.
 my $lock_name = $conf{'dbname'};
-my $lock = db_get_lock ($dbh, $lock_name);
-if ($lock == 0 && $conf{'_force'} == 0) { 
+
+# Release the database lock in forced mode.
+if ($conf{'_force'} == 1) {
+	log_message ('', " [*] Releasing database lock.\n\n");
+	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+}
+
+# Get a lock on dbname.
+my $lock = db_get_pandora_lock ($dbh, $lock_name, $LOCK_TIMEOUT);
+if ($lock == 0) { 
 	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
 }
@@ -1260,9 +1275,7 @@ if (scalar(@types) != 0) {
 }
 
 # Release the lock
-if ($lock == 1) {
-	db_release_lock ($dbh, $lock_name);
-}
+db_release_pandora_lock ($dbh, $lock_name);
 
 # Cleanup and exit
 db_disconnect ($history_dbh) if defined ($history_dbh);

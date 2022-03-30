@@ -5160,14 +5160,6 @@ function events_page_general($event)
         $data[1] = '<i>'.__('N/A').'</i>';
     }
 
-    $data = [];
-    $data[0] = __('Custom data');
-    if ($event['custom_data'] != '') {
-        $data[1] = $event['custom_data'];
-    } else {
-        $data[1] = '<i>'.__('N/A').'</i>';
-    }
-
     $table_general->data[] = $data;
 
     $table_data = $table_general->data;

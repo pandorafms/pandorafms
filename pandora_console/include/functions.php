@@ -2887,6 +2887,7 @@ function translate_file_upload_status($status_code)
 
         case UPLOAD_ERR_INI_SIZE:
             $message = __('The file exceeds the maximum size');
+            $message .= __('Please check this PHP runtime variable values: <pre>  upload_max_filesize (currently '.ini_get('upload_max_filesize').')</pre>');
         break;
 
         case UPLOAD_ERR_FORM_SIZE:

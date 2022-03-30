@@ -133,6 +133,11 @@ class DiscoveryTaskList extends HTML
             return $this->deleteConsoleTask();
         }
 
+        $toggle_console_task = (int) get_parameter('toggle_console_task', -1);
+        if ($toggle_console_task === 1 || $toggle_console_task === 0) {
+            return $this->toggleConsoleTask($toggle_console_task);
+        }
+
         $delete = (bool) get_parameter('delete', false);
         if ($delete === true) {
             return $this->deleteTask();
@@ -317,6 +322,49 @@ class DiscoveryTaskList extends HTML
                     header('Location: '.$this->url);
                 }
             }
+        }
+    }
+
+
+    /**
+     * Toggle enable/disable status of selected Console Task.
+     *
+     * @param integer $enable If 1 enable the console task.
+     *
+     * @return void
+     */
+    public function toggleConsoleTask(int $enable)
+    {
+        global $config;
+
+        if ((bool) check_acl($config['id_user'], 0, 'RM') === false) {
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Trying to access recon task viewer'
+            );
+            include 'general/noaccess.php';
+            return;
+        }
+
+        $id_console_task = (int) get_parameter('id_console_task');
+
+        if ($id_console_task > 0) {
+            $result = db_process_sql_update(
+                'tuser_task_scheduled',
+                ['enabled' => $enable],
+                ['id' => $id_console_task]
+            );
+
+            if ((int) $result === 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => ((bool) $enable === true) ? __('Task successfully enabled') : __('Task succesfully disabled'),
+                    'id'     => false,
+                ];
+            }
+
+            // Trick to avoid double execution.
+            header('Location: '.$this->url);
         }
     }
 

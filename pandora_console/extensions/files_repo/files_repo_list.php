@@ -77,7 +77,7 @@ if (!empty($files)) {
         $file_name = explode('/', $file['location']);
         $file_decoded = $file_name[(count($file_name) - 1)];
         $file_path = base64_encode($file_decoded);
-        $hash = md5($file_path.$config['dbpass']);
+        $hash = md5($file_path.$config['server_unique_identifier']);
         $url = ui_get_full_url(
             'include/get_file.php?file='.urlencode($file_path).'&hash='.$hash
         );

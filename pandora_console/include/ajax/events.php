@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 global $config;
 
@@ -86,6 +88,7 @@ $get_event_filters = get_parameter('get_event_filters', 0);
 $get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
+$node_id = (int) get_parameter('node_id', 0);
 if ($get_comments === true) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
@@ -195,7 +198,23 @@ if ($delete_event) {
         return;
     }
 
-    $r = events_delete($id_evento, $filter);
+    if ($node_id > 0) {
+        try {
+            $node = new Node($node_id);
+            $node->connect();
+            $r = events_delete($id_evento, $filter, false, true);
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            $node->disconnect();
+            $success = false;
+            echo 'owner_error';
+        } finally {
+            $node->disconnect();
+        }
+    } else {
+        $r = events_delete($id_evento, $filter);
+    }
+
     if ($r === false) {
         echo 'Failed';
     } else {
@@ -1267,18 +1286,42 @@ if ($change_status) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
 
-    $return = events_change_status(
-        explode(',', $event_ids),
-        $new_status,
-        $meta,
-        $history
-    );
+    if ($node_id > 0) {
+        try {
+            $node = new Node($node_id);
+            $node->connect();
+            $return = events_change_status(
+                explode(',', $event_ids),
+                $new_status,
+                $meta,
+                $history
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            $node->disconnect();
+            $success = false;
+            echo 'owner_error';
+        } finally {
+            $node->disconnect();
+        }
+    } else {
+        $return = events_change_status(
+            explode(',', $event_ids),
+            $new_status,
+            $meta,
+            $history
+        );
+    }
 
     if ($return !== false) {
+        $event_st = events_display_status($new_status);
+
         echo json_encode(
             [
-                'status' => 'status_ok',
-                'user'   => db_get_value(
+                'status_title' => $event_st['title'],
+                'status_img'   => html_print_image($event_st['img'], true, false, true),
+                'status'       => 'status_ok',
+                'user'         => db_get_value(
                     'fullname',
                     'tusuario',
                     'id_user',
@@ -1312,7 +1355,22 @@ if ($change_owner) {
         $new_owner = '';
     }
 
-    $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+    if ($node_id > 0) {
+        try {
+            $node = new Node($node_id);
+            $node->connect();
+            $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            $node->disconnect();
+            $success = false;
+            echo 'owner_error';
+        } finally {
+            $node->disconnect();
+        }
+    } else {
+        $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+    }
 
     if ($return) {
         echo 'owner_ok';
@@ -1328,7 +1386,7 @@ if ($change_owner) {
 if ($get_extended_event) {
     global $config;
 
-    $event = get_parameter('event', false);
+    $event = io_safe_output(get_parameter('event', false));
     $filter = get_parameter('filter', false);
 
     if ($event === false) {
@@ -1417,6 +1475,9 @@ if ($get_extended_event) {
 
     // Print group_rep in a hidden field to recover it from javascript.
     html_print_input_hidden('group_rep', (int) $group_rep);
+    if ($node_id > 0) {
+        html_print_input_hidden('node_id', (int) $node_id);
+    }
 
     if ($event === false) {
         return;
@@ -1584,14 +1645,16 @@ if ($get_extended_event) {
 
     $comments = '<div id="extended_event_comments_page" class="extended_event_pages"></div>';
 
-    $notifications = '<div id="notification_comment_error" class="invisible">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
-    $notifications .= '<div id="notification_comment_success" class="invisible">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_error" class="invisible">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_success" class="invisible">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_error" class="invisible">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_success" class="invisible">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications = '<div id="notification_comment_error" class="invisible_events">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
+    $notifications .= '<div id="notification_comment_success" class="invisible_events">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_error" class="invisible_events">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_success" class="invisible_events">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_error" class="invisible_events">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_success" class="invisible_events">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_delete_error" class="invisible_events">'.ui_print_error_message(__('Error deleting event'), '', true).'</div>';
 
-    $loading = '<div id="response_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</div>';
+
+    $loading = '<div id="response_loading" class="invisible_events">'.html_print_image('images/spinner.gif', true).'</div>';
 
     $i = 0;
     $tab['general'] = $i++;

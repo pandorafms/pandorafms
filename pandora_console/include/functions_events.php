@@ -356,13 +356,14 @@ function events_get_column_names($fields, $table_alias=false)
 /**
  * Validates all events matching target filter.
  *
- * @param integer $id_evento Master event.
- * @param array   $filter    Optional. Filter options.
- * @param boolean $history   Apply on historical table.
+ * @param integer $id_evento  Master event.
+ * @param array   $filter     Optional. Filter options.
+ * @param boolean $history    Apply on historical table.
+ * @param boolean $force_node Force node table.
  *
  * @return integer Events validated or false if error.
  */
-function events_delete($id_evento, $filter=null, $history=false)
+function events_delete($id_evento, $filter=null, $history=false, $force_node=false)
 {
     if (!isset($id_evento) || $id_evento <= 0) {
         return false;
@@ -372,7 +373,10 @@ function events_delete($id_evento, $filter=null, $history=false)
         $filter = ['group_rep' => 0];
     }
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = events_get_events_table(
+        ($force_node === false) ? is_metaconsole() : false,
+        $history
+    );
 
     switch ($filter['group_rep']) {
         case '0':
@@ -3773,7 +3777,7 @@ function events_page_responses($event, $childrens_ids=[])
         $data = [];
         $data[0] = __('Delete event');
         $data[1] = '';
-        $data[2] = '<form method="post">';
+        $data[2] = '<form id="event_responses_delete" method="post">';
         $data[2] .= html_print_button(
             __('Delete event'),
             'delete_button',
@@ -5064,6 +5068,8 @@ function events_page_general($event)
     $event_st = events_display_status($event['estado']);
 
     $data = [];
+
+    $table_general->rowid[7] = 'general_status';
     $data[0] = __('Status');
     $data[1] = $event_st['title'];
     $data[2] = html_print_image($event_st['img'], true);

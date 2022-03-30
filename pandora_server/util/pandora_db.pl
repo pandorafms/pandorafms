@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.760 Build 220329";
+my $version = "7.0NG.760 Build 220330";
 
 # Pandora server configuration
 my %conf;
@@ -1081,6 +1081,10 @@ sub pandoradb_history ($$) {
 		}
 		log_message ('', "\n");
 	}
+
+	# Update tconfig with last time of database maintance time (now)
+	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
+	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

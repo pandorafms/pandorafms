@@ -1404,7 +1404,8 @@ function dashboardShowEventDialog(settings) {
       dialog_page: "",
       meta: 0,
       history: 0,
-      filter: []
+      filter: [],
+      node_id: settings.node_id
     },
     dataType: "html",
     success: function(data) {
@@ -1417,9 +1418,58 @@ function dashboardShowEventDialog(settings) {
           resizable: true,
           draggable: true,
           modal: true,
+          create: function() {
+            $("#button-delete_button").removeAttr("onclick");
+            $("#button-delete_button").click(function() {
+              var confirm_message = $("#hidden-delete_confirm_message").val();
+              if (confirm(confirm_message) == false) {
+                return false;
+              }
+              $.ajax({
+                method: "post",
+                url: settings.ajaxUrl,
+                data: {
+                  page: "include/ajax/events",
+                  delete_event: 1,
+                  node_id: settings.node_id,
+                  id_evento: settings.event.id_evento,
+                  filter: []
+                },
+                success: function() {
+                  $("#notification_delete_error").show();
+                  $("#event_details_window").dialog("close");
+                },
+                error: function(error) {
+                  console.error(error);
+                }
+              });
+            });
+          },
           close: function() {
             //$("#refrcounter").countdown("resume");
             //$("div.vc-countdown").countdown("resume");
+            $.ajax({
+              method: "post",
+              url: settings.ajaxUrl,
+              data: {
+                page: "operation/dashboard/dashboard",
+                method: "drawWidget",
+                dashboardId: settings.dashboardId,
+                cellId: settings.cellId,
+                widgetId: settings.widgetId,
+                redraw: 1
+              },
+              success: function(dataWidget) {
+                // Widget empty and reload.
+                $("#widget-" + settings.cellId + " .content-widget").empty();
+                $("#widget-" + settings.cellId + " .content-widget").append(
+                  dataWidget
+                );
+              },
+              error: function(error) {
+                console.error(error);
+              }
+            });
           },
           overlay: {
             opacity: 0.5,

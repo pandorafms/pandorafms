@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -623,11 +623,13 @@ class CredentialStore extends Wizard
             $error = __('You must select a group where store this key!');
         } else if (empty($product) === true) {
             $error = __('You must specify a product type');
-        } else if (empty($username) === true && (empty($password) === true)) {
+        } else if (empty($username) === true || (empty($password) === true)) {
             $error = __('You must specify a username and/or password');
+        } else if (evaluate_ascii_valid_string(io_safe_output($identifier)) === false) {
+            $error = __('Identifier with forbidden characters. Check the documentation.');
         }
 
-        if (isset($error)) {
+        if (isset($error) === true) {
             $this->ajaxMsg('error', $error);
             exit;
         }
@@ -644,8 +646,15 @@ class CredentialStore extends Wizard
         ];
 
         // Spaces  are not allowed.
-        $values['identifier'] = preg_replace('/\s+/', '-', trim($identifier));
-
+        $values['identifier'] = \io_safe_input(
+            preg_replace(
+                '/\s+/',
+                '-',
+                trim(
+                    \io_safe_output($identifier)
+                )
+            )
+        );
         return $values;
     }
 
@@ -1270,7 +1279,7 @@ class CredentialStore extends Wizard
             });
 
         }
-    
+
         /**
          * Delete selected key
          */

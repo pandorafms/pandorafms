@@ -38,7 +38,7 @@ if (is_ajax() === true) {
     $type = get_parameter('type', 0);
 
     if ($getFilters === true) {
-        $refresh = get_parameter('refresh', 30);
+        $refresh = get_parameter('refresh', 180);
         $search = get_parameter('search', '');
         $group = get_parameter('group', true);
 
@@ -117,6 +117,7 @@ if (is_ajax() === true) {
                         'return'         => true,
                         'required'       => true,
                         'privilege'      => 'AR',
+                        'multiple'       => true,
                     ]
                 );
             break;
@@ -186,28 +187,20 @@ if (is_ajax() === true) {
             break;
 
             case 2:
-                $module_groups = modules_get_modulegroups();
-                // $module_groups[0] = _('Not assigned');
-                // hd(current($filter));
                 echo '<p class="label-dialog">'.__('Module group').'</p>';
-                echo html_print_select(
-                    $module_groups,
+                echo html_print_select_from_sql(
+                    'SELECT id_mg, name FROM tmodule_group ORDER BY name',
                     'filter[]',
                     $filter,
                     '',
-                    _('Not assigned'),
-                    0,
+                    __('Not assigned'),
+                    '0',
+                    true,
+                    true,
                     true,
                     false,
-                    false,
-                    '',
-                    false,
-                    'width: 70%',
-                    false,
-                    false,
-                    false,
-                    '',
-                    true
+                    'width: 200px',
+                    '5'
                 );
             break;
         }
@@ -216,20 +209,28 @@ if (is_ajax() === true) {
     }
 
     if ($getInfo === true) {
+        enterprise_include_once('include/functions_agents.php');
         $id = get_parameter('id', 0);
         switch ($type) {
             case 2:
                 $data = db_get_row('tagente_modulo', 'id_agente_modulo', $id);
+
                 // Nombre.
+                $link = sprintf(
+                    'index.php?sec=view&sec2=operation/agentes/status_monitor%s&ag_modulename=%s',
+                    '&refr=0&ag_group=0&module_option=1&status=-1',
+                    $data['nombre']
+                );
                 echo '<div class="div-dialog">';
                 echo '<p class="title-dialog">'.__('Module name').'</p>';
-                echo '<a class="info-dialog">'.$data['nombre'].'</a>';
+                echo '<a href="'.$link.'" class="info-dialog">'.$data['nombre'].'</a>';
                 echo '</div>';
 
                 // Descripcion.
+                $description = (empty($data['descripcion']) === true) ? '-' : $data['descripcion'];
                 echo '<div class="div-dialog">';
                 echo '<p class="title-dialog">'.__('Description').'</p>';
-                echo '<p class="info-dialog">'.$data['descripcion'].'</p>';
+                echo '<p class="info-dialog">'.$description.'</p>';
                 echo '</div>';
 
                 // Agent.
@@ -240,24 +241,35 @@ if (is_ajax() === true) {
                 echo '</div>';
 
                 // Group.
+                $group = (empty($data['id_module_group']) === true)
+                    ? '-'
+                    : modules_get_modulegroup_name($data['id_module_group']);
+
                 echo '<div class="div-dialog">';
-                echo '<p class="title-dialog">'.__('Group').'</p>';
-                echo '<p class="info-dialog">'.modules_get_modulegroup_name($data['id_module_group']).'</p>';
+                echo '<p class="title-dialog">'.__('Module group').'</p>';
+                echo '<p class="info-dialog">'.$group.'</p>';
                 echo '</div>';
             break;
 
             case 1:
                 $data = db_get_row('tagente_modulo', 'id_agente_modulo', $id);
+
                 // Nombre.
+                $link = sprintf(
+                    'index.php?sec=view&sec2=operation/agentes/status_monitor%s&ag_modulename=%s',
+                    '&refr=0&ag_group=0&module_option=1&status=-1',
+                    $data['nombre']
+                );
                 echo '<div class="div-dialog">';
                 echo '<p class="title-dialog">'.__('Module name').'</p>';
-                echo '<a class="info-dialog">'.$data['nombre'].'</a>';
+                echo '<a href="'.$link.'" class="info-dialog" target="_blank">'.$data['nombre'].'</a>';
                 echo '</div>';
 
                 // Descripcion.
+                $description = (empty($data['descripcion']) === true) ? '-' : $data['descripcion'];
                 echo '<div class="div-dialog">';
-                echo '<p sclass="title-dialog">'.__('Description').'</p>';
-                echo '<p class="info-dialog">'.$data['descripcion'].'</p>';
+                echo '<p class="title-dialog">'.__('Description').'</p>';
+                echo '<p class="info-dialog">'.$description.'</p>';
                 echo '</div>';
 
                 // Agent.
@@ -268,9 +280,13 @@ if (is_ajax() === true) {
                 echo '</div>';
 
                 // Group.
+                $group = (empty($data['id_module_group']) === true)
+                    ? '-'
+                    : modules_get_modulegroup_name($data['id_module_group']);
+
                 echo '<div class="div-dialog">';
-                echo '<p class="title-dialog">'.__('Group').'</p>';
-                echo '<p class="info-dialog">'.modules_get_modulegroup_name($data['id_module_group']).'</p>';
+                echo '<p class="title-dialog">'.__('Module group').'</p>';
+                echo '<p class="info-dialog">'.$group.'</p>';
                 echo '</div>';
 
                 // Tag.
@@ -317,17 +333,25 @@ if (is_ajax() === true) {
                 echo '</div>';
 
                 // Group.
+                $secondary_groups = '';
+                $secondary = agents_get_secondary_groups($data['id_agente']);
+                if (isset($secondary['for_select']) === true && empty($secondary['for_select']) === false) {
+                    $secondary_groups = implode(', ', $secondary['for_select']);
+                    $secondary_groups = ', '.$secondary_groups;
+                }
+
                 echo '<div class="div-dialog">';
                 echo '<p class="title-dialog">'.__('Group').'</p>';
-                echo '<p class="info-dialog">'.groups_get_name($data['id_grupo']).'</p>';
+                echo '<p class="info-dialog">'.groups_get_name($data['id_grupo']).$secondary_groups.'</p>';
                 echo '</div>';
+
 
                 // Events.
                 echo '<div class="div-dialog">';
                 echo graph_graphic_agentevents(
                     $id,
                     100,
-                    80,
+                    40,
                     SECONDS_1DAY,
                     '',
                     true,

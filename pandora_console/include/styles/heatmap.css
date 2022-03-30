@@ -253,3 +253,19 @@ div#heatmap-controls div.heatmap-refr > div {
   stroke: black;
   stroke-width: 0.05;
 }
+
+.small-stroke {
+  stroke-width: 0.03;
+}
+
+.big-stroke {
+  stroke-width: 0.05;
+}
+
+.small-size {
+  font-size: 0.2px;
+}
+
+.big-size {
+  font-size: 0.4px;
+}

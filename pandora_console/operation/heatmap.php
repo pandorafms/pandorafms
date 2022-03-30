@@ -45,7 +45,7 @@ require_once $config['homedir'].'/include/class/Heatmap.class.php';
 $pure = (bool) get_parameter('pure', false);
 $type = get_parameter('type', 0);
 $randomId = get_parameter('randomId', null);
-$refresh = get_parameter('refresh', 30);
+$refresh = get_parameter('refresh', 180);
 $height = get_parameter('height', 0);
 $width = get_parameter('width', 0);
 $search = get_parameter('search', '');
@@ -274,7 +274,7 @@ if ($is_ajax === true) {
                 draggable: false,
                 modal: true,
                 closeOnEscape: true,
-                height: 370,
+                height: 410,
                 width: 330,
                 title: '<?php echo __('Config'); ?>',
                 position: {

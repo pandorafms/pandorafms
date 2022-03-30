@@ -112,7 +112,7 @@ class Heatmap
         int $type=0,
         array $filter=[],
         string $randomId=null,
-        int $refresh=300,
+        int $refresh=180,
         int $width=0,
         int $height=0,
         string $search=null,
@@ -230,6 +230,8 @@ class Heatmap
                                         },
                                         (refresh * 1000)
                                     );
+                                } else {
+                                    location.reload();
                                 }
                             }
                         });
@@ -307,8 +309,7 @@ class Heatmap
 
         $id_grupo = '';
         if (empty($this->filter) === false && current($this->filter) != 0) {
-            $filter['id_grupo'] = current($this->filter);
-            $id_grupo = ' AND id_grupo = '.current($this->filter);
+            $id_grupo = ' AND id_grupo IN ('.implode(',', $this->filter).')';
         }
 
         // All agents.
@@ -380,7 +381,7 @@ class Heatmap
     {
         $filter_group = '';
         if (empty($this->filter) === false && current($this->filter) != -1) {
-            $filter_group = 'AND am.id_module_group ='.current($this->filter);
+            $filter_group = 'AND am.id_module_group IN ('.implode(',', $this->filter).')';
         }
 
         $filter_name = '';
@@ -477,9 +478,8 @@ class Heatmap
     {
         $filter_tag = '';
         if (empty($this->filter) === false && $this->filter[0] !== '0') {
-            foreach ($this->filter as $key => $value) {
-                $filter_tag .= ' AND tm.id_tag ='.$value;
-            }
+            $tags = implode(',', $this->filter);
+            $filter_tag .= ' AND tm.id_tag IN ('.$tags.')';
         }
 
         $filter_name = '';
@@ -680,11 +680,22 @@ class Heatmap
     {
         $result = $this->getData();
 
-        $scale = ($this->width / $this->height);
+        if (empty($result) === true) {
+            echo '<div style="position: absolute; top:70px; left:20px">'.__('No data found').'</div>';
+            return;
+        }
 
-        $Yaxis = $this->getYAxis(count($result), $scale);
-        $Xaxis = (int) ceil($Yaxis * $scale);
-        $Yaxis = ceil($Yaxis);
+        $count_result = count($result);
+
+        $scale = ($this->width / $this->height);
+        $Yaxis = $this->getYAxis($count_result, $scale);
+        if ($count_result <= 3) {
+            $Xaxis = $count_result;
+            $Yaxis = 1;
+        } else {
+            $Xaxis = (int) ceil($Yaxis * $scale);
+            $Yaxis = ceil($Yaxis);
+        }
 
         $viewBox = sprintf(
             '0 0 %d %d',
@@ -728,7 +739,7 @@ class Heatmap
                         modal: true,
                         closeOnEscape: true,
                         height: 400,
-                        width: 430,
+                        width: 530,
                         title: '<?php echo __('Info'); ?>',
                         open: function() {
                             $.ajax({
@@ -755,7 +766,15 @@ class Heatmap
             $x_back = 0;
             $y_back = 0;
 
-            echo '<polyline points="0,0 '.$Xaxis.',0" class="polyline" />';
+            if ($count_result <= 100) {
+                $fontSize = 'small-size';
+                $stroke = 'small-stroke';
+            } else {
+                $fontSize = 'big-size';
+                $stroke = 'big-stroke';
+            }
+
+            echo '<polyline points="0,0 '.$Xaxis.',0" class="polyline '.$stroke.'" />';
             foreach ($groups as $key => $group) {
                 $name = '';
                 switch ($this->type) {
@@ -786,7 +805,7 @@ class Heatmap
                             ($y_back + 1)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
                     }
 
                     $points = sprintf(
@@ -799,11 +818,11 @@ class Heatmap
                         $y_back
                     );
 
-                    echo '<polyline points="'.$points.'" class="polyline" />';
+                    echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                     // Name.
                     echo '<text x="'.((($x_position - $x_back) / 2) + $x_back).'" y="'.($y_position + 1).'"
-                        dominant-baseline="middle" style="font-size:0.4">'.$name.'</text>';
+                        class="'.$fontSize.'">'.$name.'</text>';
 
                     $x_back = $x_position;
                     if ($x_position === $Xaxis) {
@@ -815,7 +834,7 @@ class Heatmap
                             ($y_back + 1)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         $y_back++;
                         $x_back = 0;
@@ -838,7 +857,7 @@ class Heatmap
                                 ($y_position)
                             );
 
-                            echo '<polyline points="'.$points.'" class="polyline" />';
+                            echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
                         }
 
                         // Bottom of last line.
@@ -850,11 +869,11 @@ class Heatmap
                             ($y_position + 1)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Name.
                         echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
-                            dominant-baseline="middle" style="font-size:0.4">'.$name.'</text>';
+                            class="'.$fontSize.'">'.$name.'</text>';
 
                         // Bottom-right of last line.
                         $points = sprintf(
@@ -865,7 +884,7 @@ class Heatmap
                             ($y_position + 1)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         if ($x_position > $x_back) {
                             // Bottom-top of last line.
@@ -877,7 +896,7 @@ class Heatmap
                                 ($y_position)
                             );
 
-                            echo '<polyline points="'.$points.'" class="polyline" />';
+                            echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
                         }
                     } else {
                         // Two or more lines.
@@ -896,7 +915,7 @@ class Heatmap
                             ($y_position + 1)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Bottom-right of last line.
                         $points = sprintf(
@@ -907,11 +926,11 @@ class Heatmap
                             ($y_position + 1)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Name.
                         echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
-                            dominant-baseline="middle" style="font-size:0.4">'.$name.'</text>';
+                            class="'.$fontSize.'">'.$name.'</text>';
 
                         // Bottom-top of last line.
                         $points = sprintf(
@@ -922,7 +941,7 @@ class Heatmap
                             ($y_position)
                         );
 
-                        echo '<polyline points="'.$points.'" class="polyline" />';
+                        echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
                     }
 
                     if ($x_position === $Xaxis) {

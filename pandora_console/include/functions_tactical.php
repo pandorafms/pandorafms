@@ -118,6 +118,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
             $user_groups_ids = implode(',', array_unique($user_group_children_ids));
         }
 
+        // Subquery is needed for avoid possible duplicity in id_agente.
         $sql_stats = sprintf(
             'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_total,
             SUM(tma.total_count) AS monitors_total,
@@ -128,10 +129,12 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
 			SUM(tma.notinit_count) AS monitors_not_init,
 			SUM(tma.fired_count) AS alerts_fired
 			FROM tmetaconsole_agent tma
-            LEFT JOIN tmetaconsole_agent_secondary_group tmasg
-            ON tma.id_agente = tmasg.id_agent
-			WHERE tma.disabled = 0
-			AND tma.id_grupo IN (%s) OR tmasg.id_group IN (%s)
+            WHERE tma.disabled = 0
+            AND tma.id_agente IN (
+                SELECT DISTINCT tmag.id_agente FROM tmetaconsole_agent tmag
+                LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+                ON tmag.id_agente = tmasg.id_agent WHERE tmag.id_grupo IN (%s) OR tmasg.id_group IN (%s)
+            )
             GROUP BY tma.id_grupo',
             $user_groups_ids,
             $user_groups_ids

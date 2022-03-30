@@ -476,6 +476,7 @@ function event_change_status(event_ids) {
   var new_status = $("#estado").val();
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
+  var node_id = $("#hidden-node_id").val();
 
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -487,6 +488,7 @@ function event_change_status(event_ids) {
       event_ids: event_ids,
       new_status: new_status,
       meta: meta,
+      node_id: node_id,
       history: history
     },
     type: "POST",
@@ -519,6 +521,13 @@ function event_change_status(event_ids) {
             "N/A"
           );
         }
+
+        $("#general_status")
+          .find(".general_status")
+          .text(data.status_title);
+        $("#general_status")
+          .find("img")
+          .attr("src", data.status_img);
       } else {
         $("#notification_status_error").show();
       }
@@ -533,6 +542,7 @@ function event_change_owner() {
   var new_owner = $("#id_owner").val();
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
+  var node_id = $("#hidden-node_id").val();
 
   $("#button-owner_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -544,6 +554,7 @@ function event_change_owner() {
       event_id: event_id,
       new_owner: new_owner,
       meta: meta,
+      node_id: node_id,
       history: history
     },
     type: "POST",

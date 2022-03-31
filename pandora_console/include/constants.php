@@ -857,3 +857,6 @@ define(
         'ods'  => 'application/vnd.oasis.opendocument.spreadsheet',
     ]
 );
+
+// Pandora FMS Enterprise license.
+define('LICENSE_FILE', 'customer_key');

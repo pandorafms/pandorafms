@@ -74,6 +74,9 @@ if ($update_settings) {
             );
         }
 
+		// Update the license file.
+		file_put_contents($config["remote_config"] . '/' . LICENSE_FILE, $_POST['keys']['customer_key']);
+
         ui_print_success_message(__('License updated'));
     }
 }

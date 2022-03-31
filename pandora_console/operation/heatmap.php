@@ -170,7 +170,7 @@ if ($is_ajax === false && $pure === true) {
         [
             '30'                      => __('30 seconds'),
             (string) SECONDS_1MINUTE  => __('1 minute'),
-            '180'                     => __('3 minute'),
+            '180'                     => __('3 minutes'),
             (string) SECONDS_5MINUTES => __('5 minutes'),
         ],
         'refresh-control',

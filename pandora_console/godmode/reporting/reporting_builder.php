@@ -1852,6 +1852,36 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_width = get_parameter('macro_custom_width', []);
+                                $macro_custom_height = get_parameter('macro_custom_height', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+                                    if (isset($macro_custom_value[$key_macro]) === true) {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+
+                                    if (isset($macro_custom_width[$key_macro]) === true) {
+                                        $macros_definition[$key_macro]['width'] = $macro_custom_width[$key_macro];
+                                    }
+
+                                    if (isset($macro_custom_height[$key_macro]) === true) {
+                                        $macros_definition[$key_macro]['height'] = $macro_custom_height[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
+                                $good_format = true;
+                            break;
+
                             case 'min_value':
                             case 'max_value':
                             case 'avg_value':
@@ -2599,6 +2629,36 @@ switch ($action) {
                                     'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_width = get_parameter('macro_custom_width', []);
+                                $macro_custom_height = get_parameter('macro_custom_height', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+                                    if (isset($macro_custom_value[$key_macro]) === true) {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+
+                                    if (isset($macro_custom_width[$key_macro]) === true) {
+                                        $macros_definition[$key_macro]['width'] = $macro_custom_width[$key_macro];
+                                    }
+
+                                    if (isset($macro_custom_height[$key_macro]) === true) {
+                                        $macros_definition[$key_macro]['height'] = $macro_custom_height[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
                                 $good_format = true;
                             break;
 

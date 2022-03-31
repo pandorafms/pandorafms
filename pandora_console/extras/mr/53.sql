@@ -19,5 +19,8 @@ CREATE TABLE IF NOT EXISTS `tbackup` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
-
+ALTER TABLE `treport_content` ADD COLUMN `macros_definition` TEXT;
+ALTER TABLE `treport_content` ADD COLUMN `render_definition` TEXT;
+ALTER TABLE `treport_content_template` ADD COLUMN `macros_definition` TEXT;
+ALTER TABLE `treport_content_template` ADD COLUMN `render_definition` TEXT;
 COMMIT;

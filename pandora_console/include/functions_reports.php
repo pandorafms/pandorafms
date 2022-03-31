@@ -818,6 +818,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Grouped'),
         'name'     => __('Network interfaces'),
     ];
+    $types['custom_render'] = [
+        'optgroup' => __('Grouped'),
+        'name'     => __('Custom Render'),
+    ];
     $types['availability'] = [
         'optgroup' => __('Grouped'),
         'name'     => __('Availability'),
@@ -1030,4 +1034,227 @@ function reports_copy_report($id_report)
     }
 
     return true;
+}
+
+
+function get_table_custom_macros_report($data)
+{
+    $table = new StdClass();
+    $table->data = [];
+    $table->width = '100%';
+    $table->class = 'databox data fullwidth';
+    $table->id = 'table-macros-definition';
+    $table->rowclass = [];
+
+    $table->size = [];
+    $table->size['name'] = '20%';
+    $table->size['type'] = '20%';
+    $table->size['value'] = '50%';
+    $table->size['op'] = '10%';
+
+    $table->head = [];
+    $table->head['name'] = __('Macro');
+    $table->head['type'] = __('Type');
+    $table->head['value'] = __('Value');
+    $table->head['op'] = html_print_image(
+        'images/add.png',
+        true,
+        [
+            'class'   => 'invert_filter btn_debugModule',
+            'style'   => 'cursor: pointer; filter: invert(100%);',
+            'onclick' => 'addCustomFieldRow();',
+        ]
+    );
+
+    $list_macro_custom_type = [
+        0 => __('String'),
+        1 => __('Sql'),
+        2 => __('Graph Sql'),
+        3 => __('Simple graph'),
+    ];
+
+    $data = json_decode($data, true);
+    if (is_array($data) === false || empty($data) === true) {
+        $data = [];
+        $data[0] = [
+            'name'  => '',
+            'type'  => 0,
+            'value' => '',
+        ];
+    }
+
+    $table->data = [];
+    foreach ($data as $key_macro => $value_data_macro) {
+        $table->rowclass[$key_macro] = 'tr-macros-definition';
+        $table->data[$key_macro]['name'] = html_print_input_text_extended(
+            'macro_custom_name[]',
+            $value_data_macro['name'],
+            ($key_macro === 0) ? 'macro_custom_name' : 'macro_custom_name_'.$key_macro,
+            '',
+            15,
+            255,
+            false,
+            '',
+            'class="fullwidth"',
+            true
+        );
+
+        $table->data[$key_macro]['type'] = html_print_select(
+            $list_macro_custom_type,
+            'macro_custom_type[]',
+            $value_data_macro['type'],
+            'change_custom_fields_macros_report('.$key_macro.')',
+            '',
+            0,
+            true,
+            false,
+            false,
+            'fullwidth',
+            false,
+            'height: 32px;',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+
+        $custom_fields = custom_fields_macros_report(
+            $value_data_macro,
+            $key_macro
+        );
+
+        $custom_field_draw = '';
+        if (empty($custom_fields) === false) {
+            foreach ($custom_fields as $key => $value) {
+                $custom_field_draw .= $value;
+            }
+        }
+
+        $table->data[$key_macro]['value'] = $custom_field_draw;
+
+        $table->data[$key_macro]['op'] = html_print_image(
+            'images/clean.png',
+            true,
+            [
+                'class'   => 'invert_filter icon-clean-custom-macro',
+                'style'   => 'cursor: pointer;',
+                'onclick' => 'cleanCustomFieldRow('.$key_macro.')',
+            ]
+        );
+
+        $styles_remove = 'cursor: pointer; margin-right:10px;';
+        if ($key_macro === 0) {
+            $styles_remove .= 'display:none';
+        }
+
+        $table->data[$key_macro]['op'] .= html_print_image(
+            'images/delete.png',
+            true,
+            [
+                'class'   => 'invert_filter icon-delete-custom-macro',
+                'style'   => $styles_remove,
+                'onclick' => 'removeCustomFieldRow('.$key_macro.')',
+            ]
+        );
+    }
+
+    return html_print_table(
+        $table,
+        true
+    );
+
+}
+
+
+function custom_fields_macros_report($macro, $key_macro)
+{
+    $result = [];
+
+    switch ($macro['type']) {
+        case 0:
+        case 1:
+            $result['value'] = '<div class="custom-field-macro-report">';
+            $result['value'] .= '<label>';
+            $result['value'] .= ($macro['type'] === 0) ? __('String') : __('Sql');
+            $result['value'] .= '</label>';
+            $result['value'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.']',
+                $macro['value'],
+                ($key_macro === 0) ? 'macro_custom_value' : 'macro_custom_value_'.$key_macro,
+                '',
+                15,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+            $result['value'] .= '</div>';
+        break;
+
+        case 2:
+            $result['value'] = '<div class="custom-field-macro-report mb10">';
+            $result['value'] .= '<label>';
+            $result['value'] .= __('Sql');
+            $result['value'] .= '</label>';
+            $result['value'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.']',
+                $macro['value'],
+                ($key_macro === 0) ? 'macro_custom_value' : 'macro_custom_value_'.$key_macro,
+                '',
+                15,
+                255,
+                false,
+                '',
+                'class="fullwidth"',
+                true
+            );
+            $result['value'] .= '</div>';
+
+            $result['size'] = '<div class="custom-field-macro-report">';
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Width');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_width['.$key_macro.']',
+                $macro['width'],
+                ($key_macro === 0) ? 'macro_custom_width' : 'macro_custom_width_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Height');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_height['.$key_macro.']',
+                $macro['height'],
+                ($key_macro === 0) ? 'macro_custom_height' : 'macro_custom_height_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+            $result['size'] .= '</div>';
+        break;
+
+        default:
+            // code...
+        break;
+    }
+
+    return $result;
 }

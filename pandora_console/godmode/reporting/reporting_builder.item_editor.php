@@ -176,6 +176,8 @@ $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
+$macros_definition = '';
+$render_definition = '';
 
 $only_data = false;
 
@@ -722,6 +724,12 @@ switch ($action) {
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $recursion = $item['recursion'];
                     $graph_render = $item['graph_render'];
+                break;
+
+                case 'custom_render':
+                    $description = $item['description'];
+                    $macros_definition = $item['macros_definition'];
+                    $render_definition = $item['render_definition'];
                 break;
 
                 case 'top_n':
@@ -2436,6 +2444,35 @@ $class = 'databox filters';
                     $list_graph_render,
                     'graph_render',
                     $graph_render
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_macros_definition" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Macros definition');
+            ?>
+            </td>
+            <td>
+                <?php echo get_table_custom_macros_report($macros_definition); ?>
+            </td>
+        </tr>
+
+        <tr id="row_render_definition" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Render definition');
+            ?>
+            </td>
+            <td>
+                <?php
+                echo html_print_textarea(
+                    'render_definition',
+                    3,
+                    25,
+                    $render_definition
                 );
                 ?>
             </td>
@@ -5453,7 +5490,7 @@ function addSLARow() {
     var slaMax = $("input[name=sla_max]").val();
     var slaLimit = $("input[name=sla_limit]").val();
     var serviceId = $("select#id_service>option:selected").val();
-    if(serviceId != '' && serviceId.split('|').length > 1 ) {
+    if(serviceId != undefined && serviceId != '' && serviceId.split('|').length > 1 ) {
         var ids = serviceId.split('|');
         serverId = ids[0];
         serviceId = ids[1];
@@ -5895,6 +5932,8 @@ function chooseType() {
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
     $("#row_graph_render").hide();
+    $("#row_macros_definition").hide();
+    $("#row_render_definition").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
     $("#row_exception_condition_value").hide();
@@ -6441,6 +6480,13 @@ function chooseType() {
             }
             break;
 
+        case 'custom_render':
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_macros_definition").show();
+            $("#row_render_definition").show();
+            break;
+
         case 'top_n':
             $("#row_description").show();
             $("#row_period").show();
@@ -6765,6 +6811,81 @@ function chooseType() {
         default:
             break;
     }
+}
+
+function addCustomFieldRow() {
+  var clone = $("#table-macros-definition #table-macros-definition-0")
+    .clone()
+    .prop("id", "table-macros-definition-" + $("tr.tr-macros-definition").length);
+
+    clone
+    .find("#macro_custom_name")
+    .prop("id", "macro_custom_name_" + $("tr.tr-macros-definition").length)
+    .val("");
+
+    clone
+    .find("#macro_custom_type")
+    .prop("id", "macro_custom_type" + $("tr.tr-macros-definition").length)
+    .attr("onchange", "change_custom_fields_macros_report(" + $("tr.tr-macros-definition").length + ")");
+
+    clone
+    .find("#table-macros-definition-0-value")
+    .prop("id", "table-macros-definition-"+$("tr.tr-macros-definition").length+"-value");
+
+    clone
+    .find("#macro_custom_value")
+    .prop("id", "macro_custom_value_" + $("tr.tr-macros-definition").length)
+    .val('');
+
+    clone
+    .find(".icon-clean-custom-macro")
+    .attr("onclick", "cleanCustomFieldRow(" + $("tr.tr-macros-definition").length + ")");
+
+    clone
+    .find(".icon-delete-custom-macro")
+    .attr("onclick", "removeCustomFieldRow(" + $("tr.tr-macros-definition").length + ")")
+    .css("display", "inline-block");
+
+    clone
+    .appendTo("#table-macros-definition");
+}
+
+function cleanCustomFieldRow(row) {
+    if(row === 0) {
+        // Default value.
+        $("#macro_custom_name").val('');
+        $("#macro_custom_value").val('');
+    } else {
+        $("#macro_custom_name_"+row).val('');
+        $("#macro_custom_value_"+row).val('');
+        $("#macro_custom_width_"+row).val('');
+        $("#macro_custom_height_"+row).val('');
+    }
+}
+
+function removeCustomFieldRow(row) {
+    if(row !== 0) {
+        $("tr#table-macros-definition-"+row).remove();
+    }
+}
+
+function change_custom_fields_macros_report(id) {
+    var new_type = this.event.target.value;
+    jQuery.post (
+        "ajax.php",
+        {
+            "page" : "include/ajax/reporting.ajax",
+            "change_custom_fields_macros_report" : 1,
+            "macro_type": new_type,
+            "macro_id": id
+        },
+        function (data, status) {
+            console.log(id);
+            $("td#table-macros-definition-"+id+"-value").empty();
+            $("td#table-macros-definition-"+id+"-value").append(data);
+        },
+        "html"
+    );
 }
 
 function event_change_id_agent_inventory() {

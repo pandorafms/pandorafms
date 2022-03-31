@@ -688,6 +688,15 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'custom_render':
+                $report['contents'][] = reporting_custom_render(
+                    $report,
+                    $content,
+                    $type,
+                    $pdf
+                );
+            break;
+
             case 'group_configuration':
                 $report['contents'][] = reporting_group_configuration(
                     $report,
@@ -4670,6 +4679,224 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
             $id_meta
         );
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
+{
+    global $config;
+
+    $return['type'] = 'custom_render';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Custom render report');
+    }
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = '';
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['failed'] = null;
+
+    $macros = [];
+    $patterns = [];
+    $substitutions = [];
+    if (isset($content['macros_definition']) === true
+        && empty($content['macros_definition']) === false
+    ) {
+        $macros = json_decode(
+            io_safe_output($content['macros_definition']),
+            true
+        );
+        if (empty($macros) === false && is_array($macros) === true) {
+            foreach ($macros as $key_macro => $data_macro) {
+                switch ($data_macro['type']) {
+                    case 0:
+                        // Type: String.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+                        $substitutions[] = $data_macro['value'];
+                    break;
+
+                    case 1:
+                        // Type Sql value.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+
+                        $regex = '/(UPDATE|INSERT INTO|DELETE FROM|TRUNCATE|DROP|ALTER|CREATE|GRANT|REVOKE)\s+(.*?)\s+/i';
+                        if (preg_match($regex, $data_macro['value']) > 0) {
+                            $value_query = __('This query is insecure, it could apply unwanted modiffications on the schema');
+                        } else {
+                            $error_reporting = error_reporting();
+                            error_reporting(0);
+                            $value_query = db_get_value_sql(
+                                trim($data_macro['value'], ';')
+                            );
+
+                            if ($value_query === false) {
+                                $value_query = __('Error: %s', $config['dbconnection']->error);
+                            }
+
+                            error_reporting($error_reporting);
+                        }
+
+                        $substitutions[] = $value_query;
+                    break;
+
+                    case 2:
+                        // Type: SQL graph.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+
+                        $regex = '/(UPDATE|INSERT INTO|DELETE FROM|TRUNCATE|DROP|ALTER|CREATE|GRANT|REVOKE)\s+(.*?)\s+/i';
+                        if (preg_match($regex, $data_macro['value']) > 0) {
+                            $value_query = __('This query is insecure, it could apply unwanted modiffications on the schema');
+                        } else {
+                            $error_reporting = error_reporting();
+                            error_reporting(0);
+                            $data_query = db_get_all_rows_sql(
+                                trim($data_macro['value'], ';')
+                            );
+
+                            error_reporting($error_reporting);
+
+                            if ($data_query === false) {
+                                $value_query = __('Error: %s', $config['dbconnection']->error);
+                            } else {
+                                $width = (isset($data_macro['width']) === true) ? $data_macro['width'] : 210;
+                                $height = (isset($data_macro['height']) === true) ? $data_macro['height'] : 210;
+
+                                // TODO: Allow to paint horizontal and vertical bar graphs for the moment only pie graphs.
+                                $type = 'sql_graph_pie';
+
+                                $SQL_GRAPH_MAX_LABEL_SIZE = 5;
+
+                                $count = 0;
+                                $flagOther = false;
+                                foreach ($data_query as $data_item) {
+                                    $count++;
+                                    $value = 0;
+                                    if (empty($data_item['value']) === false) {
+                                        $value = $data_item['value'];
+                                    }
+
+                                    if ($count <= 5) {
+                                        $label = __('Data');
+                                        if (empty($data_item['label']) === false) {
+                                            $label = io_safe_output($data_item['label']);
+                                            if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
+                                                $first_label = $label;
+                                                $label = substr(
+                                                    $first_label,
+                                                    0,
+                                                    floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                                                );
+                                                $label .= '...<br>';
+                                                $label .= substr(
+                                                    $first_label,
+                                                    floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                                                );
+                                            }
+                                        }
+
+                                        switch ($type) {
+                                            case 'sql_graph_vbar':
+                                            default:
+                                                // Vertical bar.
+                                                $data[] = [
+                                                    'tick' => $label.'_'.$count,
+                                                    'data' => $value,
+                                                ];
+                                            break;
+
+                                            case 'sql_graph_hbar':
+                                                // Horizontal bar.
+                                                $data[$label.'_'.$count]['g'] = $value;
+                                            break;
+
+                                            case 'sql_graph_pie':
+                                                // Pie.
+                                                $data[$label.'_'.$count] = $value;
+                                            break;
+                                        }
+                                    } else {
+                                        switch ($type) {
+                                            case 'sql_graph_vbar':
+                                            default:
+                                                // Vertical bar.
+                                                if ($flagOther === false) {
+                                                    $data[] = [
+                                                        'tick' => __('Other'),
+                                                        'data' => $value,
+                                                    ];
+
+                                                    $flagOther = true;
+                                                }
+
+                                                $data[(count($data) - 1)]['data'] += $value;
+                                            break;
+
+                                            case 'sql_graph_hbar':
+                                                // Horizontal bar.
+                                                if (isset($data[__('Other')]['g']) === false) {
+                                                    $data[__('Other')]['g'] = 0;
+                                                }
+
+                                                $data[__('Other')]['g'] += $value;
+                                            break;
+
+                                            case 'sql_graph_pie':
+                                                // Pie.
+                                                if (isset($data[__('Other')]) === false) {
+                                                    $data[__('Other')] = 0;
+                                                }
+
+                                                $data[__('Other')] += $value;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                $value_query = pie_graph(
+                                    $data,
+                                    $width,
+                                    $height,
+                                    __('other'),
+                                    ui_get_full_url(false, false, false, false),
+                                    '',
+                                    $config['fontpath'],
+                                    $config['font_size'],
+                                    2,
+                                    'hidden',
+                                    '',
+                                    true
+                                );
+                            }
+                        }
+
+                        $substitutions[] = $value_query;
+                    break;
+
+                    default:
+                        // Not possible.
+                    break;
+                }
+            }
+        }
+    }
+
+    $return['data'] = preg_replace(
+        $patterns,
+        $substitutions,
+        $content['render_definition']
+    );
 
     return reporting_check_structure_content($return);
 }
@@ -9961,10 +10188,12 @@ function reporting_get_date_text($report=null, $content=null)
     if (!empty($report) && !empty($content)) {
         if ($content['period'] == 0) {
             $es = json_decode($content['external_source'], true);
-            if ($es['date'] == 0) {
-                $return['period'] = 0;
-            } else {
-                $return['date'] = $es['date'];
+            if (empty($es) === false) {
+                if ($es['date'] == 0) {
+                    $return['period'] = 0;
+                } else {
+                    $return['date'] = $es['date'];
+                }
             }
         } else {
             $return['period'] = $content['period'];

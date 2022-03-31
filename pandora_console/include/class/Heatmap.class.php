@@ -112,7 +112,7 @@ class Heatmap
         int $type=0,
         array $filter=[],
         string $randomId=null,
-        int $refresh=180,
+        int $refresh=300,
         int $width=0,
         int $height=0,
         string $search=null,

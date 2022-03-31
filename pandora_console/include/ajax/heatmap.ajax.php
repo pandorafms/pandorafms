@@ -38,7 +38,7 @@ if (is_ajax() === true) {
     $type = get_parameter('type', 0);
 
     if ($getFilters === true) {
-        $refresh = get_parameter('refresh', 180);
+        $refresh = get_parameter('refresh', SECONDS_5MINUTES);
         $search = get_parameter('search', '');
         $group = get_parameter('group', true);
 
@@ -49,7 +49,7 @@ if (is_ajax() === true) {
                     [
                         '30'                      => __('30 seconds'),
                         (string) SECONDS_1MINUTE  => __('1 minute'),
-                        '180'                     => __('3 minute'),
+                        '180'                     => __('3 minutes'),
                         (string) SECONDS_5MINUTES => __('5 minutes'),
                     ],
                     'refresh',

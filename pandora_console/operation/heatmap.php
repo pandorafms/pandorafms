@@ -45,7 +45,7 @@ require_once $config['homedir'].'/include/class/Heatmap.class.php';
 $pure = (bool) get_parameter('pure', false);
 $type = get_parameter('type', 0);
 $randomId = get_parameter('randomId', null);
-$refresh = get_parameter('refresh', 180);
+$refresh = get_parameter('refresh', SECONDS_5MINUTES);
 $height = get_parameter('height', 0);
 $width = get_parameter('width', 0);
 $search = get_parameter('search', '');

@@ -638,9 +638,9 @@ class HTML
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div class="flex mrgn_btn_25px wrap">';
+                    $output .= '<div class="flex-row-center flex-nowrap mrgn_btn_15px">';
                     if (!isset($input['extra'])) {
-                        $output .= '<div class="w50p">';
+                        $output .= '<div class="w100p">';
                     }
 
                     if (isset($input['extra'])) {
@@ -652,7 +652,7 @@ class HTML
                     $output .= '<div class="mrgn_right_10px">';
                 }
 
-                $output .= '<div class="label_select">';
+                $output .= '<div class="">';
                 $output .= $input['label'];
                 $output .= '</div>';
 

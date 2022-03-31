@@ -256,6 +256,10 @@ class AgentModuleWidget extends Widget
             1 => __('Show module data'),
         ];
 
+        if (empty($this->values['mModules']) === true && empty($this->values['mTypeShow'])) {
+            $this->values['mTypeShow'] = 1;
+        }
+
         $inputs[] = [
             'class'     => 'flex flex-row',
             'label'     => __('Information to be shown'),

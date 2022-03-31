@@ -1847,6 +1847,10 @@ $class = 'databox filters';
                     1 => __('Show module data'),
                 ];
 
+                if ($action === 'new' && empty($show_type) === true) {
+                    $show_type = 1;
+                }
+
                 html_print_select(
                     $show_select,
                     'show_type',

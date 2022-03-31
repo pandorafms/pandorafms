@@ -200,6 +200,10 @@ class AgentModuleWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::decoders($decoder);
 
+        if (isset($decoder['mTypeShow']) === true) {
+            $values['mTypeShow'] = $decoder['mTypeShow'];
+        }
+
         if (isset($decoder['mGroup']) === true) {
             $values['mGroup'] = $decoder['mGroup'];
         }
@@ -246,6 +250,29 @@ class AgentModuleWidget extends Widget
             'label' => __('Filter modules'),
         ];
 
+        // Type show.
+        $show_select = [
+            0 => __('Show module status'),
+            1 => __('Show module data'),
+        ];
+
+        if (empty($this->values['mModules']) === true && empty($this->values['mTypeShow'])) {
+            $this->values['mTypeShow'] = 1;
+        }
+
+        $inputs[] = [
+            'class'     => 'flex flex-row',
+            'label'     => __('Information to be shown'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $show_select,
+                'name'     => 'filtered-type-show-'.$this->cellId,
+                'return'   => true,
+                'id'       => 'filtered-type-show-'.$this->cellId,
+                'selected' => ($this->values['mTypeShow'] === null) ? 0 : $this->values['mTypeShow'],
+            ],
+        ];
+
         $return_all_group = false;
 
         if (users_can_manage_group_all('RM') || $this->values['mGroup'] == 0) {
@@ -284,6 +311,10 @@ class AgentModuleWidget extends Widget
     {
         // Retrieve global - common inputs.
         $values = parent::getPost();
+
+        $values['mTypeShow'] = \get_parameter(
+            'filtered-type-show-'.$this->cellId
+        );
 
         $values['mGroup'] = \get_parameter(
             'filtered-module-group-'.$this->cellId
@@ -409,7 +440,7 @@ class AgentModuleWidget extends Widget
         array $visualData,
         array $allModules
     ):string {
-        $style = 'display:flex; width:100%; margin: 10px;';
+        $style = 'display:flex; width:96%; margin-top: 10px;';
         $table_data = '<div style="'.$style.'">';
         $table_data .= '<table class="widget_agent_module transparent mrgn_0px" cellpadding="1" cellspacing="0" border="0">';
 
@@ -478,118 +509,126 @@ class AgentModuleWidget extends Widget
                 }
 
                 foreach ($row['modules'] as $module_name => $module) {
-                    if ($module === null) {
-                        if (in_array($module_name, $allModules) === true) {
-                            $style = 'background-color: transparent;';
-                            $table_data .= "<td style='".$style."'>";
-                            $table_data .= '</td>';
-                        } else {
-                            continue;
-                        }
-                    } else {
+                    if ($this->values['mTypeShow'] === '1') {
                         $style = 'text-align: center;';
                         $style .= ' background-color: transparent;';
                         $table_data .= "<td style='".$style."'>";
-                        switch ($module) {
-                            case AGENT_STATUS_NORMAL:
-                                $table_data .= \ui_print_status_image(
-                                    'module_ok.png',
-                                    __(
-                                        '%s in %s : NORMAL',
-                                        $module_name,
-                                        $row['agent_alias']
-                                    ),
-                                    true,
-                                    [
-                                        'width'  => '20px',
-                                        'height' => '20px',
-                                    ]
-                                );
-                            break;
-
-                            case AGENT_STATUS_CRITICAL:
-                                $table_data .= \ui_print_status_image(
-                                    'module_critical.png',
-                                    __(
-                                        '%s in %s : CRITICAL',
-                                        $module_name,
-                                        $row['agent_alias']
-                                    ),
-                                    true,
-                                    [
-                                        'width'  => '20px',
-                                        'height' => '20px',
-                                    ]
-                                );
-                            break;
-
-                            case AGENT_STATUS_WARNING:
-                                $table_data .= \ui_print_status_image(
-                                    'module_warning.png',
-                                    __(
-                                        '%s in %s : WARNING',
-                                        $module_name,
-                                        $row['agent_alias']
-                                    ),
-                                    true,
-                                    [
-                                        'width'  => '20px',
-                                        'height' => '20px',
-                                    ]
-                                );
-                            break;
-
-                            case AGENT_STATUS_UNKNOWN:
-                                $table_data .= \ui_print_status_image(
-                                    'module_unknown.png',
-                                    __(
-                                        '%s in %s : UNKNOWN',
-                                        $module_name,
-                                        $row['agent_alias']
-                                    ),
-                                    true,
-                                    [
-                                        'width'  => '20px',
-                                        'height' => '20px',
-                                    ]
-                                );
-                            break;
-
-                            case 4:
-                                $table_data .= \ui_print_status_image(
-                                    'module_no_data.png',
-                                    __(
-                                        '%s in %s : Not initialize',
-                                        $module_name,
-                                        $row['agent_alias']
-                                    ),
-                                    true,
-                                    [
-                                        'width'  => '20px',
-                                        'height' => '20px',
-                                    ]
-                                );
-                            break;
-
-                            case AGENT_STATUS_ALERT_FIRED:
-                            default:
-                                $table_data .= \ui_print_status_image(
-                                    'module_alertsfired.png',
-                                    __(
-                                        '%s in %s : ALERTS FIRED',
-                                        $module_name,
-                                        $row['agent_alias']
-                                    ),
-                                    true,
-                                    [
-                                        'width'  => '20px',
-                                        'height' => '20px',
-                                    ]
-                                );
-                            break;
-                        }
-
+                        $table_data .= $module;
                         $table_data .= '</td>';
+                    } else {
+                        if ($module === null) {
+                            if (in_array($module_name, $allModules) === true) {
+                                $style = 'background-color: transparent;';
+                                $table_data .= "<td style='".$style."'>";
+                                $table_data .= '</td>';
+                            } else {
+                                continue;
+                            }
+                        } else {
+                            $style = 'text-align: center;';
+                            $style .= ' background-color: transparent;';
+                            $table_data .= "<td style='".$style."'>";
+                            switch ($module) {
+                                case AGENT_STATUS_NORMAL:
+                                    $table_data .= \ui_print_status_image(
+                                        'module_ok.png',
+                                        __(
+                                            '%s in %s : NORMAL',
+                                            $module_name,
+                                            $row['agent_alias']
+                                        ),
+                                        true,
+                                        [
+                                            'width'  => '20px',
+                                            'height' => '20px',
+                                        ]
+                                    );
+                                break;
+
+                                case AGENT_STATUS_CRITICAL:
+                                    $table_data .= \ui_print_status_image(
+                                        'module_critical.png',
+                                        __(
+                                            '%s in %s : CRITICAL',
+                                            $module_name,
+                                            $row['agent_alias']
+                                        ),
+                                        true,
+                                        [
+                                            'width'  => '20px',
+                                            'height' => '20px',
+                                        ]
+                                    );
+                                break;
+
+                                case AGENT_STATUS_WARNING:
+                                    $table_data .= \ui_print_status_image(
+                                        'module_warning.png',
+                                        __(
+                                            '%s in %s : WARNING',
+                                            $module_name,
+                                            $row['agent_alias']
+                                        ),
+                                        true,
+                                        [
+                                            'width'  => '20px',
+                                            'height' => '20px',
+                                        ]
+                                    );
+                                break;
+
+                                case AGENT_STATUS_UNKNOWN:
+                                    $table_data .= \ui_print_status_image(
+                                        'module_unknown.png',
+                                        __(
+                                            '%s in %s : UNKNOWN',
+                                            $module_name,
+                                            $row['agent_alias']
+                                        ),
+                                        true,
+                                        [
+                                            'width'  => '20px',
+                                            'height' => '20px',
+                                        ]
+                                    );
+                                break;
+
+                                case 4:
+                                    $table_data .= \ui_print_status_image(
+                                        'module_no_data.png',
+                                        __(
+                                            '%s in %s : Not initialize',
+                                            $module_name,
+                                            $row['agent_alias']
+                                        ),
+                                        true,
+                                        [
+                                            'width'  => '20px',
+                                            'height' => '20px',
+                                        ]
+                                    );
+                                break;
+
+                                case AGENT_STATUS_ALERT_FIRED:
+                                default:
+                                    $table_data .= \ui_print_status_image(
+                                        'module_alertsfired.png',
+                                        __(
+                                            '%s in %s : ALERTS FIRED',
+                                            $module_name,
+                                            $row['agent_alias']
+                                        ),
+                                        true,
+                                        [
+                                            'width'  => '20px',
+                                            'height' => '20px',
+                                        ]
+                                    );
+                                break;
+                            }
+
+                            $table_data .= '</td>';
+                        }
                     }
                 }
 
@@ -743,9 +782,11 @@ class AgentModuleWidget extends Widget
                         }
                     }
                 } else {
-                    $modules = $agent->searchModules(
-                        ['nombre' => array_keys($reduceAllModules)]
-                    );
+                    if (empty($reduceAllModules) === false) {
+                        $modules = $agent->searchModules(
+                            ['nombre' => array_keys($reduceAllModules)]
+                        );
+                    }
                 }
 
                 $visualData[$agent_id]['modules'] = $reduceAllModules;
@@ -754,7 +795,14 @@ class AgentModuleWidget extends Widget
                         continue;
                     }
 
-                    $visualData[$agent_id]['modules'][$module->name()] = $module->getStatus()->estado();
+                    if ($this->values['mTypeShow'] === '1') {
+                        $mod = $module->toArray();
+                        $mod['datos'] = $module->lastValue();
+                        $module_last_value = modules_get_agentmodule_data_for_humans($mod);
+                        $visualData[$agent_id]['modules'][$module->name()] = $module_last_value;
+                    } else {
+                        $visualData[$agent_id]['modules'][$module->name()] = $module->getStatus()->estado();
+                    }
                 }
 
                 if ((bool) is_metaconsole() === true) {
@@ -765,7 +813,10 @@ class AgentModuleWidget extends Widget
             }
         }
 
-        $allModules = array_keys($reduceAllModules);
+        if (empty($reduceAllModules) === false) {
+            $allModules = array_keys($reduceAllModules);
+        }
+
         if ($allModules === null) {
             $allModules = [];
         }

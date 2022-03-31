@@ -760,6 +760,11 @@ switch ($action) {
                     );
 
                     $selection_a_m = get_parameter('selection');
+
+                    if (isset($es['show_type']) === true) {
+                        $show_type = $es['show_type'];
+                    }
+
                     $recursion = $item['recursion'];
 
                     $group = $item['id_group'];
@@ -1828,6 +1833,37 @@ $class = 'databox filters';
                 html_print_input_hidden(
                     'module-multiple-text',
                     json_encode($agents_select)
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_type_show" class="datos">
+            <td class="bolder"><?php echo __('Information to be shown'); ?></td>
+            <td>
+                <?php
+                $show_select = [
+                    0 => __('Show module status'),
+                    1 => __('Show module data'),
+                ];
+
+                if ($action === 'new' && empty($show_type) === true) {
+                    $show_type = 1;
+                }
+
+                html_print_select(
+                    $show_select,
+                    'show_type',
+                    $show_type,
+                    '',
+                    '',
+                    0,
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    'min-width: 180px'
                 );
                 ?>
             </td>
@@ -5925,6 +5961,7 @@ function chooseType() {
     $("#row_agent_not_assigned_to_ip").hide();
     $("#row_show_summary").hide();
     $("#row_group_by").hide();
+    $("#row_type_show").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6438,6 +6475,7 @@ function chooseType() {
 
         case 'agent_module':
             $("#row_module_group").show();
+            $("#row_type_show").show();
         case 'agent_module_status':
             $("#row_description").show();
             $("#row_group").show();

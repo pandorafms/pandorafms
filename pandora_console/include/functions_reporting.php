@@ -2802,6 +2802,12 @@ function reporting_agent_module($report, $content)
         true
     );
 
+    if (isset($external_source['show_type']) === true) {
+        $show_type = $external_source['show_type'];
+    } else {
+        $show_type = 0;
+    }
+
     $return['type'] = 'agent_module';
 
     if (empty($content['name'])) {
@@ -2838,6 +2844,10 @@ function reporting_agent_module($report, $content)
             modules_get_agentmodule_name($modul_id)
         );
         $modules_by_name[$cont]['id'] = $modul_id;
+        if ($show_type === '1') {
+            $modules_by_name[$cont]['unit'] = modules_get_unit($modul_id);
+        }
+
         $cont++;
     }
 
@@ -2853,7 +2863,18 @@ function reporting_agent_module($report, $content)
             $row['modules'] = [];
             foreach ($modules_by_name as $module) {
                 if (array_key_exists($module['id'], $agent_modules)) {
-                    $row['modules'][$module['name']] = modules_get_agentmodule_status($module['id']);
+                    if ($show_type === '1') {
+                        $module_last_value = modules_get_last_value($module['id']);
+                        if (!is_numeric($module_last_value)) {
+                            $module_last_value = htmlspecialchars($module_last_value);
+                        }
+
+                        $module['datos'] = $module_last_value;
+                        $row['modules'][$module['name']] = modules_get_agentmodule_data_for_humans($module);
+                        $row['show_type'] = $show_type;
+                    } else {
+                        $row['modules'][$module['name']] = modules_get_agentmodule_status($module['id']);
+                    }
                 } else {
                     if (!array_key_exists($module['name'], $row['modules'])) {
                         $row['modules'][$module['name']] = null;

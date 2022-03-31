@@ -1848,18 +1848,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			my @user_list = map {clean_blank($_)} split /,/, $field1;
 			my @group_list = map {clean_blank($_)} split /,/, $field2;
 
-			my $notification = {};
-			$notification->{'subject'} = safe_input($field3);
-			$notification->{'mensaje'} = safe_input($field4);
-			$notification->{'id_source'} = get_db_value($dbh, 'SELECT id FROM tnotification_source WHERE description = ?', safe_input('System status'));
-
-			# Create message
-			my $notification_id = db_process_insert($dbh,'id_mensaje','tmensajes',$notification);
-			if (!$notification_id) {
-				logger($pa_config, "Failed action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined($agent) ? $agent->{'alias'} : 'N/A') . "'.", 3);
-			} else {
-				notification_set_targets($pa_config, $dbh, $notification_id, \@user_list, \@group_list);
-			}
+			send_console_notification($pa_config, $dbh, $field3, $field4, \@user_list, \@group_list);
 		} else {
 			logger($pa_config, "Failed action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined($agent) ? $agent->{'alias'} : 'N/A') . "' Empty targets. Ignored.", 3);
 		}
@@ -1873,6 +1862,40 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
  			WHERE id = ?', int(time ()), $action->{'id_alert_templ_module_actions'});
+	}
+}
+
+##########################################################################
+=head2 C<< send_console_notification (I<$pa_config>, I<$dbh>, I<$subject>, I<$message>, I<$user_list>, I<$group_list>) >> 
+
+Send message (with subject) to given userlist and/ or group list.
+
+=cut
+##########################################################################
+sub send_console_notification {
+	my ($pa_config, $dbh, $subject, $message, $user_list, $group_list) = @_;
+
+	my $notification = {};
+
+	$notification->{'subject'} = safe_input($subject);
+	$notification->{'mensaje'} = safe_input($message);
+	$notification->{'id_source'} = get_db_value($dbh,
+		'SELECT id FROM tnotification_source WHERE description = ?',
+		safe_input('System status')
+	);
+
+	# Create message
+	my $notification_id = db_process_insert($dbh, 'id_mensaje', 'tmensajes', $notification);
+	if (!$notification_id) {
+		logger($pa_config, "Cannot send notification '" . $subject . "'", 3);
+	} else {
+		notification_set_targets(
+			$pa_config,
+			$dbh,
+			$notification_id,
+			$user_list,
+			$group_list
+		);
 	}
 }
 

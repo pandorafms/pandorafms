@@ -251,6 +251,7 @@ sub data_consumer ($$) {
     }
 
     my $recon = new PandoraFMS::Recon::Base(
+      parent => $self,
       communities => \@communities,
       dbh => $dbh,
       group_id => $task->{'id_group'},
@@ -1726,6 +1727,16 @@ sub PandoraFMS::Recon::Base::delete_connections($) {
 ################################################################################
 sub PandoraFMS::Recon::Base::message($$$) {
   my ($self, $message, $verbosity) = @_;
+
+  if ($verbosity <= 1) {
+    PandoraFMS::Core::send_console_notification(
+      $self->{'pa_config'},
+      $self->{'parent'}->getDBH(),
+      "[Recon task " . $self->{'task_id'} . "]",
+      $message,
+      ['admin']
+    )
+  }
 
   logger($self->{'pa_config'}, "[Recon task " . $self->{'task_id'} . "] $message", $verbosity);
 }

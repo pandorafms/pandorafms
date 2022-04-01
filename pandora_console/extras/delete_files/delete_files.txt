@@ -1374,12 +1374,9 @@ godmode/um_client/vendor/doctrine/instantiator/src/Doctrine/Instantiator/Excepti
 godmode/um_client/vendor/doctrine/instantiator/src/Doctrine/Instantiator/Exception/ExceptionInterface.php
 godmode/um_client/vendor/doctrine/instantiator/src/Doctrine/Instantiator/Instantiator.php
 godmode/um_client/vendor/doctrine/instantiator/src/Doctrine/Instantiator/InstantiatorInterface.php
-godmode/um_client/index.php
 godmode/um_client/views/online.php
 godmode/um_client/views/offline.php
 godmode/um_client/views/register.php
-godmode/um_client/api.php
-godmode/um_client/updateMR.php
 godmode/um_client/composer.json
 godmode/um_client/composer.lock
 godmode/um_client/lib/UpdateManager/UI/View.php

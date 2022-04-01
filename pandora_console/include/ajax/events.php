@@ -894,7 +894,9 @@ function save_update_filter() {
         "id_extra": $("#text-id_extra").val(),
         "user_comment": $("#text-user_comment").val(),
         "id_source_event": $("#text-id_source_event").val(),
-        "server_id": $("#server_id").val()
+        "server_id": $("#server_id").val(),
+        "custom_data": $("#text-custom_data").val(),
+        "custom_data_filter_type": $("#custom_data_filter_type").val()
 
         },
         function (data) {

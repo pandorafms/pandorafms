@@ -232,7 +232,6 @@ function fmModuleChange(uniqId, isMeta) {
       selection: showCommonModules
     },
     function(data) {
-      debugger;
       $("#filtered-module-modules-" + uniqId).html("");
       if (data) {
         jQuery.each(data, function(id, value) {

@@ -502,6 +502,7 @@ class EventsListWidget extends Widget
 
         \ui_require_css_file('events', 'include/styles/', true);
         \ui_require_css_file('tables', 'include/styles/', true);
+        \ui_require_javascript_file('pandora_events', 'include/javascript/', true);
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
         $this->values['tagsId'] = explode(',', $this->values['tagsId'][0]);
@@ -668,6 +669,18 @@ class EventsListWidget extends Widget
                 true
             );
 
+            $output .= \html_print_input_hidden(
+                'meta',
+                is_metaconsole(),
+                true
+            );
+
+            $output .= \html_print_input_hidden(
+                'delete_confirm_message',
+                __('Are you sure?'),
+                true
+            );
+
             $table = new \StdClass;
             $table->class = 'widget_groups_status databox';
             $table->cellspacing = '1';
@@ -717,16 +730,20 @@ class EventsListWidget extends Widget
 
                 $settings = json_encode(
                     [
-                        'event'   => $event,
-                        'page'    => 'include/ajax/events',
-                        'cellId'  => $this->cellId,
-                        'ajaxUrl' => \ui_get_full_url(
+                        'event'       => $event,
+                        'page'        => 'include/ajax/events',
+                        'cellId'      => $this->cellId,
+                        'ajaxUrl'     => \ui_get_full_url(
                             'ajax.php',
                             false,
                             false,
                             false
                         ),
-                        'result'  => false,
+                        'result'      => false,
+                        'dashboardId' => $this->dashboardId,
+                        'widgetId'    => $this->widgetId,
+                        'cellId'      => $this->cellId,
+                        'node_id'     => $this->nodeId,
                     ]
                 );
 

@@ -284,7 +284,6 @@ $url_update_manager = null;
 $homedir = sys_get_temp_dir();
 $dbconnection = null;
 $remote_config = null;
-$is_metaconsole = false;
 $insecure = false;
 $pandora_url = ui_get_full_url('/', false, false, false);
 
@@ -405,7 +404,7 @@ $ui = new Manager(
         'MR'                     => $mr,
         'registration_code'      => $puid,
         'remote_config'          => $remote_config,
-        'propagate_updates'      => $is_metaconsole,
+        'propagate_updates'      => is_metaconsole(),
         'proxy'                  => $proxy,
         'allowOfflinePatches'    => $allowOfflinePatches,
         'set_maintenance_mode'   => function () {

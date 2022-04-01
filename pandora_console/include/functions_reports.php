@@ -1099,6 +1099,15 @@ function get_table_custom_macros_report($data)
             true
         );
 
+        $table->data[$key_macro]['name'] .= html_print_input_hidden(
+            'macro_custom_key[]',
+            $key_macro,
+            true,
+            false,
+            false,
+            ($key_macro === 0) ? 'macro_custom_key' : 'macro_custom_key_'.$key_macro
+        );
+
         $table->data[$key_macro]['type'] = html_print_select(
             $list_macro_custom_type,
             'macro_custom_type[]',
@@ -1180,10 +1189,10 @@ function custom_fields_macros_report($macro, $key_macro)
         case 1:
             $result['value'] = '<div class="custom-field-macro-report">';
             $result['value'] .= '<label>';
-            $result['value'] .= ($macro['type'] === 0) ? __('String') : __('Sql');
+            $result['value'] .= ($macro['type'] == 0) ? __('String') : __('Sql');
             $result['value'] .= '</label>';
             $result['value'] .= html_print_input_text_extended(
-                'macro_custom_value['.$key_macro.']',
+                'macro_custom_value[]',
                 $macro['value'],
                 ($key_macro === 0) ? 'macro_custom_value' : 'macro_custom_value_'.$key_macro,
                 '',
@@ -1203,7 +1212,7 @@ function custom_fields_macros_report($macro, $key_macro)
             $result['value'] .= __('Sql');
             $result['value'] .= '</label>';
             $result['value'] .= html_print_input_text_extended(
-                'macro_custom_value['.$key_macro.']',
+                'macro_custom_value['.$key_macro.'][value]',
                 $macro['value'],
                 ($key_macro === 0) ? 'macro_custom_value' : 'macro_custom_value_'.$key_macro,
                 '',
@@ -1221,7 +1230,7 @@ function custom_fields_macros_report($macro, $key_macro)
             $result['size'] .= __('Width');
             $result['size'] .= '</label>';
             $result['size'] .= html_print_input_text_extended(
-                'macro_custom_width['.$key_macro.']',
+                'macro_custom_value['.$key_macro.'][width]',
                 $macro['width'],
                 ($key_macro === 0) ? 'macro_custom_width' : 'macro_custom_width_'.$key_macro,
                 '',
@@ -1237,7 +1246,7 @@ function custom_fields_macros_report($macro, $key_macro)
             $result['size'] .= __('Height');
             $result['size'] .= '</label>';
             $result['size'] .= html_print_input_text_extended(
-                'macro_custom_height['.$key_macro.']',
+                'macro_custom_value['.$key_macro.'][height]',
                 $macro['height'],
                 ($key_macro === 0) ? 'macro_custom_height' : 'macro_custom_height_'.$key_macro,
                 '',
@@ -1249,6 +1258,53 @@ function custom_fields_macros_report($macro, $key_macro)
                 true
             );
             $result['size'] .= '</div>';
+        break;
+
+        case 3:
+            $params = [];
+            $params['show_helptip'] = true;
+            $params['input_name'] = 'macro_custom_value_agent_name_'.$key_macro;
+            $params['value'] = agents_get_alias($macro['agent_id']);
+            $params['print_hidden_input_idagent'] = true;
+            $params['hidden_input_idagent_id'] = 'macro_custom_value_agent_id_'.$key_macro;
+            $params['hidden_input_idagent_name']  = 'macro_custom_value['.$key_macro.'][agent_id]';
+            $params['hidden_input_idagent_value'] = $macro['agent_id'];
+            $params['javascript_is_function_select'] = true;
+            $params['selectbox_id'] = 'macro_custom_value'.$key_macro.'id_agent_module';
+            $params['add_none_module'] = false;
+            $params['return'] = true;
+            $params['disabled_javascript_on_blur_function'] = true;
+
+            // TODO: Metaconsole.
+            // if (is_metaconsole() === true) {
+            // $params['use_input_id_server'] = true;
+            // $params['input_id_server_id'] = 'hidden-id_server';
+            // }
+            $result['size'] .= ui_print_agent_autocomplete_input($params);
+
+            $modules = [];
+            if ($macro['agent_id']) {
+                $modules = agents_get_modules(
+                    $macro['agent_id'],
+                    false,
+                    ['delete_pending' => 0]
+                );
+            }
+
+            $result['size'] .= html_print_select(
+                $modules,
+                'macro_custom_value['.$key_macro.'][id_agent_module]',
+                $macro['id_agent_module'],
+                true,
+                __('Select'),
+                0,
+                true,
+                false,
+                true,
+                '',
+                (empty($macro['agent_id']) === true),
+                'min-width: 250px;margin-right: 0.5em;'
+            );
         break;
 
         default:

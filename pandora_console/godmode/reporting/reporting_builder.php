@@ -1856,24 +1856,23 @@ switch ($action) {
                                 $macro_custom_name = get_parameter('macro_custom_name', []);
                                 $macro_custom_type = get_parameter('macro_custom_type', []);
                                 $macro_custom_value = get_parameter('macro_custom_value', []);
-                                $macro_custom_width = get_parameter('macro_custom_width', []);
-                                $macro_custom_height = get_parameter('macro_custom_height', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
                                 $macros_definition = [];
 
+                                hd($_POST);
+
                                 foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
                                     $macros_definition[$key_macro]['name'] = $value_macro;
                                     $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
 
-                                    if (isset($macro_custom_value[$key_macro]) === true) {
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
                                         $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
-                                    }
-
-                                    if (isset($macro_custom_width[$key_macro]) === true) {
-                                        $macros_definition[$key_macro]['width'] = $macro_custom_width[$key_macro];
-                                    }
-
-                                    if (isset($macro_custom_height[$key_macro]) === true) {
-                                        $macros_definition[$key_macro]['height'] = $macro_custom_height[$key_macro];
                                     }
                                 }
 
@@ -2636,24 +2635,21 @@ switch ($action) {
                                 $macro_custom_name = get_parameter('macro_custom_name', []);
                                 $macro_custom_type = get_parameter('macro_custom_type', []);
                                 $macro_custom_value = get_parameter('macro_custom_value', []);
-                                $macro_custom_width = get_parameter('macro_custom_width', []);
-                                $macro_custom_height = get_parameter('macro_custom_height', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
                                 $macros_definition = [];
 
                                 foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
                                     $macros_definition[$key_macro]['name'] = $value_macro;
                                     $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
 
-                                    if (isset($macro_custom_value[$key_macro]) === true) {
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
                                         $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
-                                    }
-
-                                    if (isset($macro_custom_width[$key_macro]) === true) {
-                                        $macros_definition[$key_macro]['width'] = $macro_custom_width[$key_macro];
-                                    }
-
-                                    if (isset($macro_custom_height[$key_macro]) === true) {
-                                        $macros_definition[$key_macro]['height'] = $macro_custom_height[$key_macro];
                                     }
                                 }
 

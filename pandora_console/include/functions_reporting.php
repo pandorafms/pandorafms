@@ -4884,6 +4884,35 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                         $substitutions[] = $value_query;
                     break;
 
+                    case 3:
+                        // Type: SQL graph.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+
+                        $params = [
+                            'agent_module_id'    => $data_macro['id_agent_module'],
+                            'period'             => 86400,
+                            'title'              => '',
+                            'label'              => '',
+                            'pure'               => false,
+                            'only_image'         => true,
+                            'homeurl'            => ui_get_full_url(
+                                false,
+                                false,
+                                false,
+                                false
+                            ),
+                            'ttl'                => 2,
+                            'show_unknown'       => true,
+                            'height'             => $config['graph_image_height'],
+                            'backgroundColor'    => 'transparent',
+                            'return_img_base_64' => true,
+                        ];
+
+                        $substitutions[] = '<img style="max-width:100%;" src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
+                    break;
+
                     default:
                         // Not possible.
                     break;

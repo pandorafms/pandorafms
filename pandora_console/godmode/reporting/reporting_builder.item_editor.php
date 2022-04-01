@@ -6814,36 +6814,46 @@ function chooseType() {
 }
 
 function addCustomFieldRow() {
+  var array_tr = $("tr.tr-macros-definition");
+  var last_tr = array_tr[array_tr.length - 1];
+  var array_id = /(\d)+$/.exec($(last_tr).attr('id'));
+  var max = (parseInt(array_id[0]) + 1);
+
   var clone = $("#table-macros-definition #table-macros-definition-0")
     .clone()
-    .prop("id", "table-macros-definition-" + $("tr.tr-macros-definition").length);
+    .prop("id", "table-macros-definition-" + max);
 
     clone
     .find("#macro_custom_name")
-    .prop("id", "macro_custom_name_" + $("tr.tr-macros-definition").length)
+    .prop("id", "macro_custom_name_" + max)
     .val("");
 
     clone
+    .find("#macro_custom_key")
+    .prop("id", "macro_custom_key_" + max)
+    .val(max);
+
+    clone
     .find("#macro_custom_type")
-    .prop("id", "macro_custom_type" + $("tr.tr-macros-definition").length)
-    .attr("onchange", "change_custom_fields_macros_report(" + $("tr.tr-macros-definition").length + ")");
+    .prop("id", "macro_custom_type" + max)
+    .attr("onchange", "change_custom_fields_macros_report(" + max + ")");
 
     clone
     .find("#table-macros-definition-0-value")
-    .prop("id", "table-macros-definition-"+$("tr.tr-macros-definition").length+"-value");
+    .prop("id", "table-macros-definition-"+max+"-value");
 
     clone
     .find("#macro_custom_value")
-    .prop("id", "macro_custom_value_" + $("tr.tr-macros-definition").length)
+    .prop("id", "macro_custom_value_" + max)
     .val('');
 
     clone
     .find(".icon-clean-custom-macro")
-    .attr("onclick", "cleanCustomFieldRow(" + $("tr.tr-macros-definition").length + ")");
+    .attr("onclick", "cleanCustomFieldRow(" + max + ")");
 
     clone
     .find(".icon-delete-custom-macro")
-    .attr("onclick", "removeCustomFieldRow(" + $("tr.tr-macros-definition").length + ")")
+    .attr("onclick", "removeCustomFieldRow(" + max + ")")
     .css("display", "inline-block");
 
     clone

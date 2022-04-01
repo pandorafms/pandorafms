@@ -66,6 +66,9 @@ if (check_acl($config['id_user'], 0, 'AR')) {
     $sub2['operation/agentes/alerts_status']['text'] = __('Alert detail');
     $sub2['operation/agentes/alerts_status']['refr'] = 0;
 
+    $sub2['operation/heatmap']['text'] = __('Heatmap view');
+    $sub2['operation/heatmap']['refr'] = 0;
+
     $sub['view']['sub2'] = $sub2;
 
     enterprise_hook('inventory_menu');

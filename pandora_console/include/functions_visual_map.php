@@ -862,7 +862,7 @@ function visual_map_print_item(
                 );
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
-                    continue;
+                    break;
                 }
             }
 
@@ -967,7 +967,7 @@ function visual_map_print_item(
                 );
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
-                    continue;
+                    break;
                 }
             }
 
@@ -1113,7 +1113,7 @@ function visual_map_print_item(
                     ['id' => $layoutData['id_metaconsole']]
                 );
                 if (metaconsole_load_external_db($connection) != NOERR) {
-                    continue;
+                    break;
                 }
             }
 
@@ -1411,7 +1411,7 @@ function visual_map_print_item(
             if (!empty($id_metaconsole)) {
                 $connection = db_get_row_filter('tmetaconsole_setup', $id_metaconsole);
                 if (metaconsole_load_external_db($connection) != NOERR) {
-                    continue;
+                    break;
                 }
             }
 
@@ -1719,7 +1719,7 @@ function visual_map_print_item(
                                 ['id' => $layoutData['id_metaconsole']]
                             );
                             if (metaconsole_load_external_db($connection) != NOERR) {
-                                continue;
+                                break;
                             }
                         }
 
@@ -2173,7 +2173,7 @@ function visual_map_print_item(
                 );
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
-                    continue;
+                    break;
                 }
             }
 
@@ -3299,7 +3299,7 @@ function visual_map_get_status_element($layoutData)
                     );
                     if (metaconsole_load_external_db($connection) != NOERR) {
                         // ui_print_error_message ("Error connecting to ".$server_name);
-                        continue;
+                        break;
                     }
                 }
 
@@ -3385,7 +3385,7 @@ function visual_map_get_status_element($layoutData)
                     );
                     if (metaconsole_load_external_db($connection) != NOERR) {
                         // ui_print_error_message ("Error connecting to ".$server_name);
-                        continue;
+                        break;
                     }
                 }
 

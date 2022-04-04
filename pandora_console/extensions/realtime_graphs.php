@@ -114,6 +114,7 @@ function pandora_realtime_graphs()
     $canvas .= '</div>';
     echo $canvas;
 
+    $table = new stdClass();
     $table->width = '100%';
     $table->id = 'table-form';
     $table->class = 'databox filters';

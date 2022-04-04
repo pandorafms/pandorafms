@@ -210,6 +210,7 @@ function events_get_all_fields()
     $columns['data'] = __('Data');
     $columns['module_status'] = __('Module status');
     $columns['module_custom_id'] = __('Module custom id');
+    $columns['custom_data'] = __('Custom data');
 
     return $columns;
 }
@@ -309,6 +310,9 @@ function events_get_column_name($field, $table_alias=false)
 
         case 'direccion':
         return __('Agent IP');
+
+        case 'custom_data':
+        return __('Custom data');
 
         default:
         return __($field);
@@ -1120,6 +1124,23 @@ function events_get_all(
             ' AND lower(te.source) like lower("%%%s%%") ',
             $filter['source']
         );
+    }
+
+    // Custom data.
+    if (empty($filter['custom_data']) === false) {
+        if ($filter['custom_data_filter_type'] === '1') {
+            $sql_filters[] = sprintf(
+                ' AND JSON_VALID(custom_data) = 1
+                AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
+                io_safe_output($filter['custom_data'])
+            );
+        } else {
+            $sql_filters[] = sprintf(
+                ' AND JSON_VALID(custom_data) = 1
+                AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
+                io_safe_output($filter['custom_data'])
+            );
+        }
     }
 
     // Validated or in process by.

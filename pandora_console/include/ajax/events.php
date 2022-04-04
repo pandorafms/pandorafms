@@ -309,6 +309,8 @@ if ($save_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+    $values['custom_data'] = get_parameter('custom_data');
+    $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
     if (is_metaconsole()) {
         $values['server_id'] = get_parameter('server_id');
@@ -363,6 +365,8 @@ if ($update_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+    $values['custom_data'] = get_parameter('custom_data');
+    $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
     if (is_metaconsole() === true) {
         $values['server_id'] = get_parameter('server_id');
@@ -834,7 +838,9 @@ function save_new_filter() {
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
             "id_source_event": $("#text-id_source_event").val(),
-            "server_id": $("#server_id").val()
+            "server_id": $("#server_id").val(),
+            "custom_data": $("#text-custom_data").val(),
+            "custom_data_filter_type": $("#custom_data_filter_type").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -907,7 +913,9 @@ function save_update_filter() {
         "id_extra": $("#text-id_extra").val(),
         "user_comment": $("#text-user_comment").val(),
         "id_source_event": $("#text-id_source_event").val(),
-        "server_id": $("#server_id").val()
+        "server_id": $("#server_id").val(),
+        "custom_data": $("#text-custom_data").val(),
+        "custom_data_filter_type": $("#custom_data_filter_type").val()
 
         },
         function (data) {

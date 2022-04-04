@@ -1040,6 +1040,13 @@ function reports_copy_report($id_report)
 }
 
 
+/**
+ * Table custom macros.
+ *
+ * @param string $data JSON.
+ *
+ * @return string Html output.
+ */
 function get_table_custom_macros_report($data)
 {
     $table = new StdClass();
@@ -1183,6 +1190,14 @@ function get_table_custom_macros_report($data)
 }
 
 
+/**
+ * Custom field macros report
+ *
+ * @param array  $macro     Info macro.
+ * @param string $key_macro Key.
+ *
+ * @return array
+ */
 function custom_fields_macros_report($macro, $key_macro)
 {
     $result = [];
@@ -1380,7 +1395,7 @@ function custom_fields_macros_report($macro, $key_macro)
         break;
 
         default:
-            // code...
+            // Not possible.
         break;
     }
 

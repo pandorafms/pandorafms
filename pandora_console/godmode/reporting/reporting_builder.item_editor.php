@@ -4630,6 +4630,9 @@ ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
 );
+
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('pandora');
 ?>
 
 <script type="text/javascript">
@@ -4866,6 +4869,14 @@ $(document).ready (function () {
             }
         });
     });
+
+    var added_config = {
+        "elements": "textarea_render_definition",
+        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+        "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
+        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor"
+    }
+    defineTinyMCE(added_config);
 
     $("#checkbox-select_by_group").change(function () {
         var select_by_group  = $('#checkbox-select_by_group').prop('checked');
@@ -6865,12 +6876,19 @@ function cleanCustomFieldRow(row) {
         // Default value.
         $("#macro_custom_name").val('');
         $("#macro_custom_value").val('');
+        $("#macro_custom_width").val('');
     } else {
         $("#macro_custom_name_"+row).val('');
         $("#macro_custom_value_"+row).val('');
         $("#macro_custom_width_"+row).val('');
-        $("#macro_custom_height_"+row).val('');
     }
+
+    $("#macro_custom_height_"+row).val('');
+    $("#macro_custom_period_"+row).val('');
+    $("#text-macro_custom_value_agent_name_"+row).val('');
+    $("#macro_custom_value"+row+"id_agent_module")
+        .val('')
+        .trigger('change');
 }
 
 function removeCustomFieldRow(row) {

@@ -818,10 +818,13 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Grouped'),
         'name'     => __('Network interfaces'),
     ];
-    $types['custom_render'] = [
-        'optgroup' => __('Grouped'),
-        'name'     => __('Custom Render'),
-    ];
+    if (!$template) {
+        $types['custom_render'] = [
+            'optgroup' => __('Grouped'),
+            'name'     => __('Custom Render'),
+        ];
+    }
+
     $types['availability'] = [
         'optgroup' => __('Grouped'),
         'name'     => __('Availability'),
@@ -1264,7 +1267,6 @@ function custom_fields_macros_report($macro, $key_macro)
             $params = [];
             $params['show_helptip'] = true;
             $params['input_name'] = 'macro_custom_value_agent_name_'.$key_macro;
-            $params['value'] = agents_get_alias($macro['agent_id']);
             $params['print_hidden_input_idagent'] = true;
             $params['hidden_input_idagent_id'] = 'macro_custom_value_agent_id_'.$key_macro;
             $params['hidden_input_idagent_name']  = 'macro_custom_value['.$key_macro.'][agent_id]';
@@ -1275,22 +1277,57 @@ function custom_fields_macros_report($macro, $key_macro)
             $params['return'] = true;
             $params['disabled_javascript_on_blur_function'] = true;
 
-            // TODO: Metaconsole.
-            // if (is_metaconsole() === true) {
-            // $params['use_input_id_server'] = true;
-            // $params['input_id_server_id'] = 'hidden-id_server';
-            // }
+            if (is_metaconsole() === true) {
+                $params['print_input_id_server'] = true;
+                $params['metaconsole_enabled'] = true;
+                $params['input_id_server_id'] = 'macro_custom_value_id_server_'.$key_macro;
+                $params['input_id_server_name']  = 'macro_custom_value['.$key_macro.'][server_id]';
+                $params['input_id_server_value'] = $macro['server_id'];
+                $params['value'] = agents_meta_get_alias(
+                    $macro['agent_id'],
+                    'none',
+                    $macro['server_id'],
+                    true
+                );
+            } else {
+                $params['value'] = agents_get_alias($macro['agent_id']);
+            }
+
+            $result['size'] = '<div class="custom-field-macro-report mb10">';
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Agent');
+            $result['size'] .= '</label>';
             $result['size'] .= ui_print_agent_autocomplete_input($params);
 
             $modules = [];
-            if ($macro['agent_id']) {
+            if (isset($macro['agent_id']) === true
+                && empty($macro['agent_id']) === false
+            ) {
+                if (is_metaconsole() === true) {
+                    $server = db_get_row(
+                        'tmetaconsole_setup',
+                        'id',
+                        $macro['server_id']
+                    );
+                    if (metaconsole_connect($server) != NOERR) {
+                        continue;
+                    }
+                }
+
                 $modules = agents_get_modules(
                     $macro['agent_id'],
                     false,
                     ['delete_pending' => 0]
                 );
+
+                if (is_metaconsole() === true) {
+                    metaconsole_restore_db();
+                }
             }
 
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Module');
+            $result['size'] .= '</label>';
             $result['size'] .= html_print_select(
                 $modules,
                 'macro_custom_value['.$key_macro.'][id_agent_module]',
@@ -1305,6 +1342,41 @@ function custom_fields_macros_report($macro, $key_macro)
                 (empty($macro['agent_id']) === true),
                 'min-width: 250px;margin-right: 0.5em;'
             );
+            $result['size'] .= '</div>';
+
+            $result['size'] .= '<div class="custom-field-macro-report">';
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Height');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][height]',
+                $macro['height'],
+                ($key_macro === 0) ? 'macro_custom_height' : 'macro_custom_height_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Period ');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][period]',
+                $macro['period'],
+                ($key_macro === 0) ? 'macro_custom_period' : 'macro_custom_period_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+            $result['size'] .= '</div>';
         break;
 
         default:

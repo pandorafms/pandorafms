@@ -8599,7 +8599,7 @@ div#err_msg_centralised {
   line-height: 16pt;
   padding: 0px;
   box-sizing: border-box;
-  page-break-after: always;
+  /*page-break-after: always;*/
 }
 
 #reset-styles a:link {

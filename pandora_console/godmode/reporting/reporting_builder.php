@@ -1859,8 +1859,6 @@ switch ($action) {
                                 $macro_custom_key = get_parameter('macro_custom_key', []);
                                 $macros_definition = [];
 
-                                hd($_POST);
-
                                 foreach ($macro_custom_name as $key_macro => $value_macro) {
                                     $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
                                     $macros_definition[$key_macro]['name'] = $value_macro;

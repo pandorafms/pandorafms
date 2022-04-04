@@ -4770,8 +4770,19 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                             if ($data_query === false) {
                                 $value_query = __('Error: %s', $config['dbconnection']->error);
                             } else {
-                                $width = (isset($data_macro['width']) === true) ? $data_macro['width'] : 210;
-                                $height = (isset($data_macro['height']) === true) ? $data_macro['height'] : 210;
+                                $width = 210;
+                                if (isset($data_macro['width']) === true
+                                    && empty($data_macro['width']) === false
+                                ) {
+                                    $width = $data_macro['width'];
+                                }
+
+                                $height = 210;
+                                if (isset($data_macro['height']) === true
+                                    && empty($data_macro['height']) === false
+                                ) {
+                                    $height = $data_macro['height'];
+                                }
 
                                 // TODO: Allow to paint horizontal and vertical bar graphs for the moment only pie graphs.
                                 $type = 'sql_graph_pie';
@@ -4885,14 +4896,39 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                     break;
 
                     case 3:
-                        // Type: SQL graph.
+                        // Type: Simple graph.
                         $patterns[] = addslashes(
                             '/_'.$data_macro['name'].'_/'
                         );
 
+                        $height = $config['graph_image_height'];
+                        if (isset($data_macro['height']) === true
+                            && empty($data_macro['height']) === false
+                        ) {
+                            $height = $data_macro['height'];
+                        }
+
+                        $period = SECONDS_1DAY;
+                        if (isset($data_macro['period']) === true
+                            && empty($data_macro['period']) === false
+                        ) {
+                            $period = $data_macro['period'];
+                        }
+
+                        if (is_metaconsole() === true) {
+                            $server = db_get_row(
+                                'tmetaconsole_setup',
+                                'id',
+                                $data_macro['server_id']
+                            );
+                            if (metaconsole_connect($server) != NOERR) {
+                                continue;
+                            }
+                        }
+
                         $params = [
                             'agent_module_id'    => $data_macro['id_agent_module'],
-                            'period'             => 86400,
+                            'period'             => $period,
                             'title'              => '',
                             'label'              => '',
                             'pure'               => false,
@@ -4905,12 +4941,17 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                             ),
                             'ttl'                => 2,
                             'show_unknown'       => true,
-                            'height'             => $config['graph_image_height'],
+                            'height'             => $height,
                             'backgroundColor'    => 'transparent',
                             'return_img_base_64' => true,
+                            'server_id'          => (is_metaconsole() === true) ? $data_macro['server_id'] : 0,
                         ];
 
                         $substitutions[] = '<img style="max-width:100%;" src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
+
+                        if (is_metaconsole() === true) {
+                            metaconsole_restore_db();
+                        }
                     break;
 
                     default:

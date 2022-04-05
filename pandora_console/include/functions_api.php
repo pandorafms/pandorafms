@@ -14530,7 +14530,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
                     $id_service_child = 0;
                     $agent_id = $element['id'];
                     if (!agents_check_access_agent($agent_id, 'AR')) {
-                        continue;
+                        continue 2;
                     }
                 break;
 
@@ -14539,7 +14539,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
                     $id_service_child = 0;
                     $id_agente_modulo = $element['id'];
                     if (!agents_check_access_agent(modules_get_agentmodule_agent($id_agente_modulo), 'AR')) {
-                        continue;
+                        continue 2;
                     }
                 break;
 
@@ -14554,7 +14554,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
                         $id_service_child
                     );
                     if ($service_group === false || !check_acl($config['id_user'], $service_group, 'AD')) {
-                        continue;
+                        continue 2;
                     }
                 break;
             }

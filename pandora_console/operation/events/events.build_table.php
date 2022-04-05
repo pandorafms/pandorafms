@@ -134,7 +134,7 @@ if ($group_rep == 2) {
         echo '<div class="nf">'.__('No events').'</div>';
     }
 } else {
-    // fields that the user has selected to show
+    // Fields that the user has selected to show.
     if ($meta) {
         $show_fields = events_meta_get_custom_fields_user();
     } else {
@@ -341,6 +341,13 @@ if ($group_rep == 2) {
                 array_merge($params, ['sort_field' => 'module_status']),
                 'sort'
             );
+            $table->align[$i] = 'left';
+
+            $i++;
+        }
+
+        if ($fields === 'custom_data') {
+            $table->head[$i] = __('Custom data');
             $table->align[$i] = 'left';
 
             $i++;

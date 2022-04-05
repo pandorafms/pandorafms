@@ -1251,6 +1251,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `server_id` INT NOT NULL DEFAULT 0,
   `time_from` TIME NULL,
   `time_to` TIME NULL,
+  `custom_data` VARCHAR(500) DEFAULT '',
+  `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

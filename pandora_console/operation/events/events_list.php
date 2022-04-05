@@ -127,6 +127,8 @@ if (is_ajax()) {
         $values['source'] = get_parameter('source');
         $values['id_extra'] = get_parameter('id_extra');
         $values['user_comment'] = get_parameter('user_comment');
+        $values['custom_data'] = get_parameter('custom_data');
+        $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
         if (is_metaconsole()) {
             $values['id_source_event'] = get_parameter('id_source_event');
@@ -182,6 +184,8 @@ if (is_ajax()) {
         $values['source'] = get_parameter('source');
         $values['id_extra'] = get_parameter('id_extra');
         $values['user_comment'] = get_parameter('user_comment');
+        $values['custom_data'] = get_parameter('custom_data');
+        $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
         if (is_metaconsole()) {
             $values['id_source_event'] = get_parameter('id_source_event');
@@ -1567,8 +1571,9 @@ $(document).ready( function() {
                 "id_extra": $("#text-id_extra").val(),
                 "user_comment": $("#text-user_comment").val(),
                 "id_source_event": $("#text-id_source_event").val(),
-                "server_id" : $("#server_id").val()
-
+                "server_id" : $("#server_id").val(),
+                "custom_data" : $("#text-custom_data").val(),
+                "custom_data_filter_type" : $("#custom_data_filter_type").val()
             },
             function (data) {
                 $(".info_box").hide();
@@ -1670,7 +1675,9 @@ $(document).ready( function() {
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
             "id_source_event": $("#text-id_source_event").val(),
-            "server_id" : $("#server_id").val()
+            "server_id" : $("#server_id").val(),
+            "custom_data" : $("#text-custom_data").val()
+            "custom_data_filter_type" : $("#custom_data_filter_type").val()
             },
             function (data) {
                 $(".info_box").hide();

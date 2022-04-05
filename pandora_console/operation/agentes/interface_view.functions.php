@@ -552,14 +552,18 @@ function print_table(
 
         $all_interfaces = [];
 
-        foreach ($data as $value) {
-            $agent_alias = agents_get_alias($value['name']);
+        foreach ($data as $key => $value) {
+            if (empty($value['name']) === false) {
+                $agent_alias = $value['name'];
+            } else {
+                $agent_alias = agents_get_alias($key);
+            }
 
             foreach ($value['interfaces'] as $if_name => $interface) {
-                $interface['agent_id'] = $value['name'];
+                $interface['agent_id'] = $key;
                 $interface['agent_alias'] = $agent_alias;
                 $interface['if_name'] = $if_name;
-                $all_interfaces[$if_name] = $interface;
+                $all_interfaces[$key][$if_name] = $interface;
             }
         }
 
@@ -569,117 +573,121 @@ function print_table(
         ) {
             $filtered_interfaces = $all_interfaces;
         } else {
-            // Filter interfaces array.
-            $filtered_interfaces = array_filter(
-                $all_interfaces,
-                function ($interface) use ($selected_interfaces) {
-                    return in_array(
-                        $interface['status_module_id'],
-                        $selected_interfaces
-                    ) === true;
-                }
-            );
+            foreach ($all_interfaces as $key => $value) {
+                // Filter interfaces array.
+                $filtered_interfaces[$key] = array_filter(
+                    $value,
+                    function ($interface) use ($selected_interfaces) {
+                        return in_array(
+                            $interface['status_module_id'],
+                            $selected_interfaces
+                        );
+                    }
+                );
+            }
         }
 
         $data = [];
 
-        foreach ($filtered_interfaces as $if_name => $agent_interfaces) {
-            // Get usage modules.
-            $usage_module_in = db_get_row(
-                'tagente_modulo',
-                'nombre',
-                $if_name.'_inUsage'
-            );
-            $usage_module_out = db_get_row(
-                'tagente_modulo',
-                'nombre',
-                $if_name.'_outUsage'
-            );
+        foreach ($filtered_interfaces as $interfaces) {
+            foreach ($interfaces as $if_name => $agent_interfaces) {
+                // Get usage modules.
+                $usage_module_in = db_get_row(
+                    'tagente_modulo',
+                    'nombre',
+                    $if_name.'_inUsage'
+                );
+                $usage_module_out = db_get_row(
+                    'tagente_modulo',
+                    'nombre',
+                    $if_name.'_outUsage'
+                );
 
-            $usage_module_id_in = $usage_module_in['id_agente_modulo'];
-            $usage_module_id_out = $usage_module_out['id_agente_modulo'];
-            $usage_module_description = $usage_module_in['descripcion'];
+                $usage_module_id_in = $usage_module_in['id_agente_modulo'];
+                $usage_module_id_out = $usage_module_out['id_agente_modulo'];
+                $usage_module_description = $usage_module_in['descripcion'];
 
-            // Get usage modules data.
-            $usage_module_data_in = modules_get_previous_data(
-                $usage_module_id_in,
-                time()
-            );
+                // Get usage modules data.
+                $usage_module_data_in = modules_get_previous_data(
+                    $usage_module_id_in,
+                    time()
+                );
 
-            $usage_module_data_out = modules_get_previous_data(
-                $usage_module_id_out,
-                time()
-            );
+                $usage_module_data_out = modules_get_previous_data(
+                    $usage_module_id_out,
+                    time()
+                );
 
-            // Extract ifSpeed from description of usage module.
-            $if_speed_str = strstr($usage_module_description, 'Speed:');
-            $if_speed_str = substr($if_speed_str, 0, -1);
-            $if_speed_str = explode(':', $if_speed_str)[1];
+                // Extract ifSpeed from description of usage module.
+                $if_speed_str = strstr($usage_module_description, 'Speed:');
+                $if_speed_str = substr($if_speed_str, 0, -1);
+                $if_speed_str = explode(':', $if_speed_str)[1];
 
-            $matches = [];
-            preg_match_all('/\d+/', $if_speed_str, $matches);
+                $matches = [];
+                preg_match_all('/\d+/', $if_speed_str, $matches);
 
-            $if_speed_value = $matches[0][0];
+                $if_speed_value = $matches[0][0];
 
-            // Transform ifSpeed unit.
-            $divisor = 1000;
-            $counter = 0;
-            while ($if_speed_value >= $divisor) {
-                if ($if_speed_value >= $divisor) {
-                    $if_speed_value = ($if_speed_value / $divisor);
+                // Transform ifSpeed unit.
+                $divisor = 1000;
+                $counter = 0;
+                while ($if_speed_value >= $divisor) {
+                    if ($if_speed_value >= $divisor) {
+                        $if_speed_value = ($if_speed_value / $divisor);
+                    }
+
+                    $counter++;
                 }
 
-                $counter++;
+                $if_speed_unit = 'bps';
+
+                switch ($counter) {
+                    case 1:
+                        $if_speed_unit = 'Kbps';
+                    break;
+
+                    case 2:
+                        $if_speed_unit = 'Mbps';
+                    break;
+
+                    case 3:
+                        $if_speed_unit = 'Gbps';
+                    break;
+
+                    case 4:
+                        $if_speed_unit = 'Tbps';
+                    break;
+
+                    default:
+                        $if_speed_unit = 'bps';
+                    break;
+                }
+
+                // Get in and out traffic.
+                $ifInOctets = modules_get_previous_data(
+                    $agent_interfaces['traffic']['in'],
+                    time()
+                );
+                $ifOutOctets = modules_get_previous_data(
+                    $agent_interfaces['traffic']['out'],
+                    time()
+                );
+
+                if ($sec === 'view') {
+                    $table_data[$loop_index]['if_agent_name'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent_interfaces['agent_id'].'">'.$agent_interfaces['agent_alias'].'</a>';
+                }
+
+                $table_data[$loop_index]['if_name'] = $agent_interfaces['if_name'];
+                $table_data[$loop_index]['if_status_image'] = $agent_interfaces['status_image'];
+                $table_data[$loop_index]['if_speed_data'] = ($if_speed_value === null) ? __('N/A') : $if_speed_value.' '.$if_speed_unit;
+                $table_data[$loop_index]['if_in_octets'] = ($ifInOctets['datos'] === null) ? __('N/A') : $ifInOctets['datos'];
+                $table_data[$loop_index]['if_out_octets'] = ($ifOutOctets['datos'] === null) ? __('N/A') : $ifOutOctets['datos'];
+                $table_data[$loop_index]['if_usage_module_data_in'] = ($usage_module_data_in['datos'] === null) ? __('N/A') : $usage_module_data_in['datos'];
+                $table_data[$loop_index]['if_usage_module_data_out'] = ($usage_module_data_out['datos'] === null) ? __('N/A') : $usage_module_data_out['datos'];
+                $table_data[$loop_index]['if_last_data'] = human_time_comparation($agent_interfaces['last_contact']);
+
+                $loop_index++;
             }
-
-            $if_speed_unit = 'bps';
-
-            switch ($counter) {
-                case 1:
-                    $if_speed_unit = 'Kbps';
-                break;
-
-                case 2:
-                    $if_speed_unit = 'Mbps';
-                break;
-
-                case 3:
-                    $if_speed_unit = 'Gbps';
-                break;
-
-                case 4:
-                    $if_speed_unit = 'Tbps';
-                break;
-
-                default:
-                    $if_speed_unit = 'bps';
-                break;
-            }
-
-            // Get in and out traffic.
-            $ifInOctets = modules_get_previous_data(
-                $agent_interfaces['traffic']['in'],
-                time()
-            );
-            $ifOutOctets = modules_get_previous_data(
-                $agent_interfaces['traffic']['out'],
-                time()
-            );
-
-            if ($sec === 'view') {
-                $table_data[$loop_index]['if_agent_name'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent_interfaces['agent_id'].'">'.$agent_interfaces['agent_alias'].'</a>';
-            }
-
-            $table_data[$loop_index]['if_name'] = $agent_interfaces['if_name'];
-            $table_data[$loop_index]['if_status_image'] = $agent_interfaces['status_image'];
-            $table_data[$loop_index]['if_speed_data'] = ($if_speed_value === null) ? __('N/A') : $if_speed_value.' '.$if_speed_unit;
-            $table_data[$loop_index]['if_in_octets'] = ($ifInOctets['datos'] === null) ? __('N/A') : $ifInOctets['datos'];
-            $table_data[$loop_index]['if_out_octets'] = ($ifOutOctets['datos'] === null) ? __('N/A') : $ifOutOctets['datos'];
-            $table_data[$loop_index]['if_usage_module_data_in'] = ($usage_module_data_in['datos'] === null) ? __('N/A') : $usage_module_data_in['datos'];
-            $table_data[$loop_index]['if_usage_module_data_out'] = ($usage_module_data_out['datos'] === null) ? __('N/A') : $usage_module_data_out['datos'];
-            $table_data[$loop_index]['if_last_data'] = human_time_comparation($agent_interfaces['last_contact']);
-
-            $loop_index++;
         }
 
         // Sort array of previously processed table values.

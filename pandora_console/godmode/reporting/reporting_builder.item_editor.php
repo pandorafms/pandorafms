@@ -6492,8 +6492,6 @@ function chooseType() {
             break;
 
         case 'custom_render':
-            $("#row_description").show();
-            $("#row_period").show();
             $("#row_macros_definition").show();
             $("#row_render_definition").show();
             break;

@@ -4884,7 +4884,7 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                     '',
                                     $config['fontpath'],
                                     $config['font_size'],
-                                    2,
+                                    ($pdf === true) ? 2 : 1,
                                     'hidden',
                                     '',
                                     true
@@ -4939,7 +4939,7 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                 false,
                                 false
                             ),
-                            'ttl'                => 2,
+                            'ttl'                => ($pdf === true) ? 2 : 1,
                             'show_unknown'       => true,
                             'height'             => $height,
                             'backgroundColor'    => 'transparent',

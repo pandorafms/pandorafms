@@ -340,8 +340,8 @@ a.pandora_pagination {
 
 /* firts_task.css */
 .new_task,
-div.new_task_cluster,
-div.new_task_cluster > div {
+div.new_task,
+div.new_task > div {
   background-color: #222;
 }
 

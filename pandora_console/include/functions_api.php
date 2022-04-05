@@ -14904,6 +14904,31 @@ function api_set_metaconsole_synch($keys)
 }
 
 
+function api_set_metaconsole_license_file($key)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (empty($key) === true) {
+        returnError('Key cannot be empty.');
+        return;
+    }
+
+    // Update the license file.
+    $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $key);
+    if ($result === false) {
+        returnError('update-license', 'Failed to Update license file.');
+    } else {
+        returnData('string', ['type' => 'string', 'data' => true]);
+    }
+
+    return;
+}
+
+
 function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3)
 {
     global $config;

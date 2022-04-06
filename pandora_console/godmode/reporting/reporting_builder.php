@@ -1852,6 +1852,33 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
+                                $good_format = true;
+                            break;
+
                             case 'min_value':
                             case 'max_value':
                             case 'avg_value':
@@ -2599,6 +2626,33 @@ switch ($action) {
                                     'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
                                 $good_format = true;
                             break;
 

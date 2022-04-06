@@ -176,6 +176,8 @@ $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
+$macros_definition = '';
+$render_definition = '';
 
 $only_data = false;
 
@@ -722,6 +724,12 @@ switch ($action) {
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $recursion = $item['recursion'];
                     $graph_render = $item['graph_render'];
+                break;
+
+                case 'custom_render':
+                    $description = $item['description'];
+                    $macros_definition = $item['macros_definition'];
+                    $render_definition = $item['render_definition'];
                 break;
 
                 case 'top_n':
@@ -2436,6 +2444,38 @@ $class = 'databox filters';
                     $list_graph_render,
                     'graph_render',
                     $graph_render
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_macros_definition" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Macros definition');
+            ?>
+            </td>
+            <td>
+                <?php echo get_table_custom_macros_report($macros_definition); ?>
+            </td>
+        </tr>
+
+        <tr id="row_render_definition" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Render definition').ui_print_help_tip(
+                __('Be aware because not all CSS inline styles are supported in the pdf library'),
+                true
+            );
+            ?>
+            </td>
+            <td>
+                <?php
+                echo html_print_textarea(
+                    'render_definition',
+                    3,
+                    25,
+                    $render_definition
                 );
                 ?>
             </td>
@@ -4593,6 +4633,9 @@ ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
 );
+
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('pandora');
 ?>
 
 <script type="text/javascript">
@@ -4829,6 +4872,14 @@ $(document).ready (function () {
             }
         });
     });
+
+    var added_config = {
+        "elements": "textarea_render_definition",
+        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+        "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
+        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor"
+    }
+    defineTinyMCE(added_config);
 
     $("#checkbox-select_by_group").change(function () {
         var select_by_group  = $('#checkbox-select_by_group').prop('checked');
@@ -5453,7 +5504,7 @@ function addSLARow() {
     var slaMax = $("input[name=sla_max]").val();
     var slaLimit = $("input[name=sla_limit]").val();
     var serviceId = $("select#id_service>option:selected").val();
-    if(serviceId != '' && serviceId.split('|').length > 1 ) {
+    if(serviceId != undefined && serviceId != '' && serviceId.split('|').length > 1 ) {
         var ids = serviceId.split('|');
         serverId = ids[0];
         serviceId = ids[1];
@@ -5895,6 +5946,8 @@ function chooseType() {
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
     $("#row_graph_render").hide();
+    $("#row_macros_definition").hide();
+    $("#row_render_definition").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
     $("#row_exception_condition_value").hide();
@@ -6441,6 +6494,11 @@ function chooseType() {
             }
             break;
 
+        case 'custom_render':
+            $("#row_macros_definition").show();
+            $("#row_render_definition").show();
+            break;
+
         case 'top_n':
             $("#row_description").show();
             $("#row_period").show();
@@ -6765,6 +6823,98 @@ function chooseType() {
         default:
             break;
     }
+}
+
+function addCustomFieldRow() {
+  var array_tr = $("tr.tr-macros-definition");
+  var last_tr = array_tr[array_tr.length - 1];
+  var array_id = /(\d)+$/.exec($(last_tr).attr('id'));
+  var max = (parseInt(array_id[0]) + 1);
+
+  var clone = $("#table-macros-definition #table-macros-definition-0")
+    .clone()
+    .prop("id", "table-macros-definition-" + max);
+
+    clone
+    .find("#macro_custom_name")
+    .prop("id", "macro_custom_name_" + max)
+    .val("");
+
+    clone
+    .find("#macro_custom_key")
+    .prop("id", "macro_custom_key_" + max)
+    .val(max);
+
+    clone
+    .find("#macro_custom_type")
+    .prop("id", "macro_custom_type" + max)
+    .attr("onchange", "change_custom_fields_macros_report(" + max + ")");
+
+    clone
+    .find("#table-macros-definition-0-value")
+    .prop("id", "table-macros-definition-"+max+"-value");
+
+    clone
+    .find("#macro_custom_value")
+    .prop("id", "macro_custom_value_" + max)
+    .val('');
+
+    clone
+    .find(".icon-clean-custom-macro")
+    .attr("onclick", "cleanCustomFieldRow(" + max + ")");
+
+    clone
+    .find(".icon-delete-custom-macro")
+    .attr("onclick", "removeCustomFieldRow(" + max + ")")
+    .css("display", "inline-block");
+
+    clone
+    .appendTo("#table-macros-definition");
+}
+
+function cleanCustomFieldRow(row) {
+    if(row === 0) {
+        // Default value.
+        $("#macro_custom_name").val('');
+        $("#macro_custom_value").val('');
+        $("#macro_custom_width").val('');
+    } else {
+        $("#macro_custom_name_"+row).val('');
+        $("#macro_custom_value_"+row).val('');
+        $("#macro_custom_width_"+row).val('');
+    }
+
+    $("#macro_custom_height_"+row).val('');
+    $("#macro_custom_period_"+row).val('');
+    $("#text-macro_custom_value_agent_name_"+row).val('');
+    $("#macro_custom_value"+row+"id_agent_module")
+        .val('')
+        .trigger('change');
+}
+
+function removeCustomFieldRow(row) {
+    if(row !== 0) {
+        $("tr#table-macros-definition-"+row).remove();
+    }
+}
+
+function change_custom_fields_macros_report(id) {
+    var new_type = this.event.target.value;
+    jQuery.post (
+        "ajax.php",
+        {
+            "page" : "include/ajax/reporting.ajax",
+            "change_custom_fields_macros_report" : 1,
+            "macro_type": new_type,
+            "macro_id": id
+        },
+        function (data, status) {
+            console.log(id);
+            $("td#table-macros-definition-"+id+"-value").empty();
+            $("td#table-macros-definition-"+id+"-value").append(data);
+        },
+        "html"
+    );
 }
 
 function event_change_id_agent_inventory() {

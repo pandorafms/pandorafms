@@ -350,6 +350,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_network_interfaces_report($table, $item);
             break;
 
+            case 'custom_render':
+                reporting_html_custom_render($table, $item);
+            break;
+
             case 'group_configuration':
                 reporting_html_group_configuration($table, $item);
             break;
@@ -3051,6 +3055,47 @@ function reporting_html_network_interfaces_report($table, $item, $pdf=0)
                 $table_agent,
                 true
             );
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
+/**
+ * This type of report element will generate the interface graphs
+ * of all those devices that belong to the selected group.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string HTML code.
+ */
+function reporting_html_custom_render($table, $item, $pdf=0)
+{
+    $return_pdf = '';
+    if (empty($item['failed']) === false) {
+        if ($pdf === 0) {
+            $table->colspan['interfaces']['cell'] = 3;
+            $table->cellstyle['interfaces']['cell'] = 'text-align: left;';
+            $table->data['interfaces']['cell'] = $item['failed'];
+        } else {
+            $return_pdf .= $item['failed'];
+        }
+    } else {
+        $output = '<div id="reset-styles">';
+        $output .= $item['data'];
+        $output .= '</div>';
+
+        if ($pdf === 1) {
+            $return_pdf .= $output;
+        } else {
+            $id = uniqid();
+            $table->colspan[$id][0] = 3;
+            $table->data[$id] = $output;
         }
     }
 

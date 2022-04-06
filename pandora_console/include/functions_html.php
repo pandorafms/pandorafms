@@ -808,7 +808,7 @@ function html_print_select(
         $output .= '<div class="flex-row-center">';
     }
 
-    $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -4766,8 +4766,13 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     enterprise_include_once('include/functions_metaconsole.php');
 
+    $style = '';
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $style = 'style="color: white"';
+    }
+
+    if (isset($data['label_class']) === false) {
+        $data['label_class'] = '';
     }
 
     $output = '';

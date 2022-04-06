@@ -1528,7 +1528,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.UPLOAD_MAX_FILESIZE');
         }
 
-        if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+        if ($PHPmemory_limit < $PHPmemory_limit_min && (int) $PHPmemory_limit !== -1) {
             $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
             if ($config['language'] == 'es') {
                 $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
@@ -2490,7 +2490,7 @@ class ConsoleSupervisor
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    $config['current_package']
+                    floor($config['current_package'])
                 ) === false
                 ) {
                     $missed++;
@@ -2511,6 +2511,8 @@ class ConsoleSupervisor
                             'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                         ]
                     );
+
+                    break;
                 }
             }
         }
@@ -2532,18 +2534,19 @@ class ConsoleSupervisor
         global $config;
 
         $message = 'If AllowOverride is disabled, .htaccess will not works.';
-	if (PHP_OS == 'FreeBSD') {
-	    $message .= '<pre>Please check /usr/local/etc/apache24/httpd.conf to resolve this problem.';
-	} else {
+        if (PHP_OS == 'FreeBSD') {
+            $message .= '<pre>Please check /usr/local/etc/apache24/httpd.conf to resolve this problem.';
+        } else {
             $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
-	}
+        }
 
         // Get content file.
-	if (PHP_OS == 'FreeBSD') {
-	    $file = file_get_contents('/usr/local/etc/apache24/httpd.conf');
-	} else {
+        if (PHP_OS == 'FreeBSD') {
+            $file = file_get_contents('/usr/local/etc/apache24/httpd.conf');
+        } else {
             $file = file_get_contents('/etc/httpd/conf/httpd.conf');
-	}
+        }
+
         $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
         $is_none = false;
 

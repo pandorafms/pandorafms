@@ -2463,7 +2463,10 @@ $class = 'databox filters';
         <tr id="row_render_definition" class="datos">
             <td class="bolder">
             <?php
-            echo __('Render definition');
+            echo __('Render definition').ui_print_help_tip(
+                __('Be aware because not all CSS inline styles are supported in the pdf library'),
+                true
+            );
             ?>
             </td>
             <td>

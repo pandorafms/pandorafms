@@ -64,6 +64,10 @@ $buttons['online'] = [
 ];
 
 switch ($tab) {
+    case 'history':
+        $title = __('Update manager » Journal');
+    break;
+
     case 'setup':
         $title = __('Update manager » Setup');
     break;

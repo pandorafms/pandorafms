@@ -1,0 +1,95 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  image: fbsanchez/httpdphp:7-runner
+  script:
+    - composer install
+  cache:
+    key: umc0000
+    paths:
+      - vendor
+
+test:
+  stage: test
+  image: aiur.artica.lan:5000/um:master
+  dependencies:
+    - build
+  needs:
+    - job: build
+  cache:
+    key: umc0000
+    paths:
+      - vendor
+  variables:
+    DOCKER_DRIVER: overlay2
+    TEST: client
+    DBUSER: root
+    DBHOST: 127.0.0.1
+    DBPASS: pandora
+    DBNAME: um
+    SOURCE_DIR: /root/code
+    APACHE_USER: apache
+    APACHE_GROUP: apache
+    TARGET: updatemanager
+  script:
+    - echo ">> Starting mysql service"
+    - sudo -u mysql mysqld &
+    - sleep 5
+    - while [ "`ps aux | grep mysqld | grep -v grep | grep -v sudo | wc -l`" == "0" ]; do echo "-- Waiting (5) until service mysql is available"; sleep 5; done
+    - echo ">> Setting password for root"
+    - if [ -e '/var/log/mysql/mysqld.log' ]; then sqllogfile='/var/log/mysql/mysqld.log'; centos=8; else sqllogfile='/var/log/mysqld.log'; centos=7; fi
+    - echo "set password='$DBPASS'" | mysql -p$(cat $sqllogfile | grep temporary | awk '{print $NF}') --connect-expired-password
+    - mysql -q -u root -p$DBPASS -e "SET GLOBAL time_zone = '+2:00';"
+    - echo ">> Installing DB schema"
+    - mysql -q -u root -p$DBPASS -e "create database um"
+    - mysql -q -u root -p$DBPASS um < $SOURCE_DIR/db/tables.sql 2>&1
+    - if [ $centos -eq 7 ]; then mysql -q -u root -p$DBPASS -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DBPASS'"; fi
+    - echo ">> Loading countries information"
+    - mysql -q -u root -p$DBPASS um < $SOURCE_DIR/db/geocountry.sql 2>&1
+    - echo ">> Adding admin user (admin // $DBPASS)"
+    - mysql -q -u root -p$DBPASS um -e "INSERT INTO um_users (username, password, admin) VALUES ('admin', '5a7b2e919d9eb13cbcfcdaa0bda8bf6aec156a00e29448e96f1702676f70b119', 1);" 2>&1
+    - echo 'xdebug.mode=coverage' >> /etc/php.ini 
+    - echo 'memory_limit = 512M' >>  /etc/php.ini 
+    - echo -e "[Open Update Manager]\ndb_host = $DBHOST\ndb_user = $DBUSER\ndb_pass = $DBPASS\ndb_name = $DBNAME\nbuild_script_path = /var/www/html/extras/build_oum.sh\nenterprise_repo_path = repo/enterprise\nsourceforge_repo_url = http://sourceforge.net\nsourceforge_repo_path = /projects/pandora/files/Nightlies/7.0NG/Tarball\nsourceforge_cache_file = /tmp/pandora7.sourceforge.cache\npagination_size = 25\n;At the moment pandora/integria\nmode = pandora\nfree_license_sting = PANDORA-FREE\n" > $SOURCE_DIR/src/conf/server.ini
+    - cp -Rp $SOURCE_DIR/src /var/www/html/$TARGET
+    - echo '<meta HTTP-EQUIV="REFRESH" content="0; url=/'$TARGET'/">' > /var/www/html/index.html
+    - chown $APACHE_USER:$APACHE_GROUP -R /var/www/html
+    - bash /entrypoint.sh &
+    - sleep 5
+    - rm -rf $SOURCE_DIR/client
+    - cp -rp ${CI_PROJECT_DIR} $SOURCE_DIR/client
+    - cd $SOURCE_DIR
+    - echo $(pwd)':'
+    - echo "- Test client"
+    - vendor/phpunit/phpunit/phpunit --coverage-text --testsuite client
+
+# Generate a package into packages register
+deploy_composer:
+  only:
+    - tags
+  stage: deploy
+  image: alpine/curl
+  dependencies:
+    - test
+  needs:
+    - job: test
+  script:
+    - curl -sS --show-error --fail --data tag=${CI_COMMIT_TAG} "https://__token__:${PACKAGE_DEPLOY_TOKEN}@brutus.artica.es:8081/api/v4/projects/${CI_PROJECT_ID}/packages/composer"
+
+# Generates a package into packagist.org
+deploy_packagist:
+  only:
+    - tags
+  stage: deploy
+  image: alpine/curl
+  dependencies:
+    - test
+  needs:
+    - job: test
+  script:
+    - echo "Updating $PACKAGIST_PROJECT_URL"
+    - curl -XPOST -H'content-type:application/json' "https://packagist.org/api/update-package?username=articast&apiToken=$PACKAGIST_API_TOKEN&autoUpdated=1" -d"{\"repository\":{\"url\":\"$PACKAGIST_PROJECT_URL\"}}"

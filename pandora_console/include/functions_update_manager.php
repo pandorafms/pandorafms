@@ -26,10 +26,12 @@
  * ============================================================================
  */
 
+use UpdateManager\UI\Manager;
+
 // Begin.
 global $config;
 
-require_once $config['homedir'].'/godmode/um_client/vendor/autoload.php';
+require_once $config['homedir'].'/vendor/autoload.php';
 
 
 /**
@@ -216,10 +218,10 @@ function update_manager_get_config_values()
         'language'          => $config['language'],
         'timezone'          => $config['timezone'],
         'proxy'             => [
-            'host'     => $config['update_manager_proxy_host'],
-            'port'     => $config['update_manager_proxy_port'],
-            'user'     => $config['update_manager_proxy_user'],
-            'password' => $config['update_manager_proxy_password'],
+            'host'     => ($config['update_manager_proxy_host'] ?? null),
+            'port'     => ($config['update_manager_proxy_port'] ?? null),
+            'user'     => ($config['update_manager_proxy_user'] ?? null),
+            'password' => ($config['update_manager_proxy_password'] ?? null),
         ],
     ];
 }
@@ -268,4 +270,42 @@ function rrmdir($dir)
     } else {
         unlink($dir);
     }
+}
+
+
+/**
+ * Keeps an history of upgrades.
+ *
+ * @param string $version Version installed.
+ * @param string $type    Package type (server|console).
+ * @param string $mode    Installation style (offline|online).
+ *
+ * @return void
+ */
+function register_upgrade($version, $type, $mode)
+{
+    global $config;
+
+    $origin = 'unknown';
+    if ($mode === Manager::MODE_OFFLINE) {
+        $origin = 'offline';
+    } else if ($mode === Manager::MODE_ONLINE) {
+        $origin = 'online';
+    }
+
+    db_pandora_audit(
+        AUDIT_LOG_UMC,
+        'System updated to '.$version.' ('.$type.') from '.$origin
+    );
+
+    db_process_sql_insert(
+        'tupdate_journal',
+        [
+            'version'    => $version,
+            'type'       => $type,
+            'origin'     => $origin,
+            'id_user'    => $config['id_user'],
+            'utimestamp' => time(),
+        ]
+    );
 }

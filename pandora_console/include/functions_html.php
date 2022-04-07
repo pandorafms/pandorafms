@@ -4779,9 +4779,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     if (($data['label'] ?? false) && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
-        $output .= ' class="'.$data['input_class'].'">';
-        $output .= '<label '.$style.' class="'.$data['label_class'].'">';
-        $output .= $data['label'];
+        $output .= ' class="'.($data['input_class'] ?? '').'">';
+        $output .= '<label '.$style.' class="'.($data['label_class'] ?? '').'">';
+        $output .= ($data['label'] ?? '');
         $output .= '</label>';
 
         if (!$data['return']) {
@@ -4806,7 +4806,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'text':
             $output .= html_print_input_text(
                 $data['name'],
-                $data['value'],
+                ($data['value'] ?? ''),
                 ((isset($data['alt']) === true) ? $data['alt'] : ''),
                 ((isset($data['size']) === true) ? $data['size'] : 50),
                 ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),

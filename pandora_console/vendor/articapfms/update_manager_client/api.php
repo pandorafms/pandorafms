@@ -38,7 +38,8 @@ if (file_exists(__DIR__.'/../../include/config.php') === true) {
     include_once __DIR__.'/../../include/config.php';
 }
 
-require_once $config['homedir'].'/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/resources/helpers.php';
 
 use UpdateManager\API\Server;
 
@@ -53,13 +54,14 @@ if (is_array($config) === true) {
     }
 }
 
-$license = db_get_value(
-    db_escape_key_identifier('value'),
-    'tupdate_settings',
-    db_escape_key_identifier('key'),
-    'customer_key'
-);
-
+if (function_exists('db_get_value') === true) {
+    $license = db_get_value(
+        db_escape_key_identifier('value'),
+        'tupdate_settings',
+        db_escape_key_identifier('key'),
+        'customer_key'
+    );
+}
 
 if (empty($license) === true) {
     $license = 'PANDORA-FREE';

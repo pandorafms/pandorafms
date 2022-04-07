@@ -26,4 +26,18 @@ ALTER TABLE `treport_content` ADD COLUMN `macros_definition` TEXT;
 ALTER TABLE `treport_content` ADD COLUMN `render_definition` TEXT;
 ALTER TABLE `treport_content_template` ADD COLUMN `macros_definition` TEXT;
 ALTER TABLE `treport_content_template` ADD COLUMN `render_definition` TEXT;
+
+DROP TABLE `tupdate`;
+DROP TABLE `tupdate_package`;
+DROP TABLE `tupdate_journal`;
+
+CREATE TABLE `tupdate_journal` (
+  `id` SERIAL,
+  `utimestamp` BIGINT DEFAULT 0,
+  `version` VARCHAR(25) DEFAULT '',
+  `type` VARCHAR(25) DEFAULT '',
+  `origin` VARCHAR(25) DEFAULT '',
+  `id_user` VARCHAR(250) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 COMMIT;

@@ -34,39 +34,31 @@
 // Begin.
 global $config;
 
-require_once __DIR__.'/vendor/autoload.php';
-require_once __DIR__.'/resources/helpers.php';
+require_once $config['homedir'].'/vendor/autoload.php';
+require_once $config['homedir'].'/include/functions_update_manager.php';
 
 use PandoraFMS\Enterprise\Metaconsole\Synchronizer;
 use UpdateManager\UI\Manager;
 
-if (function_exists('check_login') === true) {
-    check_login();
-}
-
-if (function_exists('check_acl') === true
-    && function_exists('is_user_admin') === true
+check_login();
+if ((bool) check_acl($config['id_user'], 0, 'PM') !== true
+    && (bool) is_user_admin($config['id_user']) !== true
 ) {
-    if ((bool) check_acl($config['id_user'], 0, 'PM') !== true
-        && (bool) is_user_admin($config['id_user']) !== true
-    ) {
-        db_pandora_audit(
-            AUDIT_LOG_ACL_VIOLATION,
-            'Trying to access Setup Management'
-        );
-        include 'general/noaccess.php';
-        return;
-    }
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Setup Management'
+    );
+    include 'general/noaccess.php';
+    return;
 }
 
-if (function_exists('db_get_value') === true) {
-    $license = db_get_value(
-        db_escape_key_identifier('value'),
-        'tupdate_settings',
-        db_escape_key_identifier('key'),
-        'customer_key'
-    );
-}
+$license = db_get_value(
+    db_escape_key_identifier('value'),
+    'tupdate_settings',
+    db_escape_key_identifier('key'),
+    'customer_key'
+);
+
 
 if (empty($license) === true) {
     $license = 'PANDORA-FREE';
@@ -83,76 +75,67 @@ if ($mode === Manager::MODE_ONLINE) {
     $mode_str = 'offline';
 }
 
-if (function_exists('enterprise_hook') === true) {
-    enterprise_include_once('/include/functions_license.php');
-    $license_data = enterprise_hook('license_get_info');
-    if ($license_data !== ENTERPRISE_NOT_HOOK) {
-        $days_to_expiry = ((strtotime($license_data['expiry_date']) - time()) / (60 * 60 * 24));
+enterprise_include_once('/include/functions_license.php');
+$license_data = enterprise_hook('license_get_info');
+if ($license_data !== ENTERPRISE_NOT_HOOK) {
+    $days_to_expiry = ((strtotime($license_data['expiry_date']) - time()) / (60 * 60 * 24));
 
-        if ((int) $license_data['limit_mode'] === 0) {
-            $agent_table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
-            $limit = db_get_value('count(*)', $agent_table, 'disabled', 0);
-        } else {
-            $limit = db_get_value('count(*)', 'tagente_modulo', 'disabled', 0);
-        }
-
-        if ($limit > $license_data['limit']) {
-            ui_print_warning_message(
-                __(
-                    'You cannot use update manager %s. You are exceding monitoring limits by %s elements. Please update your license or disable enterprise section by moving enterprise directory to another location and try again.',
-                    $mode_str,
-                    ($limit - $license_data['limit'])
-                )
-            );
-            return;
-        }
-
-        if ($days_to_expiry < 0) {
-            ui_print_warning_message(
-                __(
-                    'You cannot use update manager %s. This license has expired %d days ago. Please update your license or disable enterprise section by moving enterprise directory to another location and try again.',
-                    $mode_str,
-                    abs($days_to_expiry)
-                )
-            );
-            return;
-        }
-
-        if (rtrim($license_data['licensed_to']) === Manager::PANDORA_TRIAL_ISSUER) {
-            if (function_exists('get_product_name') === true) {
-                $product_name = get_product_name();
-            } else {
-                $product_name = 'Pandora FMS';
-            }
-
-            ui_print_info_message(
-                __(
-                    'You cannot use update manager %s. This license is a trial license to test all %s features. Please update your license to unlock all %s features.',
-                    $mode_str,
-                    $product_name,
-                    $product_name
-                )
-            );
-            return;
-        }
+    if ((int) $license_data['limit_mode'] === 0) {
+        $agent_table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+        $limit = db_get_value('count(*)', $agent_table, 'disabled', 0);
     } else {
-        $license_data = [];
-        $license_data['count_enabled'] = db_get_value(
-            'count(*)',
-            'tagente',
-            'disabled',
-            0
-        );
+        $limit = db_get_value('count(*)', 'tagente_modulo', 'disabled', 0);
     }
+
+    if ($limit > $license_data['limit']) {
+        ui_print_warning_message(
+            __(
+                'You cannot use update manager %s. You are exceding monitoring limits by %s elements. Please update your license or disable enterprise section by moving enterprise directory to another location and try again.',
+                $mode_str,
+                ($limit - $license_data['limit'])
+            )
+        );
+        return;
+    }
+
+    if ($days_to_expiry < 0) {
+        ui_print_warning_message(
+            __(
+                'You cannot use update manager %s. This license has expired %d days ago. Please update your license or disable enterprise section by moving enterprise directory to another location and try again.',
+                $mode_str,
+                abs($days_to_expiry)
+            )
+        );
+        return;
+    }
+
+    if (rtrim($license_data['licensed_to']) === Manager::PANDORA_TRIAL_ISSUER) {
+        $product_name = get_product_name();
+
+        ui_print_info_message(
+            __(
+                'You cannot use update manager %s. This license is a trial license to test all %s features. Please update your license to unlock all %s features.',
+                $mode_str,
+                $product_name,
+                $product_name
+            )
+        );
+        return;
+    }
+} else {
+    $license_data = [];
+    $license_data['count_enabled'] = db_get_value(
+        'count(*)',
+        'tagente',
+        'disabled',
+        0
+    );
 }
+
 
 
 // Set dbh.
-if (is_array($config) === true && $config['dbconnection'] !== null) {
-    $dbh = (object) $config['dbconnection'];
-} else {
-    $dbh = null;
-}
+$dbh = (object) $config['dbconnection'];
 
 // Retrieve current definition.
 if ($dbh !== null) {
@@ -217,22 +200,20 @@ if (is_ajax() !== true) {
         var clientMode = '<?php echo $mode; ?>';
     </script>
     <?php
-    if (function_exists('db_get_value_sql') === true) {
-        $server_version = (string) db_get_value_sql(
-            'SELECT `version` FROM `tserver` ORDER BY `master` DESC'
-        );
-        if ($server_version !== false
-            && preg_match('/NG\.(\d\.*\d*?) /', $server_version, $matches) > 0
-        ) {
-            if ((float) $matches[1]  !== (float) $current_package) {
-                ui_print_warning_message(
-                    __(
-                        'Master server version %s does not match console version %s.',
-                        (float) $matches[1],
-                        (float) $current_package
-                    )
-                );
-            }
+    $server_version = (string) db_get_value_sql(
+        'SELECT `version` FROM `tserver` ORDER BY `master` DESC'
+    );
+    if ($server_version !== false
+        && preg_match('/NG\.(\d\.*\d*?) /', $server_version, $matches) > 0
+    ) {
+        if ((float) $matches[1]  !== (float) $current_package) {
+            ui_print_warning_message(
+                __(
+                    'Master server version %s does not match console version %s.',
+                    (float) $matches[1],
+                    (float) $current_package
+                )
+            );
         }
     }
 
@@ -244,18 +225,13 @@ if (is_ajax() !== true) {
             'memory_limit',
             '800M'
         );
-        if (function_exists('ui_print_warning_message') === true) {
-            ui_print_warning_message($msg);
-        } else {
-            echo $msg;
-        }
+
+        ui_print_warning_message($msg);
     }
 }
 
 // Load styles.
-if (function_exists('ui_require_css_file') === true) {
-    ui_require_css_file('pandora', 'godmode/um_client/resources/styles/');
-}
+ui_require_css_file('pandora', '/vendor/articapfms/update_manager_client/resources/styles/');
 
 if (isset($mode) === false) {
     $mode = Manager::MODE_ONLINE;
@@ -289,16 +265,12 @@ if (is_array($config) === true
     && (bool) $config['history_db_enabled'] === true
 ) {
     ob_start();
-    $password = $config['history_db_pass'];
-    if (function_exists('io_output_password') === true) {
-        $password = io_output_password($config['history_db_pass']);
-    }
 
     $dbhHistory = db_connect(
         $config['history_db_host'],
         $config['history_db_name'],
         $config['history_db_user'],
-        $password,
+        io_output_password($config['history_db_pass']),
         $config['history_db_port']
     );
     ob_get_clean();
@@ -312,9 +284,8 @@ $url_update_manager = null;
 $homedir = sys_get_temp_dir();
 $dbconnection = null;
 $remote_config = null;
-$is_metaconsole = false;
 $insecure = false;
-$pandora_url = ui_get_full_url('godmode/um_client', false, false, false);
+$pandora_url = ui_get_full_url('/', false, false, false);
 
 if (is_array($config) === true) {
     $allowOfflinePatches = false;
@@ -353,16 +324,15 @@ if (is_array($config) === true) {
     $homedir = $config['homedir'];
     $dbconnection = $config['dbconnection'];
     $remote_config = $config['remote_config'];
-    if (function_exists('is_metaconsole') === true) {
-        $is_metaconsole = (bool) is_metaconsole();
-    }
 
-    if ($is_metaconsole === false) {
+    if (is_metaconsole() === false) {
+        // Node.
         if ((bool) $config['node_metaconsole'] === true) {
             $url_update_manager = $config['metaconsole_base_url'];
             $url_update_manager .= 'godmode/um_client/api.php';
         }
-    } else if ($is_metaconsole === true) {
+    } else {
+        // MC.
         $sc = new Synchronizer();
         $url_meta_base = ui_get_full_url('/', false, false, false);
         $sc->apply(
@@ -416,16 +386,17 @@ if (empty($config['update_manager_proxy_server']) === false
 }
 
 $ui = new Manager(
-    ((is_array($config) === true) ? $pandora_url : 'http://'.$_SERVER['SERVER_ADDR'].'/'),
-    ((is_array($config) === true) ? ui_get_full_url('ajax.php') : ''),
-    ((is_array($config) === true) ? 'godmode/um_client/index' : ''),
+    $pandora_url,
+    ui_get_full_url('ajax.php'),
+    'godmode/um_client/index',
     [
+        'lts'                    => (bool) $config['lts_updates'],
         'url'                    => $url_update_manager,
         'insecure'               => $insecure,
         'license'                => $license,
         'limit_count'            => ((is_array($license_data) === true) ? $license_data['count_enabled'] : null),
-        'language'               => ((is_array($config) === true) ? $config['language'] : null),
-        'timezone'               => ((is_array($config) === true) ? $config['timezone'] : null),
+        'language'               => $config['language'],
+        'timezone'               => $config['timezone'],
         'homedir'                => $homedir,
         'dbconnection'           => $dbconnection,
         'historydb'              => $dbhHistory,
@@ -433,21 +404,21 @@ $ui = new Manager(
         'MR'                     => $mr,
         'registration_code'      => $puid,
         'remote_config'          => $remote_config,
-        'propagate_updates'      => $is_metaconsole,
+        'propagate_updates'      => is_metaconsole(),
         'proxy'                  => $proxy,
         'allowOfflinePatches'    => $allowOfflinePatches,
         'set_maintenance_mode'   => function () {
-            if (function_exists('config_update_value') === true) {
-                config_update_value('maintenance_mode', 1);
-            }
+            config_update_value('maintenance_mode', 1);
         },
         'clear_maintenance_mode' => function () {
-            if (function_exists('config_update_value') === true) {
-                config_update_value('maintenance_mode', 0);
-            }
+            config_update_value('maintenance_mode', 0);
+        },
+        'on_update'              => function ($version, $type) use ($mode) {
+            register_upgrade($version, $type, $mode);
         },
     ],
-    $mode
+    $mode,
+    true
 );
 
 $ui->run();

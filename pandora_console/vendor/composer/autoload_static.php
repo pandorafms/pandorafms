@@ -21,6 +21,10 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         array (
             'setasign\\Fpdi\\' => 14,
         ),
+        'U' => 
+        array (
+            'UpdateManager\\' => 14,
+        ),
         'T' => 
         array (
             'Tests\\' => 6,
@@ -60,6 +64,10 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'UpdateManager\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/articapfms/update_manager_client/lib/UpdateManager',
         ),
         'Tests\\' => 
         array (

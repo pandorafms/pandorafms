@@ -2241,41 +2241,15 @@ CREATE TABLE IF NOT EXISTS `tupdate_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
--- Table `tupdate_package`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tupdate_package` (  
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,  
-  timestamp DATETIME NOT NULL,  
-  description VARCHAR(255) DEFAULT '',  PRIMARY KEY (`id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- ---------------------------------------------------------------------
--- Table `tupdate`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tupdate` (  
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,  
-  type ENUM('code', 'db_data', 'db_schema', 'binary'),  
-  id_update_package INT UNSIGNED NOT NULL DEFAULT 0,  
-  filename  VARCHAR(250) DEFAULT '',  
-  checksum  VARCHAR(250) DEFAULT '',  
-  previous_checksum  VARCHAR(250) DEFAULT '',  
-  svn_version INT UNSIGNED NOT NULL DEFAULT 0,  
-  data LONGTEXT,  
-  data_rollback LONGTEXT,  
-  description TEXT,  
-  db_table_name VARCHAR(140) DEFAULT '',  
-  db_field_name VARCHAR(140) DEFAULT '',  
-  db_field_value VARCHAR(1024) DEFAULT '',  PRIMARY KEY  (`id`),  
-  FOREIGN KEY (`id_update_package`) REFERENCES tupdate_package(`id`)   ON UPDATE CASCADE ON DELETE CASCADE 
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- ---------------------------------------------------------------------
 -- Table `tupdate_journal`
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tupdate_journal` (  
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,  
-  id_update INT UNSIGNED NOT NULL DEFAULT 0,  PRIMARY KEY  (`id`),  
-  FOREIGN KEY (`id_update`) REFERENCES tupdate(`id`)   ON UPDATE CASCADE ON DELETE CASCADE 
+CREATE TABLE `tupdate_journal` (
+  `id` SERIAL,
+  `utimestamp` BIGINT DEFAULT 0,
+  `version` VARCHAR(25) DEFAULT '',
+  `type` VARCHAR(25) DEFAULT '',
+  `origin` VARCHAR(25) DEFAULT '',
+  `id_user` VARCHAR(250) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------

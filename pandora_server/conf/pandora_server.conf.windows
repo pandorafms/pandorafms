@@ -213,6 +213,10 @@ wmi_timeout 10
 
 wmi_threads 2
 
+# WMI client binary (wmic by default).
+
+#wmi_client pandorawmic.exe
+
 # recon_threads. Each thread will scan a different scantask.
 
 recon_threads 2

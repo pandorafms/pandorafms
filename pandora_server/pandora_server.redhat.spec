@@ -67,6 +67,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
 # All binaries go to %{_bindir}
 cp -aRf bin/pandora_server $RPM_BUILD_ROOT%{_bindir}/
 cp -aRf bin/pandora_exec $RPM_BUILD_ROOT%{_bindir}/
+cp -aRf bin/pandorawmic $RPM_BUILD_ROOT%{_bindir}/
 install -m 0755 bin/tentacle_server $RPM_BUILD_ROOT%{_bindir}/
 
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
@@ -204,6 +205,7 @@ exit 0
 %{_bindir}/pandora_server
 %{_bindir}/tentacle_server
 %{_bindir}/pandora_ha
+%{_bindir}/pandorawmic
 
 %dir %{_sysconfdir}/pandora
 %dir %{_localstatedir}/spool/pandora

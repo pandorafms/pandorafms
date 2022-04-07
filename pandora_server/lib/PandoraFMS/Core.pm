@@ -1367,6 +1367,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		_modulegroup_ => undef,
 		_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 		_modulestatus_ => undef,
+		_statusimage_ => undef,
 		_moduletags_ => undef,
 		'_moduledata_\S+_' => undef,
 		_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
@@ -4560,6 +4561,18 @@ sub on_demand_macro($$$$$$;$) {
 		return (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '';
 	} elsif ($macro eq '_modulestatus_') {
 		return (defined ($module)) ? get_agentmodule_status_str($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	} elsif ($macro eq '_statusimage_') {
+		my $status = (defined ($module)) ? get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'}) : -1;
+
+		if ($status == MODULE_CRITICAL) {
+			return 'https://pandorafms.com/wp-content/uploads/2022/03/System-email-Bad-news.png';
+		} elsif ($status == MODULE_NORMAL) {
+			return 'https://pandorafms.com/wp-content/uploads/2022/03/System-email-Good-news.png';
+		} elsif ($status == MODULE_WARNING) {
+			return 'https://pandorafms.com/wp-content/uploads/2022/03/Warning-news.png';
+		}
+
+		return '';
 	} elsif ($macro eq '_moduletags_') {
 		return (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_policy_') {

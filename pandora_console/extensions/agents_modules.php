@@ -344,6 +344,7 @@ function mainAgentsModules()
     $save_serialize = (int) get_parameter('save_serialize', 0);
     $full_modules_selected = explode(';', get_parameter('full_modules_selected', 0));
     $full_agents_id = explode(';', get_parameter('full_agents_id', 0));
+    $show_type = (int) get_parameter('show_type', 0);
 
     // In full screen there is no pagination neither filters.
     if (( ($config['pure'] == 0 && $save_serialize) && $update_item == '' ) || ( ($config['pure'] == 1 && $save_serialize == 0) && $update_item == '' )) {
@@ -361,11 +362,11 @@ function mainAgentsModules()
         unserialize_in_temp($config['id_user'].'_agents', true, 1);
     }
 
-    if ($modules_selected[0]) {
+    if (isset($modules_selected[0]) === true && $modules_selected[0]) {
         serialize_in_temp($modules_selected, $config['id_user'].'_agent_module', 1);
     }
 
-    if ($agents_id[0] != -1) {
+    if (isset($agents_id[0]) === true && $agents_id[0] != -1) {
         serialize_in_temp($agents_id, $config['id_user'].'_agents', 1);
     }
 
@@ -375,20 +376,29 @@ function mainAgentsModules()
             $full_agents = urlencode(implode(';', $agents_id));
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
-			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'&show_type='.$show_type.'
 			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else if ($full_modules_selected[0] && $full_agents_id[0]) {
             $full_modules = urlencode(implode(';', $full_modules_selected));
             $full_agents = urlencode(implode(';', $full_agents_id));
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
-			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'&show_type='.$show_type.'
 			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else {
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
-			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&show_type='.$show_type.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         }
     }
+
+    // Type show.
+    $show_select = [
+        0 => __('Show module status'),
+        1 => __('Show module data'),
+    ];
+
+    $filter_type_label = '<b>'.__('Information to be shown').'</b>';
+    $filter_type = html_print_select($show_select, 'show_type', $show_type, '', '', 0, true, false, false, '', false, 'min-width: 180px;');
 
     // Groups.
     $filter_groups_label = '<b>'.__('Group').'</b>';
@@ -480,11 +490,29 @@ function mainAgentsModules()
             $full_modules = urlencode(implode(';', $full_modules_selected));
             $full_agents = urlencode(implode(';', $full_agents_id));
 
-            $url = 'index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset
-			&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr&full_modules_selected=$full_modules
-			&full_agents_id=$full_agents&selection_agent_module=$selection_a_m';
+            $url = sprintf(
+                'index.php?sec=view&sec2=extensions/agents_modules&pure=0&offset=%s
+			    &group_id=%s&modulegroup=%s&refresh=%s&full_modules_selected=%s
+			    &full_agents_id=%s&selection_agent_module=%s&show_type=%s',
+                $offset,
+                $group_id,
+                $modulegroup,
+                $refr,
+                $full_modules,
+                $full_agents,
+                $selection_a_m,
+                $show_type
+            );
         } else {
-            $url = 'index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr';
+            $url = sprintf(
+                'index.php?sec=view&sec2=extensions/agents_modules&pure=0&offset=%s&group_id=%s
+                &modulegroup=%s&refresh=%s&show_type=%s',
+                $offset,
+                $group_id,
+                $modulegroup,
+                $refr,
+                $show_type
+            );
         }
 
         // Floating menu - Start.
@@ -546,7 +574,11 @@ function mainAgentsModules()
 
     if ($config['pure'] != 1) {
         $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
-        $show_filters .= '<table class="w100p no-border" cellpadding="0" cellspacing="0" border="0">';
+        $show_filters .= '<table class="w100p no-border" cellpadding="15" cellspacing="0" border="0">';
+            $show_filters .= '<tr>';
+                $show_filters .= '<td>'.$filter_type_label.'</td>';
+                $show_filters .= '<td>'.$filter_type.'</td>';
+            $show_filters .= '</tr>';
             $show_filters .= '<tr>';
                 $show_filters .= '<td>'.$filter_groups_label.'</td>';
                 $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
@@ -574,10 +606,10 @@ function mainAgentsModules()
         );
     }
 
-    if ($agents_id[0] != -1) {
+    if (isset($agents_id[0]) === true && $agents_id[0] != -1) {
         $agents = $agents_id;
     } else {
-        if ($full_agents_id[0]) {
+        if (isset($full_agents_id[0]) === true && $full_agents_id[0]) {
             $agents = $full_agents_id;
         } else {
             $agents = '';
@@ -610,24 +642,34 @@ function mainAgentsModules()
     }
 
     $total_pagination = count($agents);
-    if ($agents_id[0] != -1) {
-        $all_modules = [];
-        foreach ($modules_selected as $key => $value) {
-            $name = modules_get_agentmodule_name($value);
-            $sql = "SELECT id_agente_modulo 
-					FROM tagente_modulo 
-					WHERE nombre = '".$name."';";
+    if (isset($agents_id[0]) === true && $agents_id[0] != -1) {
+        if (isset($modules_selected[0]) === true && $modules_selected[0]) {
+            $all_modules = [];
+            foreach ($modules_selected as $key => $value) {
+                $name = modules_get_agentmodule_name($value);
+                $sql = "SELECT id_agente_modulo 
+                        FROM tagente_modulo 
+                        WHERE nombre = '".$name."';";
 
-            $result_sql = db_get_all_rows_sql($sql);
+                $result_sql = db_get_all_rows_sql($sql);
 
-            if (is_array($result_sql)) {
-                foreach ($result_sql as $key => $value) {
-                    $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                if (is_array($result_sql)) {
+                    foreach ($result_sql as $key => $value) {
+                        $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                    }
                 }
             }
+        } else {
+            $all_modules = agents_get_modules(
+                $agents,
+                false,
+                $filter_module_group,
+                true,
+                true
+            );
         }
     } else {
-        if ($full_modules_selected[0]) {
+        if (isset($full_modules_selected[0]) === true && $full_modules_selected[0]) {
             foreach ($full_modules_selected as $key => $value) {
                 $name = modules_get_agentmodule_name($value);
                 $sql = "SELECT id_agente_modulo 
@@ -717,7 +759,7 @@ function mainAgentsModules()
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
-        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&show_type='.$show_type.'&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
             'images/arrow_left_green.png',
             true,
             ['title' => __('Previous modules')]
@@ -743,7 +785,7 @@ function mainAgentsModules()
 
     if (($hor_offset + $block) < $nmodules) {
         $new_hor_offset = ($hor_offset + $block);
-        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&show_type='.$show_type.'&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
             'images/arrow_right_green.png',
             true,
             ['title' => __('More modules')]
@@ -820,7 +862,6 @@ function mainAgentsModules()
 
             foreach ($module['id'] as $module_id) {
                 if (!$match && array_key_exists($module_id, $agent_modules)) {
-                    $status = modules_get_agentmodule_status($module_id);
                     echo "<td class='center'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
@@ -833,32 +874,42 @@ function mainAgentsModules()
                         $module_last_value = htmlspecialchars($module_last_value);
                     }
 
-                    switch ($status) {
-                        case AGENT_MODULE_STATUS_NORMAL:
-                            ui_print_status_image('module_ok.png', $module_last_value, false);
-                        break;
+                    if ($show_type === 0) {
+                        $status = modules_get_agentmodule_status($module_id);
+                        switch ($status) {
+                            case AGENT_MODULE_STATUS_NORMAL:
+                                ui_print_status_image('module_ok.png', $module_last_value, false);
+                            break;
 
-                        case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                            ui_print_status_image('module_critical.png', $module_last_value, false);
-                        break;
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                                ui_print_status_image('module_critical.png', $module_last_value, false);
+                            break;
 
-                        case AGENT_MODULE_STATUS_WARNING:
-                            ui_print_status_image('module_warning.png', $module_last_value, false);
-                        break;
+                            case AGENT_MODULE_STATUS_WARNING:
+                                ui_print_status_image('module_warning.png', $module_last_value, false);
+                            break;
 
-                        case AGENT_MODULE_STATUS_UNKNOWN:
-                            ui_print_status_image('module_unknown.png', $module_last_value, false);
-                        break;
+                            case AGENT_MODULE_STATUS_UNKNOWN:
+                                ui_print_status_image('module_unknown.png', $module_last_value, false);
+                            break;
 
-                        case AGENT_MODULE_STATUS_NORMAL_ALERT:
-                        case AGENT_MODULE_STATUS_WARNING_ALERT:
-                        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                            ui_print_status_image('module_alertsfired.png', $module_last_value, false);
-                        break;
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                                ui_print_status_image('module_alertsfired.png', $module_last_value, false);
+                            break;
 
-                        case 4:
-                            ui_print_status_image('module_no_data.png', $module_last_value, false);
-                        break;
+                            case 4:
+                                ui_print_status_image('module_no_data.png', $module_last_value, false);
+                            break;
+                        }
+                    } else {
+                        $module = modules_get_agentmodule($module_id);
+                        $module['datos'] = $module_last_value;
+
+                        $module_last_value = modules_get_agentmodule_data_for_humans($module);
+
+                        echo $module_last_value;
                     }
 
                     echo '</a>';
@@ -877,22 +928,24 @@ function mainAgentsModules()
 
     echo '</table>';
 
-    $show_legend = "<div class='legend_white'>";
-    $show_legend .= "<div class='center flex'>
-            <div class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></div>".__('Orange cell when the module has fired alerts').'</div>';
-    $show_legend .= "<div class='center flex'>
-            <div class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></div>".__('Red cell when the module has a critical status').'
-        </div>';
-    $show_legend .= "<div class='center flex'>
-        <div class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></div>".__('Yellow cell when the module has a warning status').'</div>';
-    $show_legend .= "<div class='center flex'>
-        <div class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></div>".__('Green cell when the module has a normal status').'</div>';
-    $show_legend .= "<div class='center flex'>
-        <div class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></div>".__('Grey cell when the module has an unknown status').'</div>';
-    $show_legend .= "<div class='center flex'>
-        <div class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></div>".__("Cell turns blue when the module is in 'not initialize' status").'</div>';
-    $show_legend .= '</div>';
-    ui_toggle($show_legend, __('Legend'));
+    if ($show_type === 0) {
+        $show_legend = "<div class='legend_white'>";
+        $show_legend .= "<div class='center flex'>
+                <div class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></div>".__('Orange cell when the module has fired alerts').'</div>';
+        $show_legend .= "<div class='center flex'>
+                <div class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></div>".__('Red cell when the module has a critical status').'
+            </div>';
+        $show_legend .= "<div class='center flex'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></div>".__('Yellow cell when the module has a warning status').'</div>';
+        $show_legend .= "<div class='center flex'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></div>".__('Green cell when the module has a normal status').'</div>';
+        $show_legend .= "<div class='center flex'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></div>".__('Grey cell when the module has an unknown status').'</div>';
+        $show_legend .= "<div class='center flex'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></div>".__("Cell turns blue when the module is in 'not initialize' status").'</div>';
+        $show_legend .= '</div>';
+        ui_toggle($show_legend, __('Legend'));
+    }
 
     $pure_var = $config['pure'];
     if ($pure_var) {

@@ -228,13 +228,26 @@ function messages_process_read(
         $utimestamp = time();
     }
 
+    $already_read = db_get_value_filter(
+        'utimestamp_read',
+        'tnotification_user',
+        [
+            'id_mensaje' => $message_id,
+            'id_user'    => $config['id_user'],
+        ]
+    );
+
+    if (empty($already_read) === false) {
+        // Already read.
+        return true;
+    }
+
     $ret = db_process_sql_update(
         'tnotification_user',
         ['utimestamp_read' => $utimestamp],
         [
-            'id_mensaje'      => $message_id,
-            'id_user'         => $config['id_user'],
-            'utimestamp_read' => null,
+            'id_mensaje' => $message_id,
+            'id_user'    => $config['id_user'],
         ]
     );
 
@@ -584,13 +597,6 @@ function messages_get_overview_sent(
     return db_get_all_rows_filter(
         'tmensajes',
         $filter
-    );
-
-    return db_get_all_rows_field_filter(
-        'tmensajes',
-        'id_usuario_origen',
-        $config['id_user'],
-        $order
     );
 }
 

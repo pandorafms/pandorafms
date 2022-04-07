@@ -102,7 +102,7 @@ function fullCalendarPandora(calendarEl, options, settings, initialEvents) {
 function select_alert_template(info, calendar) {
   var nextDay = info.start.getDay() === 6 ? 0 : info.start.getDay() + 1;
   if (
-    info.start.getDay() == info.end.getDay() ||
+    (info.start.getDay() == info.end.getDay() && info.start < info.end) ||
     (nextDay == info.end.getDay() && time_format(info.end) == "00:00:00")
   ) {
     recalculate_events(calendar, {}, info.start, info.end, true);
@@ -282,7 +282,6 @@ function eventClick_alert_template(info, calendar, settings) {
     onAccept: function() {
       var replace_day_from = $("#hidden-day_from").val();
       var replace_time_from = $("#text-time_from_event").val();
-
       var array_time_from = replace_time_from.split(":");
       var new_date_from = new Date(calendar_days[replace_day_from]);
       new_date_from.setHours(
@@ -294,8 +293,13 @@ function eventClick_alert_template(info, calendar, settings) {
       var replace_day_to = $("#hidden-day_to").val();
       var replace_time_to = $("#text-time_to_event").val();
       if (replace_time_to === "23:59:59") {
-        replace_day_to++;
-        replace_time_to = "00:00:00";
+        if (replace_day_to == 6) {
+          replace_day_to = 0;
+          replace_time_to = "00:00:00";
+        } else if (replace_day_to != 0) {
+          replace_day_to++;
+          replace_time_to = "00:00:00";
+        }
       }
 
       var array_time_to = replace_time_to.split(":");

@@ -1192,7 +1192,7 @@ class DiscoveryTaskList extends HTML
      */
     private function progressTaskGraph($task)
     {
-        $result .= '<div class="flex">';
+        $result = '<div class="flex">';
         $result .= '<div class="subtitle">';
         $result .= '<span>'._('Overall Progress').'</span>';
 
@@ -1317,6 +1317,9 @@ class DiscoveryTaskList extends HTML
 
         if (is_array($task['stats']) === false) {
             $task['stats'] = json_decode($task['summary'], true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return $task['summary'];
+            }
         }
 
         if (is_array($task['stats'])) {
@@ -1379,31 +1382,35 @@ class DiscoveryTaskList extends HTML
                 $table->data[$i++][1] .= '</span>';
             } else {
                 // Content.
-                $table->data[$i][0] = '<b>'.__('Hosts discovered').'</b>';
-                $table->data[$i][1] = '<span id="discovered">';
-                $table->data[$i][1] .= $task['stats']['summary']['discovered'];
-                $table->data[$i++][1] .= '</span>';
-
-                $table->data[$i][0] = '<b>'.__('Alive').'</b>';
-                $table->data[$i][1] = '<span id="alive">';
-                $table->data[$i][1] .= $task['stats']['summary']['alive'];
-                $table->data[$i++][1] .= '</span>';
-
-                $table->data[$i][0] = '<b>'.__('Not alive').'</b>';
-                $table->data[$i][1] = '<span id="not_alive">';
-                $table->data[$i][1] .= $task['stats']['summary']['not_alive'];
-                $table->data[$i++][1] .= '</span>';
-
-                if ($task['type'] == DISCOVERY_HOSTDEVICES) {
-                    $table->data[$i][0] = '<b>'.__('Responding SNMP').'</b>';
-                    $table->data[$i][1] = '<span id="SNMP">';
-                    $table->data[$i][1] .= $task['stats']['summary']['SNMP'];
+                if (is_array($task['stats']['summary']) === true) {
+                    $table->data[$i][0] = '<b>'.__('Hosts discovered').'</b>';
+                    $table->data[$i][1] = '<span id="discovered">';
+                    $table->data[$i][1] .= $task['stats']['summary']['discovered'];
                     $table->data[$i++][1] .= '</span>';
 
-                    $table->data[$i][0] = '<b>'.__('Responding WMI').'</b>';
-                    $table->data[$i][1] = '<span id="WMI">';
-                    $table->data[$i][1] .= $task['stats']['summary']['WMI'];
+                    $table->data[$i][0] = '<b>'.__('Alive').'</b>';
+                    $table->data[$i][1] = '<span id="alive">';
+                    $table->data[$i][1] .= $task['stats']['summary']['alive'];
                     $table->data[$i++][1] .= '</span>';
+
+                    $table->data[$i][0] = '<b>'.__('Not alive').'</b>';
+                    $table->data[$i][1] = '<span id="not_alive">';
+                    $table->data[$i][1] .= $task['stats']['summary']['not_alive'];
+                    $table->data[$i++][1] .= '</span>';
+
+                    if ($task['type'] == DISCOVERY_HOSTDEVICES) {
+                        $table->data[$i][0] = '<b>'.__('Responding SNMP').'</b>';
+                        $table->data[$i][1] = '<span id="SNMP">';
+                        $table->data[$i][1] .= $task['stats']['summary']['SNMP'];
+                        $table->data[$i++][1] .= '</span>';
+
+                        $table->data[$i][0] = '<b>'.__('Responding WMI').'</b>';
+                        $table->data[$i][1] = '<span id="WMI">';
+                        $table->data[$i][1] .= $task['stats']['summary']['WMI'];
+                        $table->data[$i++][1] .= '</span>';
+                    }
+                } else {
+                    $table->data[$i][0] = $task['stats']['summary'];
                 }
             }
 

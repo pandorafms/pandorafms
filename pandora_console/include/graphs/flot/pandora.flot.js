@@ -104,7 +104,7 @@ function pandoraFlotPie(
       '<div style="font-size:' +
       font_size +
       "pt;" +
-      'text-align:center;padding:2px;color:white;">' +
+      'text-align:center;padding:2px;color:#4a4a4a;">' +
       label +
       "<br/>" +
       series.percent.toFixed(2) +

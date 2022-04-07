@@ -808,7 +808,7 @@ function html_print_select(
         $output .= '<div class="flex-row-center">';
     }
 
-    $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -1697,13 +1697,19 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = [];
     }
 
+    if (is_array($data['mModules']) === false) {
+        $result = explode(((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ','), $data['mModules']);
+    } else {
+        $result = $data['mModules'];
+    }
+
     $output .= html_print_input(
         [
             'label'    => __('Modules'),
             'type'     => 'select',
             'fields'   => $all_modules,
             'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => explode((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ',', $data['mModules']),
+            'selected' => $result,
             'return'   => true,
             'multiple' => true,
             'style'    => 'min-width: 200px;max-width:200px;',
@@ -4763,6 +4769,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     $style = '';
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $style = 'style="color: white"';
+    }
+
+    if (isset($data['label_class']) === false) {
+        $data['label_class'] = '';
     }
 
     $output = '';

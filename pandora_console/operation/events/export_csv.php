@@ -226,7 +226,7 @@ try {
                         if ($custom_data_array !== null) {
                             array_walk(
                                 $custom_data_array,
-                                function (&$value, $field) {
+                                function (&$value, $field) use ($separator) {
                                     if (is_array($value) === true) {
                                         $value = '['.implode($separator, $value).']';
                                     }

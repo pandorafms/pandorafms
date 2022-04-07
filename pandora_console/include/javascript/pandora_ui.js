@@ -518,8 +518,8 @@ function confirmDialog(settings) {
         hideOkButton +
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       click: function() {
-        $(this).dialog("close");
         if (typeof settings.onAccept == "function") settings.onAccept();
+        $(this).dialog("close");
         $(this).remove();
       }
     }
@@ -547,7 +547,13 @@ function confirmDialog(settings) {
     .dialog({
       open: settings.open,
       title: settings.title,
-      close: false,
+      close: function() {
+        if (typeof settings.notCloseOnDeny == "undefined") {
+          $(this).dialog("close");
+          $(this).remove();
+        }
+        if (typeof settings.onDeny == "function") settings.onDeny();
+      },
       width: settings.size,
       maxHeight: settings.maxHeight,
       modal: true,

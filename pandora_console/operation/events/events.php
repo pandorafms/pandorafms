@@ -226,6 +226,16 @@ $server_id = get_parameter(
     $filter['id_server_meta']
 );
 
+$custom_data_filter_type = get_parameter(
+    'filter[custom_data_filter_type]',
+    $filter['custom_data_filter_type']
+);
+
+$custom_data = get_parameter(
+    'filter[custom_data]',
+    $filter['custom_data']
+);
+
 if (is_metaconsole() === true) {
     // Connect to node database.
     $id_node = $server_id;
@@ -530,6 +540,8 @@ if ($loaded_filter !== false && $from_event_graph != 1 && !isset($fb64)) {
         $user_comment = $filter['user_comment'];
         $id_source_event = ($filter['id_source_event'] ?? '');
         $server_id = $filter['server_id'];
+        $custom_data = $filter['custom_data'];
+        $custom_data_filter_type = $filter['custom_data_filter_type'];
     }
 }
 
@@ -1451,6 +1463,54 @@ $adv_inputs[] = html_print_div(
     true
 );
 
+// Custom data filter type.
+$custom_data_filter_type_input = html_print_select(
+    [
+        '0' => __('Filter custom data by field name'),
+        '1' => __('Filter custom data by field value'),
+    ],
+    'custom_data_filter_type',
+    $custom_data_filter_type,
+    '',
+    false,
+    -1,
+    true
+);
+
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s',
+            __('Custom data filter'),
+            $custom_data_filter_type_input
+        ),
+    ],
+    true
+);
+
+// Custom data.
+$custom_data_input = html_print_input_text(
+    'custom_data',
+    $custom_data,
+    '',
+    5,
+    255,
+    true
+);
+
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s',
+            __('Custom data search'),
+            $custom_data_input
+        ),
+    ],
+    true
+);
+
 // Tags.
 if (is_metaconsole() === true) {
     $data = '<fieldset><legend class="pdd_0px">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
@@ -2259,6 +2319,27 @@ function process_datatables_item(item) {
 
     /* Module name */
     item.id_agentmodule = item.module_name;
+
+    if (item.custom_data !== '') {
+        var custom_data_str = '';
+
+        var item_custom_data_obj = (function(json_str) {
+        try {
+            return JSON.parse(json_str);
+        } catch (err) {
+            return false;
+        }
+        })(item.custom_data);
+
+        if (item_custom_data_obj !== false) {
+            for (const [attr_name, val] of Object.entries(item_custom_data_obj)) {
+                custom_data_str += attr_name + ' = ' + val + '<br>';
+            }
+            item.custom_data = custom_data_str;
+        } else {
+            item.custom_data = '';
+        }
+    }
 }
 
 /* Datatables auxiliary functions ends */

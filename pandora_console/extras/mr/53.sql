@@ -3,6 +3,9 @@ START TRANSACTION;
 ALTER TABLE `tipam_vlan` ADD COLUMN `custom_id` bigint(20) unsigned DEFAULT NULL;
 ALTER TABLE `tuser_task_scheduled`ADD COLUMN `enabled` TINYINT UNSIGNED NOT NULL DEFAULT 1;
 
+ALTER TABLE `tevent_filter` ADD COLUMN `custom_data` VARCHAR(500) DEFAULT '';
+ALTER TABLE `tevent_filter` ADD COLUMN `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0;
+
 ALTER TABLE tagente MODIFY alias varchar(600) NOT NULL DEFAULT '';
 ALTER TABLE tagente MODIFY nombre varchar(600) NOT NULL DEFAULT '';
 
@@ -18,6 +21,11 @@ CREATE TABLE IF NOT EXISTS `tbackup` (
   `filepath` VARCHAR(512) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+ALTER TABLE `treport_content` ADD COLUMN `macros_definition` TEXT;
+ALTER TABLE `treport_content` ADD COLUMN `render_definition` TEXT;
+ALTER TABLE `treport_content_template` ADD COLUMN `macros_definition` TEXT;
+ALTER TABLE `treport_content_template` ADD COLUMN `render_definition` TEXT;
 
 DROP TABLE `tupdate`;
 DROP TABLE `tupdate_package`;

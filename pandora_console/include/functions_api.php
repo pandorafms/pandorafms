@@ -14530,7 +14530,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
                     $id_service_child = 0;
                     $agent_id = $element['id'];
                     if (!agents_check_access_agent($agent_id, 'AR')) {
-                        continue;
+                        continue 2;
                     }
                 break;
 
@@ -14539,7 +14539,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
                     $id_service_child = 0;
                     $id_agente_modulo = $element['id'];
                     if (!agents_check_access_agent(modules_get_agentmodule_agent($id_agente_modulo), 'AR')) {
-                        continue;
+                        continue 2;
                     }
                 break;
 
@@ -14554,7 +14554,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
                         $id_service_child
                     );
                     if ($service_group === false || !check_acl($config['id_user'], $service_group, 'AD')) {
-                        continue;
+                        continue 2;
                     }
                 break;
             }
@@ -14901,6 +14901,31 @@ function api_set_metaconsole_synch($keys)
     } else {
         echo __('This function is for metaconsole only.');
     }
+}
+
+
+function api_set_metaconsole_license_file($key)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (empty($key) === true) {
+        returnError('Key cannot be empty.');
+        return;
+    }
+
+    // Update the license file.
+    $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $key);
+    if ($result === false) {
+        returnError('update-license', 'Failed to Update license file.');
+    } else {
+        returnData('string', ['type' => 'string', 'data' => true]);
+    }
+
+    return;
 }
 
 

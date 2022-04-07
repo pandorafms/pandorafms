@@ -116,6 +116,7 @@ $fields_available['data'] = __('Data');
 $fields_available['module_status'] = __('Module Status');
 $fields_available['mini_severity'] = __('Severity mini');
 $fields_available['module_custom_id'] = __('Module custom ID');
+$fields_available['custom_data'] = __('Custom data');
 
 
 // Remove fields already selected.

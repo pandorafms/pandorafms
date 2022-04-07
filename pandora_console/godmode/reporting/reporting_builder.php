@@ -1677,6 +1677,7 @@ switch ($action) {
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+                                $es['show_type'] = get_parameter('show_type', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -1848,6 +1849,33 @@ switch ($action) {
                                     'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
                                 $good_format = true;
                             break;
 
@@ -2480,6 +2508,7 @@ switch ($action) {
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+                                $es['show_type'] = get_parameter('show_type', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -2597,6 +2626,33 @@ switch ($action) {
                                     'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
                                 $good_format = true;
                             break;
 

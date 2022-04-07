@@ -1265,6 +1265,25 @@ input.datos {
 .bg_caca {
   background-color: #cacaca;
 }
+
+.bg_th {
+  background-color: #efeff0 !important;
+  color: #000;
+  font-weight: bold;
+}
+
+.border_table {
+  border-collapse: collapse !important;
+}
+
+.border_th {
+  border-bottom: 2px solid #bfbfbf !important;
+}
+
+.border_tr {
+  border: 1px solid #dbdbdb !important;
+}
+
 /* margins */
 .mgn-lf-50 {
   margin-left: 50px;
@@ -8552,4 +8571,447 @@ div#err_msg_centralised {
 .resume_calendar_map {
   width: 90%;
   margin: 0 auto;
+}
+
+.custom-field-macro-report {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.custom-field-macro-report label {
+  flex: 0;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.custom-field-macro-report input {
+  flex: 2;
+}
+.mb10 {
+  margin-bottom: 10px;
+}
+
+#reset-styles {
+  font-size: 9pt;
+  line-height: 16pt;
+  padding: 0px;
+  box-sizing: border-box;
+  /*page-break-after: always;*/
+}
+
+#reset-styles a:link {
+  text-decoration: underline;
+  cursor: auto;
+}
+#reset-styles a:visited {
+  text-decoration: underline;
+  cursor: auto;
+}
+#reset-styles address {
+  display: block;
+  font-style: italic;
+}
+#reset-styles area {
+  display: none;
+}
+#reset-styles article {
+  display: block;
+}
+#reset-styles aside {
+  display: block;
+}
+#reset-styles b {
+  font-weight: bold;
+}
+#reset-styles bdo {
+  unicode-bidi: bidi-override;
+}
+#reset-styles blockquote {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+#reset-styles body {
+  display: block;
+  margin: 8px;
+}
+#reset-styles body:focus {
+  outline: none;
+}
+#reset-styles caption {
+  display: table-caption;
+  text-align: center;
+}
+#reset-styles cite {
+  font-style: italic;
+}
+#reset-styles code {
+  font-family: monospace;
+}
+#reset-styles col {
+  display: table-column;
+}
+#reset-styles colgroup {
+  display: table-column-group;
+}
+#reset-styles datalist {
+  display: none;
+}
+#reset-styles dd {
+  display: block;
+  margin-left: 40px;
+}
+#reset-styles del {
+  text-decoration: line-through;
+}
+#reset-styles details {
+  display: block;
+}
+#reset-styles dfn {
+  font-style: italic;
+}
+#reset-styles div {
+  display: block;
+}
+#reset-styles dl {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+}
+#reset-styles dt {
+  display: block;
+}
+#reset-styles em {
+  font-style: italic;
+}
+#reset-styles embed:focus {
+  outline: none;
+}
+#reset-styles fieldset {
+  display: block;
+  margin-left: 2px;
+  margin-right: 2px;
+  padding-top: 0.35em;
+  padding-bottom: 0.625em;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  border: 2px groove;
+}
+#reset-styles figcaption {
+  display: block;
+}
+#reset-styles figure {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+#reset-styles footer {
+  display: block;
+}
+#reset-styles form {
+  display: block;
+  margin-top: 0em;
+}
+#reset-styles h1 {
+  display: inline-block;
+  font-size: 2em;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  margin-left: 0;
+  margin-right: 0;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
+}
+#reset-styles h2 {
+  display: inline-block;
+  font-size: 1.5em;
+  margin-top: 0.83em;
+  margin-bottom: 0.83em;
+  margin-left: 0;
+  margin-right: 0;
+  margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
+}
+#reset-styles h3 {
+  display: inline-block;
+  font-size: 1.17em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
+}
+#reset-styles h4 {
+  display: inline-block;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  margin-block-start: 1.33em;
+  margin-block-end: 1.33em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
+}
+#reset-styles h5 {
+  display: inline-block;
+  font-size: 0.83em;
+  margin-top: 1.67em;
+  margin-bottom: 1.67em;
+  margin-block-start: 1.67em;
+  margin-block-end: 1.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
+}
+#reset-styles h6 {
+  display: inline-block;
+  font-size: 0.67em;
+  margin-top: 2.33em;
+  margin-bottom: 2.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
+}
+#reset-styles head {
+  display: none;
+}
+#reset-styles header {
+  display: block;
+}
+#reset-styles hr {
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+}
+#reset-styles html {
+  display: block;
+}
+#reset-styles html:focus {
+  outline: none;
+}
+#reset-styles i {
+  font-style: italic;
+}
+#reset-styles iframe:focus {
+  outline: none;
+}
+#reset-styles iframe[seamless] {
+  display: block;
+}
+#reset-styles img {
+  display: inline-block;
+}
+#reset-styles ins {
+  text-decoration: underline;
+}
+#reset-styles kbd {
+  font-family: monospace;
+}
+#reset-styles label {
+  cursor: default;
+}
+#reset-styles legend {
+  display: block;
+  padding-left: 2px;
+  padding-right: 2px;
+  border: none;
+}
+#reset-styles li {
+  display: list-item;
+}
+#reset-styles link {
+  display: none;
+}
+#reset-styles map {
+  display: inline;
+}
+#reset-styles mark {
+  background-color: yellow;
+  color: black;
+}
+#reset-styles menu {
+  display: block;
+  list-style-type: disc;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 40px;
+}
+#reset-styles nav {
+  display: block;
+}
+#reset-styles object:focus {
+  outline: none;
+}
+#reset-styles ol {
+  display: block;
+  list-style-type: decimal;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 40px;
+}
+#reset-styles output {
+  display: inline;
+}
+#reset-styles p {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+}
+#reset-styles param {
+  display: none;
+}
+#reset-styles pre {
+  display: block;
+  font-family: monospace;
+  white-space: pre;
+  margin: 1em 0;
+}
+#reset-styles q {
+  display: inline;
+}
+#reset-styles q::before {
+  content: open-quote;
+}
+#reset-styles q::after {
+  content: close-quote;
+}
+#reset-styles rt {
+  line-height: normal;
+}
+#reset-styles s {
+  text-decoration: line-through;
+}
+#reset-styles samp {
+  font-family: monospace;
+}
+#reset-styles script {
+  display: none;
+}
+#reset-styles section {
+  display: block;
+}
+#reset-styles small {
+  font-size: smaller;
+}
+#reset-styles strike {
+  text-decoration: line-through;
+}
+#reset-styles strong {
+  font-weight: bold;
+}
+#reset-styles style {
+  display: none;
+}
+#reset-styles sub {
+  vertical-align: sub;
+  font-size: smaller;
+}
+#reset-styles summary {
+  display: block;
+}
+#reset-styles sup {
+  vertical-align: super;
+  font-size: smaller;
+}
+#reset-styles table {
+  display: table;
+  border-collapse: separate;
+  border-spacing: 2px;
+  border-color: gray;
+}
+#reset-styles tbody {
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+#reset-styles td {
+  display: table-cell;
+  vertical-align: inherit;
+  text-align: inherit;
+}
+
+#reset-styles tfoot {
+  display: table-footer-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+#reset-styles thead tr th {
+  display: table-cell;
+  vertical-align: inherit;
+  font-weight: bold;
+  text-align: center;
+  background-color: initial;
+  color: initial;
+}
+#reset-styles thead {
+  display: table-header-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+#reset-styles title {
+  display: none;
+}
+#reset-styles tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+}
+#reset-styles u {
+  text-decoration: underline;
+}
+#reset-styles ul {
+  display: block;
+  list-style-type: disc;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 40px;
+}
+#reset-styles var {
+  font-style: italic;
 }

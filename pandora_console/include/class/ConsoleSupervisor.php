@@ -2532,10 +2532,19 @@ class ConsoleSupervisor
         global $config;
 
         $message = 'If AllowOverride is disabled, .htaccess will not works.';
-        $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
+        if (PHP_OS == 'FreeBSD') {
+            $message .= '<pre>Please check /usr/local/etc/apache24/httpd.conf to resolve this problem.';
+        } else {
+            $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
+        }
 
         // Get content file.
-        $file = file_get_contents('/etc/httpd/conf/httpd.conf');
+        if (PHP_OS == 'FreeBSD') {
+            $file = file_get_contents('/usr/local/etc/apache24/httpd.conf');
+        } else {
+            $file = file_get_contents('/etc/httpd/conf/httpd.conf');
+        }
+
         $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
         $is_none = false;
 

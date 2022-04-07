@@ -251,6 +251,7 @@ sub data_consumer ($$) {
     }
 
     my $recon = new PandoraFMS::Recon::Base(
+      parent => $self,
       communities => \@communities,
       dbh => $dbh,
       group_id => $task->{'id_group'},
@@ -1726,6 +1727,23 @@ sub PandoraFMS::Recon::Base::delete_connections($) {
 ################################################################################
 sub PandoraFMS::Recon::Base::message($$$) {
   my ($self, $message, $verbosity) = @_;
+
+  if ($verbosity <= 1) {
+    my $label = "[Discovery task " . $self->{'task_id'} . "]";
+    if (ref($self->{'task_data'}) eq 'HASH' && defined($self->{'task_data'}{'name'})) {
+      $label = "[Discovery task " . $self->{'task_data'}{'name'} . "]";
+    }
+
+    PandoraFMS::Core::send_console_notification(
+      $self->{'pa_config'},
+      $self->{'parent'}->getDBH(),
+      $label,
+      $message,
+      ['admin']
+    );
+
+    $self->{'summary'} = $message;
+  }
 
   logger($self->{'pa_config'}, "[Recon task " . $self->{'task_id'} . "] $message", $verbosity);
 }

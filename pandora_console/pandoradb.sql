@@ -1251,6 +1251,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `server_id` INT NOT NULL DEFAULT 0,
   `time_from` TIME NULL,
   `time_to` TIME NULL,
+  `custom_data` VARCHAR(500) DEFAULT '',
+  `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1608,6 +1610,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `ipam_network_filter` INT UNSIGNED DEFAULT 0,
   `ipam_alive_ips` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `ipam_ip_not_assigned_to_agent` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `macros_definition` TEXT,
+  `render_definition` TEXT,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE
@@ -3216,6 +3220,8 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
   `ipam_network_filter` INT UNSIGNED DEFAULT 0,
   `ipam_alive_ips` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `ipam_ip_not_assigned_to_agent` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `macros_definition` TEXT,
+  `render_definition` TEXT,
   PRIMARY KEY(`id_rc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

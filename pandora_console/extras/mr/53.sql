@@ -28,8 +28,8 @@ ALTER TABLE `treport_content_template` ADD COLUMN `macros_definition` TEXT;
 ALTER TABLE `treport_content_template` ADD COLUMN `render_definition` TEXT;
 
 DROP TABLE `tupdate_journal`;
-DROP TABLE `tupdate_package`;
 DROP TABLE `tupdate`;
+DROP TABLE `tupdate_package`;
 
 CREATE TABLE `tupdate_journal` (
   `id` SERIAL,

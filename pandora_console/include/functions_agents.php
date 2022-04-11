@@ -2118,7 +2118,7 @@ function agents_add_address($id_agent, $ip_address)
  * @param int Agent id
  * @param string IP address to unassign
  */
-function agents_delete_address($id_agent, $ip_address)
+function agents_delete_address($id_agent, $ip_address, $return=false)
 {
     global $config;
 
@@ -2151,13 +2151,20 @@ function agents_delete_address($id_agent, $ip_address)
             $new_ip = reset($new_ips);
         }
 
-        // Change main address in agent to first one in the list
+        // Change main address in agent to first one in the list.
         db_process_sql_update(
             'tagente',
             ['direccion' => $new_ip],
             ['id_agente' => $id_agent]
         );
+    } else {
+        $new_ip = agents_get_address($id_agent);
+        if (empty($new_ip)) {
+            $new_ip = '';
+        }
+    }
 
+    if ($return === true) {
         return $new_ip;
     }
 }

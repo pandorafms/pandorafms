@@ -73,7 +73,6 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/bin/
 cp -aRf bin/pandora_exec $RPM_BUILD_ROOT/usr/bin/
 cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/bin/
-cp -aRf bin/pandorawmic $RPM_BUILD_ROOT/usr/bin/
 
 cp -aRf conf/pandora_* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf conf/pandora_server.conf.new $RPM_BUILD_ROOT/etc/pandora/
@@ -194,7 +193,7 @@ rm -Rf /etc/pandora/pandora_server.conf*
 rm -Rf /etc/tentacle/tentacle_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
-rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server /usr/bin/pandorawmic
+rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
 rm -Rf /usr/bin/pandora_ha
 rm -Rf /etc/cron.hourly/pandora_db
 rm -Rf /etc/logrotate.d/pandora_server
@@ -212,7 +211,6 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /usr/bin/pandora_server
 /usr/bin/tentacle_server
 /usr/bin/pandora_ha
-/usr/bin/pandorawmic
 
 %defattr(755,pandora,root,755)
 /usr/lib/perl5/PandoraFMS/

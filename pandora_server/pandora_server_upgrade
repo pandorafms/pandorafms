@@ -33,7 +33,6 @@ install () {
 	echo "Rebuilding links /usr/local/bin -> /usr/bin"
 	ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server 2> /dev/null
 	ln -s /usr/local/bin/pandora_exec /usr/bin/pandora_exec 2> /dev/null
-	ln -s /usr/local/bin/pandorawmic /usr/bin/pandorawmic 2> /dev/null
 
 	if [ -d /etc/logrotate.d ]; then
 		echo "Creating logrotate.d entry for Pandora FMS log management"

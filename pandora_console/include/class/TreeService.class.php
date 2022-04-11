@@ -530,33 +530,6 @@ class TreeService extends Tree
                     $tmp['elementDescription'] = $item->description();
                     $tmp['disabled'] = $item->service()->disabled();
 
-                    if ($this->connectedToNode === false
-                        && is_metaconsole() === true
-                        && $tmp['metaID'] > 0
-                    ) {
-                        // Impersonate node.
-                        \enterprise_include_once('include/functions_metaconsole.php');
-                        \enterprise_hook(
-                            'metaconsole_connect',
-                            [
-                                null,
-                                $tmp['metaID'],
-                            ]
-                        );
-                    }
-
-                    if (check_acl($config['id_user'], $item->service()->id_group(), 'AR')) {
-                        $grandchildren = $item->service()->children();
-                    }
-
-                    if ($this->connectedToNode === false
-                        && is_metaconsole() === true
-                        && $tmp['metaID'] > 0
-                    ) {
-                        // Restore connection.
-                        \enterprise_hook('metaconsole_restore_db');
-                    }
-
                     $counters = [
                         'total_modules'  => 0,
                         'total_agents'   => 0,
@@ -565,29 +538,66 @@ class TreeService extends Tree
                         'total'          => 0,
                     ];
 
-                    if (is_array($grandchildren) === true) {
-                        $counters = array_reduce(
-                            $grandchildren,
-                            function ($carry, $item) {
-                                if ($item->type() === SERVICE_ELEMENT_MODULE) {
-                                    $carry['total_modules']++;
-                                } else if ($item->type() === SERVICE_ELEMENT_AGENT) {
-                                    $carry['total_agents']++;
-                                } else if ($item->type() === SERVICE_ELEMENT_SERVICE) {
-                                    $carry['total_services']++;
-                                } else if ($item->type() === SERVICE_ELEMENT_DYNAMIC) {
-                                    $carry['total_dynamic']++;
-                                }
+                    if (is_metaconsole() === false
+                        || (isset($config['realtimestats']) === true
+                        && $config['realtimestats'] === true
+                        && $tmp['metaID'] > 0)
+                    ) {
+                        // Look for counters.
+                        if ($this->connectedToNode === false
+                            && is_metaconsole() === true
+                            && $tmp['metaID'] > 0
+                        ) {
+                            // Impersonate node.
+                            \enterprise_include_once('include/functions_metaconsole.php');
+                            \enterprise_hook(
+                                'metaconsole_connect',
+                                [
+                                    null,
+                                    $tmp['metaID'],
+                                ]
+                            );
+                        }
 
-                                $carry['total']++;
+                        if (check_acl($config['id_user'], $item->service()->id_group(), 'AR')) {
+                            $grandchildren = $item->service()->children();
+                        }
 
-                                return $carry;
-                            },
-                            $counters
-                        );
-                    }
+                        if ($this->connectedToNode === false
+                            && is_metaconsole() === true
+                            && $tmp['metaID'] > 0
+                        ) {
+                            // Restore connection.
+                            \enterprise_hook('metaconsole_restore_db');
+                        }
 
-                    if ($counters['total'] > 0) {
+                        if (is_array($grandchildren) === true) {
+                            $counters = array_reduce(
+                                $grandchildren,
+                                function ($carry, $item) {
+                                    if ($item->type() === SERVICE_ELEMENT_MODULE) {
+                                        $carry['total_modules']++;
+                                    } else if ($item->type() === SERVICE_ELEMENT_AGENT) {
+                                        $carry['total_agents']++;
+                                    } else if ($item->type() === SERVICE_ELEMENT_SERVICE) {
+                                        $carry['total_services']++;
+                                    } else if ($item->type() === SERVICE_ELEMENT_DYNAMIC) {
+                                        $carry['total_dynamic']++;
+                                    }
+
+                                    $carry['total']++;
+
+                                    return $carry;
+                                },
+                                $counters
+                            );
+                        }
+
+                        if ($counters['total'] > 0) {
+                            $tmp['searchChildren'] = 1;
+                        }
+                    } else {
+                        // Always search for.
                         $tmp['searchChildren'] = 1;
                     }
 

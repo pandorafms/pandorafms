@@ -85,6 +85,7 @@ if ($do_operation) {
 
 $groups = users_get_groups();
 
+$table = new stdClass();
 $table->class = 'databox filters';
 $table->width = '100%';
 $table->data = [];

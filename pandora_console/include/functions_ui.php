@@ -840,21 +840,6 @@ function ui_print_os_icon(
 
 
 /**
- * Returns an stop icon.
- *
- * @return string
- */
-function ui_get_stop_icon():string
-{
-    if (date('md') === '0401') {
-        return 'images/icono_stop.gif';
-    }
-
-    return 'images/icono_stop.png';
-}
-
-
-/**
  * Print type agent icon.
  *
  * @param boolean $id_os          Id_os.

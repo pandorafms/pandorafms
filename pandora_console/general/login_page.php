@@ -484,7 +484,7 @@ if (isset($login_failed)) {
     $nick = get_parameter_post('nick');
     $fails = db_get_value('failed_attempt', 'tusuario', 'id_user', $nick);
     $attemps = ($config['number_attempts'] - $fails);
-    $icon = ui_get_stop_icon();
+    $icon = 'images/icono_stop.png';
     echo '<div id="login_failed" title="'.__('Login failed').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';

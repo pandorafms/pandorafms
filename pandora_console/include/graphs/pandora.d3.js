@@ -965,8 +965,8 @@ function sunburst(recipient, data, width, height) {
   }
 
   function move_tooltip(d) {
-    var x = d3.event.pageX + 10;
-    var y = d3.event.pageY + 10;
+    var x = d3.event.pageX + 10 - $("#menu_full").width();
+    var y = d3.event.pageY - 90;
 
     $("#tooltip").css("left", x + "px");
     $("#tooltip").css("top", y + "px");
@@ -1017,10 +1017,10 @@ function sunburst(recipient, data, width, height) {
         "-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
         "box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
         "left: " +
-        x +
+        100 +
         "px;" +
         "top: " +
-        y +
+        100 +
         "px;"
     );
   }

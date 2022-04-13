@@ -734,3 +734,8 @@ alertserver_warn 180
 #ha_max_resync_wait_retries 3
 # Maximum number of seconds waiting while verifying resync status.
 #ha_resync_sleep 10
+
+# Enable (1) or disable (0) the Tentacle Server watchdog (enabled by default).
+
+tentacle_service_watchdog 1
+

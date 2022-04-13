@@ -149,6 +149,9 @@ sub ha_load_pandora_conf($) {
   $conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
   $conf->{'ha_interval'} = 10 unless defined ($conf->{'ha_interval'});
   $conf->{'ha_monitoring_interval'} = 60 unless defined ($conf->{'ha_monitoring_interval'});
+  $conf->{'pandora_service_cmd'} = 'service pandora_server' unless defined($conf->{'pandora_service_cmd'});
+  $conf->{'tentacle_service_cmd'} = 'service tentacle_serverd' unless defined ($conf->{'tentacle_service_cmd'});
+  $conf->{'tentacle_service_watchdog'} = 1 unless defined ($conf->{'tentacle_service_watchdog'});
 }
 
 ##############################################################################
@@ -166,8 +169,6 @@ sub ha_keep_pandora_running($$) {
   my ($conf, $dbh) = @_;
   my $OSNAME = $^O;
   my $control_command;
-
-  $conf->{'pandora_service_cmd'} = 'service pandora_server' unless defined($conf->{'pandora_service_cmd'});
 
   # Check if all servers are running
   # Restart if crashed or keep interval is over.
@@ -231,6 +232,25 @@ sub ha_keep_pandora_running($$) {
   }
 }
 
+##############################################################################
+# Keep the Tentacle server running
+##############################################################################
+sub ha_keep_tentacle_running($$) {
+  my ($conf, $dbh) = @_;
+
+  return unless ($conf->{'tentacle_service_watchdog'} == 1);
+
+  # Try to get the PID of the service.
+  my $pid = `$conf->{'tentacle_service_cmd'} status | awk '{print \$NF*1}' | tr -d '\.'`;
+
+  # Not running.
+  if ($pid == 0) {
+    log_message($conf, 'LOG', 'Tentacle service not running.');
+    print ">> service not running...\n";
+    `$conf->{'tentacle_service_cmd'} start 2>/dev/null`;
+  }
+}
+
 ###############################################################################
 # Update pandora services.
 ###############################################################################
@@ -273,8 +293,6 @@ sub ha_update_server($$) {
   rmtree($workDir);
 
   # Restart service
-	$config->{'pandora_service_cmd'} = 'service pandora_server'
-    unless defined($config->{'pandora_service_cmd'});
   my $control_command = "restart-server";
   if ($OSNAME eq "freebsd") {
     $control_command = "restart_server";
@@ -355,6 +373,9 @@ sub ha_main($) {
 
       # Keep pandora running
       ha_keep_pandora_running($conf, $dbh);
+
+      # Keep Tentacle running
+      ha_keep_tentacle_running($conf, $dbh);
     
       # Are we the master?
       pandora_set_master($conf, $dbh);

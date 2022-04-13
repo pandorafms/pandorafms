@@ -569,6 +569,10 @@ sub pandora_load_config {
 	$pa_config->{'ncmserver_threads'} = 1; # 7.0 758
 	$pa_config->{'ncm_ssh_utility'} = '/usr/share/pandora_server/util/ncm_ssh_extension'; # 7.0 758
 
+	$pa_config->{"pandora_service_cmd"} = 'service pandora_server'; # 7.0 761
+	$pa_config->{"tentacle_service_cmd"} = 'service tentacle_serverd'; # 7.0 761
+	$pa_config->{"tentacle_service_watchdog"} = 1; # 7.0 761
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1313,6 +1317,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^pandora_service_cmd\s(.*)/i) {
 			$pa_config->{'pandora_service_cmd'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^tentacle_service_cmd\s(.*)/i) {
+			$pa_config->{'tentacle_service_cmd'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^tentacle_service_watchdog\s([0-1])/i) {
+			$pa_config->{'tentacle_service_watchdog'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^splitbrain_autofix\s+([0-9]*)/i) {
 			$pa_config->{'splitbrain_autofix'} = clean_blank($1);

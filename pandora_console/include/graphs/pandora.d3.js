@@ -796,7 +796,7 @@ function treeMap(recipient, data, width, height) {
 // The area (or angle, depending on implementation) of each arc corresponds to its value.
 // Sunburst design by John Stasko. Data courtesy Jeff Heer.
 // http://bl.ocks.org/mbostock/4348373
-function sunburst(recipient, data, width, height) {
+function sunburst(recipient, data, width, height, tooltip = true) {
   if (width === "auto") {
     width = $(recipient).innerWidth();
   }
@@ -858,11 +858,14 @@ function sunburst(recipient, data, width, height) {
     })
     .style("cursor", "pointer")
     .on("click", click)
-    .on("mouseover", over_user)
+    .on("mouseover", tooltip === "1" ? over_user : "")
     .on("mouseout", out_user)
     .on("mousemove", move_tooltip);
 
   function computeTextRotation(d) {
+    if (d.type === "central_service") {
+      return 0;
+    }
     var ang = ((x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI) * 180;
     return ang > 90 ? 180 + ang : ang;
   }
@@ -882,9 +885,18 @@ function sunburst(recipient, data, width, height) {
       return computeTextRotation(d) > 180 ? -40 : -30;
     })
     .attr("dx", "6") // margin
-    .attr("dy", ".35em") // vertical-align
+    .attr("dy", function(d) {
+      if (d.type === "central_service") {
+        return "-7em";
+      }
+      return ".35em";
+    }) // vertical-align
     .attr("opacity", function(d) {
-      if (typeof d.show_name != "undefined" && d.show_name) return 1;
+      if (
+        (typeof d.show_name != "undefined" && d.show_name) ||
+        d.type === "central_service"
+      )
+        return 1;
       else return 0;
     })
     .text(function(d) {
@@ -899,7 +911,11 @@ function sunburst(recipient, data, width, height) {
       window.location.href = d.link;
     } else {
       // fade out all text elements
-      text.transition().attr("opacity", 0);
+      if (d.type === "central_service") {
+        text.transition().attr("opacity", 1);
+      } else {
+        text.transition().attr("opacity", 0);
+      }
 
       path
         .transition()

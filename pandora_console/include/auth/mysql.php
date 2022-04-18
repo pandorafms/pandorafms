@@ -82,8 +82,15 @@ function process_user_login($login, $pass, $api=false)
 {
     global $config;
 
+    // 0. Check first is user y set as local user.
+    $local_user = (bool) db_get_value_filter(
+        'local_user',
+        'tusuario',
+        ['id_user' => $login]
+    );
+
     // 1. Try remote.
-    if (strtolower($config['auth']) != 'mysql') {
+    if ($local_user !== true && strtolower($config['auth']) != 'mysql') {
         $login_remote = process_user_login_remote(
             $login,
             io_safe_output($pass),
@@ -106,6 +113,7 @@ function process_user_login($login, $pass, $api=false)
 
         if ($config['fallback_local_auth']
             || is_user_admin($login)
+            || $local_user === true
             || strtolower($config['auth']) == 'mysql'
             || (bool) $user_not_login === true
         ) {
@@ -361,18 +369,24 @@ function process_user_login_remote($login, $pass, $api=false)
             return false;
         }
 
+        $user_info = [
+            'fullname' => $login,
+            'comments' => 'Imported from '.$config['auth'],
+        ];
+
+        if (is_metaconsole() === true) {
+            $user_info['metaconsole_access_node'] = $config['ad_adv_user_node'];
+        }
+
         // Create the user.
         if (enterprise_hook(
             'prepare_permissions_groups_of_user_ad',
             [
                 $login,
                 $pass,
-                [
-                    'fullname' => $login,
-                    'comments' => 'Imported from '.$config['auth'],
-                ],
+                $user_info,
                 false,
-                defined('METACONSOLE'),
+                defined('METACONSOLE') && is_centralized() === false,
             ]
         ) === false
         ) {
@@ -383,6 +397,10 @@ function process_user_login_remote($login, $pass, $api=false)
         if (is_management_allowed() === false) {
             $config['auth_error'] = __('Please, login into metaconsole first');
             return false;
+        }
+
+        if (is_metaconsole() === true) {
+            $user_info['metaconsole_access_node'] = $config['ldap_adv_user_node'];
         }
 
         $permissions = fill_permissions_ldap($sr);
@@ -399,7 +417,7 @@ function process_user_login_remote($login, $pass, $api=false)
                 $pass,
                 $user_info,
                 $permissions,
-                is_metaconsole()
+                is_metaconsole() && is_centralized() === false
             );
         }
     } else {
@@ -782,7 +800,7 @@ function ldap_process_user_login($login, $password)
             io_safe_output($config['ldap_base_dn']),
             $config['ldap_login_attr'],
             io_safe_output($config['ldap_admin_login']),
-            io_safe_output($config['ldap_admin_pass']),
+            io_output_password($config['ldap_admin_pass']),
             io_safe_output($login)
         );
 
@@ -806,7 +824,7 @@ function ldap_process_user_login($login, $password)
     } else {
         // PHP LDAP function
         if ($config['ldap_admin_login'] != '' && $config['ldap_admin_pass'] != '') {
-            if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'])) {
+            if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), io_output_password($config['ldap_admin_pass']))) {
                 $config['auth_error'] = 'Admin ldap connection fail';
                 @ldap_close($ds);
                 return false;
@@ -1383,8 +1401,16 @@ function safe_output_accute($string)
 }
 
 
-function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $access_attr, $ldap_admin_user, $ldap_admin_pass, $user)
-{
+function local_ldap_search(
+    $ldap_host,
+    $ldap_port=389,
+    $ldap_version=3,
+    $dn=null,
+    $access_attr=null,
+    $ldap_admin_user=null,
+    $ldap_admin_pass=null,
+    $user=null
+) {
     global $config;
 
     $filter = '';

@@ -17,7 +17,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Custom events Management'
     );
     include 'general/noaccess.php';
@@ -116,6 +116,7 @@ $fields_available['data'] = __('Data');
 $fields_available['module_status'] = __('Module Status');
 $fields_available['mini_severity'] = __('Severity mini');
 $fields_available['module_custom_id'] = __('Module custom ID');
+$fields_available['custom_data'] = __('Custom data');
 
 
 // Remove fields already selected.

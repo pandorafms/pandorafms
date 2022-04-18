@@ -23,7 +23,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Setup Management'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -116,10 +119,18 @@ $table_remote->data['ehorus_test'] = $row;
 // Print.
 echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-if ($config['style'] === 'pandora_black') {
-    html_print_image('include/ehorus/images/ehorus-logo.png');
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+    html_print_image(
+        'include/ehorus/images/ehorus-logo.png',
+        false,
+        ['class' => 'w400px']
+    );
 } else {
-    html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+    html_print_image(
+        'include/ehorus/images/ehorus-logo-grey.png',
+        false,
+        ['class' => 'w400px']
+    );
 }
 
 echo '</a>';

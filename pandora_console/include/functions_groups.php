@@ -567,20 +567,19 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
 
     $tree = $groups;
     foreach ($groups as $key => $group) {
-        if ($group['id_grupo'] == 0) {
+        if (is_array($group) === false || (int) $group['id_grupo'] === 0) {
             continue;
         }
 
         // If the user has ACLs on a gruop but not in his father,
-        // we consider it as a son of group "all"
-        if (!isset($groups[$group['parent']])) {
+        // we consider it as a son of group "all".
+        if (isset($groups[$group['parent']]) === false) {
             $group['parent'] = 0;
         }
 
-        if (is_array($tree[$group['parent']]) === false) {
-            $str = $tree[$group['parent']];
+        if (is_array(($tree[$group['parent']] ?? null)) === false) {
             $tree[$group['parent']] = [
-                'nombre'   => $tree[$group['parent']],
+                'nombre'   => ($tree[$group['parent']] ?? ''),
                 'id_grupo' => $group['parent'],
             ];
         }
@@ -590,7 +589,7 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
     }
 
     // Depends on the All group we give different format.
-    if (isset($groups[0])) {
+    if (isset($groups[0]) === true) {
         $tree = [$tree[0]];
     } else {
         $tree = $tree[0]['branch'];
@@ -609,24 +608,15 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
  *
  * @return integer Status of the agents.
  */
-function groups_get_status($id_group=0, $strict_user=false)
+function groups_get_status($id_group=0, $ignore_alerts=false)
 {
     global $config;
 
     include_once $config['homedir'].'/include/functions_reporting.php';
 
-    if ($strict_user) {
-        $acltags = tags_get_user_groups_and_tags($config['id_user'], 'AR', $strict_user);
-        $group_status = group_get_data($config['id_user'], $strict_user, $acltags, false, 'group');
-        $data['monitor_alerts_fired'] = $groups_status['_monitors_alerts_fired_'];
-        $data['agent_critical'] = $groups_status['_agents_critical_'];
-        $data['agent_warning'] = $groups_status['_agents_warning_'];
-        $data['agent_unknown'] = $groups_status['_agents_unknown_'];
-    } else {
-        $data = reporting_get_group_stats_resume($id_group);
-    }
+    $data = reporting_get_group_stats_resume($id_group);
 
-    if ($data['monitor_alerts_fired'] > 0) {
+    if ($data['monitor_alerts_fired'] > 0 && $ignore_alerts == false) {
         return AGENT_STATUS_ALERT_FIRED;
     } else if ($data['agent_critical'] > 0) {
         return AGENT_STATUS_CRITICAL;
@@ -991,31 +981,31 @@ function groups_get_agents_counter($group, $agent_filter=[], $module_filter=[], 
                 switch ($agent_status) {
                     case AGENT_STATUS_CRITICAL:
                         if ($critical > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_WARNING:
                         if (($total > 0) && ($critical == 0) && ($warning > 0)) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_UNKNOWN:
                         if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NOT_INIT:
                         if ($total == 0 || $total == $not_init) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NORMAL:
                         if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
@@ -1026,23 +1016,23 @@ function groups_get_agents_counter($group, $agent_filter=[], $module_filter=[], 
             } else {
                 if (array_search(AGENT_STATUS_CRITICAL, $agent_status) !== false) {
                     if ($critical > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_WARNING, $agent_status) !== false) {
                     if ($total > 0 && $critical = 0 && $warning > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_UNKNOWN, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NOT_INIT, $agent_status) !== false) {
                     if ($total == 0 || $total == $not_init) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NORMAL, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                        $count ++;
+                        $count++;
                     }
                 }
                 // Invalid status
@@ -1846,8 +1836,12 @@ function groups_get_tree(&$groups, $parent=false)
 }
 
 
-function groups_get_tree_good(&$groups, $parent=false, &$childs)
+function groups_get_tree_good(&$groups, $parent, &$childs)
 {
+    if (isset($parent) === false) {
+        $parent = false;
+    }
+
     $return = [];
 
     foreach ($groups as $id => $group) {
@@ -1895,8 +1889,15 @@ function groups_get_tree_keys($groups, &$group_keys)
 }
 
 
-function group_get_data($id_user=false, $user_strict=false, $acltags, $returnAllGroup=false, $mode='group', $agent_filter=[], $module_filter=[])
-{
+function group_get_data(
+    $id_user=false,
+    $user_strict=false,
+    $acltags=[],
+    $returnAllGroup=false,
+    $mode='group',
+    $agent_filter=[],
+    $module_filter=[]
+) {
     global $config;
     if ($id_user == false) {
         $id_user = $config['id_user'];
@@ -1923,7 +1924,7 @@ function group_get_data($id_user=false, $user_strict=false, $acltags, $returnAll
 			SELECT *
 			FROM tgrupo
 			WHERE id_grupo IN ('.$user_groups_ids.')
-			ORDER BY nombre COLLATE utf8_general_ci ASC'
+			ORDER BY nombre ASC'
         );
     }
 

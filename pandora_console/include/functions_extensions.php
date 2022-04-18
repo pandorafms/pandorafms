@@ -32,7 +32,10 @@ function extensions_call_main_function($filename)
     $extension = &$config['extensions'][$filename];
     if ($extension['main_function'] != '') {
         $params = [];
-        call_user_func_array($extension['main_function'], $params);
+        call_user_func_array(
+            $extension['main_function'],
+            array_values(($params ?? []))
+        );
     }
 }
 
@@ -49,7 +52,10 @@ function extensions_call_godmode_function($filename)
     $extension = &$config['extensions'][$filename];
     if ($extension['godmode_function'] != '') {
         $params = [];
-        call_user_func_array($extension['godmode_function'], $params);
+        call_user_func_array(
+            $extension['godmode_function'],
+            array_values(($params ?? []))
+        );
     }
 }
 
@@ -67,7 +73,10 @@ function extensions_call_login_function()
             continue;
         }
 
-        call_user_func_array($extension['login_function'], $params);
+        call_user_func_array(
+            $extension['login_function'],
+            array_values(($params ?? []))
+        );
     }
 }
 

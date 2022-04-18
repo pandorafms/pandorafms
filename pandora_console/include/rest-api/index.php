@@ -16,6 +16,7 @@ enterprise_include('include/functions_metaconsole.php');
 use Models\VisualConsole\Container as VisualConsole;
 use Models\VisualConsole\View as Viewer;
 use Models\VisualConsole\Item as Item;
+use PandoraFMS\User;
 
 $method = get_parameter('method');
 if ($method) {
@@ -35,6 +36,7 @@ if ($method) {
 $visualConsoleId = (int) get_parameter('visualConsoleId');
 $getVisualConsole = (bool) get_parameter('getVisualConsole');
 $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
+$doLogin = (bool) get_parameter('doLogin');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $createVisualConsoleItem = (bool) get_parameter('createVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
@@ -53,6 +55,31 @@ $loadtabs = (bool) get_parameter('loadtabs');
 
 ob_clean();
 
+if ($doLogin === true) {
+    $id_user = get_parameter('id_user', '');
+    $password = get_parameter('password', '');
+
+    if (User::login(
+        [
+            'id_usuario' => $id_user,
+            'password'   => $password,
+        ]
+    ) === true
+    ) {
+        echo json_encode(['auth_hash' => User::generatePublicHash()]);
+    } else {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to login using invalid credentials'
+        );
+        http_response_code(403);
+        return;
+    }
+
+    return;
+}
+
+
 if ($visualConsoleId) {
     // Retrieve the visual console.
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId], $ratio);
@@ -66,7 +93,7 @@ if ($visualConsoleId) {
 
     if (!$aclRead && !$aclWrite && !$aclManage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access visual console without group access'
         );
         http_response_code(403);
@@ -88,25 +115,15 @@ if ($getVisualConsole === true) {
 
     $width = get_parameter('widthScreen', 0);
 
+    $mode = get_parameter('mode', '');
+
     $ratio = 0;
     if (isset($size) === true
         && is_array($size) === true
         && empty($size) === false
     ) {
+        $ratio = $visualConsole->adjustToViewport($size, $mode);
         $visualConsoleData = $visualConsole->toArray();
-        $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
-        $ratio = ($size['width'] / $visualConsoleData['width']);
-        $radio_h = ($size['height'] / $visualConsoleData['height']);
-
-        $visualConsoleData['width'] = $size['width'];
-        $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
-
-        if ($visualConsoleData['height'] > $size['height']) {
-            $ratio = $radio_h;
-
-            $visualConsoleData['height'] = $size['height'];
-            $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);
-        }
     }
 
     $widthRatio = 0;
@@ -132,6 +149,11 @@ if ($getVisualConsole === true) {
         $item = VisualConsole::getItemFromDB($itemId);
     } catch (Throwable $e) {
         // Bad params.
+        echo $e->getMessage();
+        if (__DEBUG === 1) {
+            echo ' at '.$e->getFile().':'.$e->getLine();
+        }
+
         http_response_code(400);
         return;
     }
@@ -147,7 +169,7 @@ if ($getVisualConsole === true) {
 
     if (!$aclRead && !$aclWrite && !$aclManage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access visual console without group access'
         );
         http_response_code(403);
@@ -164,7 +186,7 @@ if ($getVisualConsole === true) {
 
         if (!$aclRead && !$aclWrite && !$aclManage) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access visual console without group access'
             );
             http_response_code(403);
@@ -209,6 +231,11 @@ if ($getVisualConsole === true) {
             $item = VisualConsole::getItemFromDB($result);
         } catch (Throwable $e) {
             // Bad params.
+            echo $e->getMessage();
+            if (__DEBUG === 1) {
+                echo ' at '.$e->getFile().':'.$e->getLine();
+            }
+
             http_response_code(400);
             return;
         }
@@ -239,7 +266,7 @@ if ($getVisualConsole === true) {
     // ACL.
     if (!$aclWrite && !$aclManage) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to delete visual console item without group access'
         );
         http_response_code(403);
@@ -247,7 +274,7 @@ if ($getVisualConsole === true) {
     }
 
     $data = get_parameter('data');
-    $result = $item::delete($itemId);
+    $result = $item->delete($itemId);
     echo $result;
     return;
 } else if ($copyVisualConsoleItem === true) {
@@ -274,7 +301,7 @@ if ($getVisualConsole === true) {
     $class = VisualConsole::getItemClass((int) $data['type']);
     try {
         // Save the new item.
-        $result = $class::save($data);
+        $result = $class::create($data);
     } catch (\Throwable $th) {
         // There is no item in the database.
         echo false;

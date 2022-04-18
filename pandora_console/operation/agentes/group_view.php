@@ -40,7 +40,7 @@ $agent_w = check_acl($config['id_user'], 0, 'AW');
 
 if (!$agent_a && !$agent_w) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent view (Grouped)'
     );
     include 'general/noaccess.php';
@@ -66,7 +66,10 @@ if (isset($_GET['update_netgroup'])) {
             );
         }
     } else {
-        db_pandora_audit('ACL Violation', 'Trying to set flag for groups');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to set flag for groups'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -186,14 +189,14 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
             echo "<span id='sumary' class='yellow_background'>".$total_agent_warning.'%</span>';
             echo "<span id='sumary' class='green_background'>".$total_agent_ok.'%</span>';
             echo "<span id='sumary' class='bg_B2B2B2'>".$total_agent_unknown.'%</span>';
-            echo "<span id='sumary' class='bg_5bb6e5'>".$total_not_init.'%</span>';
+            echo "<span id='sumary' class='blue'>".$total_not_init.'%</span>';
         echo '</td>';
         echo "<td align='center'>";
             echo "<span id='sumary' class='red_background'>".$total_critical.'%</span>';
             echo "<span id='sumary' class='yellow_background'>".$total_warning.'%</span>';
             echo "<span id='sumary' class='green_background'>".$total_ok.'%</span>';
             echo "<span id='sumary' class='bg_B2B2B2'>".$total_unknown.'%</span>';
-            echo "<span id='sumary' class='bg_5bb6e5'>".$total_monitor_not_init.'%</span>';
+            echo "<span id='sumary' class='bg_4a83f3'>".$total_monitor_not_init.'%</span>';
         echo '</td>';
     echo '</tr>';
 echo '</table>';

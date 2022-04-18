@@ -609,10 +609,11 @@ class Events
             __('Events'),
             $ui->createHeaderButton(
                 [
-                    'icon' => 'back',
-                    'pos'  => 'left',
-                    'text' => __('Back'),
-                    'href' => 'index.php?page=home',
+                    'icon'  => 'ui-icon-back',
+                    'pos'   => 'left',
+                    'text'  => __('Back'),
+                    'href'  => 'index.php?page=home',
+                    'class' => 'header-button-left',
                 ]
             )
         );
@@ -733,23 +734,29 @@ class Events
         // --------------Fill the SQL POST-------------------------------
         $sql_post = ' WHERE 1=1 ';
 
-        switch ($this->status) {
-            case 0:
-            case 1:
-            case 2:
-                $sql_post .= ' AND estado = '.$this->status;
-            break;
+        if ($this->status != null) {
+            switch ($this->status) {
+                case 0:
+                case 1:
+                case 2:
+                    $sql_post .= ' AND estado = '.$this->status;
+                break;
 
-            case 3:
-                $sql_post .= ' AND (estado = 0 OR estado = 2)';
-            break;
+                case 3:
+                    $sql_post .= ' AND (estado = 0 OR estado = 2)';
+                break;
+
+                default:
+                    // Not posible.
+                break;
+            }
         }
 
         if ($this->free_search != '') {
             $sql_post .= " AND evento LIKE '%".io_safe_input($this->free_search)."%'";
         }
 
-        if ($this->severity != -1) {
+        if ($this->severity != null && $this->severity != -1) {
             switch ($this->severity) {
                 case EVENT_CRIT_WARNING_OR_CRITICAL:
                     $sql_post .= ' AND (criticity = '.EVENT_CRIT_WARNING.' OR 
@@ -893,7 +900,7 @@ class Events
             '
 			<script type="text/javascript">
 				function openDetails(id_event) {
-					$.mobile.showPageLoadingMsg();
+                    $.mobile.loading("show");
 					
 					postvars = {};
 					postvars["action"] = "ajax";
@@ -952,24 +959,24 @@ class Events
 									}
 									else {
 										//The event is validated.
-										$("#validate_button").hide();
+                                        $("#validate_button").hide();
 									}
 									$("#validate_button_loading").hide();
 									$("#validate_button_fail").hide();
 									$("#validate_button_correct").hide();
 									
-									$.mobile.hidePageLoadingMsg();
+                                    $.mobile.loading( "hide" );
 									
 									$("#detail_event_dialog_hook").click();
 								}
 								else {
-									$.mobile.hidePageLoadingMsg();
+                                    $.mobile.loading( "hide" );
 									$("#detail_event_dialog_error_hook").click();
 								}
 							},
 						error:
 							function (jqXHR, textStatus, errorThrown) {
-								$.mobile.hidePageLoadingMsg();
+                                $.mobile.loading( "hide" );
 								$("#detail_event_dialog_error_hook").click();
 							}
 						});

@@ -46,7 +46,10 @@ if (check_acl($config['id_user'], 0, 'ER') === false
     && check_acl($config['id_user'], 0, 'EW') === false
     && check_acl($config['id_user'], 0, 'EM') === false
 ) {
-    db_pandora_audit('ACL Violation', 'Trying to access event viewer');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access event viewer'
+    );
     include 'general/noaccess.php';
 
     return;
@@ -72,7 +75,7 @@ echo '<title>'.__('Sound Events').'</title>';
 </style>
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
 } else {
     echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';

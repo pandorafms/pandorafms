@@ -64,7 +64,7 @@ function dialog_message(message_id) {
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
                 $('.check_delete').each(function(){
-                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);
                 });
             }
             else{
@@ -128,7 +128,7 @@ $report_m = check_acl($config['id_user'], 0, 'RM');
 $access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
 if (!$report_r && !$report_w && !$report_m) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -172,7 +172,7 @@ if ($action === 'edit' && $idReport > 0) {
         && ! check_acl_restricted_all($config['id_user'], $report_group, 'RM')
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access report builder'
         );
         include 'general/noaccess.php';
@@ -263,7 +263,7 @@ if ($idReport != 0) {
 
         if (!$delete_report_bypass) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access report builder'
             );
             include 'general/noaccess.php';
@@ -625,7 +625,7 @@ switch ($action) {
                         $delete = true;
                         // Owner can delete.
                     } else {
-                        $delete = check_acl(
+                        $delete = (bool) check_acl(
                             $config['id_user'],
                             $report['id_group'],
                             'RM'
@@ -646,9 +646,9 @@ switch ($action) {
                 break;
             }
 
-            if (! $delete && !empty($type_access_selected)) {
+            if ($delete === false && empty($type_access_selected) === false) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access report builder deletion'
                 );
                 include 'general/noaccess.php';
@@ -656,17 +656,12 @@ switch ($action) {
             }
 
             $result = reports_delete_report($idReport);
-            if ($result !== false) {
-                db_pandora_audit(
-                    'Report management',
-                    'Delete report #'.$idReport
-                );
-            } else {
-                db_pandora_audit(
-                    'Report management',
-                    'Fail try to delete report #'.$idReport
-                );
-            }
+            $auditMessage = ($result !== false) ? 'Delete report' : 'Fail try to delete report';
+
+            db_pandora_audit(
+                AUDIT_LOG_REPORT_MANAGEMENT,
+                sprintf('%s #%s', $auditMessage, $idReport)
+            );
 
             ui_print_result_message(
                 $result,
@@ -721,9 +716,9 @@ switch ($action) {
                 break;
             }
 
-            if (! $copy && !empty($type_access_selected)) {
+            if (! $copy && empty($type_access_selected) === false) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access report builder copy'
                 );
                 include 'general/noaccess.php';
@@ -731,17 +726,11 @@ switch ($action) {
             }
 
             $result = reports_copy_report($idReport);
-            if ($result !== false) {
-                db_pandora_audit(
-                    'Report management',
-                    'Copy report #'.$idReport
-                );
-            } else {
-                db_pandora_audit(
-                    'Report management',
-                    'Fail try to copy report #'.$idReport
-                );
-            }
+            $auditMessage = ((bool) $result === true) ? 'Copy report' : 'Fail try to copy report';
+            db_pandora_audit(
+                AUDIT_LOG_REPORT_MANAGEMENT,
+                sprintf('%s #%s', $auditMessage, $idReport)
+            );
 
             ui_print_result_message(
                 $result,
@@ -949,7 +938,7 @@ switch ($action) {
                 $table->head[$next] = __('Private');
                 $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
                 $table->size[$next] = '2%';
-                if (defined('METACONSOLE')) {
+                if (is_metaconsole() === true) {
                     $table->align[$next] = '';
                 } else {
                     $table->align[$next] = 'left';
@@ -963,7 +952,7 @@ switch ($action) {
 
                 $next++;
                 $op_column = false;
-                if (!defined('METACONSOLE')) {
+                if (is_metaconsole() === false) {
                     $op_column = true;
                     $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox(
                         'all_delete',
@@ -978,6 +967,8 @@ switch ($action) {
                 // $table->size = array ();
                 $table->size[$next] = '10%';
                 $table->align[$next] = 'right';
+            } else {
+                $table->size[1] = '40%';
             }
 
             $columnview = false;
@@ -1277,7 +1268,7 @@ switch ($action) {
             || check_acl($config['id_user'], 0, 'RM')
         ) {
             echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-            if (defined('METACONSOLE')) {
+            if (is_metaconsole() === true) {
                 echo '<div class="action-buttons w100p">';
             } else {
                 echo '<div class="action-buttons w100p">';
@@ -1421,23 +1412,17 @@ switch ($action) {
                             ['id_report' => $idReport]
                         );
 
-                        if ($resultOperationDB !== false) {
-                            db_pandora_audit(
-                                'Report management',
-                                'Update report #'.$idReport
-                            );
-                        } else {
-                            db_pandora_audit(
-                                'Report management',
-                                'Fail try to update report #'.$idReport
-                            );
-                        }
+                        $auditMessage = ($resultOperationDB === true) ? 'Update report' : 'Fail try to update report';
+                        db_pandora_audit(
+                            AUDIT_LOG_REPORT_MANAGEMENT,
+                            sprintf('%s #%s', $auditMessage, $idReport)
+                        );
                     } else {
                         $resultOperationDB = false;
                     }
 
                     $action = 'edit';
-                } else if ($action == 'save') {
+                } else if ($action === 'save') {
                     if ($reportName != '' && $idGroupReport != '') {
                         // This flag allow to differentiate
                         // between normal console and metaconsole reports.
@@ -1482,17 +1467,11 @@ switch ($action) {
                             ]
                         );
 
-                        if ($idOrResult !== false) {
-                            db_pandora_audit(
-                                'Report management',
-                                'Create report #'.$idOrResult
-                            );
-                        } else {
-                            db_pandora_audit(
-                                'Report management',
-                                'Fail try to create report'
-                            );
-                        }
+                        $auditMessage = ((bool) $idOrResult === true) ? sprintf('Create report #%s', $idOrResult) : 'Fail try to create report';
+                        db_pandora_audit(
+                            AUDIT_LOG_REPORT_MANAGEMENT,
+                            $auditMessage
+                        );
                     } else {
                         $idOrResult = false;
                     }
@@ -1676,19 +1655,76 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
-                                $agents_to_report = get_parameter('id_agents2');
-                                $modules_to_report = get_parameter(
-                                    'module',
-                                    ''
+                            case 'agent_module_status':
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
                                 );
 
-                                $es['module'] = get_same_modules(
+                                $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
-                                $es['id_agents'] = $agents_to_report;
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+                                $es['show_type'] = get_parameter('show_type', 0);
 
                                 $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'alert_report_actions':
+                                $alert_templates_to_report = get_parameter('alert_templates');
+                                $alert_actions_to_report = get_parameter('alert_actions');
+                                $show_summary = get_parameter('show_summary', 0);
+                                $group_by = get_parameter('group_by');
+                                $only_data = get_parameter('only_data', 0);
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
+                                );
+
+                                $es['module'] = get_same_modules_all(
+                                    $agents_to_report,
+                                    $modules_to_report
+                                );
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+
+                                $es['templates'] = $alert_templates_to_report;
+                                $es['actions'] = $alert_actions_to_report;
+                                $es['show_summary'] = $show_summary;
+                                $es['group_by'] = $group_by;
+                                $es['only_data'] = $only_data;
+
+                                $values['external_source'] = json_encode($es);
+
+                                $values['period'] = get_parameter('period');
+                                $values['lapse_calc'] = get_parameter(
+                                    'lapse_calc'
+                                );
+                                $values['lapse'] = get_parameter('lapse');
+
                                 $good_format = true;
                             break;
 
@@ -1718,6 +1754,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -1812,6 +1849,33 @@ switch ($action) {
                                     'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
                                 $good_format = true;
                             break;
 
@@ -1970,9 +2034,11 @@ switch ($action) {
                         );
                         $values['id_group'] = get_parameter('combo_group');
 
-                        $values['server_name'] = get_parameter(
-                            'combo_server'
-                        );
+                        if ($values['server_name'] == '') {
+                            $values['server_name'] = get_parameter(
+                                'combo_server'
+                            );
+                        }
 
                         if ((($values['type'] == 'custom_graph')
                             || ($values['type'] == 'automatic_custom_graph'))
@@ -2420,19 +2486,77 @@ switch ($action) {
                             break;
 
                             case 'agent_module':
-                                $agents_to_report = get_parameter('id_agents2');
-                                $modules_to_report = get_parameter(
-                                    'module',
-                                    ''
+                            case 'agent_module_status':
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
                                 );
 
-                                $es['module'] = get_same_modules(
+                                $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
-                                $es['id_agents'] = $agents_to_report;
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+                                $es['show_type'] = get_parameter('show_type', 0);
 
                                 $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'alert_report_actions':
+                                $alert_templates_to_report = get_parameter('alert_templates');
+                                $alert_actions_to_report = get_parameter('alert_actions');
+                                $show_summary = get_parameter('show_summary', 0);
+                                $group_by = get_parameter('group_by');
+                                $only_data = get_parameter('only_data', 0);
+
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $modules_to_report_text = get_parameter('module-multiple-text', '');
+
+                                // Decode json check modules.
+                                $agents_to_report = json_decode(
+                                    io_safe_output($agents_to_report_text),
+                                    true
+                                );
+                                $modules_to_report = json_decode(
+                                    io_safe_output($modules_to_report_text),
+                                    true
+                                );
+
+                                $es['module'] = get_same_modules_all(
+                                    $agents_to_report,
+                                    $modules_to_report
+                                );
+
+                                // Encode json modules and agents.
+                                $es['module'] = base64_encode(json_encode($es['module']));
+                                $es['id_agents'] = base64_encode(json_encode($agents_to_report));
+
+                                $es['templates'] = $alert_templates_to_report;
+                                $es['actions'] = $alert_actions_to_report;
+                                $es['show_summary'] = $show_summary;
+                                $es['group_by'] = $group_by;
+                                $es['only_data'] = $only_data;
+
+                                $values['external_source'] = json_encode($es);
+
+                                $values['period'] = get_parameter('period');
+                                $values['lapse_calc'] = get_parameter(
+                                    'lapse_calc'
+                                );
+                                $values['lapse'] = get_parameter('lapse');
+
                                 $good_format = true;
                             break;
 
@@ -2459,6 +2583,7 @@ switch ($action) {
                             case 'netflow_area':
                             case 'netflow_data':
                             case 'netflow_summary':
+                            case 'netflow_top_N':
                                 $values['text'] = get_parameter(
                                     'netflow_filter'
                                 );
@@ -2501,6 +2626,33 @@ switch ($action) {
                                     'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'custom_render':
+                                $macro_custom_name = get_parameter('macro_custom_name', []);
+                                $macro_custom_type = get_parameter('macro_custom_type', []);
+                                $macro_custom_value = get_parameter('macro_custom_value', []);
+                                $macro_custom_key = get_parameter('macro_custom_key', []);
+                                $macros_definition = [];
+
+                                foreach ($macro_custom_name as $key_macro => $value_macro) {
+                                    $kl = (empty($macro_custom_key[$key_macro]) === true) ? 0 : $macro_custom_key[$key_macro];
+                                    $macros_definition[$key_macro]['name'] = $value_macro;
+                                    $macros_definition[$key_macro]['type'] = $macro_custom_type[$key_macro];
+
+
+                                    if (is_array($macro_custom_value[$kl]) === true) {
+                                        foreach ($macro_custom_value[$kl] as $k => $v) {
+                                            $macros_definition[$key_macro][$k] = $v;
+                                        }
+                                    } else {
+                                        $macros_definition[$key_macro]['value'] = $macro_custom_value[$key_macro];
+                                    }
+                                }
+
+                                $values['macros_definition'] = json_encode($macros_definition);
+                                $values['render_definition'] = get_parameter('render_definition', '');
                                 $good_format = true;
                             break;
 
@@ -3462,25 +3614,6 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 }
 
 if ($resultOperationDB !== null) {
-    $err = '';
-    switch ($_POST['type']) {
-        case 'custom_graph':
-            $err .= 'You must enter custom graph';
-        break;
-
-        case 'SLA':
-            $err .= 'You must enter some character in SLA limit field';
-        default:
-            $err .= '';
-        break;
-    }
-
-    ui_print_result_message(
-        $resultOperationDB,
-        __('Successfull action'),
-        __('Unsuccessful action<br><br>'.$err)
-    );
-
     if ($action == 'update') {
         $buttons[$activeTab]['active'] = false;
         $activeTab = 'list_items';
@@ -3508,6 +3641,25 @@ if ($resultOperationDB !== null) {
             );
         }
     }
+
+    $err = '';
+    switch ($_POST['type']) {
+        case 'custom_graph':
+            $err .= 'You must enter custom graph';
+        break;
+
+        case 'SLA':
+            $err .= 'You must enter some character in SLA limit field';
+        default:
+            $err .= '';
+        break;
+    }
+
+    ui_print_result_message(
+        $resultOperationDB,
+        __('Successfull action'),
+        __('Unsuccessful action<br><br>'.$err)
+    );
 }
 
 switch ($activeTab) {

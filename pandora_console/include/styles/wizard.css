@@ -148,6 +148,12 @@ ul.wizard li > textarea {
   text-align: center;
 }
 
+.wizard-column-levels-check {
+  float: left;
+  width: 17%;
+  text-align: center;
+}
+
 .action_button_list {
   height: 60px;
 }

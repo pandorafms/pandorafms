@@ -88,6 +88,23 @@ function js_html_entity_decode(str) {
   return str2;
 }
 
+function truncate_string(str, str_length, separator) {
+  if (str.length <= str_length) {
+    return str;
+  }
+
+  separator = separator || "...";
+
+  var separator_length = separator.length,
+    chars_to_show = str_length - separator_length,
+    front_chars = Math.ceil(chars_to_show / 2),
+    tail_chars = Math.floor(chars_to_show / 2);
+
+  return (
+    str.substr(0, front_chars) + separator + str.substr(str.length - tail_chars)
+  );
+}
+
 /**
  * Function to search an element in an array.
  *
@@ -134,7 +151,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       $("input.module_types_excluded").each(function(index, el) {
         var module_type = parseInt($(el).val());
 
-        if (module_type !== NaN) module_types_excluded.push(module_type);
+        if (isNaN(module_type) == false)
+          module_types_excluded.push(module_type);
       });
     } catch (error) {}
   }
@@ -553,6 +571,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
     {
       page: "operation/agentes/ver_agente",
       get_agents_json_for_multiple_modules: 1,
+      truncate_agent_names: 1,
       status_module: status_module,
       "module_name[]": idModules,
       selection_mode: selection_mode,
@@ -618,8 +637,8 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
         s = js_html_entity_decode(val);
         $("#agents").append(
           $("<option></option>")
-            .html(s)
-            .attr("value", i)
+            .html(truncate_string(s, 30, "..."))
+            .attr({ value: i, title: s })
         );
         $("#agents").fadeIn("normal");
       });
@@ -1021,6 +1040,7 @@ function adjustTextUnits(name) {
         "selected",
         true
       );
+      $("#" + name + "_units").trigger("change");
       $("#text-" + name + "_text").val(restPrev);
       unitsSelected = true;
     }
@@ -1029,7 +1049,9 @@ function adjustTextUnits(name) {
   });
 
   if (unitsSelected == false) {
+    //$("#" + name + "_units option:last").prop("selected", true);
     $("#" + name + "_units option:last").prop("selected", true);
+    $("#" + name + "_units").trigger("change");
     $("#text-" + name + "_text").val(restPrev);
   }
 
@@ -1339,7 +1361,8 @@ function defineTinyMCE(added_config) {
     element_format: "html",
     object_resizing: true,
     autoresize_bottom_margin: 50,
-    autoresize_on_init: true
+    autoresize_on_init: true,
+    extended_valid_elements: "img[*]"
   });
 
   if (!isEmptyObject(added_config)) {
@@ -1997,4 +2020,12 @@ function progressBarSvg(option) {
   svg.append(backgroundRect, progressRect, text);
 
   return svg;
+}
+
+function inArray(needle, haystack) {
+  var length = haystack.length;
+  for (var i = 0; i < length; i++) {
+    if (haystack[i] == needle) return true;
+  }
+  return false;
 }

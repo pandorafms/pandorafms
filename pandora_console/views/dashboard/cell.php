@@ -78,11 +78,12 @@ if (empty($options['background']) === true) {
         $options['background'] = '#ffffff';
     }
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $options['background'] = '#222222';
     }
 } else if ($options['background'] === '#ffffff'
     && $config['style'] === 'pandora_black'
+    && !is_metaconsole()
 ) {
     $options['background'] = '#222222';
 } else if ($options['background'] === '#222222'

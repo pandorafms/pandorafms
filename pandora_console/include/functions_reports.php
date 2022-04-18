@@ -653,7 +653,8 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Graphs'),
         'name'     => __('Custom graph'),
     ];
-    // Only pandora managers have access to the whole database
+
+    // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql_graph_vbar'] = [
             'optgroup' => __('Graphs'),
@@ -711,7 +712,7 @@ function reports_get_report_types($template=false, $not_editor=false)
             'name'     => __('Hourly S.L.A.'),
         ];
 
-        if (!$config['metaconsole'] && !$template) {
+        if ($template === false) {
             $types['SLA_services'] = [
                 'optgroup' => __('SLA'),
                 'name'     => __('Services S.L.A.'),
@@ -796,6 +797,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         }
     }
 
+    $types['agent_module_status'] = [
+        'optgroup' => __('Grouped'),
+        'name'     => __('Agents/Modules status'),
+    ];
+
     // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [
@@ -812,6 +818,13 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Grouped'),
         'name'     => __('Network interfaces'),
     ];
+    if (!$template) {
+        $types['custom_render'] = [
+            'optgroup' => __('Grouped'),
+            'name'     => __('Custom Render'),
+        ];
+    }
+
     $types['availability'] = [
         'optgroup' => __('Grouped'),
         'name'     => __('Availability'),
@@ -834,12 +847,18 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Alerts'),
         'name'     => __('Agent alert report '),
     ];
+
     if (!$template) {
         $types['alert_report_group'] = [
             'optgroup' => __('Alerts'),
             'name'     => __('Group alert report'),
         ];
     }
+
+    $types['alert_report_actions'] = [
+        'optgroup' => __('Alerts'),
+        'name'     => __('Actions alert report '),
+    ];
 
     $types['event_report_module'] = [
         'optgroup' => __('Events'),
@@ -895,6 +914,10 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Netflow'),
             'name'     => __('Netflow summary table'),
         ];
+        $types['netflow_top_N'] = [
+            'optgroup' => __('Netflow'),
+            'name'     => __('Netflow top-N connections'),
+        ];
     }
 
     if ($config['enterprise_installed'] && $template === false && !is_metaconsole()) {
@@ -910,6 +933,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             'name'     => __('Permissions report'),
         ];
     }
+
+    $types['ncm'] = [
+        'optgroup' => __('NCM'),
+        'name'     => __('Network configuration changes'),
+    ];
 
     return $types;
 }
@@ -1009,4 +1037,367 @@ function reports_copy_report($id_report)
     }
 
     return true;
+}
+
+
+/**
+ * Table custom macros.
+ *
+ * @param string $data JSON.
+ *
+ * @return string Html output.
+ */
+function get_table_custom_macros_report($data)
+{
+    $table = new StdClass();
+    $table->data = [];
+    $table->width = '100%';
+    $table->class = 'databox data fullwidth';
+    $table->id = 'table-macros-definition';
+    $table->rowclass = [];
+
+    $table->size = [];
+    $table->size['name'] = '20%';
+    $table->size['type'] = '20%';
+    $table->size['value'] = '50%';
+    $table->size['op'] = '10%';
+
+    $table->head = [];
+    $table->head['name'] = __('Macro');
+    $table->head['type'] = __('Type');
+    $table->head['value'] = __('Value');
+    $table->head['op'] = html_print_image(
+        'images/add.png',
+        true,
+        [
+            'class'   => 'invert_filter btn_debugModule',
+            'style'   => 'cursor: pointer; filter: invert(100%);',
+            'onclick' => 'addCustomFieldRow();',
+        ]
+    );
+
+    $list_macro_custom_type = [
+        0 => __('String'),
+        1 => __('Sql'),
+        2 => __('Graph Sql'),
+        3 => __('Simple graph'),
+    ];
+
+    $data = json_decode($data, true);
+    if (is_array($data) === false || empty($data) === true) {
+        $data = [];
+        $data[0] = [
+            'name'  => '',
+            'type'  => 0,
+            'value' => '',
+        ];
+    }
+
+    $table->data = [];
+    foreach ($data as $key_macro => $value_data_macro) {
+        $table->rowclass[$key_macro] = 'tr-macros-definition';
+        $table->data[$key_macro]['name'] = html_print_input_text_extended(
+            'macro_custom_name[]',
+            $value_data_macro['name'],
+            ($key_macro === 0) ? 'macro_custom_name' : 'macro_custom_name_'.$key_macro,
+            '',
+            15,
+            255,
+            false,
+            '',
+            'class="fullwidth"',
+            true
+        );
+
+        $table->data[$key_macro]['name'] .= html_print_input_hidden(
+            'macro_custom_key[]',
+            $key_macro,
+            true,
+            false,
+            false,
+            ($key_macro === 0) ? 'macro_custom_key' : 'macro_custom_key_'.$key_macro
+        );
+
+        $table->data[$key_macro]['type'] = html_print_select(
+            $list_macro_custom_type,
+            'macro_custom_type[]',
+            $value_data_macro['type'],
+            'change_custom_fields_macros_report('.$key_macro.')',
+            '',
+            0,
+            true,
+            false,
+            false,
+            'fullwidth',
+            false,
+            'height: 32px;',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+
+        $custom_fields = custom_fields_macros_report(
+            $value_data_macro,
+            $key_macro
+        );
+
+        $custom_field_draw = '';
+        if (empty($custom_fields) === false) {
+            foreach ($custom_fields as $key => $value) {
+                $custom_field_draw .= $value;
+            }
+        }
+
+        $table->data[$key_macro]['value'] = $custom_field_draw;
+
+        $table->data[$key_macro]['op'] = html_print_image(
+            'images/clean.png',
+            true,
+            [
+                'class'   => 'invert_filter icon-clean-custom-macro',
+                'style'   => 'cursor: pointer;',
+                'onclick' => 'cleanCustomFieldRow('.$key_macro.')',
+            ]
+        );
+
+        $styles_remove = 'cursor: pointer; margin-right:10px;';
+        if ($key_macro === 0) {
+            $styles_remove .= 'display:none';
+        }
+
+        $table->data[$key_macro]['op'] .= html_print_image(
+            'images/delete.png',
+            true,
+            [
+                'class'   => 'invert_filter icon-delete-custom-macro',
+                'style'   => $styles_remove,
+                'onclick' => 'removeCustomFieldRow('.$key_macro.')',
+            ]
+        );
+    }
+
+    return html_print_table(
+        $table,
+        true
+    );
+
+}
+
+
+/**
+ * Custom field macros report
+ *
+ * @param array  $macro     Info macro.
+ * @param string $key_macro Key.
+ *
+ * @return array
+ */
+function custom_fields_macros_report($macro, $key_macro)
+{
+    $result = [];
+
+    switch ($macro['type']) {
+        case 0:
+        case 1:
+            $result['value'] = '<div class="custom-field-macro-report">';
+            $result['value'] .= '<label>';
+            $result['value'] .= ($macro['type'] == 0) ? __('String') : __('Sql');
+            $result['value'] .= '</label>';
+            $result['value'] .= html_print_input_text_extended(
+                'macro_custom_value[]',
+                $macro['value'],
+                ($key_macro === 0) ? 'macro_custom_value' : 'macro_custom_value_'.$key_macro,
+                '',
+                15,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+            $result['value'] .= '</div>';
+        break;
+
+        case 2:
+            $result['value'] = '<div class="custom-field-macro-report mb10">';
+            $result['value'] .= '<label>';
+            $result['value'] .= __('Sql');
+            $result['value'] .= '</label>';
+            $result['value'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][value]',
+                $macro['value'],
+                ($key_macro === 0) ? 'macro_custom_value' : 'macro_custom_value_'.$key_macro,
+                '',
+                15,
+                255,
+                false,
+                '',
+                'class="fullwidth"',
+                true
+            );
+            $result['value'] .= '</div>';
+
+            $result['size'] = '<div class="custom-field-macro-report">';
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Width');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][width]',
+                $macro['width'],
+                ($key_macro === 0) ? 'macro_custom_width' : 'macro_custom_width_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Height');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][height]',
+                $macro['height'],
+                ($key_macro === 0) ? 'macro_custom_height' : 'macro_custom_height_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+            $result['size'] .= '</div>';
+        break;
+
+        case 3:
+            $params = [];
+            $params['show_helptip'] = true;
+            $params['input_name'] = 'macro_custom_value_agent_name_'.$key_macro;
+            $params['print_hidden_input_idagent'] = true;
+            $params['hidden_input_idagent_id'] = 'macro_custom_value_agent_id_'.$key_macro;
+            $params['hidden_input_idagent_name']  = 'macro_custom_value['.$key_macro.'][agent_id]';
+            $params['hidden_input_idagent_value'] = $macro['agent_id'];
+            $params['javascript_is_function_select'] = true;
+            $params['selectbox_id'] = 'macro_custom_value'.$key_macro.'id_agent_module';
+            $params['add_none_module'] = false;
+            $params['return'] = true;
+            $params['disabled_javascript_on_blur_function'] = true;
+
+            if (is_metaconsole() === true) {
+                $params['print_input_id_server'] = true;
+                $params['metaconsole_enabled'] = true;
+                $params['input_id_server_id'] = 'macro_custom_value_id_server_'.$key_macro;
+                $params['input_id_server_name']  = 'macro_custom_value['.$key_macro.'][server_id]';
+                $params['input_id_server_value'] = $macro['server_id'];
+                $params['value'] = agents_meta_get_alias(
+                    $macro['agent_id'],
+                    'none',
+                    $macro['server_id'],
+                    true
+                );
+            } else {
+                $params['value'] = agents_get_alias($macro['agent_id']);
+            }
+
+            $result['size'] = '<div class="custom-field-macro-report mb10">';
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Agent');
+            $result['size'] .= '</label>';
+            $result['size'] .= ui_print_agent_autocomplete_input($params);
+
+            $modules = [];
+            if (isset($macro['agent_id']) === true
+                && empty($macro['agent_id']) === false
+            ) {
+                if (is_metaconsole() === true) {
+                    $server = db_get_row(
+                        'tmetaconsole_setup',
+                        'id',
+                        $macro['server_id']
+                    );
+                    if (metaconsole_connect($server) != NOERR) {
+                        continue;
+                    }
+                }
+
+                $modules = agents_get_modules(
+                    $macro['agent_id'],
+                    false,
+                    ['delete_pending' => 0]
+                );
+
+                if (is_metaconsole() === true) {
+                    metaconsole_restore_db();
+                }
+            }
+
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Module');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_select(
+                $modules,
+                'macro_custom_value['.$key_macro.'][id_agent_module]',
+                $macro['id_agent_module'],
+                true,
+                __('Select'),
+                0,
+                true,
+                false,
+                true,
+                '',
+                (empty($macro['agent_id']) === true),
+                'min-width: 250px;margin-right: 0.5em;'
+            );
+            $result['size'] .= '</div>';
+
+            $result['size'] .= '<div class="custom-field-macro-report">';
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Height');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][height]',
+                $macro['height'],
+                ($key_macro === 0) ? 'macro_custom_height' : 'macro_custom_height_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+
+            $result['size'] .= '<label>';
+            $result['size'] .= __('Period ');
+            $result['size'] .= '</label>';
+            $result['size'] .= html_print_input_text_extended(
+                'macro_custom_value['.$key_macro.'][period]',
+                $macro['period'],
+                ($key_macro === 0) ? 'macro_custom_period' : 'macro_custom_period_'.$key_macro,
+                '',
+                5,
+                255,
+                false,
+                '',
+                '',
+                true
+            );
+            $result['size'] .= '</div>';
+        break;
+
+        default:
+            // Not possible.
+        break;
+    }
+
+    return $result;
 }

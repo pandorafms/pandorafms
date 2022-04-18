@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Config Management Admin section'
     );
     include 'general/noaccess.php';
@@ -66,7 +66,7 @@ if ($do_operation) {
     ];
     if ($result) {
         db_pandora_audit(
-            'Massive management',
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
             'Copy modules',
             false,
             false,
@@ -74,7 +74,7 @@ if ($do_operation) {
         );
     } else {
         db_pandora_audit(
-            'Massive management',
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
             'Fail to try copy modules',
             false,
             false,
@@ -85,6 +85,7 @@ if ($do_operation) {
 
 $groups = users_get_groups();
 
+$table = new stdClass();
 $table->class = 'databox filters';
 $table->width = '100%';
 $table->data = [];

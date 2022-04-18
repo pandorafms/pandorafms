@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -149,7 +149,7 @@ class CredentialStore extends Wizard
      * @param string $ajax_controller Path of ajaxController, is the 'page'
      *                               variable sent in ajax calls.
      *
-     * @return Object
+     * @return object
      */
     public function __construct($ajax_controller)
     {
@@ -158,9 +158,11 @@ class CredentialStore extends Wizard
         // Check access.
         check_login();
 
-        if (! check_acl($config['id_user'], 0, 'AR')) {
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === false
+            || (bool) check_acl($config['id_user'], 0, 'UM') === false
+        ) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access credential store'
             );
 
@@ -248,7 +250,11 @@ class CredentialStore extends Wizard
                 );
             } else {
                 $groups = [ $filter['filter_id_group'] ];
-                $childrens = groups_get_children($id_group, null, true);
+                $childrens = groups_get_children(
+                    $filter['filter_id_group'],
+                    null,
+                    true
+                );
                 if (!empty($childrens)) {
                     foreach ($childrens as $child) {
                         $groups[] = (int) $child['id_grupo'];
@@ -353,6 +359,10 @@ class CredentialStore extends Wizard
 
         $return = db_get_all_rows_sql($sql);
 
+        if ($return === false) {
+            $return = [];
+        }
+
         // Filter out those items of group all that cannot be edited by user.
         $return = array_filter(
             $return,
@@ -445,7 +455,8 @@ class CredentialStore extends Wizard
                     $item['extra_2'] = io_output_password($item['extra_2']);
                     $carry[$item['identifier']] = $item['identifier'];
                     return $carry;
-                }
+                },
+                []
             );
 
             return $return;
@@ -612,11 +623,13 @@ class CredentialStore extends Wizard
             $error = __('You must select a group where store this key!');
         } else if (empty($product) === true) {
             $error = __('You must specify a product type');
-        } else if (empty($username) === true && (empty($password) === true)) {
+        } else if (empty($username) === true || (empty($password) === true)) {
             $error = __('You must specify a username and/or password');
+        } else if (evaluate_ascii_valid_string(io_safe_output($identifier)) === false) {
+            $error = __('Identifier with forbidden characters. Check the documentation.');
         }
 
-        if (isset($error)) {
+        if (isset($error) === true) {
             $this->ajaxMsg('error', $error);
             exit;
         }
@@ -633,8 +646,15 @@ class CredentialStore extends Wizard
         ];
 
         // Spaces  are not allowed.
-        $values['identifier'] = preg_replace('/\s+/', '-', trim($identifier));
-
+        $values['identifier'] = \io_safe_input(
+            preg_replace(
+                '/\s+/',
+                '-',
+                trim(
+                    \io_safe_output($identifier)
+                )
+            )
+        );
         return $values;
     }
 
@@ -1259,7 +1279,7 @@ class CredentialStore extends Wizard
             });
 
         }
-    
+
         /**
          * Delete selected key
          */

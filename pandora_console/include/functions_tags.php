@@ -48,8 +48,8 @@ function tags_search_tag($tag_name_description=false, $filter=false, $only_names
     if ($tag_name_description) {
         switch ($config['dbtype']) {
             case 'mysql':
-                $filter[] = '((name COLLATE utf8_general_ci LIKE "%'.$tag_name_description.'%") OR 
-						(description COLLATE utf8_general_ci LIKE "%'.$tag_name_description.'%"))';
+                $filter[] = '((name LIKE "%'.$tag_name_description.'%") OR 
+						(description LIKE "%'.$tag_name_description.'%"))';
             break;
 
             case 'postgresql':
@@ -794,7 +794,7 @@ function tags_get_acl_tags(
 
     $acltags = [];
     foreach ($raw_acltags as $group => $taglist) {
-        if (!empty($id_group) && !in_array($group, $id_group)) {
+        if (empty($id_group) === false && array_key_exists($group, $id_group) === false) {
             continue;
         }
 
@@ -1627,31 +1627,31 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                 switch ($agent_status) {
                     case AGENT_STATUS_CRITICAL:
                         if ($critical > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_WARNING:
                         if ($total > 0 && $critical = 0 && $warning > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_UNKNOWN:
                         if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NOT_INIT:
                         if ($total == 0 || $total == $not_init) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
                     case AGENT_STATUS_NORMAL:
                         if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                            $count ++;
+                            $count++;
                         }
                     break;
 
@@ -1662,23 +1662,23 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
             } else {
                 if (array_search(AGENT_STATUS_CRITICAL, $agent_status) !== false) {
                     if ($critical > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_WARNING, $agent_status) !== false) {
                     if ($total > 0 && $critical = 0 && $warning > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_UNKNOWN, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown > 0) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NOT_INIT, $agent_status) !== false) {
                     if ($total == 0 || $total == $not_init) {
-                        $count ++;
+                        $count++;
                     }
                 } else if (array_search(AGENT_STATUS_NORMAL, $agent_status) !== false) {
                     if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0) {
-                        $count ++;
+                        $count++;
                     }
                 }
                 // Invalid status.
@@ -2520,7 +2520,7 @@ function tags_get_all_user_agents(
     if ($filter) {
         if (($filter['search']) != '') {
             $string = io_safe_input($filter['search']);
-            $search_sql = ' AND (tagente.nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+            $search_sql = ' AND (tagente.nombre LIKE "%'.$string.'%")';
         }
 
         if (isset($filter['show_void_agents'])) {
@@ -2692,8 +2692,14 @@ function tags_get_user_applied_agent_tags($id_agent, $access='AR')
             continue;
         }
 
-        $group_tags = $user_groups[$group]['tags'][$acl_column];
-        if (!empty($group_tags)) {
+        $group_tags = null;
+        if (isset($user_groups[$group]) === true
+            && isset($user_groups[$group]['tags']) === true
+        ) {
+            $group_tags = $user_groups[$group]['tags'][$acl_column];
+        }
+
+        if (empty($group_tags) === false) {
             $tags = array_merge($tags, $group_tags);
         } else {
             // If an agent

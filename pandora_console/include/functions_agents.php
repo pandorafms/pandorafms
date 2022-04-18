@@ -162,9 +162,13 @@ function agents_locate_agent(string $field)
  *
  * @return array|boolean Agents ids or false if error.
  */
-function agents_get_agent_id_by_alias($alias)
+function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
-    return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    if ($is_metaconsole === true) {
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+    } else {
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+    }
 }
 
 
@@ -268,7 +272,10 @@ function agents_create_agent(
         agents_add_address($id_agent, $ip_address);
     }
 
-    db_pandora_audit('Agent management', 'New agent '.$name.' created');
+    db_pandora_audit(
+        AUDIT_LOG_AGENT_MANAGEMENT,
+        'New agent '.$name.' created'
+    );
 
     return $id_agent;
 }
@@ -421,12 +428,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         INNER JOIN tagente_modulo t2
             ON talert_template_modules.id_agent_module = t2.id_agente_modulo
         INNER JOIN tagente t3
-            ON t2.id_agente = t3.id_agente
+            ON t2.id_agente = t3.id_agente %s
         %s
         INNER JOIN talert_templates t4
             ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s',
         $selectText,
+        ($id_agent !== false && is_array($id_agent)) ? 'AND t3.id_agente IN ('.implode(',', $id_agent).')' : '',
         $secondary_join,
         $subQuery,
         $where,
@@ -434,39 +442,13 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         $orderbyText
     );
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " LIMIT $offset, $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-            $alerts = db_get_all_rows_sql($sql);
-        break;
-
-        case 'postgresql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " OFFSET $offset LIMIT $limit ";
-            }
-
-            $sql = sprintf('%s %s', $sql, $limit_sql);
-
-            $alerts = db_get_all_rows_sql($sql);
-
-        break;
-
-        case 'oracle':
-            $set = [];
-            if (isset($offset) && isset($limit)) {
-                $set['limit'] = $limit;
-                $set['offset'] = $offset;
-            }
-
-            $alerts = oracle_recode_query($sql, $set, 'AND', false);
-        break;
+    $limit_sql = '';
+    if (isset($offset) && isset($limit)) {
+        $limit_sql = " LIMIT $offset, $limit ";
     }
+
+    $sql = sprintf('%s %s', $sql, $limit_sql);
+    $alerts = db_get_all_rows_sql($sql);
 
     if ($alerts === false) {
         return [];
@@ -679,7 +661,7 @@ function agents_get_agents(
     // Add the group filter to
     $where = db_format_array_where_clause_sql($filter, 'AND', '('.$where_secondary.') AND ');
     if ($where == '' && $where_secondary != '') {
-        $where = $where_secondary;
+        $where = '('.$where_secondary.')';
     }
 
     $where_nogroup = db_format_array_where_clause_sql(
@@ -755,6 +737,64 @@ function agents_get_agents(
     }
 
     return $agents;
+}
+
+
+function agents_get_agents_selected($group)
+{
+    if (is_metaconsole() === true) {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_tagente',
+                'id_tmetaconsole_setup',
+                'id_agente',
+                'alias',
+                'server_name',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            true
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
+                return $carry;
+            },
+            []
+        );
+    } else {
+        $all = agents_get_agents(
+            ['id_grupo' => $group],
+            [
+                'id_agente',
+                'alias',
+            ],
+            'AR',
+            [
+                'field' => 'alias',
+                'order' => 'ASC',
+            ]
+        );
+
+        $all = array_reduce(
+            $all,
+            function ($carry, $item) {
+                $carry[$item['id_agente']] = $item['alias'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $all;
 }
 
 
@@ -874,7 +914,11 @@ function agents_process_manage_config($source_id_agent, $destiny_id_agents, $cop
                 [
                     'nombre'   => $module['nombre'],
                     'disabled' => false,
-                ]
+                ],
+                true,
+                true,
+                false,
+                false
             );
 
             // Keep all modules repeated
@@ -1181,28 +1225,46 @@ function agents_get_group_agents(
             }
         }
 
+        if ((isset($search['disabled']) === true
+            && $search['disabled'] === 2)
+            || (isset($filter['disabled']) === true
+            && $filter['disabled'] === 2)
+        ) {
+            unset($search['disabled']);
+            unset($filter['disabled']);
+        }
+
+        if (isset($search['all_agents'])) {
+            unset($search['all_agents']);
+        }
+
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
-            $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
+            $filter[] = "(nombre LIKE '%$string%' OR direccion LIKE '%$string%')";
             unset($search['string']);
+        }
+
+        if (isset($search['matchIds']) === true && is_array($search['matchIds']) === true) {
+            $filter[] = sprintf('id_agente IN (%s)', implode(', ', $search['matchIds']));
+            unset($search['matchIds']);
         }
 
         if (isset($search['name']) === true) {
             $name = io_safe_input($search['name']);
-            $filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "nombre LIKE '$name'";
             unset($search['name']);
         }
 
         if (isset($search['alias']) === true) {
             $name = io_safe_input($search['alias']);
-            $filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
+            $filter[] = "alias LIKE '$name'";
             unset($search['alias']);
         }
 
         if (isset($search['aliasRegex']) === true) {
             $name = io_safe_input($search['aliasRegex']);
             $filter[] = sprintf(
-                'alias COLLATE utf8_general_ci REGEXP "%s"',
+                'alias REGEXP "%s"',
                 $name
             );
             unset($search['aliasRegex']);
@@ -1269,21 +1331,24 @@ function agents_get_group_agents(
             }
         }
 
-        if (is_metaconsole() && isset($search['id_server'])) {
-            $filter['id_tmetaconsole_setup'] = $search['id_server'];
+        if (is_metaconsole() === true
+            && isset($search['id_server']) === true
+            && empty($search['id_server']) === false
+        ) {
+            $filter['ta.id_tmetaconsole_setup'] = $search['id_server'];
 
             if ($filter['id_tmetaconsole_setup'] == 0) {
                 // All nodes.
                 unset($filter['id_tmetaconsole_setup']);
             }
-
-            unset($search['id_server']);
         }
+
+        unset($search['id_server']);
 
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
             foreach ($search as $key => $value) {
-                $filter[] = $value;
+                $filter[$key] = $value;
             }
         }
     } else if ($filter !== true) {
@@ -1292,7 +1357,7 @@ function agents_get_group_agents(
 
     $filter['order'] = 'alias';
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
         if ($meta_fields === true) {
@@ -1338,7 +1403,7 @@ function agents_get_group_agents(
             $key = $row['id_agente'];
         }
 
-        if ($row['id_server'] !== '') {
+        if (($row['id_server'] ?? '') !== '') {
             if (is_metaconsole()) {
                 $server_name = db_get_row_filter(
                     'tmetaconsole_setup',
@@ -1371,6 +1436,9 @@ function agents_get_group_agents(
 
 
 /**
+ * @deprecated use \PandoraFMS\Agent::searchModules
+ *
+ *
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's, by default is null and this mean that use the ids of agents in user's groups.
@@ -1403,7 +1471,8 @@ function agents_get_modules(
     $filter=false,
     $indexed=true,
     $get_not_init_modules=true,
-    $force_tags=false
+    $force_tags=false,
+    $filter_include_sql=true
 ) {
     global $config;
 
@@ -1492,7 +1561,7 @@ function agents_get_modules(
             // ----------------------------------------------------------
             foreach ($list_filter as $item) {
                 $field = $item['field'];
-                $value = $item['value'];
+                $value = (string) $item['value'];
 
                 // Check <> operator
                 $operatorDistin = false;
@@ -1502,18 +1571,18 @@ function agents_get_modules(
                     }
                 }
 
-                if ($value[0] == '%') {
+                if ($value[0] == '%' && $filter_include_sql === true) {
                     array_push(
                         $fields,
                         $field.' LIKE "'.$value.'"'
                     );
-                } else if ($operatorDistin) {
+                } else if ($operatorDistin && $filter_include_sql === true) {
                     array_push($fields, $field.' <> '.substr($value, 2));
-                } else if (substr($value, -1) == '%') {
+                } else if (substr($value, -1) == '%' && $filter_include_sql === true) {
                     array_push($fields, $field.' LIKE "'.$value.'"');
                 } else if (strncmp($value, '666=666', 7) == 0) {
                     array_push($fields, ' '.$value);
-                } else if (preg_match('/\bin\b/i', $field)) {
+                } else if (preg_match('/\bin\b/i', $field) && $filter_include_sql === true) {
                     array_push($fields, $field.' '.$value);
                 } else {
                     array_push($fields, 'tagente_modulo.'.$field.' = "'.$value.'"');
@@ -1656,40 +1725,129 @@ function agents_get_name($id_agent, $case='none')
         case 'upper':
         return mb_strtoupper($agent, 'UTF-8');
 
-            break;
         case 'lower':
         return mb_strtolower($agent, 'UTF-8');
 
-            break;
         case 'none':
         default:
         return ($agent);
-
-            break;
     }
+}
+
+
+/**
+ * Get the agents names of an agent.
+ *
+ * @param array $array_ids Agents ids.
+ *
+ * @return array Id => name.
+ */
+function agents_get_alias_array($array_ids)
+{
+    if (is_array($array_ids) === false || empty($array_ids) === true) {
+        return [];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        $agents = array_reduce(
+            $array_ids,
+            function ($carry, $item) {
+                $explode = explode('|', $item);
+
+                $carry[$explode[0]][] = $explode[1];
+                return $carry;
+            }
+        );
+
+        $result = [];
+        foreach ($agents as $tserver => $id_agents) {
+            $sql = sprintf(
+                'SELECT id_tagente as id, alias as `name`
+                FROM tmetaconsole_agent
+                WHERE id_tagente IN (%s) AND id_tmetaconsole_setup = %d',
+                implode(',', $id_agents),
+                $tserver
+            );
+
+            $data_server = db_get_all_rows_sql($sql);
+
+            if ($data_server === false) {
+                $data_server = [];
+            }
+
+            $data_server = array_reduce(
+                $data_server,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+
+            $result[$tserver] = $data_server;
+        }
+    } else {
+        $sql = sprintf(
+            'SELECT id_agente as id, alias as `name`
+            FROM tagente
+            WHERE id_agente IN (%s)',
+            implode(',', $array_ids)
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        if ($result === false) {
+            $result = [];
+        }
+
+        $result = array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+    return $result;
 }
 
 
 /**
  * Get alias of an agent (cached function).
  *
- * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none).
+ * @param integer|array $id_agent Agent id or array or box, also a boat.
+ * @param string        $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
-function agents_get_alias($id_agent, $case='none')
+function agents_get_alias($id_agent, string $case='none')
 {
-    global $config;
     // Prepare cache.
     static $cache = [];
-    if (empty($case)) {
+    if (empty($case) === true) {
         $case = 'none';
     }
 
+    $agent_alias = '';
+    if (is_array($id_agent) === true) {
+        foreach ($id_agent as $agg) {
+            $agent_alias .= agents_get_alias($agg, $case);
+        }
+
+        return $agent_alias;
+    }
+
+    if (isset($cache[$case]) === false) {
+        $cache[$case] = [];
+    }
+
     // Check cache.
-    if (!is_metaconsole()) {
-        if (isset($cache[$case][$id_agent])) {
+    if (is_metaconsole() === false) {
+        if (is_numeric($id_agent) === true && isset($cache[$case]) === true
+            && isset($cache[$case][$id_agent]) === true
+        ) {
             return $cache[$case][$id_agent];
         }
     }
@@ -1715,7 +1873,7 @@ function agents_get_alias($id_agent, $case='none')
         break;
     }
 
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         $cache[$case][$id_agent] = $alias;
     }
 
@@ -1960,7 +2118,7 @@ function agents_add_address($id_agent, $ip_address)
  * @param int Agent id
  * @param string IP address to unassign
  */
-function agents_delete_address($id_agent, $ip_address)
+function agents_delete_address($id_agent, $ip_address, $return=false)
 {
     global $config;
 
@@ -1980,7 +2138,7 @@ function agents_delete_address($id_agent, $ip_address)
 
     $agent_name = agents_get_name($id_agent, '');
     db_pandora_audit(
-        'Agent management',
+        AUDIT_LOG_AGENT_MANAGEMENT,
         "Deleted IP $ip_address from agent '$agent_name'"
     );
 
@@ -1993,13 +2151,20 @@ function agents_delete_address($id_agent, $ip_address)
             $new_ip = reset($new_ips);
         }
 
-        // Change main address in agent to first one in the list
+        // Change main address in agent to first one in the list.
         db_process_sql_update(
             'tagente',
             ['direccion' => $new_ip],
             ['id_agente' => $id_agent]
         );
+    } else {
+        $new_ip = agents_get_address($id_agent);
+        if (empty($new_ip)) {
+            $new_ip = '';
+        }
+    }
 
+    if ($return === true) {
         return $new_ip;
     }
 }
@@ -2448,12 +2613,12 @@ function agents_delete_agent($id_agents, $disableACL=false)
             error_log($e->getMessage().' in '.$e->getFile().':'.$e->getLine());
         }
 
-        // The status of the module
+        // The status of the module.
         db_process_delete_temp('tagente_estado', 'id_agente', $id_agent);
 
         // The actual modules, don't put anything based on
         // DONT Delete this, just mark for deletion
-        // db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);
+        // db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);.
         db_process_sql_update(
             'tagente_modulo',
             [
@@ -2467,11 +2632,11 @@ function agents_delete_agent($id_agents, $disableACL=false)
         // Access entries
         // Dont delete here, this records are deleted in daily script
         // db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
-        // Delete agent policies
+        // Delete agent policies.
         enterprise_include_once('include/functions_policies.php');
         enterprise_hook('policies_delete_agent', [$id_agent]);
 
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             // Delete agent in networkmap.
             enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
@@ -2510,12 +2675,12 @@ function agents_delete_agent($id_agents, $disableACL=false)
             );
         }
 
-        // tagente_datos_inc
-        // Dont delete here, this records are deleted later, in database script
+        // Tagente_datos_inc.
+        // Dont delete here, this records are deleted later, in database script.
         // db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules, true);
-        // Delete remote configuration
-        if (enterprise_installed()) {
-            if (isset($config['remote_config'])) {
+        // Delete remote configuration.
+        if (enterprise_installed() === true) {
+            if (isset($config['remote_config']) === true) {
                 enterprise_include_once('include/functions_config_agents.php');
                 if (enterprise_hook('config_agents_has_remote_configuration', [$id_agent])) {
                     $agent_name = agents_get_name($id_agent);
@@ -2523,47 +2688,45 @@ function agents_delete_agent($id_agents, $disableACL=false)
                     $agent_alias = io_safe_output(agents_get_alias($id_agent));
                     $agent_md5 = md5($agent_name, false);
 
-                    // Agent remote configuration editor
+                    // Agent remote configuration editor.
                     $file_name = $config['remote_config'].'/conf/'.$agent_md5.'.conf';
 
                     $error = !@unlink($file_name);
 
-                    if (!$error) {
+                    if ((bool) $error === false) {
                         $file_name = $config['remote_config'].'/md5/'.$agent_md5.'.md5';
                         $error = !@unlink($file_name);
-                    }
-
-                    if ($error) {
+                    } else {
                         db_pandora_audit(
-                            'Agent management',
-                            "Error: Deleted agent $agent_alias, the error is in the delete conf or md5."
+                            AUDIT_LOG_AGENT_MANAGEMENT,
+                            sprintf('Error: Deleted agent %s, the error is in the delete conf or md5.', $agent_alias)
                         );
                     }
                 }
             }
         }
 
-        // And at long last, the agent
+        // And at long last, the agent.
         db_process_delete_temp('tagente', 'id_agente', $id_agent);
 
         db_process_sql('delete from ttag_module where id_agente_modulo in (select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent.')');
 
         db_pandora_audit(
-            'Agent management',
-            "Deleted agent $agent_alias"
+            AUDIT_LOG_AGENT_MANAGEMENT,
+            sprintf('Deleted agent %s', $agent_alias)
         );
 
-        // Delete the agent from the metaconsole cache
+        // Delete the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
 
-        // Break the loop on error
-        if ($error) {
+        // Break the loop on error.
+        if ((bool) $error === true) {
             break;
         }
     }
 
-    if ($error) {
+    if ((bool) $error === true) {
         return false;
     } else {
         return true;
@@ -3073,8 +3236,8 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     $ni_by_agents = [];
     foreach ($agents as $agent) {
         $agent_id = (isset($agent['id_agente'])) ? $agent['id_agente'] : $agent;
-        $agent_group_id = $agent['id_grupo'];
-        $agent_name = $agent['alias'];
+        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : '';
+        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : '';
         $agent_interfaces = [];
 
         $accepted_module_types = [];
@@ -3757,7 +3920,7 @@ function agents_get_status_animation($up=true)
     $red = 'images/heartbeat_green.gif';
     $green = 'images/heartbeat_green.gif';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $red = 'images/heartbeat_green_black.gif';
         $green = 'images/heartbeat_green_black.gif';
     }
@@ -4029,4 +4192,79 @@ function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups
     }
 
     return $agents;
+}
+
+
+/**
+ * Agent Module status and data
+ *
+ * @param integer $id_group Group
+ * @param array   $agents   Agents filter.
+ * @param array   $modules  Modules filter.
+ *
+ * @return array Result.
+ */
+function get_status_data_agent_modules($id_group, $agents=[], $modules=[])
+{
+    $slq_filter_group = '';
+    if (empty($id_group) === false) {
+        $slq_filter_group = sprintf(
+            ' AND tagente.id_grupo = %d',
+            $id_group
+        );
+    }
+
+    $slq_filter_agent = '';
+    if (empty($agents) === false) {
+        $slq_filter_agent = sprintf(
+            ' AND tagente_modulo.id_agente IN (%s)',
+            implode(',', $agents)
+        );
+    }
+
+    $slq_filter_module = '';
+    if (empty($modules) === false) {
+        $slq_filter_module = sprintf(
+            ' AND tagente_modulo.id_agente_modulo IN (%s)',
+            implode(',', $modules)
+        );
+    }
+
+    $sql = sprintf(
+        'SELECT tagente_modulo.id_agente_modulo as id_agent_module,
+            tagente_modulo.nombre as name_module,
+            tagente_modulo.unit as unit_module,
+            tagente_modulo.id_agente as id_agent,
+            tagente_estado.datos as data_module,
+            tagente_estado.timestamp as data_time_module,
+            tagente_estado.estado as status_module,
+            tagente.alias as name_agent,
+            tagente.id_grupo as id_group,
+            tgrupo.nombre as name_group
+        FROM tagente_modulo
+        INNER JOIN tagente_estado
+            ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+        INNER JOIN tagente
+            ON tagente_modulo.id_agente = tagente.id_agente
+        LEFT JOIN tagent_secondary_group
+            ON tagente.id_agente = tagent_secondary_group.id_agent
+        INNER JOIN tgrupo
+            ON tagente.id_grupo = tgrupo.id_grupo
+        WHERE 1=1
+            %s
+            %s
+            %s
+            ',
+        $slq_filter_group,
+        $slq_filter_agent,
+        $slq_filter_module
+    );
+
+    $res = db_get_all_rows_sql($sql);
+
+    if ($res === false) {
+        $res = [];
+    }
+
+    return $res;
 }

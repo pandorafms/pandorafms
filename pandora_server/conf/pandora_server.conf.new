@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.757
+# Version 7.0NG.761
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -348,6 +348,9 @@ fsnmp /usr/bin/pandorafsnmp
 
 autocreate_group 10
 
+# Works like autocreate_group, except the name of the group is specified (instead of its id). Do not set both.
+#autocreate_group_name Unknown
+
 # If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
 # If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).
 
@@ -477,6 +480,14 @@ export_threads 1
 # Enable (1) or disable (0) Pandora FMS Event Server (PANDORA FMS ENTERPRISE ONLY).
 
 eventserver 0
+
+# Enable (1) or disable (0) Pandora FMS Correlation Server (PANDORA FMS ENTERPRISE ONLY).
+
+correlationserver 0
+
+# Time in seconds to re-evaluate correlation alerts pool (PANDORA FMS ENTERPRISE ONLY).
+
+correlation_threshold 30
 
 # Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
@@ -651,8 +662,8 @@ wuxserver 0
 # Force closing previous sessions on remote wux_host, only for Selenium Grid server 3.
 #clean_wux_sessions 1
 
-# Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
-syslogserver 1
+# Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY) disabled by default.
+syslogserver 0
 
 # Full path to syslog's output file (PANDORA FMS ENTERPRISE ONLY).
 syslog_file /var/log/messages
@@ -686,6 +697,15 @@ syslog_max 65535
 
 # Address
 # sync_address
+
+# Network manager configuration server (PANDORA FMS ENTERPRISE ONLY).
+#ncmserver 1
+
+# Threads for NCM server (PANDORA FMS ENTERPRISE ONLY).
+ncmserver_threads 1
+
+# NCM utility to avoid Net::SSH::Expect issues in multi-threaded environments.
+ncm_ssh_utility /usr/share/pandora_server/util/ncm_ssh_extension
 
 # Pandora FMS Daemon Watchdog execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30

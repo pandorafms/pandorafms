@@ -16,7 +16,7 @@
 // Load global vars
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access SNMP Alert Management'
     );
     include 'general/noaccess.php';
@@ -270,10 +270,16 @@ if ($save_alert || $modify_alert) {
         $result = db_process_sql_insert('talert_snmp', $values);
 
         if (!$result) {
-            db_pandora_audit('SNMP management', 'Fail try to create snmp alert');
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                'Fail try to create snmp alert'
+            );
             ui_print_error_message(__('There was a problem creating the alert'));
         } else {
-            db_pandora_audit('SNMP management', "Create snmp alert #$result");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Create snmp alert #$result"
+            );
             ui_print_success_message(__('Successfully created'));
         }
     } else {
@@ -400,10 +406,16 @@ if ($save_alert || $modify_alert) {
         $result = db_process_sql($sql);
 
         if (!$result) {
-            db_pandora_audit('SNMP management', "Fail try to update snmp alert #$id_as");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Fail try to update snmp alert #$id_as"
+            );
             ui_print_error_message(__('There was a problem updating the alert'));
         } else {
-            db_pandora_audit('SNMP management', "Update snmp alert #$id_as");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Update snmp alert #$id_as"
+            );
             ui_print_success_message(__('Successfully updated'));
         }
     }
@@ -497,7 +509,7 @@ if ($update_alert || $duplicate_alert) {
 
     if (!check_acl_restricted_all($config['id_user'], $group, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access SNMP Alert Management'
         );
         include 'general/noaccess.php';
@@ -591,14 +603,23 @@ if ($duplicate_alert) {
         $result = db_process_sql_insert('talert_snmp', $values_duplicate);
 
         if (!$result) {
-            db_pandora_audit('SNMP management', "Fail try to duplicate snmp alert #$id_as");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Fail try to duplicate snmp alert #$id_as"
+            );
             ui_print_error_message(__('There was a problem duplicating the alert'));
         } else {
-            db_pandora_audit('SNMP management', "Duplicate snmp alert #$id_as");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Duplicate snmp alert #$id_as"
+            );
             ui_print_success_message(__('Successfully Duplicate'));
         }
     } else {
-        db_pandora_audit('SNMP management', "Fail try to duplicate snmp alert #$id_as");
+        db_pandora_audit(
+            AUDIT_LOG_SNMP_MANAGEMENT,
+            "Fail try to duplicate snmp alert #$id_as"
+        );
         ui_print_error_message(__('There was a problem duplicating the alert'));
     }
 }
@@ -616,10 +637,16 @@ if ($delete_alert) {
     );
 
     if ($result === false) {
-        db_pandora_audit('SNMP management', "Fail try to delete snmp alert #$alert_delete");
+        db_pandora_audit(
+            AUDIT_LOG_SNMP_MANAGEMENT,
+            "Fail try to delete snmp alert #$alert_delete"
+        );
         ui_print_error_message(__('There was a problem deleting the alert'));
     } else {
-        db_pandora_audit('SNMP management', "Delete snmp alert #$alert_delete");
+        db_pandora_audit(
+            AUDIT_LOG_SNMP_MANAGEMENT,
+            "Delete snmp alert #$alert_delete"
+        );
         ui_print_success_message(__('Successfully deleted'));
     }
 }
@@ -637,10 +664,16 @@ if ($multiple_delete) {
         );
 
         if ($result !== false) {
-            db_pandora_audit('SNMP management', "Delete snmp alert #$alert_delete");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Delete snmp alert #$alert_delete"
+            );
             $count++;
         } else {
-            db_pandora_audit('SNMP management', "Fail try to delete snmp alert #$alert_delete");
+            db_pandora_audit(
+                AUDIT_LOG_SNMP_MANAGEMENT,
+                "Fail try to delete snmp alert #$alert_delete"
+            );
         }
     }
 
@@ -1513,7 +1546,7 @@ $(document).ready (function () {
                         $('#table_macros-field' + i)
                             .removeAttr('class');
 
-                        $("[name=field" + i + "_value]").val(old_value);
+                        $("[name=field" + i + "_value]").val(old_value).trigger('change');
                         $('#table_macros-field').show();
                     }
                 }

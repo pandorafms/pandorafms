@@ -62,7 +62,7 @@ function main_intel_dcm()
     )
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Setup Management'
         );
         include 'general/noaccess.php';

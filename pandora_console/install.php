@@ -128,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-            $version = '7.0NG.757';
-            $build = '211019';
+            $version = '7.0NG.761';
+            $build = '220418';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -328,7 +328,7 @@ function parse_mysqli_dump($connection, $url)
                 $query .= $sql_line;
                 if (preg_match("/;[\040]*\$/", $sql_line)) {
                     if (!$result = mysqli_query($connection, $query)) {
-                        echo mysqli_error();
+                        echo mysqli_error($connection);
                         // Uncomment for debug
                         echo "<i><br>$query<br></i>";
                         return 0;
@@ -993,8 +993,14 @@ function install_step4()
 
                     $step5 = mysqli_query(
                         $connection,
-                        "CREATE USER pandora@$host IDENTIFIED BY '".$random_password."'"
+                        "CREATE USER IF NOT EXISTS pandora@$host"
                     );
+
+                    mysqli_query(
+                        $connection,
+                        "SET PASSWORD FOR 'pandora'@'".$host."' = '".$random_password."'"
+                    );
+
                     $step5 |= mysqli_query(
                         $connection,
                         "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host"

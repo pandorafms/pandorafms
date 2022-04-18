@@ -20,7 +20,10 @@ $gis_m = check_acl($config['id_user'], 0, 'MM');
 $access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
 if (!$gis_w && !$gis_m) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -33,7 +36,10 @@ $action = get_parameter('action', 'new_map');
 $gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
 
 if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -71,6 +77,40 @@ foreach ($layer_ids as $layer_id) {
 
 $next_action = 'new_map';
 
+$buttons['gis_maps_list'] = [
+    'active' => false,
+    'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
+];
+if ($idMap) {
+    $buttons['view_gis'] = [
+        'active' => false,
+        'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
+            'images/op_gis.png',
+            true,
+            [
+                'title' => __('View GIS'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
+    ];
+}
+
+ui_print_page_header(
+    __('GIS Maps builder'),
+    'images/gm_gis.png',
+    false,
+    'configure_gis_map_edit',
+    true,
+    $buttons
+);
+
 switch ($action) {
     case 'save_new':
         $map_name = get_parameter('map_name');
@@ -79,7 +119,6 @@ switch ($action) {
         $map_initial_altitude = get_parameter('map_initial_altitude');
         $map_zoom_level = get_parameter('map_zoom_level');
         $map_background = '';
-        // TODO
         $map_default_longitude = get_parameter('map_default_longitude');
         $map_default_latitude = get_parameter('map_default_latitude');
         $map_default_altitude = get_parameter('map_default_altitude');
@@ -179,7 +218,6 @@ switch ($action) {
 
     case 'edit_map':
         $next_action = 'update_saved';
-
     break;
 
     case 'update_saved':
@@ -189,7 +227,6 @@ switch ($action) {
         $map_initial_altitude = get_parameter('map_initial_altitude');
         $map_zoom_level = get_parameter('map_zoom_level');
         $map_background = '';
-        // TODO
         $map_default_longitude = get_parameter('map_default_longitude');
         $map_default_latitude = get_parameter('map_default_latitude');
         $map_default_altitude = get_parameter('map_default_altitude');
@@ -235,8 +272,7 @@ switch ($action) {
             $map_levels_zoom
         );
 
-        if (empty($invalidFields)) {
-            // TODO
+        if (empty($invalidFields) === true) {
             gis_update_map(
                 $idMap,
                 $map_name,
@@ -267,43 +303,11 @@ switch ($action) {
         $next_action = 'update_saved';
         html_print_input_hidden('map_id', $idMap);
     break;
+
+    default:
+        // Default.
+    break;
 }
-
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
-
-$buttons['gis_maps_list'] = [
-    'active' => false,
-    'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
-        'images/list.png',
-        true,
-        [
-            'title' => __('GIS Maps list'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>',
-];
-if ($idMap) {
-    $buttons['view_gis'] = [
-        'active' => false,
-        'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
-            'images/op_gis.png',
-            true,
-            [
-                'title' => __('View GIS'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>',
-    ];
-}
-
-ui_print_page_header(
-    __('GIS Maps builder'),
-    'images/gm_gis.png',
-    false,
-    'configure_gis_map_edit',
-    true,
-    $buttons
-);
 
 ?>
 
@@ -411,6 +415,7 @@ function addConnectionMap() {
 </script>
 
 <?php
+$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
 echo '<form action="'.$url.'" id="form_setup" method="post">';
 
 // Load the data in edit or reload in update.
@@ -434,6 +439,10 @@ switch ($action) {
         $map_levels_zoom = gis_get_num_zoom_levels_connection_default($map_connection_list);
 
         $layer_list = !empty($mapData['layers']) ? $mapData['layers'] : [];
+    break;
+
+    default:
+        // Default.
     break;
 }
 
@@ -465,14 +474,13 @@ foreach ($listConnectionTemp as $connectionTemp) {
 $table->data[1][0] = __('Add Map connection').$iconError;
 $table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
-		<td >
-			".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
+        <td>".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
 		</td>
 		<td >
 			<a href='javascript: addConnectionMap();'>".html_print_image(
-    'images/add.png',
-    true,
-    ['class' => 'invert_filter']
+            'images/add.png',
+            true,
+            ['class' => 'invert_filter']
 )."</a>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
@@ -539,6 +547,8 @@ $table->data[9][1] = html_print_input_text('map_default_altitude', $map_default_
 
 html_print_table($table);
 
+$user_groups = users_get_groups($config['user'], 'AR', false);
+
 echo '<h3>'.__('Layers').'</h3>';
 
 $table->width = '100%';
@@ -562,7 +572,7 @@ $table->data[1][1] = '<div id="form_layer" class="invisible">
 			</tr>
 			<tr>
 				<td>'.__('Show agents from group').':</td>
-				<td colspan="3">'.html_print_select_groups(false, $access, $display_all_group, 'layer_group_form', '-1', '', __('None'), '-1', true).'</td>
+                <td colspan="3">'.html_print_select($user_groups, 'layer_group_form', '-1', '', __('none'), '-1', true).'</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>
@@ -656,7 +666,7 @@ switch ($action) {
     case 'save_new':
     case 'edit_map':
     case 'update_saved':
-        if (!empty($invalidFields)) {
+        if (empty($invalidFields) === true) {
             html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
         } else {
             html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
@@ -665,6 +675,10 @@ switch ($action) {
 
     case 'new_map':
         html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+    break;
+
+    default:
+        // Default.
     break;
 }
 
@@ -883,7 +897,7 @@ function setLayerEditorData (data) {
     var $layerFormIdInput = $("input#hidden-current_edit_layer_id");
     var $layerFormNameInput = $("input#text-layer_name_form");
     var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
-    var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
+    var $layerFormAgentsFromGroupSelect = $("#layer_group_form");
     var $layerFormAgentInput = $("input#text-agent_alias");
     var $layerFormAgentButton = $("input#button-add_agent");
     var $layerFormAgentsListItems = $("tr.agents_list_item");
@@ -892,7 +906,8 @@ function setLayerEditorData (data) {
     $layerFormIdInput.val(data.id);
     $layerFormNameInput.val(data.name);
     $layerFormVisibleCheckbox.prop("checked", data.visible);
-    $layerFormAgentsFromGroupSelect.val(data.agentsFromGroup);
+    $(`#layer_group_form option[value=${data.agentsFromGroup}]`).attr('selected', 'selected');
+    $(`#layer_group_form`).trigger('change');
     $layerFormAgentInput.val("");
     $layerFormAgentButton.prop("disabled", true);
     $layerFormAgentsListItems.remove();
@@ -981,7 +996,7 @@ function unbindLayerEditorEvents () {
 
     $layerFormNameInput.unbind("change");
     $layerFormVisibleCheckbox.unbind("click");
-    $layerFormAgentsFromGroupSelect.unbind("change");
+    $layerFormAgentsFromGroupSelect.val('-1');
 }
 
 function getAgentRow (layerId, agentId, agentAlias) {
@@ -990,7 +1005,7 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?> </a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', false, ['class' => 'invert_filter']); ?> </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);

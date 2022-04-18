@@ -23,7 +23,7 @@ check_login();
 // ACL
 if (! check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access SNMP Console'
     );
     include 'general/noaccess.php';

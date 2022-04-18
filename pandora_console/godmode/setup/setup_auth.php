@@ -25,7 +25,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Setup Management'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -60,6 +63,7 @@ if (is_ajax()) {
             $table->data['fallback_local_auth'] = $row;
 
             if (enterprise_installed()) {
+                $is_management_allowed = is_management_allowed();
                 // Autocreate remote users.
                 $row = [];
                 $row['name'] = __('Autocreate remote users');
@@ -67,7 +71,7 @@ if (is_ajax()) {
                     'autocreate_remote_users',
                     1,
                     $config['autocreate_remote_users'],
-                    false,
+                    (is_metaconsole() === false) ? !$is_management_allowed : false,
                     '',
                     '',
                     true

@@ -49,6 +49,7 @@ if (is_ajax()) {
     $get_agent_modules_json = (bool) get_parameter('get_agent_modules_json');
     $get_agent_status_tooltip = (bool) get_parameter('get_agent_status_tooltip');
     $get_agents_group_json = (bool) get_parameter('get_agents_group_json');
+    $get_agents_also_interfaces = (bool) get_parameter('get_agents_also_interfaces');
     $get_modules_group_json = (bool) get_parameter('get_modules_group_json');
     $filter_modules_group_json = (bool) get_parameter('filter_modules_group_json');
     $get_modules_group_value_name_json = (bool) get_parameter('get_modules_group_value_name_json');
@@ -91,7 +92,7 @@ if (is_ajax()) {
 
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
-        $recursion = (get_parameter_switch('recursion', 'false') === 'true');
+        $recursion = filter_var(get_parameter_switch('recursion', 'false'), FILTER_VALIDATE_BOOLEAN);
         $id_os = get_parameter('id_os', '');
         $agent_name = get_parameter('name', '');
 
@@ -103,15 +104,15 @@ if (is_ajax()) {
         // Build filter.
         $filter = [];
 
-        if (!empty($id_os)) {
+        if (empty($id_os) === false) {
             $filter['id_os'] = $id_os;
         }
 
-        if (!empty($agent_name)) {
+        if (empty($agent_name) === false) {
             $filter['nombre'] = '%'.$agent_name.'%';
         }
 
-        if (!empty($agent_alias)) {
+        if (empty($agent_alias) === false) {
             $filter['alias'] = '%'.$agent_alias.'%';
         }
 
@@ -147,6 +148,20 @@ if (is_ajax()) {
             }
         }
 
+        if ($get_agents_also_interfaces === true) {
+            $listAgentsWithIface = db_get_all_rows_sql("SELECT DISTINCT id_agente FROM tagente_modulo WHERE nombre LIKE '%_ifOperStatus'");
+            if (empty($listAgentsWithIface) === false) {
+                $filter['matchIds'] = array_reduce(
+                    $listAgentsWithIface,
+                    function ($carry, $item) {
+                        $carry[] = $item['id_agente'];
+                        return $carry;
+                    },
+                    []
+                );
+            }
+        }
+
         // Perform search.
         $agents = agents_get_group_agents(
             // Id_group.
@@ -171,7 +186,7 @@ if (is_ajax()) {
             (bool) is_metaconsole()
         );
 
-        if (empty($agents)) {
+        if (empty($agents) === true) {
             $agents = [];
         }
 
@@ -192,126 +207,25 @@ if (is_ajax()) {
         return;
     }
 
-    if ($get_modules_group_json) {
+    if ($get_modules_group_json === true) {
         $id_group = (int) get_parameter('id_module_group', 0);
         $id_agents = get_parameter('id_agents', null);
         $selection = get_parameter('selection');
+        $select_mode = (bool) get_parameter('select_mode', 0);
 
         if ($id_agents === null) {
             echo '[]';
             return;
         }
 
-        if ((bool) is_metaconsole() === true) {
-            if (count($id_agents) > 0) {
-                $rows = db_get_all_rows_sql(
-                    sprintf(
-                        'SELECT `id_agente`, `id_tagente`, `id_tmetaconsole_setup`
-                        FROM `tmetaconsole_agent`
-                        WHERE `id_agente` IN (%s)',
-                        implode(',', $id_agents)
-                    )
-                );
-            } else {
-                $rows = [];
-            }
-
-            $agents = array_reduce(
-                $rows,
-                function ($carry, $item) {
-                    if ($carry[$item['id_tmetaconsole_setup']] === null) {
-                        $carry[$item['id_tmetaconsole_setup']] = [];
-                    }
-
-                    $carry[$item['id_tmetaconsole_setup']][] = $item['id_tagente'];
-                    return $carry;
-                },
-                []
-            );
-
-            $modules = [];
-
-            foreach ($agents as $tserver => $id_agents) {
-                if (metaconsole_connect(null, $tserver) == NOERR) {
-                    $modules[$tserver] = select_modules_for_agent_group(
-                        $id_group,
-                        $id_agents,
-                        $selection,
-                        false,
-                        false,
-                        true
-                    );
-
-                    metaconsole_restore_db();
-                }
-            }
-
-
-            if (!$selection) {
-                // Common modules.
-                $final_modules = [];
-                $nodes_consulted = count($modules);
-
-                foreach ($modules as $tserver => $mods) {
-                    foreach ($mods as $module) {
-                        if ($final_modules[$module['nombre']] === null) {
-                            $final_modules[$module['nombre']] = 0;
-                        }
-
-                        $final_modules[$module['nombre']]++;
-                    }
-                }
-
-                $modules = [];
-                foreach ($final_modules as $module_name => $occurrences) {
-                    if ($occurrences === $nodes_consulted) {
-                        // Module already present in ALL nodes.
-                        $modules[] = [
-                            'id_agente_modulo' => $module_name,
-                            'nombre'           => $module_name,
-                        ];
-                    }
-                }
-            } else {
-                // All modules.
-                $return = [];
-                $nodes = [];
-                foreach ($agents as $tserver => $id_agents) {
-                    try {
-                        $nodes[$tserver] = new Node($tserver);
-                    } catch (Exception $e) {
-                        hd($e);
-                    }
-
-                    $return = array_reduce(
-                        $modules[$tserver],
-                        function ($carry, $item) use ($tserver, $nodes) {
-                            $t = [];
-                            foreach ($item as $k => $v) {
-                                $t[$k] = $v;
-                            }
-
-                            $t['id_node'] = $tserver;
-                            if ($nodes[$tserver] !== null) {
-                                $t['nombre'] = io_safe_output(
-                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
-                                );
-                            }
-
-                            $carry[] = $t;
-                            return $carry;
-                        },
-                        $return
-                    );
-                }
-
-                $modules = $return;
-            }
-
-            echo json_encode($modules);
-        } else {
-            select_modules_for_agent_group($id_group, $id_agents, $selection);
-        }
+        $modules = get_modules_agents(
+            $id_group,
+            $id_agents,
+            $selection,
+            $select_mode
+        );
+        echo json_encode($modules);
+        return;
     }
 
     if ($filter_modules_group_json) {
@@ -454,6 +368,8 @@ if (is_ajax()) {
         $selection_mode = get_parameter('selection_mode', 'common') == 'all';
         $status_modulo = (int) get_parameter('status_module', -1);
         $tags_selected = (array) get_parameter('tags', []);
+        $truncate_agent_names = (bool) get_parameter('truncate_agent_names');
+
         $names = select_agents_for_module_group(
             $nameModules,
             $selection_mode,
@@ -590,7 +506,7 @@ if (is_ajax()) {
         }
 
         if (!empty($module_name)) {
-            $filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%".$module_name."%'";
+            $filter .= " AND t1.nombre LIKE '%".$module_name."%'";
         }
 
         // Status selector.
@@ -801,7 +717,7 @@ if (is_ajax()) {
                 }
             } else {
                 $sql = sprintf(
-                    'SELECT DISTINCT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+                    'SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
 					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 					%s WHERE %s AND t1.delete_pending = 0
 					AND t1.id_agente IN ('.implode(',', $idAgents).')
@@ -890,6 +806,8 @@ if (is_ajax()) {
         $tags = (array) get_parameter('tags', []);
 
         $safe_name = (bool) get_parameter('safe_name', false);
+
+        $truncate_module_names = (bool) get_parameter('truncate_module_names');
 
         // Filter.
         $filter = [];
@@ -1044,6 +962,16 @@ if (is_ajax()) {
             }
 
             $agent_modules = $new_elements;
+        }
+
+        if ($truncate_module_names === true) {
+            $agent_modules = array_map(
+                function ($item) {
+                    $item['safe_name'] = ui_print_truncate_text($item['safe_name'], 'module_medium');
+                    return $item;
+                },
+                $agent_modules
+            );
         }
 
         echo json_encode($agent_modules);
@@ -1361,7 +1289,7 @@ $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
 if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente)) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access (read) to agent '.agents_get_name($id_agente)
     );
     include 'general/noaccess.php';
@@ -1454,7 +1382,9 @@ $agent_interfaces = agents_get_network_interfaces(
     ['id_agente' => $id_agente]
 );
 
-if (is_array($agent_interfaces[$id_agente]['interfaces']) !== true
+if (isset($agent_interfaces) !== true
+    || isset($agent_interfaces[$id_agente]) !== true
+    || is_array($agent_interfaces[$id_agente]['interfaces']) !== true
     || is_object($agent_interfaces[$id_agente]['interfaces']) !== true
 ) {
     $agent_interfaces_count = 0;
@@ -1531,6 +1461,11 @@ if ($url_route_analyzer) {
     if ($url_route_analyzer_tab == -1) {
         $url_route_analyzer_tab = '';
     }
+}
+
+$ncm_tab = enterprise_hook('networkconfigmanager_console_tab');
+if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+    $ncm_tab = '';
 }
 
 // GIS tab.
@@ -1756,25 +1691,24 @@ if ($tab == 'external_tools') {
 }
 
 $onheader = [
-    'manage'             => $managetab,
-    'main'               => $maintab,
-    'alert'              => $alerttab,
-    'interface'          => $interfacetab,
-    'inventory'          => $inventorytab,
-    'collection'         => $collectiontab,
-    'gis'                => $gistab,
-    'custom'             => $custom_fields,
-    'graphs'             => $graphs,
-    'policy'             => $policyTab,
-    'ux_console'         => $ux_console_tab,
-    'wux_console'        => $wux_console_tab,
-    'url_route_analyzer' => $url_route_analyzer_tab,
-    'sap_view'           => $saptab,
-    'external_tools'     => $external_tools,
+    'manage'             => ($managetab ?? null),
+    'main'               => ($maintab ?? null),
+    'alert'              => ($alerttab ?? null),
+    'interface'          => ($interfacetab ?? null),
+    'inventory'          => ($inventorytab ?? null),
+    'collection'         => ($collectiontab ?? null),
+    'gis'                => ($gistab ?? null),
+    'custom'             => ($custom_fields ?? null),
+    'graphs'             => ($graphs ?? null),
+    'policy'             => ($policyTab ?? null),
+    'ux_console'         => ($ux_console_tab ?? null),
+    'wux_console'        => ($wux_console_tab ?? null),
+    'url_route_analyzer' => ($url_route_analyzer_tab ?? null),
+    'sap_view'           => ($saptab ?? null),
+    'ncm_view'           => ($ncm_tab ?? null),
+    'external_tools'     => ($external_tools ?? null),
+    'incident'           => ($incidenttab ?? null),
 ];
-
-
-$onheader['incident'] = $incidenttab;
 
 
 if ($agent['url_address'] != '') {
@@ -1941,6 +1875,10 @@ switch ($tab) {
             $tab_name = 'SAP View';
     break;
 
+    case 'ncm':
+        $tab_name = 'Network configuration';
+    break;
+
     case 'external_tools':
         $tab_name = 'External Tools';
     break;
@@ -2067,6 +2005,10 @@ switch ($tab) {
 
     case 'sap_view':
         include 'general/sap_view.php';
+    break;
+
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente, false]);
     break;
 
     case 'external_tools':

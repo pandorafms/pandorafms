@@ -18,6 +18,7 @@ $searchMaps = check_acl($config['id_user'], 0, 'VR');
 if ($maps === false || !$searchMaps) {
         echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
@@ -31,6 +32,13 @@ if ($maps === false || !$searchMaps) {
     $table->align = [];
     $table->align[1] = 'center';
     $table->align[2] = 'center';
+
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: center';
+    $table->headstyle[1] = 'text-align: center';
+
+
 
     $table->data = [];
     foreach ($maps as $map) {

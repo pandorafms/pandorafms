@@ -546,7 +546,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Agent General Information'
         );
         include_once 'general/noaccess.php';
@@ -596,7 +596,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $hashdata = md5($hashdata);
         $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
 
-        if ($grants_on_node) {
+        if ($grants_on_node && (bool) $user_access_node !== false) {
             $cellName .= '<a href="'.$url.'">'.'<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
         } else {
             $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';

@@ -106,7 +106,10 @@ function pandora_files_repo_godmode()
     // ACL Check
     check_login();
     if (! check_acl($config['id_user'], 0, 'PM')) {
-        db_pandora_audit('ACL Violation', 'Trying to access to Files repository');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access to Files repository'
+        );
         include 'general/noaccess.php';
         return;
     }
@@ -142,7 +145,7 @@ function pandora_files_repo_godmode()
     // Check for an anoying error that causes the $_POST and $_FILES arrays.
     // were empty if the file is larger than the post_max_size.
     if (intval($server_content_length) > 0 && empty($_POST)) {
-        ui_print_error_message(__('The file exceeds the maximum size'));
+        ui_print_error_message(__('Problem uploading. Please check this PHP runtime variable values: <pre>  post_max_size (currently '.ini_get('post_max_size').')</pre>'));
     }
 
     // GET and POST parameters.

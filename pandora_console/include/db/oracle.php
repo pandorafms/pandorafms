@@ -977,10 +977,10 @@ function oracle_recode_query($sql, $values, $join='AND', $return=true)
  *
  * @return the first value of the first row of a table result from query.
  */
-function oracle_db_get_value_sql($sql, $dbconnection=false)
+function oracle_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql = 'SELECT * FROM ('.$sql.') WHERE rownum < 2';
-    $result = oracle_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = oracle_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;
@@ -1041,7 +1041,7 @@ function oracle_db_get_row_sql($sql, $search_history_db=false, $cache=true)
  *
  * @return mixed Array of the row or false in case of error.
  */
-function oracle_db_get_row_filter($table, $filter, $fields=false, $where_join='AND')
+function oracle_db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $history_db=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -1063,7 +1063,7 @@ function oracle_db_get_row_filter($table, $filter, $fields=false, $where_join='A
 
     $sql = sprintf('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-    return db_get_row_sql($sql);
+    return db_get_row_sql($sql, $history_db, $cache);
 }
 
 

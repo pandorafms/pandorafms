@@ -25,6 +25,7 @@ $enable_alert = (bool) get_parameter('enable_alert');
 $get_actions_module = (bool) get_parameter('get_actions_module');
 $show_update_action_menu = (bool) get_parameter('show_update_action_menu');
 $get_agent_alerts_agent_view = (bool) get_parameter('get_agent_alerts_agent_view');
+$resize_event_week = (bool) get_parameter('resize_event_week');
 
 if ($get_agent_alerts_simple) {
     $id_agent = (int) get_parameter('id_agent');
@@ -37,7 +38,7 @@ if ($get_agent_alerts_simple) {
 
     if (! check_acl($config['id_user'], $id_group, 'AR')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         echo json_encode(false);
@@ -46,7 +47,7 @@ if ($get_agent_alerts_simple) {
 
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         echo json_encode(false);
@@ -331,7 +332,7 @@ if ($get_agent_alerts_agent_view) {
 if ($enable_alert) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -352,7 +353,7 @@ if ($enable_alert) {
 if ($disable_alert) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -373,7 +374,7 @@ if ($disable_alert) {
 if ($get_actions_module) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -394,7 +395,7 @@ if ($get_actions_module) {
 if ($show_update_action_menu) {
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Alert Management'
         );
         return false;
@@ -422,11 +423,16 @@ if ($show_update_action_menu) {
         $id_action
     );
 
-    $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
-    $data .= '<table class="databox_color w100p bg_color222">';
+    $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
+    $data .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
             1,
+            true
+        );
+        $data .= html_print_input_hidden(
+            'alert_id',
+            $id_alert,
             true
         );
         $data .= html_print_input_hidden(
@@ -478,7 +484,7 @@ if ($show_update_action_menu) {
             $data .= '<td class="datos2">';
                 $data .= html_print_select(
                     $actions,
-                    'action_select_ajax',
+                    'action_select_ajax-'.$id_alert,
                     $action_option['id_alert_action'],
                     '',
                     false,
@@ -553,6 +559,53 @@ if ($show_update_action_menu) {
     );
     $data .= '</form>';
     echo $data;
+    return;
+}
+
+if ($resize_event_week === true) {
+    // Date.
+    $day_from = get_parameter('day_from', 0);
+    $day_to = get_parameter('day_to', 0);
+
+    // Time.
+    $time_from = get_parameter('time_from', '');
+    $time_to = get_parameter('time_to', '');
+
+    $table = new StdClass();
+    $table->class = 'databox filters';
+    $table->width = '100%';
+    $table->data = [];
+
+    $table->data[0][0] = __('From:');
+    $table->data[0][1] = html_print_input_hidden(
+        'day_from',
+        $day_from,
+        true
+    );
+    $table->data[0][1] .= html_print_input_text(
+        'time_from_event',
+        $time_from,
+        '',
+        9,
+        9,
+        true
+    );
+    $table->data[1][0] = __('To:');
+    $table->data[1][1] = html_print_input_hidden(
+        'day_to',
+        $day_from,
+        true
+    );
+    $table->data[1][1] .= html_print_input_text(
+        'time_to_event',
+        ($time_to === '00:00:00') ? '23:59:59' : $time_to,
+        '',
+        9,
+        9,
+        true
+    );
+
+    echo html_print_table($table, true);
     return;
 }
 

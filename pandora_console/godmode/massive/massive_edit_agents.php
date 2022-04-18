@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,36 +31,54 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive agent deletion section'
     );
     include 'general/noaccess.php';
     return;
 }
 
-require_once 'include/functions_agents.php';
-require_once 'include/functions_ui.php';
-require_once 'include/functions_alerts.php';
-require_once 'include/functions_modules.php';
-require_once 'include/functions_servers.php';
-require_once 'include/functions_gis.php';
-require_once 'include/functions_users.php';
+require_once $config['homedir'].'/include/functions_agents.php';
+require_once $config['homedir'].'/include/functions_ui.php';
+require_once $config['homedir'].'/include/functions_alerts.php';
+require_once $config['homedir'].'/include/functions_modules.php';
+require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_gis.php';
+require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_config_agents.php');
 
-if (is_ajax()) {
-    $get_n_conf_files = (bool) get_parameter('get_n_conf_files');
-    if ($get_n_conf_files) {
+if (is_ajax() === true) {
+    $get_n_conf_files = (bool) get_parameter('get_n_conf_files', false);
+    $groups_secondary_selected = (bool) get_parameter('groups_secondary_selected', false);
+
+    if ($get_n_conf_files === true) {
         $id_agents = get_parameter('id_agents');
         $cont = 0;
         foreach ($id_agents as $id_agent) {
             $name = agents_get_name($id_agent);
             $agent_md5 = md5($name);
-            if (file_exists($config['remote_config'].'/md5/'.$agent_md5.'.md5')) {
-                $cont ++;
+            if (file_exists($config['remote_config'].'/md5/'.$agent_md5.'.md5') === true) {
+                $cont++;
             }
         }
 
         echo $cont;
+        return;
+    }
+
+    if ($groups_secondary_selected === true) {
+        $groups = get_parameter('groups', []);
+        $groups_selected = get_parameter('groups_selected', []);
+
+        $user_groups = users_get_groups($config['user'], 'AR', false);
+        $ret = [];
+        foreach ($user_groups as $id_gr => $name_group) {
+            if (in_array($id_gr, $groups) === false) {
+                $ret[$id_gr] = $name_group;
+            }
+        }
+
+        echo json_encode($ret);
         return;
     }
 }
@@ -140,6 +158,9 @@ if ($update_agents) {
         $values['safe_mode_module'] = '0';
     }
 
+    $secondary_groups_added = (array) get_parameter('secondary_groups_added', []);
+    $secondary_groups_removed = (array) get_parameter('secondary_groups_removed', []);
+
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
     if ($fields === false) {
@@ -171,7 +192,7 @@ if ($update_agents) {
         }
     }
 
-    // CONF FILE DELETION
+    // CONF FILE DELETION.
     if (isset($values['delete_conf'])) {
         unset($values['delete_conf']);
         $n_deleted = 0;
@@ -189,9 +210,15 @@ if ($update_agents) {
 
 
         if ($n_deleted > 0) {
-            db_pandora_audit('Massive management', 'Delete conf file '.$id_agent);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Delete conf file '.$id_agent
+            );
         } else {
-            db_pandora_audit('Massive management', 'Try to delete conf file '.$id_agent);
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Try to delete conf file '.$id_agent
+            );
         }
 
 
@@ -207,19 +234,14 @@ if ($update_agents) {
     }
 
     $n_edited = 0;
-    $result = false;
+    $result = [];
     foreach ($id_agents as $id_agent) {
         $old_interval_value = db_get_value_filter('intervalo', 'tagente', ['id_agente' => $id_agent]);
 
         if (!empty($values)) {
-            $group_old = false;
             $disabled_old = false;
             if ($values['id_grupo'] || isset($values['disabled'])) {
                 $values_old = db_get_row_filter('tagente', ['id_agente' => $id_agent], ['id_grupo', 'disabled']);
-                if ($values_old['id_grupo']) {
-                    $group_old = $values_old['id_grupo'];
-                }
-
                 if (isset($values['disabled'])) {
                     $disabled_old = $values_old['disabled'];
                 }
@@ -230,20 +252,20 @@ if ($update_agents) {
                 $values['safe_mode_module'] = $id_module_safe[$id_agent];
             }
 
-            $result = db_process_sql_update(
+            $result[$id_agent]['db'] = db_process_sql_update(
                 'tagente',
                 $values,
                 ['id_agente' => $id_agent]
             );
 
-            if ($result && $config['metaconsole_agent_cache'] == 1) {
+            if ($result[$id_agent]['db'] && $config['metaconsole_agent_cache'] == 1) {
                 $server_name['server_name'] = db_get_sql('SELECT server_name FROM tagente WHERE id_agente ='.$id_agent);
                 // Force an update of the agent cache.
                 $result_metaconsole = agent_update_from_cache($id_agent, $values, $server_name);
             }
 
             // Update the configuration files.
-            if ($result && ($old_interval_value != $values['intervalo']) && !empty($values['intervalo'])) {
+            if ($result[$id_agent]['db'] && ($old_interval_value != $values['intervalo']) && !empty($values['intervalo'])) {
                 enterprise_hook(
                     'config_agents_update_config_token',
                     [
@@ -268,78 +290,10 @@ if ($update_agents) {
                     alerts_validate_alert_agent($id_agent);
                 }
             }
-
-            if ($group_old || $result) {
-                if ($group_old && $group_old != null) {
-                    $tpolicy_group_old = db_get_all_rows_sql(
-                        'SELECT id_policy FROM tpolicy_groups 
-						WHERE id_group = '.$group_old
-                    );
-                } else {
-                    $tpolicy_group_old = db_get_all_rows_sql('SELECT id_policy FROM tpolicy_groups');
-                }
-
-                if ($tpolicy_group_old) {
-                    foreach ($tpolicy_group_old as $key => $value) {
-                        $tpolicy_agents_old = db_get_sql(
-                            'SELECT * FROM tpolicy_agents 
-							WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agent
-                        );
-
-                        if ($tpolicy_agents_old) {
-                            $result2 = db_process_sql_update(
-                                'tpolicy_agents',
-                                ['pending_delete' => 1],
-                                [
-                                    'id_agent'  => $id_agent,
-                                    'id_policy' => $value['id_policy'],
-                                ]
-                            );
-                        }
-                    }
-                }
-
-                if ($values['id_grupo'] && $values['id_grupo'] != null) {
-                    $tpolicy_group_new = db_get_all_rows_sql(
-                        'SELECT id_policy FROM tpolicy_groups 
-						WHERE id_group = '.$values['id_grupo']
-                    );
-                } else {
-                    $tpolicy_group_new = db_get_all_rows_sql('SELECT id_policy FROM tpolicy_groups');
-                }
-
-                if ($tpolicy_group_new) {
-                    foreach ($tpolicy_group_new as $key => $value) {
-                        $tpolicy_agents_new = db_get_sql(
-                            'SELECT * FROM tpolicy_agents 
-							WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agent
-                        );
-
-                        if (!$tpolicy_agents_new) {
-                            db_process_sql_insert(
-                                'tpolicy_agents',
-                                [
-                                    'id_policy' => $value['id_policy'],
-                                    'id_agent'  => $id_agent,
-                                ]
-                            );
-                        } else {
-                            $result3 = db_process_sql_update(
-                                'tpolicy_agents',
-                                ['pending_delete' => 0],
-                                [
-                                    'id_agent'  => $id_agent,
-                                    'id_policy' => $value['id_policy'],
-                                ]
-                            );
-                        }
-                    }
-                }
-            }
         }
 
         $info = [];
-        // Update Custom Fields
+        // Update Custom Fields.
         foreach ($fields as $field) {
             $info[$field['id_field']] = $field['name'];
             $value = get_parameter('customvalue_'.$field['id_field']);
@@ -354,8 +308,8 @@ if ($update_agents) {
                 );
 
                 if ($old_value === false) {
-                    // Create custom field if not exist
-                    $result = db_process_sql_insert(
+                    // Create custom field if not exist.
+                    $result[$id_agent]['fields'][$field['id_field']] = db_process_sql_insert(
                         'tagent_custom_data',
                         [
                             'id_field'    => $key,
@@ -365,7 +319,7 @@ if ($update_agents) {
                     );
                 } else {
                     if ($old_value[0]['description'] !== $value) {
-                        $result = db_process_sql_update(
+                        $result[$id_agent]['fields'][$field['id_field']] = db_process_sql_update(
                             'tagent_custom_data',
                             ['description' => $value],
                             [
@@ -378,29 +332,163 @@ if ($update_agents) {
             }
         }
 
-        $n_edited += (int) $result;
-    }
+        // Create or Remove the secondary groups.
+        if (empty($secondary_groups_added) === false
+            || empty($secondary_groups_removed) === false
+        ) {
+            $result[$id_agent]['secondary'] = enterprise_hook(
+                'agents_update_secondary_groups',
+                [
+                    $id_agent,
+                    $secondary_groups_added,
+                    $secondary_groups_removed,
+                    true,
+                ]
+            );
+        }
 
-
-    if ($result !== false) {
-        db_pandora_audit('Massive management', 'Update agent '.$id_agent, false, false, json_encode($info));
-    } else {
-        if (isset($id_agent)) {
-            db_pandora_audit('Massive management', 'Try to update agent '.$id_agent, false, false, json_encode($info));
+        if ($result['db'] !== false) {
+            db_pandora_audit(
+                AUDIT_LOG_MASSIVE_MANAGEMENT,
+                'Update agent '.$id_agent,
+                false,
+                false,
+                json_encode($info)
+            );
+        } else {
+            if (isset($id_agent) === true) {
+                db_pandora_audit(
+                    AUDIT_LOG_MASSIVE_MANAGEMENT,
+                    'Try to update agent '.$id_agent,
+                    false,
+                    false,
+                    json_encode($info)
+                );
+            }
         }
     }
 
+    $ret = [];
+    foreach ($result as $id_agent => $item) {
+        if ($item['db'] !== false) {
+            $ret['db']['edited'] += 1;
+            $ret['db']['edited_agent'][] = $id_agent;
+        } else {
+            $ret['db']['failed'] += 1;
+            $ret['db']['failed_agent'][] = $id_agent;
+        }
 
-    ui_print_result_message(
-        $result !== false,
-        __('Agents updated successfully (%d)', $n_edited),
-        __('Agents cannot be updated (maybe there was no field to update)')
-    );
+        if (isset($item['fields']) === true
+            && empty($item['fields']) === false
+        ) {
+            foreach ($item['fields'] as $kfield => $vfield) {
+                if ($vfield !== false) {
+                    $ret['fields'][$id_agent]['edited'] += 1;
+                    $ret['fields'][$id_agent]['edited_field'][] = $kfield;
+                } else {
+                    $ret['fields'][$id_agent]['failed'] += 1;
+                    $ret['fields'][$id_agent]['failed_field'][] = $kfield;
+                }
+            }
+        }
+
+        if (isset($item['secondary']) === true
+            && empty($item['secondary']) === false
+        ) {
+            foreach ($item['secondary'] as $type_action => $values_secondary) {
+                foreach ($values_secondary as $kgr => $vgr) {
+                    if ($vgr !== false) {
+                        $ret['secondary'][$type_action][$id_agent]['edited'] += 1;
+                        $ret['secondary'][$type_action][$id_agent]['edited_gr'][] = $kgr;
+                    } else {
+                        $ret['secondary'][$type_action][$id_agent]['failed'] += 1;
+                        $ret['secondary'][$type_action][$id_agent]['failed_gr'][] = $kgr;
+                    }
+                }
+            }
+        }
+    }
+
+    foreach ($ret as $type => $ret_val) {
+        switch ($type) {
+            case 'db':
+                if (isset($ret_val['edited']) === true
+                    && $ret_val['edited'] > 0
+                ) {
+                    ui_print_success_message(
+                        __(
+                            'Agents updated successfully (%d)',
+                            $ret_val['edited'],
+                            implode(
+                                ',',
+                                $ret_val['edited_agent']
+                            )
+                        )
+                    );
+                }
+
+                if (isset($ret_val['failed']) === true
+                    && $ret_val['failed'] > 0
+                ) {
+                    ui_print_error_message(
+                        __(
+                            'Agents cannot be updated (%d), ids (%s)',
+                            $ret_val['failed'],
+                            implode(',', $ret_val['failed_agent'])
+                        )
+                    );
+                }
+            break;
+
+            case 'fields':
+                $str = '';
+                foreach ($ret_val as $kag => $vag) {
+                    if (isset($vag['failed']) === true
+                        && $vag['failed'] > 0
+                    ) {
+                        $str .= __(
+                            'Agent ID: %s cannot be updated custom fields (%s)',
+                            $kag,
+                            implode(',', $vag['failed_field'])
+                        ).'<br>';
+                    }
+                }
+
+                if (empty($str) === false) {
+                    ui_print_error_message($str);
+                }
+            break;
+
+            case 'secondary':
+                $str = '';
+                foreach ($ret_val as $type => $values_secondary) {
+                    foreach ($values_secondary as $kag => $vag) {
+                        if (isset($vag['failed']) === true
+                            && $vag['failed'] > 0
+                        ) {
+                            $str .= __(
+                                'Agent ID: %s cannot be updated %s secondary groups (%s)',
+                                $kag,
+                                $type,
+                                implode(',', $vag['failed_gr'])
+                            ).'<br>';
+                        }
+                    }
+                }
+
+                if (empty($str) === false) {
+                    ui_print_error_message($str);
+                }
+            break;
+
+            default:
+                // Not posible.
+            break;
+        }
+    }
 }
 
 $id_group = 0;
-
-$groups = users_get_groups();
 
 $table = new StdClass();
 $table->id = 'delete_table';
@@ -468,18 +556,22 @@ $table->data[1][3] = html_print_select(
     __('All'),
     2,
     true,
+    false,
+    true,
     '',
-    '',
-    '',
-    '',
+    false,
     'width:30%;'
 );
+
 $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
-$enabled_agents = agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false)), ['disabled' => 0], 'none');
-$all_agents = (agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false)), ['disabled' => 1], 'none') + $enabled_agents);
+$all_agents = agents_get_group_agents(
+    array_keys(users_get_groups($config['id_user'], 'AW', false)),
+    ['disabled' => 2],
+    'none'
+);
 
 $table->data[2][1] = html_print_select(
     $all_agents,
@@ -489,10 +581,27 @@ $table->data[2][1] = html_print_select(
     '',
     '',
     true,
+    true,
+    true,
+    '',
+    false,
+    'min-width: 500px; max-width: 500px; max-height: 100px',
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    true,
+    true,
     true
 );
 
-echo '<form method="post" id="form_agent" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
+echo '<form method="post" autocomplete="off" id="form_agent" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
+echo html_print_avoid_autocomplete();
+
 html_print_table($table);
 
 $nombre_agente = '';
@@ -521,9 +630,6 @@ $table->size[2] = '15%';
 $table->size[3] = '35%';
 
 $table->data = [];
-
-$groups = users_get_groups($config['id_user'], 'AW', false);
-$agents = agents_get_group_agents(array_keys($groups));
 
 $modules = db_get_all_rows_sql(
     'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
@@ -565,7 +671,16 @@ $table->data[0][1] .= '<b>'.__('Cascade protection').'</b>'.html_print_select(
     true
 );
 
-$table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;'.html_print_select($modules, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true);
+$table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;';
+$table->data[0][1] .= html_print_select(
+    $modules,
+    'cascade_protection_module',
+    $cascade_protection_module,
+    '',
+    '',
+    0,
+    true
+);
 
 $table->data[1][0] = __('Group');
 $table->data[1][1] = '<div class="w290px inline">';
@@ -589,7 +704,17 @@ $table->data[1][1] .= '</div>';
 
 $table->data[2][0] = __('Interval');
 
-$table->data[2][1] = html_print_extended_select_for_time('interval', 0, '', __('No change'), '0', 10, true, 'width: 150px', false);
+$table->data[2][1] = html_print_extended_select_for_time(
+    'interval',
+    0,
+    '',
+    __('No change'),
+    '0',
+    10,
+    true,
+    'width: 150px',
+    false
+);
 
 $table->data[3][0] = __('OS');
 $table->data[3][1] = html_print_select_from_sql(
@@ -609,7 +734,7 @@ $table->data[3][1] .= ' <span id="os_preview">';
 $table->data[3][1] .= ui_print_os_icon($id_os, false, true);
 $table->data[3][1] .= '</span>';
 
-// Network server
+// Network server.
 $none = '';
 if ($server_name == '' && $id_agente) {
     $none = __('None');
@@ -631,9 +756,16 @@ $table->data[4][1] = html_print_select(
     'width: 150px;'
 );
 
-// Description
+// Description.
 $table->data[5][0] = __('Description');
-$table->data[5][1] = html_print_input_text('description', $description, '', 45, 255, true);
+$table->data[5][1] = html_print_input_text(
+    'description',
+    $description,
+    '',
+    45,
+    255,
+    true
+);
 
 html_print_table($table);
 unset($table);
@@ -662,27 +794,157 @@ $table->style = [];
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = [];
 
-// Custom ID
+// Custom ID.
 $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255, true);
 
-// Learn mode / Normal mode
+// Secondary Groups.
+if (enterprise_installed() === true) {
+    $groups = users_get_groups($config['id_user'], 'AW', false);
+    $table->data['secondary_groups_added'][0] = __('Add secondary groups');
+    $table->data['secondary_groups_added'][1] = html_print_select(
+        $groups,
+        'secondary_groups_added[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 500px; max-width: 500px; max-height: 100px',
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
+    );
+
+    $table->data['secondary_groups_removed'][0] = __('Remove secondary groups');
+    $table->data['secondary_groups_removed'][1] = html_print_select(
+        $groups,
+        'secondary_groups_removed[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 500px; max-width: 500px; max-height: 100px',
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
+    );
+}
+
+// Learn mode / Normal mode.
 $table->data[1][0] = __('Module definition');
-$table->data[1][1] = __('No change').' '.html_print_radio_button_extended('mode', -1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
-$table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended('mode', 1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
-$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended('mode', 0, '', $mode, false, '', 'class="mrgn_right_40px"', true);
-$table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended('mode', 2, '', $mode, false, '', 'class="mrgn_right_40px"', true);
+$table->data[1][1] = __('No change').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    -1,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[1][1] .= __('Learning mode').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    1,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[1][1] .= __('Normal mode').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    0,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[1][1] .= __('Autodisable mode').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'mode',
+    2,
+    '',
+    $mode,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
 
-// Status (Disabled / Enabled)
+// Status (Disabled / Enabled).
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('No change').' '.html_print_radio_button_extended('disabled', -1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
-$table->data[2][1] .= __('Disabled').' '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).' '.html_print_radio_button_extended('disabled', 1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
-$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended('disabled', 0, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
+$table->data[2][1] = __('No change').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'disabled',
+    -1,
+    '',
+    $disabled,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[2][1] .= __('Disabled').' ';
+$table->data[1][1] .= ui_print_help_tip(
+    __('If the remote configuration is enabled, it will also go into standby mode when disabling it.'),
+    true
+).' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'disabled',
+    1,
+    '',
+    $disabled,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[2][1] .= __('Active').' ';
+$table->data[1][1] .= html_print_radio_button_extended(
+    'disabled',
+    0,
+    '',
+    $disabled,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
 
-// Remote configuration
+// Remote configuration.
 $table->data[3][0] = __('Remote configuration');
 
-// Delete remote configuration
+// Delete remote configuration.
 $table->data[3][1] = '<div id="delete_configurations" class="invisible">'.__('Delete available remote configurations').' (';
 $table->data[3][1] .= '<span id="n_configurations"></span>';
 $table->data[3][1] .= ') '.html_print_checkbox_extended('delete_conf', 1, 0, false, '', 'class="mrgn_right_40px"', true).'</div>';
@@ -700,7 +962,7 @@ $path = 'images/gis_map/icons/';
 // TODO set better method the path
 if ($icon_path == '') {
     $display_icons = 'none';
-    // Hack to show no icon. Use any given image to fix not found image errors
+    // Hack to show no icon. Use any given image to fix not found image errors.
     $path_without = 'images/spinner.png';
     $path_default = 'images/spinner.png';
     $path_ok = 'images/spinner.png';
@@ -801,7 +1063,8 @@ foreach ($fields as $field) {
     }
 
     if ($field['is_password_type']) {
-        $data[1] = html_print_input_text_extended(
+        $data[1] = html_print_input_password_avoid_autocomplete();
+        $data[1] .= html_print_input_text_extended(
             'customvalue_'.$field['id_field'],
             $custom_value,
             'customvalue_'.$field['id_field'],
@@ -851,7 +1114,6 @@ attachActionButton('update_agents', 'update', $table->width);
 echo '</div></form>';
 
 ui_require_jquery_file('form');
-
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
@@ -864,7 +1126,6 @@ var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
     var checked = $("#cascade_protection").val();
-    
     $("#cascade_protection_module").attr("disabled", 'disabled');
 
     $("#cascade_protection").change(function () {
@@ -891,9 +1152,9 @@ $(document).ready (function () {
             $("#safe_mode_module").attr("disabled", "disabled");
             $('#safe_mode_module').empty();
             $("#safe_mode_module").append($("<option></option>").attr("value", 'Any').html('Any'));
-        } 
+        }
     });
- 
+
     // Fill modules in Safe Operation Mode.
     function refreshSafeModules(){
         var idAgents = Array();
@@ -907,7 +1168,7 @@ $(document).ready (function () {
             "id_agent" : idAgents,
             "selection_mode": "common"
         };
-        
+
         jQuery.post ("ajax.php",
             params,
             function (data, status) {
@@ -926,73 +1187,70 @@ $(document).ready (function () {
         );
     }
 
-
     $("#form_agent").submit(function() {
         var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
         var post_parameters_count = $("#form_agent").serializeArray().length;
-        
+
         var count_parameters =
             get_parameters_count + post_parameters_count;
-        
+
         if (count_parameters > limit_parameters_massive) {
             alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
             return false;
         }
     });
-    
+
     var disabled;
-    
-    $("#disabled").click(function () {
-    
-            disabled = this.value;
-    
-         $("#id_group").trigger("change");
+    $("#disabled").change(function () {
+        disabled = this.value;
+        $("#id_group").trigger("change");
     });
-    
+
     $('#id_agents').on('change', function() {
         var idAgents = Array();
         jQuery.each ($("#id_agents option:selected"), function (i, val) {
             idAgents.push($(val).val());
         });
-        jQuery.post ("ajax.php",
-                {"page" : "godmode/massive/massive_edit_agents",
+        jQuery.post (
+            "ajax.php",
+            {
+                "page" : "godmode/massive/massive_edit_agents",
                 "get_n_conf_files" : 1,
                 "id_agents[]" : idAgents
-                },
-                function (data, status) {
-                    if (data == 0) { 
-                        $("#delete_configurations").attr("style", "display: none");
-                        $("#not_available_configurations").attr("style", "");
-                    }
-                    else {
-                        $("#n_configurations").text(data);
-                        $("#not_available_configurations").attr("style", "display: none");
-                        $("#delete_configurations").attr("style", "");
-                    }
-                },
-                "json"
-            );
-        
+            },
+            function (data, status) {
+                if (data == 0) {
+                    $("#delete_configurations").attr("style", "display: none");
+                    $("#not_available_configurations").attr("style", "");
+                }
+                else {
+                    $("#n_configurations").text(data);
+                    $("#not_available_configurations").attr("style", "display: none");
+                    $("#delete_configurations").attr("style", "");
+                }
+            },
+            "json"
+        );
         $("#form_agents").attr("style", "");
 
         if($("#safe_mode_change").val() == 1) {
             refreshSafeModules();
         }
     });
-    
+
     $("#id_group").change (function () {
         $("#form_agents").attr("style", "display: none");
     });
-    
+
     $("select#id_os").pandoraSelectOS ();
-    
+
     var recursion;
     $("#checkbox-recursion2").click(function () {
         recursion = this.checked ? 1 : 0;
         $("#id_group").trigger("change");
     });
-    
+
     $("#id_group").pandoraSelectGroupAgent ({
         status_agents: function () {
             return $("#status_agents").val();
@@ -1006,27 +1264,59 @@ $(document).ready (function () {
             return disabled;
         }
     });
-    
+
     $("#status_agents").change(function() {
         $("#id_group").trigger("change");
     });
-    
-    
+
     disabled = 2;
 
- $("#id_group").trigger("change");
-    
+    $("#status_agents").change(function() {
+        $("#id_group").trigger("change");
+    });
+
+    $("#secondary_groups_added").change(
+        function() {
+            var groups = $("#secondary_groups_added").val();
+            var groups_selected = $("#secondary_groups_removed").val();
+            jQuery.post (
+                "ajax.php",
+                {
+                    "page" : "godmode/massive/massive_edit_agents",
+                    "groups_secondary_selected" : 1,
+                    "groups" : groups
+                },
+                function (data, status) {
+                    $('#secondary_groups_removed').empty();
+                    $('#secondary_groups_removed').val(null).trigger("change");
+                    if($.type(data) === "object"){
+                        jQuery.each (data, function (id, value) {
+                            option = $("<option></option>").attr("value", id).html(value);
+                            if (inArray(id, groups_selected) === true) {
+                                option.attr("selected", true);
+                            }
+                            $("#secondary_groups_removed").append(option).trigger("change");
+                        });
+                    } else {
+                        option = $("<option></option>").attr("value", '').html('None');
+                        $("#secondary_groups_removed").append(option).trigger("change");
+                    }
+                },
+                "json"
+            );
+        }
+    );
 });
 
 function changeIcons() {
     var icon = $("#icon_path :selected").val();
-    
+
     $("#icon_without_status").attr("src", "images/spinner.png");
     $("#icon_default").attr("src", "images/spinner.png");
     $("#icon_ok").attr("src", "images/spinner.png");
     $("#icon_bad").attr("src", "images/spinner.png");
     $("#icon_warning").attr("src", "images/spinner.png");
-    
+
     if (icon.length == 0) {
         $("#icon_without_status").attr("style", "display:none;");
         $("#icon_default").attr("style", "display:none;");

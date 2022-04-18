@@ -10,6 +10,11 @@
   <style>
     body {
       margin: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
   </style>
   <body>
@@ -31,6 +36,29 @@
         isFavorite: false
       };
 
+      var size = {
+        width: screen.width,
+        height: screen.height
+      };
+
+      var ratio_visualconsole = props.height / props.width;
+      var ratio_t = size.width / props.width;
+      var radio_h = size.height / props.height;
+
+      props.width = size.width;
+      props.height = size.width * ratio_visualconsole;
+
+      if (props.height > size.height) {
+        ratio_t = radio_h;
+
+        props.height = size.height;
+        props.width = size.height / ratio_visualconsole;
+      }
+
+      //ratio_t = 1;
+      //props.height = 400;
+      //props.width = 1000;
+
       var staticGraphRawProps = {
         // Generic props.
         id: 1,
@@ -41,11 +69,11 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 100,
-        y: 50,
+        x: 100 * ratio_t,
+        y: 50 * ratio_t,
         // Size props.
-        width: 70,
-        height: 70,
+        width: 70 * ratio_t,
+        height: 70 * ratio_t,
         // Agent props.
         agentId: null,
         agentName: null,
@@ -55,7 +83,8 @@
         // Custom props.
         imageSrc:
           "http://localhost/pandora_console/images/console/icons/bridge_ok.png",
-        showLastValueTooltip: "default"
+        showLastValueTooltip: "default",
+        receivedAt: 1646846155
       };
 
       var colorCloudRawProps = {
@@ -70,11 +99,11 @@
         aclGroupId: null,
         link: "https://google.es",
         // Position props.
-        x: 300,
-        y: 50,
+        x: 300 * ratio_t,
+        y: 50 * ratio_t,
         // Size props.
-        width: 150,
-        height: 150,
+        width: 150 * ratio_t,
+        height: 150 * ratio_t,
         // Agent props.
         agentId: null,
         agentName: null,
@@ -82,7 +111,8 @@
         moduleId: null,
         moduleName: null,
         // Custom props.
-        color: "rgb(100, 50, 245)"
+        color: "rgb(100, 50, 245)",
+        receivedAt: 1646846155
       };
 
       var digitalClockRawProps = {
@@ -95,18 +125,19 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 60,
-        y: 150,
+        x: 60 * ratio_t,
+        y: 150 * ratio_t,
         // Size props.
-        width: 300,
-        height: 150,
+        width: 300 * ratio_t,
+        height: 150 * ratio_t,
         // Custom props.
         clockType: "digital",
         clockFormat: "datetime",
         clockTimezone: "Madrid",
         clockTimezoneOffset: 60,
         showClockTimezone: true,
-        color: "white"
+        color: "white",
+        receivedAt: 1646846155
       };
 
       var digitalClockRawProps2 = {
@@ -119,18 +150,19 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 10,
-        y: 250,
+        x: 10 * ratio_t,
+        y: 250 * ratio_t,
         // Size props.
-        width: 100,
-        height: 50,
+        width: 100 * ratio_t,
+        height: 50 * ratio_t,
         // Custom props.
         clockType: "digital",
         clockFormat: "datetime",
         clockTimezone: "Madrid",
         clockTimezoneOffset: 60,
         showClockTimezone: true,
-        color: "#82B92E"
+        color: "#82B92E",
+        receivedAt: 1646846155
       };
 
       var analogicClockRawProps = {
@@ -144,17 +176,18 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 500,
-        y: 50,
+        x: 500 * ratio_t,
+        y: 50 * ratio_t,
         // Size props.
-        width: 200,
-        height: 200,
+        width: 200 * ratio_t,
+        height: 200 * ratio_t,
         // Custom props.
         clockType: "analogic",
         clockFormat: "datetime",
         clockTimezone: "Copenhagen",
         clockTimezoneOffset: 60,
-        showClockTimezone: true
+        showClockTimezone: true,
+        receivedAt: 1646846155
       };
 
       var boxRawProps = {
@@ -162,15 +195,16 @@
         id: 6,
         type: 12, // Box = 12
         // Position props.
-        x: 720,
-        y: 20,
+        x: 720 * ratio_t,
+        y: 20 * ratio_t,
         // Size props.
-        width: 50,
-        height: 50,
+        width: 50 * ratio_t,
+        height: 50 * ratio_t,
         // Custom props.
         borderWidth: 10,
         borderColor: "white",
-        fillColor: "black"
+        fillColor: "black",
+        receivedAt: 1646846155
       };
 
       var lineRawProps = {
@@ -178,18 +212,19 @@
         id: 7,
         type: 13, // Line = 13
         // Position props.
-        x: 720,
-        y: 20,
+        x: 720 * ratio_t,
+        y: 20 * ratio_t,
         // Size props.
-        width: 50,
-        height: 50,
+        width: 50 * ratio_t,
+        height: 50 * ratio_t,
         // Custom props.
         startX: 200,
         startY: 100,
         endX: 350,
         endY: 30,
         lineWidth: 2,
-        color: "white"
+        color: "white",
+        receivedAt: 1646846155
       };
 
       var labelRawProps = {
@@ -202,11 +237,12 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 410,
-        y: 0,
+        x: 410 * ratio_t,
+        y: 0 * ratio_t,
         // Size props.
-        width: 200,
-        height: 200
+        width: 200 * ratio_t,
+        height: 200 * ratio_t,
+        receivedAt: 1646846155
       };
 
       var simpleValueRawProps = {
@@ -219,15 +255,16 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 10,
-        y: 10,
+        x: 10 * ratio_t,
+        y: 10 * ratio_t,
         // Size props.
-        width: 50,
-        height: 50,
+        width: 50 * ratio_t,
+        height: 50 * ratio_t,
         // Custom props.
         valueType: "string",
         value: "10",
-        processValue: "none"
+        processValue: "none",
+        receivedAt: 1646846155
       };
 
       var percentileRawProps = {
@@ -240,11 +277,11 @@
         parentId: null,
         aclGroupId: null,
         // Position props.
-        x: 790,
-        y: 10,
+        x: 790 * ratio_t,
+        y: 10 * ratio_t,
         // Size props.
-        width: 200,
-        height: 40,
+        width: 200 * ratio_t,
+        height: 40 * ratio_t,
         // Custom props.
         percentileType: "progress-bar",
         valueType: "percent",
@@ -253,7 +290,8 @@
         color: null,
         labelColor: "#82B92E",
         value: 245,
-        unit: "seconds"
+        unit: "seconds",
+        receivedAt: 1646846155
       };
 
       var percentileBubbleRawProps = {
@@ -266,11 +304,11 @@
         parentId: 1,
         aclGroupId: null,
         // Position props.
-        x: 830,
-        y: 60,
+        x: 830 * ratio_t,
+        y: 60 * ratio_t,
         // Size props.
-        width: 100,
-        height: 100,
+        width: 100 * ratio_t,
+        height: 100 * ratio_t,
         // Custom props.
         percentileType: "bubble",
         valueType: "value",
@@ -279,7 +317,8 @@
         color: null,
         labelColor: "#82B92E",
         value: 245,
-        unit: "seconds"
+        unit: "seconds",
+        receivedAt: 1646846155
       };
 
       var percentileDonutRawProps = {
@@ -292,11 +331,11 @@
         parentId: 1,
         aclGroupId: null,
         // Position props.
-        x: 830,
-        y: 170,
+        x: 830 * ratio_t,
+        y: 170 * ratio_t,
         // Size props.
-        width: 100,
-        height: 100,
+        width: 100 * ratio_t,
+        height: 100 * ratio_t,
         // Custom props.
         percentileType: "circular-progress-bar",
         valueType: "value",
@@ -305,7 +344,8 @@
         color: null,
         labelColor: "#82B92E",
         value: 245,
-        unit: "seconds"
+        unit: "seconds",
+        receivedAt: 1646846155
       };
 
       var percentileDonutAltRawProps = {
@@ -318,11 +358,11 @@
         parentId: 1,
         aclGroupId: null,
         // Position props.
-        x: 830,
-        y: 280,
+        x: 830 * ratio_t,
+        y: 280 * ratio_t,
         // Size props.
-        width: 100,
-        height: 100,
+        width: 100 * ratio_t,
+        height: 100 * ratio_t,
         // Custom props.
         percentileType: "circular-progress-bar-alt",
         valueType: "value",
@@ -331,7 +371,8 @@
         color: null,
         labelColor: "#82B92E",
         value: 245,
-        unit: "seconds"
+        unit: "seconds",
+        receivedAt: 1646846155
       };
 
       var items = [
@@ -353,6 +394,295 @@
       try {
         var visualConsole = new VisualConsole(container, props, items);
         console.log(visualConsole);
+
+        //visualConsole.enableEditMode();
+
+        // VC Item clicked.
+        visualConsole.onItemClick(function(e) {
+          var data = e.item.props || {};
+          var meta = e.item.meta || {};
+
+          if (meta.editMode) {
+            // Item selection.
+            if (meta.isSelected) {
+              visualConsole.unSelectItem(data.id);
+            } else {
+              // Unselect the rest of the elements if the
+              var isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+              visualConsole.selectItem(
+                data.id,
+                isMac ? !e.nativeEvent.metaKey : !e.nativeEvent.ctrlKey
+              );
+            }
+          } else if (
+            !meta.editMode &&
+            data.linkedLayoutId != null &&
+            data.linkedLayoutId > 0 &&
+            data.link != null &&
+            data.link.length > 0 &&
+            (data.linkedLayoutAgentId == null ||
+              data.linkedLayoutAgentId === 0) &&
+            data.linkedLayoutNodeId === 0 &&
+            e.nativeEvent.metaKey === false
+          ) {
+            // Override the link to another VC if it isn't on remote console.
+            // Stop the current link behavior.
+            e.nativeEvent.preventDefault();
+            // Fetch and update the old VC with the new.
+            updateVisualConsole(data.linkedLayoutId, updateInterval);
+          }
+        });
+        // VC Item double clicked.
+        visualConsole.onItemDblClick(function(e) {
+          e.nativeEvent.preventDefault();
+          e.nativeEvent.stopPropagation();
+
+          var item = e.item || {};
+          var meta = item.meta || {};
+
+          if (meta.editMode && !meta.isUpdating) {
+            createOrUpdateVisualConsoleItem(
+              visualConsole,
+              asyncTaskManager,
+              baseUrl,
+              item
+            );
+          } else if (meta.lineMode && item.props.type == 21) {
+            load_modal({
+              url: baseUrl + "/ajax.php",
+              modal: {
+                title: "NetworkLink information",
+                ok: "Ok"
+              },
+              extradata: [
+                {
+                  name: "from",
+                  value: item.props.linkedStart
+                },
+                {
+                  name: "to",
+                  value: item.props.linkedEnd
+                }
+              ],
+              onshow: {
+                page: "include/rest-api/index",
+                method: "networkLinkPopup"
+              }
+            });
+            // confirmDialog({
+            //   title: "todo",
+            //   message:
+            //     "<pre>" +
+            //     item.props.labelStart +
+            //     "</pre><br><pre>" +
+            //     item.props.labelEnd +
+            //     "</pre>"
+            // });
+          }
+        });
+        // VC Item moved.
+        visualConsole.onItemMoved(function(e) {
+          var id = e.item.props.id;
+          var data = {
+            x: e.newPosition.x,
+            y: e.newPosition.y,
+            type: e.item.props.type
+          };
+          if (e.item.props.type === 13 || e.item.props.type === 21) {
+            var startIsLeft =
+              e.item.props.startPosition.x - e.item.props.endPosition.x <= 0;
+            var startIsTop =
+              e.item.props.startPosition.y - e.item.props.endPosition.y <= 0;
+
+            data = {
+              startX: startIsLeft
+                ? e.newPosition.x
+                : e.item.props.width + e.newPosition.x,
+              startY: startIsTop
+                ? e.newPosition.y
+                : e.item.props.height + e.newPosition.y,
+              endX: startIsLeft
+                ? e.item.props.width + e.newPosition.x
+                : e.newPosition.x,
+              endY: startIsTop
+                ? e.item.props.height + e.newPosition.y
+                : e.newPosition.y,
+              type: e.item.props.type
+            };
+          }
+
+          if (e.item.props.processValue != undefined) {
+            data.processValue = e.item.props.processValue;
+          }
+
+          if (e.item.props.percentileType != undefined) {
+            data.percentileType = e.item.props.percentileType;
+          }
+
+          var taskId = "visual-console-item-update-" + id;
+
+          // Persist the new position.
+          asyncTaskManager
+            .add(taskId, function(done) {
+              var abortable = updateVisualConsoleItem(
+                baseUrl,
+                visualConsole.props.id,
+                id,
+                data,
+                function(error, data) {
+                  // if (!error && !data) return;
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    // Move the element to its initial position.
+                    e.item.move(e.prevPosition.x, e.prevPosition.y);
+                  }
+
+                  done();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+        });
+        // VC Line Item moved.
+        visualConsole.onLineMoved(function(e) {
+          var id = e.item.props.id;
+          var data = {
+            startX: e.startPosition.x,
+            startY: e.startPosition.y,
+            endX: e.endPosition.x,
+            endY: e.endPosition.y
+          };
+
+          var taskId = "visual-console-item-update-" + id;
+
+          // Persist the new position.
+          asyncTaskManager
+            .add(taskId, function(done) {
+              var abortable = updateVisualConsoleItem(
+                baseUrl,
+                visualConsole.props.id,
+                id,
+                data,
+                function(error, data) {
+                  if (!error && !data) return;
+
+                  try {
+                    var decoded_data = JSON.parse(data);
+                    visualConsole.updateElement(decoded_data);
+                  } catch (error) {
+                    console.error(error);
+                  }
+                  done();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+        });
+
+        // VC Item resized.
+        visualConsole.onItemResized(function(e) {
+          var item = e.item;
+          var id = item.props.id;
+          var data = {
+            width: e.newSize.width,
+            height: e.newSize.height,
+            type: item.props.type
+          };
+
+          // Trick, to allow the percentile item to reuse the height field to save the max value,
+          // it is very ugly, change some year.
+          if (item.props.type === 3) {
+            data = {
+              width: e.newSize.width,
+              type: item.props.type
+            };
+          }
+
+          if (item.props.processValue != undefined) {
+            data.processValue = item.props.processValue;
+          }
+
+          if (item.props.percentileType != undefined) {
+            data.percentileType = item.props.percentileType;
+          }
+
+          var taskId = "visual-console-item-update-" + id;
+          // Persist the new size.
+          asyncTaskManager
+            .add(taskId, function(done) {
+              var abortable = updateVisualConsoleItem(
+                baseUrl,
+                visualConsole.props.id,
+                id,
+                data,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    // Resize the element to its initial Size.
+                    item.resize(e.prevSize.width, e.prevSize.height);
+                    item.setMeta({ isUpdating: false });
+                    done();
+                    return; // Stop task execution.
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      // Resize the element to its initial Size.
+                      item.resize(e.prevSize.width, e.prevSize.height);
+                      item.setMeta({ isUpdating: false });
+                      done();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  visualConsole.updateElement(data);
+                  item.setMeta({ isUpdating: false });
+
+                  done();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+        });
 
         visualConsole.onClick(function(e) {
           console.log("[CLICK]", e);

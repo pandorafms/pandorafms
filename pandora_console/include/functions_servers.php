@@ -177,13 +177,8 @@ function servers_get_performance()
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND tagente.id_agente = tagente_estado.id_agente
 				AND tagente_modulo.disabled = 0
+                		AND tagente_modulo.id_modulo <> 0
 				AND delete_pending = 0
-				AND (utimestamp > 0
-                    OR (id_tipo_modulo = 100
-                        OR (id_tipo_modulo > 21
-                        AND id_tipo_modulo < 23)
-                    )
-                )
 				AND tagente.disabled = 0
 			GROUP BY tagente_modulo.id_modulo'
         );
@@ -696,6 +691,19 @@ function servers_get_info($id_server=-1)
                 $id_modulo = 2;
             break;
 
+            case SERVER_TYPE_CORRELATION:
+                $server['img'] = html_print_image(
+                    'images/lightning_go.png',
+                    true,
+                    [
+                        'title' => __('Correlation server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'correlation';
+                $id_modulo = 0;
+            break;
+
             case SERVER_TYPE_ENTERPRISE_ICMP:
                 $server['img'] = html_print_image(
                     'images/network.png',
@@ -797,6 +805,19 @@ function servers_get_info($id_server=-1)
                     ]
                 );
                 $server['type'] = 'syslog';
+                $id_modulo = 0;
+            break;
+
+            case SERVER_TYPE_NCM:
+                $server['img'] = html_print_image(
+                    'images/book_edit.png',
+                    true,
+                    [
+                        'title' => __('NCM server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'ncm';
                 $id_modulo = 0;
             break;
 
@@ -1326,7 +1347,16 @@ function servers_get_server_string_name(int $server)
         return __('WUX server');
 
         case SERVER_TYPE_ENTERPRISE_SATELLITE:
-        return __('Satellite');
+        return __('Satellite server');
+
+        case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
+        return __('Transactional server');
+
+        case SERVER_TYPE_ALERT:
+        return __('Alert server');
+
+        case SERVER_TYPE_NCM:
+        return __('NCM server');
 
         default:
         return __('N/A');

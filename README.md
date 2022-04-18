@@ -1,12 +1,16 @@
 [![Build Status](https://travis-ci.org/pandorafms/pandorafms.svg?branch=develop)](https://travis-ci.org/pandorafms/pandorafms)
 
-[![Pandora logo](http://wolf359.artica.es/public_images/logo_pandora_community.png)](http://pandorafms.org)
+![logo Pandora-FMS](https://user-images.githubusercontent.com/8567291/151817953-dc9c4c88-5f3c-459b-98a7-da0534930a2c.png)
 
-Pandora FMS is a monitoring software for IT infrastructure management which includes network equipment, Windows and Unix servers, virtual infrastructure and all different kind of applications. It has a large amount of features, making it a new generation software which discovers all the monitoring issues that an organization may need.
+With more than 50,000 customer installations across the five continents, Pandora FMS is an out-of-the-box monitoring solution: profitable and scalable, covering most infrastructure deployment options.
+
+Pandora FMS gives you the agility to find and solve problems quickly, scaling them so they can be derived from any source, on-premise, multi cloud or both of them mixed. Now you have that capability across your entire IT stack and analytics to find any problem, even the ones that are hard to find.
+
+Thanks to more than 500 plugins available, you can control and manage any application and technology, from SAP, Oracle, Lotus, Citrix or Jboss to VMware, AWS, SQL Server, Redhat, Websphere, etc.
 
 ### Support
 
-For community support you can visit our forums at http://forums.pandorafms.org. Visit our community page at http://pandorafms.org and if you need commercial information or/and professional support visit http://pandorafms.com.
+For community support you can visit our forums at https://pandorafms.com/community/ and if you need commercial information or/and professional support visit https://pandorafms.com
 
 ### How to install Pandora FMS
 

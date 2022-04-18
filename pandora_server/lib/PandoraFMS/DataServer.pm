@@ -41,7 +41,7 @@ use Encode::Locale ();
 use LWP::Simple;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -89,11 +89,20 @@ sub new ($$;$) {
 		}
 	}
 
-	if ($config->{'autocreate_group'} > 0 && !defined(get_group_name ($dbh, $config->{'autocreate_group'}))) {
-		my $msg = "Group id " . $config->{'autocreate_group'} . " does not exist (check autocreate_group config token).";
-		logger($config, $msg, 3);
-		print_message($config, $msg, 1);
-		pandora_event ($config, $msg, 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	if ($config->{'autocreate_group_name'} ne '') {
+		if (get_group_id($dbh, $config->{'autocreate_group_name'}) == -1) {
+			my $msg = "Group '" . $config->{'autocreate_group_name'} . "' does not exist (check autocreate_group_name config token).";
+			logger($config, $msg, 3);
+			print_message($config, $msg, 1);
+			pandora_event ($config, $msg, 0, 0, 0, 0, 0, 'error', 0, $dbh);
+		}
+	} elsif ($config->{'autocreate_group'} > 0) {
+		if (!defined(get_group_name ($dbh, $config->{'autocreate_group'}))) {
+			my $msg = "Group id " . $config->{'autocreate_group'} . " does not exist (check autocreate_group config token).";
+			logger($config, $msg, 3);
+			print_message($config, $msg, 1);
+			pandora_event ($config, $msg, 0, 0, 0, 0, 0, 'error', 0, $dbh);
+		}
 	}
 
 	bless $self, $class;

@@ -359,6 +359,7 @@ function grafico_modulo_sparse_data(
         $count_data = 0;
         $data_last_acum = $array_data['sum1']['data'][0][1];
 
+        $array_data_only = [];
         while ($period_time_interval > 0) {
             foreach ($array_data['sum1']['data'] as $key => $value) {
                 if ($value[0] >= $start_period
@@ -794,7 +795,7 @@ function grafico_modulo_sparse($params)
     }
 
     if (isset($params['type_mode_graph']) === false) {
-        $params['type_mode_graph'] = $config['type_mode_graph'];
+        $params['type_mode_graph'] = ($config['type_mode_graph'] ?? null);
         if (isset($params['graph_render']) === true) {
             $params['type_mode_graph'] = $params['graph_render'];
         }
@@ -1468,15 +1469,23 @@ function graphic_combined_module(
                     'module_description' => $module_description,
                 ];
 
-                if ($source['label'] != '') {
+                if (is_array($source['label']) === true) {
+                    $lab = '';
+                    foreach ($source['label'] as $label) {
+                        $lab .= reporting_label_macro(
+                            $items_label,
+                            ($label ?? '')
+                        );
+                    }
+                } else if ($source['label'] != '') {
                     $lab = reporting_label_macro(
                         $items_label,
-                        $source['label']
+                        ($source['label'] ?? '')
                     );
                 } else {
                     $lab = reporting_label_macro(
                         $items_label,
-                        $params_combined['labels']
+                        ($params_combined['labels'] ?? '')
                     );
                 }
 
@@ -1555,7 +1564,7 @@ function graphic_combined_module(
 
     $long_index = '';
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null )
+    if (($config['style'] === 'pandora_black' && !is_metaconsole()) && ($params['pdf'] === false || $params['pdf'] === null )
     ) {
         $background_color = '#222';
         $params['legend_color'] = '#fff';
@@ -1574,7 +1583,9 @@ function graphic_combined_module(
             $date_array['final_date'] = $params['date'];
             $date_array['start_date'] = ($params['date'] - $params['period']);
 
-            $server_name = metaconsole_get_server_by_id($modules[0]['server']);
+            if (is_metaconsole()) {
+                $server_name = metaconsole_get_server_by_id($modules[0]['server']);
+            }
 
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
@@ -2050,7 +2061,7 @@ function graphic_combined_module(
                 $width,
                 $height,
                 $color,
-                $module_name_list,
+                [],
                 $long_index,
                 ui_get_full_url(
                     'images/image_problem_area_small.png',
@@ -2593,7 +2604,7 @@ function graphic_agentaccess(
     } else {
         $options['generals']['pdf']['width'] = 350;
         $options['generals']['pdf']['height'] = 125;
-        $imgbase64 = '<img src="data:image/jpg;base64,';
+        $imgbase64 = '<img src="data:image/png;base64,';
         $imgbase64 .= vbar_graph($data_array, $options, 2);
         $imgbase64 .= '" />';
 
@@ -2798,7 +2809,7 @@ function graph_agent_status(
  * @param integer height pie graph height
  * @param integer id_agent Agent ID
  */
-function graph_event_module($width=300, $height=200, $id_agent)
+function graph_event_module($width=300, $height=200, $id_agent=null)
 {
     global $config;
     global $graphic_type;
@@ -2958,9 +2969,9 @@ function graph_sla_slicebar(
     $sla_min,
     $sla_max,
     $date,
-    $daysWeek=null,
-    $time_from=null,
-    $time_to=null,
+    $daysWeek,
+    $time_from,
+    $time_to,
     $width,
     $height,
     $home_url,
@@ -3864,7 +3875,7 @@ function graph_custom_sql_graph(
                 $options['x']['color'] = 'transparent';
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
-                $output .= '<img src="data:image/jpg;base64,';
+                $output .= '<img src="data:image/png;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';
             } else {
@@ -4232,6 +4243,14 @@ function fullscale_data(
     $flag_unknown  = 0;
     $array_percentil = [];
 
+    // Missing initializations.
+    $params = ['baseline' => false];
+    $sum_data_total = 0;
+    $count_data_total = 0;
+    $sum_data_min = 0;
+    $sum_data_max = 0;
+    $sum_data_avg = 0;
+
     if ($data_slice) {
         if (isset($data_uncompress) === true
             && is_array($data_uncompress) === true
@@ -4476,6 +4495,8 @@ function fullscale_data(
             }
         }
     } else {
+        $sum_data = 0;
+        $count_data = 0;
         foreach ($data_uncompress as $k) {
             foreach ($k['data'] as $v) {
                 if (isset($v['type']) && $v['type'] == 1) {

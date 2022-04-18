@@ -22,7 +22,7 @@ use warnings;
 use DBI;
 use Carp qw/croak/;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::Tools;
 
 #use Data::Dumper;
@@ -42,6 +42,7 @@ our @EXPORT = qw(
 		db_disconnect
 		db_do
 		db_get_lock
+		db_get_pandora_lock
 		db_insert
 		db_insert_get_values
 		db_insert_from_array_hash
@@ -49,6 +50,7 @@ our @EXPORT = qw(
 		db_process_insert
 		db_process_update
 		db_release_lock
+		db_release_pandora_lock
 		db_string
 		db_text
 		db_update
@@ -555,6 +557,7 @@ sub get_agentmodule_status_str($$$) {
 			FROM tagente_estado
 			WHERE id_agente_modulo = ?', $agent_module_id);
 	
+	return 'N/A' unless defined($status);
 	return 'Normal' if ($status == 0);
 	return 'Critical' if ($status == 1);
 	return 'Warning' if ($status == 2);
@@ -917,7 +920,7 @@ sub get_db_value_limit ($$$;@) {
 
 ##########################################################################
 ## Get a single row returned by an SQL query as a hash reference. Returns
-## -1 on error.
+## hash or undef on error.
 ##########################################################################
 sub get_db_single_row ($$;@) {
 	my ($dbh, $query, @values) = @_;
@@ -1572,6 +1575,52 @@ sub db_release_lock($$) {
 	my $sth = $dbh->prepare('SELECT RELEASE_LOCK(?)');
 	$sth->execute($lock_name);
 	my ($lock) = $sth->fetchrow;
+}
+
+########################################################################
+## Try to obtain a persistent lock using Pandora FMS's database.
+########################################################################
+sub db_get_pandora_lock($$;$) {
+	my ($dbh, $lock_name, $lock_timeout) = @_;
+	my $rv;
+
+	# Lock.
+	my $lock = db_get_lock($dbh, $lock_name, $lock_timeout);
+	if ($lock != 0) {
+		my $lock_value = get_db_value($dbh, "SELECT `value` FROM tconfig WHERE token = 'pandora_lock_$lock_name'");
+		if (!defined($lock_value)) {
+			my $sth = $dbh->prepare('INSERT INTO tconfig (`token`, `value`) VALUES (?, ?)');
+			$rv = $sth->execute('pandora_lock_' . $lock_name, '1');
+		} elsif ($lock_value == 0) {
+			my $sth = $dbh->prepare('UPDATE tconfig SET `value`=? WHERE `token`=?');
+			$rv = $sth->execute('1', 'pandora_lock_' . $lock_name);
+		}
+		db_release_lock($dbh, $lock_name);
+	}
+
+	# Lock acquired.
+	if ($rv) {
+		return 1;
+	}
+
+	# Something went wrong.
+	return 0;
+}
+
+########################################################################
+## Release a persistent lock.
+########################################################################
+sub db_release_pandora_lock($$;$) {
+	my ($dbh, $lock_name, $lock_timeout) = @_;
+	my $rv;
+
+	# Lock.
+	my $lock = db_get_lock($dbh, $lock_name, $lock_timeout);
+	if ($lock != 0) {
+		my $sth = $dbh->prepare('UPDATE tconfig SET `value`=? WHERE `token`=?');
+		$rv = $sth->execute('0', 'pandora_lock_' . $lock_name);
+		db_release_lock($dbh, $lock_name);
+	}
 }
 
 ########################################################################

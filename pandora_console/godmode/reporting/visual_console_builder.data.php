@@ -41,7 +41,7 @@ if (empty($idVisualConsole)) {
 
 if (!$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -170,7 +170,7 @@ $table->data[2][0] = __('Background');
 $table->data[2][1] = html_print_select(
     $backgrounds_list,
     'background',
-    $background,
+    io_safe_output($background),
     '',
     'None',
     'None.png',

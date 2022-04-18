@@ -55,7 +55,7 @@ if ((!check_acl($config['id_user'], users_get_groups($id), 'UM'))
     && ($id != $config['id_user'])
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to view a user without privileges'
     );
     include 'general/noaccess.php';

@@ -31,7 +31,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive profile deletion'
     );
     include 'general/noaccess.php';
@@ -96,7 +96,7 @@ if ($delete_profiles) {
     } else {
         foreach ($users as $user) {
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Deleted profile for user '.io_safe_input($user)
             );
 
@@ -111,9 +111,21 @@ if ($delete_profiles) {
     ];
 
     if ($result) {
-        db_pandora_audit('Massive management', 'Delete profile ', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Delete profile ',
+            false,
+            false,
+            json_encode($info)
+        );
     } else {
-        db_pandora_audit('Massive management', 'Fail try to delete profile', false, false, json_encode($info));
+        db_pandora_audit(
+            AUDIT_LOG_MASSIVE_MANAGEMENT,
+            'Fail try to delete profile',
+            false,
+            false,
+            json_encode($info)
+        );
     }
 
     ui_print_result_message(

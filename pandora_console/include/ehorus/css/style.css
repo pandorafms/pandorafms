@@ -1,3 +1,24 @@
+.terminal-main {
+  font-family: monospace;
+  font-size: 10pt;
+}
+
+#ehorus-client-container {
+  font-family: 'lato';
+}
+
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-style: normal;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Glyphicons Halflings';
+}
+
 .btn:focus,
 .btn:active:focus,
 .btn.active:focus,

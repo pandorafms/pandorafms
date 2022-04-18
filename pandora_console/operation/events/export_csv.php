@@ -84,35 +84,66 @@ $column_names = [
     'module_status',
 ];
 
-$fields = [
-    'te.id_evento',
-    'te.evento',
-    'te.timestamp',
-    'te.estado',
-    'te.event_type',
-    'te.utimestamp',
-    'te.id_agente',
-    'ta.alias as agent_name',
-    'te.id_usuario',
-    'te.id_grupo',
-    'te.id_agentmodule',
-    'am.nombre as module_name',
-    'te.id_alert_am',
-    'te.criticity',
-    'te.user_comment',
-    'te.tags',
-    'te.source',
-    'te.id_extra',
-    'te.critical_instructions',
-    'te.warning_instructions',
-    'te.unknown_instructions',
-    'te.owner_user',
-    'te.ack_utimestamp',
-    'te.custom_data',
-    'te.data',
-    'te.module_status',
-    'tg.nombre as group_name',
-];
+if (is_metaconsole() === true) {
+    $fields = [
+        'te.id_evento',
+        'te.evento',
+        'te.timestamp',
+        'te.estado',
+        'te.event_type',
+        'te.utimestamp',
+        'te.id_agente',
+        'ta.alias as agent_name',
+        'te.id_usuario',
+        'te.id_grupo',
+        'te.id_agentmodule',
+        'te.id_alert_am',
+        'te.criticity',
+        'te.user_comment',
+        'te.tags',
+        'te.source',
+        'te.id_extra',
+        'te.critical_instructions',
+        'te.warning_instructions',
+        'te.unknown_instructions',
+        'te.owner_user',
+        'te.ack_utimestamp',
+        'te.custom_data',
+        'te.data',
+        'te.module_status',
+        'tg.nombre as group_name',
+    ];
+} else {
+    $fields = [
+        'te.id_evento',
+        'te.evento',
+        'te.timestamp',
+        'te.estado',
+        'te.event_type',
+        'te.utimestamp',
+        'te.id_agente',
+        'ta.alias as agent_name',
+        'te.id_usuario',
+        'te.id_grupo',
+        'te.id_agentmodule',
+        'am.nombre as module_name',
+        'te.id_alert_am',
+        'te.criticity',
+        'te.user_comment',
+        'te.tags',
+        'te.source',
+        'te.id_extra',
+        'te.critical_instructions',
+        'te.warning_instructions',
+        'te.unknown_instructions',
+        'te.owner_user',
+        'te.ack_utimestamp',
+        'te.custom_data',
+        'te.data',
+        'te.module_status',
+        'tg.nombre as group_name',
+    ];
+}
 
 $now = date('Y-m-d');
 
@@ -181,6 +212,33 @@ try {
                         echo events_translate_event_criticity(
                             $row[$key]
                         );
+                    break;
+
+                    case 'custom_data':
+                        $custom_data_array = json_decode(
+                            $row[$key],
+                            true
+                        );
+
+                        $custom_data = '';
+                        $separator = ($config['csv_divider'] === ';') ? ',' : ';';
+
+                        if ($custom_data_array !== null) {
+                            array_walk(
+                                $custom_data_array,
+                                function (&$value, $field) use ($separator) {
+                                    if (is_array($value) === true) {
+                                        $value = '['.implode($separator, $value).']';
+                                    }
+
+                                    $value = $field.'='.$value;
+                                }
+                            );
+
+                            $custom_data = implode($separator, $custom_data_array);
+                        }
+
+                        echo io_safe_output($custom_data);
                     break;
 
                     default:

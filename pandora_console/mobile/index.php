@@ -50,7 +50,7 @@ $is_mobile = true;
 
 if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
     $query = '';
-    if (sizeof($_REQUEST)) {
+    if (count($_REQUEST)) {
         // Some (old) browsers don't like the ?&key=var
         $query .= 'mobile/index.php?1=1';
     }
@@ -170,6 +170,8 @@ switch ($action) {
             case 'visualmap':
                 $visualmap = new Visualmap();
                 $visualmap->ajax($parameter2);
+            break;
+
             case 'tactical':
                 $tactical = new Tactical();
                 $tactical->ajax($parameter2);

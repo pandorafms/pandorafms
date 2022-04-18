@@ -148,7 +148,7 @@ if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1
     ini_set('error_log', $config['homedir'].'/log/console.log');
 } else {
     ini_set('log_errors', 0);
-    ini_set('error_log', null);
+    ini_set('error_log', '');
 }
 
 if (isset($config['error'])) {
@@ -220,8 +220,6 @@ echo '<head>'."\n";
 // This starts the page head. In the callback function,
 // $page['head'] array content will be processed into the head.
 ob_start('ui_process_page_head');
-// Avoid clickjacking.
-header('X-Frame-Options: SAMEORIGIN');
 // Enterprise main.
 enterprise_include_once('index.php');
 
@@ -379,7 +377,7 @@ if (! isset($config['id_user'])) {
                 $login_failed = true;
                 include_once 'general/login_page.php';
                 db_pandora_audit(
-                    'Logon Failed',
+                    AUDIT_LOG_USER_REGISTRATION,
                     'Invalid double auth login: '.$_SERVER['REMOTE_ADDR'],
                     $_SERVER['REMOTE_ADDR']
                 );
@@ -426,6 +424,8 @@ if (! isset($config['id_user'])) {
                 // Process logout.
                 include 'general/logoff.php';
             }
+
+            $validatedCSRF = true;
         } else {
             // process_user_login is a virtual function which should be defined in each auth file.
             // It accepts username and password. The rest should be internal to the auth file.
@@ -446,7 +446,11 @@ if (! isset($config['id_user'])) {
 
                 if ($blocked) {
                     include_once 'general/login_page.php';
-                    db_pandora_audit('Password expired', 'Password expired: '.$nick, $nick);
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        'Password expired: '.$nick,
+                        $nick
+                    );
                     while (ob_get_length() > 0) {
                         ob_end_flush();
                     }
@@ -489,7 +493,7 @@ if (! isset($config['id_user'])) {
             // Login ok and password has expired.
             include_once 'general/login_page.php';
             db_pandora_audit(
-                'Password expired',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Password expired: '.$nick,
                 $nick
             );
@@ -628,7 +632,7 @@ if (! isset($config['id_user'])) {
             $user_language = get_user_language($config['id_user']);
 
             $l10n = null;
-            if (file_exists('./include/languages/'.$user_language.'.mo')) {
+            if (file_exists('./include/languages/'.$user_language.'.mo') === true) {
                 $cacheFileReader = new CachedFileReader(
                     './include/languages/'.$user_language.'.mo'
                 );
@@ -639,60 +643,50 @@ if (! isset($config['id_user'])) {
             // Login wrong.
             $blocked = false;
 
-            if ((!is_user_admin($nick) || $config['enable_pass_policy_admin'])
-                && file_exists(ENTERPRISE_DIR.'/load_enterprise.php')
+            if ((is_user_admin($nick) === false || (bool) $config['enable_pass_policy_admin'] === true)
+                && file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true
             ) {
                 $blocked = login_check_blocked($nick);
             }
 
-            if (!$blocked) {
-                if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+            if ((bool) $blocked === false) {
+                if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true) {
                     // Checks failed attempts.
                     login_check_failed($nick);
                 }
 
                 $login_failed = true;
-                include_once 'general/login_page.php';
-                db_pandora_audit(
-                    'Logon Failed',
-                    'Invalid login: '.$nick,
-                    $nick
-                );
-                while (ob_get_length() > 0) {
-                    ob_end_flush();
-                }
-
-                exit('</html>');
-            } else {
-                include_once 'general/login_page.php';
-                db_pandora_audit(
-                    'Logon Failed',
-                    'Invalid login: '.$nick,
-                    $nick
-                );
-                while (ob_get_length() > 0) {
-                    ob_end_flush();
-                }
-
-                exit('</html>');
             }
+
+            include_once 'general/login_page.php';
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Invalid login: '.$nick,
+                $nick
+            );
+
+            while (ob_get_length() > 0) {
+                ob_end_flush();
+            }
+
+            exit('</html>');
         }
 
         // Form the url.
         $query_params_redirect = $_GET;
         // Visual console do not want sec2.
-        if ($home_page == 'Visual console') {
+        if ($home_page === 'Visual console') {
             unset($query_params_redirect['sec2']);
         }
 
         // Dashboard do not want sec2.
-        if ($home_page == 'Dashboard') {
+        if ($home_page === 'Dashboard') {
             unset($query_params_redirect['sec2']);
         }
 
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
-            if ($key == 'login') {
+            if ($key === 'login') {
                 continue;
             }
 
@@ -704,7 +698,7 @@ if (! isset($config['id_user'])) {
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
-    } else if (isset($_GET['loginhash'])) {
+    } else if (isset($_GET['loginhash']) === true) {
         // Hash login process.
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
@@ -719,7 +713,11 @@ if (! isset($config['id_user'])) {
             $config['id_user'] = $loginhash_user;
         } else {
             include_once 'general/login_page.php';
-            db_pandora_audit('Logon Failed (loginhash', '', 'system');
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Loginhash failed',
+                'system'
+            );
             while (ob_get_length() > 0) {
                 ob_end_flush();
             }
@@ -922,7 +920,11 @@ if (! isset($config['id_user'])) {
             $config['id_user'] = $loginhash_user;
         } else {
             include_once 'general/login_page.php';
-            db_pandora_audit('Logon Failed (loginhash', '', 'system');
+            db_pandora_audit(
+                AUDIT_LOG_USER_REGISTRATION,
+                'Loginhash failed',
+                'system'
+            );
             while (ob_get_length() > 0) {
                 ob_end_flush();
             }
@@ -1012,7 +1014,7 @@ if (isset($_GET['bye'])) {
 
 clear_pandora_error_for_header();
 
-if ((bool) $config['node_deactivated'] === true) {
+if ((bool) ($config['node_deactivated'] ?? false) === true) {
     // Prevent access node if not merged.
     include 'general/node_deactivated.php';
 
@@ -1023,7 +1025,7 @@ if ((bool) $config['node_deactivated'] === true) {
     exit('</html>');
 }
 
-if ((bool) $config['maintenance_mode'] === true
+if ((bool) ($config['maintenance_mode'] ?? false) === true
     && (bool) users_is_admin() === false
 ) {
     // Show maintenance web-page. For non-admin users only.
@@ -1084,7 +1086,7 @@ if (get_parameter('login', 0) !== 0) {
 }
 
 
-if ((bool) $config['maintenance_mode'] === true
+if ((bool) ($config['maintenance_mode'] ?? false) === true
     && (bool) users_is_admin() === false
 ) {
     // Show maintenance web-page. For non-admin users only.
@@ -1121,6 +1123,63 @@ if ($config['pure'] == 0) {
     // Require menu only to build structure to use it in ACLs.
     include 'operation/menu.php';
     include 'godmode/menu.php';
+}
+
+if (has_metaconsole() === true
+    && (bool) $config['centralized_management'] === true
+) {
+    $MR = (float) $config['MR'];
+    // Node attached to a metaconsole.
+    $server_id = $config['metaconsole_node_id'];
+
+    // Connect to meta.
+    metaconsole_load_external_db(
+        [
+            'dbhost' => $config['replication_dbhost'],
+            'dbuser' => $config['replication_dbuser'],
+            'dbpass' => io_output_password($config['replication_dbpass']),
+            'dbname' => $config['replication_dbname'],
+        ]
+    );
+    $metaMR = (float) db_get_value(
+        'value',
+        'tconfig',
+        'token',
+        'MR',
+        false,
+        false
+    );
+
+    // Return connection to node.
+    metaconsole_restore_db();
+
+    if ($MR !== $metaMR) {
+        $err = '<div id="err_msg_centralised">'.html_print_image(
+            '/images/warning_modern.png',
+            true
+        );
+
+        $err .= '<div>'.__(
+            'Metaconsole MR (%d) is different than this one (%d)',
+            $metaMR,
+            $MR
+        );
+
+        $err .= '<br>';
+        $err .= __('Please keep all environment updated to same version.');
+        $err .= '</div>';
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                infoMessage({
+                    title: '<?php echo __('Warning'); ?>',
+                    text: '<?php echo $err; ?>',
+                    simple: true,
+                })
+            })
+        </script>
+        <?php
+    }
 }
 
 /*
@@ -1364,8 +1423,6 @@ echo "\n<!-- Page generated in ".$run_time." seconds -->\n";
 
 // Values from PHP to be recovered from JAVASCRIPT.
 require 'include/php_to_js_values.php';
-
-
 ?>
 
 <script type="text/javascript" language="javascript">

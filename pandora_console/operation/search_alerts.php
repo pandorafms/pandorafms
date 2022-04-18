@@ -23,6 +23,7 @@ $searchAlerts = check_acl($config['id_user'], 0, 'AR');
 if ($alerts === false || $totalAlerts == 0 || !$searchAlerts) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
@@ -41,6 +42,13 @@ if ($alerts === false || $totalAlerts == 0 || !$searchAlerts) {
     $table->align[2] = 'left';
     $table->align[3] = 'left';
     $table->align[4] = 'left';
+
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: center';
+    $table->headstyle[1] = 'text-align: left';
+    $table->headstyle[2] = 'text-align: left';
+    $table->headstyle[3] = 'text-align: left';
+    $table->headstyle[4] = 'text-align: left';
 
     $table->valign = [];
     $table->valign[0] = 'top';

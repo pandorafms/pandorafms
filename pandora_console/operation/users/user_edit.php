@@ -33,7 +33,6 @@ $headerTitle = __('User detail editor');
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
 if (is_metaconsole() === false) {
-    date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
     // Read in options for map builder.
@@ -186,6 +185,8 @@ if (isset($_GET['modified']) && !$view_mode) {
             } else {
                 if (!empty($password_new) && !empty($password_confirm)) {
                     $success_msg = __('Password successfully updated');
+                } else if ($upd_info['id_skin'] !== $user_info['id_skin']) {
+                    $success_msg = __('Skin successfully updated');
                 } else {
                     $return = false;
                     $error_msg = __('No changes have been made');
@@ -280,12 +281,13 @@ if (is_user_admin($id)) {
     $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
 }
 
-if ($view_mode === false) {
-    $table->rowspan[0][2] = 3;
-} else {
-    $table->rowspan[0][2] = 2;
+if (isset($table) === true) {
+    if ($view_mode === false) {
+        $table->rowspan = [0 => [2 => 3]];
+    } else {
+        $table->rowspan = [0 => [2 => 2]];
+    }
 }
-
 
 $email = '<div class="label_select_simple">'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', ['class' => 'input', 'placeholder' => __('E-mail')], true).'</div>';
 
@@ -347,7 +349,7 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
 $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
-
+$skin = '';
 if (!$meta) {
     $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
     $values = [
@@ -393,10 +395,7 @@ if (!$meta) {
     $home_screen .= '</div>';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
-
-
     // User only can change skins if has more than one group.
-    $skin = '';
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
             $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
@@ -405,7 +404,16 @@ if (!$meta) {
     }
 } else {
     $home_screen = '';
-    $skin = '';
+    // User only can change skins if has more than one group.
+    if (function_exists('skins_print_select')) {
+        if (count($usr_groups) > 1) {
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').ui_print_help_tip(
+                __('This change will only apply to nodes'),
+                true
+            ).'</p>';
+            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+        }
+    }
 }
 
 $timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
@@ -452,7 +460,7 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 
 
 $autorefresh_list_out = [];
-if (is_metaconsole() === false || is_centrallised() === true) {
+if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
@@ -549,13 +557,13 @@ $table_ichanges = '<div class="autorefresh_select">
                         </div>
                         <div class="autorefresh_select_arrows" style="display:grid">
                             <a href="javascript:">'.html_print_image(
-    'images/darrowright_green.png',
-    true,
-    [
-        'id'    => 'right_autorefreshlist',
-        'alt'   => __('Push selected pages into autorefresh list'),
-        'title' => __('Push selected pages into autorefresh list'),
-    ]
+                                'images/darrowright_green.png',
+                                true,
+                                [
+                                    'id'    => 'right_autorefreshlist',
+                                    'alt'   => __('Push selected pages into autorefresh list'),
+                                    'title' => __('Push selected pages into autorefresh list'),
+                                ]
 ).'</a>
                             <a href="javascript:">'.html_print_image(
     'images/darrowleft_green.png',

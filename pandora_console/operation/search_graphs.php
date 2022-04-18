@@ -20,6 +20,7 @@ $searchGraphs = check_acl($config['id_user'], 0, 'RR');
 if ($graphs === false || !$searchGraphs) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
@@ -28,6 +29,10 @@ if ($graphs === false || !$searchGraphs) {
     $table->head = [];
     $table->head[0] = __('Graph name');
     $table->head[1] = __('Description');
+
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
 
     $table->data = [];
     foreach ($graphs as $graph) {

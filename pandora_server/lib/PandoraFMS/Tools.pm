@@ -34,7 +34,7 @@ use threads::shared;
 use JSON;
 use Encode qw/decode_utf8 encode_utf8/;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::Sendmail;
 
 # New in 3.2. Used to sendmail internally, without external scripts
@@ -67,6 +67,7 @@ our @EXPORT = qw(
 	INVENTORYSERVER
 	WEBSERVER
 	EVENTSERVER
+	CORRELATIONSERVER
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
@@ -77,6 +78,7 @@ our @EXPORT = qw(
 	WUXSERVER
 	PROVISIONINGSERVER
 	MIGRATIONSERVER
+	NCMSERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
 	DISCOVERY_HOSTDEVICES
@@ -124,6 +126,7 @@ our @EXPORT = qw(
 	is_offline
 	is_empty
 	is_in_array
+	array_diff
 	add_hashes
 	to_number
 	clean_blank
@@ -145,6 +148,7 @@ our @EXPORT = qw(
 	ping
 	resolve_hostname
 	ticks_totime
+	seconds_totime
 	safe_input
 	safe_output
 	month_have_days
@@ -191,6 +195,8 @@ use constant SYSLOGSERVER => 18;
 use constant PROVISIONINGSERVER => 19;
 use constant MIGRATIONSERVER => 20;
 use constant ALERTSERVER => 21;
+use constant CORRELATIONSERVER => 22;
+use constant NCMSERVER => 23;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -231,7 +237,7 @@ our $OS = $^O;
 our $OS_VERSION = "unknown";
 our $DEVNULL = '/dev/null';
 if ($OS eq 'linux') {
-	$OS_VERSION = `lsb_release -sd 2>/dev/null`;
+	$OS_VERSION = `cat /etc/*ease|grep PRETTY| cut -f 2 -d= | tr -d '"' 2>/dev/null`;
 } elsif ($OS eq 'aix') {
 	$OS_VERSION = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
 } elsif ($OS =~ /win/i) {
@@ -372,6 +378,159 @@ my %ENT2CHR = (
 	'ouml' => chr(246), 
 	'uacute' => chr(250), 
 	'uuml' => chr(252), 
+# multibyte characters
+	'OElig' => chr(338),
+	'oelig' => chr(339),
+	'Scaron' => chr(352),
+	'scaron' => chr(353),
+	'Yuml' => chr(376),
+	'fnof' => chr(402),
+	'circ' => chr(710),
+	'tilde' => chr(732),
+	'Alpha' => chr(913),
+	'Beta' => chr(914),
+	'Gamma' => chr(915),
+	'Delta' => chr(916),
+	'Epsilon' => chr(917),
+	'Zeta' => chr(918),
+	'Eta' => chr(919),
+	'Theta' => chr(920),
+	'Iota' => chr(921),
+	'Kappa' => chr(922),
+	'Lambda' => chr(923),
+	'Mu' => chr(924),
+	'Nu' => chr(925),
+	'Xi' => chr(926),
+	'Omicron' => chr(927),
+	'Pi' => chr(928),
+	'Rho' => chr(929),
+	'Sigma' => chr(931),
+	'Tau' => chr(932),
+	'Upsilon' => chr(933),
+	'Phi' => chr(934),
+	'Chi' => chr(935),
+	'Psi' => chr(936),
+	'Omega' => chr(937),
+	'alpha' => chr(945),
+	'beta' => chr(946),
+	'gamma' => chr(947),
+	'delta' => chr(948),
+	'epsilon' => chr(949),
+	'zeta' => chr(950),
+	'eta' => chr(951),
+	'theta' => chr(952),
+	'iota' => chr(953),
+	'kappa' => chr(954),
+	'lambda' => chr(955),
+	'mu' => chr(956),
+	'nu' => chr(957),
+	'xi' => chr(958),
+	'omicron' => chr(959),
+	'pi' => chr(960),
+	'rho' => chr(961),
+	'sigmaf' => chr(962),
+	'sigma' => chr(963),
+	'tau' => chr(964),
+	'upsilon' => chr(965),
+	'phi' => chr(966),
+	'chi' => chr(967),
+	'psi' => chr(968),
+	'omega' => chr(969),
+	'thetasym' => chr(977),
+	'upsih' => chr(978),
+	'piv' => chr(982),
+	'ensp' => chr(8194),
+	'emsp' => chr(8195),
+	'thinsp' => chr(8201),
+	'zwnj' => chr(8204),
+	'zwj' => chr(8205),
+	'lrm' => chr(8206),
+	'rlm' => chr(8207),
+	'ndash' => chr(8211),
+	'mdash' => chr(8212),
+	'lsquo' => chr(8216),
+	'rsquo' => chr(8217),
+	'sbquo' => chr(8218),
+	'ldquo' => chr(8220),
+	'rdquo' => chr(8221),
+	'bdquo' => chr(8222),
+	'dagger' => chr(8224),
+	'Dagger' => chr(8225),
+	'bull' => chr(8226),
+	'hellip' => chr(8230),
+	'permil' => chr(8240),
+	'prime' => chr(8242),
+	'Prime' => chr(8243),
+	'lsaquo' => chr(8249),
+	'rsaquo' => chr(8250),
+	'oline' => chr(8254),
+	'frasl' => chr(8260),
+	'euro' => chr(8364),
+	'image' => chr(8465),
+	'weierp' => chr(8472),
+	'real' => chr(8476),
+	'trade' => chr(8482),
+	'alefsym' => chr(8501),
+	'larr' => chr(8592),
+	'uarr' => chr(8593),
+	'rarr' => chr(8594),
+	'darr' => chr(8595),
+	'harr' => chr(8596),
+	'crarr' => chr(8629),
+	'lArr' => chr(8656),
+	'uArr' => chr(8657),
+	'rArr' => chr(8658),
+	'dArr' => chr(8659),
+	'hArr' => chr(8660),
+	'forall' => chr(8704),
+	'part' => chr(8706),
+	'exist' => chr(8707),
+	'empty' => chr(8709),
+	'nabla' => chr(8711),
+	'isin' => chr(8712),
+	'notin' => chr(8713),
+	'ni' => chr(8715),
+	'prod' => chr(8719),
+	'sum' => chr(8721),
+	'minus' => chr(8722),
+	'lowast' => chr(8727),
+	'radic' => chr(8730),
+	'prop' => chr(8733),
+	'infin' => chr(8734),
+	'ang' => chr(8736),
+	'and' => chr(8743),
+	'or' => chr(8744),
+	'cap' => chr(8745),
+	'cup' => chr(8746),
+	'int' => chr(8747),
+	'there4' => chr(8756),
+	'sim' => chr(8764),
+	'cong' => chr(8773),
+	'asymp' => chr(8776),
+	'ne' => chr(8800),
+	'equiv' => chr(8801),
+	'le' => chr(8804),
+	'ge' => chr(8805),
+	'sub' => chr(8834),
+	'sup' => chr(8835),
+	'nsub' => chr(8836),
+	'sube' => chr(8838),
+	'supe' => chr(8839),
+	'oplus' => chr(8853),
+	'otimes' => chr(8855),
+	'perp' => chr(8869),
+	'sdot' => chr(8901),
+	'lceil' => chr(8968),
+	'rceil' => chr(8969),
+	'lfloor' => chr(8970),
+	'rfloor' => chr(8971),
+	'lang' => chr(9001),
+	'rang' => chr(9002),
+	'loz' => chr(9674),
+	'spades' => chr(9824),
+	'clubs' => chr(9827),
+	'hearts' => chr(9829),
+	'diams' => chr(9830),
 );
 
 # Construct the character to entity mapping.
@@ -471,7 +630,7 @@ sub safe_input($) {
 
 	return "" unless defined($value);
 
-	$value =~ s/([\x00-\xFF])/$CHR2ENT{$1}||$1/ge;
+	$value =~ s/(.)/$CHR2ENT{$1}||$1/ge;
 	
 	return $value;
 }
@@ -711,6 +870,19 @@ sub is_in_array {
 }
 
 ################################################################################
+# Check if a value is in an array
+################################################################################
+sub array_diff($$) {
+	my ($a, $b) = @_;
+
+	my %diff;
+	@diff{ @{$a} } = @{$a};
+	delete @diff{ @{$b} };
+
+	return keys %diff;
+}
+
+################################################################################
 # Mix hashses
 ################################################################################
 sub add_hashes {
@@ -778,11 +950,11 @@ sub md5check {
 sub logger ($$;$) {
 	my ($pa_config, $message, $level) = @_;
 
-	# Clean any string and ready to be printed in screen/file
-	$message = safe_output ($message);
-
 	$level = 1 unless defined ($level);
 	return if (!defined ($pa_config->{'verbosity'}) || $level > $pa_config->{'verbosity'});
+
+	# Clean any string and ready to be printed in screen/file
+	$message = safe_output ($message);
 
 	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
@@ -865,6 +1037,7 @@ sub limpia_cadena {
 ################################################################################
 sub clean_blank {
 	my $input = $_[0];
+	return $input unless defined($input);
 	$input =~ s/^\s+//g;
 	$input =~ s/\s+$//g;
 	return $input;
@@ -972,9 +1145,9 @@ sub enterprise_hook ($$) {
 	my $output = eval { &$func (@args); };
 
 	# Discomment to debug.
-	if ($@) {
-		print STDERR $@;
-	}
+	#if ($@) {
+	#	print STDERR $@;
+	#}
 
 	# Check for errors
 	#return undef if ($@);
@@ -1248,6 +1421,31 @@ sub ticks_totime ($){
 	my $minutes = int($ticks / $TICKS_PER_MINUTE) % 60;
 	my $hours   = int($ticks / $TICKS_PER_HOUR)   % 24;
 	my $days    = int($ticks / $TICKS_PER_DAY);
+
+	return "$days days, $hours hours, $minutes minutes, $seconds seconds";
+}
+
+
+
+################################################################################
+## SUB human_time_readable
+# Transform a seconds count in a human readable date
+################################################################################
+sub seconds_totime ($){
+	my $SECONDS_PER_MINUTE = 60;
+	my $SECONDS_PER_HOUR   = $SECONDS_PER_MINUTE * 60;
+	my $SECONDS_PER_DAY    = $SECONDS_PER_HOUR * 24;
+
+	my $orig_seconds   = shift;
+
+	if (!defined($orig_seconds)){
+			return "";
+	}
+
+	my $seconds = int($orig_seconds) % 60;
+	my $minutes = int($orig_seconds / $SECONDS_PER_MINUTE) % 60;
+	my $hours   = int($orig_seconds / $SECONDS_PER_HOUR)   % 24;
+	my $days    = int($orig_seconds / $SECONDS_PER_DAY);
 
 	return "$days days, $hours hours, $minutes minutes, $seconds seconds";
 }
@@ -2457,7 +2655,7 @@ sub p_encode_json {
 	};
 	if ($@){
 		if (defined($data)) {
-			logger($pa_config, 'Failed to encode data: '.$@, 5);
+			logger($pa_config, 'Failed to encode data: '.$@, 1);
 		}
 	}
 
@@ -2522,6 +2720,7 @@ sub get_server_name {
 	return "PROVISIONINGSERVER" if ($server_type eq PROVISIONINGSERVER);
 	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
 	return "ALERTSERVER" if ($server_type eq ALERTSERVER);
+	return "CORRELATIONSERVER" if ($server_type eq CORRELATIONSERVER);
 
 	return "UNKNOWN";
 }

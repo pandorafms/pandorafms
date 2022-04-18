@@ -77,7 +77,7 @@ if (!empty($files)) {
         $file_name = explode('/', $file['location']);
         $file_decoded = $file_name[(count($file_name) - 1)];
         $file_path = base64_encode($file_decoded);
-        $hash = md5($file_path.$config['dbpass']);
+        $hash = md5($file_path.$config['server_unique_identifier']);
         $url = ui_get_full_url(
             'include/get_file.php?file='.urlencode($file_path).'&hash='.$hash
         );
@@ -131,7 +131,7 @@ if (!empty($files)) {
             $config_url = ui_get_full_url(
                 'index.php?sec=godmode/extensions&sec2=extensions/files_repo&file_id='.$file_id
             );
-            $data[4] .= '<a href=\"$config_url\">';
+            $data[4] .= "<a href=\"$config_url\">";
             $data[4] .= html_print_image(
                 'images/config.png',
                 true,

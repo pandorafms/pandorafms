@@ -37,6 +37,20 @@ abstract class Entity
 {
 
     /**
+     * Load from DB or new one.
+     *
+     * @var boolean
+     */
+    protected $existsInDB;
+
+    /**
+     * Fields to identify register.
+     *
+     * @var array
+     */
+    protected $primaryKeys;
+
+    /**
      * Entity fields (from table).
      *
      * @var array
@@ -88,7 +102,34 @@ abstract class Entity
             $obj->{$k}($v);
         }
 
+        $obj->existsInDB = true;
         return $obj;
+    }
+
+
+    /**
+     * Duplicates an object.
+     *
+     * @param array  $field_exceptions Fields to skip.
+     * @param string $class_str        Class name.
+     *
+     * @return object
+     */
+    public function duplicate(
+        array $field_exceptions=[],
+        string $class_str=__CLASS__
+    ) {
+        $keys = array_keys($this->toArray());
+
+        $new = new $class_str();
+        foreach ($keys as $k) {
+            if (in_array($k, $field_exceptions) === false) {
+                $new->$k($this->$k());
+            }
+        }
+
+        return $new;
+
     }
 
 
@@ -98,13 +139,15 @@ abstract class Entity
      * @param string      $table            Table.
      * @param array|null  $filters          Filters, for instance ['id' => $id].
      * @param string|null $enterprise_class Enterprise class name.
+     * @param boolean     $cache            Use cache or not.
      *
      * @throws \Exception On error.
      */
     public function __construct(
         string $table,
         ?array $filters=null,
-        ?string $enterprise_class=null
+        ?string $enterprise_class=null,
+        bool $cache=true
     ) {
         if (empty($table) === true) {
             throw new \Exception(
@@ -116,7 +159,16 @@ abstract class Entity
 
         if (is_array($filters) === true) {
             // New one.
-            $data = \db_get_row_filter($this->table, $filters);
+            $this->primaryKeys = array_keys($filters);
+
+            $data = \db_get_row_filter(
+                $this->table,
+                $filters,
+                false,
+                'AND',
+                false,
+                $cache
+            );
 
             if ($data === false) {
                 throw new \Exception(
@@ -128,6 +180,9 @@ abstract class Entity
             foreach ($data as $k => $v) {
                 $this->fields[$k] = $v;
             }
+
+            // Mark as existing object.
+            $this->existsInDB = true;
         } else {
             // Empty one.
             $data = \db_get_all_rows_sql(
@@ -140,6 +195,9 @@ abstract class Entity
             foreach ($data as $row) {
                 $this->fields[$row['Field']] = null;
             }
+
+            // Mark as virtual object.
+            $this->existsInDB = false;
         }
 
         if (\enterprise_installed() === true
@@ -269,8 +327,94 @@ abstract class Entity
      * Saves current object definition to database.
      *
      * @return boolean Success or not.
+     * @throws \Exception On error.
      */
-    public abstract function save();
+    public function save()
+    {
+        $updates = $this->fields;
+        // Clean null fields.
+        foreach ($updates as $k => $v) {
+            if ($v === null) {
+                unset($updates[$k]);
+            }
+        }
+
+        if ($this->existsInDB === true) {
+            // Update.
+            $where = [];
+
+            foreach ($this->primaryKeys as $key) {
+                $where[$key] = $this->fields[$key];
+            }
+
+            if (empty($where) === true) {
+                throw new \Exception(
+                    __METHOD__.' error: Cannot identify object'
+                );
+            }
+
+            $rs = \db_process_sql_update(
+                $this->table,
+                $updates,
+                $where
+            );
+
+            if ($rs === false) {
+                global $config;
+                throw new \Exception(
+                    __METHOD__.' error: '.$config['dbconnection']->error
+                );
+            }
+        } else {
+            // New register.
+            $rs = \db_process_sql_insert(
+                $this->table,
+                $updates
+            );
+
+            if ($rs === false) {
+                global $config;
+
+                throw new \Exception(
+                    __METHOD__.' error: '.$config['dbconnection']->error
+                );
+            }
+
+            $this->existsInDB = true;
+        }
+
+        return true;
+
+    }
+
+
+    /**
+     * Remove this entity.
+     *
+     * @return void
+     * @throws \Exception If no primary keys are defined.
+     */
+    public function delete()
+    {
+        if ($this->existsInDB === true) {
+            $where = [];
+
+            foreach ($this->primaryKeys as $key) {
+                $where[$key] = $this->fields[$key];
+            }
+
+            if (empty($where) === true) {
+                throw new \Exception(
+                    __METHOD__.' error: Cannot identify object on deletion'
+                );
+            }
+
+            \db_process_sql_delete(
+                $this->table,
+                $where
+            );
+        }
+    }
 
 
 }

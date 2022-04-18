@@ -30,8 +30,9 @@
 global $config;
 
 enterprise_include('godmode/agentes/configurar_agente.php');
-enterprise_include('include/functions_policies.php');
 enterprise_include_once('include/functions_modules.php');
+enterprise_include_once('include/functions_config_agents.php');
+enterprise_include('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');
@@ -70,7 +71,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
 
     if (!$access_granted) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access agent manager'
         );
         include 'general/noaccess.php';
@@ -196,6 +197,16 @@ if ($create_agent) {
 
     $nombre_agente = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
     $grupo = (int) get_parameter_post('grupo');
+
+    if ((bool) check_acl($config['id_user'], $grupo, 'AW') === false) {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access agent manager'
+        );
+        include $config['homedir'].'/general/noaccess.php';
+        return;
+    }
+
     $intervalo = (string) get_parameter_post('intervalo', SECONDS_5MINUTES);
     $comentarios = (string) get_parameter_post('comentarios', '');
     $modo = (int) get_parameter_post('modo');
@@ -297,23 +308,6 @@ if ($create_agent) {
 
             $agent_created_ok = true;
 
-            $tpolicy_group_old = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $old_group) {
-                    db_process_sql_insert(
-                        'tpolicy_agents',
-                        [
-                            'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $id_agente,
-                        ]
-                    );
-                }
-            }
-
             $info = '{"Name":"'.$nombre_agente.'",
 				"IP":"'.$direccion_agente.'",
 				"Group":"'.$grupo.'",
@@ -345,7 +339,7 @@ if ($create_agent) {
 
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Created agent '.$unsafe_alias,
                 false,
                 true,
@@ -485,6 +479,13 @@ if ($id_agente) {
         $collectiontab = '';
     }
 
+    // NetworkConfigManager tab.
+    $ncm_tab = enterprise_hook('networkconfigmanager_tab');
+
+    if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+        $ncm_tab = '';
+    }
+
     // Group tab.
     $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image(
         'images/group.png',
@@ -616,6 +617,7 @@ if ($id_agente) {
                 'main'                 => $maintab,
                 'remote_configuration' => $remote_configuration_tab,
                 'module'               => $moduletab,
+                'ncm'                  => $ncm_tab,
                 'alert'                => $alerttab,
                 'template'             => $templatetab,
                 'inventory'            => $inventorytab,
@@ -631,6 +633,7 @@ if ($id_agente) {
                 'separator'    => '',
                 'main'         => $maintab,
                 'module'       => $moduletab,
+                'ncm'          => $ncm_tab,
                 'alert'        => $alerttab,
                 'template'     => $templatetab,
                 'inventory'    => $inventorytab,
@@ -697,6 +700,11 @@ if ($id_agente) {
         case 'collection':
             $tab_description = '- '.__('Collection');
             $tab_name = 'Collection';
+        break;
+
+        case 'ncm':
+            $tab_description = '- '.__('Network config manager');
+            $tab_name = 'Network config manager';
         break;
 
         case 'inventory':
@@ -976,6 +984,7 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
+    $secondary_groups = (string) get_parameter('secondary_hidden', '');
 
     if ($fields === false) {
         $fields = [];
@@ -1055,8 +1064,11 @@ if ($update_agent) {
         // If IP is set for deletion, delete first.
         if ($action_delete_ip) {
             $delete_ip = get_parameter_post('address_list');
-
-            $direccion_agente = agents_delete_address($id_agente, $delete_ip);
+            if (empty($direccion_agente) === true) {
+                $direccion_agente = agents_delete_address($id_agente, $delete_ip, true);
+            } else {
+                $direccion_agente = agents_delete_address($id_agente, $delete_ip, true);
+            }
         }
 
         $values = [
@@ -1077,7 +1089,6 @@ if ($update_agent) {
             'icon_path'                 => $icon_path,
             'update_gis_data'           => $update_gis_data,
             'url_address'               => $url_description,
-            'url_address'               => $url_description,
             'quiet'                     => $quiet,
             'cps'                       => $cps,
             'safe_mode_module'          => $safe_mode_module,
@@ -1087,12 +1098,6 @@ if ($update_agent) {
             $values['update_module_count'] = 1;
             // Force an update of the agent cache.
         }
-
-        $group_old = db_get_sql('SELECT id_grupo FROM tagente WHERE id_agente ='.$id_agente);
-        $tpolicy_group_old = db_get_all_rows_sql(
-            'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$group_old
-        );
 
         $result = db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
 
@@ -1132,59 +1137,6 @@ if ($update_agent) {
                 }
             }
 
-            if ($tpolicy_group_old) {
-                foreach ($tpolicy_group_old as $key => $value) {
-                    $tpolicy_agents_old = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-						WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agente
-                    );
-
-                    if ($tpolicy_agents_old) {
-                        $result2 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 1],
-                            [
-                                'id_agent'  => $id_agente,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
-            $tpolicy_group = db_get_all_rows_sql(
-                'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
-            );
-
-            if ($tpolicy_group) {
-                foreach ($tpolicy_group as $key => $value) {
-                    $tpolicy_agents = db_get_sql(
-                        'SELECT * FROM tpolicy_agents 
-						WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agente
-                    );
-
-                    if (!$tpolicy_agents) {
-                        db_process_sql_insert(
-                            'tpolicy_agents',
-                            [
-                                'id_policy' => $value['id_policy'],
-                                'id_agent'  => $id_agente,
-                            ]
-                        );
-                    } else {
-                        $result3 = db_process_sql_update(
-                            'tpolicy_agents',
-                            ['pending_delete' => 0],
-                            [
-                                'id_agent'  => $id_agente,
-                                'id_policy' => $value['id_policy'],
-                            ]
-                        );
-                    }
-                }
-            }
-
             $info = '{
 				"id_agente":"'.$id_agente.'",
 				"alias":"'.$alias.'",
@@ -1205,10 +1157,19 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
-            enterprise_hook('update_agent', [$id_agente]);
+            // Create the secondary groups.
+            enterprise_hook(
+                'agents_update_secondary_groups',
+                [
+                    $id_agente,
+                    explode(',', $secondary_groups),
+                    [],
+                ]
+            );
+
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Updated agent '.io_safe_output($alias),
                 false,
                 false,
@@ -1224,7 +1185,10 @@ if ($id_agente) {
     // This has been done in the beginning of the page, but if an agent was created, this id might change.
     $id_grupo = agents_get_agent_group($id_agente);
     if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') && !check_acl_one_of_groups($config['id_user'], $all_groups, 'AD')) {
-        db_pandora_audit('ACL Violation', 'Trying to admin an agent without access');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to admin an agent without access'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -1284,7 +1248,7 @@ if ($update_module || $create_module) {
 
     if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to create a module without admin rights'
         );
         include 'general/noaccess.php';
@@ -1350,9 +1314,15 @@ if ($update_module || $create_module) {
         $custom_integer_2_default = $module['custom_integer_2'];
     }
 
-    if ($id_module_type == 25) {
+    if ($id_module_type === 25) {
         // Web analysis, from MODULE_WUX.
-        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1', $custom_string_1_default));
+        $custom_string_1 = base64_encode((string) get_parameter('custom_string_1'));
+        // If the custom_string_1 parameter come empty, set the content
+        // of the module (it is base64_encoded).
+        if (empty($custom_string_1) === true) {
+            $custom_string_1 = $custom_string_1_default;
+        }
+
         $custom_integer_1 = (int) get_parameter('custom_integer_1', $custom_integer_1_default);
     } else {
         $custom_string_1 = (string) get_parameter('custom_string_1', $custom_string_1_default);
@@ -1367,7 +1337,7 @@ if ($update_module || $create_module) {
     $macros = (string) get_parameter('macros');
     $macros_names = (array) get_parameter('macro_name', []);
 
-    if (!empty($macros)) {
+    if (empty($macros) === false) {
         $macros = json_decode(base64_decode($macros), true);
 
         foreach ($macros as $k => $m) {
@@ -1509,6 +1479,8 @@ if ($update_module || $create_module) {
     $unknown_instructions = (string) get_parameter('unknown_instructions');
     $critical_inverse = (int) get_parameter('critical_inverse');
     $warning_inverse = (int) get_parameter('warning_inverse');
+    $percentage_critical = (int) get_parameter('percentage_critical');
+    $percentage_warning = (int) get_parameter('percentage_warning');
 
     $id_category = (int) get_parameter('id_category');
 
@@ -1568,6 +1540,15 @@ if ($update_module || $create_module) {
             'modules_delete_synthetic_operations',
             [$id_agent_module]
         );
+    }
+
+    if ($prediction_module === MODULE_PREDICTION_PLANNING) {
+        $custom_string_2 = get_parameter('estimation_type', 'estimation_calculation');
+        if ($custom_string_2 === 'estimation_calculation') {
+            $custom_string_1 = get_parameter('estimation_days', -1);
+        } else {
+            $custom_string_1 = get_parameter('estimation_interval', '300');
+        }
     }
 
     $active_snmp_v3 = get_parameter('active_snmp_v3');
@@ -1662,6 +1643,8 @@ if ($update_module) {
         'unknown_instructions'  => $unknown_instructions,
         'critical_inverse'      => $critical_inverse,
         'warning_inverse'       => $warning_inverse,
+        'percentage_critical'   => $percentage_critical,
+        'percentage_warning'    => $percentage_warning,
         'cron_interval'         => $cron_interval,
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
@@ -1749,11 +1732,11 @@ if ($update_module) {
         $edit_module = true;
 
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1773,7 +1756,7 @@ if ($update_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
 
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Updated module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             false,
@@ -1868,6 +1851,8 @@ if ($create_module) {
         'unknown_instructions'  => $unknown_instructions,
         'critical_inverse'      => $critical_inverse,
         'warning_inverse'       => $warning_inverse,
+        'percentage_critical'   => $percentage_critical,
+        'percentage_warning'    => $percentage_warning,
         'cron_interval'         => $cron_interval,
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
@@ -1896,7 +1881,7 @@ if ($create_module) {
         }
     }
 
-    if ($prediction_module == 3 && $serialize_ops == '') {
+    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC && $serialize_ops == '') {
         $id_agent_module = false;
     } else {
         $id_agent_module = modules_create_agent_module(
@@ -1933,11 +1918,11 @@ if ($create_module) {
         $edit_module = true;
         $moduletype = $id_module;
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == 3) {
+        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1958,7 +1943,7 @@ if ($create_module) {
 
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             true,
@@ -1993,12 +1978,12 @@ if ($enable_module) {
     $success_action = $result;
     if ($result === NOERR) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
@@ -2016,6 +2001,7 @@ if ($disable_module) {
             io_safe_output($module_name),
         ]
     );
+
     // Force disable.
     $disabled = 1;
 
@@ -2028,12 +2014,12 @@ if ($disable_module) {
 
     if ($result === NOERR) {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
-            'Module management',
+            AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
@@ -2077,7 +2063,7 @@ if ($delete_module) {
 
     if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to delete a module without admin rights'
         );
         include 'general/noaccess.php';
@@ -2087,7 +2073,7 @@ if ($delete_module) {
 
     if (empty($module_data) || $id_borrar_modulo < 1) {
         db_pandora_audit(
-            'HACK Attempt',
+            AUDIT_LOG_HACK_ATTEMPT,
             'Expected variable from form is not correct'
         );
         include 'general/noaccess.php';
@@ -2109,7 +2095,7 @@ if ($delete_module) {
 
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Deleted module '".io_safe_output($module_data['nombre'])."' for agent ".io_safe_output($agent['alias'])
         );
     }
@@ -2150,12 +2136,12 @@ if (!empty($duplicate_module)) {
 
     if ($result) {
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Duplicate module '".$id_duplicate_module."' for agent ".$agent['alias'].' with the new id for clon '.$result
         );
     } else {
         db_pandora_audit(
-            'Agent management',
+            AUDIT_LOG_AGENT_MANAGEMENT,
             "Fail to try duplicate module '".$id_duplicate_module."' for agent ".$agent['alias']
         );
     }
@@ -2169,9 +2155,15 @@ if ($enable_module) {
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
-        db_pandora_audit('Module management', 'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     } else {
-        db_pandora_audit('Module management', 'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     }
 
     ui_print_result_message(
@@ -2188,9 +2180,15 @@ if ($disable_module) {
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
-        db_pandora_audit('Module management', 'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     } else {
-        db_pandora_audit('Module management', 'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+        db_pandora_audit(
+            AUDIT_LOG_MODULE_MANAGEMENT,
+            'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']
+        );
     }
 
     ui_print_result_message(
@@ -2313,6 +2311,10 @@ switch ($tab) {
         include 'agent_incidents.php';
     break;
 
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente]);
+    break;
+
     case 'remote_configuration':
         enterprise_include('godmode/agentes/agent_disk_conf_editor.php');
     break;
@@ -2368,7 +2370,7 @@ switch ($tab) {
             
             var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() &&
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() &&
              '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>' == 19){
                 
                 event.preventDefault();
@@ -2402,7 +2404,7 @@ switch ($tab) {
             
             var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter('id_agent_module')); ?>';
             
-            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() && (
+            if('<?php echo io_safe_output(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() && (
                 module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
                     
                     event.preventDefault();

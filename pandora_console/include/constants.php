@@ -108,11 +108,17 @@ define('SECONDS_1YEAR', 31536000);
 define('SECONDS_2YEARS', 63072000);
 define('SECONDS_3YEARS', 94608000);
 
+// PhantomJS Cache cleanup intervals.
+define('PHANTOM_CACHE_CLEANUP_ONCE', 0);
+define('PHANTOM_CACHE_CLEANUP_WEEKLY', SECONDS_1WEEK);
+define('PHANTOM_CACHE_CLEANUP_DAILY', SECONDS_1DAY);
+
 
 
 // Separator constats.
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10));
+define('SEPARATOR_META_MODULE', '|-|-|-|');
 // Chr(10) is \n.
 define('SEPARATOR_COLUMN_CSV', '#');
 define('SEPARATOR_ROW_CSV', "@\n");
@@ -173,6 +179,7 @@ define('COL_GRAPH13', '#E83128');
 // Styles.
 // Size of text in characters for truncate.
 define('GENERIC_SIZE_TEXT', 50);
+define('MENU_SIZE_TEXT', 20);
 
 
 
@@ -367,12 +374,15 @@ define('MODULE_WUX', 8);
 define('MODULE_WIZARD', 9);
 
 // Type of Modules of Prediction.
+define('MODULE_PREDICTION_PLANNING', 1);
 define('MODULE_PREDICTION_SERVICE', 2);
 define('MODULE_PREDICTION_SYNTHETIC', 3);
 define('MODULE_PREDICTION_NETFLOW', 4);
 define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
+define('MODULE_PREDICTION_TRENDING', 8);
+
 
 // Forced agent OS ID for cluster agents.
 define('CLUSTER_OS_ID', 100);
@@ -425,6 +435,8 @@ define('SERVER_TYPE_SYSLOG', 18);
 define('SERVER_TYPE_AUTOPROVISION', 19);
 define('SERVER_TYPE_MIGRATION', 20);
 define('SERVER_TYPE_ALERT', 21);
+define('SERVER_TYPE_CORRELATION', 22);
+define('SERVER_TYPE_NCM', 23);
 
 // REPORTS.
 define('REPORT_TOP_N_MAX', 1);
@@ -449,6 +461,8 @@ define('REPORT_ITEM_ORDER_BY_AGENT_NAME', 3);
 define('REPORT_ITEM_ORDER_BY_ASCENDING', 2);
 define('REPORT_ITEM_ORDER_BY_DESCENDING', 1);
 define('REPORT_ITEM_ORDER_BY_UNSORT', 0);
+
+define('REPORT_ITEM_DYNAMIC_HEIGHT', 230);
 
 define('REPORT_OLD_TYPE_SIMPLE_GRAPH', 1);
 define('REPORT_OLD_TYPE_CUSTOM_GRAPH', 2);
@@ -760,3 +774,90 @@ define('COMMAND_PING', 2);
 define('COMMAND_SNMP', 3);
 define('COMMAND_NMAP', 4);
 define('COMMAND_DIGWHOIS', 5);
+
+// Audit logs.
+define('AUDIT_LOG_SETUP', 'Setup');
+define('AUDIT_LOG_SYSTEM', 'System');
+define('AUDIT_LOG_HACK_ATTEMPT', 'HACK Attempt');
+define('AUDIT_LOG_ACL_VIOLATION', 'ACL Violation');
+define('AUDIT_LOG_METACONSOLE_NODE', 'Metaconsole node');
+define('AUDIT_LOG_USER_REGISTRATION', 'Console user registration');
+define('AUDIT_LOG_EXTENSION_MANAGER', 'Extension manager');
+define('AUDIT_LOG_WEB_SOCKETS', 'WebSockets engine');
+define('AUDIT_LOG_USER_MANAGEMENT', 'User management');
+define('AUDIT_LOG_AGENT_MANAGEMENT', 'Agent management');
+define('AUDIT_LOG_MODULE_MANAGEMENT', 'Module management');
+define('AUDIT_LOG_CATEGORY_MANAGEMENT', 'Category management');
+define('AUDIT_LOG_REPORT_MANAGEMENT', 'Report management');
+define('AUDIT_LOG_MASSIVE_MANAGEMENT', 'Massive operation management');
+define('AUDIT_LOG_POLICY_MANAGEMENT', 'Policy management');
+define('AUDIT_LOG_AGENT_REMOTE_MANAGEMENT', 'Agent remote configuration');
+define('AUDIT_LOG_FILE_COLLECTION', 'File collection');
+define('AUDIT_LOG_FILE_MANAGER', 'File manager');
+define('AUDIT_LOG_ALERT_MANAGEMENT', 'Alert management');
+define('AUDIT_LOG_ALERT_CORRELATION_MANAGEMENT', 'Alert correlation management');
+define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
+define('AUDIT_LOG_TAG_MANAGEMENT', 'Tag management');
+define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
+define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');
+define('AUDIT_LOG_SERVICE_MANAGEMENT', 'Service management');
+define('AUDIT_LOG_INCIDENT_MANAGEMENT', 'Incident management');
+define('AUDIT_LOG_UMC', 'Update Manager');
+
+// MIMEs.
+define(
+    'MIME_TYPES',
+    [
+        'txt'  => 'text/plain',
+        'htm'  => 'text/html',
+        'html' => 'text/html',
+        'php'  => 'text/html',
+        'css'  => 'text/css',
+        'js'   => 'application/javascript',
+        'json' => 'application/json',
+        'xml'  => 'application/xml',
+        'swf'  => 'application/x-shockwave-flash',
+        'flv'  => 'video/x-flv',
+        // Images.
+        'png'  => 'image/png',
+        'jpe'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'jpg'  => 'image/jpeg',
+        'gif'  => 'image/gif',
+        'bmp'  => 'image/bmp',
+        'ico'  => 'image/vnd.microsoft.icon',
+        'tiff' => 'image/tiff',
+        'tif'  => 'image/tiff',
+        'svg'  => 'image/svg+xml',
+        'svgz' => 'image/svg+xml',
+        // Archives.
+        'zip'  => 'application/zip',
+        'rar'  => 'application/x-rar-compressed',
+        'exe'  => 'application/x-msdownload',
+        'msi'  => 'application/x-msdownload',
+        'cab'  => 'application/vnd.ms-cab-compressed',
+        'gz'   => 'application/x-gzip',
+        'gz'   => 'application/x-bzip2',
+        // Audio/Video.
+        'mp3'  => 'audio/mpeg',
+        'qt'   => 'video/quicktime',
+        'mov'  => 'video/quicktime',
+        // Adobe.
+        'pdf'  => 'application/pdf',
+        'psd'  => 'image/vnd.adobe.photoshop',
+        'ai'   => 'application/postscript',
+        'eps'  => 'application/postscript',
+        'ps'   => 'application/postscript',
+        // MS Office.
+        'doc'  => 'application/msword',
+        'rtf'  => 'application/rtf',
+        'xls'  => 'application/vnd.ms-excel',
+        'ppt'  => 'application/vnd.ms-powerpoint',
+        // Open Source Office files.
+        'odt'  => 'application/vnd.oasis.opendocument.text',
+        'ods'  => 'application/vnd.oasis.opendocument.spreadsheet',
+    ]
+);
+
+// Pandora FMS Enterprise license.
+define('LICENSE_FILE', 'customer_key');

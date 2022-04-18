@@ -23,7 +23,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Setup Management'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -571,7 +574,11 @@ $table_remote->data['integria_test'] = $row;
 // Print.
 echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
-html_print_image('images/integria_logo.svg');
+html_print_image(
+    'images/integria_logo.svg',
+    false,
+    ['class' => 'w400px'    ]
+);
 echo '</a>';
 echo '<br />';
 echo '<div clsas="integria_title">';

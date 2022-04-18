@@ -59,7 +59,26 @@ function show_event_dialog(event, dialog_page, result) {
             background: "black"
           },
           width: 710,
-          height: 600
+          height: 600,
+          autoOpen: true,
+          open: function() {
+            if (
+              $.ui &&
+              $.ui.dialog &&
+              $.ui.dialog.prototype._allowInteraction
+            ) {
+              var ui_dialog_interaction =
+                $.ui.dialog.prototype._allowInteraction;
+              $.ui.dialog.prototype._allowInteraction = function(e) {
+                if ($(e.target).closest(".select2-dropdown").length)
+                  return true;
+                return ui_dialog_interaction.apply(this, arguments);
+              };
+            }
+          },
+          _allowInteraction: function(event) {
+            return !!$(event.target).is(".select2-input") || this._super(event);
+          }
         })
         .show();
       $.post({
@@ -457,6 +476,7 @@ function event_change_status(event_ids) {
   var new_status = $("#estado").val();
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
+  var node_id = $("#hidden-node_id").val();
 
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -468,6 +488,7 @@ function event_change_status(event_ids) {
       event_ids: event_ids,
       new_status: new_status,
       meta: meta,
+      node_id: node_id,
       history: history
     },
     type: "POST",
@@ -500,6 +521,13 @@ function event_change_status(event_ids) {
             "N/A"
           );
         }
+
+        $("#general_status")
+          .find(".general_status")
+          .text(data.status_title);
+        $("#general_status")
+          .find("img")
+          .attr("src", data.status_img);
       } else {
         $("#notification_status_error").show();
       }
@@ -514,6 +542,7 @@ function event_change_owner() {
   var new_owner = $("#id_owner").val();
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
+  var node_id = $("#hidden-node_id").val();
 
   $("#button-owner_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -525,6 +554,7 @@ function event_change_owner() {
       event_id: event_id,
       new_owner: new_owner,
       meta: meta,
+      node_id: node_id,
       history: history
     },
     type: "POST",
@@ -576,7 +606,6 @@ function event_comment(current_event) {
     return;
   }
 
-  var event_id = event.id_evento;
   var comment = $("#textarea_comment").val();
   var meta = 0;
   if ($("#hidden-meta").val() != undefined) {
@@ -596,7 +625,11 @@ function event_comment(current_event) {
   var params = [];
   params.push("page=include/ajax/events");
   params.push("add_comment=1");
-  params.push("event_id=" + event_id);
+  if (event.event_rep > 0) {
+    params.push("event_id=" + event.max_id_evento);
+  } else {
+    params.push("event_id=" + event.id_evento);
+  }
   params.push("comment=" + comment);
   params.push("meta=" + meta);
   params.push("history=" + history);

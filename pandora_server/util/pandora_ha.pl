@@ -15,7 +15,7 @@ use threads::shared;
 use File::Path qw(rmtree);
 
 # Default lib dir for Pandora FMS RPM and DEB packages.
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -82,24 +82,26 @@ sub ha_daemonize($) {
 
   # Fork!
   defined(my $pid = fork) or die "Can't fork: $!";
-  if ($pid) {
-    # Store PID of this process in file presented by config token
-    if ($PID_FILE ne "") {
-      if ( -e $PID_FILE && open (FILE, $PID_FILE)) {
-        $pid = <FILE> + 0;
-        close FILE;
-        
-        # Check if pandora_ha is running.
-        die "[ERROR] pandora_ha is already running with pid: $pid." if (kill (0, $pid));
-      }
-      umask 0022;
-      open (FILE, '>', $PID_FILE) or die "[FATAL] $!";
-      print FILE $pid;
-      close (FILE);
-    }
-    exit;
-  }
+  exit if ($pid);
+
+  # Child inherits execution.
   setsid or die "Can't start a new session: $!";
+
+  # Store PID of this process in file presented by config token
+  if ($PID_FILE ne "") {
+    if ( -e $PID_FILE && open (FILE, $PID_FILE)) {
+      $pid = <FILE> + 0;
+      close FILE;
+      
+      # Check if pandora_ha is running.
+      die "[ERROR] pandora_ha is already running with pid: $pid.\n" if (kill (0, $pid));
+    }
+
+    umask 0022;
+    open (FILE, '>', $PID_FILE) or die "[FATAL] $!";
+    print FILE $$;
+    close (FILE);
+  }
 }
 
 ########################################################################
@@ -315,9 +317,9 @@ sub ha_main($) {
   # Log to a separate file if needed.
   $conf->{'log_file'} = $conf->{'ha_log_file'} if defined ($conf->{'ha_log_file'});
 
-  ha_daemonize($conf) if ($DAEMON == 1);
-
   $Running = 1;
+
+  ha_daemonize($conf) if ($DAEMON == 1);
 
   while ($Running) {
     eval {

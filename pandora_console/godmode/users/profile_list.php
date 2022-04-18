@@ -39,7 +39,7 @@ require_once $config['homedir'].'/include/functions_groups.php';
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access User Management'
     );
     include 'general/noaccess.php';
@@ -127,7 +127,7 @@ if ($is_management_allowed === true && $delete_profile === true) {
         ui_print_error_message(__('There was a problem deleting the profile'));
     } else {
         db_pandora_audit(
-            'Profile management',
+            AUDIT_LOG_USER_MANAGEMENT,
             'Delete profile '.io_safe_output($profile['name'])
         );
         ui_print_success_message(__('Successfully deleted'));
@@ -178,28 +178,36 @@ if ($is_management_allowed === true && ($create_profile === true || $update_prof
     $vconsole_edit = (bool) get_parameter('vconsole_edit');
     $vconsole_management = (bool) get_parameter('vconsole_management');
 
+    // NCM.
+    $network_config_view = (bool) get_parameter('network_config_view');
+    $network_config_edit = (bool) get_parameter('network_config_edit');
+    $network_config_management = (bool) get_parameter('network_config_management');
+
     $values = [
-        'name'                => $name,
-        'agent_view'          => $agent_view,
-        'agent_edit'          => $agent_edit,
-        'agent_disable'       => $agent_disable,
-        'alert_edit'          => $alert_edit,
-        'alert_management'    => $alert_management,
-        'user_management'     => $user_management,
-        'db_management'       => $db_management,
-        'event_view'          => $event_view,
-        'event_edit'          => $event_edit,
-        'event_management'    => $event_management,
-        'report_view'         => $report_view,
-        'report_edit'         => $report_edit,
-        'report_management'   => $report_management,
-        'map_view'            => $map_view,
-        'map_edit'            => $map_edit,
-        'map_management'      => $map_management,
-        'vconsole_view'       => $vconsole_view,
-        'vconsole_edit'       => $vconsole_edit,
-        'vconsole_management' => $vconsole_management,
-        'pandora_management'  => $pandora_management,
+        'name'                      => $name,
+        'agent_view'                => $agent_view,
+        'agent_edit'                => $agent_edit,
+        'agent_disable'             => $agent_disable,
+        'alert_edit'                => $alert_edit,
+        'alert_management'          => $alert_management,
+        'user_management'           => $user_management,
+        'db_management'             => $db_management,
+        'event_view'                => $event_view,
+        'event_edit'                => $event_edit,
+        'event_management'          => $event_management,
+        'report_view'               => $report_view,
+        'report_edit'               => $report_edit,
+        'report_management'         => $report_management,
+        'map_view'                  => $map_view,
+        'map_edit'                  => $map_edit,
+        'map_management'            => $map_management,
+        'vconsole_view'             => $vconsole_view,
+        'vconsole_edit'             => $vconsole_edit,
+        'vconsole_management'       => $vconsole_management,
+        'network_config_view'       => $network_config_view,
+        'network_config_edit'       => $network_config_edit,
+        'network_config_management' => $network_config_management,
+        'pandora_management'        => $pandora_management,
     ];
 }
 
@@ -228,10 +236,13 @@ if ($is_management_allowed === true && $update_profile === true) {
 				"Visual console view":"'.$vconsole_view.'",
 				"Visual console edit":"'.$vconsole_edit.'",
 				"Visual console management":"'.$vconsole_management.'",
+                "NCM view":"'.$network_config_view.'",
+				"NCM edit":"'.$network_config_edit.'",
+				"NCM management":"'.$network_config_management.'",
 				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Update profile '.io_safe_output($name),
                 false,
                 false,
@@ -276,10 +287,13 @@ if ($is_management_allowed === true && $create_profile === true) {
 				"Visual console view":"'.$vconsole_view.'",
 				"Visual console edit":"'.$vconsole_edit.'",
 				"Visual console management":"'.$vconsole_management.'",
+                "NCM view":"'.$network_config_view.'",
+				"NCM edit":"'.$network_config_edit.'",
+				"NCM management":"'.$network_config_management.'",
 				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 
             db_pandora_audit(
-                'User management',
+                AUDIT_LOG_USER_MANAGEMENT,
                 'Created profile '.io_safe_output($name),
                 false,
                 false,
@@ -327,6 +341,9 @@ $table->head['MM'] = 'MM';
 $table->head['VR'] = 'VR';
 $table->head['VW'] = 'VW';
 $table->head['VM'] = 'VM';
+$table->head['NR'] = 'NR';
+$table->head['NW'] = 'NW';
+$table->head['NM'] = 'NM';
 $table->head['PM'] = 'PM';
 if ($is_management_allowed === true) {
     $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
@@ -354,6 +371,9 @@ $table->size['MM'] = '10px';
 $table->size['VR'] = '10px';
 $table->size['VW'] = '10px';
 $table->size['VM'] = '10px';
+$table->size['NR'] = '10px';
+$table->size['NW'] = '10px';
+$table->size['NM'] = '10px';
 $table->size['PM'] = '10px';
 if ($is_management_allowed === true) {
     $table->size['operations'] = '5%';
@@ -401,6 +421,9 @@ foreach ($profiles as $profile) {
     $data['VR'] = (empty($profile['vconsole_view']) === false) ? $img : '';
     $data['VW'] = (empty($profile['vconsole_edit']) === false) ? $img : '';
     $data['VM'] = (empty($profile['vconsole_management']) === false) ? $img : '';
+    $data['NR'] = (empty($profile['network_config_view']) === false) ? $img : '';
+    $data['NW'] = (empty($profile['network_config_edit']) === false) ? $img : '';
+    $data['NM'] = (empty($profile['network_config_management']) === false) ? $img : '';
     $data['PM'] = (empty($profile['pandora_management']) === false) ? $img : '';
     $table->cellclass[]['operations'] = 'action_buttons';
     if ($is_management_allowed === true) {

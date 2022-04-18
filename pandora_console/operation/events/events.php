@@ -55,7 +55,7 @@ if (! $event_a
     && ! $event_m
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     if (is_ajax()) {
@@ -102,6 +102,8 @@ $default_filter = [
 $fb64 = get_parameter('fb64', null);
 if (isset($fb64)) {
     $filter = json_decode(base64_decode($fb64), true);
+    $filter['tag_with'] = [];
+    $filter['tag_without'] = [];
 } else {
     $filter = get_parameter(
         'filter',
@@ -224,6 +226,16 @@ $server_id = get_parameter(
     $filter['id_server_meta']
 );
 
+$custom_data_filter_type = get_parameter(
+    'filter[custom_data_filter_type]',
+    $filter['custom_data_filter_type']
+);
+
+$custom_data = get_parameter(
+    'filter[custom_data]',
+    $filter['custom_data']
+);
+
 if (is_metaconsole() === true) {
     // Connect to node database.
     $id_node = $server_id;
@@ -261,11 +273,6 @@ if (is_ajax() === true) {
     if ($get_events) {
         try {
             ob_start();
-            $order = get_datatable_order(true);
-
-            if (is_array($order) === true && $order['field'] === 'mini_severity') {
-                $order['field'] = 'te.criticity';
-            }
 
             $fields = [
                 'te.id_evento',
@@ -295,6 +302,20 @@ if (is_ajax() === true) {
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
+
+            $order = get_datatable_order(true);
+
+            if (is_array($order) === true && $order['field'] === 'mini_severity') {
+                $order['field'] = 'te.criticity';
+            }
+
+            // Find the order field and set the table and field name.
+            foreach ($fields as $field) {
+                if (str_contains($field, $order['field']) === true) {
+                    $order['field'] = $field;
+                    break;
+                }
+            }
 
             if (is_metaconsole() === false) {
                 $fields[] = 'am.nombre as module_name';
@@ -345,7 +366,8 @@ if (is_ajax() === true) {
 
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
-                        if (is_metaconsole()) {
+                        // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+                        if ($tmp->meta === true) {
                             if ($tmp->server_name !== null) {
                                 $tmp->data_server = metaconsole_get_servers($tmp->server_id);
                                 $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
@@ -371,7 +393,7 @@ if (is_ajax() === true) {
                                 sprintf(
                                     'SELECT criticity, timestamp FROM %s
                                     WHERE id_evento = %s',
-                                    ($tmp->meta) ? 'tmetaconsole_event' : 'tevento',
+                                    ($tmp->meta === true) ? 'tmetaconsole_event' : 'tevento',
                                     $tmp->max_id_evento
                                 )
                             );
@@ -479,7 +501,7 @@ if ($load_filter_id === 0) {
 
 // Do not load the user filter if we come from the 24h event graph.
 $from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
-if ($loaded_filter !== false && $from_event_graph != 1) {
+if ($loaded_filter !== false && $from_event_graph != 1 && !isset($fb64)) {
     $filter = events_get_event_filter($loaded_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];
@@ -518,6 +540,8 @@ if ($loaded_filter !== false && $from_event_graph != 1) {
         $user_comment = $filter['user_comment'];
         $id_source_event = ($filter['id_source_event'] ?? '');
         $server_id = $filter['server_id'];
+        $custom_data = $filter['custom_data'];
+        $custom_data_filter_type = $filter['custom_data_filter_type'];
     }
 }
 
@@ -538,7 +562,7 @@ if (is_array($tag_without) === false) {
 }
 
 
-foreach ($tags as $id_tag => $tag) {
+foreach ((array) $tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
         && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
@@ -839,7 +863,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
         'images/csv.png',
         true,
         [
@@ -930,7 +954,6 @@ if ($pure) {
         );
     } else {
         unset($onheader['rss']);
-        unset($onheader['csv']);
         unset($onheader['sound_event']);
         unset($onheader['fullscreen']);
         ui_meta_print_header(__('Events'), $section_string, $onheader);
@@ -991,7 +1014,7 @@ if (is_metaconsole() !== true) {
     ) {
         if ($config['show_events_in_local'] == 0) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer. View disabled due event replication.'
             );
             ui_print_info_message(
@@ -1007,6 +1030,18 @@ if (is_metaconsole() !== true) {
             $readonly = true;
         }
     }
+}
+
+if (enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'execute_event_responses',
+    ]
+) === false
+) {
+    $readonly = true;
 }
 
 /*
@@ -1428,6 +1463,54 @@ $adv_inputs[] = html_print_div(
     true
 );
 
+// Custom data filter type.
+$custom_data_filter_type_input = html_print_select(
+    [
+        '0' => __('Filter custom data by field name'),
+        '1' => __('Filter custom data by field value'),
+    ],
+    'custom_data_filter_type',
+    $custom_data_filter_type,
+    '',
+    false,
+    -1,
+    true
+);
+
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s',
+            __('Custom data filter'),
+            $custom_data_filter_type_input
+        ),
+    ],
+    true
+);
+
+// Custom data.
+$custom_data_input = html_print_input_text(
+    'custom_data',
+    $custom_data,
+    '',
+    5,
+    255,
+    true
+);
+
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s',
+            __('Custom data search'),
+            $custom_data_input
+        ),
+    ],
+    true
+);
+
 // Tags.
 if (is_metaconsole() === true) {
     $data = '<fieldset><legend class="pdd_0px">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
@@ -1504,7 +1587,8 @@ try {
         [
             'text'  => 'options',
             'class' => 'action_buttons w120px',
-        ],[
+        ],
+        [
             'text'  => 'm',
             'extra' => $checkbox_all,
             'class' => 'mw120px',
@@ -1547,7 +1631,8 @@ try {
             [
                 'text'  => 'options',
                 'class' => 'action_buttons mw120px',
-            ],[
+            ],
+            [
                 'text'  => 'm',
                 'extra' => $checkbox_all,
                 'class' => 'w20px no-text-imp',
@@ -2183,7 +2268,7 @@ function process_datatables_item(item) {
     // Url to agent view.
     var url_link = '<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>';
     var url_link_hash = '';
-    if(item.meta === true){   
+    if(item.meta === true){
         url_link = server_url+'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
         url_link_hash = hashdata;
     }
@@ -2234,6 +2319,27 @@ function process_datatables_item(item) {
 
     /* Module name */
     item.id_agentmodule = item.module_name;
+
+    if (item.custom_data !== '') {
+        var custom_data_str = '';
+
+        var item_custom_data_obj = (function(json_str) {
+        try {
+            return JSON.parse(json_str);
+        } catch (err) {
+            return false;
+        }
+        })(item.custom_data);
+
+        if (item_custom_data_obj !== false) {
+            for (const [attr_name, val] of Object.entries(item_custom_data_obj)) {
+                custom_data_str += attr_name + ' = ' + val + '<br>';
+            }
+            item.custom_data = custom_data_str;
+        } else {
+            item.custom_data = '';
+        }
+    }
 }
 
 /* Datatables auxiliary functions ends */
@@ -2313,7 +2419,7 @@ function click_button_add_tag(what_button) {
         id_button_remove = "#button-remove_without";
         id_button_add = "#button-add_without";
     }
-    
+
     $(id_select_origin + " option:selected").each(function() {
         if (what_button == 'with') {
             select_destiny_empty = select_with_tag_empty;
@@ -2321,17 +2427,17 @@ function click_button_add_tag(what_button) {
         else { //without
             select_destiny_empty = select_without_tag_empty;
         }
-        
-        
+
+
         without_val = $(this).val();
         if(without_val == null) {
             next;
         }
         without_text = $(this).text();
-                
+
         if (select_destiny_empty) {
             $(id_select_destiny).empty();
-            
+
             if (what_button == 'with') {
                 select_with_tag_empty = false;
             }
@@ -2339,15 +2445,15 @@ function click_button_add_tag(what_button) {
                 select_without_tag_empty = false;
             }
         }
-        
+
         $(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
         $(id_select_origin + " option:selected").remove();
         $(id_button_remove).removeAttr('disabled');
-        
+
         if ($(id_select_origin + " option").length == 0) {
             $(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
             $(id_button_add).attr('disabled', 'true');
-            
+
             if (what_button == 'with') {
                 origin_select_with_tag_empty = true;
             }
@@ -2355,10 +2461,10 @@ function click_button_add_tag(what_button) {
                 origin_select_without_tag_empty = true;
             }
         }
-            
+
         replace_hidden_tags(what_button);
     });
-    
+
 }
 
 function replace_hidden_tags(what_button) {
@@ -2370,15 +2476,15 @@ function replace_hidden_tags(what_button) {
         id_select_destiny = "#tag_without_temp";
         id_hidden = "#hidden-tag_without";
     }
-    
+
     value_store = [];
-    
+
     jQuery.each($(id_select_destiny + " option"), function(key, element) {
         val = $(element).val();
-        
+
         value_store.push(val);
     });
-    
+
     $(id_hidden).val(Base64.encode(JSON.stringify(value_store)));
 }
 
@@ -2393,28 +2499,26 @@ function reorder_tags_inputs() {
     jQuery.each($("#tag_with_temp option"), function(key, element) {
         val = $(element).val();
         text = $(element).text();
-        
+
         if (val == val_none)
             return;
-        
+
         $("#select_with").append($("<option value='" + val + "'>" + text + "</option>"));
     });
     $("#tag_with_temp option").remove();
-    
-    
+
     $('#select_without option[value="' + val_none + '"]').remove();
     jQuery.each($("#tag_without_temp option"), function(key, element) {
         val = $(element).val();
         text = $(element).text();
-        
+
         if (val == val_none)
             return;
-        
+
         $("#select_without").append($("<option value='" + val + "'>" + text + "</option>"));
     });
     $("#tag_without_temp option").remove();
-    
-    
+
     tags_base64 = $("#hidden-tag_with").val();
     if (tags_base64.length > 0) {
         tags = jQuery.parseJSON(Base64.decode(tags_base64));
@@ -2447,7 +2551,7 @@ function reorder_tags_inputs() {
         select_with_tag_empty = false;
         $("#button-remove_with").removeAttr('disabled');
     }
-    
+
     tags_base64 = $("#hidden-tag_without").val();
     if (tags_base64.length > 0) {
         tags = jQuery.parseJSON(Base64.decode(tags_base64));

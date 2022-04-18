@@ -166,7 +166,7 @@ function safe_url_extraclean($string, $default_string='')
  * @param string  $searchHandler Pattern of files to match.
  * @param boolean $return        Whether to print or return the list.
  *
- * @return string he list of files if $return parameter is true.
+ * @return array the list of files if $return parameter is true.
  */
 function list_files($directory, $stringSearch, $searchHandler, $return=false)
 {
@@ -515,6 +515,7 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
 
     if ($exactly) {
         $returnDate = '';
+        $seconds = (float) $seconds;
 
         $years = floor($seconds / SECONDS_1YEAR);
 
@@ -1234,6 +1235,7 @@ function get_event_types($id_type=false)
     $types['system'] = __('System');
     $types['error'] = __('Error');
     $types['configuration_change'] = __('Configuration change');
+    $types['ncm'] = __('Network configuration manager');
 
     // This types are impersonated by the monitor 'x' types
     // $types['going_up_normal'] = __('Going Normal');
@@ -1544,7 +1546,10 @@ function enterprise_hook($function_name, $parameters=false)
             return call_user_func($function_name);
         }
 
-        return call_user_func_array($function_name, $parameters);
+        return call_user_func_array(
+            $function_name,
+            array_values(($parameters ?? []))
+        );
     }
 
     return ENTERPRISE_NOT_HOOK;
@@ -1732,9 +1737,9 @@ function is_management_allowed($hkey='')
         $nodes = (int) $nodes;
     }
 
-    return ( (is_metaconsole() && (is_centrallised() || $nodes === 0))
-        || (!is_metaconsole() && !is_centrallised())
-        || (!is_metaconsole() && is_centrallised()) && $hkey == generate_hash_to_api());
+    return ( (is_metaconsole() && (is_centralized() || $nodes === 0))
+        || (!is_metaconsole() && !is_centralized())
+        || (!is_metaconsole() && is_centralized()) && $hkey == generate_hash_to_api());
 }
 
 
@@ -1743,7 +1748,7 @@ function is_management_allowed($hkey='')
  *
  * @return boolean
  */
-function is_centrallised()
+function is_centralized()
 {
     global $config;
 
@@ -1763,7 +1768,7 @@ function is_centrallised()
  */
 function is_central_policies()
 {
-    return is_metaconsole() && is_centrallised();
+    return is_metaconsole() && is_centralized();
 }
 
 
@@ -2092,7 +2097,7 @@ function get_snmpwalk(
     $snmpwalk = [];
 
     // Check if OID is available.
-    if (count($output) == 1 && strpos($output[0], "No Such Object available on this agent at this OID") !== false) {
+    if (count($output) == 1 && strpos($output[0], 'No Such Object available on this agent at this OID') !== false) {
         return $snmpwalk;
     }
 
@@ -2281,7 +2286,11 @@ function check_login($output=true)
         return false;
     }
 
-    db_pandora_audit('No session', 'Trying to access without a valid session', 'N/A');
+    db_pandora_audit(
+        AUDIT_LOG_HACK_ATTEMPT,
+        'Trying to access without a valid session',
+        'N/A'
+    );
     include $config['homedir'].'/general/noaccess.php';
     exit;
 }
@@ -2452,86 +2461,74 @@ function get_acl_column($access)
         case 'AR':
         return 'agent_view';
 
-            break;
         case 'AW':
         return 'agent_edit';
 
-            break;
         case 'AD':
         return 'agent_disable';
 
-            break;
         case 'LW':
         return 'alert_edit';
 
-            break;
         case 'LM':
         return 'alert_management';
 
-            break;
         case 'PM':
         return 'pandora_management';
 
-            break;
         case 'DM':
         return 'db_management';
 
-            break;
         case 'UM':
         return 'user_management';
 
-            break;
         case 'RR':
         return 'report_view';
 
-            break;
         case 'RW':
         return 'report_edit';
 
-            break;
         case 'RM':
         return 'report_management';
 
-            break;
         case 'ER':
         return 'event_view';
 
-            break;
         case 'EW':
         return 'event_edit';
 
-            break;
         case 'EM':
         return 'event_management';
 
-            break;
         case 'MR':
         return 'map_view';
 
-            break;
         case 'MW':
         return 'map_edit';
 
-            break;
         case 'MM':
         return 'map_management';
 
-            break;
         case 'VR':
         return 'vconsole_view';
 
-            break;
         case 'VW':
         return 'vconsole_edit';
 
-            break;
         case 'VM':
         return 'vconsole_management';
 
-            break;
+        case 'NR':
+        return 'network_config_view';
+
+        case 'NW':
+        return 'network_config_edit';
+
+        case 'NM':
+        return 'network_config_management';
+
         default:
         return '';
-            break;
     }
 }
 
@@ -2565,7 +2562,10 @@ function get_users_acl($id_user)
 						sum(tperfil.map_management) as map_management,
 						sum(tperfil.vconsole_view) as vconsole_view,
 						sum(tperfil.vconsole_edit) as vconsole_edit,
-						sum(tperfil.vconsole_management) as vconsole_management
+						sum(tperfil.vconsole_management) as vconsole_management,
+                        sum(tperfil.network_config_view) as network_config_view,
+						sum(tperfil.network_config_edit) as network_config_edit,
+						sum(tperfil.network_config_management) as network_config_management
 					FROM tusuario_perfil, tperfil
 					WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 						AND tusuario_perfil.id_usuario = '%s'",
@@ -2887,6 +2887,7 @@ function translate_file_upload_status($status_code)
 
         case UPLOAD_ERR_INI_SIZE:
             $message = __('The file exceeds the maximum size');
+            $message .= __('Please check this PHP runtime variable values: <pre>  upload_max_filesize (currently '.ini_get('upload_max_filesize').')</pre>');
         break;
 
         case UPLOAD_ERR_FORM_SIZE:
@@ -4193,6 +4194,9 @@ function generator_chart_to_pdf(
     ) {
         $width_img = 650;
         $height_img = ($params['height'] + 50);
+    } else if ($type_graph_pdf === 'hbar' || $type_graph_pdf === 'pie_chart') {
+        $width_img  = ($params['width'] ?? 550);
+        $height_img = $params['height'];
     } else {
         $width_img  = 550;
         $height_img = $params['height'];
@@ -5968,9 +5972,36 @@ function send_test_email(
         $result = $mailer->send($message);
     } catch (Exception $e) {
         error_log($e->getMessage());
-        db_pandora_audit('Cron jobs mail', $e->getMessage());
+        db_pandora_audit(
+            AUDIT_LOG_SYSTEM,
+            sprintf(
+                'Cron jobs mail: %s',
+                $e->getMessage()
+            )
+        );
     }
 
     return $result;
+
+}
+
+
+if (function_exists('str_contains') === false) {
+
+
+    /**
+     * Checks if $needle is found in $haystack and returns a boolean value.
+     * For lower than PHP8 versions.
+     *
+     * @param string $haystack The string who can have the needle.
+     * @param string $needle   The needle.
+     *
+     * @return boolean True if haystack contains the needle.
+     */
+    function str_contains(string $haystack, string $needle)
+    {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+
 
 }

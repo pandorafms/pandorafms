@@ -32,7 +32,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
-    db_pandora_audit('ACL Violation', 'Trying to change License settings');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to change License settings'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -69,6 +72,12 @@ if ($update_settings) {
                 [db_escape_key_identifier('value') => $value],
                 [db_escape_key_identifier('key') => $key]
             );
+        }
+
+        // Update the license file.
+        $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $_POST['keys']['customer_key']);
+        if ($result === false) {
+            ui_print_error_message(__('Failed to Update license file'));
         }
 
         ui_print_success_message(__('License updated'));

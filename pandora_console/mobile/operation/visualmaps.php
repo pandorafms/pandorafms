@@ -74,6 +74,13 @@ class Visualmaps
      */
     private $type = 0;
 
+    /**
+     * CV favourites.
+     *
+     * @var boolean
+     */
+    private $favourite = true;
+
 
     /**
      * Builder.
@@ -177,16 +184,31 @@ class Visualmaps
             __('Visual consoles'),
             $ui->createHeaderButton(
                 [
-                    'icon' => 'back',
-                    'pos'  => 'left',
-                    'text' => __('Back'),
-                    'href' => 'index.php?page=home',
+                    'icon'  => 'ui-icon-back',
+                    'pos'   => 'left',
+                    'text'  => __('Back'),
+                    'href'  => 'index.php?page=home',
+                    'class' => 'header-button-left',
                 ]
             )
         );
         $ui->showFooter(false);
         $ui->beginContent();
             $this->listVisualmapsHtml();
+
+        $output = '<script type="text/javascript">';
+        $output .= 'function loadVisualConsole(id) {';
+        $output .= ' var dimensions = "&width="+$(window).width();';
+        $output .= ' dimensions += "&height="+$(window).height();';
+        $output .= ' window.location.href = "';
+        $output .= ui_get_full_url('/', false, false, false);
+        $output .= 'mobile/index.php?page=visualmap&id="';
+        $output .= '+id+dimensions;';
+        $output .= '};';
+        $output .= '</script>';
+
+        $ui->contentAddHtml($output);
+
         $ui->endContent();
         $ui->showPage();
     }
@@ -200,9 +222,42 @@ class Visualmaps
     private function listVisualmapsHtml()
     {
         $system = System::getInstance();
+        $this->favourite = (bool) $system->getRequest('favourite', true);
         $ui = Ui::getInstance();
 
-        $visualmaps = visual_map_get_user_layouts();
+        $visualmaps = visual_map_get_user_layouts(
+            false,
+            false,
+            false,
+            true,
+            $this->favourite
+        );
+
+        if ($this->favourite === true) {
+            $ui->contentAddHtml(
+                $ui->createButton(
+                    [
+                        'icon'  => '',
+                        'pos'   => 'right',
+                        'text'  => __('All visual consoles'),
+                        'href'  => 'index.php?page=visualmaps&favourite=0',
+                        'class' => '',
+                    ]
+                )
+            );
+        } else {
+            $ui->contentAddHtml(
+                $ui->createButton(
+                    [
+                        'icon'  => '',
+                        'pos'   => 'right',
+                        'text'  => __('Favourite visual consoles'),
+                        'href'  => 'index.php?page=visualmaps&favourite=1',
+                        'class' => '',
+                    ]
+                )
+            );
+        }
 
         if (empty($visualmaps) === true) {
             $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');
@@ -213,8 +268,8 @@ class Visualmaps
             $table->id = 'list_visualmaps';
             foreach ($visualmaps as $map) {
                 $link = '<a class="ui-link" data-ajax="false" ';
-                $link .= ' href="index.php?page=visualmap&id=';
-                $link .= $map['id'].'">'.io_safe_output($map['name']).'</a>';
+                $link .= ' href="#" onclick="loadVisualConsole(';
+                $link .= $map['id'].')">'.io_safe_output($map['name']).'</a>';
 
                 $row = $link;
                 $row .= ui_print_group_icon(

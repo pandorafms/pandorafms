@@ -27,7 +27,7 @@ use File::Path qw(rmtree);
 use Time::HiRes qw(usleep);
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Core;
 use PandoraFMS::Tools;
@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.757 Build 211019";
+my $version = "7.0NG.761 Build 220418";
 
 # Pandora server configuration
 my %conf;
@@ -46,6 +46,9 @@ my $BIG_OPERATION_STEP = 100;	# 100 is default
 # Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
 #Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
 my $SMALL_OPERATION_STEP = 1000;	# 1000 is default
+
+# Timeout for lock acquisition.
+my $LOCK_TIMEOUT = 60;
 
 # FLUSH in each IO 
 $| = 1;
@@ -245,6 +248,9 @@ sub pandora_purgedb ($$) {
 	else {
 		log_message ('PURGE', 'trap_purge is set to 0. Old SNMP traps will not be deleted.');
 	}
+
+	# Cleanup policy groups pointing to non-existing policies.
+	enterprise_hook('pandora_policy_group_cleanup', [$dbh]);
 	
 	# Delete policy queue data
 	enterprise_hook("pandora_purge_policy_queue", [$dbh, $conf]);
@@ -318,7 +324,7 @@ sub pandora_purgedb ($$) {
 	} else {
 		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
 			"'sql_graph_pie'", "'database_serialized'", "'sql'", "'inventory'", "'inventory_changes'",
-			"'netflow_area'", "'netflow_data'", "'netflow_summary'");
+			"'netflow_area'", "'netflow_data'", "'netflow_summary'", "'netflow_top_N'");
 		my $blacklist_types_str = join(',', @blacklist_types);
 		
 		# Deleted modules
@@ -387,6 +393,15 @@ sub pandora_purgedb ($$) {
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
+	}
+
+	# Delete old log data
+	log_message ('PURGE', "Deleting old network configuration manager data.");
+	if (defined($conf->{'_days_purge'}) && $conf->{'_days_purge'} > 0) {
+		log_message ('PURGE', 'Deleting NCM data older than ' . $conf->{'_days_purge'} . ' days.');
+    enterprise_hook ('pandora_purge_ncm', [$dbh, \&log_message, $conf->{'_days_purge'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]);
+	} else {
+		log_message ('PURGE', '_days_purge is set to 0. Old network configuration manager data will not be deleted.');
 	}
 
 	# Delete old special days
@@ -1024,10 +1039,64 @@ sub pandora_delete_old_session_data {
 }
 
 ###############################################################################
+# Delete old data from the history database.
+###############################################################################
+sub pandoradb_history ($$) {
+	my ($conf, $dbh) = @_;
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my $ulimit_access_timestamp = time() - 86400;
+	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
+
+	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
+
+	# Delete old numeric data.
+	if ($conf->{'_days_purge'} > 0) {
+		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
+	} else {
+		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
+	}
+
+	# Delete old string data.
+	$conf->{'_string_purge'} = 7 unless defined($conf->{'_string_purge'});
+	if ($conf->{'_string_purge'} > 0) {
+		$ulimit_access_timestamp = time() - 86400;
+		$ulimit_timestamp = time() - (86400 * $conf->{'_string_purge'});
+		pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
+	} else {
+		log_message ('PURGE', 'string_purge is set to 0. Old string data will not be deleted.');
+	}
+
+	# Delete old events.
+	if ($conf->{'_event_purge'} > 0) {
+		log_message ('PURGE', "Deleting events older than " . $conf->{'_event_purge'} . " days from tevento.", '');
+
+		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
+		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tevento WHERE utimestamp < ?", $event_limit);
+		while($events_to_delete > 0) {
+			db_delete_limit($dbh, 'tevento', "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
+			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
+				
+			# Mark the progress.
+			log_message ('', ".");
+				
+			# Do not overload the MySQL server.
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+
+	# Update tconfig with last time of database maintance time (now)
+	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
+	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
+
+	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
+}
+
+###############################################################################
 # Main
 ###############################################################################
 sub pandoradb_main ($$$;$) {
-	my ($conf, $dbh, $history_dbh, $running_in_history) = @_;
+	my ($conf, $dbh, $history_dbh) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
@@ -1050,8 +1119,7 @@ sub pandoradb_main ($$$;$) {
 
 	# Only active database should be compacted. Disabled for historical database.
 	# Compact on if enable and DaysCompact are below DaysPurge 
-	if (!$running_in_history
-		&& ($conf->{'_onlypurge'} == 0)
+	if (($conf->{'_onlypurge'} == 0)
 		&& ($conf->{'_days_compact'} < $conf->{'_days_purge'})
 	) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
@@ -1072,6 +1140,9 @@ sub pandoradb_main ($$$;$) {
 
 	# Metaconsole database cleanup.
 	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
+
+	# NCM cleanup.
+	enterprise_hook("ncm_database_cleanup", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
@@ -1150,10 +1221,18 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Get a lock on dbname.
+# Set the lock name for pandora_db.
 my $lock_name = $conf{'dbname'};
-my $lock = db_get_lock ($dbh, $lock_name);
-if ($lock == 0 && $conf{'_force'} == 0) { 
+
+# Release the database lock in forced mode.
+if ($conf{'_force'} == 1) {
+	log_message ('', " [*] Releasing database lock.\n\n");
+	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+}
+
+# Get a lock on dbname.
+my $lock = db_get_pandora_lock ($dbh, $lock_name, $LOCK_TIMEOUT);
+if ($lock == 0) { 
 	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
 }
@@ -1169,13 +1248,8 @@ if (defined($history_dbh)) {
 	# Keep base settings.
 	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};
 
-	# Re-launch maintenance process for historical database.
-	pandoradb_main(
-		$h_conf,
-		$history_dbh,
-		undef,
-		1 # Disable certain funcionality while runningn in historical database.
-	);
+	# Launch maintenance process for historical database.
+	pandoradb_history($h_conf, $history_dbh);
 
 	# Handle partitions.
 	enterprise_hook('handle_partitions', [$h_conf, $history_dbh]);
@@ -1201,9 +1275,7 @@ if (scalar(@types) != 0) {
 }
 
 # Release the lock
-if ($lock == 1) {
-	db_release_lock ($dbh, $lock_name);
-}
+db_release_pandora_lock ($dbh, $lock_name);
 
 # Cleanup and exit
 db_disconnect ($history_dbh) if defined ($history_dbh);

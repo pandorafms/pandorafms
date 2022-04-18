@@ -63,7 +63,7 @@ require_once 'include/functions_visual_map.php';
 $hash = (string) get_parameter('hash');
 $visualConsoleId = (int) get_parameter('id_layout');
 $config['id_user'] = (string) get_parameter('id_user');
-$refr = (int) get_parameter('refr', $config['refr']);
+$refr = (int) get_parameter('refr', ($config['refr'] ?? null));
 
 if (!isset($config['pure'])) {
     $config['pure'] = 0;
@@ -72,7 +72,7 @@ if (!isset($config['pure'])) {
 // Check input hash.
 if (User::validatePublicHash($hash) !== true) {
     db_pandora_audit(
-        'Invalid public visual console',
+        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
         'Trying to access public visual console'
     );
     include 'general/noaccess.php';
@@ -86,7 +86,7 @@ try {
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
 } catch (Throwable $e) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without Id'
     );
     include $config['homedir'].'/general/noaccess.php';
@@ -97,7 +97,7 @@ $visualConsoleData = $visualConsole->toArray();
 $visualConsoleName = $visualConsoleData['name'];
 
 $bg_color = '';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $bg_color = 'style="background-color: #222"';
 }
 
@@ -180,7 +180,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
-    var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
+    var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
 
     var controls = document.getElementById('vc-controls');
@@ -220,6 +220,12 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             var title = document.querySelector("div.vc-title");
             if (title !== null) {
                 title.textContent = newProps.name;
+            }
+
+            // Fullscreen Meta view title.
+            var titleMeta = document.querySelector("div.vc-title-meta");
+            if (titleMeta !== null) {
+                titleMeta.textContent = newProps.name;
             }
         }
 

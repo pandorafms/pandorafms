@@ -231,8 +231,8 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
 {
     global $config;
 
-    // Ignore $ip and always set the ip address
-    if (isset($config['remote_addr'])) {
+    // Ignore $ip and always set the ip address.
+    if (isset($config['remote_addr']) === true) {
         $ip = $config['remote_addr'];
     } else {
         if ($_SERVER['REMOTE_ADDR']) {
@@ -245,46 +245,26 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
     if ($user_id !== false) {
         $id = $user_id;
     } else {
-        if (isset($config['id_user'])) {
-            $id = $config['id_user'];
-        } else {
-            $id = 0;
-        }
+        $id = (isset($config['id_user']) === true) ? $config['id_user'] : 0;
     }
 
     $accion = io_safe_input($accion);
     $descripcion = io_safe_input($descripcion);
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $values = [
-                'id_usuario'  => $id,
-                'accion'      => $accion,
-                'ip_origen'   => $ip,
-                'descripcion' => $descripcion,
-                'fecha'       => date('Y-m-d H:i:s'),
-                'utimestamp'  => time(),
-            ];
-        break;
-
-        case 'oracle':
-            $values = [
-                'id_usuario'  => $id,
-                'accion'      => $accion,
-                'ip_origen'   => $ip,
-                'descripcion' => $descripcion,
-                'fecha'       => '#to_date(\''.date('Y-m-d H:i:s').'\',\'YYYY-MM-DD HH24:MI:SS\')',
-                'utimestamp'  => time(),
-            ];
-        break;
-    }
+    $values = [
+        'id_usuario'  => $id,
+        'accion'      => $accion,
+        'ip_origen'   => $ip,
+        'descripcion' => $descripcion,
+        'fecha'       => date('Y-m-d H:i:s'),
+        'utimestamp'  => time(),
+    ];
 
     $id_audit = db_process_sql_insert('tsesion', $values);
 
     $valor = ''.$values['fecha'].' - '.io_safe_output($id).' - '.io_safe_output($accion).' - '.$ip.' - '.io_safe_output($descripcion)."\n";
 
-    if ($config['audit_log_enabled']) {
+    if ((bool) $config['audit_log_enabled'] === true) {
         file_put_contents($config['homedir'].'/log/audit.log', $valor, FILE_APPEND);
     }
 
@@ -298,12 +278,19 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
 /**
  * Log in a user into Pandora.
  *
- * @param string $id_user User id
+ * @param string $id_user User id.
  * @param string $ip      Client user IP address.
+ *
+ * @return void
  */
 function db_logon($id_user, $ip)
 {
-    db_pandora_audit('Logon', 'Logged in', $id_user, $ip);
+    db_pandora_audit(
+        AUDIT_LOG_USER_REGISTRATION,
+        'Logged in',
+        $id_user,
+        $ip
+    );
 
     // Update last registry of user to set last logon. How do we audit when the user was created then?
     process_user_contact($id_user);
@@ -313,12 +300,19 @@ function db_logon($id_user, $ip)
 /**
  * Log out a user into Pandora.
  *
- * @param string $id_user User id
+ * @param string $id_user User id.
  * @param string $ip      Client user IP address.
+ *
+ * @return void
  */
 function db_logoff($id_user, $ip)
 {
-    db_pandora_audit('Logoff', 'Logged out', $id_user, $ip);
+    db_pandora_audit(
+        AUDIT_LOG_USER_REGISTRATION,
+        'Logged out',
+        $id_user,
+        $ip
+    );
 }
 
 
@@ -414,21 +408,21 @@ function db_get_value_filter($field, $table, $filter, $where_join='AND', $search
  *
  * @return mixed the first value of the first row of a table result from query.
  */
-function db_get_value_sql($sql, $dbconnection=false)
+function db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_value_sql($sql, $dbconnection);
+        return mysql_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_value_sql($sql, $dbconnection);
+        return postgresql_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
         case 'oracle':
-        return oracle_db_get_value_sql($sql, $dbconnection);
+        return oracle_db_get_value_sql($sql, $dbconnection, $search_history_db);
 
             break;
     }
@@ -518,24 +512,25 @@ function db_get_row($table, $field_search, $condition, $fields=false, $cache=tru
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
  * @param string Condition to join the filters (AND, OR).
+ * @param boolean                                                  $cache Use cache or not.
  *
  * @return mixed Array of the row or false in case of error.
  */
-function db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false)
+function db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false, $cache=true)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_row_filter($table, $filter, $fields, $where_join, $historydb);
+        return mysql_db_get_row_filter($table, $filter, $fields, $where_join, $historydb, $cache);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_row_filter($table, $filter, $fields, $where_join);
+        return postgresql_db_get_row_filter($table, $filter, $fields, $where_join, $historydb, $cache);
 
             break;
         case 'oracle':
-        return oracle_db_get_row_filter($table, $filter, $fields, $where_join);
+        return oracle_db_get_row_filter($table, $filter, $fields, $where_join, $historydb, $cache);
 
             break;
     }
@@ -1169,9 +1164,11 @@ function db_get_all_rows_filter($table, $filter=[], $fields=false, $where_join='
  * @param  string   $sql
  * @return mixed The row or false in error.
  */
-function db_get_all_row_by_steps_sql($new=true, &$result, $sql=null)
+function db_get_all_row_by_steps_sql($new, &$result, $sql=null)
 {
     global $config;
+
+    $new = ($new ?? true);
 
     switch ($config['dbtype']) {
         case 'mysql':
@@ -1376,39 +1373,53 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
         break;
     }
 
-    if ($rc !== false) {
-        if (enterprise_hook('is_metaconsole') === true
-            && isset($config['centralized_management']) === true
-            && (bool) $config['centralized_management'] === true
-            && $dbconnection === ''
-        ) {
-            $errors = null;
-            try {
-                // Synchronize changes to nodes if needed.
-                $sync = new Synchronizer();
-                if ($sync !== null) {
-                    if ($sync->queue($sql) === false) {
-                        // Launch events per failed query.
-                        $errors = $sync->getLatestErrors();
-                        if ($errors !== null) {
-                            $errors = join(', ', $errors);
-                        } else {
-                            $errors = '';
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                $errors = $e->getMessage();
-            }
-
-            if ($errors !== null) {
-                // TODO: Generate pandora event.
-                error_log($errors);
-            }
-        }
-    }
+    db_sync($dbconnection, $sql, $rc);
 
     return $rc;
+}
+
+
+/**
+ * Propagate to nodes.
+ *
+ * @param mixed $dbconnection Dbconnection.
+ * @param mixed $sql          Sql.
+ * @param mixed $rc           Rc.
+ *
+ * @return void
+ */
+function db_sync($dbconnection, $sql, $rc)
+{
+    global $config;
+    if (enterprise_hook('is_metaconsole') === true
+        && isset($config['centralized_management']) === true
+        && (bool) $config['centralized_management'] === true
+        && $dbconnection === ''
+    ) {
+        $errors = null;
+        try {
+            // Synchronize changes to nodes if needed.
+            $sync = new Synchronizer();
+            if ($sync !== null) {
+                if ($sync->queue($sql, $rc) === false) {
+                    // Launch events per failed query.
+                    $errors = $sync->getLatestErrors();
+                    if ($errors !== null) {
+                        $errors = join(', ', $errors);
+                    } else {
+                        $errors = '';
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $errors = $e->getMessage();
+        }
+
+        if ($errors !== null) {
+            // TODO: Generate pandora event.
+            error_log($errors);
+        }
+    }
 }
 
 
@@ -1807,20 +1818,20 @@ function db_process_sql_delete($table, $where, $where_join='AND')
 function db_process_sql_begin()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_process_sql_begin();
-
-            break;
         case 'postgresql':
         return postgresql_db_process_sql_begin();
 
-            break;
         case 'oracle':
         return oracle_db_process_sql_begin();
 
-            break;
+        default:
+        case 'mysql':
+            db_process_sql('SET AUTOCOMMIT = 0', 'affected_rows', '', false, $null, false);
+            db_process_sql('START TRANSACTION', 'affected_rows', '', false, $null, false);
+        break;
     }
 }
 
@@ -1831,20 +1842,20 @@ function db_process_sql_begin()
 function db_process_sql_commit()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_process_sql_commit();
-
-            break;
         case 'postgresql':
         return postgresql_db_process_sql_commit();
 
-            break;
         case 'oracle':
         return oracle_db_process_sql_commit();
 
-            break;
+        default:
+        case 'mysql':
+            db_process_sql('COMMIT', 'affected_rows', '', false, $null, false);
+            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, $null, false);
+        break;
     }
 }
 
@@ -1855,20 +1866,20 @@ function db_process_sql_commit()
 function db_process_sql_rollback()
 {
     global $config;
+    $null = null;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_process_sql_rollback();
-
-            break;
         case 'postgresql':
         return postgresql_db_process_sql_rollback();
 
-            break;
         case 'oracle':
         return oracle_db_process_sql_rollback();
 
-            break;
+        default:
+        case 'mysql':
+            db_process_sql('ROLLBACK', 'affected_rows', '', false, $null, false);
+            db_process_sql('SET AUTOCOMMIT = 1', 'affected_rows', '', false, $null, false);
+        break;
     }
 }
 
@@ -1888,6 +1899,7 @@ function db_print_database_debug()
 
     echo '<div class="database_debug_title">'.__('Database debug').'</div>';
 
+    $table = new stdClass();
     $table->id = 'database_debug';
     $table->cellpadding = '0';
     $table->width = '95%';
@@ -1945,18 +1957,15 @@ function db_get_last_error()
     global $config;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_get_last_error();
-
-            break;
         case 'postgresql':
         return postgresql_db_get_last_error();
 
-            break;
         case 'oracle':
         return oracle_db_get_last_error();
 
-            break;
+        case 'mysql':
+        default:
+        return mysql_db_get_last_error();
     }
 }
 
@@ -1974,18 +1983,15 @@ function db_get_type_field_table($table, $field)
     global $config;
 
     switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_db_get_type_field_table($table, $field);
-
-            break;
         case 'postgresql':
         return postgresql_db_get_type_field_table($table, $field);
 
-            break;
         case 'oracle':
         return oracle_db_get_type_field_table($table, $field);
 
-            break;
+        case 'mysql':
+        default:
+        return mysql_db_get_type_field_table($table, $field);
     }
 }
 

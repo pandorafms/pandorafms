@@ -18,7 +18,7 @@ require_once $config['homedir'].'/include/functions_reporting.php';
 enterprise_include('operation/reporting/custom_reporting.php');
 
 $searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0, 'AR');
-$searchUsers = $searchPolicies = check_acl($config['id_user'], 0, 'AR');
+$searchUsers = $searchPolicies = (check_acl($config['id_user'], 0, 'AR') && enterprise_installed());
 $searchReports = $searchGraphs = check_acl($config['id_user'], 0, 'RR');
 $searchMaps = check_acl($config['id_user'], 0, 'VR');
 $searchMain = true;

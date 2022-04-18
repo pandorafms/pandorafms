@@ -22,14 +22,15 @@ $searchModules = check_acl($config['id_user'], 0, 'AR');
 if (!$modules || !$searchModules) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
     $table->class = 'databox';
 
     $table->head = [];
-    $table->head[0] = __('Module').' '.'<a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp]).'</a>'.'<a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown]).'</a>';
-    $table->head[1] = __('Agent').' '.'<a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentNameUp]).'</a>'.'<a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentNameDown]).'</a>';
+    $table->head[0] = __('Module').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp]).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown]).'</a>';
+    $table->head[1] = __('Agent').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentNameUp]).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentNameDown]).'</a>';
     $table->head[2] = __('Type');
     $table->head[3] = __('Interval');
     $table->head[4] = __('Status');
@@ -50,6 +51,17 @@ if (!$modules || !$searchModules) {
     $table->align[6] = 'left';
     $table->align[7] = 'left';
     $table->align[8] = 'left';
+
+    $table->headstyle = [];
+    $table->headstyle[0] = 'text-align: left';
+    $table->headstyle[1] = 'text-align: left';
+    $table->headstyle[2] = 'text-align: left';
+    $table->headstyle[3] = 'text-align: left';
+    $table->headstyle[4] = 'text-align: left';
+    $table->headstyle[5] = 'text-align: left';
+    $table->headstyle[6] = 'text-align: left';
+    $table->headstyle[7] = 'text-align: left';
+    $table->headstyle[8] = 'text-align: left';
 
     $table->data = [];
 
@@ -158,10 +170,10 @@ if (!$modules || !$searchModules) {
             $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
             $win_handle = dechex(crc32($module['id_agente_modulo'].$module['module_name']));
 
-            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module['id_agente_modulo'].'&'.'refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
+            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module['id_agente_modulo'].'&refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
 
             $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => 0, 'alt' => '']).'</a>';
-            $graphCell .= '&nbsp;'."<a href='index.php?".'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$module['id_agente'].'&amp;'.'tab=data_view&'.'period='.SECONDS_1DAY.'&amp;'.'id='.$module['id_agente_modulo']."'>".html_print_image(
+            $graphCell .= '&nbsp;'."<a href='index.php?".'sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$module['id_agente'].'&amp;tab=data_view&period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo']."'>".html_print_image(
                 'images/binary.png',
                 true,
                 [

@@ -33,7 +33,7 @@ check_login();
 // ACL Check.
 if (!check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Module Groups view'
     );
     include 'general/noaccess.php';
@@ -302,7 +302,7 @@ function mainModuleGroups()
         $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
 
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $background_color = '#333';
         } else {
             $background_color = '#fff';
@@ -351,7 +351,7 @@ function mainModuleGroups()
                         }
 
                         $data[$i][$j] = "<div style='".$cell_style.'background:'.$color.";'>";
-                        $data[$i][$j] .= '<a class="info_cell white font_18px" rel="'.$rel.'" href="'.$url.'">';
+                        $data[$i][$j] .= "<a class='info_cell white font_18px' rel='".$rel."' href='".$url."'>";
                         $data[$i][$j] .= $array_data[$key][$k]['total_count'];
                         $data[$i][$j] .= '</a></div>';
                     } else {

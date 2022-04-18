@@ -21,11 +21,9 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Alert Management'
     );
     include 'general/noaccess.php';
@@ -49,6 +47,8 @@ if (is_ajax()) {
         return;
     }
 }
+
+enterprise_hook('open_meta_frame');
 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
@@ -96,7 +96,10 @@ if ($al_action !== false) {
 }
 
 if (!$is_in_group && $al_action['id_group'] != 0) {
-    db_pandora_audit('ACL Violation', 'Trying to access unauthorized alert action configuration');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access unauthorized alert action configuration'
+    );
     include 'general/noaccess.php';
     exit;
 }
@@ -237,7 +240,7 @@ $create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_saf
 
 $sql_exclude_command_id = '';
 
-if ($config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
+if (!is_metaconsole() && $config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
     $sql_exclude_command_id = ' AND id <> '.$create_ticket_command_id;
 }
 
@@ -597,6 +600,7 @@ $(document).ready (function () {
 
     $("#id_command").change (function () {
         values = Array ();
+        // No se envia el valor del commando.
         values.push({
             name: "page",
             value: "godmode/alerts/alert_commands"});
@@ -693,8 +697,19 @@ $(document).ready (function () {
                             }
                         }
                         else {
+                            var is_element_select = $("[name=field" + i + "_value]").is("select");
+
                             $("[name=field" + i + "_value]").val(old_value);
+                            if (is_element_select === true) {
+                                $("[name=field" + i + "_value]").trigger('change');
+                            }
+
+                            
                             $("[name=field" + i + "_recovery_value]").val(old_recovery_value);
+
+                            if (is_element_select === true) {
+                                $("[name=field" + i + "_recovery_value]").trigger('change');
+                            }
                         }
                     }
                     else {
@@ -746,6 +761,7 @@ $(document).ready (function () {
 
                     if ($('#field5_value').val() !== '') {
                         ajax_get_integria_custom_fields($('#field5_value').val(), integria_custom_fields_values, integria_custom_fields_rvalues);
+                        $('#field5_value').trigger('change');
                     }
 
                     $('#field5_value').on('change', function() {

@@ -38,7 +38,7 @@ $agent_w = check_acl($config['id_user'], 0, 'AW');
 $access = ($agent_d == true) ? 'AD' : (($agent_w == true) ? 'AW' : 'AD');
 if (!$agent_d && !$agent_w) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access downtime scheduler'
     );
     include 'general/noaccess.php';
@@ -135,6 +135,7 @@ $first_create = (int) get_parameter('first_create');
 $create_downtime = (int) get_parameter('create_downtime');
 $update_downtime = (int) get_parameter('update_downtime');
 $edit_downtime = (int) get_parameter('edit_downtime');
+$downtime_copy = (int) get_parameter('downtime_copy');
 $id_downtime = (int) get_parameter('id_downtime');
 
 $id_agent = (int) get_parameter('id_agent');
@@ -169,7 +170,7 @@ if ($delete_downtime_agent === 1) {
         || !in_array($downtime_group, $user_groups_ad)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -188,7 +189,7 @@ if ($delete_downtime_agent === 1) {
         || !in_array($agent_group, $user_groups_ad)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -250,6 +251,7 @@ if ($create_downtime || $update_downtime) {
     } else if ($type_execution == 'periodically'
         && $type_periodicity == 'monthly'
         && $periodically_day_from == $periodically_day_to
+        && $periodically_time_from >= $periodically_time_to
     ) {
         ui_print_error_message(
             __('Not created. Error inserting data').'. '.__('The end time must be higher than the start time')
@@ -264,7 +266,7 @@ if ($create_downtime || $update_downtime) {
             // Check AD permission on new downtime.
             if (!in_array($id_group, $user_groups_ad)) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access downtime scheduler'
                 );
                 include 'general/noaccess.php';
@@ -322,7 +324,7 @@ if ($create_downtime || $update_downtime) {
             // Check AD permission on OLD downtime.
             if (empty($old_downtime) || !in_array($old_downtime['id_group'], $user_groups_ad)) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access downtime scheduler'
                 );
                 include 'general/noaccess.php';
@@ -332,7 +334,7 @@ if ($create_downtime || $update_downtime) {
             // Check AD permission on NEW downtime group.
             if (!in_array($id_group, $user_groups_ad)) {
                 db_pandora_audit(
-                    'ACL Violation',
+                    AUDIT_LOG_ACL_VIOLATION,
                     'Trying to access downtime scheduler'
                 );
                 include 'general/noaccess.php';
@@ -419,6 +421,16 @@ if ($create_downtime || $update_downtime) {
     }
 }
 
+if ($downtime_copy) {
+    $result = planned_downtimes_copy($id_downtime);
+    if ($result['id_downtime'] !== false) {
+        $id_downtime = $result['id_downtime'];
+        ui_print_success_message($result['success']);
+    } else {
+        ui_print_error_message(__($result['error']));
+    }
+}
+
 // Have any data to show ?
 if ($id_downtime > 0) {
     // Columns of the table tplanned_downtime.
@@ -486,7 +498,7 @@ if ($id_downtime > 0) {
     // Permission check for the downtime with the AD user groups
     if (empty($result) || !in_array($result['id_group'], $user_groups_ad)) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';
@@ -627,20 +639,20 @@ $table->data[5][1] = "
             <tr><td>".ui_get_using_system_timezone_warning().'</td></tr>
             <tr>
                 <td>'.__('Type Periodicity:').'&nbsp;'.html_print_select(
-    [
-        'weekly'  => __('Weekly'),
-        'monthly' => __('Monthly'),
-    ],
-    'type_periodicity',
-    $type_periodicity,
-    'change_type_periodicity();',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
+                [
+                    'weekly'  => __('Weekly'),
+                    'monthly' => __('Monthly'),
+                ],
+                'type_periodicity',
+                $type_periodicity,
+                'change_type_periodicity();',
+                '',
+                0,
+                true,
+                false,
+                true,
+                '',
+                $disabled_in_execution
 )."</td>
             </tr>
             <tr>
@@ -660,31 +672,31 @@ $table->data[5][1] = "
                         <tr>
                             <td>".__('From day:').'</td>
                             <td>'.html_print_select(
-    $days,
-    'periodically_day_from',
-    $periodically_day_from,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
+                                $days,
+                                'periodically_day_from',
+                                $periodically_day_from,
+                                '',
+                                '',
+                                0,
+                                true,
+                                false,
+                                true,
+                                '',
+                                $disabled_in_execution
 ).'</td>
                             <td>'.__('To day:').'</td>
                             <td>'.html_print_select(
-    $days,
-    'periodically_day_to',
-    $periodically_day_to,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
+                                $days,
+                                'periodically_day_to',
+                                $periodically_day_to,
+                                '',
+                                '',
+                                0,
+                                true,
+                                false,
+                                true,
+                                '',
+                                $disabled_in_execution
 ).'</td>
                             <td>'.ui_print_help_tip(__('The end day must be higher than the start day'), true).'</td>
                         </tr>
@@ -693,26 +705,26 @@ $table->data[5][1] = "
                         <tr>
                             <td>'.__('From hour:').'</td>
                             <td>'.html_print_input_text(
-    'periodically_time_from',
-    $periodically_time_from,
-    '',
-    7,
-    7,
-    true,
-    $disabled_in_execution
+                                'periodically_time_from',
+                                $periodically_time_from,
+                                '',
+                                7,
+                                7,
+                                true,
+                                $disabled_in_execution
 ).ui_print_help_tip(
     __('The end time must be higher than the start time'),
     true
 ).'</td>
                             <td>'.__('To hour:').'</td>
                             <td>'.html_print_input_text(
-    'periodically_time_to',
-    $periodically_time_to,
-    '',
-    7,
-    7,
-    true,
-    $disabled_in_execution
+                                'periodically_time_to',
+                                $periodically_time_to,
+                                '',
+                                7,
+                                7,
+                                true,
+                                $disabled_in_execution
 ).ui_print_help_tip(
     __('The end time must be higher than the start time'),
     true
@@ -946,9 +958,7 @@ if (empty($downtimes_agents)) {
 
         if (!$running) {
             $data[5] = '';
-            if ($type_downtime != 'disable_agents_alerts'
-                && $type_downtime != 'disable_agents'
-            ) {
+            if ($type_downtime !== 'disable_agents') {
                 $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
             }
 
@@ -998,13 +1008,13 @@ $table->data['module'][1] = "
                 <td class='cell_delete_button' style='text-align: right; width:10%;' id=''>".'<a class="link_delete"
                         onclick="if(!confirm(\''.__('Are you sure?').'\')) return false;"
                         href="">'.html_print_image(
-    'images/cross.png',
-    true,
-    [
-        'border' => '0',
-        'alt'    => __('Delete'),
-        'class'  => 'invert_filter',
-    ]
+                            'images/cross.png',
+                            true,
+                            [
+                                'border' => '0',
+                                'alt'    => __('Delete'),
+                                'class'  => 'invert_filter',
+                            ]
 ).'</a>'."</td>
             </tr>
             <tr class='datos2' id='add_modules_row'>
@@ -1083,7 +1093,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         || !in_array($downtime_group, $user_groups_ad)
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access downtime scheduler'
         );
         include 'general/noaccess.php';

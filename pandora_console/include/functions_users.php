@@ -301,6 +301,7 @@ function users_get_groups(
     $search=''
 ) {
     static $group_cache = [];
+
     $filter = '';
 
     // Added users_group_cache to avoid unnecessary proccess on massive calls...
@@ -341,13 +342,6 @@ function users_get_groups(
         else {
             $query  = 'SELECT * FROM tgrupo ORDER BY nombre';
             $raw_groups = db_get_all_rows_sql($query);
-
-            if (empty($search) === false) {
-                $filter = sprintf(
-                    ' AND lower(tgrupo.nombre) like lower("%%%s%%")',
-                    $search
-                );
-            }
 
             $query = sprintf(
                 "SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags, tusuario_perfil.no_hierarchy FROM tgrupo, tusuario_perfil, tperfil
@@ -449,6 +443,16 @@ function users_get_groups(
         } else {
             $user_groups[$group[$keys_field]] = $group['nombre'];
         }
+    }
+
+    // Search filter.
+    if (empty($search) === false) {
+        $user_groups = array_filter(
+            $user_groups,
+            function ($group) use ($search) {
+                return (bool) preg_match('/'.$search.'/i', $group['nombre']);
+            }
+        );
     }
 
     $users_group_cache[$users_group_cache_key] = $user_groups;
@@ -773,10 +777,13 @@ function users_get_groups_UM($id_user)
 /**
  * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
  *
- * @param  string User id
+ * @param string  $id_group User id.
+ * @param boolean $um       Um.
+ * @param boolean $disabled Reurn also disabled users.
+ *
  * @return array Return .
  */
-function users_get_users_by_group($id_group, $um=false)
+function users_get_users_by_group($id_group, $um=false, $disabled=true)
 {
     $sql = sprintf(
         "SELECT tusuario.* FROM tusuario 
@@ -784,6 +791,10 @@ function users_get_users_by_group($id_group, $um=false)
         AND tusuario_perfil.id_grupo = '%s'",
         $id_group
     );
+
+    if ($disabled === false) {
+        $sql .= 'WHERE tusuario.disabled = 0';
+    }
 
     $users = db_get_all_rows_sql($sql);
     $return = [];

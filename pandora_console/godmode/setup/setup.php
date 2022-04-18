@@ -59,7 +59,10 @@ if (is_ajax()) {
 
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Setup Management'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -320,6 +323,8 @@ switch ($section) {
     break;
 }
 
+// Put header inside div for special sizing.(No right margin).
+echo '<div id="header_configuration" style="width: calc(100% + 3em);">';
 // Header.
 ui_print_page_header(
     __('Configuration').$subpage,
@@ -327,8 +332,15 @@ ui_print_page_header(
     false,
     $help_header,
     true,
-    $buttons
+    $buttons,
+    false,
+    '',
+    GENERIC_SIZE_TEXT,
+    '',
+    '',
+    true
 );
+echo '</div>';
 
 if (isset($config['error_config_update_config'])) {
     if ($config['error_config_update_config']['correct'] == false) {

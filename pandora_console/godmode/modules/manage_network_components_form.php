@@ -33,7 +33,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent Management'
     );
     include 'general/noaccess.php';
@@ -93,6 +93,8 @@ if ($create_network_from_module) {
     $unknown_instructions = $data_module['unknown_instructions'];
     $critical_inverse = $data_module['critical_inverse'];
     $warning_inverse = $data_module['warning_inverse'];
+    $percentage_critical = $data_module['percentage_critical'];
+    $percentage_warning = $data_module['percentage_warning'];
     $id_category = $data_module['id_category'];
     $ff_event_normal = $data_module['min_ff_event_normal'];
     $ff_event_warning = $data_module['min_ff_event_warning'];
@@ -150,7 +152,9 @@ if (isset($id)) {
         $warning_instructions    = $component['warning_instructions'];
         $unknown_instructions    = $component['unknown_instructions'];
         $critical_inverse        = $component['critical_inverse'];
+        $percentage_critical     = $component['percentage_critical'];
         $warning_inverse         = $component['warning_inverse'];
+        $percentage_warning     = $component['percentage_warning'];
         $id_category             = $component['id_category'];
         $tags                    = $component['tags'];
         $ff_event_normal         = $component['min_ff_event_normal'];
@@ -233,6 +237,8 @@ if (isset($id)) {
         $unknown_instructions = '';
         $critical_inverse = 0;
         $warning_inverse = 0;
+        $percentage_critical = 0;
+        $percentage_warning = 0;
         $id_category = 0;
         $tags = '';
         $ff_event_normal = 0;
@@ -823,6 +829,60 @@ $(document).ready (function () {
     });
 
     $("#snmp_version" ).trigger("change");
+
+    if ($('#checkbox-warning_inverse').prop('checked') === true) {
+    $('#percentage_warning').hide();
+    }
+
+    if ($('#checkbox-critical_inverse').prop('checked') === true) {
+        $('#percentage_critical').hide();
+    }
+
+    if ($('#checkbox-percentage_warning').prop('checked') === true) {
+        $('#warning_inverse').hide();
+    }
+
+    if ($('#checkbox-percentage_critical').prop('checked') === true) {
+        $('#critical_inverse').hide();
+    }
+
+    $('#checkbox-warning_inverse').change (function() {
+        if ($('#checkbox-warning_inverse').prop('checked') === true){
+            $('#checkbox-percentage_warning').prop('checked', false);
+            $('#percentage_warning').hide();
+        } else {
+            $('#percentage_warning').show();
+        }
+    }); 
+
+    $('#checkbox-critical_inverse').change (function() {
+        if ($('#checkbox-critical_inverse').prop('checked') === true){
+            $('#checkbox-percentage_critical').prop('checked', false);
+            $('#percentage_critical').hide();
+        } else {
+            $('#percentage_critical').show();
+        }
+    });
+
+    $('#checkbox-percentage_warning').change (function() {
+        if ($('#checkbox-percentage_warning').prop('checked') === true){
+            $('#checkbox-warning_inverse').prop('checked', false);
+            $('#warning_inverse').hide();
+        } else {
+            $('#warning_inverse').show();
+        }
+    });
+
+    $('#checkbox-percentage_critical').change (function() {
+        if ($('#checkbox-percentage_critical').prop('checked') === true){
+            $('#checkbox-critical_inverse').prop('checked', false);
+            $('#critical_inverse').hide();
+        }
+            else {
+            $('#critical_inverse').show();
+        }   
+    });
+
 });
 
 <?php

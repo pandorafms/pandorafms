@@ -30,7 +30,7 @@ use JSON qw(decode_json);
 use Encode qw(encode_utf8 decode_utf8);
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -242,6 +242,7 @@ sub data_consumer ($$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				'_agentcustomfield_\d+_' => undef,
+				'_addressn_\d+_' => undef,
 	);
 	$parameters = subst_alert_macros ($parameters, \%macros, $pa_config, $dbh, $agent, $module);
 
@@ -296,7 +297,7 @@ sub data_consumer ($$) {
 			elsif ($ReturnCode == 2){
 				$module_data = 0;
 			} 
-			elsif ($ReturnCode == 3 || $ReturnCode == 124){
+			elsif ($ReturnCode == 3 || $ReturnCode == 124 || $ReturnCode == 137){
 				# 124 should be a exit code of the timeout command (command times out)
 				$module_data = ''; # not defined = Uknown 
 			} 
@@ -304,7 +305,15 @@ sub data_consumer ($$) {
 				$module_data = 1;
 			}
 		}
+	} else {
+		# Timeout.
+		if ($ReturnCode == 124 || $ReturnCode == 137) {
+			logger($pa_config, "Plug-in module " . $module->{'nombre'} . " for agent " . $agent->{'nombre'} . " timed out.", 3);
+			pandora_update_module_on_error ($pa_config, $module, $dbh);
+			return;
+		}
 	}
+
 	if (! defined $module_data || $module_data eq '') {
 		logger (
 			$pa_config,

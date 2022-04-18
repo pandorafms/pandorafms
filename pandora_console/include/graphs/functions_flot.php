@@ -33,7 +33,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
         if ($mobile === true) {
             $output .= '
                 <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.js').'"></script>
-                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.3.1.js').'"></script>';
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.5.0-rc1.js').'"></script>';
         }
 
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
@@ -146,7 +146,7 @@ function flot_area_graph(
         break;
     }
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
+    if (($config['style'] === 'pandora_black' && !is_metaconsole()) && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
     ) {
         $background_style = '#222';
         $params['grid_color'] = '#fff';
@@ -553,11 +553,6 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 {
     global $config;
 
-    if ($pdf === true) {
-        $background_color = 'white';
-        $tick_color = '#000';
-    }
-
     // Include_javascript_dependencies_flot_graph().
     $return = '';
 
@@ -750,7 +745,7 @@ function flot_slicesbar_graph(
             'server_id'          => $server_id,
         ];
 
-        $graph = '<img src="data:image/jpg;base64,';
+        $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
         $graph .= '" />';
 
@@ -861,7 +856,7 @@ function flot_slicesbar_graph(
     $values2 = [];
     foreach ($data as $jsvar => $values) {
         $values2[] = implode($separator, $values);
-        $i ++;
+        $i++;
     }
 
     $values = implode($separator2, $values2);

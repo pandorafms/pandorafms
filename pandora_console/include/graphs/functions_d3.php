@@ -202,7 +202,7 @@ function d3_bullet_chart(
     $font = array_shift(explode('.', array_pop(explode('/', $font))));
 
     $invert_color = '';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $invert_color = 'filter: invert(100%);';
     }
 
@@ -225,14 +225,14 @@ function d3_bullet_chart(
 			.bullet .range.s2 { fill: #ccc; }
 			.bullet .measure.s0 { fill: steelblue; }
 			.bullet .measure.s1 { fill: steelblue; }
-			.bullet .title { font-size: 7pt; font-weight: bold; text-align:left; }
+			.bullet .title { font-size: 9pt; font-weight: bold; text-align:left; cursor: help;}
             .bullet .subtitle { fill: #999; font-size: 7pt;}
 			.bullet g text { font-size:'.$font_size.'pt; '.$invert_color.' }
 
 		</style>
 		<script language="javascript" type="text/javascript">
 
-		var margin = {top: 5, right: 40, bottom: 20, left: 120};
+		var margin = {top: 5, right: 40, bottom: 20, left: 130};
 
 		var width = ('.$width.'+10);
 		var height = '.$height.'- margin.top - margin.bottom;
@@ -251,13 +251,14 @@ function d3_bullet_chart(
             $name = io_safe_output($data['nombre']);
         }
 
-        $name = ui_print_truncate_text($name, 15, false, true, false, '...', false);
+        $long_name = $name;
+        $name = ui_print_truncate_text($name, 20, false, true, false, '...', false);
         $marker = '';
         if ($data['value'] == 0) {
             $marker = ', 0';
         }
 
-        $temp[] = '{"title":"'.$name.'","subtitle":"'.$data['unit'].'",
+        $temp[] = '{"longTitle":"'.$long_name.'", "title":"'.$name.'","subtitle":"'.$data['unit'].'",
 				"ranges":['.((float) $data['max']).'],"measures":['.$data['value'].'],
 					"markers":['.$data['min_warning'].','.$data['min_critical'].$marker.']}';
     }
@@ -276,12 +277,19 @@ function d3_bullet_chart(
 				.call(chart);
 
 		var title = svg.append("g")
+            .attr("width", "120px")
 			.style("text-anchor", "end")
 			.attr("transform", "translate(-10, 15)");
 
 		title.append("text")
-			.attr("class", "'.$font.' invert_filter")
-			.text(function(d) { return d.title; });
+			.attr("class", "title '.$font.' invert_filter")
+            .attr("textLength","120")
+            .attr("lengthAdjust", "spacingAndGlyphs")
+			.text(function(d) { return d.title; })
+            .append("title")
+                .text(function(d) { return d.longTitle; });
+
+
 
 		title.append("text")
 			.attr("class", "subtitle")

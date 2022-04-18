@@ -82,7 +82,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
             SELECT *
             FROM tgrupo
             WHERE id_grupo IN ('.$user_groups_ids.')
-            ORDER BY nombre COLLATE utf8_general_ci ASC'
+            ORDER BY nombre ASC'
         );
     }
 
@@ -105,64 +105,122 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
     if (is_metaconsole() && !empty($list_groups)) {
         $cache_table = 'tmetaconsole_agent';
 
-        $sql_stats = "SELECT id_grupo, COUNT(id_agente) AS agents_total,
-						SUM(total_count) AS monitors_total,
-						SUM(normal_count) AS monitors_ok,
-						SUM(warning_count) AS monitors_warning,
-						SUM(critical_count) AS monitors_critical,
-						SUM(unknown_count) AS monitors_unknown,
-						SUM(notinit_count) AS monitors_not_init,
-						SUM(fired_count) AS alerts_fired
-					  FROM $cache_table
-					  WHERE disabled = 0
-					  	AND id_grupo IN ($user_groups_ids)
-					  GROUP BY id_grupo";
+        if (users_is_admin() === false) {
+            $user_groups_ids_array = explode(',', $user_groups_ids);
+
+            $user_group_children_ids = [];
+
+            foreach ($user_groups_ids_array as $user_group_id) {
+                $group_children_ids = groups_get_children_ids($user_group_id);
+                $user_group_children_ids = array_merge($user_group_children_ids, $group_children_ids);
+            }
+
+            $user_groups_ids = implode(',', array_unique($user_group_children_ids));
+        }
+
+        // Subquery is needed for avoid possible duplicity in id_agente.
+        $sql_stats = sprintf(
+            'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_total,
+            SUM(tma.total_count) AS monitors_total,
+            SUM(tma.normal_count) AS monitors_ok,
+            SUM(tma.warning_count) AS monitors_warning,
+			SUM(tma.critical_count) AS monitors_critical,
+			SUM(tma.unknown_count) AS monitors_unknown,
+			SUM(tma.notinit_count) AS monitors_not_init,
+			SUM(tma.fired_count) AS alerts_fired
+			FROM tmetaconsole_agent tma
+            WHERE tma.disabled = 0
+            AND tma.id_agente IN (
+                SELECT DISTINCT tmag.id_agente FROM tmetaconsole_agent tmag
+                LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+                ON tmag.id_agente = tmasg.id_agent WHERE tmag.id_grupo IN (%s) OR tmasg.id_group IN (%s)
+            )
+            GROUP BY tma.id_grupo',
+            $user_groups_ids,
+            $user_groups_ids
+        );
+
         $data_stats = db_get_all_rows_sql($sql_stats);
 
-        $sql_stats_unknown = "SELECT id_grupo, COUNT(id_agente) AS agents_unknown
-							  FROM $cache_table
-							  WHERE disabled = 0
-							  	AND id_grupo IN ($user_groups_ids)
-							  	AND critical_count = 0
-							  	AND warning_count = 0
-							  	AND unknown_count > 0
-							  GROUP BY id_grupo";
+        $sql_stats_unknown = sprintf(
+            'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_unknown
+            FROM tmetaconsole_agent tma
+            LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+            ON tma.id_agente = tmasg.id_agent
+			WHERE tma.disabled = 0
+			AND (tma.id_grupo IN (%s) OR tmasg.id_group IN (%s))
+			AND tma.critical_count = 0
+			AND tma.warning_count = 0
+			AND tma.unknown_count > 0
+            GROUP BY tma.id_grupo',
+            $user_groups_ids,
+            $user_groups_ids
+        );
+
         $data_stats_unknown = db_get_all_rows_sql($sql_stats_unknown);
 
-        $sql_stats_not_init = "SELECT id_grupo, COUNT(id_agente) AS agents_not_init
-							  FROM $cache_table
-							  WHERE disabled = 0
-							  	AND id_grupo IN ($user_groups_ids)
-							  	AND (total_count = 0 OR total_count = notinit_count)
-							  GROUP BY id_grupo";
+        $sql_stats_not_init = sprintf(
+            'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_not_init
+			FROM tmetaconsole_agent tma
+            LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+            ON tma.id_agente = tmasg.id_agent
+			WHERE tma.disabled = 0
+			AND (tma.id_grupo IN (%s) OR tmasg.id_group IN (%s))
+			AND (tma.total_count = 0 OR tma.total_count = tma.notinit_count)
+            GROUP BY tma.id_grupo',
+            $user_groups_ids,
+            $user_groups_ids
+        );
+
         $data_stats_not_init = db_get_all_rows_sql($sql_stats_not_init);
 
-        $sql_stats_ok = "SELECT id_grupo, COUNT(id_agente) AS agents_ok
-						 FROM $cache_table
-						 WHERE disabled = 0
-						 	AND id_grupo IN ($user_groups_ids)
-						 	AND critical_count = 0
-						 	AND warning_count = 0
-						 	AND unknown_count = 0
-						 	AND normal_count > 0
-						 GROUP BY id_grupo";
+        $sql_stats_ok = sprintf(
+            'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_ok
+            FROM tmetaconsole_agent tma
+            LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+            ON tma.id_agente = tmasg.id_agent
+			WHERE tma.disabled = 0
+			AND (tma.id_grupo IN (%s) OR tmasg.id_group IN (%s))
+			AND tma.critical_count = 0
+			AND tma.warning_count = 0
+			AND tma.unknown_count = 0
+			AND tma.normal_count > 0
+            GROUP BY tma.id_grupo',
+            $user_groups_ids,
+            $user_groups_ids
+        );
+
         $data_stats_ok = db_get_all_rows_sql($sql_stats_ok);
 
-        $sql_stats_warning = "SELECT id_grupo, COUNT(id_agente) AS agents_warning
-							  FROM $cache_table
-							  WHERE disabled = 0
-							  	AND id_grupo IN ($user_groups_ids)
-							  	AND critical_count = 0
-							  	AND warning_count > 0
-							  GROUP BY id_grupo";
+        $sql_stats_warning = sprintf(
+            'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_warning
+			FROM tmetaconsole_agent tma
+            LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+            ON tma.id_agente = tmasg.id_agent
+			WHERE tma.disabled = 0
+			AND (tma.id_grupo IN (%s) OR tmasg.id_group IN (%s))
+			AND tma.critical_count = 0
+			AND tma.warning_count > 0
+            GROUP BY tma.id_grupo',
+            $user_groups_ids,
+            $user_groups_ids
+        );
+
         $data_stats_warning = db_get_all_rows_sql($sql_stats_warning);
 
-        $sql_stats_critical = "SELECT id_grupo, COUNT(id_agente) AS agents_critical
-								FROM $cache_table
-								WHERE disabled = 0
-									AND id_grupo IN ($user_groups_ids)
-									AND critical_count > 0
-								GROUP BY id_grupo";
+        $sql_stats_critical = sprintf(
+            'SELECT tma.id_grupo, COUNT(tma.id_agente) AS agents_critical
+			FROM tmetaconsole_agent tma
+            LEFT JOIN tmetaconsole_agent_secondary_group tmasg
+            ON tma.id_agente = tmasg.id_agent
+			WHERE tma.disabled = 0
+			AND (tma.id_grupo IN (%s) OR tmasg.id_group IN (%s))
+			AND tma.critical_count > 0
+            GROUP BY tma.id_grupo',
+            $user_groups_ids,
+            $user_groups_ids
+        );
+
         $data_stats_critical = db_get_all_rows_sql($sql_stats_critical);
 
         if (!empty($data_stats)) {
@@ -292,7 +350,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
         $list['_total_agents_'] = $total_agentes[0]['total_agents'];
         $list['_monitor_alerts_fire_count_'] = $group_stat[0]['alerts_fired'];
 
-        $list['_monitors_alerts_'] = tactical_monitor_alerts(explode(',', $user_groups_ids), $user_strict, explode(',', $user_groups_ids));
+        $list['_monitors_alerts_'] = tactical_monitor_alerts($user_strict);
         // Get total count of monitors for this group, except disabled.
         $list['_monitor_checks_'] = ($list['_monitors_not_init_'] + $list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
 
@@ -332,7 +390,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
 
         $list['_server_sanity_'] = format_numeric((100 - $list['_module_sanity_']), 1);
     } else {
-        if (users_is_admin()) {
+        if (users_is_admin() || users_can_manage_group_all()) {
             $result_list = db_get_all_rows_sql(
                 sprintf(
                     'SELECT COUNT(*) as contado, estado FROM tagente_estado tae 
@@ -411,12 +469,14 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
         }
 
         $list['_monitors_alerts_fired_'] = tactical_monitor_fired_alerts(explode(',', $user_groups_ids), $user_strict, explode(',', $user_groups_ids));
-        $list['_monitors_alerts_'] = tactical_monitor_alerts(explode(',', $user_groups_ids), $user_strict, explode(',', $user_groups_ids));
+        $list['_monitors_alerts_'] = tactical_monitor_alerts($user_strict);
 
         $total_agentes = agents_get_agents(false, ['count(DISTINCT id_agente) as total_agents'], 'AR', false, false, 1);
         $list['_total_agents_'] = $total_agentes[0]['total_agents'];
 
-        $list['_monitor_checks_'] = ($list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
+        $list['_monitor_checks_'] = ($list['_monitors_not_init_'] + $list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
+
+        $list['_monitor_total_'] = ($list['_monitors_not_init_'] + $list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
 
         // Calculate not_normal monitors
         $list['_monitor_not_normal_'] = ($list['_monitor_checks_'] - $list['_monitors_ok_']);
@@ -442,42 +502,33 @@ function tactical_status_modules_agents($id_user=false, $user_strict=false, $acc
 }
 
 
-function tactical_monitor_alerts($group_array, $strict_user=false, $id_group_strict=false)
+function tactical_monitor_alerts($strict_user=false)
 {
-    // If there are not groups to query, we jump to nextone
-    if (empty($group_array)) {
-        return 0;
-    } else if (!is_array($group_array)) {
-        $group_array = [$group_array];
-    }
+    $groups = users_get_groups($config['id_user'], 'AR', false);
+    $id_groups = array_keys($groups);
 
-    $group_clause = implode(',', $group_array);
-    $group_clause = '('.$group_clause.')';
-
-    if ($strict_user) {
-        $group_clause_strict = implode(',', $id_group_strict);
-        $group_clause_strict = '('.$group_clause_strict.')';
-        $sql = "SELECT COUNT(talert_template_modules.id)
-			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-			WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
-            AND tagente.disabled = 0 AND tagente_modulo.disabled = 0
-            AND talert_template_modules.disabled = 0
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
-        $count = db_get_sql($sql);
-        return $count;
+    if (empty($id_groups)) {
+        $where_clause .= ' AND (1 = 0) ';
     } else {
-        // TODO REVIEW ORACLE AND POSTGRES
-        return db_get_sql(
-            "SELECT COUNT(talert_template_modules.id)
-			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-            AND tagente.disabled = 0 AND tagente_modulo.disabled = 0
-            AND talert_template_modules.disabled = 0
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo"
+        $where_clause .= sprintf(
+            ' AND id_agent_module IN (
+            SELECT tam.id_agente_modulo
+            FROM tagente_modulo tam
+            WHERE tam.id_agente IN (SELECT ta.id_agente
+                FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
+                    ta.id_agente = tasg.id_agent
+                    WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+            implode(',', $id_groups),
+            implode(',', $id_groups)
         );
     }
+
+    $filter_alert = [];
+    $filter_alert['disabled'] = 'all_enabled';
+
+    $alert_count = get_group_alerts($id_groups, $filter_alert, false, $where_clause, false, false, false, true, $strict_user);
+
+    return $alert_count;
 }
 
 

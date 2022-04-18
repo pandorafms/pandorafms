@@ -34,7 +34,10 @@ $confMapDefaultUrlFull = json_decode($confMapDefault['conection_data'], true);
 $confMapUrlDefault = $confMapDefaultFull['url'];
 
 if (! check_acl($config['id_user'], $map['group_id'], 'MR') && ! check_acl($config['id_user'], $map['group_id'], 'MW') && ! check_acl($config['id_user'], $map['group_id'], 'MM')) {
-    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access map builder'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -139,7 +142,7 @@ if ($has_management_acl) {
     $hash = md5($config['dbpass'].$idMap.$config['id_user']);
     $buttons['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/gis_maps/public_console.php?hash='.$hash.'&map_id='.$idMap.'&id_user='.$config['id_user']
-    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console'), 'class' => 'invert_filter']).'</a>';
+    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public GIS map'), 'class' => 'invert_filter']).'</a>';
 }
 
 $times = [

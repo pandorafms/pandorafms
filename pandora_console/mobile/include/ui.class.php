@@ -220,10 +220,11 @@ class Ui
         if ($left_button === false) {
             $left_button = $this->createHeaderButton(
                 [
-                    'icon' => 'back',
-                    'pos'  => 'left',
-                    'text' => __('Logout'),
-                    'href' => 'index.php?action=logout',
+                    'icon'  => 'ui-icon-back',
+                    'pos'   => 'left',
+                    'text'  => __('Logout'),
+                    'href'  => 'index.php?action=logout',
+                    'class' => 'header-button-left',
                 ]
             );
         }
@@ -233,10 +234,11 @@ class Ui
             $left_button,
             $this->createHeaderButton(
                 [
-                    'icon' => 'home',
-                    'pos'  => 'right',
-                    'text' => __('Home'),
-                    'href' => 'index.php?page=home',
+                    'icon'  => 'ui-icon-home',
+                    'pos'   => 'right',
+                    'text'  => __('Home'),
+                    'href'  => 'index.php?page=home',
+                    'class' => 'header-button-right',
                 ]
             )
         );
@@ -263,6 +265,10 @@ class Ui
             $return .= 'href="'.$options['href'].'" ';
         } else {
             $return .= 'href="#" ';
+        }
+
+        if (isset($options['class'])) {
+            $return .= 'class="'.$options['class'].'" ';
         }
 
         $return .= ' data-ajax="false">';
@@ -731,7 +737,7 @@ class Ui
             $html_title_close_button = "data-close-btn='yes'";
         }
 
-        $dialogHtml = "<div id='".$dialog_id."' class='".$dialog_class."' data-role='dialog' ".$html_title_close_button.">\n";
+        $dialogHtml = "<div data-close-btn='right' id='".$dialog_id."' class='".$dialog_class."' data-role='dialog' ".$html_title_close_button.">\n";
         $dialogHtml .= "<div data-role='header'>\n";
         $dialogHtml .= "<h1 class='dialog_title'>".$title_text."</h1>\n";
         $dialogHtml .= "</div>\n";
@@ -784,11 +790,12 @@ class Ui
         echo '		<title>'.$this->title."</title>\n";
         echo "		<meta charset='UTF-8' />\n";
         echo "		<meta name='viewport' content='width=device-width, initial-scale=1'>\n";
+        echo '      <link rel="icon" href="'.ui_get_full_url('/').ui_get_favicon().'" type="image/ico" />'."\n";
+        echo '      <link rel="shortcut icon" href="'.ui_get_full_url('/').ui_get_favicon().'" type="image/x-icon" />'."\n";
         echo "		<link rel='stylesheet' href='include/style/main.css' />\n";
-
-        echo "		<link rel='stylesheet' href='include/style/jquery.mobile-1.3.1.css' />\n";
+        echo "		<link rel='stylesheet' href='include/style/jquery.mobile-1.5.0-rc1.min.css' />\n";
         echo "		<script src='include/javascript/jquery.js'></script>\n";
-        echo "		<script src='include/javascript/jquery.mobile-1.3.1.js'></script>\n";
+        echo "		<script src='include/javascript/jquery.mobile-1.5.0-rc1.js'></script>\n";
         echo "		<script src='../include/javascript/pandora.js'></script>\n";
         echo "		<script src='../include/javascript/pandora_ui.js'></script>\n";
 
@@ -829,12 +836,12 @@ class Ui
         }
 
         echo "		<div data-dom-cache='false' data-role='page' id='".$this->page_name."'>\n";
-        echo "			<div data-role='header' data-position='fixed' >\n";
-        echo '				<h1>'.$this->header['title']."</h1>\n";
+        echo "			<div data-role='header' data-position='fixed' class='ui-header ui-bar-inherit ui-header-fixed slidedown'>\n";
+        echo '				<h1 class="ui-title">'.$this->header['title']."</h1>\n";
         echo '				'.$this->header['button_left']."\n";
         echo '				'.$this->header['button_right']."\n";
         echo "			</div>\n";
-        echo "			<div data-role='content'>\n";
+        echo "			<div data-role='content' class='ui-content'>\n";
         foreach ($this->content as $content) {
             echo '				'.$content."\n";
         }
@@ -975,6 +982,30 @@ class Ui
 
         <?php
 
+    }
+
+
+    /**
+     * Load VC.
+     *
+     * @param string  $settings        Json object.
+     * @param integer $visualConsoleId Id.
+     *
+     * @return void Output script.
+     */
+    public function loadVc($settings, $visualConsoleId)
+    {
+        $this->contentAddHtml(
+            '<script type="text/javascript">
+            var settings = '.$settings.';
+            var fullUrl = "'.ui_get_full_url('/', false, false, false).'";
+            var visualConsoleId = '.$visualConsoleId.';
+
+            $(document).ready(function () {
+                dashboardLoadVC(settings);
+            });
+        </script>'
+        );
     }
 
 

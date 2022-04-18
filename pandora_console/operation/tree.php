@@ -45,6 +45,8 @@ $group_id      = (int) get_parameter('group_id');
 $tag_id        = (int) get_parameter('tag_id');
 $strict_acl    = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 $serach_hirearchy = (bool) get_parameter('searchHirearchy', false);
+$show_disabled = get_parameter('show_disabled', false);
+
 // ---------------------Tabs -------------------------------------------
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
@@ -215,7 +217,7 @@ $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $row = [];
 $row[] = __('Search group');
-$row[] = html_print_input_text('search_group', $search_group, '', is_metaconsole() ? 50 : 25, 30, true);
+$row[] = html_print_input_text('search_group', $search_group, '', 25, 30, true);
 
 if (is_metaconsole()) {
     $row[] = __('Show not init modules');
@@ -228,10 +230,15 @@ $table->data[] = $row;
 
 $row = [];
 $row[] = __('Search agent');
-$row[] = html_print_input_text('search_agent', $search_agent, '', is_metaconsole() ? 50 : 25, 30, true);
+$row[] = html_print_input_text('search_agent', $search_agent, '', 25, 30, true);
 
 $row[] = __('Show not init agents');
 $row[] = html_print_checkbox('show_not_init_agents', $show_not_init_agents, true, true);
+
+if (is_metaconsole() === true) {
+    $table->data[] = $row;
+    $row = [];
+}
 
 $row[] = __('Show full hirearchy');
 $row[] = html_print_checkbox('serach_hirearchy', $serach_hirearchy, false, true);
@@ -241,8 +248,16 @@ $row[] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '',
 $row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
 
 // Button
+if (is_metaconsole() === true) {
+    $table->data[] = $row;
+    $row = [];
+    $row[] = __('Show only disabled');
+    $row[] = html_print_checkbox('show_disabled', $show_disabled, false, true);
+    $table->data[] = $row;
+    $row = [];
+}
+
 $row[] = html_print_submit_button(__('Filter'), 'uptbutton', false, 'class="sub search"', true);
-$table->rowspan[][(count($row) - 1)] = 2;
 
 $table->data[] = $row;
 
@@ -314,7 +329,7 @@ html_print_image(
 echo "<div id='tree-controller-recipient'>";
 echo '</div>';
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     echo '</div>';
 }
 
@@ -322,7 +337,7 @@ enterprise_hook('close_meta_frame');
 
 ?>
 
-<?php if (!is_metaconsole()) { ?>
+<?php if (is_metaconsole() === false) { ?>
 <script type="text/javascript" src="include/javascript/fixed-bottom-box.js"></script>
 <?php } else { ?>
 <script type="text/javascript" src="../../include/javascript/fixed-bottom-box.js"></script>
@@ -330,14 +345,14 @@ enterprise_hook('close_meta_frame');
 
 <script type="text/javascript">
     var treeController = TreeController.getController();
-    
+
     processTreeSearch();
-    
+
     $("form#tree_search").submit(function(e) {
         e.preventDefault();
         processTreeSearch();
     });
-    
+
     function processTreeSearch () {
         // Clear the tree
         if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
@@ -379,6 +394,13 @@ enterprise_hook('close_meta_frame');
         else{
             parameters['filter']['show_not_init_modules'] = 0;
             $('#hidden-show_not_init_modules_hidden').val(0);
+        }
+
+        if($("#checkbox-show_disabled").is(':checked')){
+            parameters['filter']['show_disabled'] = 1;
+        }
+        else{
+            parameters['filter']['show_disabled'] = 0;
         }
 
         $.ajax({

@@ -105,6 +105,8 @@ function configure_modules_form() {
     $("#text-unit").attr("value", "");
     $("#checkbox-critical_inverse").attr("value", 0);
     $("#checkbox-warning_inverse").attr("value", 0);
+    $("#checkbox-percentage_warning").attr("value", 0);
+    $("#checkbox-percentage_critical").attr("value", 0);
     $("#checkbox-ff_type").attr("value", 0);
     $("#textarea_critical_instructions").attr("value", "");
     $("#textarea_warning_instructions").attr("value", "");
@@ -205,6 +207,16 @@ function configure_modules_form() {
           data["critical_inverse"]
         );
         $("#checkbox-warning_inverse").prop("uncheck", data["warning_inverse"]);
+
+        $("#checkbox-percentage_warning").prop(
+          "uncheck",
+          data["percentage_warning"]
+        );
+        $("#checkbox-percentage_critical").prop(
+          "uncheck",
+          data["percentage_critical"]
+        );
+
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {
@@ -464,6 +476,15 @@ function configure_modules_form() {
           data["critical_inverse"]
         );
         $("#checkbox-warning_inverse").prop("checked", data["warning_inverse"]);
+        $("#checkbox-percentage_warning").prop(
+          "uncheck",
+          data["percentage_warning"]
+        );
+        $("#checkbox-percentage_critical").prop(
+          "uncheck",
+          data["percentage_critical"]
+        );
+
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {
@@ -500,7 +521,7 @@ function configure_modules_form() {
           );
         }
 
-        if (tags != "") {
+        if (tags != "" && tags != undefined && tangs != null) {
           tags = tags.split(",");
 
           // Fill the selected tags box with select ones
@@ -609,7 +630,7 @@ function configure_modules_form() {
 
     moduletype = $("#hidden-moduletype").val();
     if (moduletype == 5) {
-      if ($("#prediction_module").val() == null) {
+      if ($("#id_modules").val() === null) {
         $("#prediction_module").focus();
         $("#message").showMessage(no_prediction_module_lang);
         return false;
@@ -921,7 +942,9 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
         .children()
         .eq(1)
         .children()
-        .attr("type", "password");
+        .attr("type", "password")
+        .removeAttr("value")
+        .val(macro_value);
     } else {
       $("#" + row_id)
         .children()
@@ -934,7 +957,9 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
       $("#" + row_id)
         .children()
         .eq(1)
-        .attr("type", "password");
+        .attr("type", "password")
+        .removeAttr("value")
+        .val(macro_value);
     } else {
       $("#" + row_id)
         .children()

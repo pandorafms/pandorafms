@@ -33,7 +33,7 @@ use File::Basename qw(dirname);
 use File::Copy;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -190,6 +190,8 @@ sub data_consumer ($$) {
   }
 
   eval {
+    local $SIG{__DIE__};
+
     my @subnets = split(/,/, safe_output($task->{'subnet'}));
     my @communities = split(/,/, safe_output($task->{'snmp_community'}));
     my @auth_strings = ();
@@ -249,6 +251,7 @@ sub data_consumer ($$) {
     }
 
     my $recon = new PandoraFMS::Recon::Base(
+      parent => $self,
       communities => \@communities,
       dbh => $dbh,
       group_id => $task->{'id_group'},
@@ -929,9 +932,9 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
 
     # 2. Verify Private Enterprise Number matches (PEN)
     if (defined($template->{'pen'})) {
-      my @penes = split(',', $template->{'pen'});
+      my @pens = split(',', $template->{'pen'});
 
-      next unless (is_in_array(\@penes, $self->get_pen($device)));
+      next unless (is_in_array(\@pens, $self->get_pen($device)));
     }
 
     # 3. Retrieve module list from target template.
@@ -1724,6 +1727,23 @@ sub PandoraFMS::Recon::Base::delete_connections($) {
 ################################################################################
 sub PandoraFMS::Recon::Base::message($$$) {
   my ($self, $message, $verbosity) = @_;
+
+  if ($verbosity <= 1) {
+    my $label = "[Discovery task " . $self->{'task_id'} . "]";
+    if (ref($self->{'task_data'}) eq 'HASH' && defined($self->{'task_data'}{'name'})) {
+      $label = "[Discovery task " . $self->{'task_data'}{'name'} . "]";
+    }
+
+    PandoraFMS::Core::send_console_notification(
+      $self->{'pa_config'},
+      $self->{'parent'}->getDBH(),
+      $label,
+      $message,
+      ['admin']
+    );
+
+    $self->{'summary'} = $message;
+  }
 
   logger($self->{'pa_config'}, "[Recon task " . $self->{'task_id'} . "] $message", $verbosity);
 }

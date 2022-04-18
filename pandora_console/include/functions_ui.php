@@ -251,6 +251,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $icon_image = '';
     $no_close_bool = false;
     $force_style = '';
+    $force_class = '';
     if (is_array($message)) {
         if (!empty($message['title'])) {
             $text_title = $message['title'];
@@ -270,6 +271,10 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 
         if (!empty($message['force_style'])) {
             $force_style = $message['force_style'];
+        }
+
+        if (empty($message['force_class']) === false) {
+            $force_class = $message['force_class'];
         }
     } else {
         $text_message = $message;
@@ -319,6 +324,10 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 
     $id = 'info_box_'.uniqid();
 
+    if (empty($force_class) === false) {
+        $class = $class.' '.$force_class;
+    }
+
     // Use the no_meta parameter because this image is only in the base console.
     $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
@@ -329,7 +338,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.
-        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, true).'</a>';
+        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, false).'</a>';
     }
 
     $output .= '</td>
@@ -1203,7 +1212,7 @@ function ui_format_alert_row(
 
     $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
 
-    if (empty($actions) === false) {
+    if (empty($actions) === false || $actionDefault != '') {
         $actionText = '<div><ul class="action_list">';
         foreach ($actions as $action) {
             $actionText .= '<div class="mrgn_btn_5px" ><span class="action_name"><li>'.$action['name'];
@@ -1215,9 +1224,9 @@ function ui_format_alert_row(
         }
 
         $actionText .= '</ul></div>';
-    } else {
+
         if ($actionDefault != '') {
-            $actionText = db_get_sql(
+            $actionText .= db_get_sql(
                 sprintf(
                     'SELECT name FROM talert_actions WHERE id = %d',
                     $actionDefault
@@ -2704,16 +2713,15 @@ function ui_print_status_image(
         $imagepath = $path;
     }
 
-    if ($imagepath == 'images/status_sets/default') {
+    if ($imagepath === 'images/status_sets/default') {
         $image_with_css = true;
     }
-
-    $imagepath .= '/'.$type;
 
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
         return ui_print_status_sets($type, $title, $return, $shape_status, $extra_info);
     } else {
+        $imagepath .= '/'.$type;
         if ($options === false) {
             $options = [];
         }
@@ -2728,23 +2736,30 @@ function ui_print_status_image(
 /**
  * Returns html code to print a shape for a module.
  *
- * @param integer $status Module status.
- * @param boolean $return True or false.
- * @param string  $class  Custom class or use defined.
+ * @param integer $status      Module status.
+ * @param boolean $return      True or false.
+ * @param string  $class       Custom class or use defined.
+ * @param string  $title       Custom title or inherit from module status.
+ * @param string  $div_content Content.
  *
  * @return string HTML code for shape.
  */
 function ui_print_module_status(
     $status,
     $return=false,
-    $class='status_rounded_rectangles'
+    $class='status_rounded_rectangles',
+    $title=null,
+    $div_content=''
 ) {
     $color = modules_get_color_status($status, true);
-    $title = modules_get_modules_status($status);
+    if ($title === null) {
+        $title = modules_get_modules_status($status);
+    }
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
-    $output .= '" title="'.$title.'"></div>';
+    $output .= ' forced_title" data-title="'.$title.'" title="';
+    $output .= $title.'" data-use_title_for_force_title="1">'.$div_content.'</div>';
 
     if ($return === false) {
         echo $output;
@@ -2855,7 +2870,7 @@ function ui_print_status_sets(
         $options = [];
     }
 
-    if (isset($options['style'])) {
+    if (isset($options['style']) === true) {
         $options['style'] .= ' display: inline-block;';
     } else {
         $options['style'] = 'display: inline-block;';
@@ -2865,15 +2880,15 @@ function ui_print_status_sets(
         $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
-    if (isset($options['class'])) {
+    if (isset($options['class']) === true) {
         $options['class'] = $options['class'];
     }
 
-    if ($title != '') {
-        $options['title'] = empty($extra_info) ? $title : $title.'&#10'.$extra_info;
-        $options['data-title'] = empty($extra_info) ? $title : $title.'<br>'.$extra_info;
+    if (empty($title) === false) {
+        $options['title'] = (empty($extra_info) === true) ? $title : $title.'&#10'.$extra_info;
+        $options['data-title'] = (empty($extra_info) === true) ? $title : $title.'<br>'.$extra_info;
         $options['data-use_title_for_force_title'] = 1;
-        if (isset($options['class'])) {
+        if (isset($options['class']) === true) {
             $options['class'] .= ' forced_title';
         } else {
             $options['class'] = 'forced_title';
@@ -2885,15 +2900,13 @@ function ui_print_status_sets(
         $output .= $k.'="'.$v.'"';
     }
 
-    $output .= '>';
-    $output .= '</div>';
+    $output .= '>&nbsp;</div>';
 
     if ($return === false) {
         echo $output;
+    } else {
+        return $output;
     }
-
-    return $output;
-
 }
 
 
@@ -3307,7 +3320,9 @@ function ui_print_datatable(array $parameters)
         ];
     }
 
-    if (!is_array($parameters['datacolumns'])) {
+    if (isset($parameters['datacolumns']) === false
+        || is_array($parameters['datacolumns']) === false
+    ) {
         $parameters['datacolumns'] = $parameters['columns'];
     }
 
@@ -3356,7 +3371,9 @@ function ui_print_datatable(array $parameters)
         $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
 
         // Extra buttons.
-        if (is_array($parameters['form']['extra_buttons'])) {
+        if (isset($parameters['form']['extra_buttons']) === true
+            && is_array($parameters['form']['extra_buttons']) === true
+        ) {
             foreach ($parameters['form']['extra_buttons'] as $button) {
                 $filter .= '<button id="'.$button['id'].'" ';
                 $filter .= ' class="'.$button['class'].'" ';
@@ -3455,6 +3472,13 @@ function ui_print_datatable(array $parameters)
         }
     }
 
+    $export_columns = '';
+    if (isset($parameters['csv_exclude_latest']) === true
+        && $parameters['csv_exclude_latest'] === true
+    ) {
+        $export_columns = ',columns: \'th:not(:last-child)\'';
+    }
+
     $js .= '
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
@@ -3485,8 +3509,7 @@ function ui_print_datatable(array $parameters)
                             order : "current",
                             page : "All",
                             search : "applied"
-                        },
-                        columns: [1,'.$columns.']
+                        }'.$export_columns.'
                     }
                 }
             ],
@@ -3587,18 +3610,95 @@ function ui_print_datatable(array $parameters)
     // Order.
     $err_msg = '<div id="error-'.$table_id.'"></div>';
     $output = $err_msg.$filter.$extra.$table.$js;
+    if (is_ajax() === false) {
+        ui_require_css_file('datatables.min', 'include/styles/js/');
+        ui_require_css_file('tables');
+        if (is_metaconsole()) {
+            ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+        }
 
-    ui_require_css_file('datatables.min', 'include/styles/js/');
-    ui_require_css_file('tables');
-    if (is_metaconsole()) {
-        ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+        ui_require_javascript_file('datatables.min');
+        ui_require_javascript_file('buttons.dataTables.min');
+        ui_require_javascript_file('dataTables.buttons.min');
+        ui_require_javascript_file('buttons.html5.min');
+        ui_require_javascript_file('buttons.print.min');
+    } else {
+        // Load datatable.min.css.
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/js/datatables.min.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+        // Load tables.css.
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/tables.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+        if (is_metaconsole() === true) {
+            // Load tables_meta.css.
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                ENTERPRISE_DIR.'/include/styles/tables_meta.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        }
+
+        // Load datatables.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/datatables.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.dataTables.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.dataTables.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load dataTables.buttons.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/dataTables.buttons.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.html5.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.html5.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+        // Load buttons.print.min.js.
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/buttons.print.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
     }
-
-    ui_require_javascript_file('datatables.min');
-    ui_require_javascript_file('buttons.dataTables.min');
-    ui_require_javascript_file('dataTables.buttons.min');
-    ui_require_javascript_file('buttons.html5.min');
-    ui_require_javascript_file('buttons.print.min');
 
     if (isset($parameters['return']) && $parameters['return'] == true) {
         // Compat.
@@ -4169,7 +4269,9 @@ function ui_forced_public_url()
         $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
     }
 
-    if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
+    if (isset($_SERVER['REMOTE_ADDR']) === true
+        && in_array($_SERVER['REMOTE_ADDR'], $exclusions)
+    ) {
         return false;
     }
 
@@ -4276,7 +4378,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     } else {
         $protocol = 'http';
 
-        if ($_SERVER['SERVER_PORT'] != 80) {
+        if (($_SERVER['SERVER_PORT'] ?? 80) != 80) {
             $port = $_SERVER['SERVER_PORT'];
         }
     }
@@ -4301,10 +4403,10 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
 
             $proxy = true;
         } else {
-            $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
+            $fullurl = $protocol.'://'.($_SERVER['SERVER_NAME'] ?? '');
         }
     } else {
-        $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
+        $fullurl = $protocol.'://'.($_SERVER['SERVER_NAME'] ?? '');
     }
 
     // Using a different port than the standard.
@@ -4481,19 +4583,19 @@ function ui_print_standard_header(
 /**
  * Return a standard page header (Pandora FMS 3.1 version)
  *
- * @param string  $title       Title.
- * @param string  $icon        Icon path.
- * @param boolean $return      Return (false will print using a echo).
- * @param boolean $help        Help (Help ID to print the Help link).
- * @param boolean $godmode     Godmode (false = operation mode).
- * @param string  $options     Options (HTML code for make tabs or just a brief
- * info string.
- * @param mixed   $modal       Modal.
- * @param mixed   $message     Message.
- * @param mixed   $numChars    NumChars.
- * @param mixed   $alias       Alias.
- * @param mixed   $breadcrumbs Breadcrumbs.
- *
+ * @param  string  $title           Title.
+ * @param  string  $icon            Icon path.
+ * @param  boolean $return          Return (false will print using a echo).
+ * @param  boolean $help            Help (Help ID to print the Help link).
+ * @param  boolean $godmode         Godmode (false = operation mode).
+ * @param  string  $options         Options (HTML code for make tabs or just a brief
+ *     info string.
+ * @param  mixed   $modal           Modal.
+ * @param  mixed   $message         Message.
+ * @param  mixed   $numChars        NumChars.
+ * @param  mixed   $alias           Alias.
+ * @param  mixed   $breadcrumbs     Breadcrumbs.
+ * @param  boolean $hide_left_small Hide title id screen is small.
  * @return string Header HTML
  */
 function ui_print_page_header(
@@ -4507,7 +4609,8 @@ function ui_print_page_header(
     $message='',
     $numChars=GENERIC_SIZE_TEXT,
     $alias='',
-    $breadcrumbs=''
+    $breadcrumbs='',
+    $hide_left_small=false
 ) {
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
@@ -4536,7 +4639,6 @@ function ui_print_page_header(
     }
 
     $buffer .= '<div id="menu_tab_left">';
-
     $buffer .= '<ul class="mn"><li class="'.$type.'">';
 
     if (strpos($title, 'Monitoring » Services »') != -1) {
@@ -4544,11 +4646,14 @@ function ui_print_page_header(
     }
 
     $buffer .= '<span>';
+    $buffer .= '<span class="breadcrumbs-title">';
     if (empty($alias)) {
         $buffer .= ui_print_truncate_text($title, $numChars);
     } else {
         $buffer .= ui_print_truncate_text($alias, $numChars);
     }
+
+    $buffer .= '</span>';
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "
@@ -4628,6 +4733,31 @@ function ui_print_page_header(
     }
 
     $buffer .= '</div>';
+
+    if ($hide_left_small) {
+        $buffer .= '<script>
+        $(window).resize(function () {
+            hideLeftHeader()
+        });
+
+        $(document).ready(function () {
+           hideLeftHeader();
+        });
+
+        function hideLeftHeader() {
+            var right_width = 0;
+            $("#menu_tab").find("li").each(function(index) {
+                right_width += parseInt($(this).outerWidth(), 10);
+            });
+          
+            if($("#menu_tab").outerWidth() < right_width) {
+                $("#menu_tab_left").children().hide()
+            } else {
+                $("#menu_tab_left").children().show();
+            }
+        }
+    </script>';
+    }
 
     if (!$return) {
         echo $buffer;
@@ -4887,7 +5017,7 @@ function ui_print_agent_autocomplete_input($parameters)
     // Default value.
     $icon_agent = 'images/search_agent.png';
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
     }
@@ -5743,7 +5873,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $html = '';
 
     $text_color = '';
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'color: white';
     }
 
@@ -6343,7 +6473,7 @@ function ui_print_comments($comments)
         $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
+    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
         $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
 

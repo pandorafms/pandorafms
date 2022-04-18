@@ -57,7 +57,7 @@ final class ModuleGraph extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 
@@ -91,7 +91,7 @@ final class ModuleGraph extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid identifier of an agent.
+     * @return mixed Valid identifier of an agent.
      */
     private static function extractIdCustomGraph(array $data)
     {
@@ -327,6 +327,10 @@ final class ModuleGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
 
+        if ($height == 0) {
+            $height = 15;
+        }
+
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
@@ -381,7 +385,7 @@ final class ModuleGraph extends Item
             ];
 
             if ($imageOnly !== false) {
-                $imgbase64 = 'data:image/jpg;base64,';
+                $imgbase64 = 'data:image/png;base64,';
             }
 
             $imgbase64 .= \graphic_combined_module(
@@ -426,7 +430,7 @@ final class ModuleGraph extends Item
             ];
 
             if ($imageOnly !== false) {
-                $imgbase64 = 'data:image/jpg;base64,';
+                $imgbase64 = 'data:image/png;base64,';
             }
 
             $imgbase64 .= \grafico_modulo_sparse($params);
@@ -447,7 +451,7 @@ final class ModuleGraph extends Item
      *
      * @return array
      */
-    public function getListCustomGraph():array
+    public static function getListCustomGraph():array
     {
         include_once 'include/functions_custom_graphs.php';
         enterprise_include_once('include/functions_metaconsole.php');
@@ -483,7 +487,7 @@ final class ModuleGraph extends Item
      *
      * @return array Of inputs.
      *
-     * @throws Exception On error.
+     * @throws \Exception On error.
      */
     public static function getFormInputs(array $values): array
     {
@@ -494,7 +498,7 @@ final class ModuleGraph extends Item
         $inputs = Item::getFormInputs($values);
 
         if (is_array($inputs) !== true) {
-            throw new Exception(
+            throw new \Exception(
                 '[ModuleGraph]::getFormInputs parent class return is not an array'
             );
         }
@@ -696,7 +700,7 @@ final class ModuleGraph extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);

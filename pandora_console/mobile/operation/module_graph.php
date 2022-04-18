@@ -108,7 +108,7 @@ class ModuleGraph
 
         $this->height -= 80;
         // Correct the height
-        // For to avoid fucking IPHONES when they are in horizontal.
+        // For to avoid IPHONES when they are in horizontal.
         if ($this->height < 140) {
             $this->height = 140;
         }
@@ -359,10 +359,11 @@ class ModuleGraph
                 sprintf(__('%s: %s'), get_product_name(), $this->module['nombre']),
                 $ui->createHeaderButton(
                     [
-                        'icon' => 'back',
-                        'pos'  => 'left',
-                        'text' => __('Back'),
-                        'href' => 'index.php?page=agent&id='.$this->id_agent,
+                        'icon'  => 'ui-icon-back',
+                        'pos'   => 'left',
+                        'text'  => __('Back'),
+                        'href'  => 'index.php?page=agent&id='.$this->id_agent,
+                        'class' => 'header-button-left',
                     ]
                 )
             );
@@ -371,10 +372,11 @@ class ModuleGraph
                 sprintf(__('%s: %s'), get_product_name(), $this->module['nombre']),
                 $ui->createHeaderButton(
                     [
-                        'icon' => 'back',
-                        'pos'  => 'left',
-                        'text' => __('Back'),
-                        'href' => 'index.php?page=modules',
+                        'icon'  => 'ui-icon-back',
+                        'pos'   => 'left',
+                        'text'  => __('Back'),
+                        'href'  => 'index.php?page=modules',
+                        'class' => 'header-button-left',
                     ]
                 )
             );

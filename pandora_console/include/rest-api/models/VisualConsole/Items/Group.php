@@ -78,7 +78,7 @@ final class Group extends Item
      *
      * @overrides Item->encode.
      */
-    protected function encode(array $data): array
+    protected static function encode(array $data): array
     {
         $return = parent::encode($data);
 
@@ -346,9 +346,7 @@ final class Group extends Item
 
                 $countStatus = \db_get_row_sql($sql);
 
-                if ($countStatus['fired'] > 0) {
-                    $status = AGENT_STATUS_ALERT_FIRED;
-                } else if ($countStatus['critical'] > 0) {
+                if ($countStatus['critical'] > 0) {
                     $status = AGENT_STATUS_CRITICAL;
                 } else if ($countStatus['warning'] > 0) {
                     $status = AGENT_STATUS_WARNING;
@@ -359,7 +357,7 @@ final class Group extends Item
                 }
             } else {
                 // Get the status img src.
-                $status = \groups_get_status($groupId);
+                $status = \groups_get_status($groupId, true);
             }
 
             $imagePath = \visual_map_get_image_status_element($data, $status);
@@ -408,7 +406,8 @@ final class Group extends Item
         $html .= '<div class="group-item-title">';
         $html .= $groupName;
         $html .= '</div>';
-        $html .= '<div class="group-item-info">';
+        $html .= '<div class="group-item-info" style="padding:0%;width: 100%;justify-content:center">';
+        $html .= '<div style="width:90%;display:flex;flex-direction:row;flex-wrap:wrap;padding:1%">';
         // Critical.
         $html .= '<div class="group-item-info-container">';
         $html .= '<div class="value-style red_background">';
@@ -438,6 +437,7 @@ final class Group extends Item
         $html .= '<div class="name-style">'.__('Unknown').'</div>';
         $html .= '</div>';
 
+        $html .= '</div>';
         $html .= '</div>';
         $html .= '</div>';
 
@@ -537,7 +537,10 @@ final class Group extends Item
                 'class'         => 'flex-row flex-end w100p',
                 'direct'        => 1,
                 'block_content' => [
-                    ['label' => $images],
+                    [
+                        'label'     => $images,
+                        'arguments' => ['type' => 'image-item'],
+                    ],
                 ],
             ];
 

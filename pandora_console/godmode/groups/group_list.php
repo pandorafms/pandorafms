@@ -47,7 +47,10 @@ if (is_metaconsole() === true) {
 
 if (is_ajax() === true) {
     if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
-        db_pandora_audit('ACL Violation', 'Trying to access Group Management');
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access Group Management'
+        );
         include 'general/noaccess.php';
         return;
     }
@@ -74,7 +77,7 @@ if (is_ajax() === true) {
 
         if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert Management'
             );
             echo json_encode(false);
@@ -113,10 +116,11 @@ if (is_ajax() === true) {
             '|'
         );
         $force_serialized = (bool) get_parameter('force_serialized', false);
+        $nodes = (array) get_parameter('nodes', []);
 
         if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access Alert Management'
             );
             echo json_encode(false);
@@ -152,6 +156,10 @@ if (is_ajax() === true) {
         if ($show_void_agents == 0) {
             $_sql_post .= ' AND id_agente IN (SELECT a.id_agente FROM tagente a, tagente_modulo b WHERE a.id_agente=b.id_agente AND b.delete_pending=0) AND \'1\'';
             $filter[$_sql_post] = '1';
+        }
+
+        if (is_metaconsole() === true && empty($nodes) === false) {
+            $filter['id_server'] = $nodes;
         }
 
         $id_groups_get_agents = $id_group;
@@ -270,7 +278,7 @@ if ($tab !== 'credbox'
     && (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
@@ -280,7 +288,7 @@ if ($tab !== 'credbox'
     && (bool) check_acl($config['id_user'], 0, 'PM') === false
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Credential Store'
     );
     include 'general/noaccess.php';

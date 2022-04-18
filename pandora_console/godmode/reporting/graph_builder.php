@@ -41,7 +41,7 @@ if (is_ajax()) {
         $id_group = (int) get_parameter('id_group');
 
         $filter = [];
-        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+        $filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
         $filter['id_grupo'] = $id_group;
 
         $agents = agents_get_agents($filter, ['nombre', 'direccion']);
@@ -65,7 +65,7 @@ if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access graph builder'
     );
     include 'general/noaccess.php';
@@ -90,7 +90,7 @@ if ($id_graph > 0) {
         && !check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
     ) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access graph builder'
         );
         include 'general/noaccess.php';
@@ -145,11 +145,11 @@ if ($add_graph === true) {
 
     if (trim($name) != '') {
         $id_graph = db_process_sql_insert('tgraph', $values);
-        if ($id_graph !== false) {
-            db_pandora_audit('Report management', 'Create graph #'.$id_graph);
-        } else {
-            db_pandora_audit('Report management', 'Fail try to create graph');
-        }
+        $auditMessage = ($id_graph !== false) ? sprintf('Create graph #%s', $id_graph) : 'Fail try to create graph';
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            $auditMessage
+        );
     } else {
         $id_graph = false;
     }
@@ -197,17 +197,16 @@ if ($update_graph) {
             ],
             ['id_graph' => $id_graph]
         );
-        if ($success !== false) {
-            db_pandora_audit(
-                'Report management',
-                'Update graph #'.$id_graph
-            );
-        } else {
-            db_pandora_audit(
-                'Report management',
-                'Fail try to update graph #'.$id_graph
-            );
-        }
+
+        $auditMessage = ($success !== false) ? 'Update graph' : 'Fail try to update graph';
+        db_pandora_audit(
+            AUDIT_LOG_REPORT_MANAGEMENT,
+            sprintf(
+                '%s #%s',
+                $auditMessage,
+                $id_graph
+            )
+        );
     } else {
         $success = false;
     }
@@ -222,17 +221,14 @@ function add_quotes($item)
 
 if ($add_module === true) {
     $id_graph = get_parameter('id');
-    $id_modules = get_parameter('module');
-    $id_agents = get_parameter('id_agents');
+    $id_modules = explode(',', get_parameter('id_modules'));
+    $id_agents = explode(',', get_parameter('id_agents'));
     $weight = get_parameter('weight');
 
     // Id modules has double entities conversion.
     // Safe output remove all entities.
     io_safe_output_array($id_modules, '');
 
-    // We need to put the entities again
-    // to browse in db.
-    io_safe_input_array($id_modules);
 
     $id_agent_modules = db_get_all_rows_sql(
         'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN ('.implode(',', $id_agents).") AND nombre IN ('".implode("','", $id_modules)."')"

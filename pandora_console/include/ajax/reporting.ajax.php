@@ -18,7 +18,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'RW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
     );
     include 'general/noaccess.php';
@@ -34,6 +34,10 @@ $id = get_parameter('id', 0);
 $truncate_text = get_parameter('truncate_text', 0);
 $get_metaconsole_hash_data = get_parameter('get_metaconsole_hash_data', 0);
 $get_metaconsole_server_url = get_parameter('get_metaconsole_server_url', 0);
+$change_custom_fields_macros_report = (bool) get_parameter(
+    'change_custom_fields_macros_report',
+    0
+);
 
 if ($delete_sla_item) {
     $result = db_process_sql_delete('treport_content_sla_combined', ['id' => (int) $id]);
@@ -216,5 +220,27 @@ if ($get_metaconsole_server_url) {
     $server = enterprise_hook('metaconsole_get_connection', [$server_name]);
 
     echo $server['server_url'];
+    return;
+}
+
+if ($change_custom_fields_macros_report === true) {
+    include_once $config['homedir'].'/include/functions_reports.php';
+    $macro_type = get_parameter('macro_type', '');
+    $macro_id = get_parameter('macro_id', 0);
+
+    $macro = [
+        'name'  => '',
+        'type'  => $macro_type,
+        'value' => '',
+    ];
+    $custom_fields = custom_fields_macros_report($macro, $macro_id);
+    $custom_field_draw = '';
+    if (empty($custom_fields) === false) {
+        foreach ($custom_fields as $key => $value) {
+            $custom_field_draw .= $value;
+        }
+    }
+
+    echo $custom_field_draw;
     return;
 }

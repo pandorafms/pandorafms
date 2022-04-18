@@ -99,6 +99,9 @@ if (is_ajax()) {
         $component['str_critical'] = io_safe_output($component['str_critical']);
         $component['warning_inverse'] = (bool) $component['warning_inverse'];
         $component['critical_inverse'] = (bool) $component['critical_inverse'];
+        $component['percentage_warning'] = (bool) $component['percentage_warning'];
+        $component['percentage_critical'] = (bool) $component['percentage_critical'];
+
 
         echo io_json_mb_encode($component);
         return;
@@ -328,6 +331,9 @@ if ($id_agent_module) {
 
     $critical_inverse = $module['critical_inverse'];
     $warning_inverse = $module['warning_inverse'];
+    $percentage_critical = $module['percentage_critical'];
+    $percentage_warning = $module['percentage_warning'];
+
 
     $id_category = $module['id_category'];
 
@@ -467,6 +473,8 @@ if ($id_agent_module) {
 
         $critical_inverse = '';
         $warning_inverse = '';
+        $percentage_critical = '';
+        $percentage_warning = '';
 
         $each_ff = 0;
         $ff_event_normal = '';
@@ -541,7 +549,7 @@ if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
             );
 
             db_pandora_audit(
-                'Agent management',
+                AUDIT_LOG_AGENT_MANAGEMENT,
                 'Re-link module '.$id_agent_module
             );
         }
@@ -554,7 +562,10 @@ if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
             __('Module will be unlinked in the next application')
         );
 
-        db_pandora_audit('Agent management', 'Unlink module '.$id_agent_module);
+        db_pandora_audit(
+            AUDIT_LOG_AGENT_MANAGEMENT,
+            'Unlink module '.$id_agent_module
+        );
     }
 }
 
@@ -574,7 +585,7 @@ if ($__code_from !== 'policies') {
 
     if (!$tag_acl) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access agent manager'
         );
         include 'general/noaccess.php';

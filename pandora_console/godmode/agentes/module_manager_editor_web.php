@@ -62,7 +62,9 @@ html_print_div(
     ]
 );
 
-require_once $config['homedir'].'/include/ajax/web_server_module_debug.php';
+if (is_int($id_agent_module) && $id_agent_module !== 0) {
+    include_once $config['homedir'].'/include/ajax/web_server_module_debug.php';
+}
 
 define('ID_NETWORK_COMPONENT_TYPE', 7);
 

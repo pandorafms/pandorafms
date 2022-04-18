@@ -104,7 +104,7 @@ function pandoraFlotPie(
       '<div style="font-size:' +
       font_size +
       "pt;" +
-      'text-align:center;padding:2px;color:white;">' +
+      'text-align:center;padding:2px;color:#4a4a4a;">' +
       label +
       "<br/>" +
       series.percent.toFixed(2) +
@@ -335,7 +335,7 @@ function pandoraFlotHBars(
     "#e63c52",
     "#FFA631",
     "#f3b200",
-    "#5BB6E5",
+    "#4a83f3",
     "#F2919D",
     "#82b92e"
   ];
@@ -437,25 +437,23 @@ function pandoraFlotHBars(
     var format = new Array();
     for (var i = 0; i < labels_total.length; i++) {
       var label = labels_total[i][1];
-      // var shortLabel = reduceText(label, 25);
-      var title = label;
-      if (label.length > 30) {
-        label = reduceText(label, 30);
-      }
       var div_attributes =
         'style="font-size:' +
         font_size +
         "pt !important;" +
-        " margin: 0; max-width: 150px;" +
-        "margin-right:5px";
-      +"margin-left: -1.5em";
-      +"text-align: right";
+        "margin: 0; max-width: 200px;" +
+        "margin-right:5px;" +
+        "margin-left: -1.5em" +
+        "text-align: right" +
+        "text-overflow: ellipsis;" +
+        "overflow: hidden;" +
+        "white-space: pre;";
 
       if (label.indexOf("<br>") != -1) {
         div_attributes += "min-height: 2.5em;";
       }
 
-      div_attributes += '" title="' + title + '" style="overflow: hidden;"';
+      div_attributes += '" title="' + label + '" style="overflow: hidden;"';
 
       format.push([i, "<div " + div_attributes + ">" + label + "</div>"]);
     }
@@ -3270,5 +3268,6 @@ function reduceText(text, maxLength) {
   if (text.length <= maxLength) return text;
   var firstSlideEnd = parseInt((maxLength - 3) / 1.6);
   var str_cut = text.substr(0, firstSlideEnd);
-  return str_cut + "...<br>" + text.substr(-firstSlideEnd - 3);
+  //return str_cut + "...<br>" + text.substr(-firstSlideEnd - 3);
+  return str_cut + "..." + text.substr(-firstSlideEnd - 3);
 }

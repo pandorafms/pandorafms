@@ -56,7 +56,27 @@ abstract class Model
      *
      * @abstract
      */
-    abstract protected function encode(array $data): array;
+    abstract protected static function encode(array $data): array;
+
+
+    /**
+     * Inserts a new item model in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public static function create(array $data=[]): int
+    {
+        // Insert.
+        $save = static::encode($data);
+
+        $result = \db_process_sql_insert('tlayout_data', $save);
+
+        return $result;
+    }
 
 
     /**
@@ -98,6 +118,13 @@ abstract class Model
     }
 
 
+    /**
+     * Set data.
+     *
+     * @param array $data Data.
+     *
+     * @return void
+     */
     public function setData(array $data)
     {
         $this->data = $data;
@@ -121,7 +148,9 @@ abstract class Model
     /**
      * Obtain a data structure from the database using a filter.
      *
-     * @param array $filter Filter to retrieve the modeled element.
+     * @param array      $filter     Filter to retrieve the modeled element.
+     * @param float|null $ratio      Ratio.
+     * @param float|null $widthRatio Width ratio.
      *
      * @return array The modeled element data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
@@ -138,7 +167,9 @@ abstract class Model
     /**
      * Obtain a model's instance from the database using a filter.
      *
-     * @param array $filter Filter to retrieve the modeled element.
+     * @param array      $filter     Filter to retrieve the modeled element.
+     * @param float|null $ratio      Ratio.
+     * @param float|null $widthRatio Width ratio.
      *
      * @return self A modeled element's instance.
      */
@@ -152,7 +183,7 @@ abstract class Model
     /**
      * JSON representation of the model.
      *
-     * @return string
+     * @return array
      */
     public function toArray(): array
     {
@@ -179,6 +210,61 @@ abstract class Model
     public function __toString(): string
     {
         return $this->toJson();
+    }
+
+
+    /**
+     * Calculate ratio for mobile.
+     *
+     * @param array  $size Size viewport.
+     * @param string $mode Mode calculate (dashboard or mobile).
+     *
+     * @return float Ratio.
+     */
+    public function adjustToViewport($size, $mode='')
+    {
+        $ratio_visualconsole = $this->getRatio();
+        $ratio_w = ($size['width'] / $this->data['width']);
+        $ratio_h = ($size['height'] / $this->data['height']);
+
+        $this->data['width'] = $size['width'];
+        $this->data['height'] = ($size['width'] * $ratio_visualconsole);
+
+        $ratio = $ratio_w;
+        if ($mode === 'mobile') {
+            if ($this->data['height'] < $this->data['width']) {
+                if ($this->data['height'] > $size['height']) {
+                    $ratio = $ratio_h;
+                    $this->data['height'] = $size['height'];
+                    $this->data['width'] = ($size['height'] / $ratio_visualconsole);
+                }
+            }
+        } else {
+            if ($this->data['height'] > $size['height']) {
+                $ratio = $ratio_h;
+                $this->data['height'] = $size['height'];
+                $this->data['width'] = ($size['height'] / $ratio_visualconsole);
+            }
+        }
+
+        return $ratio;
+    }
+
+
+    /**
+     * Calculate ratio
+     *
+     * @return float Ratio.
+     */
+    public function getRatio()
+    {
+        if (isset($this->data['width']) === false
+            || empty($this->data['width']) === true
+        ) {
+            return null;
+        }
+
+        return ($this->data['height'] / $this->data['width']);
     }
 
 

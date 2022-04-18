@@ -42,7 +42,7 @@ function pandora_realtime_graphs()
     global $config;
     check_login();
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         ui_require_css_file('pandora_black', 'include/styles/', true);
     }
 
@@ -114,6 +114,7 @@ function pandora_realtime_graphs()
     $canvas .= '</div>';
     echo $canvas;
 
+    $table = new stdClass();
     $table->width = '100%';
     $table->id = 'table-form';
     $table->class = 'databox filters';

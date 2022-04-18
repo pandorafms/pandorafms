@@ -161,6 +161,7 @@ function load_modal(settings) {
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+      id: settings.modal.cancel_button_id,
       text: settings.modal.cancel,
       click: function() {
         if (settings.oncancel != undefined) {
@@ -329,7 +330,20 @@ function load_modal(settings) {
                 } else {
                   settings.ajax_callback(data);
                 }
+              } else {
+                generalShowMsg(data, null);
               }
+
+              AJAX_RUNNING = 0;
+            },
+            error: function(response) {
+              generalShowMsg(
+                {
+                  title: "Failed",
+                  text: response.responseText
+                },
+                null
+              );
               AJAX_RUNNING = 0;
             }
           });
@@ -349,6 +363,7 @@ function load_modal(settings) {
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       text: settings.modal.ok,
+      id: settings.modal.ok_button_id,
       click: function() {
         if (
           settings.onsubmit != undefined &&
@@ -480,43 +495,69 @@ function confirmDialog(settings) {
     );
   }
 
+  var buttons = [
+    {
+      id: "cancel_btn_dialog",
+      text: settings.cancelText
+        ? settings.cancelText
+        : settings.strCancelButton,
+      class:
+        hideCancelButton +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+      click: function() {
+        if (typeof settings.notCloseOnDeny == "undefined") {
+          $(this).dialog("close");
+          $(this).remove();
+        }
+        if (typeof settings.onDeny == "function") settings.onDeny();
+      }
+    },
+    {
+      text: settings.strOKButton,
+      class:
+        hideOkButton +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+      click: function() {
+        if (typeof settings.onAccept == "function") settings.onAccept();
+        $(this).dialog("close");
+        $(this).remove();
+      }
+    }
+  ];
+
+  if (settings.newButton != undefined) {
+    var newButton = {
+      text: settings.newButton.text,
+      class:
+        settings.newButton.class +
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-warning",
+      click: function() {
+        $(this).dialog("close");
+        if (typeof settings.newButton.onFunction == "function")
+          settings.newButton.onFunction();
+        $(this).remove();
+      }
+    };
+
+    buttons.unshift(newButton);
+  }
+
   $("#confirm_" + randomStr);
   $("#confirm_" + randomStr)
     .dialog({
+      open: settings.open,
       title: settings.title,
-      close: false,
+      close: function() {
+        if (typeof settings.notCloseOnDeny == "undefined") {
+          $(this).dialog("close");
+          $(this).remove();
+        }
+        if (typeof settings.onDeny == "function") settings.onDeny();
+      },
       width: settings.size,
       maxHeight: settings.maxHeight,
       modal: true,
-      buttons: [
-        {
-          id: "cancel_btn_dialog",
-          text: settings.cancelText
-            ? settings.cancelText
-            : settings.strCancelButton,
-          class:
-            hideCancelButton +
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-          click: function() {
-            if (typeof settings.notCloseOnDeny == "undefined") {
-              $(this).dialog("close");
-              $(this).remove();
-            }
-            if (typeof settings.onDeny == "function") settings.onDeny();
-          }
-        },
-        {
-          text: settings.strOKButton,
-          class:
-            hideOkButton +
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-          click: function() {
-            $(this).dialog("close");
-            if (typeof settings.onAccept == "function") settings.onAccept();
-            $(this).remove();
-          }
-        }
-      ]
+      buttons: buttons
     })
     .show();
 }
@@ -546,6 +587,32 @@ function generalShowMsg(data, idMsg) {
   var text = data.text[data.error];
   var failed = !data.error;
 
+  if (typeof data.error != "number") {
+    title = "Response";
+    text = data;
+    failed = false;
+
+    if (typeof data == "object") {
+      title = data.title || "Response";
+      text = data.text || data.error || data.result;
+      failed = data.failed || data.error;
+    }
+
+    if (failed) {
+      title = "Error";
+      text = data.error;
+    }
+
+    if (idMsg == null) {
+      idMsg = uniqId();
+    }
+
+    if ($("#" + idMsg).length === 0) {
+      $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+      $("#" + idMsg).empty();
+    }
+  }
+
   $("#" + idMsg).empty();
   $("#" + idMsg).html(text);
   $("#" + idMsg).dialog({
@@ -562,6 +629,7 @@ function generalShowMsg(data, idMsg) {
         class:
           "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
         text: "OK",
+        id: "general_message_ok",
         click: function(e) {
           if (!failed) {
             $(".ui-dialog-content").dialog("close");

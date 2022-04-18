@@ -87,7 +87,7 @@ try {
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
 } catch (Throwable $e) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without Id'
     );
     include 'general/noaccess.php';
@@ -105,7 +105,7 @@ $aclManage = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VM')
 
 if ($aclRead === false && $aclWrite === false && $aclManage === false) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access visual console without group access'
     );
     include 'general/noaccess.php';
@@ -269,7 +269,7 @@ if ($pure === false) {
         $class_basic_chart = 'basic_chart_min link-create-item';
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
             $class_camera = 'camera_min_white link-create-item';
             $class_percentile = 'percentile_item_min_white link-create-item';
             $class_module_graph = 'graph_min_white link-create-item';
@@ -398,6 +398,17 @@ if ($pure === false) {
         echo '</div>';
 
         if ($aclWrite === true || $aclManage === true) {
+            if (!is_metaconsole()) {
+                echo '<a id ="force_check" href="" style="margin-right: 25px;">'.html_print_image(
+                    'images/target.png',
+                    true,
+                    [
+                        'title' => __('Force remote checks'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>';
+            }
+
             echo html_print_checkbox_switch('edit-mode', 1, false, true);
         }
 
@@ -406,7 +417,7 @@ if ($pure === false) {
 }
 
 $bg_color = '';
-if ($config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $bg_color = 'style="background-color: #222"';
 }
 
@@ -600,7 +611,7 @@ ui_require_css_file('form');
         if (prevProps && prevProps.name != newProps.name) {
             // View title.
             var title = document.querySelector(
-                "div#menu_tab_frame_view > div#menu_tab_left span"
+                ".breadcrumbs-title"
             );
             if (title !== null) {
                 title.textContent = newProps.name;
@@ -610,7 +621,12 @@ ui_require_css_file('form');
             if (fullscreenTitle !== null) {
                 fullscreenTitle.textContent = newProps.name;
             }
-            // TODO: Change the metaconsole title.
+
+            // Fullscreen Meta view title.
+            var fullscreenTitleMeta = document.querySelector("div.vc-title-meta");
+            if (fullscreenTitleMeta !== null) {
+                fullscreenTitleMeta.textContent = newProps.name;
+            }
         }
 
         // Change the links.
@@ -671,12 +687,14 @@ if ($edit_capable === true) {
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
+            $('#force_check').hide();
             $('#edit-controls').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
             $('#edit-controls').css('visibility', 'hidden');
+            $('#force_check').show();
         }
     });
     <?php
@@ -749,6 +767,37 @@ if ($edit_capable === true) {
         window.location.href = $('#full_screen').attr('href');
 
     });
+
+    $('#force_check').click(function (e) {
+        e.preventDefault();
+        visualConsoleManager.changeUpdateInterval(0);
+        const id_layout = '<?php echo $visualConsoleId; ?>';
+        $.ajax({
+            type: "GET",
+            url: "ajax.php",
+            dataType: "json",
+            data: {
+                page: "include/ajax/visual_console.ajax",
+                force_remote_check: true,
+                id_layout: id_layout
+            },
+            success: function (data) {
+                if (data == 1) {
+                    visualConsoleManager.changeUpdateInterval(5000);
+                    setTimeout(resetInterval, 6000);
+                } else {
+                    resetInterval();
+                }
+            },
+            error: function (data) {
+                resetInterval();
+            }
+        });
+    });
+
+    function resetInterval() {
+        visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>);
+    }
 
     /**
      * Process ajax responses and shows a dialog with results.

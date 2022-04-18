@@ -32,7 +32,10 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
-    db_pandora_audit('ACL Violation', 'Trying to access File manager');
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access File manager'
+    );
     include 'general/noaccess.php';
     return;
 }
@@ -62,13 +65,22 @@ $real_directory = realpath($config['homedir'].'/'.$directory);
 
 echo '<h4>'.__('Index of %s', $directory).'</h4>';
 
-$upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
+$upload_file = (bool) get_parameter('upload_file');
 $create_text_file   = (bool) get_parameter('create_text_file');
 
 $default_real_directory = realpath($config['homedir'].'/');
 
-if ($upload_file_or_zip === true) {
-    upload_file($upload_file_or_zip, $default_real_directory, $real_directory);
+if ($upload_file === true) {
+    upload_file(
+        $upload_file,
+        $default_real_directory,
+        $real_directory,
+        [
+            MIME_TYPES['jpg'],
+            MIME_TYPES['png'],
+            MIME_TYPES['gif'],
+        ]
+    );
 }
 
 if ($create_text_file === true) {
@@ -86,5 +98,6 @@ filemanager_file_explorer(
     false,
     '',
     false,
-    false
+    false,
+    []
 );

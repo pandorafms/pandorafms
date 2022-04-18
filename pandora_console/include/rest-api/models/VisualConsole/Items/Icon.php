@@ -190,7 +190,10 @@ final class Icon extends Item
                 'class'         => 'flex-row flex-end w100p',
                 'direct'        => 1,
                 'block_content' => [
-                    ['label' => $images],
+                    [
+                        'label'     => $images,
+                        'arguments' => ['type' => 'image-item'],
+                    ],
                 ],
             ];
 
@@ -216,12 +219,8 @@ final class Icon extends Item
      *
      * @overrides Item->getDefaultGeneralValues.
      */
-    public function getDefaultGeneralValues(array $values): array
+    public static function getDefaultGeneralValues(array $values): array
     {
-        if (isset($values['isLinkEnabled']) === false) {
-            $values['isLinkEnabled'] = false;
-        }
-
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);
 

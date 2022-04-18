@@ -92,7 +92,7 @@ class ModuleTemplates extends HTML
     private $validPen;
 
     /**
-     * Complete list of PENes.
+     * Complete list of PENs.
      *
      * @var array.
      */
@@ -120,7 +120,7 @@ class ModuleTemplates extends HTML
 
         if (! check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
-                'ACL Violation',
+                AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
             );
 

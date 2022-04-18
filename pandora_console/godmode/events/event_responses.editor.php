@@ -17,7 +17,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
@@ -43,7 +43,7 @@ if ($event_response_id > 0) {
     // ACL check for event response edition.
     if (!check_acl_restricted_all($config['id_user'], $event_response['id_group'], 'PM')) {
         db_pandora_audit(
-            'ACL Violation',
+            AUDIT_LOG_ACL_VIOLATION,
             'Trying to access Group Management'
         );
         include 'general/noaccess.php';
@@ -90,6 +90,8 @@ $data[1] = html_print_input_text(
     '',
     50,
     255,
+    true,
+    false,
     true
 );
 $data[1] .= html_print_input_hidden('id_response', $event_response['id'], true);
@@ -197,6 +199,18 @@ $data[0] = '<div id="command_timeout_label" class="labels invisible">'.__('Comma
 $data[1] = '<div id="command_timeout_value" class="invisible">'.html_print_input_text('command_timeout', $event_response['command_timeout'], '', 4, 5, true);
 
 $table->data[5] = $data;
+
+$data = [];
+$data[0] = __('Display command').ui_print_help_tip(__('If enabled the command will be displayed to any user that can execute this event response'), true);
+$data[1] = html_print_checkbox_switch(
+    'display_command',
+    1,
+    $event_response['display_command'],
+    true
+);
+
+$table->data[6] = $data;
+
 if ($event_response_id == 0) {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);

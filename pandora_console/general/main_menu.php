@@ -36,10 +36,10 @@ if (isset($config['id_user']) === false) {
 <script type="text/javascript" language="javascript">
 
 $(document).ready(function(){    
-    var menuType_value = "<?php echo $_SESSION['menu_type']; ?>";
+    var menuType_value = "<?php echo ($_SESSION['menu_type'] ?? ''); ?>";
 
     if (menuType_value === '' || menuType_value === 'classic') {
-        $('ul.submenu').css('left', '214px');    
+        $('ul.submenu').css('left', '214px');
     }
     else{
         $('ul.submenu').css('left', '59px');
@@ -107,7 +107,12 @@ echo '</a></div>';
 require 'operation/menu.php';
 require 'godmode/menu.php';
 
-echo sprintf('<div id="button_collapse" class="button_%s button_collapse"></div>', $menuTypeClass);
+html_print_div(
+    [
+        'id'    => 'button_collapse',
+        'class' => sprintf('button_collapse button_%s', $menuTypeClass),
+    ]
+);
 
 echo '</div>';
 // Menu_container.
@@ -122,7 +127,7 @@ if (isset($config['fixed_header']) === true) {
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
 
-$('#button_collapse').on('click', function() { 
+$('#button_collapse').on('click', function() {
 
     if($('#menu_full').hasClass('menu_full_classic')){
         localStorage.setItem("menuType", "collapsed");
@@ -155,7 +160,7 @@ $('#button_collapse').on('click', function() {
 
     $('.logo_full').toggle();
     $('.logo_icon').toggle();
-    $('#menu_full').toggleClass('menu_full_classic menu_full_collapsed');    
+    $('#menu_full').toggleClass('menu_full_classic menu_full_collapsed');
     $('#button_collapse').toggleClass('button_classic button_collapsed');
     $('div#title_menu').toggleClass('title_menu_classic title_menu_collapsed');
     $('div#page').toggleClass('page_classic page_collapsed');
@@ -389,9 +394,9 @@ $(document).ready(function() {
         if( typeof(table_hover) != 'undefined')
             $("ul#sub"+table_hover[0].id).hide();
         if( typeof(table_hover2) != 'undefined')
-            $("ul#sub"+table_hover2[0].id).hide();               
-    });    
-        
+            $("ul#sub"+table_hover2[0].id).hide();
+    });
+
     $('div.menu>ul>li>ul>li>ul>li>a').click(function() {
         openTime = 4000;
         if( typeof(table_hover) != 'undefined')
@@ -399,7 +404,7 @@ $(document).ready(function() {
         if( typeof(table_hover2) != 'undefined')
             $("ul#sub"+table_hover2[0].id).hide();
     });
-    
+
 });
-    
+
 </script>

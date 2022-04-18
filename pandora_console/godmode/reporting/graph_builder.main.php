@@ -42,7 +42,7 @@ if (is_ajax() === true) {
         $id_group = (int) get_parameter('id_group');
 
         $filter = [];
-        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+        $filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
         $filter['id_grupo'] = $id_group;
 
         $agents = agents_get_agents($filter, ['nombre', 'direccion']);
@@ -66,7 +66,7 @@ if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access graph builder'
     );
     include 'general/noaccess.php';

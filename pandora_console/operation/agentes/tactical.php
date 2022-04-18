@@ -39,7 +39,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Agent view (Grouped)'
     );
     include 'general/noaccess.php';
@@ -98,6 +98,7 @@ $data['monitor_critical'] = (int) $all_data['_monitors_critical_'];
 $data['monitor_not_normal'] = (int) $all_data['_monitor_not_normal_'];
 $data['monitor_alerts'] = (int) $all_data['_monitors_alerts_'];
 $data['monitor_alerts_fired'] = (int) $all_data['_monitors_alerts_fired_'];
+$data['monitor_total'] = (int) $all_data['_monitor_total_'];
 
 $data['total_agents'] = (int) $all_data['_total_agents_'];
 
@@ -146,7 +147,7 @@ echo '<td class="tactical_left_column" id="leftcolumn">';
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
 $bg_color = 'background-color: #222';
-if ($config['style'] !== 'pandora_black') {
+if ($config['style'] !== 'pandora_black' && !is_metaconsole()) {
     $bg_color = 'background-color: #fff';
 }
 

@@ -15,9 +15,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 3px;
-  width: 99%;
-  margin: 0 auto;
+}
+
+#main_pure #menu_tab_frame_view #menu_tab_left {
+  margin-left: 20px;
 }
 
 ul.mn {
@@ -411,6 +412,14 @@ table.widget_agent_module tbody tr td {
   padding: 5px;
 }
 
+table.widget_agent_module tbody tr:first-child > th {
+  background-color: #373737;
+  color: #fff;
+  font-size: 7.5pt;
+  letter-spacing: 0.3pt;
+  line-height: 16pt;
+}
+
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
   font-family: inherit !important;
@@ -485,7 +494,7 @@ div#main_pure {
 #form-config-widget .info_box,
 .content-widget .info_box {
   border-radius: 5px;
-  width: 90%;
+  width: 100%;
 }
 
 #form-config-widget .info_box {
@@ -511,16 +520,17 @@ div#main_pure {
 #select_multiple_modules_filtered {
   border: 1px solid #c1c1c1;
   border-radius: 10px;
+  width: auto;
 }
 
 #select_multiple_modules_filtered > div {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   margin: 5px;
   flex-wrap: wrap;
-  flex: 1 1 320px;
+  flex: 1 2 750px;
 }
 
 #select_multiple_modules_filtered > div > div {
@@ -529,10 +539,19 @@ div#main_pure {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  width: 250px;
 }
 
 #select_multiple_modules_filtered > div > div > * {
   flex: auto;
+}
+
+#select_multiple_modules_filtered > div > div > select {
+  min-width: 250px !important;
+}
+
+#select_multiple_modules_filtered > div > div > .select2 {
+  min-width: 250px !important;
 }
 
 .visual-console-container-dashboard div.label strong {
@@ -544,12 +563,12 @@ div#main_pure {
 }
 
 /* Mobile trick */
-.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content {
+#main_page > .ui-content {
   overflow: visible;
   overflow-x: visible;
   margin: 0 !important;
   padding: 0 !important;
 }
-.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content div.label > p {
+#main_page > .ui-content div.label > p {
   margin: 0;
 }

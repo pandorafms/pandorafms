@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 global $config;
 
@@ -47,7 +49,7 @@ if (! check_acl($config['id_user'], 0, 'ER')
     && ! check_acl($config['id_user'], 0, 'EM')
 ) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
     include 'general/noaccess.php';
@@ -83,16 +85,19 @@ $in_process_event = get_parameter('in_process_event', 0);
 $validate_event = get_parameter('validate_event', 0);
 $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
-$get_comments = get_parameter('get_comments', 0);
+$get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
-if ($get_comments) {
+$node_id = (int) get_parameter('node_id', 0);
+if ($get_comments === true) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
 
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
+
+    $eventsGrouped = [];
 
     if ($filter['group_rep'] == 1) {
         $events = events_get_all(
@@ -119,23 +124,52 @@ if ($get_comments) {
             // True for show comments of validated events.
             true
         );
+
         if ($events !== false) {
             $event = $events[0];
         }
     } else {
-        $events = events_get_event(
-            $event['id_evento'],
-            false,
-            $meta,
-            $history
-        );
+        // Consider if the event is grouped.
+        if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
+            // Evaluate if we are in metaconsole or not.
+            $eventTable = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+            // Default grouped message filtering (evento and estado).
+            $whereGrouped = sprintf(
+                '`evento` = "%s" AND `estado` = "%s"',
+                io_safe_output($event['evento']),
+                $event['estado']
+            );
+            // If id_agente is reported, filter the messages by them as well.
+            if ((int) $event['id_agente'] > 0) {
+                $whereGrouped .= sprintf(' AND `id_agente` = "%s"', $event['id_agente']);
+            }
 
-        if ($events !== false) {
-            $event = $events;
+            // Get grouped comments.
+            $eventsGrouped = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT `user_comment`
+                    FROM `%s`
+                    WHERE %s',
+                    $eventTable,
+                    $whereGrouped
+                )
+            );
+        } else {
+            $events = events_get_event(
+                $event['id_evento'],
+                false,
+                is_metaconsole(),
+                $history
+            );
+
+            if ($events !== false) {
+                $event = $events;
+            }
         }
     }
 
-    echo events_page_comments($event, true);
+    // End of get_comments.
+    echo events_page_comments($event, true, $eventsGrouped);
 
     return;
 }
@@ -164,7 +198,23 @@ if ($delete_event) {
         return;
     }
 
-    $r = events_delete($id_evento, $filter);
+    if ($node_id > 0) {
+        try {
+            $node = new Node($node_id);
+            $node->connect();
+            $r = events_delete($id_evento, $filter, false, true);
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            $node->disconnect();
+            $success = false;
+            echo 'owner_error';
+        } finally {
+            $node->disconnect();
+        }
+    } else {
+        $r = events_delete($id_evento, $filter);
+    }
+
     if ($r === false) {
         echo 'Failed';
     } else {
@@ -259,6 +309,8 @@ if ($save_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+    $values['custom_data'] = get_parameter('custom_data');
+    $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
     if (is_metaconsole()) {
         $values['server_id'] = get_parameter('server_id');
@@ -313,6 +365,8 @@ if ($update_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+    $values['custom_data'] = get_parameter('custom_data');
+    $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
     if (is_metaconsole() === true) {
         $values['server_id'] = get_parameter('server_id');
@@ -784,7 +838,9 @@ function save_new_filter() {
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
             "id_source_event": $("#text-id_source_event").val(),
-            "server_id": $("#server_id").val()
+            "server_id": $("#server_id").val(),
+            "custom_data": $("#text-custom_data").val(),
+            "custom_data_filter_type": $("#custom_data_filter_type").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -857,7 +913,9 @@ function save_update_filter() {
         "id_extra": $("#text-id_extra").val(),
         "user_comment": $("#text-user_comment").val(),
         "id_source_event": $("#text-id_source_event").val(),
-        "server_id": $("#server_id").val()
+        "server_id": $("#server_id").val(),
+        "custom_data": $("#text-custom_data").val(),
+        "custom_data_filter_type": $("#custom_data_filter_type").val()
 
         },
         function (data) {
@@ -1145,12 +1203,15 @@ if ($dialogue_event_response) {
     $prompt = '<br>> ';
     switch ($event_response['type']) {
         case 'command':
+            $display_command = (bool) $event_response['display_command'];
+            $command_str = ($display_command === true) ? $command : '';
+
             if ($massive) {
                 echo "<div class='left'>";
                 echo $prompt.sprintf(
                     '(Event #'.$event_id.') '.__(
                         'Executing command: %s',
-                        $command
+                        $command_str
                     )
                 );
                 echo '</div><br>';
@@ -1183,7 +1244,7 @@ if ($dialogue_event_response) {
             } else {
                 echo "<div class='left'>";
 
-                echo $prompt."Executing command: $command";
+                echo $prompt."Executing command: $command_str";
                 echo '</div><br>';
 
                 echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
@@ -1207,25 +1268,18 @@ if ($dialogue_event_response) {
     }
 }
 
-if ($add_comment) {
-    $aviability_comment = true;
-    $comment = get_parameter('comment');
+if ($add_comment === true) {
+    $comment = (string) get_parameter('comment');
+    $eventId = (int) get_parameter('event_id');
+
+    // Safe comments for hacks.
     if (preg_match('/script/i', io_safe_output($comment))) {
-        $aviability_comment = false;
         $return = false;
-    }
-
-    $event_id = get_parameter('event_id');
-
-    if ($aviability_comment !== false) {
-        $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
-    }
-
-    if ($return) {
-        echo 'comment_ok';
     } else {
-        echo 'comment_error';
+        $return = events_comment($eventId, $comment, 'Added comment', $meta, $history);
     }
+
+    echo ($return === true) ? 'comment_ok' : 'comment_error';
 
     return;
 }
@@ -1234,18 +1288,42 @@ if ($change_status) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
 
-    $return = events_change_status(
-        explode(',', $event_ids),
-        $new_status,
-        $meta,
-        $history
-    );
+    if ($node_id > 0) {
+        try {
+            $node = new Node($node_id);
+            $node->connect();
+            $return = events_change_status(
+                explode(',', $event_ids),
+                $new_status,
+                $meta,
+                $history
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            $node->disconnect();
+            $success = false;
+            echo 'owner_error';
+        } finally {
+            $node->disconnect();
+        }
+    } else {
+        $return = events_change_status(
+            explode(',', $event_ids),
+            $new_status,
+            $meta,
+            $history
+        );
+    }
 
     if ($return !== false) {
+        $event_st = events_display_status($new_status);
+
         echo json_encode(
             [
-                'status' => 'status_ok',
-                'user'   => db_get_value(
+                'status_title' => $event_st['title'],
+                'status_img'   => html_print_image($event_st['img'], true, false, true),
+                'status'       => 'status_ok',
+                'user'         => db_get_value(
                     'fullname',
                     'tusuario',
                     'id_user',
@@ -1279,7 +1357,22 @@ if ($change_owner) {
         $new_owner = '';
     }
 
-    $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+    if ($node_id > 0) {
+        try {
+            $node = new Node($node_id);
+            $node->connect();
+            $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            $node->disconnect();
+            $success = false;
+            echo 'owner_error';
+        } finally {
+            $node->disconnect();
+        }
+    } else {
+        $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+    }
 
     if ($return) {
         echo 'owner_ok';
@@ -1295,7 +1388,7 @@ if ($change_owner) {
 if ($get_extended_event) {
     global $config;
 
-    $event = get_parameter('event', false);
+    $event = io_safe_output(get_parameter('event', false));
     $filter = get_parameter('filter', false);
 
     if ($event === false) {
@@ -1309,6 +1402,14 @@ if ($get_extended_event) {
         && isset($config['event_replication'])
         && $config['event_replication'] == 1
         && $config['show_events_in_local'] == 1
+        || enterprise_hook(
+            'enterprise_acl',
+            [
+                $config['id_user'],
+                'eventos',
+                'execute_event_responses',
+            ]
+        ) === false
     ) {
         $readonly = true;
     }
@@ -1330,6 +1431,10 @@ if ($get_extended_event) {
     $timestamp_first = $event['min_timestamp'];
     $timestamp_last = $event['max_timestamp'];
     $server_id = $event['server_id'];
+    if (empty($server_id) && !empty($event['server_name']) && is_metaconsole()) {
+        $server_id = metaconsole_get_id_server($event['server_name']);
+    }
+
     $comments = $event['comments'];
 
     $event['similar_ids'] = $similar_ids;
@@ -1372,6 +1477,9 @@ if ($get_extended_event) {
 
     // Print group_rep in a hidden field to recover it from javascript.
     html_print_input_hidden('group_rep', (int) $group_rep);
+    if ($node_id > 0) {
+        html_print_input_hidden('node_id', (int) $node_id);
+    }
 
     if ($event === false) {
         return;
@@ -1505,7 +1613,7 @@ if ($get_extended_event) {
 
     $console_url = '';
     // If metaconsole switch to node to get details and custom fields.
-    if ($meta) {
+    if ($meta || (is_metaconsole() && !empty($server_id))) {
         $server = metaconsole_get_connection_by_id($server_id);
     } else {
         $server = '';
@@ -1518,7 +1626,7 @@ if ($get_extended_event) {
     }
 
     $connected = true;
-    if ($meta) {
+    if ($meta || (is_metaconsole() && !empty($server_id))) {
         if (metaconsole_connect($server) === NOERR) {
             $connected = true;
         } else {
@@ -1539,14 +1647,16 @@ if ($get_extended_event) {
 
     $comments = '<div id="extended_event_comments_page" class="extended_event_pages"></div>';
 
-    $notifications = '<div id="notification_comment_error" class="invisible">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
-    $notifications .= '<div id="notification_comment_success" class="invisible">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_error" class="invisible">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_success" class="invisible">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_error" class="invisible">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_success" class="invisible">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications = '<div id="notification_comment_error" class="invisible_events">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
+    $notifications .= '<div id="notification_comment_success" class="invisible_events">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_error" class="invisible_events">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_success" class="invisible_events">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_error" class="invisible_events">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_success" class="invisible_events">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_delete_error" class="invisible_events">'.ui_print_error_message(__('Error deleting event'), '', true).'</div>';
 
-    $loading = '<div id="response_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</div>';
+
+    $loading = '<div id="response_loading" class="invisible_events">'.html_print_image('images/spinner.gif', true).'</div>';
 
     $i = 0;
     $tab['general'] = $i++;
@@ -1612,6 +1722,7 @@ if ($get_extended_event) {
                 data : {
                     page: "include/ajax/events",
                     get_comments: 1,
+                    meta: '.(int) is_metaconsole().',
                     event: '.json_encode($event).',
                 },
                 dataType : "html",

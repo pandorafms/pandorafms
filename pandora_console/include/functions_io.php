@@ -409,7 +409,10 @@ function __($string /*, variable arguments */)
     if (defined('METACONSOLE')) {
         enterprise_include_once('meta/include/functions_meta.php');
 
-        $tranlateString = call_user_func_array('meta_get_defined_translation', func_get_args());
+        $tranlateString = call_user_func_array(
+            'meta_get_defined_translation',
+            array_values(func_get_args())
+        );
 
         if ($tranlateString !== false) {
             return $tranlateString;
@@ -421,7 +424,10 @@ function __($string /*, variable arguments */)
     ) {
         enterprise_include_once('extensions/translate_string/functions.php');
 
-        $tranlateString = call_user_func_array('get_defined_translation', func_get_args());
+        $tranlateString = call_user_func_array(
+            'get_defined_translation',
+            array_values(func_get_args())
+        );
 
         if ($tranlateString !== false) {
             return $tranlateString;
@@ -477,7 +483,10 @@ function ___($string /*, variable arguments */)
 
         foreach ($trace as $item) {
             if (pathinfo($item['file'], PATHINFO_BASENAME) == $extension_file) {
-                   $tranlateString = call_user_func_array($config['extensions'][$extension_file]['translate_function'], func_get_args());
+                $tranlateString = call_user_func_array(
+                    $config['extensions'][$extension_file]['translate_function'],
+                    array_values(func_get_args())
+                );
                 if ($tranlateString !== false) {
                     return $tranlateString;
                 }
@@ -485,7 +494,10 @@ function ___($string /*, variable arguments */)
         }
     }
 
-       return call_user_func_array('__', func_get_args());
+    return call_user_func_array(
+        '__',
+        array_values(func_get_args())
+    );
 }
 
 
@@ -545,11 +557,12 @@ function io_input_password($password)
  * Process the given password read from the Pandora FMS Database,
  * decrypting it if necessary.
  *
- * @param string password Password read from the DB.
+ * @param string $password  Password read from the DB.
+ * @param string $wrappedBy Wrap the password with the informed character.
  *
  * @return string The processed password.
  */
-function io_output_password($password)
+function io_output_password($password, $wrappedBy='')
 {
     global $config;
 
@@ -562,11 +575,14 @@ function io_output_password($password)
         ]
     );
 
-    if ($plaintext === ENTERPRISE_NOT_HOOK) {
-            return io_safe_output($password);
-    }
+    $output = ($plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
 
-    return io_safe_output($plaintext);
+    return sprintf(
+        '%s%s%s',
+        $wrappedBy,
+        io_safe_output($output),
+        $wrappedBy
+    );
 }
 
 

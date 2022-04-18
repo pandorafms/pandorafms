@@ -17,7 +17,7 @@ check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
-        'ACL Violation',
+        AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Inventory'
     );
     include 'general/noaccess.php';
@@ -46,11 +46,11 @@ ui_require_css_file('first_task');
 ui_print_info_message(['no_close' => true, 'message' => __('There are no clusters defined yet.') ]);
 ?>
 
-<div class="new_task_cluster">
-    <div class="image_task_cluster">
+<div class="new_task">
+    <div class="image_task">
         <?php echo html_print_image('images/first_task/icono-cluster-activo.png', true, ['title' => __('Clusters')]); ?>
     </div>
-    <div class="text_task_cluster">
+    <div class="text_task">
         <h3> <?php echo __('Create Cluster'); ?></h3>
         <p id="description_task"> 
     <?php

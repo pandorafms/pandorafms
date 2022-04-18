@@ -1200,11 +1200,11 @@ class Module extends Entity
 
         $cps = 0;
 
-        if (is_array($direct_parents) === false) {
+        if (is_array(($direct_parents ?? null)) === false) {
             $direct_parents = [];
         }
 
-        if (is_array($mc_parents) === false) {
+        if (is_array(($mc_parents ?? null)) === false) {
             $mc_parents = [];
         }
 

@@ -31,7 +31,7 @@ require_once $config['homedir'].'/include/functions.php';
  * @param string $active_tab Current tab or false for View page.
  * @param number $view       Id of incident. Show View tab.
  *
- * @return html Print tabs in header.
+ * @return string HTML code. Print tabs in header.
  */
 function integriaims_tabs($active_tab, $view=false)
 {
@@ -145,48 +145,113 @@ function integriaims_get_details($details, $detail_index=false)
 /**
  * Perform an API call to Integria IMS.
  *
- * @param string API host URL.
- * @param string User name.
- * @param string User password.
- * @param string API password.
- * @param string API Operation.
- * @param mixed String or array with parameters required by the API function.
+ * @param string|null $api_hostname               API host URL.
+ * @param string|null $user                       User name.
+ * @param string|null $user_pass                  User password.
+ * @param string|null $api_pass                   API password.
+ * @param string|null $operation                  API Operation.
+ * @param mixed       $params                     String or array with parameters required by the API function.
+ * @param mixed       $show_credentials_error_msg Show_credentials_error_msg.
+ * @param mixed       $return_type                Return_type.
+ * @param mixed       $token                      Token.
+ * @param mixed       $user_level_conf            User_level_conf.
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api_pass=null, $operation, $params='', $show_credentials_error_msg=false, $return_type='', $token='', $user_level_conf=null)
-{
+function integria_api_call(
+    $api_hostname=null,
+    $user=null,
+    $user_pass=null,
+    $api_pass=null,
+    $operation=null,
+    $params='',
+    $show_credentials_error_msg=false,
+    $return_type='',
+    $token='',
+    $user_level_conf=null
+) {
     global $config;
 
-    if ($user_level_conf === null) {
-        $user_level_conf = (bool) $config['integria_user_level_conf'];
-    }
+    if (is_metaconsole()) {
+        $servers = metaconsole_get_connection_names();
+        foreach ($servers as $key => $server) {
+            $connection = metaconsole_get_connection($server);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
 
-    $user_info = users_get_user_by_id($config['id_user']);
+            $integria_enabled = db_get_sql(
+                'SELECT `value` FROM tconfig WHERE `token` = "integria_enabled"'
+            );
 
-    // API access data.
-    if ($api_hostname === null) {
-        $api_hostname = $config['integria_hostname'];
-    }
+            if (!$integria_enabled) {
+                metaconsole_restore_db();
+                continue;
+            }
 
-    if ($api_pass === null) {
-        $api_pass = $config['integria_api_pass'];
-    }
+            // integria_user_level_conf, integria_hostname, integria_api_pass, integria_user, integria_user_level_user, integria_pass, integria_user_level_pass
+            $config_aux = db_get_all_rows_sql('SELECT `token`, `value` FROM `tconfig` WHERE `token` IN ("integria_user_level_conf", "integria_hostname", "integria_api_pass", "integria_user", "integria_user_level_user", "integria_pass", "integria_user_level_pass")');
+            $user_info = users_get_user_by_id($config['id_user']);
+            foreach ($config_aux as $key => $conf) {
+                if ($conf['token'] === 'integria_user_level_conf') {
+                    $user_level_conf = $conf['value'];
+                }
 
-    // Integria user and password.
-    if ($user === null || $user_level_conf === true) {
-        $user = $config['integria_user'];
+                if ($conf['token'] === 'integria_hostname') {
+                    $api_hostname = $conf['value'];
+                }
 
-        if ($user_level_conf === true) {
-            $user = $user_info['integria_user_level_user'];
+                if ($conf['token'] === 'integria_api_pass') {
+                    $api_pass = $conf['value'];
+                }
+
+                if ($conf['token'] === 'integria_user') {
+                    $user = $conf['value'];
+                }
+
+                if ($conf['token'] === 'integria_pass') {
+                    $user_pass = $conf['value'];
+                }
+            }
+
+            if ($user_level_conf == true) {
+                $user = $user_info['integria_user_level_user'];
+                $user_pass = $user_info['integria_user_level_pass'];
+            }
+
+            metaconsole_restore_db();
         }
-    }
+    } else {
+        if ($user_level_conf === null) {
+            $user_level_conf = (bool) $config['integria_user_level_conf'];
+        }
 
-    if ($user_pass === null || $user_level_conf === true) {
-        $user_pass = $config['integria_pass'];
+        $user_info = users_get_user_by_id($config['id_user']);
 
-        if ($user_level_conf === true) {
-            $user_pass = $user_info['integria_user_level_pass'];
+        // API access data.
+        if ($api_hostname === null) {
+            $api_hostname = $config['integria_hostname'];
+        }
+
+        if ($api_pass === null) {
+            $api_pass = $config['integria_api_pass'];
+        }
+
+        // Integria user and password.
+        if ($user === null || $user_level_conf === true) {
+            $user = $config['integria_user'];
+
+            if ($user_level_conf === true) {
+                $user = $user_info['integria_user_level_user'];
+            }
+        }
+
+        if ($user_pass === null || $user_level_conf === true) {
+            $user_pass = $config['integria_pass'];
+
+            if ($user_level_conf === true) {
+                $user_pass = $user_info['integria_user_level_pass'];
+            }
         }
     }
 
@@ -310,7 +375,7 @@ function get_array_from_csv_data_all($csv_data, &$array_values, $index=false)
  * @param string $priority       value of priority in Integria IMS.
  * @param string $priority_label text shown in color box.
  *
- * @return HTML  code to print the color box.
+ * @return string HTML code.  code to print the color box.
  */
 function ui_print_integria_incident_priority($priority, $priority_label)
 {
@@ -453,4 +518,47 @@ function get_tickets_integriaims($tickets_filters)
     }
 
     return $array_get_incidents;
+}
+
+
+function integriaims_upload_file($filename, $incident_id, $file_description)
+{
+    if ($_FILES[$filename]['name'] != '') {
+        $filename = io_safe_input($_FILES[$filename]['name']);
+        $filesize = io_safe_input($_FILES[$filename]['size']);
+
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $invalid_extensions = '/^(bat|exe|cmd|sh|php|php1|php2|php3|php4|php5|pl|cgi|386|dll|com|torrent|js|app|jar|iso|
+            pif|vb|vbscript|wsf|asp|cer|csr|jsp|drv|sys|ade|adp|bas|chm|cpl|crt|csh|fxp|hlp|hta|inf|ins|isp|jse|htaccess|
+            htpasswd|ksh|lnk|mdb|mde|mdt|mdw|msc|msi|msp|mst|ops|pcd|prg|reg|scr|sct|shb|shs|url|vbe|vbs|wsc|wsf|wsh)$/i';
+
+        if (!preg_match($invalid_extensions, $extension)) {
+            // The following is if you have clamavlib installed.
+            // (php5-clamavlib) and enabled in php.ini
+            // http://www.howtoforge.com/scan_viruses_with_php_clamavlib
+            if (extension_loaded('clamav')) {
+                cl_setlimits(5, 1000, 200, 0, 10485760);
+                $malware = cl_scanfile($_FILES['file']['tmp_name']);
+                if ($malware) {
+                    $error = 'Malware detected: '.$malware.'<br>ClamAV version: '.clam_get_version();
+                    die($error);
+                }
+            }
+
+            $filecontent = base64_encode(file_get_contents($_FILES[$filename]['tmp_name']));
+
+            $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $file_description, $filecontent], false, '', '|;|');
+
+            // API method returns '0' string if success.
+            $file_added = ($result_api_call === '0') ? true : false;
+
+            ui_print_result_message(
+                $file_added,
+                __('File successfully added'),
+                __('File could not be added')
+            );
+        } else {
+            ui_print_error_message(__('File has an invalid extension'));
+        }
+    }
 }

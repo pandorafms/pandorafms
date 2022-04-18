@@ -39,7 +39,7 @@ BEGIN {
 
 	use File::Copy;
 	use Scalar::Util qw(looks_like_number);
-	use lib '/usr/lib/perl5';
+	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	################################################################################
 	# Erase blank spaces before and after the string
@@ -312,7 +312,7 @@ BEGIN {
 		$YAML = 1;
 	}
 
-	use lib '/usr/lib/perl5';
+	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	our @ISA = ("Exporter");
 	our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
@@ -1003,7 +1003,7 @@ use IO::Socket;
 use Sys::Syslog;
 use Time::Local;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 # Agent XML data
 my $Xml;
@@ -1014,8 +1014,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.757';
-use constant AGENT_BUILD => '211019';
+use constant AGENT_VERSION => '7.0NG.761';
+use constant AGENT_BUILD => '220418';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -2736,7 +2736,7 @@ sub guess_os_version ($) {
 
 	# Linux
 	if ($os eq 'linux') {
-		$os_version = `lsb_release -sd 2>$DevNull`;
+		$os_version = `cat /etc/*ease|grep PRETTY| cut -f 2 -d= | tr -d '"' 2>$DevNull`;
 	# AIX
 	} elsif ($os eq 'aix') {
 		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);

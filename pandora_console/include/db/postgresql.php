@@ -686,10 +686,10 @@ function postgresql_db_format_array_where_clause_sql($values, $join='AND', $pref
  *
  * @return the first value of the first row of a table result from query.
  */
-function postgresql_db_get_value_sql($sql, $dbconnection=false)
+function postgresql_db_get_value_sql($sql, $dbconnection=false, $search_history_db=false)
 {
     $sql .= ' LIMIT 1';
-    $result = postgresql_db_get_all_rows_sql($sql, false, true, $dbconnection);
+    $result = postgresql_db_get_all_rows_sql($sql, $search_history_db, true, $dbconnection);
 
     if ($result === false) {
         return false;
@@ -750,7 +750,7 @@ function postgresql_db_get_row_sql($sql, $search_history_db=false, $cache=true)
  *
  * @return mixed Array of the row or false in case of error.
  */
-function postgresql_db_get_row_filter($table, $filter, $fields=false, $where_join='AND')
+function postgresql_db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -772,7 +772,7 @@ function postgresql_db_get_row_filter($table, $filter, $fields=false, $where_joi
 
     $sql = sprintf('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-    return db_get_row_sql($sql);
+    return db_get_row_sql($sql, $historydb, $cache);
 }
 
 

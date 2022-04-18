@@ -59,6 +59,9 @@ $license = db_get_value(
     'customer_key'
 );
 
+if (isset($config['lts_updates']) === false) {
+    $config['lts_updates'] = false;
+}
 
 if (empty($license) === true) {
     $license = 'PANDORA-FREE';
@@ -285,7 +288,7 @@ $homedir = sys_get_temp_dir();
 $dbconnection = null;
 $remote_config = null;
 $insecure = false;
-$pandora_url = ui_get_full_url('/', false, false, false);
+$pandora_url = ui_get_full_url('update_manager_client/', false, false, false);
 
 if (is_array($config) === true) {
     $allowOfflinePatches = false;
@@ -417,8 +420,7 @@ $ui = new Manager(
             register_upgrade($version, $type, $mode);
         },
     ],
-    $mode,
-    true
+    $mode
 );
 
 $ui->run();

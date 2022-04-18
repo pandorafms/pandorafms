@@ -1361,7 +1361,8 @@ function defineTinyMCE(added_config) {
     element_format: "html",
     object_resizing: true,
     autoresize_bottom_margin: 50,
-    autoresize_on_init: true
+    autoresize_on_init: true,
+    extended_valid_elements: "img[*]"
   });
 
   if (!isEmptyObject(added_config)) {

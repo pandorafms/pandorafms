@@ -2464,7 +2464,7 @@ $class = 'databox filters';
             <td class="bolder">
             <?php
             echo __('Render definition').ui_print_help_tip(
-                __('Be aware because not all CSS inline styles are supported in the pdf library'),
+                __('Please note that not all CSS styles are supported by PDF reports.'),
                 true
             );
             ?>

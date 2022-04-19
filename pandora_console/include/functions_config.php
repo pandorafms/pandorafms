@@ -632,6 +632,38 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP password');
                     }
 
+                    if (config_update_value('ldap_server_secondary', get_parameter('ldap_server_secondary'), true) === false) {
+                        $error_update[] = __('Secondary LDAP server');
+                    }
+
+                    if (config_update_value('ldap_port_secondary', get_parameter('ldap_port_secondary'), true) === false) {
+                        $error_update[] = __('Secondary LDAP port');
+                    }
+
+                    if (config_update_value('ldap_version_secondary', get_parameter('ldap_version_secondary'), true) === false) {
+                        $error_update[] = __('Secondary LDAP version');
+                    }
+
+                    if (config_update_value('ldap_start_tls_secondary', get_parameter('ldap_start_tls_secondary'), true) === false) {
+                        $error_update[] = __('Secontary start TLS');
+                    }
+
+                    if (config_update_value('ldap_base_dn_secondary', get_parameter('ldap_base_dn_secondary'), true) === false) {
+                        $error_update[] = __('Secondary base DN');
+                    }
+
+                    if (config_update_value('ldap_login_attr_secondary', get_parameter('ldap_login_attr_secondary'), true) === false) {
+                        $error_update[] = __('Secondary login attribute');
+                    }
+
+                    if (config_update_value('ldap_admin_login_secondary', get_parameter('ldap_admin_login_secondary'), true) === false) {
+                        $error_update[] = __('Admin secondary LDAP login');
+                    }
+
+                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(io_safe_output(get_parameter('ldap_admin_pass_secondary'))), true) === false) {
+                        $error_update[] = __('Admin secondary LDAP password');
+                    }
+
                     if (config_update_value('fallback_local_auth', get_parameter('fallback_local_auth'), true) === false) {
                         $error_update[] = __('Fallback to local authentication');
                     }
@@ -654,6 +686,10 @@ function config_update_config()
 
                     if (config_update_value('ldap_save_profile', get_parameter('ldap_save_profile'), true) === false) {
                         $error_update[] = __('Save profile');
+                    }
+
+                    if (config_update_value('secondary_ldap_enabled', get_parameter('secondary_ldap_enabled'), true) === false) {
+                        $error_update[] = __('LDAP secondary enabled');
                     }
 
                     if (config_update_value('rpandora_server', get_parameter('rpandora_server'), true) === false) {
@@ -2626,6 +2662,41 @@ function config_process_config()
 
     if (!isset($config['ldap_admin_pass'])) {
         config_update_value('ldap_admin_pass', '');
+    }
+
+    if (!isset($config['ldap_server_secondary'])) {
+        config_update_value('ldap_server_secondary', 'localhost');
+    }
+
+    if (!isset($config['ldap_port_secondary'])) {
+        config_update_value('ldap_port_secondary', 389);
+    }
+
+    if (!isset($config['ldap_version_secondary'])) {
+        config_update_value('ldap_version_secondary', '3');
+    }
+
+    if (!isset($config['ldap_start_tls_secondary'])) {
+        config_update_value('ldap_start_tls_secondary', 0);
+    }
+
+    if (!isset($config['ldap_base_dn_secondary'])) {
+        config_update_value(
+            'ldap_base_dn_secondary',
+            'ou=People,dc=edu,dc=example,dc=org'
+        );
+    }
+
+    if (!isset($config['ldap_login_attr_secondary'])) {
+        config_update_value('ldap_login_attr_secondary', 'uid');
+    }
+
+    if (!isset($config['ldap_admin_login_secondary'])) {
+        config_update_value('ldap_admin_login_secondary', '');
+    }
+
+    if (!isset($config['ldap_admin_pass_secondary'])) {
+        config_update_value('ldap_admin_pass_secondary', '');
     }
 
     if (!isset($config['ldap_function'])) {

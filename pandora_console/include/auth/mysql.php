@@ -239,6 +239,10 @@ function process_user_login_remote($login, $pass, $api=false)
         // LDAP
         case 'ldap':
             $sr = ldap_process_user_login($login, $pass);
+            // Try with secondary server if not login.
+            if ($sr === false && (bool) $config['secondary_ldap_enabled'] === true) {
+                $sr = ldap_process_user_login($login, $pass, true);
+            }
 
             if (!$sr) {
                 return false;
@@ -754,7 +758,7 @@ function update_user($id_user, $values)
  *
  * @return boolean True if the login is correct, false in other case
  */
-function ldap_process_user_login($login, $password)
+function ldap_process_user_login($login, $password, $secondary_server=false)
 {
     global $config;
 
@@ -764,14 +768,29 @@ function ldap_process_user_login($login, $password)
         return false;
     }
 
+    $ldap_tokens = [
+        'ldap_server',
+        'ldap_port',
+        'ldap_version',
+        'ldap_base_dn',
+        'ldap_login_attr',
+        'ldap_admin_login',
+        'ldap_admin_pass',
+        'ldap_start_tls',
+    ];
+
+    foreach ($ldap_tokens as $token) {
+        $ldap[$token] = $secondary_server === true ? $config[$token.'_secondary'] : $config[$token];
+    }
+
     // Connect to the LDAP server
-    if (stripos($config['ldap_server'], 'ldap://') !== false
-        || stripos($config['ldap_server'], 'ldaps://') !== false
-        || stripos($config['ldap_server'], 'ldapi://') !== false
+    if (stripos($ldap['ldap_server'], 'ldap://') !== false
+        || stripos($ldap['ldap_server'], 'ldaps://') !== false
+        || stripos($ldap['ldap_server'], 'ldapi://') !== false
     ) {
-        $ds = @ldap_connect($config['ldap_server'].':'.$config['ldap_port']);
+        $ds = @ldap_connect($ldap['ldap_server'].':'.$ldap['ldap_port']);
     } else {
-        $ds = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+        $ds = @ldap_connect($ldap['ldap_server'], $ldap['ldap_port']);
     }
 
     if (!$ds) {
@@ -781,9 +800,9 @@ function ldap_process_user_login($login, $password)
     }
 
     // Set the LDAP version
-    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, $config['ldap_version']);
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, $ldap['ldap_version']);
 
-    if ($config['ldap_start_tls']) {
+    if ($ldap['ldap_start_tls']) {
         if (!@ldap_start_tls($ds)) {
             $config['auth_error'] = 'Could not start TLS for LDAP connection';
             @ldap_close($ds);
@@ -794,20 +813,21 @@ function ldap_process_user_login($login, $password)
 
     if ($config['ldap_function'] == 'local') {
         $sr = local_ldap_search(
-            $config['ldap_server'],
-            $config['ldap_port'],
-            $config['ldap_version'],
-            io_safe_output($config['ldap_base_dn']),
-            $config['ldap_login_attr'],
-            io_safe_output($config['ldap_admin_login']),
-            io_output_password($config['ldap_admin_pass']),
-            io_safe_output($login)
+            $ldap['ldap_server'],
+            $ldap['ldap_port'],
+            $ldap['ldap_version'],
+            io_safe_output($ldap['ldap_base_dn']),
+            $ldap['ldap_login_attr'],
+            io_safe_output($ldap['ldap_admin_login']),
+            io_output_password($ldap['ldap_admin_pass']),
+            io_safe_output($login),
+            $ldap['ldap_start_tls']
         );
 
         if ($sr) {
             $user_dn = $sr['dn'][0];
 
-            $ldap_base_dn = !empty($config['ldap_base_dn']) ? ','.io_safe_output($config['ldap_base_dn']) : '';
+            $ldap_base_dn = !empty($ldap['ldap_base_dn']) ? ','.io_safe_output($ldap['ldap_base_dn']) : '';
 
             if (!empty($ldap_base_dn)) {
                 if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($user_dn), $password)) {
@@ -823,17 +843,17 @@ function ldap_process_user_login($login, $password)
         }
     } else {
         // PHP LDAP function
-        if ($config['ldap_admin_login'] != '' && $config['ldap_admin_pass'] != '') {
-            if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), io_output_password($config['ldap_admin_pass']))) {
+        if ($ldap['ldap_admin_login'] != '' && $ldap['ldap_admin_pass'] != '') {
+            if (!@ldap_bind($ds, io_safe_output($ldap['ldap_admin_login']), io_output_password($ldap['ldap_admin_pass']))) {
                 $config['auth_error'] = 'Admin ldap connection fail';
                 @ldap_close($ds);
                 return false;
             }
         }
 
-        $filter = '('.$config['ldap_login_attr'].'='.io_safe_output($login).')';
+        $filter = '('.$ldap['ldap_login_attr'].'='.io_safe_output($login).')';
 
-        $sr = ldap_search($ds, io_safe_output($config['ldap_base_dn']), $filter);
+        $sr = ldap_search($ds, io_safe_output($ldap['ldap_base_dn']), $filter);
 
         $memberof = ldap_get_entries($ds, $sr);
 
@@ -845,7 +865,7 @@ function ldap_process_user_login($login, $password)
         }
 
         unset($memberof['count']);
-        $ldap_base_dn = !empty($config['ldap_base_dn']) ? ','.io_safe_output($config['ldap_base_dn']) : '';
+        $ldap_base_dn = !empty($ldap['ldap_base_dn']) ? ','.io_safe_output($ldap['ldap_base_dn']) : '';
 
         if (!empty($ldap_base_dn)) {
             if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($memberof['dn']), $password)) {
@@ -1409,7 +1429,8 @@ function local_ldap_search(
     $access_attr=null,
     $ldap_admin_user=null,
     $ldap_admin_pass=null,
-    $user=null
+    $user=null,
+    $ldap_start_tls=null
 ) {
     global $config;
 
@@ -1419,7 +1440,7 @@ function local_ldap_search(
     }
 
     $tls = '';
-    if ($config['ldap_start_tls']) {
+    if ($ldap_start_tls) {
         $tls = ' -ZZ ';
     }
 

@@ -101,18 +101,30 @@ function process_user_login($login, $pass, $api=false)
     }
 
     // 2. Try local.
-    if ($login_remote === false
-        && ($config['fallback_local_auth']
-        || is_user_admin($login)
-        || $local_user === true
-        || strtolower($config['auth']) == 'mysql')
-    ) {
-        return process_user_login_local($login, $pass, $api);
+    if ($login_remote === false) {
+        if ($api === true) {
+            $user_not_login = db_get_value(
+                'not_login',
+                'tusuario',
+                'id_user',
+                $login
+            );
+        }
+
+        if ($config['fallback_local_auth']
+            || is_user_admin($login)
+            || $local_user === true
+            || strtolower($config['auth']) == 'mysql'
+            || (bool) $user_not_login === true
+        ) {
+            return process_user_login_local($login, $pass, $api);
+        } else {
+            return false;
+        }
     } else {
         return $login_remote;
     }
 
-    return false;
 }
 
 

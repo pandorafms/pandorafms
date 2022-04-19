@@ -10,16 +10,15 @@ namespace UpdateManager;
 require_once __DIR__.'/../vendor/autoload.php';
 
 // Load Config class from updatemanager project to read test.ini settings.
-
 // Embeebed mode.
-@include_once __DIR__.'/../../src/lib/Config.php';
-@include_once __DIR__.'/../../src/lib/License.php';
-@include_once __DIR__.'/../../src/lib/DB.php';
+@require_once __DIR__.'/../../src/lib/Config.php';
+@require_once __DIR__.'/../../src/lib/License.php';
+@require_once __DIR__.'/../../src/lib/DB.php';
 
 // Referenced mode.
-@include_once __DIR__.'/../../updatemanager/src/lib/Config.php';
-@include_once __DIR__.'/../../updatemanager/src/lib/License.php';
-@include_once __DIR__.'/../../updatemanager/src/lib/DB.php';
+@require_once __DIR__.'/../../updatemanager/src/lib/Config.php';
+@require_once __DIR__.'/../../updatemanager/src/lib/License.php';
+@require_once __DIR__.'/../../updatemanager/src/lib/DB.php';
 
 /**
  * Test the Client class.
@@ -69,7 +68,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
 
         if ($online === true) {
             $target = '/var/www/html/updatemanager/repo/test';
-        } elseif (substr($target, 0, 1) !== '/') {
+        } else if (substr($target, 0, 1) !== '/') {
             $target = __DIR__.'/../../'.$target;
         }
 
@@ -562,4 +561,6 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         // Cleanup.
         $umc_enterprise->getDBH()->query('DROP DATABASE `ent`');
     }
+
+
 }

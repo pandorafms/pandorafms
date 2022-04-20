@@ -848,7 +848,6 @@ var TreeController = {
 
               break;
             case "services":
-              console.log(element);
               if (
                 typeof element.statusImageHTML != "undefined" &&
                 element.statusImageHTML.length > 0
@@ -1302,6 +1301,7 @@ var TreeController = {
                     .removeClass("leaf-error")
                     .addClass("leaf-loading");
 
+                  console.log(element);
                   $.ajax({
                     url: controller.ajaxURL,
                     type: "POST",
@@ -1315,6 +1315,7 @@ var TreeController = {
                       serverID: element.serverID,
                       rootType: element.rootType,
                       metaID: element.metaID,
+                      title: element.title,
                       filter: controller.filter,
                       auth_class: controller.auth_class,
                       id_user: controller.id_user,

@@ -268,7 +268,20 @@ class ServiceMapWidget extends Widget
             $fields = array_reduce(
                 $services_res,
                 function ($carry, $item) {
-                    $carry[$item['id']] = $item['name'];
+                    $parents = '';
+                    if (class_exists('\PandoraFMS\Enterprise\Service') === true) {
+                        try {
+                            $service = new \PandoraFMS\Enterprise\Service($item['id']);
+                            $ancestors = $service->getAncestors();
+                            if (empty($ancestors) === false) {
+                                $parents = '('.join('/', $ancestors).')';
+                            }
+                        } catch (\Exception $e) {
+                            $parents = '';
+                        }
+                    }
+
+                    $carry[$item['id']] = $item['name'].' '.$parents;
                     return $carry;
                 },
                 []

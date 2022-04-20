@@ -1301,7 +1301,6 @@ var TreeController = {
                     .removeClass("leaf-error")
                     .addClass("leaf-loading");
 
-                  console.log(element);
                   $.ajax({
                     url: controller.ajaxURL,
                     type: "POST",

@@ -14,15 +14,15 @@
   },
   "require": {
     "mpdf/mpdf": "^8.0.15",
-    "swiftmailer/swiftmailer": "^6.0",
-    "articapfms/update_manager_client": "^1.0"
+    "swiftmailer/swiftmailer": "^6.0"
   },
   "autoload": {
     "psr-4": {
       "Models\\": "include/rest-api/models",
       "Enterprise\\Models\\": "enterprise/include/rest-api/models",
       "PandoraFMS\\": "include/lib",
-      "PandoraFMS\\Enterprise\\": "enterprise/include/lib"
+      "PandoraFMS\\Enterprise\\": "enterprise/include/lib",
+      "UpdateManager\\": "update_manager_client/lib/UpdateManager"
     }
   },
   "autoload-dev": {

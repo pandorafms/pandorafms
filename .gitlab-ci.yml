@@ -14,7 +14,7 @@ test:
     - sed -i "s/_PRODUCT_/$REBRANDING/g"  $CI_PROJECT_DIR/pandora_server/Makefile.PL
     - sed -i "s/TENTACLE_USER=\"pandora\"/TENTACLE_USER=\"$REBRANDING\"/g" $CI_PROJECT_DIR/pandora_server/util/tentacle_serverd
     - docker pull pandorafms/pandorafms-base:rocky8.5
-    - docker run --rm -e REBRANDING="$REBRANDING" -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:rocky8.5 /tmp/pandorafms/tests/test.sh
+    - docker run --ulimit nofile=262144:262144 --rm -e REBRANDING="$REBRANDING" -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:rocky8.5 /tmp/pandorafms/tests/test.sh
 
 test_php_legacy:
   stage: test
@@ -22,4 +22,4 @@ test_php_legacy:
     - df -h | grep instaladores | awk '{print $NF}' |xargs umount >/dev/null 2>&1 || true
   script:
     - docker pull pandorafms/pandorafms-base:centos7
-    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:centos7 /tmp/pandorafms/tests/test_legacy.sh
+    - docker run --ulimit nofile=262144:262144 --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base:centos7 /tmp/pandorafms/tests/test_legacy.sh

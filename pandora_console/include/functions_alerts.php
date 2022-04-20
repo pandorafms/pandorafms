@@ -1159,7 +1159,13 @@ function alerts_create_alert_agent_module($id_agent_module, $id_alert_template, 
     $values['id_alert_template'] = (int) $id_alert_template;
     $values['last_reference'] = time();
 
-    return @db_process_sql_insert('talert_template_modules', $values);
+    $sql = sprintf(
+        'INSERT IGNORE INTO talert_template_modules(%s) VALUES(%s)',
+        implode(', ', array_keys($values)),
+        implode(', ', array_values($values))
+    );
+
+    return @db_process_sql($sql);
 }
 
 

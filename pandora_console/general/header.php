@@ -954,7 +954,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         
         $("a.autorefresh").click (function () {
             $("a.autorefresh_txt").toggle ();
-            $("#combo_refr").toggle ();
+            $("#combo_refr").toggle();
             $("select#ref").change (function () {
                 href = $("a.autorefresh").attr ("href");
             

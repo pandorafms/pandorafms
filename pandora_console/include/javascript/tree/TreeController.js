@@ -848,6 +848,7 @@ var TreeController = {
 
               break;
             case "services":
+              console.log(element);
               if (
                 typeof element.statusImageHTML != "undefined" &&
                 element.statusImageHTML.length > 0
@@ -861,7 +862,7 @@ var TreeController = {
                 '<span><img class="invert_filter" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
                 'images/help.png" class="img_help" title="' +
-                element.name +
+                (element.title ? element.title : element.name) +
                 '" alt="' +
                 element.name +
                 '"/></span> ';

@@ -523,6 +523,8 @@ class TreeService extends Tree
                         continue 2;
                     }
 
+                    $tmp['parents'] = $item->service()->getAncestors();
+                    $tmp['title'] = join('/', $tmp['parents']);
                     $tmp['id'] = (int) $item->service()->id();
                     $tmp['name'] = $item->service()->name();
                     $tmp['alias'] = $item->service()->name();

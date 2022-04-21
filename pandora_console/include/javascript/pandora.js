@@ -2029,3 +2029,32 @@ function inArray(needle, haystack) {
   }
   return false;
 }
+
+/**
+ * Filter selector item by text based on a text input.
+ *
+ * @param {string} textbox Text input.
+ *
+ * @return {void}
+ */
+$.fn.filterByText = function(textbox) {
+  var select = this;
+
+  $(textbox).bind("change keyup", function() {
+    var search = $.trim($(textbox).val());
+
+    $(select)
+      .find("option")
+      .each(function() {
+        if (
+          $(this)
+            .text()
+            .includes(search.toLowerCase()) === true
+        ) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+  });
+};

@@ -107,7 +107,11 @@ switch ($tab) {
 
     case 'online':
     default:
-        $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
-        include $config['homedir'].'/godmode/um_client/index.php';
+        if ($config['node_metaconsole'] === 0) {
+            $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
+            include $config['homedir'].'/godmode/um_client/index.php';
+        } else {
+            ui_print_warning_message(__('Please register on metaconsole.'));
+        }
     break;
 }

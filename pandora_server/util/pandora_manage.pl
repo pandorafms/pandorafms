@@ -375,29 +375,55 @@ sub pandora_disable_group ($$$) {
 		exit;
 	}
 
-	if ($group == 0){
-		# Extract all the names of the pandora agents if it is for all = 0.
-		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+	if(is_metaconsole($conf) == 1) {
+			my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+			my @servers_id = split(',',$servers);
+			use Data:Dumper; 
+			print Dumper()
+			foreach my $server (@servers_id) {
+					my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 
-		# Update bbdd.
-		db_do ($dbh, "UPDATE tagente SET disabled = 1");
-	}
-	else {
-		# Extract all the names of the pandora agents if it is for group.
-		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+					if ($group == 0){
+						# Extract all the names of the pandora agents if it is for all = 0.
+						@agents_bd = get_db_rows ($dbh_metaconsole, 'SELECT id_agente FROM tagente');
+					}
+					else {
+						# Extract all the names of the pandora agents if it is for group.
+						@agents_bd = get_db_rows ($dbh_metaconsole, 'SELECT id_agente FROM tagente WHERE id_grupo = ?', $group);
+					}
 
-		# Update bbdd.
-		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
-	}
+					foreach my $id_agent (@agents_bd) {
+							# Call the API.
+							$result = api_call(
+								$conf, 'set', 'disabled_and_standby', $id_agent, $server, 1
+							);
+					}
+			}
+	} else {
+			if ($group == 0){
+				# Extract all the names of the pandora agents if it is for all = 0.
+				@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
 
-	foreach my $name_agent (@agents_bd) {
-		# Check the standby field I put it to 0.
-		my $new_conf = update_conf_txt(
-			$conf,
-			$name_agent->{'nombre'},
-			'standby',
-			'1'
-		);
+				# Update bbdd.
+				db_do ($dbh, "UPDATE tagente SET disabled = 1");
+		}
+		else {
+				# Extract all the names of the pandora agents if it is for group.
+				@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+				# Update bbdd.
+				db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
+		}
+
+		foreach my $name_agent (@agents_bd) {
+			# Check the standby field I put it to 0.
+			my $new_conf = update_conf_txt(
+				$conf,
+				$name_agent->{'nombre'},
+				'standby',
+				'1'
+			);
+		}
 	}
 
     return $result;

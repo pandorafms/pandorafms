@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.761 Build 220420";
+my $version = "7.0NG.761 Build 220425";
 
 # save program name for logging
 my $progname = basename($0);
@@ -378,8 +378,6 @@ sub pandora_disable_group ($$$) {
 	if(is_metaconsole($conf) == 1) {
 			my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
 			my @servers_id = split(',',$servers);
-			use Data:Dumper; 
-			print Dumper()
 			foreach my $server (@servers_id) {
 					my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 
@@ -394,9 +392,11 @@ sub pandora_disable_group ($$$) {
 
 					foreach my $id_agent (@agents_bd) {
 							# Call the API.
-							$result = api_call(
-								$conf, 'set', 'disabled_and_standby', $id_agent, $server, 1
-							);
+							use Data::Dumper;
+							print Dumper($conf);
+							$result .= api_call(
+								$conf, 'set', 'disabled_and_standby', $id_agent, $server, 1, 1
+							).'\n';
 					}
 			}
 	} else {
@@ -1164,7 +1164,8 @@ sub cli_disable_group() {
 		print_log "[INFO] Disabling group '$group_name'\n\n";
 	}
 	
-	pandora_disable_group ($conf, $dbh, $id_group);
+	my $result = pandora_disable_group ($conf, $dbh, $id_group);
+	print $result.'\n\n';
 }
 
 ##############################################################################

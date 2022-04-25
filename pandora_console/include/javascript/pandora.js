@@ -2042,6 +2042,7 @@ $.fn.filterByText = function(textbox) {
 
   $(textbox).bind("change keyup", function() {
     var search = $.trim($(textbox).val());
+    var regex = new RegExp(search, "gi");
 
     $(select)
       .find("option")
@@ -2049,7 +2050,7 @@ $.fn.filterByText = function(textbox) {
         if (
           $(this)
             .text()
-            .includes(search.toLowerCase()) === true
+            .match(regex) !== null
         ) {
           $(this).show();
         } else {

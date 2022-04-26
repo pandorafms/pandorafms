@@ -757,7 +757,7 @@ function events_get_all(
     if (is_array($fields) === false && $fields === 'count'
         || (is_array($fields) === true && $fields[0] === 'count')
     ) {
-        $fields = ['te.*'];
+        $fields = ['te.id_evento'];
         $count = true;
     } else if (!is_array($fields)) {
         error_log('[events_get_all] Fields must be an array or "count".');
@@ -1406,17 +1406,15 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.estado, te.evento, te.id_agente, te.id_agentmodule';
+            $group_by .= 'te.estado, te.event_type, te.id_agente, te.id_agentmodule';
             $group_by .= $extra;
         break;
 
         case '2':
             // Group by agents.
             $tagente_join = 'INNER';
-            // $group_by .= 'te.id_agente, te.event_type';
-            // $group_by .= $extra;
             $group_by = '';
-            $order_by = events_get_sql_order('id_agente', 'asc');
+            $order_by = events_get_sql_order('te.id_agente', 'asc');
             if (isset($order, $sort_field)) {
                 $order_by .= ','.events_get_sql_order(
                     $sort_field,
@@ -1477,13 +1475,13 @@ function events_get_all(
 
     $group_selects = '';
     if ($group_by != '') {
-        $group_selects = ',COUNT(id_evento) AS event_rep
-        ,GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
-        MAX(utimestamp) as timestamp_last,
-        MIN(utimestamp) as timestamp_first,
-        MAX(id_evento) as max_id_evento';
-
         if ($count === false) {
+            $group_selects = ',COUNT(id_evento) AS event_rep,
+            GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
+            MAX(utimestamp) as timestamp_last,
+            MIN(utimestamp) as timestamp_first,
+            MAX(id_evento) as max_id_evento';
+
             $idx = array_search('te.user_comment', $fields);
             if ($idx !== false) {
                 unset($fields[$idx]);
@@ -1573,7 +1571,7 @@ function events_get_all(
                 ('.$sql.') tbase';
     }
 
-    if ($count) {
+    if ($count === true) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
     }
 

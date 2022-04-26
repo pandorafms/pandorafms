@@ -181,6 +181,7 @@ fieldset {
   color: #777;
   border: none;
   margin-top: -2em;
+  box-sizing: border-box;
 }
 
 /* Image open dialog in group events by agents*/

@@ -1165,7 +1165,7 @@ function alerts_create_alert_agent_module($id_agent_module, $id_alert_template, 
         implode(', ', array_values($values))
     );
 
-    return @db_process_sql($sql);
+    return @db_process_sql($sql, 'insert_id');
 }
 
 

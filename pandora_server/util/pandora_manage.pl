@@ -21,7 +21,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
 use LWP::Simple;
-use Data::Dumper;
+#use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -392,11 +392,9 @@ sub pandora_disable_group ($$$) {
 
 					foreach my $id_agent (@agents_bd) {
 							# Call the API.
-							use Data::Dumper;
-							print Dumper($conf);
-							$result .= api_call(
-								$conf, 'set', 'disabled_and_standby', $id_agent, $server, 1, 1
-							).'\n';
+							$result += api_call(
+								$conf, 'set', 'disabled_and_standby', $id_agent->{'id_agente'}, $server, '1|1' 
+							);
 					}
 			}
 	} else {
@@ -405,14 +403,14 @@ sub pandora_disable_group ($$$) {
 				@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
 
 				# Update bbdd.
-				db_do ($dbh, "UPDATE tagente SET disabled = 1");
+				$result = db_update ($dbh, "UPDATE tagente SET disabled = 1");
 		}
 		else {
 				# Extract all the names of the pandora agents if it is for group.
 				@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
 
 				# Update bbdd.
-				db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
+				$result = db_update ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
 		}
 
 		foreach my $name_agent (@agents_bd) {
@@ -1165,7 +1163,7 @@ sub cli_disable_group() {
 	}
 	
 	my $result = pandora_disable_group ($conf, $dbh, $id_group);
-	print $result.'\n\n';
+	print_log "[INFO] Disbaled ".$result." agents from group ".$group_name."\n\n";
 }
 
 ##############################################################################
@@ -5565,8 +5563,6 @@ sub cli_get_agents() {
 	my $agent_status;
 	
 	my $head_print = 0;
-
-	# use Data::Dumper;
 
 
 	foreach my $agent (@agents) {

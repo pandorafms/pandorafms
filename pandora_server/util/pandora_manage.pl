@@ -5953,6 +5953,24 @@ sub cli_delete_group() {
 
 	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
 
+	# Delete on nodes too if metaconsole.
+	if(is_metaconsole($conf) == 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+		my @servers_id = split(',',$servers);
+
+	foreach my $server (@servers_id) {
+
+		my $dbh_node = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+
+		my $group_id = get_group_id($dbh_node,$group_name);
+		exist_check($group_id, 'group name', $group_name);
+
+		$group_id = db_do ($dbh_node, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
+
+		}
+	}
+
+
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";
 	}else{

@@ -1,0 +1,2 @@
+*.exe filter=lfs diff=lfs merge=lfs -text
+pandorawmic filter=lfs diff=lfs merge=lfs -text

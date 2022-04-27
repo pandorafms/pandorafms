@@ -53,7 +53,7 @@ sub new ($$;$) {
 	return undef unless $config->{'wmiserver'} == 1;
 
 	# Check for a WMI client
-	if (system ($config->{'wmi_client'} . " >$DEVNULL 2>&1") >> 8 != 1) {
+	if (system ($config->{'wmi_client'} . " >$DEVNULL 2>&1") >> 8 == 127) {
 		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. " . $config->{'rb_product_name'} . " WMI Server needs a DCOM/WMI client.", 1);
 		print_message ($config, ' [E] ' . $config->{'wmi_client'} . " not found. " . $config->{'rb_product_name'} . " WMI Server needs a DCOM/WMI client.", 1);
 		return undef;

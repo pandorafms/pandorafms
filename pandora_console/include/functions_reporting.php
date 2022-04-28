@@ -810,7 +810,7 @@ function reporting_make_reporting_data(
                     break;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'event_report_module':
@@ -826,7 +826,7 @@ function reporting_make_reporting_data(
                     break;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'event_report_group':
@@ -1943,6 +1943,8 @@ function reporting_event_report_group(
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
+    $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
+
     // Filter.
     $show_summary_group         = $event_filter['show_summary_group'];
     $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
@@ -2246,6 +2248,8 @@ function reporting_event_report_module(
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
+    $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
+
     // Filter.
     $show_summary_group = $event_filter['show_summary_group'];
     $filter_event_severity = json_decode(
@@ -3779,6 +3783,8 @@ function reporting_event_report_agent(
     $filter_event_status = json_decode($style['filter_event_status'], true);
     $filter_event_filter_search = $style['event_filter_search'];
     $filter_event_filter_exclude = $style['event_filter_exclude'];
+    $show_custom_data = (isset($style['custom_data_events']) === true) ? (bool) $style['custom_data_events'] : false;
+    $return['show_custom_data'] = $show_custom_data;
 
     // Graph.
     $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -3798,7 +3804,8 @@ function reporting_event_report_agent(
         $filter_event_status,
         $filter_event_filter_search,
         $filter_event_filter_exclude,
-        $id_server
+        $id_server,
+        $show_custom_data
     );
 
     if (is_metaconsole() === true) {
@@ -10594,7 +10601,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_status=false,
     $filter_event_filter_search=false,
     $filter_event_filter_exclude=false,
-    $id_server=0
+    $id_server=0,
+    $show_custom_data=false
 ) {
     global $config;
 
@@ -10651,6 +10659,7 @@ function reporting_get_agents_detailed_event(
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp_rep'],
                         'id_evento'    => $e['id_evento'],
+                        'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
                     ];
                 } else {
                     $return_data[] = [
@@ -10661,6 +10670,7 @@ function reporting_get_agents_detailed_event(
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp'],
                         'id_evento'    => $e['id_evento'],
+                        'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
                     ];
                 }
             }

@@ -540,6 +540,10 @@ sed -i -e "s/^max_input_time.*/max_input_time = -1/g" /etc/php.ini
 sed -i -e "s/^max_execution_time.*/max_execution_time = 0/g" /etc/php.ini
 sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 800M/g" /etc/php.ini
 sed -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.ini
+sed -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
+
+#adding 900s to httpd timeout
+echo 'TimeOut 900' > /etc/httpd/conf.d/timeout.conf
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">

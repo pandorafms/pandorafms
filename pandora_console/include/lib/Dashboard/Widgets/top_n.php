@@ -463,8 +463,13 @@ class TopNWidget extends Widget
             // Calculation of max-min values for show in graph.
             $calc = (ceil((5 * (float) $module[$display]) / 100) + $module[$display]);
             // Set of max-min values for graph.
-            $valueMax = ((int) $module[$display] >= $valueMax) ? $calc : $valueMax;
-            $valueMin = ((int) $module[$display] <= $valueMin) ? $calc : $valueMin;
+            $valueMax = ((int) $module[$display] >= $valueMax) ? $calc : (int) $valueMax;
+            $valueMin = ((int) $module[$display] < $valueMin) ? $calc : (int) $valueMin;
+        }
+
+        // This change is for get more space between values.
+        if ((int) $valueMax === (int) $valueMin) {
+            $valueMax += 10;
         }
 
         $height = (count($data_hbar) * 25 + 35);

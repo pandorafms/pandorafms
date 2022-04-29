@@ -454,11 +454,17 @@ class TopNWidget extends Widget
         }
 
         $data_hbar = [];
+        $valueMax = 0;
+        $valueMin = 0;
         foreach ($modules as $module) {
             $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20);
-            $item_name = '';
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
             $data_hbar[$item_name]['g'] = $module[$display];
+            // Calculation of max-min values for show in graph.
+            $calc = (ceil((5 * (float) $module[$display]) / 100) + $module[$display]);
+            // Set of max-min values for graph.
+            $valueMax = ((int) $module[$display] >= $valueMax) ? $calc : $valueMax;
+            $valueMin = ((int) $module[$display] <= $valueMin) ? $calc : $valueMin;
         }
 
         $height = (count($data_hbar) * 25 + 35);
@@ -480,7 +486,9 @@ class TopNWidget extends Widget
             1,
             $config['homeurl'],
             'white',
-            'black'
+            'black',
+            $valueMin,
+            $valueMax
         );
         $output .= '</div>';
 

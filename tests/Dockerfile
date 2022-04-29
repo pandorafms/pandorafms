@@ -12,7 +12,7 @@ RUN { \
 RUN dnf install -y vim wget bzip2 curl && \
     dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
     dnf install -y yum-utils && \
-    dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-2.noarch.rpm && \
+    dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-4.noarch.rpm && \
     dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm && \
 	dnf config-manager --set-enabled powertools && \
     dnf module reset -y php && \
@@ -30,6 +30,7 @@ RUN dnf install -y vim wget bzip2 curl && \
     pip3 install unittest2 && \
     pip3 install testtools && \
     dnf install -y git \
+	git-lfs \
     passwd \
     openssh-server \
     httpd \
@@ -90,6 +91,7 @@ RUN dnf install -y vim wget bzip2 curl && \
     fontconfig-devel \
     libstdc++ \
     gettext \
+	wmic \
     cpanminus && \
     cpanm Geo::IP && \
     mkdir -p /opt/phantomjs/bin && cd /opt/phantomjs/bin && \
@@ -101,8 +103,6 @@ RUN dnf install -y vim wget bzip2 curl && \
     chmod +x /etc/init.d/httpd && \
 	setcap -r /usr/libexec/mysqld && \
     yum clean all
-
-ADD wmic /usr/bin/
 
 # Install debugg dependencies.
 RUN dnf install -y \

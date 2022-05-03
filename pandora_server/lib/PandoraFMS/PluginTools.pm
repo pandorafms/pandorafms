@@ -2211,6 +2211,14 @@ sub snmp_get {
 		return {
 			'error' => "Only SNMP 1 2 2c and 3 are supported."
 		};
+	} elsif (!defined $snmp->{host}) {
+		return {
+			'error' => "Destination host must be defined."
+		};
+	} elsif (!defined $snmp->{oid}) {
+		return {
+			'error' => "OID must be defined"
+		};
 	} else {
 		$snmp->{extra} = '' unless defined $snmp->{extra};
 		$snmp->{context} = '' unless defined $snmp->{context};

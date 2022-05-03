@@ -1607,7 +1607,7 @@ function config_update_config()
                                 'port' => $config['history_db_port'],
                                 'name' => $config['history_db_name'],
                                 'user' => $config['history_db_user'],
-                                'pass' => $config['history_db_pass'],
+                                'pass' => io_output_password($config['history_db_pass']),
                             ]
                         );
 

@@ -1163,7 +1163,7 @@ sub cli_disable_group() {
 	}
 	
 	my $result = pandora_disable_group ($conf, $dbh, $id_group);
-	print_log "[INFO] Disbaled ".$result." agents from group ".$group_name."\n\n";
+	print_log "[INFO] Disabled ".$result." agents from group ".$group_name."\n\n";
 }
 
 ##############################################################################

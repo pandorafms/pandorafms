@@ -2578,7 +2578,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdashboard` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(60) NOT NULL DEFAULT '',
+  `name` TEXT NOT NULL DEFAULT '',
   `id_user` VARCHAR(60) NOT NULL DEFAULT '',
   `id_group` INT NOT NULL DEFAULT 0,
   `active` TINYINT NOT NULL DEFAULT 0,

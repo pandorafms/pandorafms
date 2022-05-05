@@ -713,7 +713,7 @@ class DiscoveryTaskList extends HTML
                 }
 
                 if ($task['id_recon_script'] == 0 || $ipam === true) {
-                    $data[4] = $subnet;
+                    $data[4] = ui_print_truncate_text($subnet, 50, true, true, true, '[&hellip;]');
                 } else {
                     $data[4] = '-';
                 }

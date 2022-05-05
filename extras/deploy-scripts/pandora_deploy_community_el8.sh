@@ -14,11 +14,13 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022020801'
+S_VERSION='2022050501'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
+[ "$MYVER" ] || MYVER=57
+[ "$PHPVER" ] || PHPVER=7
 [ "$DBHOST" ] || DBHOST=127.0.0.1
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
@@ -204,15 +206,28 @@ fi
 #Installing wget
 execute_cmd "dnf install -y wget" "Installing wget"
 
-#Installing extra repositiries
-
+#Installing php
 execute_cmd "dnf module reset -y php " "Disabling standard PHP module"
-execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP"
+if [ "$PHPVER" -ne '8' ] ; then
+    execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP 7"
+fi
+
+if [ "$PHPVER" -eq '8' ] ; then
+    execute_cmd "dnf module install -y php:remi-8.0" "Configuring PHP 8"
+fi
 
 # Install percona Database
 execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
-#rm -rf /etc/my.cnf
-execute_cmd "dnf install -y Percona-Server-server-57" "Installing Percona Server"
+
+if [ "$MYVER" -eq '80' ] ; then
+    execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
+    execute_cmd "dnf install -y percona-server-server percona-xtrabackup-24" "Installing Percona Server 80"
+fi
+
+if [ "$MYVER" -ne '80' ] ; then
+    execute_cmd "dnf install -y Percona-Server-server-57 percona-xtrabackup-24" "Installing Percona Server 57"
+fi
+
 
 # Console dependencies
 console_dependencies=" \
@@ -382,20 +397,31 @@ EO_CONFIG_TMP
 
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
-execute_cmd "systemctl start mysqld" "Starting database engine"
-export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
-echo """
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
-    UNINSTALL PLUGIN validate_password;
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
-    """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
+    execute_cmd "systemctl start mysqld" "Starting database engine"
+    export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
+    if [ "$MYVER" -eq '80' ] ; then
+        echo """
+        SET PASSWORD FOR 'root'@'localhost' = 'Pandor4!';
+        UNINSTALL COMPONENT 'file://component_validate_password';
+        SET PASSWORD FOR 'root'@'localhost' = '$DBROOTPASS';
+        """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
+    fi
+
+    if [ "$MYVER" -ne '80' ] ; then
+        echo """
+        SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
+        UNINSTALL PLUGIN validate_password;
+        SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
+        """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"fi
+    fi
 fi
 export MYSQL_PWD=$DBROOTPASS
 echo -en "${cyan}Creating Pandora FMS database...${reset}"
 echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
 check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
-echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST
+echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -uroot -P$DBPORT -h$DBHOST
+echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -uroot -P$DBPORT -h$DBHOST
 export MYSQL_PWD=$DBPASS
 
 #Generating my.cnf
@@ -442,6 +468,10 @@ log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
 
 EO_CONFIG_F
+
+if [ "$MYVER" -eq '80' ] ; then
+    sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+fi
 
 execute_cmd "systemctl restart mysqld" "Configuring database engine"
 

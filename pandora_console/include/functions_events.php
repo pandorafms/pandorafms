@@ -757,7 +757,7 @@ function events_get_all(
     if (is_array($fields) === false && $fields === 'count'
         || (is_array($fields) === true && $fields[0] === 'count')
     ) {
-        $fields = ['te.id_evento'];
+        $fields = ['te.*'];
         $count = true;
     } else if (!is_array($fields)) {
         error_log('[events_get_all] Fields must be an array or "count".');

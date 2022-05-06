@@ -224,7 +224,7 @@ if (is_ajax() !== true) {
         if ($server_version !== false
             && preg_match('/NG\.(\d\.*\d*?) /', $server_version, $matches) > 0
         ) {
-            if ((float) $matches[1]  !== (float) $current_package) {
+            if ((float) $matches[1] !== floor((float) $current_package)) {
                 ui_print_warning_message(
                     __(
                         'Master server version %s does not match console version %s.',

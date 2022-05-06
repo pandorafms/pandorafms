@@ -2490,7 +2490,7 @@ class ConsoleSupervisor
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    floor($config['current_package'])
+                    (string) floor($config['current_package'])
                 ) === false
                 ) {
                     $missed++;

@@ -166,9 +166,8 @@ if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
     ## In case REDHAT
     # Check susbscription manager status:
     echo -en "${cyan}Checking Red Hat Enterprise subscription... ${reset}"
-    subscription-manager status &>> "$LOGFILE"
     subscription-manager list &>> "$LOGFILE"
-    subscription-manager list | grep 'Status:' | grep Subscribed &>> "$LOGFILE"
+    subscription-manager status &>> "$LOGFILE"
     check_cmd_status 'Error checking subscription status, make sure your server is activated and suscribed to Red Hat Enterprise repositories'
 
     # Ckeck repolist

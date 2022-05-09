@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022020801'
+S_VERSION='2022050901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -84,7 +84,6 @@ check_pre_pandora () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
     execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }

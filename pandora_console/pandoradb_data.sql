@@ -218,7 +218,7 @@ INSERT INTO `tlink` VALUES
 (1,'Documentation','https://pandorafms.com/manual'),
 (2,'Enterprise Edition','http://pandorafms.com'),
 (3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
-(4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0'),
+(4,'Suggest new feature','https://pandorafms.com/community/beta-program/'),
 (5,'Module library','http://library.pandorafms.com/');
 
 UNLOCK TABLES;

@@ -1260,7 +1260,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 -- Table `tusuario`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tusuario` (
-  `id_user` VARCHAR(60) NOT NULL DEFAULT '0',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '0',
   `fullname` VARCHAR(255) NOT NULL,
   `firstname` VARCHAR(255) NOT NULL,
   `lastname` VARCHAR(255) NOT NULL,
@@ -1328,7 +1328,7 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(60) NOT NULL,
+  `id_user` VARCHAR(255) NOT NULL,
   `secret` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`id_user`),
@@ -1388,7 +1388,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnotification_user` (
   `id_mensaje` INT UNSIGNED NOT NULL,
-  `id_user` VARCHAR(60) NOT NULL,
+  `id_user` VARCHAR(255) NOT NULL,
   `utimestamp_read` BIGINT,
   `utimestamp_erased` BIGINT,
   `postpone` INT,
@@ -1415,7 +1415,7 @@ CREATE TABLE IF NOT EXISTS `tnotification_group` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnotification_source_user` (
   `id_source` BIGINT UNSIGNED NOT NULL,
-  `id_user` VARCHAR(60),
+  `id_user` VARCHAR(255),
   `enabled` INT DEFAULT NULL,
   `also_mail` INT DEFAULT NULL,
   PRIMARY KEY (`id_source`,`id_user`),
@@ -1443,7 +1443,7 @@ CREATE TABLE IF NOT EXISTS `tnotification_source_group` (
 CREATE TABLE IF NOT EXISTS `tnotification_source_group_user` (
   `id_source` BIGINT UNSIGNED NOT NULL,
   `id_group` MEDIUMINT UNSIGNED NOT NULL,
-  `id_user` VARCHAR(60),
+  `id_user` VARCHAR(255),
   `enabled` INT DEFAULT NULL,
   `also_mail` INT DEFAULT NULL,
   PRIMARY KEY (`id_source`,`id_user`),
@@ -3836,7 +3836,7 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `vc_id` INT UNSIGNED NOT NULL,
   `vc_item_id` INT UNSIGNED NOT NULL,
-  `user_id` VARCHAR(60) DEFAULT NULL,
+  `user_id` VARCHAR(255) DEFAULT NULL,
   `data` TEXT,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expiration` INT UNSIGNED NOT NULL COMMENT 'Seconds to expire',

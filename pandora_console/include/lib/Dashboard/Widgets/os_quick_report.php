@@ -264,14 +264,20 @@ class OsQuickReportWidget extends Widget
             $table->cellpadding = 0;
             $table->cellspacing = 0;
             $table->size = [];
+            $table->size[0] = '10%';
+            $table->size[1] = '10%';
+            $table->size[2] = '20%';
+            $table->size[3] = '20%';
+            $table->size[4] = '20%';
+            $table->size[5] = '20%';
 
             $table->align = [];
-            $table->align[0] = 'left';
+            $table->align[0] = 'center';
             $table->align[1] = 'left';
-            $table->align[2] = 'left';
-            $table->align[3] = 'left';
-            $table->align[4] = 'left';
-            $table->align[5] = 'left';
+            $table->align[2] = 'center';
+            $table->align[3] = 'center';
+            $table->align[4] = 'center';
+            $table->align[5] = 'center';
 
             $table->head = [];
             $table->head[0] = __('OS');
@@ -282,12 +288,12 @@ class OsQuickReportWidget extends Widget
             $table->head[5] = ucfirst(__('unknown agents'));
 
             $table->headstyle = [];
-            $table->headstyle[0] = 'background-color: '.$values['background'];
+            $table->headstyle[0] = 'text-align:center;background-color: '.$values['background'];
             $table->headstyle[1] = 'background-color: '.$values['background'];
-            $table->headstyle[2] = 'background-color: '.$values['background'];
-            $table->headstyle[3] = 'background-color: '.$values['background'];
-            $table->headstyle[4] = 'background-color: '.$values['background'];
-            $table->headstyle[5] = 'background-color: '.$values['background'];
+            $table->headstyle[2] = 'text-align:center;background-color: '.$values['background'];
+            $table->headstyle[3] = 'text-align:center;background-color: '.$values['background'];
+            $table->headstyle[4] = 'text-align:center;background-color: '.$values['background'];
+            $table->headstyle[5] = 'text-align:center;background-color: '.$values['background'];
 
             $table->style = [];
             $table->style[0] = 'background-color: '.$values['background'];

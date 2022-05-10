@@ -298,10 +298,10 @@ class OsQuickReportWidget extends Widget
             $table->style = [];
             $table->style[0] = 'background-color: '.$values['background'];
             $table->style[1] = 'background-color: '.$values['background'];
-            $table->style[2] = 'background-color: '.$values['background'];
-            $table->style[3] = 'background-color: '.$values['background'];
-            $table->style[4] = 'background-color: '.$values['background'];
-            $table->style[5] = 'background-color: '.$values['background'];
+            $table->style[2] = 'font-size: 22px;background-color: '.$values['background'];
+            $table->style[3] = 'font-size: 22px;background-color: '.$values['background'];
+            $table->style[4] = 'font-size: 22px;background-color: '.$values['background'];
+            $table->style[5] = 'font-size: 22px;background-color: '.$values['background'];
 
             foreach ($result as $id => $os) {
                 $data = [];

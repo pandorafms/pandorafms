@@ -456,6 +456,15 @@ class TopNWidget extends Widget
         $data_hbar = [];
         $valueMax = 0;
         $valueMin = 0;
+        $booleanModulesCount = 0;
+        $booleanModulesTypes = [
+            2,
+            6,
+            9,
+            18,
+            35,
+        ];
+
         foreach ($modules as $module) {
             $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20);
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
@@ -465,10 +474,17 @@ class TopNWidget extends Widget
             // Set of max-min values for graph.
             $valueMax = ((int) $module[$display] >= $valueMax) ? $calc : (int) $valueMax;
             $valueMin = ((int) $module[$display] < $valueMin) ? $calc : (int) $valueMin;
+            // Count if all modules are booleans (for visual representation).
+            if (in_array($module['type_module'], $booleanModulesTypes) === true) {
+                $booleanModulesCount++;
+            }
         }
 
-        // This change is for get more space between values.
-        if ((int) $valueMax === (int) $valueMin) {
+        if ($booleanModulesCount === count($modules)) {
+            // All modules are booleans. By this, only are allowed 0 or 1.
+            $valueMax = 1;
+        } else if ((int) $valueMax === (int) $valueMin) {
+            // This change is for get more space between values.
             $valueMax += 10;
         }
 

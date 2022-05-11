@@ -1156,7 +1156,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     );
     $table_advanced->colspan[16][1] = 6;
 } else {
-    // Store in a hidden field if is not visible to avoid delete the value
+    // Store in a hidden field if is not visible to avoid delete the value.
     $table_advanced->data[15][4] .= html_print_input_hidden('id_category', $id_category, true);
 }
 
@@ -1193,7 +1193,7 @@ if (!$in_policy) {
 }
 
 
-// Advanced form part
+// Advanced form part.
 $table_macros = new stdClass();
 $table_macros->id = 'module_macros';
 $table_macros->width = '100%';
@@ -1398,7 +1398,7 @@ ui_require_jquery_file('json');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-    var disabledBecauseInPolicy = <?php echo '\''.(empty($disabledBecauseInPolicy) === true ? '0' : '1').'\''; ?>;
+    var disabledBecauseInPolicy = <?php echo '\''.((empty($disabledBecauseInPolicy) === true) ? '0' : '1').'\''; ?>;
     $("#right").click (function () {
         jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
             tag_name = $(value).html();
@@ -1407,12 +1407,16 @@ $(document).ready (function () {
                 $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
-                    $("select[name='id_tag_available[]']").append(value);
+                    $("select[name='id_tag_available[]']").append(
+                        $("<option></option>").val('').html(
+                            '<i><?php echo __('None'); ?></i>'
+                        )
+                    );
                 }
             }
         });
     });
-    
+
     $("#left").click (function () {
         jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
                 tag_name = $(value).html();
@@ -1422,7 +1426,11 @@ $(document).ready (function () {
                     $("#id_tag_selected").find("option[value='" + id_tag + "']").remove();
                     $("#id_tag_available").find("option[value='']").remove();
                     if($("#id_tag_selected option").length == 0) {
-                        $("select[name='id_tag_selected[]']").append(value);
+                        $("select[name='id_tag_selected[]']").append(
+                            $("<option></option>").val('').html(
+                                '<i><?php echo __('None'); ?></i>'
+                            )
+                        );
                     }
                 }
         });

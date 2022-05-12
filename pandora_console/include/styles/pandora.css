@@ -759,6 +759,9 @@ select:-internal-list-box {
 .flex {
   display: flex;
 }
+.padding-0 {
+  padding: 0 !important;
+}
 .padding-2 {
   padding: 2em;
 }

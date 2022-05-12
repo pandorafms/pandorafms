@@ -507,7 +507,7 @@ class TopNWidget extends Widget
             1,
             $config['homeurl'],
             'white',
-            'black',
+            '#DFDFDF',
             $valueMin,
             $valueMax
         );

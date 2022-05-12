@@ -329,7 +329,7 @@ class AgentWizard extends HTML
                 }
             }
 
-            if (count($this->datalist) === 1 && $this->targetIp === '') {
+            if (empty($this->datalist) === false && count($this->datalist) === 1 && $this->targetIp === '') {
                 $this->targetIp = $this->datalist[0];
             }
         }

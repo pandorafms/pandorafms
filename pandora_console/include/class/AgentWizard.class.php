@@ -278,6 +278,13 @@ class AgentWizard extends HTML
      */
     private $extraArguments = '';
 
+    /**
+     * Binary of wmic.
+     *
+     * @var string
+     */
+    private $wmiBinary = '';
+
 
     /**
      * Constructor
@@ -291,7 +298,7 @@ class AgentWizard extends HTML
         // Check access.
         check_login();
 
-        if (!check_acl($config['id_user'], 0, 'AR')) {
+        if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
@@ -311,6 +318,7 @@ class AgentWizard extends HTML
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
+        $this->wmiBinary = $config['wmiBinary'];
 
         if (empty($this->idAgent) === false) {
             $array_aux = db_get_all_rows_sql(
@@ -1044,7 +1052,7 @@ class AgentWizard extends HTML
             $oidExplore = '.1.3.6.1.2.1.1.2.0';
         }
 
-        // Explore general or interfaces
+        // Explore general or interfaces.
         $receivedOid = $this->snmpWalkValues(
             $oidExplore,
             false,
@@ -1080,7 +1088,7 @@ class AgentWizard extends HTML
         // Capture the parameters.
         // Call WMI Explorer function.
         $this->wmiCommand = wmi_compose_query(
-            'wmic',
+            $this->wmiBinary,
             $this->usernameWMI,
             $this->passwordWMI,
             $this->targetIp,
@@ -5717,7 +5725,7 @@ class AgentWizard extends HTML
                         $(this).removeClass('hidden');
                         return;
                     }
-                    
+
                     if (this.id.match(regex)) {
                         $(this).removeClass('hidden');
                     } else {
@@ -5729,7 +5737,7 @@ class AgentWizard extends HTML
                             $(this).addClass('hidden');
                         }
                     }
-                    
+
                     if (filter_up == true) {
                         if ($(this).attr('operstatus') != 1) {
                             $(this).addClass('hidden');

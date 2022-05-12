@@ -32,13 +32,13 @@ function wmi_compose_query($wmi_client, $user, $password, $host, $namespace='')
 {
     $wmi_command = '';
 
-    if (!empty($password)) {
-        $wmi_command = $wmi_client.' -U "'.$user.'"%"'.$password.'"';
+    if (empty($password)  === false) {
+        $wmi_command = $wmi_client.' -U \''.$user.'\'%\''.$password.'\'';
     } else {
         $wmi_command = $wmi_client.' -U "'.$user.'"';
     }
 
-    if (!empty($namespace)) {
+    if (empty($namespace) === false) {
         $namespace = str_replace('&quot;', "'", $namespace);
         $wmi_command .= ' --namespace="'.$namespace.'"';
     }

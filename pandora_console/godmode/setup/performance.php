@@ -661,6 +661,16 @@ $tip = ui_print_help_tip(
     true
 );
 
+$table_other->data[$i][0] = __('WMI binary');
+$table_other->data[$i++][1] = html_print_input_text(
+    'wmiBinary',
+    $config['wmiBinary'],
+    '',
+    50,
+    10,
+    true
+);
+
 if (enterprise_installed() === true) {
     $table_other->data[$i][0] = __('PhantomJS cache cleanup ').$tip;
     $table_other->data[$i++][1] = html_print_input(

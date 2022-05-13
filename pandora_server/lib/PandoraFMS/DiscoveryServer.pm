@@ -713,7 +713,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
         'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
         'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
         'snmp_community' => $community,
-        'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index"
+        'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index",
+        'unit'        => ''
+
       }
     );
 
@@ -741,7 +743,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
+
         }
       );
     } else {
@@ -766,7 +770,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
+
         }
       );
     }
@@ -795,7 +801,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
+
         }
       );
     } else { 
@@ -820,7 +828,8 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
         }
       );
     }
@@ -1253,8 +1262,12 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               $id_tipo_modulo = get_module_id($self->{'dbh'}, $module->{'type'})
                 if is_empty($id_tipo_modulo);
 
-              my $description = safe_output($module->{'description'});
+              my $description = safe_output($module->{'descripcion'});
               $description = '' if is_empty($description);
+
+              my $unit = safe_output($module->{'unit'});
+              $unit = '' if is_empty($unit);
+              
 
               if (is_enabled($module->{'__module_component'})) {
                 # Module from network component.
@@ -1275,6 +1288,11 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               } else {
                 # Create module - Direct.
                 my $name = $module->{'name'};
+                my $description = safe_output($module->{'descripcion'});
+
+                my $unit = safe_output($module->{'unit'});
+                $unit = '' if is_empty($unit);
+                
                 delete $module->{'name'};
                 delete $module->{'description'};
                 $agentmodule_id = pandora_create_module_from_hash(
@@ -1286,7 +1304,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
                     'nombre' => safe_input($name),
                     'descripcion' => safe_input($description),
                     'id_agente' => $agent_id,
-                    'ip_target' => $data->{'agent'}{'direccion'}
+                    'ip_target' => $data->{'agent'}{'direccion'},
+                    'unit' => safe_input($unit)
                   },
                   $self->{'dbh'}
                 );

@@ -1351,40 +1351,42 @@ function dashboardLoadVC(settings) {
       : "dashboard"
   );
 
-  $(window).on("orientationchange", function() {
-    $(container).width($(window).height());
-    $(container).height($(window).width() - headerMobileFix);
-    //Remove spinner change VC.
-    container.classList.remove("is-updating");
-    container.classList.remove("cv-overflow");
+  if (settings.mobile_view_orientation_vc === true) {
+    $(window).on("orientationchange", function() {
+      $(container).width($(window).height());
+      $(container).height($(window).width() - headerMobileFix);
+      //Remove spinner change VC.
+      container.classList.remove("is-updating");
+      container.classList.remove("cv-overflow");
 
-    var div = container.querySelector(".div-visual-console-spinner");
+      var div = container.querySelector(".div-visual-console-spinner");
 
-    if (div !== null) {
-      var parent = div.parentElement;
-      if (parent !== null) {
-        parent.removeChild(div);
+      if (div !== null) {
+        var parent = div.parentElement;
+        if (parent !== null) {
+          parent.removeChild(div);
+        }
       }
-    }
 
-    container.classList.add("is-updating");
-    container.classList.add("cv-overflow");
-    const divParent = document.createElement("div");
-    divParent.className = "div-visual-console-spinner";
+      container.classList.add("is-updating");
+      container.classList.add("cv-overflow");
+      const divParent = document.createElement("div");
+      divParent.className = "div-visual-console-spinner";
 
-    const divSpinner = document.createElement("div");
-    divSpinner.className = "visual-console-spinner";
+      const divSpinner = document.createElement("div");
+      divSpinner.className = "visual-console-spinner";
 
-    divParent.appendChild(divSpinner);
-    container.appendChild(divParent);
+      divParent.appendChild(divSpinner);
+      container.appendChild(divParent);
 
-    var dimensions = {
-      width: $(window).height(),
-      height: $(window).width() - 40
-    };
+      var dimensions = {
+        width: $(window).height(),
+        height: $(window).width() - 40
+      };
 
-    visualConsoleManager.changeDimensionsVc(dimensions, interval);
-  });
+      visualConsoleManager.changeDimensionsVc(dimensions, interval);
+    });
+  }
 }
 
 // eslint-disable-next-line no-unused-vars

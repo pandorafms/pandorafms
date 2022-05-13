@@ -1396,7 +1396,7 @@ div.ui-mobile-viewport {
   overflow: visible;
   overflow-x: hidden;
   padding: 1em;
-  min-height: calc(100vh - 60px);
+  /*min-height: calc(100vh - 60px);*/
 }
 .ui-corner-all > .ui-toolbar-header:first-child,
 .ui-corner-all > .ui-content:first-child,

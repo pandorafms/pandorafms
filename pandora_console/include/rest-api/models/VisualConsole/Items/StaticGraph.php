@@ -174,6 +174,14 @@ final class StaticGraph extends Item
             throw new \InvalidArgumentException('missing module Id');
         }
 
+        if (isset($data['agentDisabled']) === false) {
+            $data['agentDisabled'] = false;
+        }
+
+        if (isset($data['moduleDisabled']) === false) {
+            $data['moduleDisabled'] = false;
+        }
+
         if ((bool) $data['agentDisabled'] === false
             && (bool) $data['moduleDisabled'] === false
         ) {

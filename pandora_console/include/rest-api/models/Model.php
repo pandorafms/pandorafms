@@ -223,6 +223,7 @@ abstract class Model
      */
     public function adjustToViewport($size, $mode='')
     {
+        global $config;
         $ratio_visualconsole = $this->getRatio();
         $ratio_w = ($size['width'] / $this->data['width']);
         $ratio_h = ($size['height'] / $this->data['height']);
@@ -232,8 +233,16 @@ abstract class Model
 
         $ratio = $ratio_w;
         if ($mode === 'mobile') {
-            if ($this->data['height'] < $this->data['width']) {
-                if ($this->data['height'] > $size['height']) {
+            if ((bool) $config['mobile_view_orientation_vc'] === true) {
+                if ($this->data['height'] < $this->data['width']) {
+                    if ($this->data['height'] > $size['height']) {
+                        $ratio = $ratio_h;
+                        $this->data['height'] = $size['height'];
+                        $this->data['width'] = ($size['height'] / $ratio_visualconsole);
+                    }
+                }
+            } else {
+                if ($this->data['height'] > $this->data['width']) {
                     $ratio = $ratio_h;
                     $this->data['height'] = $size['height'];
                     $this->data['width'] = ($size['height'] / $ratio_visualconsole);

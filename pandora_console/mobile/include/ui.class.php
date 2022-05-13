@@ -1003,6 +1003,10 @@ class Ui
 
             $(document).ready(function () {
                 dashboardLoadVC(settings);
+                if(settings.mobile_view_orientation_vc === false) {
+                    $(".container-center").css("transform", "rotate(90deg)");
+                    $(".container-center").css("margin-top", "40px");
+                }
             });
         </script>'
         );

@@ -1476,16 +1476,19 @@ function events_get_all(
     $group_selects = '';
     if ($group_by != '') {
         if ($count === false) {
-            $group_selects = ',COUNT(id_evento) AS event_rep,
-            GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
-            MAX(utimestamp) as timestamp_last,
-            MIN(utimestamp) as timestamp_first,
-            MAX(id_evento) as max_id_evento';
-
             $idx = array_search('te.user_comment', $fields);
             if ($idx !== false) {
                 unset($fields[$idx]);
             }
+
+            $group_selects = sprintf(
+                ',COUNT(id_evento) AS event_rep,
+                %s
+                MAX(utimestamp) as timestamp_last,
+                MIN(utimestamp) as timestamp_first,
+                MAX(id_evento) as max_id_evento',
+                ($idx !== false) ? 'GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,' : ''
+            );
         }
     } else {
         $idx = array_search('te.user_comment', $fields);

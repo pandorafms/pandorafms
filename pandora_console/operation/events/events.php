@@ -286,7 +286,6 @@ if (is_ajax() === true) {
                 'te.event_type',
                 'te.id_alert_am',
                 'te.criticity',
-                'te.user_comment',
                 'te.tags',
                 'te.source',
                 'te.id_extra',
@@ -302,6 +301,13 @@ if (is_ajax() === true) {
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
+
+            if (strpos($config['event_fields'], 'user_comment') !== false
+                || empty($user_comment) === false
+                || empty($search) === false
+            ) {
+                $fields[] = 'te.user_comment';
+            }
 
             $order = get_datatable_order(true);
 

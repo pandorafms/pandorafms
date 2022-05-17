@@ -596,7 +596,6 @@ class EventsListWidget extends Widget
             'te.event_type',
             'te.id_alert_am',
             'te.criticity',
-            'te.user_comment',
             'te.tags',
             'te.source',
             'te.id_extra',
@@ -611,6 +610,10 @@ class EventsListWidget extends Widget
             'ta.alias as agent_name',
             'tg.nombre as group_name',
         ];
+
+        if (empty($filter['search']) === false || empty($filter['user_comment']) === false) {
+            $fields[] = 'te.user_comment';
+        }
 
         $home_url = $config['homeurl'];
 

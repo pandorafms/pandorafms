@@ -180,6 +180,7 @@ class Manager implements PublicLogin
         'imageIconDashboardAjax',
         'formSlides',
         'callWidgetMethod',
+        'getSizeModalConfiguration',
     ];
 
 
@@ -1520,6 +1521,24 @@ class Manager implements PublicLogin
         }
 
         return false;
+
+    }
+
+
+    /**
+     * Size configuration modal (ajax only).
+     *
+     * @return void.
+     */
+    public function getSizeModalConfiguration():void
+    {
+        $result = [];
+        $widget = $this->instanceWidget();
+        $result = $widget->getSizeModalConfiguration();
+
+        echo json_encode($result);
+
+        return;
 
     }
 

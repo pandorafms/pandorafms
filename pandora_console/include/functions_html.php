@@ -1685,7 +1685,9 @@ function html_print_select_multiple_modules_filtered(array $data):string
         );
     }
 
-    if ($data['mAgents'] !== null) {
+    if (empty($data['mAgents']) === false
+        && empty($data['mModuleGroup'] === false)
+    ) {
         $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),

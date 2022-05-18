@@ -443,4 +443,20 @@ class GraphModuleHistogramWidget extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 500,
+        ];
+
+        return $size;
+    }
+
+
 }

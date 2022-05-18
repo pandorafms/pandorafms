@@ -266,13 +266,36 @@ function initialiceLayout(data) {
         });
 
         $("#configure-widget-" + id).click(function() {
-          configurationWidget(id, widgetId);
+          getSizeModalConfiguration(id, widgetId);
         });
       },
       error: function(error) {
         console.error(error);
       }
     });
+  }
+
+  function getSizeModalConfiguration(cellId, widgetId) {
+    $.ajax({
+      method: "post",
+      url: data.url,
+      data: {
+        page: data.page,
+        method: "getSizeModalConfiguration",
+        dashboardId: data.dashboardId,
+        cellId: cellId,
+        widgetId: widgetId
+      },
+      dataType: "json",
+      success: function(size) {
+        configurationWidget(cellId, widgetId, size);
+      },
+      error: function(error) {
+        console.log(error);
+        return [];
+      }
+    });
+    return false;
   }
 
   function saveLayout() {
@@ -370,7 +393,7 @@ function initialiceLayout(data) {
     });
   }
 
-  function configurationWidget(cellId, widgetId) {
+  function configurationWidget(cellId, widgetId, size) {
     load_modal({
       target: $("#modal-config-widget"),
       form: "form-config-widget",
@@ -388,12 +411,9 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width:
-          widgetId == 14 || widgetId == 2 || widgetId == 23 || widgetId == 16
-            ? 750
-            : 450,
-        maxHeight: 650,
-        minHeight: widgetId == 16 ? 450 : 400
+        width: size.width,
+        maxHeight: size.height,
+        minHeight: size.height
       },
       onsubmit: {
         page: data.page,
@@ -710,7 +730,7 @@ function initialiceLayout(data) {
         });
 
         $("#configure-widget-" + cellId).click(function() {
-          configurationWidget(cellId, widgetId);
+          getSizeModalConfiguration(cellId, widgetId);
         });
 
         saveLayout();

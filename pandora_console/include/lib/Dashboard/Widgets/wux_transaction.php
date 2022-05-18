@@ -176,7 +176,7 @@ class WuxWidget extends Widget
         // Must be configured before using.
         $this->configurationRequired = false;
         if (empty($this->options) === true) {
-            $this->configuration_required = true;
+            $this->configurationRequired = true;
         }
 
         $this->overflow_scrollbars = false;
@@ -427,6 +427,22 @@ class WuxWidget extends Widget
     public static function getName()
     {
         return 'wux_transaction';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 360,
+        ];
+
+        return $size;
     }
 
 

@@ -193,6 +193,10 @@ class GroupsStatusWidget extends Widget
             $values['groupId'] = $decoder['groupId'];
         }
 
+        if (isset($decoder['groupRecursion']) === true) {
+            $values['groupRecursion'] = $decoder['groupRecursion'];
+        }
+
         return $values;
     }
 
@@ -224,6 +228,16 @@ class GroupsStatusWidget extends Widget
             ],
         ];
 
+        $inputs[] = [
+            'label'     => __('Group recursion'),
+            'arguments' => [
+                'name'  => 'groupRecursion',
+                'id'    => 'groupRecursion',
+                'type'  => 'switch',
+                'value' => $values['groupRecursion'],
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -239,6 +253,7 @@ class GroupsStatusWidget extends Widget
         $values = parent::getPost();
 
         $values['groupId'] = \get_parameter('groupId', 0);
+        $values['groupRecursion'] = \get_parameter_switch('groupRecursion', 0);
 
         return $values;
     }
@@ -260,9 +275,12 @@ class GroupsStatusWidget extends Widget
 
         $output = '';
 
-        $user_groups = \users_get_groups(false, 'AR', false);
-
-        $stats = \reporting_get_group_stats_resume($this->values['groupId'], 'AR', true);
+        $stats = \reporting_get_group_stats_resume(
+            $this->values['groupId'],
+            'AR',
+            true,
+            (bool) $this->values['groupRecursion']
+        );
 
         $data = '<div class="widget-groups-status"><span>';
         $data .= ui_print_group_icon(
@@ -393,7 +411,7 @@ class GroupsStatusWidget extends Widget
             $table->data[0][0] .= '</span>';
             $table->data[0][1] = '<span>';
             $table->data[0][1] .= '<b>';
-            $table->data[0][1] .= $stats['monitor_total'];
+            $table->data[0][1] .= $stats['total_checks'];
             $table->data[0][1] .= '</b>';
             $table->data[0][1] .= '</span>';
 

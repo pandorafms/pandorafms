@@ -10987,7 +10987,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false, $recursive=false)
 {
     global $config;
 
@@ -11031,6 +11031,8 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
         $id_group = array_keys(
             users_get_groups($config['id_user'], $access, false)
         );
+    } else if ($recursive === true) {
+        $id_group = groups_get_children_ids($id_group);
     }
 
     // -----------------------------------------------------------------
@@ -11161,7 +11163,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
             $group_stat = db_get_all_rows_sql($sql);
             $data = [
                 'monitor_checks'            => (int) $group_stat[0]['modules'],
-                'monitor_alerts'            => (int) groups_monitor_alerts($group_array),
+                'monitor_alerts'            => (int) groups_monitor_alerts($group_stat[0]['id_group']),
                 'monitor_alerts_fired'      => (int) $group_stat[0]['alerts_fired'],
                 'monitor_alerts_fire_count' => (int) $group_stat[0]['alerts_fired'],
                 'monitor_ok'                => (int) $group_stat[0]['normal'],
@@ -11175,10 +11177,33 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
                 'agent_warning'             => (int) $group_stat[0]['agents_warnings'],
                 'agent_critical'            => (int) $group_stat[0]['agents_critical'],
                 'total_checks'              => (int) $group_stat[0]['modules'],
-                'total_alerts'              => (int) groups_monitor_alerts($group_array),
+                'total_alerts'              => (int) groups_monitor_alerts($group_stat[0]['id_group']),
                 'total_agents'              => (int) $group_stat[0]['agents'],
                 'utimestamp'                => (int) $group_stat[0]['utimestamp'],
             ];
+
+            if ($recursive === true) {
+                unset($group_stat[0]);
+                foreach ($group_stat as $value) {
+                    $data['monitor_checks'] = ($data['monitor_checks'] + $value['modules']);
+                    $data['monitor_alerts'] = ($data['monitor_alerts'] + groups_monitor_alerts($value['id_group']));
+                    $data['monitor_alerts_fired'] = ($data['monitor_alerts_fired'] + $value['alerts_fired']);
+                    $data['monitor_alerts_fire_count'] = ($data['monitor_alerts_fire_count'] + $value['alerts_fired']);
+                    $data['monitor_ok'] = ($data['monitor_ok'] + $value['normal']);
+                    $data['monitor_warning'] = ($data['monitor_warning'] + $value['warning']);
+                    $data['monitor_critical'] = ($data['monitor_critical'] + $value['critical']);
+                    $data['monitor_unknown'] = ($data['monitor_unknown'] + $value['unknown']);
+                    $data['monitor_not_init'] = ($data['monitor_not_init'] + $value['non-init']);
+                    $data['agent_not_init'] = ($data['agent_not_init'] + $value['agents_not_init']);
+                    $data['agent_unknown'] = ($data['agent_unknown'] + $value['agents_unknown']);
+                    $data['agent_ok'] = ($data['agent_ok'] + $value['agents_normal']);
+                    $data['agent_warning'] = ($data['agent_warning'] + $value['agents_warnings']);
+                    $data['agent_critical'] = ($data['agent_critical'] + $value['agents_critical']);
+                    $data['total_checks'] = ($data['total_checks'] + $value['modules']);
+                    $data['total_alerts'] = ($data['total_alerts'] + groups_monitor_alerts($value['id_group']));
+                    $data['total_agents'] = ($data['total_agents'] + $value['agents']);
+                }
+            }
         }
     }
 

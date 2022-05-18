@@ -14855,7 +14855,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'type_graph'         => $config['type_module_charts'],
         'fullscale'          => false,
         'return_img_base_64' => true,
-        'image_treshold'     => $graph_threshold,
+        'image_threshold'    => $graph_threshold,
         'graph_font_size'    => $graph_font_size,
     ];
 

@@ -1003,7 +1003,7 @@ function pandoraFlotArea(
   var max_x = date_array["final_date"] * 1000;
   var type = parseInt(params.stacked);
   var show_legend = params.show_legend;
-  var image_treshold = params.image_treshold;
+  var image_threshold = params.image_threshold;
   var short_data = params.short_data != "" ? params.short_data : 3;
   var grid_color = params.grid_color;
   var background_color = params.backgroundColor;
@@ -2198,7 +2198,7 @@ function pandoraFlotArea(
     }
 
     if (thresholded) {
-      var data_base_treshold = add_threshold(
+      var data_base_threshold = add_threshold(
         data_base,
         threshold_data,
         ranges.yaxis.from,
@@ -2211,7 +2211,7 @@ function pandoraFlotArea(
 
       plot = $.plot(
         $("#" + graph_id),
-        data_base_treshold,
+        data_base_threshold,
         $.extend(true, {}, options, {
           grid: {
             borderWidth: 1,
@@ -2597,7 +2597,7 @@ function pandoraFlotArea(
     $("#overview_" + graph_id).bind("mouseout", resetInteractivity);
   }
 
-  if (image_treshold) {
+  if (image_threshold) {
     var y_recal = plot.getAxes().yaxis.max;
     if (!thresholded) {
       // Recalculate the y axis
@@ -2611,7 +2611,7 @@ function pandoraFlotArea(
       );
     }
 
-    var datas_treshold = add_threshold(
+    var datas_threshold = add_threshold(
       data_base,
       threshold_data,
       plot.getAxes().yaxis.min,
@@ -2624,7 +2624,7 @@ function pandoraFlotArea(
 
     plot = $.plot(
       $("#" + graph_id),
-      datas_treshold,
+      datas_threshold,
       $.extend(true, {}, options, {
         yaxis: {
           max: y_recal.max
@@ -2758,7 +2758,7 @@ function pandoraFlotArea(
           );
         }
 
-        datas_treshold = add_threshold(
+        datas_threshold = add_threshold(
           data_base,
           threshold_data,
           plot.getAxes().yaxis.min,
@@ -2771,7 +2771,7 @@ function pandoraFlotArea(
 
         plot = $.plot(
           $("#" + graph_id),
-          datas_treshold,
+          datas_threshold,
           $.extend(true, {}, options, {
             yaxis: {
               min: max_draw["min"],
@@ -3115,7 +3115,7 @@ function axis_thresholded(
   return y;
 }
 
-//add treshold
+//add threshold
 function add_threshold(
   data_base,
   threshold_data,
@@ -3235,13 +3235,13 @@ function add_threshold(
     }
   });
 
-  var extreme_treshold_array = [];
+  var extreme_threshold_array = [];
   var i = 0;
   var flag = true;
 
   $.each(threshold_array, function(index, value) {
     flag = true;
-    extreme_treshold_array[i] = {
+    extreme_threshold_array[i] = {
       below: value["max"],
       color: value["color"]
     };
@@ -3252,7 +3252,7 @@ function add_threshold(
       }
     });
     if (flag) {
-      extreme_treshold_array[i] = {
+      extreme_threshold_array[i] = {
         below: value["min"],
         color: datas[0].color
       };
@@ -3260,7 +3260,7 @@ function add_threshold(
     }
   });
 
-  datas[0].threshold = extreme_treshold_array;
+  datas[0].threshold = extreme_threshold_array;
 
   return datas;
 }

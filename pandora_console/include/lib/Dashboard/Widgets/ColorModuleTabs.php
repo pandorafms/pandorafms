@@ -1,6 +1,6 @@
 <?php
 /**
- * Widget Simple graph Pandora FMS Console
+ * Widget Color tabs modules Pandora FMS Console
  *
  * @category   Console Class
  * @package    Pandora FMS
@@ -33,7 +33,7 @@ global $config;
 /**
  * URL Widgets
  */
-class SingleGraphWidget extends Widget
+class ColorModuleTabs extends Widget
 {
 
     /**
@@ -167,7 +167,7 @@ class SingleGraphWidget extends Widget
         $this->className = $class->getShortName();
 
         // Title.
-        $this->title = __('Agent module graph');
+        $this->title = __('Color tabs modules');
 
         // Name.
         if (empty($this->name) === true) {
@@ -176,7 +176,7 @@ class SingleGraphWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (empty($this->values['moduleId']) === true) {
+        if (empty($this->values['moduleColorModuleTabs']) === true) {
             $this->configurationRequired = true;
         }
 
@@ -197,36 +197,36 @@ class SingleGraphWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::decoders($decoder);
 
-        if (isset($decoder['id_agent_'.$this->cellId]) === true) {
-            $values['agentId'] = $decoder['id_agent_'.$this->cellId];
+        $values['agentsColorModuleTabs'] = [];
+        if (isset($decoder['agentsColorModuleTabs']) === true) {
+            if (isset($decoder['agentsColorModuleTabs'][0]) === true
+                && empty($decoder['agentsColorModuleTabs']) === false
+            ) {
+                $values['agentsColorModuleTabs'] = explode(
+                    ',',
+                    $decoder['agentsColorModuleTabs'][0]
+                );
+            }
         }
 
-        if (isset($decoder['agentId']) === true) {
-            $values['agentId'] = $decoder['agentId'];
+        if (isset($decoder['selectionColorModuleTabs']) === true) {
+            $values['selectionColorModuleTabs'] = $decoder['selectionColorModuleTabs'];
         }
 
-        if (isset($decoder['metaconsoleId']) === true) {
-            $values['metaconsoleId'] = $decoder['metaconsoleId'];
+        $values['moduleColorModuleTabs'] = [];
+        if (isset($decoder['moduleColorModuleTabs']) === true) {
+            if (isset($decoder['moduleColorModuleTabs'][0]) === true
+                && empty($decoder['moduleColorModuleTabs']) === false
+            ) {
+                $values['moduleColorModuleTabs'] = explode(
+                    ',',
+                    $decoder['moduleColorModuleTabs'][0]
+                );
+            }
         }
 
-        if (isset($decoder['id_module_'.$this->cellId]) === true) {
-            $values['moduleId'] = $decoder['id_module_'.$this->cellId];
-        }
-
-        if (isset($decoder['moduleId']) === true) {
-            $values['moduleId'] = $decoder['moduleId'];
-        }
-
-        if (isset($decoder['period']) === true) {
-            $values['period'] = $decoder['period'];
-        }
-
-        if (isset($decoder['show_full_legend']) === true) {
-            $values['showLegend'] = $decoder['show_full_legend'];
-        }
-
-        if (isset($decoder['showLegend']) === true) {
-            $values['showLegend'] = $decoder['showLegend'];
+        if (isset($decoder['formatData']) === true) {
+            $values['formatData'] = $decoder['formatData'];
         }
 
         return $values;
@@ -247,69 +247,27 @@ class SingleGraphWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
-        // Default values.
-        if (isset($values['period']) === false) {
-            $values['period'] = SECONDS_1DAY;
-        }
-
-        if (isset($values['showLegend']) === false) {
-            $values['showLegend'] = 1;
-        }
-
-        // Autocomplete agents.
         $inputs[] = [
-            'label'     => __('Agent'),
             'arguments' => [
-                'type'               => 'autocomplete_agent',
-                'name'               => 'agentAlias',
-                'id_agent_hidden'    => $values['agentId'],
-                'name_agent_hidden'  => 'agentId',
-                'server_id_hidden'   => $values['metaconsoleId'],
-                'name_server_hidden' => 'metaconsoleId',
-                'return'             => true,
-                'module_input'       => true,
-                'module_name'        => 'moduleId',
-                'module_none'        => false,
-                'size'               => 0,
+                'type'                   => 'select_multiple_modules_filtered_select2',
+                'agent_values'           => agents_get_agents_selected(0),
+                'agent_name'             => 'agentsColorModuleTabs[]',
+                'agent_ids'              => $values['agentsColorModuleTabs'],
+                'selectionModules'       => true,
+                'selectionModulesNameId' => 'selectionColorModuleTabs',
+                'modules_ids'            => $values['moduleColorModuleTabs'],
+                'modules_name'           => 'moduleColorModuleTabs[]',
             ],
         ];
 
-        // Autocomplete module.
+        // Format Data.
         $inputs[] = [
-            'label'     => __('Module'),
+            'label'     => __('Format Data'),
             'arguments' => [
-                'type'           => 'autocomplete_module',
-                'name'           => 'moduleId',
-                'selected'       => $values['moduleId'],
-                'return'         => true,
-                'sort'           => false,
-                'agent_id'       => $values['agentId'],
-                'metaconsole_id' => $values['metaconsoleId'],
-                'style'          => 'width: inherit;',
-            ],
-        ];
-
-        // Show legend.
-        $inputs[] = [
-            'label'     => __('Show legend'),
-            'arguments' => [
-                'name'  => 'showLegend',
-                'id'    => 'showLegend',
+                'name'  => 'formatData',
+                'id'    => 'formatData',
                 'type'  => 'switch',
-                'value' => $values['showLegend'],
-            ],
-        ];
-
-        // Period.
-        $inputs[] = [
-            'label'     => __('Interval'),
-            'arguments' => [
-                'name'          => 'period',
-                'type'          => 'interval',
-                'value'         => $values['period'],
-                'nothing'       => __('None'),
-                'nothing_value' => 0,
-                'style_icon'    => 'flex-grow: 0',
+                'value' => $values['formatData'],
             ],
         ];
 
@@ -327,11 +285,10 @@ class SingleGraphWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::getPost();
 
-        $values['agentId'] = \get_parameter('agentId', 0);
-        $values['metaconsoleId'] = \get_parameter('metaconsoleId', 0);
-        $values['moduleId'] = \get_parameter('moduleId', 0);
-        $values['period'] = \get_parameter('period', 0);
-        $values['showLegend'] = \get_parameter_switch('showLegend');
+        $values['agentsColorModuleTabs'] = \get_parameter('agentsColorModuleTabs', []);
+        $values['selectionColorModuleTabs'] = \get_parameter('selectionColorModuleTabs', 0);
+        $values['moduleColorModuleTabs'] = \get_parameter('moduleColorModuleTabs', []);
+        $values['formatData'] = \get_parameter_switch('formatData', 0);
 
         return $values;
     }
@@ -348,37 +305,76 @@ class SingleGraphWidget extends Widget
 
         $size = parent::getSize();
 
-        include_once $config['homedir'].'/include/functions_graph.php';
-        include_once $config['homedir'].'/include/functions_agents.php';
-        include_once $config['homedir'].'/include/functions_modules.php';
+        $sql = sprintf(
+            'SELECT tagente_modulo.id_agente_modulo AS `id`,
+                tagente_modulo.nombre AS `name`,
+                tagente_modulo.unit AS `unit`,
+                tagente_estado.datos AS `data`,
+                tagente_estado.timestamp AS `timestamp`,
+                tagente_estado.estado AS `status`
+            FROM tagente_modulo
+            LEFT JOIN tagente_estado
+                ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+            WHERE tagente_modulo.id_agente_modulo IN (%s)',
+            implode(',', $this->values['moduleColorModuleTabs'])
+        );
 
-        $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
-        $units_name = \modules_get_unit($this->values['moduleId']);
+        $modules = db_get_all_rows_sql($sql);
 
-        $trickHight = 10;
-        if ($this->values['showLegend'] === 1) {
-            // Needed for legend.
-            $trickHight = 40;
+        $output = '<div class="container-tabs">';
+        foreach ($modules as $module) {
+            $output .= $this->drawTabs($module);
         }
 
-        $params = [
-            'agent_module_id' => $this->values['moduleId'],
-            'width'           => ((int) $size['width'] - 5),
-            'height'          => ((int) $size['height'] - $trickHight),
-            'period'          => $this->values['period'],
-            'title'           => $module_name,
-            'unit'            => $units_name,
-            'homeurl'         => $config['homeurl'],
-            'backgroundColor' => 'transparent',
-            'show_legend'     => $this->values['showLegend'],
-            'show_title'      => $module_name,
-            'menu'            => false,
-            'dashboard'       => true,
-        ];
-
-        $output = '<div class="container-center">';
-        $output .= \grafico_modulo_sparse($params);
         $output .= '</div>';
+        return $output;
+    }
+
+
+    /**
+     * Draw tab module.
+     *
+     * @param array $data Info module.
+     *
+     * @return string Output.
+     */
+    private function drawTabs(array $data):string
+    {
+        global $config;
+
+        $background = modules_get_color_status($data['status'], true);
+        $color = modules_get_textcolor_status($data['status']);
+
+        $style = 'background-color:'.$background.'; color:'.$color.';';
+        $output = '<div class="widget-module-tabs" style="'.$style.'">';
+        $output .= '<span class="widget-module-tabs-title">';
+        $output .= $data['name'];
+        $output .= '</span>';
+        $output .= '<span class="widget-module-tabs-data">';
+        if ($data['data'] !== null && $data['data'] !== '') {
+            if (isset($this->values['formatData']) === true
+                && (bool) $this->values['formatData'] === true
+            ) {
+                $output .= format_for_graph(
+                    $data['data'],
+                    $config['graph_precision']
+                );
+            } else {
+                $output .= sla_truncate(
+                    $data['data'],
+                    $config['graph_precision']
+                );
+            }
+        } else {
+            $output .= '--';
+        }
+
+        $output .= '<span class="widget-module-tabs-unit">';
+        $output .= ' '.$data['unit'];
+        $output .= '</span>';
+        $output .= '</span>';
+        $output .= '</div>';
+
         return $output;
     }
 
@@ -390,7 +386,7 @@ class SingleGraphWidget extends Widget
      */
     public static function getDescription()
     {
-        return __('Agent module graph');
+        return __('Color tabs modules');
     }
 
 
@@ -401,7 +397,7 @@ class SingleGraphWidget extends Widget
      */
     public static function getName()
     {
-        return 'single_graph';
+        return 'ColorModuleTabs';
     }
 
 

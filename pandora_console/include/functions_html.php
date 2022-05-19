@@ -5367,6 +5367,108 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'select_multiple_modules_filtered_select2':
+            $output .= '<li class="agents_select2">';
+            $output .= html_print_label(__('Agents'), '', true);
+            $output .= html_print_select(
+                $data['agent_values'],
+                $data['agent_name'],
+                $data['agent_ids'],
+                'agent_multiple_change(this, \''.base64_encode(json_encode($data)).'\')',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'min-width: 150px; max-height: 100px',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                true
+            );
+            $output .= '</li>';
+
+            // $output .= html_print_input_hidden(
+            // 'id_agents2-multiple-text',
+            // json_encode($agents_select)
+            // );
+            $selection = [
+                0 => __('Show common modules'),
+                1 => __('Show all modules'),
+            ];
+
+            $output .= '<li>';
+            $output .= html_print_label(__('Type'), '', true);
+            $output .= html_print_select(
+                $selection,
+                $data['selectionModulesNameId'],
+                $data['selectionModules'],
+                'selection_multiple_change(\''.base64_encode(json_encode($data)).'\')',
+                '',
+                0,
+                true,
+                false,
+                true,
+                '',
+                false,
+                'min-width: 180px'
+            );
+            $output .= '</li>';
+
+            $all_modules = [];
+            if (empty($data['agent_ids']) === false) {
+                $all_modules = get_modules_agents(
+                    0,
+                    $data['agent_ids'],
+                    $data['selectionModules'],
+                    true
+                );
+            }
+
+            $output .= '<li class="modules_select2">';
+            $output .= html_print_label(__('Modules'), '', true);
+            $output .= html_print_select(
+                $all_modules,
+                $data['modules_name'],
+                $data['modules_ids'],
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'min-width: 150px; max-width: 500px; max-height: 100px',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                true
+            );
+            $output .= '</li>';
+
+            // $output .= html_print_input_hidden(
+            // 'module-multiple-text',
+            // json_encode($agents_select)
+            // );
+        break;
+
         default:
             // Ignore.
         break;

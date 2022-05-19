@@ -412,6 +412,10 @@ class Widget
                     $className .= '\WuxWidget';
                 break;
 
+                case 'ColorModuleTabs':
+                    $className .= '\\'.$name;
+                break;
+
                 default:
                     $className = false;
                 break;

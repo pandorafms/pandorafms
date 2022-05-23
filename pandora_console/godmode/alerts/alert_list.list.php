@@ -238,6 +238,9 @@ if ($searchFlag) {
 }
 
 $id_agents = array_keys($agents);
+if (empty($id_agents) === true) {
+    $id_agents[0] = 0;
+}
 
 $total = agents_get_alerts_simple(
     (empty($agent_id) === false) ? ['0' => $agent_id] : $id_agents,

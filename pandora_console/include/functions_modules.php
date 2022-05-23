@@ -3664,7 +3664,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             }
         }
 
-        if (!$selection) {
+        if (!$selection && $useName === true) {
             // Common modules.
             $final_modules = [];
             $nodes_consulted = count($modules);

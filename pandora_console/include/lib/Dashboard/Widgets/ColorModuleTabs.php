@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 /**
@@ -215,13 +217,8 @@ class ColorModuleTabs extends Widget
 
         $values['moduleColorModuleTabs'] = [];
         if (isset($decoder['moduleColorModuleTabs']) === true) {
-            if (isset($decoder['moduleColorModuleTabs'][0]) === true
-                && empty($decoder['moduleColorModuleTabs']) === false
-            ) {
-                $values['moduleColorModuleTabs'] = explode(
-                    ',',
-                    $decoder['moduleColorModuleTabs'][0]
-                );
+            if (empty($decoder['moduleColorModuleTabs']) === false) {
+                $values['moduleColorModuleTabs'] = $decoder['moduleColorModuleTabs'];
             }
         }
 
@@ -253,7 +250,7 @@ class ColorModuleTabs extends Widget
                 'agent_values'           => agents_get_agents_selected(0),
                 'agent_name'             => 'agentsColorModuleTabs[]',
                 'agent_ids'              => $values['agentsColorModuleTabs'],
-                'selectionModules'       => true,
+                'selectionModules'       => $values['selectionColorModuleTabs'],
                 'selectionModulesNameId' => 'selectionColorModuleTabs',
                 'modules_ids'            => $values['moduleColorModuleTabs'],
                 'modules_name'           => 'moduleColorModuleTabs[]',
@@ -285,9 +282,24 @@ class ColorModuleTabs extends Widget
         // Retrieve global - common inputs.
         $values = parent::getPost();
 
-        $values['agentsColorModuleTabs'] = \get_parameter('agentsColorModuleTabs', []);
-        $values['selectionColorModuleTabs'] = \get_parameter('selectionColorModuleTabs', 0);
-        $values['moduleColorModuleTabs'] = \get_parameter('moduleColorModuleTabs', []);
+        $values['agentsColorModuleTabs'] = \get_parameter(
+            'agentsColorModuleTabs',
+            []
+        );
+        $values['selectionColorModuleTabs'] = \get_parameter(
+            'selectionColorModuleTabs',
+            0
+        );
+
+        $values['moduleColorModuleTabs'] = \get_parameter(
+            'moduleColorModuleTabs'
+        );
+
+        $values['moduleColorModuleTabs'] = get_same_modules_all(
+            explode(',', $values['agentsColorModuleTabs'][0]),
+            explode(',', $values['moduleColorModuleTabs'][0])
+        );
+
         $values['formatData'] = \get_parameter_switch('formatData', 0);
 
         return $values;
@@ -305,6 +317,80 @@ class ColorModuleTabs extends Widget
 
         $size = parent::getSize();
 
+        $output = '';
+
+        if (is_metaconsole() === true) {
+            $modules_nodes = array_reduce(
+                $this->values['moduleColorModuleTabs'],
+                function ($carry, $item) {
+                    $explode = explode('|', $item);
+                    $carry[$explode[0]][] = $explode[1];
+                    return $carry;
+                },
+                []
+            );
+
+            $modules = [];
+            foreach ($modules_nodes as $n => $mod) {
+                try {
+                    $node = new Node((int) $n);
+                    $node->connect();
+                    $node_mods = $this->getInfoModules($mod);
+                    if (empty($node_mods) === false) {
+                        foreach ($node_mods as $value) {
+                            $value['id_node'] = $n;
+                            $value['server_name'] = $node->toArray()['server_name'];
+                            $modules[] = $value;
+                        }
+                    }
+
+                    $node->disconnect();
+                } catch (\Exception $e) {
+                    // Unexistent agent.
+                    $node->disconnect();
+                }
+            }
+        } else {
+            $modules = $this->getInfoModules(
+                $this->values['moduleColorModuleTabs']
+            );
+        }
+
+        if ($modules !== false && empty($modules) === false) {
+            $output .= '<div class="container-tabs">';
+            foreach ($modules as $module) {
+                $output .= $this->drawTabs($module);
+            }
+
+            $output .= '</div>';
+        } else {
+            $output .= '<div class="container-center">';
+            $output .= \ui_print_info_message(
+                __('Not found modules'),
+                '',
+                true
+            );
+            $output .= '</div>';
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Get info modules.
+     *
+     * @param array $modules Modules.
+     *
+     * @return array Data.
+     */
+    private function getInfoModules(array $modules): array
+    {
+        $where = sprintf(
+            'tagente_modulo.id_agente_modulo IN (%s)',
+            implode(',', $modules)
+        );
+
         $sql = sprintf(
             'SELECT tagente_modulo.id_agente_modulo AS `id`,
                 tagente_modulo.nombre AS `name`,
@@ -315,19 +401,17 @@ class ColorModuleTabs extends Widget
             FROM tagente_modulo
             LEFT JOIN tagente_estado
                 ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-            WHERE tagente_modulo.id_agente_modulo IN (%s)',
-            implode(',', $this->values['moduleColorModuleTabs'])
+            WHERE %s',
+            $where
         );
 
         $modules = db_get_all_rows_sql($sql);
 
-        $output = '<div class="container-tabs">';
-        foreach ($modules as $module) {
-            $output .= $this->drawTabs($module);
+        if ($modules === false) {
+            $modules = [];
         }
 
-        $output .= '</div>';
-        return $output;
+        return $modules;
     }
 
 
@@ -348,6 +432,11 @@ class ColorModuleTabs extends Widget
         $style = 'background-color:'.$background.'; color:'.$color.';';
         $output = '<div class="widget-module-tabs" style="'.$style.'">';
         $output .= '<span class="widget-module-tabs-title">';
+        if (is_metaconsole() === true) {
+            $output .= $data['server_name'];
+            $output .= '<br>';
+        }
+
         $output .= $data['name'];
         $output .= '</span>';
         $output .= '<span class="widget-module-tabs-data">';

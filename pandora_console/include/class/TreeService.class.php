@@ -356,12 +356,7 @@ class TreeService extends Tree
         global $config;
 
         $service = new Service($this->id, true);
-        // hd("SRVSRVSRVSRVSRVSRV", true);
-        // hd($service, true);
-        /*
-            if ($this->filter['searchService'] !== '') {
-            $filter[] = " (tservice.name LIKE '%".$this->filter['searchService']."%' OR tservice.description LIKE '%".$this->filter['searchService']."%')";
-        }*/
+
         $output = [];
         foreach ($service->children() as $item) {
             $tmp = [];

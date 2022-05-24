@@ -231,6 +231,7 @@ sub help_screen{
 	print "\nTOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', "Execute any CLI option \n\t  with macros from CSV file");
     help_screen_line('--create_snmp_trap', '<name> <oid> <description> <severity>', "Create a new trap definition. \n\tSeverity 0 (Maintenance), 1(Info) , 2 (Normal), 3 (Warning), 4 (Critical), 5 (Minor) and 6 (Major)");
+    help_screen_line('--start_snmptrapd', '[no parameters needed]', "Start the snmptrap process or restart if it is running");
     print "\nSETUP:\n\n" unless $param ne '';
 	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
 	
@@ -279,7 +280,7 @@ sub api_call($$$;$$$$) {
 		my $ua = new LWP::UserAgent;
 		my $url = $pa_config->{"console_api_url"};
 		my $response = $ua->post($url, $params);
-		
+
 		if ($response->is_success) {
 			$content = $response->decoded_content();
 		}
@@ -1161,6 +1162,16 @@ sub cli_enable_group() {
 	}
 	
 	pandora_enable_group ($conf, $dbh, $id_group);
+}
+
+##############################################################################
+# Start snmptrap process.
+# Related option: --start_snmptrapd
+##############################################################################
+sub cli_start_snmptrapd() {
+	use PandoraFMS::SNMPServer;
+	print_log "[INFO] Starting snmptrap process. \n";
+	PandoraFMS::SNMPServer::start_snmptrapd(\%conf);
 }
 
 ##############################################################################
@@ -7504,6 +7515,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--enable_group') {
 			param_check($ltotal, 1);
 			cli_enable_group();
+		}
+		elsif ($param eq '--start_snmptrapd') {
+			#param_check($ltotal, 0);
+			cli_start_snmptrapd();
 		}
 		elsif ($param eq '--create_agent') {
 			param_check($ltotal, 8, 4);

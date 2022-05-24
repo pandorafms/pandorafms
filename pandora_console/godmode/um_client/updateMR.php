@@ -5,10 +5,11 @@ if ($argv === null) {
     exit(0);
 }
 
-// UMC dependencies.
-require_once __DIR__.'/vendor/autoload.php';
-
 chdir(__DIR__.'/../../');
+
+// UMC dependencies.
+require_once 'vendor/autoload.php';
+// Config file.
 $cnf_file = 'include/config.php';
 
 if (file_exists($cnf_file) === false) {

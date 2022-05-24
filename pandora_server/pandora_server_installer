@@ -333,7 +333,9 @@ install () {
 	fi
 	# when fakeroot installation, this can fail
 	chown -R pandora:$GROUPNAME $DESTDIR$PANDORA_SPOOL 2>/dev/null
-		
+
+	chown apache:$GROUPNAME $DESTDIR$PANDORA_SPOOL/data_in/customer_key 2>/dev/null
+
 	echo "Creating setup directory in $PANDORA_CFG_DIR"
 	mkdir -p $DESTDIR$PANDORA_CFG_DIR 2> /dev/null
 	if [ -f "$DESTDIR$PANDORA_CFG_FILE" ]

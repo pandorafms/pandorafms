@@ -20,9 +20,6 @@ ini_set('display_errors', 1);
 
 require_once $cnf_file;
 
-// PandoraFMS dependencies.
-require_once __DIR__.'/vendor/autoload.php';
-
 use PandoraFMS\Core\Config;
 use PandoraFMS\Core\DBMaintainer;
 

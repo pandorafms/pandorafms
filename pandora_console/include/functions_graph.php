@@ -3015,7 +3015,7 @@ function graph_sla_slicebar(
         true,
         $ttl,
         false,
-        false,
+        true,
         $date
     );
 }
@@ -4024,7 +4024,7 @@ function graph_graphic_agentevents(
         EVENT_CRIT_CRITICAL => COL_CRITICAL,
     ];
 
-    // Draw slicebar graph
+    // Draw slicebar graph.
     $out = flot_slicesbar_graph(
         $data,
         $period,
@@ -4043,6 +4043,7 @@ function graph_graphic_agentevents(
         $not_interactive,
         1,
         $widgets,
+        true,
         $server_id
     );
 

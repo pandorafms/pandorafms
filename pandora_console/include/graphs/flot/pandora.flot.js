@@ -802,13 +802,13 @@ function pandoraFlotSlicebar(
       }
     },
     grid: {
-      borderWidth: 1,
-      borderColor: "#C1C1C1",
+      borderWidth: 0,
+      borderColor: "transparent",
       tickColor: "#fff"
     },
     xaxes: [
       {
-        show: true,
+        show: show_date,
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,

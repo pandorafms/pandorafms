@@ -14702,6 +14702,16 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         );
     }
 
+    $showLabelTicks = true;
+    if (isset($content['showLabelTicks']) === true) {
+        $showLabelTicks = $content['showLabelTicks'];
+    }
+
+    $height_graph = 80;
+    if (isset($content['height_graph']) === true) {
+        $height_graph = $content['height_graph'];
+    }
+
     $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
@@ -14948,7 +14958,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     ];
 
     $width_graph  = 100;
-    $height_graph = 80;
     if (empty($array_result) === false) {
         $return['chart'] = flot_slicesbar_graph(
             $array_result,
@@ -14959,7 +14968,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             $colors,
             $config['fontpath'],
             $config['round_corner'],
-            $homeurl,
+            $config['homeurl'],
             '',
             '',
             false,
@@ -14968,7 +14977,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             true,
             $ttl,
             $content['sizeForTicks'],
-            true,
+            $showLabelTicks,
             $report['datetime']
         );
     } else {

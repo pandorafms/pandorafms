@@ -635,11 +635,31 @@ form.modal-dashboard
 }
 
 .widget-module-tabs-data {
-  font-size: larger;
+  font-size: 1.5em;
   font-weight: bolder;
 }
 
 .widget-module-tabs-unit {
   font-size: smaller;
   font-style: italic;
+}
+
+.container-histograms {
+  min-width: 400px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.table-container-histograms {
+  width: 100%;
+}
+
+.container-histograms .widget-histogram-chart {
+  height: 28px;
+}
+
+.container-histograms .widget-histogram-label {
+  padding-top: 10px;
+  text-align: initial;
 }

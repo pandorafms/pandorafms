@@ -413,6 +413,7 @@ class Widget
                 break;
 
                 case 'ColorModuleTabs':
+                case 'BlockHistogram':
                     $className .= '\\'.$name;
                 break;
 

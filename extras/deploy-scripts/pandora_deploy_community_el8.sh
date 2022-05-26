@@ -495,7 +495,7 @@ execute_cmd "curl -LSs --output pandorafms_agent_unix-7.0NG.noarch.rpm ${PANDORA
 execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "Installing Pandora FMS packages"
 
 # Copy gotty utility
-execute_cmd "wget https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+execute_cmd "wget https://pandorafms.com/library/wp-content/uploads/2019/11/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
 tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 

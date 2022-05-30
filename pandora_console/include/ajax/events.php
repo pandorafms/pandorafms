@@ -2038,121 +2038,78 @@ if ($get_table_response_command) {
 
 if ($get_events_fired) {
     global $config;
-    $id = get_parameter('id_row');
-    $idGroup = get_parameter('id_group');
-    $agents = get_parameter('agents', null);
+    $filter_id = (int) get_parameter('filter_id', 0);
+    $interval = (int) get_parameter('interval', 10);
 
-    $query = ' AND id_evento > '.$id;
-
-    $type = [];
-    $alert = get_parameter('alert_fired');
-    if ($alert == 'true') {
-        $resultAlert = alerts_get_event_status_group(
-            $idGroup,
-            [
-                'alert_fired',
-                'alert_ceased',
-            ],
-            $query,
-            $agents
-        );
-    }
-
-    $critical = get_parameter('critical');
-    if ($critical == 'true') {
-        $resultCritical = alerts_get_event_status_group(
-            $idGroup,
-            [
-                'going_up_critical',
-                'going_down_critical',
-            ],
-            $query,
-            $agents
-        );
-    }
-
-    $warning = get_parameter('warning');
-    if ($warning == 'true') {
-        $resultWarning = alerts_get_event_status_group(
-            $idGroup,
-            [
-                'going_up_warning',
-                'going_down_warning',
-            ],
-            $query,
-            $agents
-        );
-    }
-
-    $unknown = get_parameter('unknown');
-    if ($unknown == 'true') {
-        $resultUnknown = alerts_get_event_status_group(
-            $idGroup,
-            'going_unknown',
-            $query,
-            $agents
-        );
-    }
-
-    if ($resultAlert) {
-        $return = [
-            'fired' => $resultAlert,
-            'sound' => $config['sound_alert'],
+    if (empty($filter_id) === true) {
+        $filter = [
+            'id_group'                => 0,
+            'event_type'              => '',
+            'severity'                => -1,
+            'status'                  => -1,
+            'search'                  => '',
+            'text_agent'              => '',
+            'id_agent'                => 0,
+            'id_agent_module'         => 0,
+            'pagination'              => 0,
+            'id_user_ack'             => 0,
+            'group_rep'               => 0,
+            'tag_with'                => [],
+            'tag_without'             => [],
+            'filter_only_alert'       => -1,
+            'source'                  => '',
+            'id_extra'                => '',
+            'user_comment'            => '',
+            'id_source_event'         => 0,
+            'server_id'               => 0,
+            'custom_data'             => '',
+            'custom_data_filter_type' => 0,
         ];
-        $event = events_get_event($resultAlert);
-
-        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-        $agent_name = agents_get_alias($event['id_agente']);
-
-        $return['message'] = io_safe_output($agent_name).' - ';
-        $return['message'] .= __('Alert fired in module ');
-        $return['message'] .= io_safe_output($module_name).' - ';
-        $return['message'] .= $event['timestamp'];
-    } else if ($resultCritical) {
-        $return = [
-            'fired' => $resultCritical,
-            'sound' => $config['sound_critical'],
-        ];
-        $event = events_get_event($resultCritical);
-
-        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-        $agent_name = agents_get_alias($event['id_agente']);
-
-        $return['message'] = io_safe_output($agent_name).' - ';
-        $return['message'] .= __('Module ').io_safe_output($module_name);
-        $return['message'] .= __(' is going to critical').' - ';
-        $return['message'] .= $event['timestamp'];
-    } else if ($resultWarning) {
-        $return = [
-            'fired' => $resultWarning,
-            'sound' => $config['sound_warning'],
-        ];
-        $event = events_get_event($resultWarning);
-
-        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-        $agent_name = agents_get_alias($event['id_agente']);
-
-        $return['message'] = io_safe_output($agent_name).' - ';
-        $return['message'] .= __('Module ').io_safe_output($module_name);
-        $return['message'] .= __(' is going to warning').' - ';
-        $return['message'] .= $event['timestamp'];
-    } else if ($resultUnknown) {
-        $return = [
-            'fired' => $resultUnknown,
-            'sound' => $config['sound_alert'],
-        ];
-        $event = events_get_event($resultUnknown);
-
-        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-        $agent_name = agents_get_alias($event['id_agente']);
-
-        $return['message'] = io_safe_output($agent_name).' - ';
-        $return['message'] .= __('Module ').io_safe_output($module_name);
-        $return['message'] .= __(' is going to unknown').' - ';
-        $return['message'] .= $event['timestamp'];
     } else {
-        $return = ['fired' => 0];
+        $filter = events_get_event_filter($filter_id);
+    }
+
+    // Set time.
+    $filter['event_view_hr'] = 0;
+
+    $start = (time() - $interval);
+    $end = time();
+
+    $filter['date_from'] = date('Y-m-d', $start);
+    $filter['date_to'] = date('Y-m-d', $end);
+    $filter['time_from'] = date('H:i:s', $start);
+    $filter['time_to'] = date('H:i:s', $end);
+    $data = events_get_all(
+        ['te.*'],
+        $filter
+    );
+
+    $return = [];
+    if (empty($data) === false) {
+        foreach ($data as $event) {
+            $return[] = [
+                'fired'     => $event['id_evento'],
+                'sound'     => 'include/sounds/Star_Trek_emergency_simulation.wav',
+                'message'   => ui_print_string_substr(
+                    strip_tags(io_safe_output($event['evento'])),
+                    75,
+                    true,
+                    '9'
+                ),
+                'priority'  => ui_print_event_priority($event['criticity'], true, true),
+                'type'      => events_print_type_img(
+                    $event['event_type'],
+                    true
+                ),
+                'timestamp' => ui_print_timestamp(
+                    $event['timestamp'],
+                    true,
+                    ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
+                ),
+            ];
+        }
     }
 
     echo io_json_mb_encode($return);
+    return;
 }

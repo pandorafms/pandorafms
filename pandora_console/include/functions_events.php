@@ -917,7 +917,7 @@ function events_get_all(
         }
     }
 
-    $groups = $filter['id_group_filter'];
+    $groups = (isset($filter['id_group_filter']) === true) ? $filter['id_group_filter'] : '';
     if ((bool) $user_is_admin === false
         && isset($groups) === false
     ) {
@@ -1280,7 +1280,7 @@ function events_get_all(
             // Id_user.
             $config['id_user'],
             // Id_group.
-            $ER_groups,
+            (isset($ER_groups) === true) ? $ER_groups : 0,
             // Access.
             'ER',
             // Return_mode.

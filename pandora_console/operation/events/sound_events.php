@@ -55,13 +55,14 @@ if (check_acl($config['id_user'], 0, 'ER') === false
     return;
 }
 
-$agents = agents_get_group_agents(0, false, 'none', false, true);
 ob_start('ui_process_page_head');
 ob_start();
 echo '<html>';
 echo '<head>';
 
 echo '<title>'.__('Sound Events').'</title>';
+ui_require_css_file('wizard');
+ui_require_css_file('discovery');
 ?>
 <style type='text/css'>
     * {
@@ -71,6 +72,83 @@ echo '<title>'.__('Sound Events').'</title>';
 
     img {
         border: 0;
+    }
+
+    ul.wizard li > label:not(.p-switch):first-of-type {
+        width: inherit;
+    }
+    form {
+        margin-top: -3px;
+        margin-bottom: 10px;
+    }
+    table {
+        margin-top: 5px;
+    }
+
+    .events_fired {
+        background: white;
+        padding: 20px;
+        overflow: auto;
+        height: 200px;
+        margin-bottom: 5px;
+    }
+
+    .events_fired li {
+        padding: 5px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .events_fired li div {
+        margin-right: 10px;
+    }
+
+    .events_fired li div.flex0 {
+        flex: 0;
+    }
+
+    .events_fired li div.flex-time {
+        flex: 0 1 75px;
+        text-align: end;
+    }
+
+    .events_fired li div.mess {
+        width: 100%;
+    }
+
+    .forced_title.mini-criticity {
+        width: 10px;
+        height: 30px;
+    }
+
+    .progressbar {
+        width: 100%;
+        margin: 5px 0px;
+    }
+    .progressbar .inner {
+        height: 10px;
+        animation: progressbar-countdown;
+        /* Placeholder, this will be updated using javascript */
+        animation-duration: 40s;
+        /* We stop in the end */
+        animation-iteration-count: 1;
+        /* Stay on pause when the animation is finished finished */
+        animation-fill-mode: forwards;
+        /* We start paused, we start the animation using javascript */
+        animation-play-state: paused;
+        /* We want a linear animation, ease-out is standard */
+        animation-timing-function: linear;
+    }
+    @keyframes progressbar-countdown {
+        0% {
+            width: 100%;
+            background: #82b92e;
+        }
+        100% {
+            width: 0%;
+            background: #e63c52;
+        }
     }
 </style>
 <?php
@@ -98,106 +176,94 @@ ui_print_message_dialog(
     '/images/error_1.png'
 );
 
-$table = new StdClass;
-$table->width = '100%';
-$table->class = 'w16px sound_div_background ';
-$table->size[0] = '10%';
-$table->rowclass[0] = 'bold_top';
-$table->rowclass[1] = 'bold_top';
-$table->rowclass[2] = 'bold_top';
+$inputs = [];
 
-$table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(
-    false,
-    $access,
-    true,
-    'group',
-    '',
-    'changeGroup();',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'max-width:200px;'
-).'<br /><br />';
+// Load filter.
+$fields = \events_get_event_filter_select();
+$inputs[] = [
+    'label'     => \__('Load filter'),
+    'class'     => 'flex-row',
+    'arguments' => [
+        'type'          => 'select',
+        'fields'        => $fields,
+        'name'          => 'filter_id',
+        'selected'      => 0,
+        'return'        => true,
+        'nothing'       => \__('All new events'),
+        'nothing_value' => 0,
+        'class'         => 'fullwidth',
+    ],
+];
 
-$table->data[0][2] = __('Type');
-$table->data[0][3] = html_print_checkbox(
-    'alert_fired',
-    'alert_fired',
-    true,
-    true,
-    false,
-    'changeType();'
-);
-$table->data[0][3] .= __('Alert fired').'<br />';
-$table->data[0][3] .= html_print_checkbox(
-    'critical',
-    'critical',
-    true,
-    true,
-    false,
-    'changeType();'
-);
-$table->data[0][3] .= __('Monitor critical').'<br />';
-$table->data[0][3] .= html_print_checkbox(
-    'unknown',
-    'unknown',
-    true,
-    true,
-    false,
-    'changeType();'
-);
-$table->data[0][3] .= __('Monitor unknown').'<br />';
-$table->data[0][3] .= html_print_checkbox(
-    'warning',
-    'warning',
-    true,
-    true,
-    false,
-    'changeType();'
-);
-$table->data[0][3] .= __('Monitor warning').'<br />';
+$times_interval = [
+    10 => '10 '.__('seconds'),
+    15 => '15 '.__('seconds'),
+    30 => '30 '.__('seconds'),
+    60 => '60 '.__('seconds'),
+];
 
-$table->data[1][0] = __('Agent');
-$table->data[1][1] = html_print_select(
-    $agents,
-    'id_agents[]',
-    true,
+$times_sound = [
+    2  => '2 '.__('seconds'),
+    5  => '5 '.__('seconds'),
+    10 => '10 '.__('seconds'),
+    15 => '15 '.__('seconds'),
+    30 => '30 '.__('seconds'),
+    60 => '60 '.__('seconds'),
+];
+
+$inputs[] = [
+    'class'         => 'flex-row flex-row-center',
+    'direct'        => 1,
+    'block_content' => [
+        [
+            'label'     => __('Interval'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $times_interval,
+                'name'     => 'interval',
+                'selected' => 10,
+                'return'   => true,
+            ],
+        ],
+        [
+            'label'     => __('Time Sound'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $times_sound,
+                'name'     => 'time_sound',
+                'selected' => 10,
+                'return'   => true,
+            ],
+        ],
+    ],
+];
+
+// Print form.
+HTML::printForm(
+    [
+        'form'   => [
+            'action' => '',
+            'method' => 'POST',
+        ],
+        'inputs' => $inputs,
+    ],
     false,
-    '',
-    '',
-    true,
-    true,
-    '',
-    '',
-    '',
-    'max-width:200px; height:100px',
-    '',
-    false,
-    '',
-    '',
     true
 );
 
-$table->data[1][2] = __('Event');
-$table->data[1][3] = html_print_textarea(
-    'events_fired',
-    200,
-    20,
-    '',
-    'readonly="readonly" style="max-height:100px; resize:none;"',
-    true
-);
+$result = '<div><ul class="events_fired">';
+$result .= '<li class="events_fired_li_empty">';
+$result .= ui_print_info_message(__('Events not found'), '', true);
+$result .= '</li>';
+$result .= '</ul></div>';
 
-html_print_table($table);
+$result .= '<div id="progressbar_time"></div>';
+
+echo $result;
 
 $table = new StdClass;
 $table->width = '100%';
-$table->class = 'w16px sound_div_background text_center';
+$table->class = 'sound_div_background text_center';
 
 $table->data[0][0] = '<a href="javascript: toggleButton();">';
 $table->data[0][0] .= html_print_image(
@@ -239,18 +305,11 @@ html_print_table($table);
 ?>
 
 <script type="text/javascript">
-var group = 0;
-var alert_fired = true;
-var critical = true;
-var warning = true;
-var unknown = true;
+var control = false;
 
 var running = false;
-
 var id_row = 0;
-
 var button_play_status = "play";
-
 var test_sound = false;
 
 function test_sound_button() {
@@ -258,57 +317,10 @@ function test_sound_button() {
         $("#button_try").attr('src', '../../images/icono_test.png');
         $('body').append("<audio src='../../include/sounds/Star_Trek_emergency_simulation.wav' autoplay='true' hidden='true' loop='false'>");
         test_sound = true;
-    }
-    else {
+    } else {
         $("#button_try").attr('src', '../../images/icono_test.png');
         $('body audio').remove();
         test_sound = false;
-    }
-}
-
-function changeGroup() {
-    group = $("#group").val();
-
-    jQuery.post ("../../ajax.php",
-        {"page" : "include/ajax/agent",
-            "get_agents_group": 1,
-            "id_group": group
-        },
-        function (data) {
-            $("#id_agents").empty();
-            jQuery.each (data, function (id, value) {
-                if (value != "") {
-                    $("#id_agents")
-                        .append(
-                            '<option value="' + id + '">' + value + '</option>'
-                        );
-                }
-            });
-        },
-        "json"
-    );
-}
-
-function changeType() {
-    alert_fired = false;
-    critical = false;
-    warning = false;
-    unknown = false;
-
-    if($("input[name=alert_fired]").is(':checked') ) {
-        alert_fired = true;
-    }
-
-    if($("input[name=critical]").is(':checked') ) {
-        critical = true;
-    }
-
-    if($("input[name=warning]").is(':checked') ) {
-        warning = true;
-    }
-
-    if($("input[name=unknown]").is(':checked') ) {
-        unknown = true;
     }
 }
 
@@ -316,6 +328,7 @@ function toggleButton() {
     if (button_play_status == 'pause') {
         $("#button").attr('src', '../../images/play.button.png');
         stopSound();
+        control.paused();
 
         button_play_status = 'play';
     }
@@ -331,7 +344,7 @@ function toggleButton() {
 function ok() {
     $('#button_status').attr('src','../../images/tick_sound_events.png');
     $('audio').remove();
-    $('#textarea_events_fired').val("");
+    $('.events_fired').empty();
 }
 
 function stopSound() {
@@ -345,77 +358,83 @@ function startSound() {
 }
 
 function forgetPreviousEvents() {
-    var agents = $("#id_agents").val();
-
-    jQuery.post ("../../ajax.php",
-        {"page" : "include/ajax/events",
-            "get_events_fired": 1,
-            "id_group": group,
-            "alert_fired": alert_fired,
-            "critical": critical,
-            "warning": warning,
-            "unknown": unknown,
-            "id_row": id_row,
-            "agents[]" : agents
-        },
-        function (data) {
-            firedId = parseInt(data['fired']);
-            if (firedId != 0) {
-                id_row = firedId;
+    if(control === false) {
+        running = true;
+        control = progressTimeBar(
+            "progressbar_time",
+            $("#interval").val(),
+            'infinite',
+            function() {
+                check_event();
             }
-            running = true;
-        },
-        "json"
-    );
+        );
+    } else {
+        control.start();
+    }
 }
 
 function check_event() {
-    var agents = $("#id_agents").val();
     if (running) {
         jQuery.post ("../../ajax.php",
-            {"page" : "include/ajax/events",
+            {
+                "page" : "include/ajax/events",
                 "get_events_fired": 1,
-                "id_group": group,
-                "alert_fired": alert_fired,
-                "critical": critical,
-                "warning": warning,
-                "unknown": unknown,
-                "id_row": id_row,
-                "agents[]" : agents,
+                "filter_id": $('#filter_id').val(),
+                "interval": $('#interval').val(),
+                "time_sound": $('#time_sound').val(),
             },
             function (data) {
-                firedId = parseInt(data['fired']);
-                if (firedId != 0) {
-                    id_row = firedId;
-                    var actual_text = $('#textarea_events_fired').val();
-                    if (actual_text == "") {
-                        $('#textarea_events_fired').val(data['message'] + "\n");
-                    } else {
-                        $('#textarea_events_fired')
-                            .val(actual_text + "\n" + data['message'] + "\n");
-                    }
+                if(data != false) {
+                    $('.events_fired_li_empty').remove();
+
                     $('#button_status')
                         .attr(
                             'src','../../images/sound_events_console_alert.gif'
                         );
                     $('audio').remove();
-                    if(data['sound'] == '') {
-                        data['sound'] = 'include/sounds/Star_Trek_emergency_simulation.wav';
+                    if(data[0].sound == '') {
+                        data[0].sound = 'include/sounds/Star_Trek_emergency_simulation.wav';
                     }
 
                     $('body')
-                        .append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
+                        .append("<audio id='audio-boom' src='../../" + data[0].sound + "' autoplay='true' hidden='true' loop='true' >");
+
+                    data.forEach(function (element) {
+                        var li = document.createElement('li');
+                        li.insertAdjacentHTML(
+                            'beforeend',
+                            '<div class="flex0">'+element.priority+'</div>'
+                        );
+                        li.insertAdjacentHTML(
+                            'beforeend',
+                            '<div class="flex0">'+element.type+'</div>'
+                        );
+                        li.insertAdjacentHTML(
+                            'beforeend',
+                            '<div class="mess">'+element.message+'</div>'
+                        );
+                        li.insertAdjacentHTML(
+                            'beforeend',
+                            '<div class="flex-time">'+element.timestamp+'</div>'
+                        );
+                        $('.events_fired').append(li);
+                    });
+
+                    function removeAudio() {
+                        $('audio').remove();
+                    }
+
+                    // -100 delay sound.
+                    setTimeout(
+                        removeAudio,
+                        (parseInt($('#time_sound').val())  * 1000) - 100
+                    );
                 }
             },
             "json"
         );
     }
 }
-
-$(document).ready (function () {
-    //10 seconds between ajax request
-    setInterval("check_event()", (10 * 1000));
-});
 
 </script>
 

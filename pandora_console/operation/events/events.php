@@ -962,12 +962,20 @@ if ($pure) {
     ?>
     <script type="text/javascript">
         function openSoundEventWindow() {
-            url = "<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>";
+            url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
+            // devicePixelRatio knows how much zoom browser applied.
+            var windowScale = parseFloat(window.devicePixelRatio);
+            var defaultWidth = 630;
+            var defaultHeight = 630;
+            // If the scale is 1, no zoom has been applied.
+            var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
+            var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
+
             window.open(
                 url,
                 '<?php __('Sound Alerts'); ?>',
-                'width=600, height=450, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'
-            ); 
+                'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
+            );
         }
     </script>
     <?php

@@ -2089,7 +2089,6 @@ if ($get_events_fired) {
         foreach ($data as $event) {
             $return[] = [
                 'fired'     => $event['id_evento'],
-                'sound'     => 'include/sounds/Star_Trek_emergency_simulation.wav',
                 'message'   => ui_print_string_substr(
                     strip_tags(io_safe_output($event['evento'])),
                     75,

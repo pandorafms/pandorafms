@@ -109,7 +109,7 @@ ui_require_css_file('discovery');
     }
 
     .events_fired li div.flex-time {
-        flex: 0 1 75px;
+        flex: 0 1 100px;
         text-align: end;
     }
 
@@ -235,6 +235,33 @@ $inputs[] = [
                 'return'   => true,
             ],
         ],
+    ],
+];
+
+$sounds = [
+    'aircraftalarm.wav'                  => 'Air craft alarm',
+    'air_shock_alarm.wav'                => 'Air shock alarm',
+    'alien_alarm.wav'                    => 'Alien alarm',
+    'alien_beacon.wav'                   => 'Alien beacon',
+    'bell_school_ringing.wav'            => 'Bell school ringing',
+    'Door_Alarm.wav'                     => 'Door alarm',
+    'EAS_beep.wav'                       => 'EAS beep',
+    'Firewarner.wav'                     => 'Fire warner',
+    'HardPCMAlarm.wav'                   => 'Hard PCM Alarm',
+    'negativebeep.wav'                   => 'Negative beep',
+    'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
+];
+
+$inputs[] = [
+    'label'     => \__('Sounds'),
+    'class'     => 'flex-row',
+    'arguments' => [
+        'type'     => 'select',
+        'fields'   => $sounds,
+        'name'     => 'sound_id',
+        'selected' => 'Star_Trek_emergency_simulation.wav',
+        'return'   => true,
+        'class'    => 'fullwidth',
     ],
 ];
 
@@ -375,6 +402,7 @@ function forgetPreviousEvents() {
 
 function check_event() {
     if (running) {
+        var sound = '../../include/sounds/' + $('#sound_id').val();
         jQuery.post ("../../ajax.php",
             {
                 "page" : "include/ajax/events",
@@ -392,12 +420,11 @@ function check_event() {
                             'src','../../images/sound_events_console_alert.gif'
                         );
                     $('audio').remove();
-                    if(data[0].sound == '') {
-                        data[0].sound = 'include/sounds/Star_Trek_emergency_simulation.wav';
-                    }
 
                     $('body')
-                        .append("<audio id='audio-boom' src='../../" + data[0].sound + "' autoplay='true' hidden='true' loop='true' >");
+                        .append(
+                            "<audio id='audio-boom' src='" + sound + "' autoplay='true' hidden='true' loop='true' >"
+                        );
 
                     data.forEach(function (element) {
                         var li = document.createElement('li');

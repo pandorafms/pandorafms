@@ -229,7 +229,6 @@ our @EXPORT = qw(
 	pandora_planned_downtime_weekly_start
 	pandora_planned_downtime_weekly_stop
 	pandora_process_alert
-	pandora_process_event_replication
 	pandora_process_module
 	pandora_reset_server
 	pandora_safe_mode_modules_update
@@ -5473,85 +5472,6 @@ sub pandora_server_statistics ($$) {
 		# Update server record
 		db_do ($dbh, "UPDATE tserver SET lag_time = '".$server->{"lag"}."', lag_modules = '".$server->{"module_lag"}."', total_modules_running = '".$server->{"modules_total"}."', my_modules = '".$server->{"modules"}."' , stat_utimestamp = UNIX_TIMESTAMP() WHERE id_server = " . $server->{"id_server"} );
 	}
-}
-
-##########################################################################
-=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
-
-Process groups statistics for statistics table
-
-=cut
-##########################################################################
-sub pandora_process_event_replication ($) {
-	my $pa_config = shift;
-	my $dbh_metaconsole;
-	my %pa_config = %{$pa_config};
-
-	# Get the console DB connection
-	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
-						$pa_config{'dbuser'}, $pa_config{'dbpass'});
-
-	my $is_event_replication_enabled = enterprise_hook('get_event_replication_flag', [$dbh]);
-	my $replication_interval = enterprise_hook('get_event_replication_interval', [$dbh]);
-		
-	# If there are not installed the enterprise version,  
-	# desactivated the event replication or the replication
-	# interval is wrong: abort
-	if($is_event_replication_enabled == 0) {
-		db_disconnect($dbh);
-		return;
-	}
-	
-	if($replication_interval <= 0) {
-		logger($pa_config, "The event replication interval must be greater than 0. Event replication aborted.", 1);
-		db_disconnect($dbh);
-		return;
-	}
-	
-	logger($pa_config, "Started event replication thread.", 1);
-
-	while($THRRUN == 1) { 
-		eval {{
-			local $SIG{__DIE__};
-			
-			# Get the metaconsole DB connection
-			$dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
-			$dbh_metaconsole = undef if $dbh_metaconsole eq '';
-			if (!defined($dbh_metaconsole)) {
-				logger($pa_config, "Metaconsole DB connection error. Event replication postponed.", 5);
-				next;
-			}
-			
-			# Get server id on metaconsole
-			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh]);
-		
-			# If the server name is not found in metaconsole setup: abort
-			if($metaconsole_server_id == -1) {
-				logger($pa_config, "The server name is not configured in metaconsole. Event replication postponed.", 5);
-				db_disconnect($dbh_metaconsole);
-				next;
-			}
-			
-			my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
-						
-			while($THRRUN == 1) { 
-		
-				# If we are not the master server sleep and check again.
-				if (pandora_is_master($pa_config) == 0) {
-					sleep ($pa_config->{'server_threshold'});
-					next;
-				}
-		
-				# Check the queue each N seconds
-				enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
-				sleep ($replication_interval);
-			}
-		}};
-		db_disconnect($dbh_metaconsole) if defined($dbh_metaconsole);
-		sleep ($replication_interval);
-	}
-
-	db_disconnect($dbh);
 }
 
 ##########################################################################

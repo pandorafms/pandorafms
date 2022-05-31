@@ -4415,12 +4415,7 @@ sub cli_get_event_info () {
 	
 	$csv_separator = '|' unless defined($csv_separator);
 
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-	
-	my $query = "SELECT * FROM " . $event_table . " where id_evento=" . $id_event;
+	my $query = "SELECT * FROM tevento WHERE id_evento=" . $id_event;
 
 	my $header = "Event ID".$csv_separator."Event name".$csv_separator."Agent ID".$csv_separator."User ID".$csv_separator.
 				"Group ID".$csv_separator."Status".$csv_separator."Timestamp".$csv_separator."Event type".$csv_separator.
@@ -6407,12 +6402,7 @@ sub cli_set_event_storm_protection () {
 sub pandora_get_event_name($$) {
 	my ($dbh,$id_event) = @_;
 	
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_name = get_db_value($dbh, 'SELECT evento FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
+	my $event_name = get_db_value($dbh, 'SELECT evento FROM tevento WHERE id_evento = ?',$id_event);
 	
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -6423,12 +6413,7 @@ sub pandora_get_event_name($$) {
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_id = db_process_update($dbh, $event_table, $parameters, {$where_column => $where_value});
+	my $event_id = db_process_update($dbh, 'tevento', $parameters, {$where_column => $where_value});
 	return $event_id;
 }
 
@@ -6439,12 +6424,7 @@ sub pandora_update_event_from_hash ($$$$) {
 sub pandora_get_event_comment($$) {
 	my ($dbh,$id_event) = @_;
 
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
+	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
 
 	return defined ($event_name) ? $event_name : -1;
 }

@@ -7001,10 +7001,6 @@ function sla_check_value($value, $min, $max, $inverse_interval=0)
         return ($inverse_interval == 0) ? true : false;
     }
 
-    if ($max == 0 && $min != 0 && $value >= $min) {
-        return ($inverse_interval == 0) ? true : false;
-    }
-
     return ($inverse_interval == 0) ? false : true;
 }
 

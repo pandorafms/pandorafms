@@ -6954,7 +6954,7 @@ function sla_truncate($num, $accurancy=2)
  *
  * @param integer $value            Value.
  * @param integer $min              Treshold min SLA.
- * @param boolean $max              Treshold max SLA.
+ * @param integer $max              Treshold max SLA.
  * @param boolean $inverse_interval Treshold inverse SLA.
  *
  * @return boolean Returns the interval in downtime (false if no matches).
@@ -6998,6 +6998,10 @@ function sla_check_value($value, $min, $max, $inverse_interval=0)
     }
 
     if (($value >= $min) && ($value <= $max)) {
+        return ($inverse_interval == 0) ? true : false;
+    }
+
+    if ($max == 0 && $min != 0 && $value >= $min) {
         return ($inverse_interval == 0) ? true : false;
     }
 
@@ -14739,8 +14743,10 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if ($modules_is_string === false) {
         if ($agentmodule_info['max_critical'] == 0) {
             $max_value_critical = null;
-            if ((bool) $content['dinamic_proc'] === true) {
-                $max_value_critical = 0.01;
+            if ($agentmodule_info['min_critical'] == 0) {
+                if ((bool) $content['dinamic_proc'] === true) {
+                    $max_value_critical = 0.01;
+                }
             }
         } else {
             $max_value_critical = $agentmodule_info['max_critical'];

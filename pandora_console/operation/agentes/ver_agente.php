@@ -697,6 +697,15 @@ if (is_ajax()) {
             asort($result);
         } else {
             if ($idAgents[0] < 0) {
+                // Get all user's groups.
+                $id_group = array_keys(users_get_groups($config['id_user']));
+
+                if (is_array($id_group)) {
+                    $id_group = implode(',', $id_group);
+                }
+
+                $where_tags .= ' AND tagente.id_grupo IN ('.$id_group.')';
+
                 if ($selection_mode == 'common') {
                     $sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';
                     $agent_total = db_get_value_sql($sql_agent_total);
@@ -705,13 +714,13 @@ if (is_ajax()) {
 						JOIN (SELECT COUNT(*) AS num_names, nombre FROM tagente_modulo
 						WHERE disabled=0 AND delete_pending=0 GROUP BY nombre) AS tj
 						ON tj.num_names = $agent_total AND tj.nombre = t1.nombre %s %s",
-                        $sql_tags_join,
+                        ($sql_tags_join === '') ? 'INNER JOIN tagente ON tagente.id_agente = t1.id_agente' : '',
                         (empty($where_tags)) ? '' : " WHERE 1=1 $where_tags"
                     );
                 } else {
                     $sql = sprintf(
                         'SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1 %s %s',
-                        $sql_tags_join,
+                        ($sql_tags_join === '') ? 'INNER JOIN tagente ON tagente.id_agente = t1.id_agente' : '',
                         (empty($where_tags)) ? '' : " WHERE 1=1 $where_tags"
                     );
                 }

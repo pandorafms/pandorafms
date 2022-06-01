@@ -3377,7 +3377,7 @@ function ui_print_datatable(array $parameters)
             foreach ($parameters['form']['extra_buttons'] as $button) {
                 $filter .= '<button id="'.$button['id'].'" ';
                 $filter .= ' class="'.$button['class'].'" ';
-                $filter .= ' style="'.$button['style'].'" ';
+                $filter .= ' style="'.($button['style'] ?? '').'" ';
                 $filter .= ' onclick="'.$button['onclick'].'" >';
                 $filter .= $button['text'];
                 $filter .= '</button>';

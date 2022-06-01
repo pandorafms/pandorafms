@@ -132,7 +132,7 @@ if ($get_comments === true) {
         // Consider if the event is grouped.
         if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
             // Evaluate if we are in metaconsole or not.
-            $eventTable = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+            $eventTable = 'tevento';
             // Default grouped message filtering (evento and estado).
             $whereGrouped = sprintf(
                 '`evento` = "%s" AND `estado` = "%s"',

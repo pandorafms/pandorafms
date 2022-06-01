@@ -4260,7 +4260,9 @@ function get_product_name()
 
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        if ($config['rb_product_name_alt']) {
+        if (isset($config['rb_product_name_alt']) === true
+            && empty($config['rb_product_name_alt']) === false
+        ) {
             return $config['rb_product_name_alt'];
         }
 

@@ -1144,7 +1144,7 @@ echo '</div>';
     );
 </script>
 <?php
-$event_table = events_get_events_table($meta, $history);
+$event_table = 'tevento';
 $event_lj = events_get_secondary_groups_left_join($event_table);
 
 if ($group_rep == 0) {
@@ -1268,7 +1268,6 @@ html_print_input_hidden(
 );
 html_print_input_hidden('meta', (int) $meta);
 html_print_input_hidden('history', (int) $history);
-html_print_input_hidden('filterid', $is_filter);
 
 ui_require_jquery_file('json');
 ui_include_time_picker();

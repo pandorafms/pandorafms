@@ -29,6 +29,13 @@
 // Begin.
 global $config;
 
+require_once $config['homedir'].'/vendor/autoload.php';
+
+use Amp\Promise;
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
+use function Amp\ParallelFunctions\parallelMap;
+
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions.php';
@@ -338,10 +345,10 @@ function events_get_column_names($fields, $table_alias=false)
         if (is_array($f)) {
             $name = [];
             $name['text'] = events_get_column_name($f['text'], $table_alias);
-            $name['class'] = $f['class'];
-            $name['style'] = $f['style'];
-            $name['extra'] = $f['extra'];
-            $name['id'] = $f['id'];
+            $name['class'] = ($f['class'] ?? '');
+            $name['style'] = ($f['style'] ?? '');
+            $name['extra'] = ($f['extra'] ?? '');
+            $name['id'] = ($f['id'] ?? '');
             $names[] = $name;
         } else {
             $names[] = events_get_column_name($f, $table_alias);
@@ -373,10 +380,7 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
         $filter = ['group_rep' => 0];
     }
 
-    $table = events_get_events_table(
-        ($force_node === false) ? is_metaconsole() : false,
-        $history
-    );
+    $table = 'tevento';
 
     switch ($filter['group_rep']) {
         case '0':
@@ -473,7 +477,7 @@ function events_get_related_events(
         $filter = ['group_rep' => 0];
     }
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = 'tevento';
     $select = '*';
     if ($count === true) {
         $select = 'count(*) as n';
@@ -565,7 +569,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
         $filter = ['group_rep' => 0];
     }
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = 'tevento';
 
     switch ($filter['group_rep']) {
         case '0':
@@ -748,7 +752,7 @@ function events_get_all(
 
     $user_is_admin = users_is_admin();
 
-    if (!is_array($filter)) {
+    if (is_array($filter) === false) {
         error_log('[events_get_all] Filter must be an array.');
         throw new Exception('[events_get_all] Filter must be an array.');
     }
@@ -759,24 +763,26 @@ function events_get_all(
     ) {
         $fields = ['te.*'];
         $count = true;
-    } else if (!is_array($fields)) {
+    } else if (is_array($fields) === false) {
         error_log('[events_get_all] Fields must be an array or "count".');
-        throw new Exception('[events_get_all] Fields must be an array or "count".');
+        throw new Exception(
+            '[events_get_all] Fields must be an array or "count".'
+        );
     }
 
-    if (isset($filter['date_from'])
-        && !empty($filter['date_from'])
-        && $filter['date_from'] != '0000-00-00'
+    if (isset($filter['date_from']) === true
+        && empty($filter['date_from']) === false
+        && $filter['date_from'] !== '0000-00-00'
     ) {
         $date_from = $filter['date_from'];
     }
 
-    if (isset($filter['time_from'])) {
+    if (isset($filter['time_from']) === true) {
         $time_from = (empty($filter['time_from']) === true) ? '00:00:00' : $filter['time_from'];
     }
 
-    if (isset($date_from)) {
-        if (!isset($time_from)) {
+    if (isset($date_from) === true) {
+        if (isset($time_from) === false) {
             $time_from = '00:00:00';
         }
 
@@ -981,7 +987,7 @@ function events_get_all(
         $sql_filters[] = ' AND te.id_grupo != 0 ';
     }
 
-    if (isset($filter['status'])) {
+    if (isset($filter['status']) === true) {
         switch ($filter['status']) {
             case EVENT_ALL:
             default:
@@ -1017,13 +1023,11 @@ function events_get_all(
         }
     }
 
-    if (!$user_is_admin) {
+    if (!$user_is_admin && users_can_manage_group_all('ER') === false) {
         $ER_groups = users_get_groups($config['id_user'], 'ER', true);
         $EM_groups = users_get_groups($config['id_user'], 'EM', true, true);
         $EW_groups = users_get_groups($config['id_user'], 'EW', true, true);
-    }
 
-    if (!$user_is_admin && users_can_manage_group_all('ER') === false) {
         // Get groups where user have ER grants.
         $sql_filters[] = sprintf(
             ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
@@ -1032,25 +1036,13 @@ function events_get_all(
         );
     }
 
-    $table = events_get_events_table(
-        (is_metaconsole() && $nodeConnected === false),
-        $history
-    );
-    $tevento = sprintf(
-        ' %s te',
-        $table
-    );
-
     // Prepare agent join sql filters.
+    $table = 'tevento';
+    $tevento = 'tevento te';
     $agent_join_filters = [];
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
     $conditionMetaconsole = '';
-    if ((is_metaconsole() === true) && ($nodeConnected === false)) {
-        $tagente_table = 'tmetaconsole_agent';
-        $tagente_field = 'id_tagente';
-        $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
-    }
 
     // Agent alias.
     if (empty($filter['agent_alias']) === false) {
@@ -1091,16 +1083,6 @@ function events_get_all(
             ' AND lower(te.id_extra) like lower("%%%s%%") ',
             $filter['id_extra']
         );
-    }
-
-    if ((is_metaconsole() === true) && ($nodeConnected === false)) {
-        // Id source event.
-        if (empty($filter['id_source_event']) === false) {
-            $sql_filters[] = sprintf(
-                ' AND lower(te.id_source_event) like lower("%%%s%%") ',
-                $filter['id_source_event']
-            );
-        }
     }
 
     // User comment.
@@ -1280,7 +1262,7 @@ function events_get_all(
             // Id_user.
             $config['id_user'],
             // Id_group.
-            $ER_groups,
+            ($ER_groups ?? ''),
             // Access.
             'ER',
             // Return_mode.
@@ -1363,9 +1345,7 @@ function events_get_all(
 
     // Module search.
     $agentmodule_join = 'LEFT JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
-    if (is_metaconsole() && $nodeConnected === false) {
-        $agentmodule_join = '';
-    } else if (!empty($filter['module_search'])) {
+    if (empty($filter['module_search']) === false) {
         $agentmodule_join = 'INNER JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
         $sql_filters[] = sprintf(
             ' AND am.nombre = "%s" ',
@@ -1375,8 +1355,8 @@ function events_get_all(
 
     // Order.
     $order_by = '';
-    if (isset($order, $sort_field)) {
-        if (isset($filter['group_rep']) && $filter['group_rep'] == 1) {
+    if (isset($order, $sort_field) === true) {
+        if (isset($filter['group_rep']) === true && $filter['group_rep'] == 1) {
             $order_by = events_get_sql_order('MAX('.$sort_field.')', $order);
         } else {
             $order_by = events_get_sql_order($sort_field, $order);
@@ -1385,15 +1365,11 @@ function events_get_all(
 
     // Pagination.
     $pagination = '';
-    if (isset($limit, $offset) && $limit > 0) {
+    if (isset($limit, $offset) === true && $limit > 0) {
         $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
     }
 
     $extra = '';
-    if (is_metaconsole() && $nodeConnected === false) {
-        $extra = ', server_id';
-    }
-
     // Group by.
     $group_by = 'GROUP BY ';
     $tagente_join = 'LEFT';
@@ -1454,17 +1430,6 @@ function events_get_all(
     }
 
     $server_join = '';
-    if (is_metaconsole() && $nodeConnected === false) {
-        $server_join = ' LEFT JOIN tmetaconsole_setup ts
-            ON ts.id = te.server_id';
-        if (!empty($filter['server_id'])) {
-            $server_join = sprintf(
-                ' INNER JOIN tmetaconsole_setup ts
-                  ON ts.id = te.server_id AND ts.id= %d',
-                $filter['server_id']
-            );
-        }
-    }
 
     // Secondary groups.
     $event_lj = '';
@@ -1533,6 +1498,55 @@ function events_get_all(
         $pagination,
         $having
     );
+
+    if ($count !== true) {
+        if (is_metaconsole() === true) {
+            $result_meta = [];
+            $metaconsole_connections = metaconsole_get_names();
+            if (isset($metaconsole_connections) === true
+                && is_array($metaconsole_connections) === true
+            ) {
+                try {
+                    $metaconsole_connections = array_flip($metaconsole_connections);
+                    $metaconsole_connections['meta'] = 0;
+
+                    $result_meta = Promise\wait(
+                        parallelMap(
+                            $metaconsole_connections,
+                            function ($node) use ($sql) {
+                                if ($node !== 0) {
+                                    $node = new Node((int) $node);
+                                    $node->connect();
+                                }
+
+                                $res = db_get_all_rows_sql($sql);
+                                if ($res === false) {
+                                    $res = [];
+                                }
+
+                                if ($node !== 0) {
+                                    $node->disconnect();
+                                }
+
+                                return $res;
+                            }
+                        )
+                    );
+                } catch (\Exception $e) {
+                    $e->getReasons();
+                }
+            }
+
+            $data = [];
+            if (empty($result_meta) === false) {
+                foreach ($result_meta as $key => $value) {
+                    $data = array_merge($data, $value);
+                }
+            }
+
+            return $data;
+        }
+    }
 
     if (!$user_is_admin) {
         // XXX: Confirm there's no extra grants unhandled!.
@@ -1660,7 +1674,7 @@ function events_get_event($id, $fields=false, $meta=false, $history=false)
         }
     }
 
-    $table = events_get_events_table($meta, $history);
+    $table = 'tevento';
 
     $event = db_get_row($table, 'id_evento', $id, $fields);
     if ((bool) check_acl($config['id_user'], $event['id_grupo'], 'ER') === false) {
@@ -1689,7 +1703,7 @@ function events_get_events_no_grouped(
 ) {
     global $config;
 
-    $table = events_get_events_table($meta, $history);
+    $table = 'tevento';
 
     $sql = 'SELECT * FROM '.$table.' te ';
     $sql .= events_get_secondary_groups_left_join($table);
@@ -1733,7 +1747,7 @@ function events_get_events_grouped(
 ) {
     global $config;
 
-    $table = events_get_events_table($meta, $history);
+    $table = 'tevento';
 
     if ($meta) {
         $groupby_extra = ', server_id';
@@ -1844,7 +1858,7 @@ function events_get_total_events_grouped($sql_post, $meta=false, $history=false)
  */
 function events_get_similar_ids($id, $meta=false, $history=false)
 {
-    $events_table = events_get_events_table($meta, $history);
+    $events_table = 'tevento';
 
     $ids = [];
     if ($meta) {
@@ -1902,7 +1916,7 @@ function events_delete_event(
 ) {
     global $config;
 
-    $table_event = events_get_events_table($meta, $history);
+    $table_event = 'tevento';
 
     // Cleans up the selection for all unwanted values also casts any single values as an array.
     $id_event = (array) safe_int($id_event, 1);
@@ -1979,7 +1993,7 @@ function events_change_status(
 ) {
     global $config;
 
-    $event_table = events_get_events_table($meta, $history);
+    $event_table = 'tevento';
 
     // Cleans up the selection for all unwanted values also casts any single values as an array.
     $id_event = (array) safe_int($id_event, 1);
@@ -2128,7 +2142,7 @@ function events_change_owner(
 ) {
     global $config;
 
-    $event_table = events_get_events_table($meta, $history);
+    $event_table = 'tevento';
 
     // Cleans up the selection for all unwanted values also casts any single
     // values as an array.
@@ -2198,30 +2212,6 @@ function events_change_owner(
 
 
 /**
- * Returns proper event table based on environment.
- *
- * @param boolean $meta    Metaconsole environment or not.
- * @param boolean $history Historical data or not.
- *
- * @return string Table name.
- */
-function events_get_events_table($meta, $history)
-{
-    if ($meta) {
-        if ($history) {
-            $event_table = 'tmetaconsole_event_history';
-        } else {
-            $event_table = 'tmetaconsole_event';
-        }
-    } else {
-        $event_table = 'tevento';
-    }
-
-    return $event_table;
-}
-
-
-/**
  * Comment events in a transresponse
  *
  * @param mixed   $id_event     Event ID or array of events.
@@ -2246,7 +2236,7 @@ function events_comment(
 ) {
     global $config;
 
-    $event_table = events_get_events_table($meta, $history);
+    $event_table = 'tevento';
 
     // Cleans up the selection for all unwanted values also casts any single
     // values as an array.
@@ -2446,77 +2436,37 @@ function events_create_event(
     $server_id=0,
     $id_extra=''
 ) {
-    global $config;
-
     if ($source === false) {
         $source = get_product_name();
     }
 
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
+    $values = [
+        'id_agente'             => $id_agent,
+        'id_usuario'            => $id_user,
+        'id_grupo'              => $id_group,
+        'estado'                => $status,
+        'timestamp'             => 'NOW()',
+        'evento'                => $event,
+        'utimestamp'            => 'UNIX_TIMESTAMP(NOW())',
+        'event_type'            => $event_type,
+        'id_agentmodule'        => $id_agent_module,
+        'id_alert_am'           => $id_aam,
+        'criticity'             => $priority,
+        'user_comment'          => '',
+        'tags'                  => $tags,
+        'source'                => $source,
+        'id_extra'              => $id_extra,
+        'critical_instructions' => $critical_instructions,
+        'warning_instructions'  => $warning_instructions,
+        'unknown_instructions'  => $unknown_instructions,
+        'owner_user'            => '',
+        'ack_utimestamp'        => 0,
+        'custom_data'           => $custom_data,
+        'data'                  => '',
+        'module_status'         => 0,
+    ];
 
-        $sql = sprintf(
-            'INSERT INTO '.$table_events.' (id_agente, id_grupo, evento,
-                timestamp, estado, utimestamp, id_usuario,
-                event_type, criticity, id_agentmodule, id_alert_am,
-                critical_instructions, warning_instructions,
-                unknown_instructions, source, tags, custom_data,
-                server_id, id_extra, data, module_status) 
-            VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
-                "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-                "%s", "%s", %d, "%s", %d, %d)',
-            $id_agent,
-            $id_group,
-            $event,
-            $status,
-            $id_user,
-            $event_type,
-            $priority,
-            $id_agent_module,
-            $id_aam,
-            $critical_instructions,
-            $warning_instructions,
-            $unknown_instructions,
-            $source,
-            $tags,
-            $custom_data,
-            $server_id,
-            $id_extra,
-            $data,
-            $module_status
-        );
-    } else {
-        $sql = sprintf(
-            'INSERT INTO '.$table_events.' (id_agente, id_grupo, evento,
-                timestamp, estado, utimestamp, id_usuario,
-                event_type, criticity, id_agentmodule, id_alert_am,
-                critical_instructions, warning_instructions,
-                unknown_instructions, source, tags, custom_data, id_extra, data, module_status) 
-            VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
-                "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s", %d, %d)',
-            $id_agent,
-            $id_group,
-            $event,
-            $status,
-            $id_user,
-            $event_type,
-            $priority,
-            $id_agent_module,
-            $id_aam,
-            $critical_instructions,
-            $warning_instructions,
-            $unknown_instructions,
-            $source,
-            $tags,
-            $custom_data,
-            $id_extra,
-            $data,
-            $module_status
-        );
-    }
-
-    return (int) db_process_sql($sql, 'insert_id');
+    return (int) db_process_sql_insert('tevento', $values);
 }
 
 
@@ -3902,7 +3852,7 @@ function events_get_response_target(
 
     // If server_id > 0, it's a metaconsole query.
     $meta = $server_id > 0 || is_metaconsole();
-    $event_table = events_get_events_table($meta, $history);
+    $event_table = 'tevento';
     $event = db_get_row($event_table, 'id_evento', $event_id);
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
@@ -6264,7 +6214,7 @@ function events_get_events_grouped_by_agent(
 ) {
     global $config;
 
-    $table = events_get_events_table($meta, $history);
+    $table = 'tevento';
 
     if ($meta) {
         $fields_extra = ', agent_name, server_id';
@@ -6611,7 +6561,7 @@ function events_list_events_grouped_agents($sql)
 {
     global $config;
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = 'tevento';
 
     $sql = sprintf(
         'SELECT * FROM %s 

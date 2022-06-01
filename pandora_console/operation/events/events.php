@@ -113,106 +113,106 @@ if (isset($fb64)) {
 
 $id_group = get_parameter(
     'filter[id_group]',
-    $filter['id_group']
+    ($filter['id_group'] ?? '')
 );
 $event_type = get_parameter(
     'filter[event_type]',
-    $filter['event_type']
+    ($filter['event_type'] ?? '')
 );
 $severity = get_parameter(
     'filter[severity]',
-    $filter['severity']
+    ($filter['severity'] ?? '')
 );
 $status = get_parameter(
     'filter[status]',
-    $filter['status']
+    ($filter['status'] ?? '')
 );
 $search = get_parameter(
     'filter[search]',
-    $filter['search']
+    ($filter['search'] ?? '')
 );
 $text_agent = get_parameter(
     'filter[text_agent]',
-    $filter['text_agent']
+    ($filter['text_agent'] ?? '')
 );
 $id_agent = get_parameter(
     'filter[id_agent]',
-    $filter['id_agent']
+    ($filter['id_agent'] ?? '')
 );
 $text_module = get_parameter(
     'filter[module_search]',
-    $filter['module_search']
+    ($filter['module_search'] ?? '')
 );
 $id_agent_module = get_parameter(
     'id_agent_module',
     get_parameter(
         'filter[id_agent_module]',
-        $filter['id_agent_module']
+        ($filter['id_agent_module'] ?? '')
     )
 );
 $pagination = get_parameter(
     'filter[pagination]',
-    $filter['pagination']
+    ($filter['pagination'] ?? '')
 );
 $event_view_hr = get_parameter(
     'filter[event_view_hr]',
-    $filter['event_view_hr']
+    ($filter['event_view_hr'] ?? '')
 );
 $id_user_ack = get_parameter(
     'filter[id_user_ack]',
-    $filter['id_user_ack']
+    ($filter['id_user_ack'] ?? '')
 );
 $group_rep = get_parameter(
     'filter[group_rep]',
-    $filter['group_rep']
+    ($filter['group_rep'] ?? '')
 );
 $tag_with = get_parameter(
     'filter[tag_with]',
-    $filter['tag_with']
+    ($filter['tag_with'] ?? '')
 );
 $tag_without = get_parameter(
     'filter[tag_without]',
-    $filter['tag_without']
+    ($filter['tag_without'] ?? '')
 );
 $filter_only_alert = get_parameter(
     'filter[filter_only_alert]',
-    $filter['filter_only_alert']
+    ($filter['filter_only_alert'] ?? '')
 );
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
-    $filter['id_group_filter']
+    ($filter['id_group_filter'] ?? '')
 );
 $date_from = get_parameter(
     'filter[date_from]',
-    $filter['date_from']
+    ($filter['date_from'] ?? '')
 );
 $date_to = get_parameter(
     'filter[date_to]',
-    $filter['date_to']
+    ($filter['date_to'] ?? '')
 );
 $time_from = get_parameter(
     'filter[time_from]',
-    $filter['time_from']
+    ($filter['time_from'] ?? '')
 );
 $time_to = get_parameter(
     'filter[time_to]',
-    $filter['time_to']
+    ($filter['time_to'] ?? '')
 );
 $source = get_parameter(
     'filter[source]',
-    $filter['source']
+    ($filter['source'] ?? '')
 );
 $id_extra = get_parameter(
     'filter[id_extra]',
-    $filter['id_extra']
+    ($filter['id_extra'] ?? '')
 );
 $user_comment = get_parameter(
     'filter[user_comment]',
-    $filter['user_comment']
+    ($filter['user_comment'] ?? '')
 );
 $history = get_parameter(
     'history',
-    $filter['history']
+    ($filter['history'] ?? '')
 );
 $section = get_parameter('section', false);
 
@@ -223,17 +223,17 @@ $id_source_event = get_parameter(
 
 $server_id = get_parameter(
     'filter[server_id]',
-    $filter['id_server_meta']
+    ($filter['id_server_meta'] ?? 0)
 );
 
 $custom_data_filter_type = get_parameter(
     'filter[custom_data_filter_type]',
-    $filter['custom_data_filter_type']
+    ($filter['custom_data_filter_type'] ?? '')
 );
 
 $custom_data = get_parameter(
     'filter[custom_data]',
-    $filter['custom_data']
+    ($filter['custom_data'] ?? '')
 );
 
 if (is_metaconsole() === true) {
@@ -245,7 +245,6 @@ if (is_metaconsole() === true) {
         }
     }
 }
-
 
 if (empty($text_agent) && empty($id_agent) === false) {
     $text_agent = agents_get_alias($id_agent);
@@ -317,16 +316,10 @@ if (is_ajax() === true) {
                 }
             }
 
-            if (is_metaconsole() === false) {
-                $fields[] = 'am.nombre as module_name';
-                $fields[] = 'am.id_agente_modulo as id_agentmodule';
-                $fields[] = 'am.custom_id as module_custom_id';
-                $fields[] = 'ta.server_name as server_name';
-            } else {
-                $fields[] = 'ts.server_name as server_name';
-                $fields[] = 'te.id_agentmodule';
-                $fields[] = 'te.server_id';
-            }
+            $fields[] = 'am.nombre as module_name';
+            $fields[] = 'am.id_agente_modulo as id_agentmodule';
+            $fields[] = 'am.custom_id as module_custom_id';
+            $fields[] = 'ta.server_name as server_name';
 
             $events = events_get_all(
                 // Fields.
@@ -344,19 +337,20 @@ if (is_ajax() === true) {
                 // History.
                 $history
             );
-            $count = events_get_all(
-                'count',
-                $filter,
-                null,
-                null,
-                null,
-                null,
-                $history
-            );
-
-            if ($count !== false) {
-                $count = $count['0']['nitems'];
-            }
+            // $count = events_get_all(
+            // 'count',
+            // $filter,
+            // null,
+            // null,
+            // null,
+            // null,
+            // $history
+            // );
+            //
+            // if ($count !== false) {
+            // $count = $count['0']['nitems'];
+            // }
+            $count = count($events);
 
             if ($events) {
                 $data = array_reduce(
@@ -365,15 +359,14 @@ if (is_ajax() === true) {
                         global $config;
 
                         $tmp = (object) $item;
-                        $tmp->meta = is_metaconsole();
-                        // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-                        if ($tmp->meta === true) {
-                            if ($tmp->server_name !== null) {
-                                $tmp->data_server = metaconsole_get_servers($tmp->server_id);
-                                $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
-                            }
-                        }
-
+                        // $tmp->meta = is_metaconsole();
+                        //// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+                        // if ($tmp->meta === true) {
+                        // if ($tmp->server_name !== null) {
+                        // $tmp->data_server = metaconsole_get_servers($tmp->server_id);
+                        // $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
+                        // }
+                        // }
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         if (strlen($tmp->evento) >= 255) {
                             $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
@@ -437,7 +430,7 @@ if (is_ajax() === true) {
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
-                    'data'            => $data,
+                    'data'            => ($data ?? []),
                     'recordsTotal'    => $count,
                     'recordsFiltered' => $count,
                 ]
@@ -500,7 +493,7 @@ if ($load_filter_id === 0) {
 }
 
 // Do not load the user filter if we come from the 24h event graph.
-$from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
+$from_event_graph = get_parameter('filter[from_event_graph]', ($filter['from_event_graph'] ?? ''));
 if ($loaded_filter !== false && $from_event_graph != 1 && !isset($fb64)) {
     $filter = events_get_event_filter($loaded_filter['id_filter']);
     if ($filter !== false) {
@@ -629,7 +622,7 @@ $data[1] = html_print_image(
 
 $data[1] .= html_print_input_hidden(
     'tag_with',
-    $tag_with_base64,
+    ($tag_with_base64 ?? ''),
     true
 );
 
@@ -704,7 +697,7 @@ $data[1] = html_print_image(
 );
 $data[1] .= html_print_input_hidden(
     'tag_without',
-    $tag_without_base64,
+    ($tag_without_base64 ?? ''),
     true
 );
 $data[1] .= '<br><br>'.html_print_image(
@@ -863,7 +856,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
         'images/csv.png',
         true,
         [
@@ -1216,7 +1209,7 @@ $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
 $params['return'] = true;
 
-if ($meta) {
+if (is_metaconsole() === true) {
     $params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
 
@@ -1226,7 +1219,7 @@ $params['hidden_input_idagent_value'] = $id_agent;
 $params['size'] = '';
 
 if ($id_agent !== null) {
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $metaconsole_agent = db_get_row_sql(
             sprintf(
                 'SELECT alias, server_name
@@ -1236,7 +1229,9 @@ if ($id_agent !== null) {
             )
         );
 
-        $params['value'] = $metaconsole_agent['alias'].' ('.$metaconsole_agent['server_name'].')';
+        if ($metaconsole_agent !== false) {
+            $params['value'] = $metaconsole_agent['alias'].' ('.$metaconsole_agent['server_name'].')';
+        }
     } else {
         $params['value'] = agents_get_alias($id_agent);
     }
@@ -1881,7 +1876,6 @@ ui_require_jquery_file(
 // End. Load required JS.
 html_print_input_hidden('meta', (int) is_metaconsole());
 html_print_input_hidden('history', (int) $history);
-html_print_input_hidden('filterid', $is_filter);
 html_print_input_hidden(
     'ajax_file',
     ui_get_full_url('ajax.php', false, false, false)
@@ -1896,7 +1890,8 @@ echo "<div id='event_response_command_window' title='".__('Parameters')."'></div
 echo '<div id="load-modal-filter" style="display:none"></div>';
 echo '<div id="save-modal-filter" style="display:none"></div>';
 
-if ($_GET['refr'] || $do_refresh === true) {
+$autorefresh_draw = false;
+if ($_GET['refr'] || (bool) ($do_refresh ?? false) === true) {
     $autorefresh_draw = true;
 }
 

@@ -614,18 +614,10 @@ class EventsListWidget extends Widget
 
         $home_url = $config['homeurl'];
 
-        if ((bool) \is_metaconsole() === false
-            || $this->nodeId > 0
-        ) {
-            $fields[] = 'am.nombre as module_name';
-            $fields[] = 'am.id_agente_modulo as id_agentmodule';
-            $fields[] = 'am.custom_id as module_custom_id';
-            $fields[] = 'ta.server_name as server_name';
-        } else {
-            $fields[] = 'ts.server_name as server_name';
-            $fields[] = 'te.id_agentmodule';
-            $fields[] = 'te.server_id';
-        }
+        $fields[] = 'am.nombre as module_name';
+        $fields[] = 'am.id_agente_modulo as id_agentmodule';
+        $fields[] = 'am.custom_id as module_custom_id';
+        $fields[] = 'ta.server_name as server_name';
 
         $events = \events_get_all(
             // Fields.

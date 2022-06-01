@@ -14,7 +14,8 @@
   },
   "require": {
     "mpdf/mpdf": "^8.0.15",
-    "swiftmailer/swiftmailer": "^6.0"
+    "swiftmailer/swiftmailer": "^6.0",
+    "amphp/parallel-functions": "^1.0"
   },
   "autoload": {
     "psr-4": {

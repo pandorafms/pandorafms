@@ -329,7 +329,7 @@ class AgentWizard extends HTML
                 }
             }
 
-            if (count($this->datalist) === 1 && $this->targetIp === '') {
+            if (empty($this->datalist) === false && count($this->datalist) === 1 && $this->targetIp === '') {
                 $this->targetIp = $this->datalist[0];
             }
         }
@@ -4827,8 +4827,8 @@ class AgentWizard extends HTML
                 // SecurityName.
                 $macros[6]['value'] = $this->authUserV3;
 
-                // SecurityContext.
-                $macros[7]['value'] = $this->community;
+                // SecurityContext. Empty by default.
+                $macros[7]['value'] = '';
 
                 // SecurityLevel.
                 $macros[8]['value'] = $this->securityLevelV3;

@@ -2455,6 +2455,8 @@ function pandoraFlotArea(
                 number_format(value[x].max, 0, unit, short_data, divisor) +
                 " Avg: " +
                 number_format(value[x].avg, 0, unit, short_data, divisor);
+            } else {
+              data_legend[index] = " Min: " + 0 + " Max: " + 0 + " Avg: " + 0;
             }
           });
 

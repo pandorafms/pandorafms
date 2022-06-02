@@ -31,6 +31,10 @@ if (!$config['MR']) {
     $config['MR'] = 0;
 }
 
+if (isset($config['lts_name']) === false) {
+    $config['lts_name'] = '';
+}
+
 echo '<a class="footer"target="_blank" href="'.$config['homeurl'].$license_file.'">';
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
@@ -46,7 +50,7 @@ if ($current_package === null) {
 echo __(
     '%s %s - %s - MR %s',
     get_product_name(),
-    $pandora_version,
+    $pandora_version.' '.$config['lts_name'],
     $build_package_version,
     $config['MR']
 ).'</a><br><span>'.__('Page generated on %s', date('Y-m-d H:i:s')).'</span><br>';

@@ -556,7 +556,7 @@ function config_update_config()
                         $error_update[] = __('Autocreate profile group');
                     }
 
-                    if (config_update_value('default_assign_tags', implode(',', get_parameter('default_assign_tags')), true) === false) {
+                    if (config_update_value('default_assign_tags', implode(',', get_parameter('default_assign_tags', [])), true) === false) {
                         $error_update[] = __('Autocreate profile tags');
                     }
 

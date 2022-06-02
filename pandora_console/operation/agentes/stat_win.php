@@ -117,11 +117,13 @@ ui_print_message_dialog(
         <link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
+        <link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
         <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
+        <script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
         <?php
         require_once $config['homedir'].'/include/graphs/functions_flot.php';
             echo include_javascript_dependencies_flot_graph(true, '../');

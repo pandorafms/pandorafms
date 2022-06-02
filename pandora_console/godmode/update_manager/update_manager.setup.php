@@ -274,7 +274,7 @@ $table->data[$i++][1] = html_print_input_text(
     $url_update_manager,
     __('URL update manager'),
     80,
-    60,
+    255,
     true
 );
 

@@ -24,7 +24,10 @@
       "PandoraFMS\\": "include/lib",
       "PandoraFMS\\Enterprise\\": "enterprise/include/lib",
       "UpdateManager\\": "update_manager_client/lib/UpdateManager"
-    }
+    },
+    "files": [
+      "include/global_config.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {

@@ -1510,6 +1510,9 @@ function events_get_all(
                     $metaconsole_connections = array_flip($metaconsole_connections);
                     $metaconsole_connections['meta'] = 0;
 
+                    hd($metaconsole_connections, true);
+                    hd($sql, true);
+
                     $result_meta = Promise\wait(
                         parallelMap(
                             $metaconsole_connections,
@@ -1520,6 +1523,7 @@ function events_get_all(
                                 }
 
                                 $res = db_get_all_rows_sql($sql);
+                                hd($res, true);
                                 if ($res === false) {
                                     $res = [];
                                 }
@@ -1536,6 +1540,8 @@ function events_get_all(
                     $e->getReasons();
                 }
             }
+
+            hd($result_meta, true);
 
             $data = [];
             if (empty($result_meta) === false) {

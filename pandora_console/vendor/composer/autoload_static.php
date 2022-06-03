@@ -26,6 +26,7 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '861372841bb4b8ba9fdd215894666f40' => __DIR__ . '/..' . '/amphp/parallel-functions/src/functions.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        '11a9819e563d3900ef57275fe1df7d91' => __DIR__ . '/../..' . '/include/global_config.php',
     );
 
     public static $prefixLengthsPsr4 = array (

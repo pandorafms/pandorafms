@@ -25,4 +25,5 @@ return array(
     '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => $vendorDir . '/symfony/polyfill-mbstring/bootstrap.php',
     '861372841bb4b8ba9fdd215894666f40' => $vendorDir . '/amphp/parallel-functions/src/functions.php',
     '2c102faa651ef8ea5874edb585946bce' => $vendorDir . '/swiftmailer/swiftmailer/lib/swift_required.php',
+    '11a9819e563d3900ef57275fe1df7d91' => $baseDir . '/include/global_config.php',
 );

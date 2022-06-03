@@ -281,7 +281,6 @@ class CalendarManager
         }
 
         if (is_numeric($id) === true) {
-            // Check for permissions before rendering edit view or performing save action.
             if ((bool) check_acl(
                 $config['id_user'],
                 $calendar->id_group(),

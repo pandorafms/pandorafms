@@ -230,6 +230,7 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
 
 if (empty($sub2) === false) {
     $sub['geventos']['text'] = __('Events');
+    $sub['geventos']['id'] = 'events';
     $sub['geventos']['sec2'] = 'godmode/events/events&section=filter';
     $sub['geventos']['type'] = 'direct';
     $sub['geventos']['subtype'] = 'nolink';

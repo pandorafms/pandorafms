@@ -2398,9 +2398,9 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
  * LM - Alert Management
  * PM - Pandora Management
  *
- * @param integer $id_user      User id
- * @param integer $id_group     Agents group id to check from
- * @param string  $access       Access privilege
+ * @param integer $id_user      User id.
+ * @param integer $id_group     Agents group id to check from.
+ * @param string  $access       Access privilege.
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
  *
  * @return boolean 1 if the user has privileges, 0 if not.
@@ -2408,7 +2408,7 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 function check_acl_restricted_all($id_user, $id_group, $access, $onlyOneGroup=false)
 {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {

@@ -704,14 +704,19 @@ class Module extends Entity
             return false;
         }
 
-        return (bool) \db_process_sql_insert(
-            'talert_template_modules',
-            [
-                'id_agent_module'   => $this->id_agente_modulo(),
-                'id_alert_template' => $id_alert_template,
-                'last_reference'    => time(),
-            ]
-        );
+        $old = $this->alertTemplatesAssigned();
+        if (in_array($id_alert_template, $old) === false) {
+            return (bool) \db_process_sql_insert(
+                'talert_template_modules',
+                [
+                    'id_agent_module'   => $this->id_agente_modulo(),
+                    'id_alert_template' => $id_alert_template,
+                    'last_reference'    => time(),
+                ]
+            );
+        }
+
+        return false;
 
     }
 

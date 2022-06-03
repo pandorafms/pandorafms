@@ -11,5 +11,6 @@ ALTER TABLE `tnotification_user` ADD CONSTRAINT `tnotification_user_ibfk_2` FORE
 ALTER TABLE `tnotification_source_user` ADD CONSTRAINT `tnotification_source_user_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `tnotification_source_group_user` ADD CONSTRAINT `tnotification_source_group_user_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `tvisual_console_elements_cache` ADD CONSTRAINT `tvisual_console_elements_cache_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `tservice` ADD COLUMN `enable_sunburst` tinyint(1) NOT NULL default 0;
 
 COMMIT;

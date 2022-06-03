@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.761 Build 220509";
+my $version = "7.0NG.762 Build 220603";
 
 # save program name for logging
 my $progname = basename($0);
@@ -3078,7 +3078,7 @@ sub cli_user_update() {
 		$new_value = md5($new_value);
 	}
 	else {
-		print_log "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesn't exist\n\n";
 		exit;
 	}
 		
@@ -3107,7 +3107,7 @@ sub cli_agent_update_custom_fields() {
 	my $found = 0;
 
 	if($agent_name eq '') {
-		print_log "[ERROR] Agent '$id_agent' doesnt exist\n\n";
+		print_log "[ERROR] Agent '$id_agent' doesn't exist\n\n";
 		exit;
 	}
 
@@ -3116,7 +3116,7 @@ sub cli_agent_update_custom_fields() {
 
 
 	if($custom_field eq '') {
-			print_log "[ERROR] Field '$field' doesnt exist\n\n";
+			print_log "[ERROR] Field '$field' doesn't exist\n\n";
 			exit;
 	}
 
@@ -3142,7 +3142,7 @@ sub cli_agent_update_custom_fields() {
 	if($result == "0E0"){
 			print_log "[ERROR] Error updating field '$field'\n\n";
 	} else {
-			print_log "[INFO] Field '$field' updated succesfully!\n\n";
+			print_log "[INFO] Field '$field' updated successfully!\n\n";
 	}
 
 	exit;
@@ -3210,7 +3210,7 @@ sub cli_agent_update() {
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$new_value);
 		
-		# If the addres doesnt exist, we add it to the addresses list
+		# If the addres doesn't exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$new_value);
 		}
@@ -3233,7 +3233,7 @@ sub cli_agent_update() {
 		$field = 'direccion';
 	}
 	else {
-		print_log "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesn't exist\n\n";
 		exit;
 	}
 	
@@ -3299,7 +3299,7 @@ sub cli_alert_template_update() {
 		$field = 'id_group';
 	}
 	else {
-		print_log "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesn't exist\n\n";
 		exit;
 	}
 		
@@ -3346,7 +3346,7 @@ sub pandora_check_network_module_fields($) {
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
 		
-		# If the addres doesnt exist, we add it to the addresses list
+		# If the addres doesn't exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$field_value->{'new_value'});
 		}
@@ -3419,7 +3419,7 @@ sub pandora_check_snmp_module_fields($) {
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
 		
-		# If the addres doesnt exist, we add it to the addresses list
+		# If the addres doesn't exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$field_value->{'new_value'});
 		}
@@ -3482,7 +3482,7 @@ sub pandora_check_plugin_module_fields($) {
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
 		
-		# If the addres doesnt exist, we add it to the addresses list
+		# If the addres doesn't exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$field_value->{'new_value'});
 		}
@@ -3584,7 +3584,7 @@ sub cli_module_update() {
 				my $module_group_id = get_module_group_id($dbh,$new_value);
 				
 				if ($module_group_id == -1) {
-					print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
+					print_log "[ERROR] Module group '$new_value' doesn't exist\n\n";
 					exit;
 				}
 				$field = 'id_module_group';
@@ -3728,7 +3728,7 @@ sub cli_module_update() {
 			my $module_group_id = get_module_group_id($dbh,$new_value);
 			
 			if ($module_group_id == -1) {
-				print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
+				print_log "[ERROR] Module group '$new_value' doesn't exist\n\n";
 				exit;
 			}
 			$field = 'id_module_group';
@@ -4749,7 +4749,7 @@ if($result == 0) {
 		print_log "[ERROR] Alert could not be validated\n\n";
 	}
 	else {
-			print_log "[INFO] Alert succesfully validated\n\n";
+			print_log "[INFO] Alert successfully validated\n\n";
 ;
 	}
 
@@ -5589,7 +5589,7 @@ sub cli_delete_conf_file() {
 			}
 			
 			if($conf_deleted == 1 || $md5_deleted == 1) {
-				print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
+				print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted successfully\n\n";
 			}
 			else {
 				print_log "[ERROR] Local conf file of the agent '$agent_name' was not found\n\n";
@@ -5607,7 +5607,7 @@ sub cli_delete_conf_file() {
 		}
 		
 		if($conf_deleted == 1 || $md5_deleted == 1) {
-			print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
+			print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted successfully\n\n";
 		}
 		else {
 			print_log "[ERROR] Local conf file of the agent '$agent_name' was not found\n\n";
@@ -5913,7 +5913,7 @@ sub cli_create_group() {
 							$parent_group_id, 0, 0, '', 0, $description);
 				};
 				if ($@) {
-					print_log "[ERROR] Problems with IDS and doesnt created group\n\n";
+					print_log "[ERROR] Problems with IDS and doesn't created group\n\n";
 					$count_error++;
 					next;
 				}
@@ -6563,7 +6563,7 @@ sub cli_update_special_day() {
 		$field = 'id_group';
 	}
 	else {
-		print_log "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesn't exist\n\n";
 		exit;
 	}
 		

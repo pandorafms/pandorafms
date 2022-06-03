@@ -278,11 +278,11 @@ foreach ($sessions as $session) {
         true
     ).human_time_comparation($session['utimestamp'], 'tiny');
     $data[3] = $session_ip_origen;
-    $description = str_replace([',', ', '], ', ', $session['descripcion']);
+    $description = io_safe_output(str_replace([',', ', '], ', ', $session['descripcion']));
     if (strlen($description) > 100) {
-        $data[4] = '<div >'.io_safe_output(substr($description, 0, 150).'...').'</div>';
+        $data[4] = '<div >'.io_safe_input(substr($description, 0, 150)).'...</div>';
     } else {
-        $data[4] = '<div >'.io_safe_output($description).'</div>';
+        $data[4] = '<div >'.io_safe_input($description).'</div>';
     }
 
     array_push($table->data, $data);

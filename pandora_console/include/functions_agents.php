@@ -3236,8 +3236,8 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     $ni_by_agents = [];
     foreach ($agents as $agent) {
         $agent_id = (isset($agent['id_agente'])) ? $agent['id_agente'] : $agent;
-        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : '';
-        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : '';
+        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : agents_get_agent_group($agent_id);
+        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : agents_get_alias($agent_id);
         $agent_interfaces = [];
 
         $accepted_module_types = [];

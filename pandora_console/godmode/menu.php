@@ -1,16 +1,32 @@
 <?php
+/**
+ * Godmode menu.
+ *
+ * @category   Menu
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Begin.
 require_once 'include/config.php';
 
 check_login();
@@ -21,11 +37,11 @@ require_once 'include/functions_menu.php';
 $menu_godmode = [];
 $menu_godmode['class'] = 'godmode';
 
-if (check_acl($config['id_user'], 0, 'AR')
-    || check_acl($config['id_user'], 0, 'AW')
-    || check_acl($config['id_user'], 0, 'RR')
-    || check_acl($config['id_user'], 0, 'RW')
-    || check_acl($config['id_user'], 0, 'PM')
+if ((bool) check_acl($config['id_user'], 0, 'AR') === true
+    || (bool) check_acl($config['id_user'], 0, 'AW') === true
+    || (bool) check_acl($config['id_user'], 0, 'RR') === true
+    || (bool) check_acl($config['id_user'], 0, 'RW') === true
+    || (bool) check_acl($config['id_user'], 0, 'PM') === true
 ) {
     $sub = [];
     $sub['godmode/servers/discovery&wiz=main']['text'] = __('Start');
@@ -33,17 +49,17 @@ if (check_acl($config['id_user'], 0, 'AR')
     $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
     $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';
 
-    if (check_acl($config['id_user'], 0, 'AW')
-        || check_acl($config['id_user'], 0, 'PM')
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true
+        || (bool) check_acl($config['id_user'], 0, 'PM') === true
     ) {
-        if (check_acl($config['id_user'], 0, 'AW')) {
+        if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             $sub2 = [];
             $sub2['godmode/servers/discovery&wiz=hd&mode=netscan']['text'] = __('Network scan');
             enterprise_hook('hostdevices_submenu');
             $sub2['godmode/servers/discovery&wiz=hd&mode=customnetscan']['text'] = __('Custom network scan');
         }
 
-        if (check_acl($config['id_user'], 0, 'PM')) {
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
             $sub2['godmode/servers/discovery&wiz=hd&mode=managenetscanscripts']['text'] = __('Manage scan scripts');
         }
 
@@ -52,7 +68,7 @@ if (check_acl($config['id_user'], 0, 'AR')
         $sub['godmode/servers/discovery&wiz=hd']['sub2'] = $sub2;
     }
 
-    if (check_acl($config['id_user'], 0, 'AW')) {
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
         enterprise_hook('applications_menu');
         enterprise_hook('cloud_menu');
         enterprise_hook('console_task_menu');
@@ -67,19 +83,19 @@ if (check_acl($config['id_user'], 0, 'AR')
 
 
 $sub = [];
-if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AD')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($config['id_user'], 0, 'AD') === true) {
     $sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
     $sub['godmode/agentes/modificar_agente']['id'] = 'Manage agents';
     $sub['godmode/agentes/modificar_agente']['subsecs'] = ['godmode/agentes/configurar_agente'];
 }
 
-if (check_acl($config['id_user'], 0, 'PM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     $sub['godmode/agentes/fields_manager']['text'] = __('Custom fields');
     $sub['godmode/agentes/fields_manager']['id'] = 'Custom fields';
 
     $sub['godmode/modules/manage_nc_groups']['text'] = __('Component groups');
     $sub['godmode/modules/manage_nc_groups']['id'] = 'Component groups';
-    // Category
+    // Category.
     $sub['godmode/category/category']['text'] = __('Module categories');
     $sub['godmode/category/category']['id'] = 'Module categories';
     $sub['godmode/category/category']['subsecs'] = 'godmode/category/edit_category';
@@ -91,15 +107,15 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/groups/modu_group_list']['id'] = 'Module groups';
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
-    // Netflow
-    if ($config['activate_netflow']) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+    // Netflow.
+    if ((bool) $config['activate_netflow'] === true) {
         $sub['godmode/netflow/nf_edit']['text'] = __('Netflow filters');
         $sub['godmode/netflow/nf_edit']['id'] = 'Netflow filters';
     }
 }
 
-if (!empty($sub)) {
+if (empty($sub) === false) {
     $menu_godmode['gagente']['text'] = __('Resources');
     $menu_godmode['gagente']['sec2'] = 'godmode/agentes/modificar_agente';
     $menu_godmode['gagente']['id'] = 'god-resources';
@@ -107,13 +123,13 @@ if (!empty($sub)) {
 }
 
 $sub = [];
-if (check_acl($config['id_user'], 0, 'PM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     $sub['godmode/groups/group_list']['text'] = __('Manage agents groups');
     $sub['godmode/groups/group_list']['id'] = 'Manage agents groups';
 }
 
-if (check_acl($config['id_user'], 0, 'PM')) {
-    // Tag
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    // Tag.
     $sub['godmode/tag/tag']['text'] = __('Module tags');
     $sub['godmode/tag/tag']['id'] = 'Module tags';
     $sub['godmode/tag/tag']['subsecs'] = 'godmode/tag/edit_tag';
@@ -121,17 +137,17 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     enterprise_hook('enterprise_acl_submenu');
 }
 
-if (check_acl($config['id_user'], 0, 'UM')) {
+if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
     $sub['godmode/users/user_list']['text'] = __('Users management');
     $sub['godmode/users/user_list']['id'] = 'Users management';
 }
 
-if (check_acl($config['id_user'], 0, 'PM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     $sub['godmode/users/profile_list']['text'] = __('Profile management');
     $sub['godmode/users/profile_list']['id'] = 'Profile management';
 }
 
-if (!empty($sub)) {
+if (empty($sub) === false) {
     $menu_godmode['gusuarios']['sub'] = $sub;
     $menu_godmode['gusuarios']['text'] = __('Profiles');
     $menu_godmode['gusuarios']['sec2'] = 'godmode/users/user_list';
@@ -139,8 +155,7 @@ if (!empty($sub)) {
 }
 
 $sub = [];
-if (check_acl($config['id_user'], 0, 'PM')) {
-    // enterprise_hook('components_submenu');
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     $sub['templates']['text'] = __('Templates');
     $sub['templates']['id'] = 'Templates';
     $sub['templates']['type'] = 'direct';
@@ -155,31 +170,22 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/modules/manage_network_components']['text'] = __('Remote components');
     $sub2['godmode/modules/manage_network_components']['id'] = 'Network components';
     $sub['templates']['sub2'] = $sub2;
-    /*
-        $sub2['godmode/modules/manage_snmp_modules']['text'] = __('SNMP Modules');
-        $sub2['godmode/modules/manage_snmp_modules']['id'] = 'SNMP Modules';
-        $sub2['godmode/modules/manage_wmi_modules']['text'] = __('WMI Modules');
-        $sub2['godmode/modules/manage_wmi_modules']['id'] = 'WMI Modules';
-        $sub['godmode/modules/manage_block_templates']['text'] = __('Module blocks');
-        $sub['godmode/modules/manage_block_templates']['id'] = 'Module blocks';
-    */
-
 
     enterprise_hook('inventory_submenu');
     enterprise_hook('autoconfiguration_menu');
     enterprise_hook('agent_repository_menu');
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     enterprise_hook('policies_menu');
     enterprise_hook('agents_submenu');
 }
 
-if (check_acl($config['id_user'], 0, 'NW')) {
+if ((bool) check_acl($config['id_user'], 0, 'NW') === true) {
     enterprise_hook('agents_ncm_submenu');
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     $sub['gmassive']['text'] = __('Bulk operations');
     $sub['gmassive']['id'] = 'Bulk operations';
     $sub['gmassive']['type'] = 'direct';
@@ -188,7 +194,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $sub2['godmode/massive/massive_operations&amp;tab=massive_agents']['text'] = __('Agents operations');
     $sub2['godmode/massive/massive_operations&amp;tab=massive_modules']['text'] = __('Modules operations');
     $sub2['godmode/massive/massive_operations&amp;tab=massive_plugins']['text'] = __('Plugins operations');
-    if (check_acl($config['id_user'], 0, 'UM')) {
+    if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
         $sub2['godmode/massive/massive_operations&amp;tab=massive_users']['text'] = __('Users operations');
     }
 
@@ -199,23 +205,47 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     enterprise_hook('massiveservices_submenu');
 
     $sub['gmassive']['sub2'] = $sub2;
+    $sub2 = [];
 }
 
-if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, 'UM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'UM') === true) {
     $sub['godmode/groups/group_list&tab=credbox']['text'] = __('Credential store');
     $sub['godmode/groups/group_list&tab=credbox']['id'] = 'credential store';
 }
 
-if (!empty($sub)) {
+// Manage events.
+$sub2 = [];
+if ((bool) check_acl($config['id_user'], 0, 'EW') === true || (bool) check_acl($config['id_user'], 0, 'EM') === true) {
+    // Custom event fields.
+    $sub2['godmode/events/events&section=filter']['text'] = __('Event filters');
+    $sub2['godmode/events/events&section=filter']['id'] = 'Event filters';
+}
+
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    $sub2['godmode/events/events&section=fields']['text'] = __('Custom columns');
+    $sub2['godmode/events/events&section=fields']['id'] = 'Custom events';
+    $sub2['godmode/events/events&section=responses']['text'] = __('Event responses');
+    $sub2['godmode/events/events&section=responses']['id'] = 'Event responses';
+}
+
+if (empty($sub2) === false) {
+    $sub['geventos']['text'] = __('Events');
+    $sub['geventos']['sec2'] = 'godmode/events/events&section=filter';
+    $sub['geventos']['type'] = 'direct';
+    $sub['geventos']['subtype'] = 'nolink';
+    $sub['geventos']['sub2'] = $sub2;
+}
+
+if (empty($sub) === false) {
     $menu_godmode['gmodules']['text'] = __('Configuration');
     $menu_godmode['gmodules']['sec2'] = 'godmode/modules/manage_network_templates';
     $menu_godmode['gmodules']['id'] = 'god-configuration';
     $menu_godmode['gmodules']['sub'] = $sub;
 }
 
-if (check_acl($config['id_user'], 0, 'LW')
-    || check_acl($config['id_user'], 0, 'LM')
-    || check_acl($config['id_user'], 0, 'AD')
+if ((bool) check_acl($config['id_user'], 0, 'LW') === true
+    || (bool) check_acl($config['id_user'], 0, 'LM') === true
+    || (bool) check_acl($config['id_user'], 0, 'AD') === true
 ) {
     $menu_godmode['galertas']['text'] = __('Alerts');
     $menu_godmode['galertas']['sec2'] = 'godmode/alerts/alert_list';
@@ -226,7 +256,7 @@ if (check_acl($config['id_user'], 0, 'LW')
     $sub['godmode/alerts/alert_list']['id'] = 'List of Alerts';
     $sub['godmode/alerts/alert_list']['pages'] = ['godmode/alerts/alert_view'];
 
-    if (check_acl($config['id_user'], 0, 'LM')) {
+    if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
         $sub['godmode/alerts/alert_templates']['text'] = __('Templates');
         $sub['godmode/alerts/alert_templates']['id'] = 'Templates';
         $sub['godmode/alerts/alert_templates']['pages'] = ['godmode/alerts/configure_alert_template'];
@@ -250,44 +280,21 @@ if (check_acl($config['id_user'], 0, 'LW')
     $menu_godmode['galertas']['sub'] = $sub;
 }
 
-// Manage events
-$sub = [];
-if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
-    // Custom event fields
-    $sub['godmode/events/events&section=filter']['text'] = __('Event filters');
-    $sub['godmode/events/events&section=filter']['id'] = 'Event filters';
-}
-
-if (check_acl($config['id_user'], 0, 'PM')) {
-    $sub['godmode/events/events&section=fields']['text'] = __('Custom events');
-    $sub['godmode/events/events&section=fields']['id'] = 'Custom events';
-    $sub['godmode/events/events&section=responses']['text'] = __('Event responses');
-    $sub['godmode/events/events&section=responses']['id'] = 'Event responses';
-}
-
-if (!empty($sub)) {
-    $menu_godmode['geventos']['text'] = __('Events');
-    $menu_godmode['geventos']['sec2'] = 'godmode/events/events&section=filter';
-    $menu_godmode['geventos']['id'] = 'god-events';
-    $menu_godmode['geventos']['sub'] = $sub;
-}
-
-
-if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'PM')) {
-    // Servers
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    // Servers.
     $menu_godmode['gservers']['text'] = __('Servers');
     $menu_godmode['gservers']['sec2'] = 'godmode/servers/modificar_server';
     $menu_godmode['gservers']['id'] = 'god-servers';
 
     $sub = [];
 
-    if (check_acl($config['id_user'], 0, 'AW')) {
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
         $sub['godmode/servers/modificar_server']['text'] = __('Manage servers');
         $sub['godmode/servers/modificar_server']['id'] = 'Manage servers';
     }
 
     // This subtabs are only for Pandora Admin.
-    if (check_acl($config['id_user'], 0, 'PM')) {
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
         enterprise_hook('ha_cluster');
 
         $sub['godmode/servers/plugin']['text'] = __('Plugins');
@@ -304,15 +311,15 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     $menu_godmode['gservers']['sub'] = $sub;
 }
 
-if (check_acl($config['id_user'], 0, 'PM')) {
-    // Setup
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    // Setup.
     $menu_godmode['gsetup']['text'] = __('Setup');
     $menu_godmode['gsetup']['sec2'] = 'general';
     $menu_godmode['gsetup']['id'] = 'god-setup';
 
     $sub = [];
 
-    // Options Setup
+    // Options Setup.
     $sub['general']['text'] = __('Setup');
     $sub['general']['id'] = 'Setup';
     $sub['general']['type'] = 'direct';
@@ -337,8 +344,8 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&section=vis']['text'] = __('Visual styles');
     $sub2['godmode/setup/setup&section=vis']['refr'] = 0;
 
-    if (check_acl($config['id_user'], 0, 'AW')) {
-        if ($config['activate_netflow']) {
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+        if ((bool) $config['activate_netflow'] === true) {
             $sub2['godmode/setup/setup&section=net']['text'] = __('Netflow');
             $sub2['godmode/setup/setup&section=net']['refr'] = 0;
         }
@@ -361,7 +368,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
     $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;
 
-    if ($config['activate_gis']) {
+    if ((bool) $config['activate_gis'] === true) {
         $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');
     }
 
@@ -376,14 +383,14 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $menu_godmode['gsetup']['sub'] = $sub;
 }
 
-if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, 'DM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true) {
     $menu_godmode['gextensions']['text'] = __('Admin tools');
     $menu_godmode['gextensions']['sec2'] = 'godmode/extensions';
     $menu_godmode['gextensions']['id'] = 'god-extensions';
 
     $sub = [];
 
-    if (check_acl($config['id_user'], 0, 'PM')) {
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
         // Audit //meter en extensiones.
         $sub['godmode/audit_log']['text'] = __('System audit log');
         $sub['godmode/audit_log']['id'] = 'System audit log';
@@ -399,7 +406,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['godmode/setup/file_manager']['text'] = __('File manager');
         $sub['godmode/setup/file_manager']['id'] = 'File manager';
 
-        if (is_user_admin($config['id_user'])) {
+        if (is_user_admin($config['id_user']) === true) {
             $sub['extensions/db_status']['text'] = __('DB Schema Check');
             $sub['extensions/db_status']['id'] = 'DB Schema Check';
             $sub['extensions/db_status']['sec'] = 'gbman';
@@ -414,40 +421,38 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
     $menu_godmode['gextensions']['sub'] = $sub;
 }
 
-if (is_array($config['extensions'])) {
+if (is_array($config['extensions']) === true) {
     $sub = [];
     $sub2 = [];
 
     foreach ($config['extensions'] as $extension) {
-        // If no godmode_menu is a operation extension
-        if ($extension['godmode_menu'] == '') {
+        // If no godmode_menu is a operation extension.
+        if (empty($extension['godmode_menu']) === true) {
             continue;
         }
 
-        if ($extension['godmode_menu']['name'] == 'System Info') {
+        if ($extension['godmode_menu']['name'] === 'System Info') {
             continue;
         }
 
-
-
-        if ($extension['godmode_menu']['name'] != __('DB Schema check') && $extension['godmode_menu']['name'] != __('DB interface')) {
+        if ($extension['godmode_menu']['name'] !== __('DB Schema check') && $extension['godmode_menu']['name'] !== __('DB interface')) {
             $extmenu = $extension['godmode_menu'];
         }
 
-        // Check the ACL for this user
-        if (! check_acl($config['id_user'], 0, $extmenu['acl'])) {
+        // Check the ACL for this user.
+        if ((bool) check_acl($config['id_user'], 0, $extmenu['acl']) === false) {
             continue;
         }
 
-        // Check if was displayed inside other menu
-        if ($extension['godmode_menu']['fatherId'] == '') {
+        // Check if was displayed inside other menu.
+        if (empty($extension['godmode_menu']['fatherId']) === true) {
             $sub2[$extmenu['sec2']]['text'] = __($extmenu['name']);
             $sub2[$extmenu['sec2']]['id'] = $extmenu['name'];
             $sub2[$extmenu['sec2']]['refr'] = 0;
         } else {
-            if (is_array($extmenu) && array_key_exists('fatherId', $extmenu)) {
+            if (is_array($extmenu) === true && array_key_exists('fatherId', $extmenu) === true) {
                 if (strlen($extmenu['fatherId']) > 0) {
-                    if (array_key_exists('subfatherId', $extmenu)) {
+                    if (array_key_exists('subfatherId', $extmenu) === true) {
                         if (strlen($extmenu['subfatherId']) > 0) {
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['text'] = __($extmenu['name']);
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['id'] = $extmenu['name'];
@@ -462,12 +467,7 @@ if (is_array($config['extensions'])) {
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['id'] = $extmenu['name'];
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['refr'] = 0;
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['icon'] = $extmenu['icon'];
-                            if ($extmenu['name'] == 'Cron jobs') {
-                                $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = $extmenu['fatherId'];
-                            } else {
-                                $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = $extmenu['fatherId'];
-                            }
-
+                            $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['sec'] = $extmenu['fatherId'];
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['extension'] = true;
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]['enterprise'] = $extension['enterprise'];
                             $menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
@@ -487,7 +487,7 @@ if (is_array($config['extensions'])) {
         }
     }
 
-    // Complete the submenu
+    // Complete the submenu.
     $extension_view = [];
     $extension_view['godmode/extensions']['id'] = 'Extension manager view';
     $extension_view['godmode/extensions']['text'] = __('Extension manager view');
@@ -499,7 +499,7 @@ if (is_array($config['extensions'])) {
     $sub['godmode/extensions']['type'] = 'direct';
     $sub['godmode/extensions']['subtype'] = 'nolink';
 
-    if (is_array($menu_godmode['gextensions']['sub'])) {
+    if (is_array($menu_godmode['gextensions']['sub']) === true) {
         $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
         if ($menu_godmode['gextensions']['sub'] != null) {
             $menu_godmode['gextensions']['sub'] = $submenu;
@@ -514,7 +514,7 @@ $menu_godmode['links']['id'] = 'god-links';
 $sub = [];
 $rows = db_get_all_rows_in_table('tlink', 'name');
 foreach ($rows as $row) {
-    // Audit //meter en extensiones
+    // Audit //meter en extensiones.
     $sub[$row['link']]['text'] = $row['name'];
     $sub[$row['link']]['id'] = $row['name'];
     $sub[$row['link']]['type'] = 'direct';
@@ -523,8 +523,8 @@ foreach ($rows as $row) {
 
 $menu_godmode['links']['sub'] = $sub;
 
-// Update Manager
-if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) {
+// Update Manager.
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true && (bool) $config['enable_update_manager'] === true) {
     $menu_godmode['messages']['text'] = __('Update manager');
     $menu_godmode['messages']['id'] = 'god-um_messages';
     $menu_godmode['messages']['sec2'] = '';
@@ -546,7 +546,7 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
 }
 
 // Module library.
-if (check_acl($config['id_user'], 0, 'AR')) {
+if ((bool) check_acl($config['id_user'], 0, 'AR') === true) {
     $menu_godmode['gmodule_library']['text'] = __('Module library');
     $menu_godmode['gmodule_library']['id'] = 'god-module_library';
 
@@ -560,6 +560,6 @@ if (check_acl($config['id_user'], 0, 'AR')) {
     $menu_godmode['gmodule_library']['sub'] = $sub;
 }
 
-if (!$config['pure']) {
+if ((bool) $config['pure'] === false) {
     menu_print_menu($menu_godmode);
 }

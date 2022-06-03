@@ -2293,6 +2293,7 @@ function events_comment(
         $comments_format = 'new';
     } else {
         // If comments are not stored in json, the format is old.
+        $event_comments[0]['user_comment'] = str_replace(["\n", '&#x0a;'], '<br>', $event_comments[0]['user_comment']);
         $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
         if (empty($event_comments_array) === true) {
@@ -5182,6 +5183,8 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
                 if (isset($comm['user_comment']) === true) {
                     $comm = $comm['user_comment'];
                 }
+
+                $comm = str_replace(["\n", '&#x0a;'], '<br>', $comm);
 
                 $comments_array[] = io_safe_output(json_decode($comm, true));
             }

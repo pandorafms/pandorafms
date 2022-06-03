@@ -2096,6 +2096,10 @@ function config_process_config()
         config_update_value('metaconsole_events_history', 0);
     }
 
+    if (!isset($config['realtimestats'])) {
+        config_update_value('realtimestats', 1);
+    }
+
     if (!isset($config['trap_purge'])) {
         config_update_value('trap_purge', 7);
     }

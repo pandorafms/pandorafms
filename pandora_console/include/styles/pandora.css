@@ -6048,9 +6048,9 @@ table.table_modal_alternate tr td:first-child {
   font-family: "lato" !important;
 }
 
-.flot-text {
-  width: 100%;
-  font-family: inherit !important;
+.flot-text .flot-x-axis div {
+  white-space: normal;
+  word-break: break-all;
 }
 
 /*Font header feedback*/
@@ -6226,6 +6226,9 @@ div.graph td.legendLabel {
 div.graph div.legend div,
 div.graph div.legend table {
   top: 25px !important;
+  display: block;
+  overflow: auto;
+  text-align: left;
 }
 
 .rotate_text_module {

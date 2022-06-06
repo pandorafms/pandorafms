@@ -476,6 +476,12 @@ function filemanager_file_explorer(
     $options=[]
 ) {
     global $config;
+    // Requirements for message dialog.
+    ui_require_css_file('dialog');
+    ui_require_jquery_file('jquery-ui.min');
+    ui_require_jquery_file('jquery-ui_custom');
+    // Check for errors.
+    $errorOutput = (string) get_parameter('errorOutput');
 
     // Windows compatibility.
     $real_directory = str_replace('\\', '/', $real_directory);
@@ -492,7 +498,17 @@ function filemanager_file_explorer(
     $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
 
     ?>
+    <div id="modalAlert"></div>
     <script type="text/javascript">
+        <?php if (empty($errorOutput) === false) : ?>
+            $("#modalAlert").html('<?php echo io_safe_output($errorOutput); ?>');
+            $("#modalAlert").dialog ({
+                title: '<?php echo __('Error'); ?>',
+                resizable: false,
+                draggable: false,
+                width: 450
+            });
+        <?php endif; ?>
         function show_form_create_folder() {
             actions_dialog('create_folder');
             $("#create_folder").css("display", "block");

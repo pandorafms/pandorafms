@@ -31,7 +31,7 @@ global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access File manager'
@@ -43,7 +43,24 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 require_once 'include/functions_filemanager.php';
 
 // Header.
-ui_print_page_header(__('File manager'), '', false, '', true);
+ui_print_standard_header(
+    __('File manager'),
+    '',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Admin tools'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('File manager'),
+        ],
+    ]
+);
 
 if (isset($config['filemanager']['message']) === true) {
     echo $config['filemanager']['message'];
@@ -66,7 +83,7 @@ $real_directory = realpath($config['homedir'].'/'.$directory);
 echo '<h4>'.__('Index of %s', io_safe_input($directory)).'</h4>';
 
 $upload_file = (bool) get_parameter('upload_file');
-$create_text_file   = (bool) get_parameter('create_text_file');
+$create_text_file = (bool) get_parameter('create_text_file');
 
 $default_real_directory = realpath($config['homedir'].'/');
 

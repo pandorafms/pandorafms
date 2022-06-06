@@ -185,6 +185,7 @@ class TacticalWidget extends Widget
         if (empty($this->values['statusMonitor']) === true
             && empty($this->values['serverPerformance']) === true
             && empty($this->values['summary']) === true
+            && empty($this->values['groupId']) === true
         ) {
             $this->configurationRequired = true;
         }
@@ -224,6 +225,18 @@ class TacticalWidget extends Widget
 
         if (isset($decoder['summary']) === true) {
             $values['summary'] = $decoder['summary'];
+        }
+
+        if (isset($decoder['id_groups']) === true) {
+            if (is_array($decoder['id_groups']) === true) {
+                $decoder['id_groups'][0] = implode(',', $decoder['id_groups']);
+            }
+
+            $values['groupId'] = $decoder['id_groups'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
         }
 
         return $values;
@@ -292,6 +305,43 @@ class TacticalWidget extends Widget
             ],
         ];
 
+        // Groups.
+        $return_all_group = false;
+
+        // Restrict access to group.
+        $selected_groups = [];
+        if ($values['groupId']) {
+            $selected_groups = explode(',', $values['groupId'][0]);
+
+            if (users_can_manage_group_all('AR') === true
+                || ($selected_groups[0] !== ''
+                && in_array(0, $selected_groups) === true)
+            ) {
+                // Return all group if user has permissions
+                // or it is a currently selected group.
+                $return_all_group = true;
+            }
+        } else {
+            if (users_can_manage_group_all('AR') === true) {
+                $return_all_group = true;
+            }
+        }
+
+        $inputs[] = [
+            'label'     => __('Groups'),
+            'arguments' => [
+                'type'           => 'select_groups',
+                'name'           => 'groupId[]',
+                'returnAllGroup' => true,
+                'privilege'      => 'AR',
+                'selected'       => $selected_groups,
+                'return'         => true,
+                'multiple'       => true,
+                'returnAllGroup' => $return_all_group,
+                'required'       => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -311,6 +361,7 @@ class TacticalWidget extends Widget
             'serverPerformance'
         );
         $values['summary'] = \get_parameter_switch('summary');
+        $values['groupId'] = \get_parameter('groupId', []);
 
         return $values;
     }
@@ -327,7 +378,7 @@ class TacticalWidget extends Widget
 
         $output = '';
 
-        $all_data = \tactical_status_modules_agents($config['id_user']);
+        $all_data = \tactical_status_modules_agents($config['id_user'], false, 'AR', $this->values['groupId'][0]);
 
         $data = [];
 

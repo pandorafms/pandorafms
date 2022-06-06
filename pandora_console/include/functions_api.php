@@ -1855,7 +1855,19 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
+    $alias                     = io_safe_input(
+        trim(
+            preg_replace(
+                '/[\/\\\|%#&$]/',
+                '',
+                preg_replace(
+                    '/x20;/',
+                    ' ',
+                    $other['data'][0]
+                )
+            )
+        )
+    );
     $direccion_agente          = io_safe_input($other['data'][1]);
     $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
     $id_parent                 = (int) $other['data'][2];

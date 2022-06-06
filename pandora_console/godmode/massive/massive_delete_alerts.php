@@ -258,9 +258,9 @@ $table->style[0] = 'font-weight: bold;';
 $table->style[2] = 'font-weight: bold;';
 $table->size = [];
 $table->size[0] = '15%';
-$table->size[1] = '40%';
+$table->size[1] = '35%';
 $table->size[2] = '15%';
-$table->size[3] = '40%';
+$table->size[3] = '35%';
 
 $table->data = [];
 
@@ -276,7 +276,12 @@ $table->data[0][1] = html_print_select(
     false,
     __('Select'),
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
 );
 $table->data[0][2] = '';
 $table->data[0][3] = '';
@@ -295,7 +300,8 @@ $table->data[1][1] = html_print_select_groups(
     false,
     true,
     '',
-    $id_alert_template == 0
+    $id_alert_template == 0,
+    'width: 100%;'
 );
 
 $table->data[0][2] = __('Show alerts on disabled modules');

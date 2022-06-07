@@ -26,9 +26,10 @@
  * ============================================================================
  */
 
-// Get global data.
+// Begin.
 require_once 'config.php';
 require_once 'functions.php';
+require_once 'functions_ui.php';
 require_once 'functions_filemanager.php';
 
 global $config;
@@ -41,17 +42,13 @@ if ($auth_method !== 'ad' && $auth_method !== 'ldap') {
     include_once 'auth/'.$auth_method.'.php';
 }
 
-
-$styleError = 'background:url("../images/err.png") no-repeat scroll 0 0 transparent; padding:4px 1px 6px 30px; color:#CC0000;';
-
-$file_raw = get_parameter('file', null);
+$hash = get_parameter('hash');
+$file_raw = get_parameter('file');
 
 $file = base64_decode(urldecode($file_raw));
 
-$hash = get_parameter('hash', null);
-
-if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['server_unique_identifier']) || !isset($_SERVER['HTTP_REFERER'])) {
-    echo "<h3 style='".$styleError."'>".__('Security error. Please contact the administrator.').'</h3>';
+if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier']) || isset($_SERVER['HTTP_REFERER']) === false) {
+    $errorMessage = __('Security error. Please contact the administrator.');
 } else {
     $downloadable_file = '';
     $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
@@ -79,28 +76,16 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['server_uniq
             break;
 
             default:
+                // Wrong action.
                 $downloadable_file = '';
-                // Do nothing
             break;
         }
     }
 
     if (empty($downloadable_file) === true || file_exists($downloadable_file) === false) {
-        ?>
-            <div id="mainDiv"></div>
-            <script type="text/javascript">
-                var refererPath = '<?php echo $_SERVER['HTTP_REFERER']; ?>';
-                var errorOutput = '<?php echo __('File is missing in disk storage. Please contact the administrator.'); ?>';
-                document.addEventListener('DOMContentLoaded', function () {
-                    document.getElementById('mainDiv').innerHTML = `<form action="` + refererPath + `" name="failedReturn" method="post" style="display:none;">
-                        <input type="hidden" name="errorOutput" value="` + errorOutput + `" />
-                        </form>`;
-
-                    document.forms['failedReturn'].submit();
-                }, false);
-            </script>
-        <?php
+        $errorMessage = __('File is missing in disk storage. Please contact the administrator.');
     } else {
+        // Everything went well.
         header('Content-type: aplication/octet-stream;');
         header('Content-type: '.mime_content_type($downloadable_file).';');
         header('Content-Length: '.filesize($downloadable_file));
@@ -108,3 +93,18 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['server_uniq
         readfile($downloadable_file);
     }
 }
+
+?>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var refererPath = '<?php echo (($_SERVER['HTTP_REFERER']) ?? ui_get_full_url()); ?>';
+        var errorOutput = '<?php echo $errorMessage; ?>';
+
+        document.body.innerHTML = `<form action="` + refererPath + `" name="failedReturn" method="post" style="display:none;">
+                    <input type="hidden" name="errorOutput" value="` + errorOutput + `" />
+                    </form>`;
+
+        document.forms['failedReturn'].submit();
+    }, false);
+</script>

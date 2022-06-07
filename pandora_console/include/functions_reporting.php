@@ -1978,6 +1978,10 @@ function reporting_event_report_group(
         }
     }
 
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
+
     $data = events_get_agent(
         false,
         $content['period'],
@@ -3785,12 +3789,14 @@ function reporting_event_report_agent(
     $event_graph_by_criticity = $style['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
+
     $return['data'] = reporting_get_agents_detailed_event(
         $content['id_agent'],
         $content['period'],
         $report['datetime'],
-        true,
-        true,
         $history,
         $show_summary_group,
         $filter_event_severity,
@@ -3800,10 +3806,6 @@ function reporting_event_report_agent(
         $filter_event_filter_exclude,
         $id_server
     );
-
-    if (is_metaconsole() === true) {
-        metaconsole_restore_db();
-    }
 
     reporting_set_conf_charts(
         $width,
@@ -10585,8 +10587,6 @@ function reporting_get_agents_detailed_event(
     $id_agents,
     $period=0,
     $date=0,
-    $return=false,
-    $only_data=false,
     $history=false,
     $show_summary_group=false,
     $filter_event_severity=false,
@@ -10598,10 +10598,7 @@ function reporting_get_agents_detailed_event(
 ) {
     global $config;
 
-    if ($only_data) {
-        $return_data = [];
-    }
-
+    $return_data = [];
     $id_agents = (array) safe_int($id_agents, 1);
 
     if (!is_numeric($date)) {
@@ -10611,8 +10608,6 @@ function reporting_get_agents_detailed_event(
     if (empty($date)) {
         $date = get_system_time();
     }
-
-    $events = [];
 
     foreach ($id_agents as $id_agent) {
         $event = events_get_agent(
@@ -10637,112 +10632,35 @@ function reporting_get_agents_detailed_event(
             $event = [];
         }
 
-        if ($only_data) {
-            $nevents = count($event);
-            for ($i = ($nevents - 1); $i >= 0; $i--) {
-                $e = $event[$i];
-                if ($show_summary_group) {
-                    $return_data[] = [
-                        'status'       => $e['estado'],
-                        'count'        => $e['event_rep'],
-                        'name'         => $e['evento'],
-                        'type'         => $e['event_type'],
-                        'criticity'    => $e['criticity'],
-                        'validated_by' => $e['id_usuario'],
-                        'timestamp'    => $e['timestamp_rep'],
-                        'id_evento'    => $e['id_evento'],
-                    ];
-                } else {
-                    $return_data[] = [
-                        'status'       => $e['estado'],
-                        'name'         => $e['evento'],
-                        'type'         => $e['event_type'],
-                        'criticity'    => $e['criticity'],
-                        'validated_by' => $e['id_usuario'],
-                        'timestamp'    => $e['timestamp'],
-                        'id_evento'    => $e['id_evento'],
-                    ];
-                }
-            }
-        } else {
-            if (!empty($event)) {
-                array_push($events, $event);
+        $nevents = count($event);
+        for ($i = ($nevents - 1); $i >= 0; $i--) {
+            $e = $event[$i];
+            if ($show_summary_group) {
+                $return_data[] = [
+                    'status'       => $e['estado'],
+                    'count'        => $e['event_rep'],
+                    'name'         => $e['evento'],
+                    'type'         => $e['event_type'],
+                    'criticity'    => $e['criticity'],
+                    'validated_by' => $e['id_usuario'],
+                    'timestamp'    => $e['timestamp_rep'],
+                    'id_evento'    => $e['id_evento'],
+                ];
+            } else {
+                $return_data[] = [
+                    'status'       => $e['estado'],
+                    'name'         => $e['evento'],
+                    'type'         => $e['event_type'],
+                    'criticity'    => $e['criticity'],
+                    'validated_by' => $e['id_usuario'],
+                    'timestamp'    => $e['timestamp'],
+                    'id_evento'    => $e['id_evento'],
+                ];
             }
         }
     }
 
-    if ($only_data) {
-        return $return_data;
-    }
-
-    if ($events) {
-        $note = '';
-        if (count($events) >= 1000) {
-            $note .= '* '.__('Maximum of events shown').' (1000)<br>';
-        }
-
-        foreach ($events as $eventRow) {
-            foreach ($eventRow as $k => $event) {
-                // First pass along the class of this row.
-                $table->cellclass[$k][1] = $table->cellclass[$k][2] = $table->cellclass[$k][4] = $table->cellclass[$k][5] = $table->cellclass[$k][6] = get_priority_class($event['criticity']);
-
-                $data = [];
-                // Colored box.
-                switch ($event['estado']) {
-                    case 0:
-                        $img_st = 'images/star.png';
-                        $title_st = __('New event');
-                    break;
-
-                    case 1:
-                        $img_st = 'images/tick.png';
-                        $title_st = __('Event validated');
-                    break;
-
-                    case 2:
-                        $img_st = 'images/hourglass.png';
-                        $title_st = __('Event in process');
-                    break;
-                }
-
-                $data[] = html_print_image(
-                    $img_st,
-                    true,
-                    [
-                        'class' => 'image_status invert filter',
-                        'width' => 16,
-                        'title' => $title_st,
-                    ]
-                );
-
-                $data[] = $event['event_rep'];
-
-                $data[] = ui_print_truncate_text(
-                    io_safe_output($event['evento']),
-                    140,
-                    false,
-                    true
-                );
-                // $data[] = $event['event_type'];
-                $data[] = events_print_type_img($event['event_type'], true);
-
-                $data[] = get_priority_name($event['criticity']);
-                if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
-                    $data[] = '<i>'.__('System').'</i>';
-                } else {
-                    $user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-                    $data[] = io_safe_output($user_name);
-                }
-
-                $data[] = '<font style="font-size: 6pt;">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
-                array_push($table->data, $data);
-            }
-        }
-    }
-
-    if ($events) {
-        return html_print_table($table, $return).$note;
-    }
+    return $return_data;
 }
 
 

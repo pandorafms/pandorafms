@@ -5898,7 +5898,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
 }
 
 
-function reporting_get_event_histogram_meta($width)
+function reporting_get_event_histogram_meta($width, $events)
 {
     global $config;
     if (!defined('METACONSOLE')) {
@@ -5941,21 +5941,6 @@ function reporting_get_event_histogram_meta($width)
         EVENT_CRIT_CRITICAL      => COL_CRITICAL,
     ];
 
-    $user_groups = users_get_groups($config['id_user'], 'ER');
-    $user_groups_ids = array_keys($user_groups);
-
-    if (empty($user_groups)) {
-        $groups_condition = ' AND 1 = 0 ';
-    } else {
-        $groups_condition = ' AND id_grupo IN ('.implode(',', $user_groups_ids).') ';
-    }
-
-    if (!check_acl($config['id_user'], 0, 'PM')) {
-        $groups_condition .= ' AND id_grupo != 0';
-    }
-
-    $status_condition = ' AND estado = 0 ';
-
     $cont = 0;
     for ($i = 0; $i < $interval; $i++) {
         $bottom = ($datelimit + ($periodtime * $i));
@@ -5979,23 +5964,12 @@ function reporting_get_event_histogram_meta($width)
 
         $top = ($datelimit + ($periodtime * ($i + 1)));
 
-        $time_condition = 'utimestamp > '.$bottom.' AND utimestamp < '.$top;
-        $sql = sprintf(
-            'SELECT criticity,utimestamp
-            FROM tmetaconsole_event
-            WHERE %s %s %s
-            ORDER BY criticity DESC',
-            $time_condition,
-            $groups_condition,
-            $status_condition
-        );
-
-        $events = db_get_all_rows_sql($sql);
-
         $events_criticity = [];
         if (is_array($events)) {
-            foreach ($events as $key => $value) {
-                array_push($events_criticity, $value['criticity']);
+            foreach ($events as $value) {
+                if ($value['utimestamp'] >= $bottom && $value['utimestamp'] < $top) {
+                    array_push($events_criticity, $value['criticity']);
+                }
             }
         }
 

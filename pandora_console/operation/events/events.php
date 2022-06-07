@@ -266,12 +266,15 @@ if (is_metaconsole() === true) {
 
 // Ajax responses.
 if (is_ajax() === true) {
-    $get_events = get_parameter('get_events', 0);
+    $get_events = (int) get_parameter('get_events', 0);
     // Datatables offset, limit.
     $start = get_parameter('start', 0);
-    $length = get_parameter('length', $config['block_size']);
+    $length = get_parameter(
+        'length',
+        $config['block_size']
+    );
 
-    if ($get_events) {
+    if ($get_events !== 0) {
         try {
             ob_start();
 
@@ -313,8 +316,17 @@ if (is_ajax() === true) {
             // Find the order field and set the table and field name.
             foreach ($fields as $field) {
                 if (str_contains($field, $order['field']) === true) {
-                    $order['field'] = $field;
-                    break;
+                    switch ($field) {
+                        case 'ta.alias as agent_name':
+                            $order['field'] = 'agent_name';
+                        break;
+
+                        default:
+                            $order['field'] = $field;
+                        break;
+                    }
+
+                    continue;
                 }
             }
 
@@ -339,56 +351,75 @@ if (is_ajax() === true) {
                 // History.
                 $history
             );
-            // $count = events_get_all(
-            // 'count',
-            // $filter,
-            // null,
-            // null,
-            // null,
-            // null,
-            // $history
-            // );
-            //
-            // if ($count !== false) {
-            // $count = $count['0']['nitems'];
-            // }
-            $count = count($events);
 
-            if ($events) {
+            if (is_metaconsole() === false) {
+                $count = events_get_all(
+                    'count',
+                    $filter,
+                    null,
+                    null,
+                    null,
+                    null,
+                    $history
+                );
+
+                if ($count !== false) {
+                    $count = $count['0']['nitems'];
+                }
+            } else {
+                $count = $events['total'];
+                $events = $events['data'];
+            }
+
+            if (empty($events) === false) {
                 $data = array_reduce(
                     $events,
                     function ($carry, $item) {
                         global $config;
 
                         $tmp = (object) $item;
-                        // $tmp->meta = is_metaconsole();
+                        $tmp->meta = is_metaconsole();
                         //// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-                        // if ($tmp->meta === true) {
-                        // if ($tmp->server_name !== null) {
-                        // $tmp->data_server = metaconsole_get_servers($tmp->server_id);
-                        // $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
-                        // }
-                        // }
-                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        if (strlen($tmp->evento) >= 255) {
-                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
+                        if ($tmp->meta === true) {
+                            if ($tmp->server_name !== null) {
+                                $tmp->data_server = metaconsole_get_servers(
+                                    $tmp->server_id
+                                );
+                                $tmp->server_url_hash = metaconsole_get_servers_url_hash(
+                                    $tmp->data_server
+                                );
+                            }
                         }
 
-                        if ($tmp->module_name) {
+                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
+                        if (strlen($tmp->evento) >= 255) {
+                            $tmp->evento = ui_print_truncate_text(
+                                $tmp->evento,
+                                255,
+                                $tmp->evento,
+                                true,
+                                false
+                            );
+                        }
+
+                        if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }
 
-                        if ($tmp->comments) {
+                        if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
                         // Show last event.
-                        if (isset($tmp->max_id_evento) && $tmp->max_id_evento !== $tmp->id_evento) {
+                        if (isset($tmp->max_id_evento) === true
+                            && $tmp->max_id_evento !== $tmp->id_evento
+                        ) {
                             $max_event = db_get_row_sql(
                                 sprintf(
-                                    'SELECT criticity, timestamp FROM %s
+                                    'SELECT criticity,
+                                        `timestamp`
+                                    FROM tevento
                                     WHERE id_evento = %s',
-                                    ($tmp->meta === true) ? 'tmetaconsole_event' : 'tevento',
                                     $tmp->max_id_evento
                                 )
                             );

@@ -2357,12 +2357,12 @@ function config_process_config()
         config_update_value('custom_favicon', '');
     }
 
-    if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_4.png');
+    if (isset($config['custom_logo']) === false) {
+        config_update_value('custom_logo', 'logo-pandorafms-1.png');
     }
 
-    if (!isset($config['custom_logo_collapsed'])) {
-        config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
+    if (isset($config['custom_logo_collapsed']) === false) {
+        config_update_value('custom_logo_collapsed', 'logo-pandorafms-1-collapsed.png');
     }
 
     if (is_metaconsole()) {

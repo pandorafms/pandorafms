@@ -476,12 +476,6 @@ function filemanager_file_explorer(
     $options=[]
 ) {
     global $config;
-    // Requirements for message dialog.
-    ui_require_css_file('dialog');
-    ui_require_jquery_file('jquery-ui.min');
-    ui_require_jquery_file('jquery-ui_custom');
-    // Check for errors.
-    $errorOutput = (string) get_parameter('errorOutput');
 
     // Windows compatibility.
     $real_directory = str_replace('\\', '/', $real_directory);
@@ -498,17 +492,7 @@ function filemanager_file_explorer(
     $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
 
     ?>
-    <div id="modalAlert"></div>
     <script type="text/javascript">
-        <?php if (empty($errorOutput) === false) : ?>
-            $("#modalAlert").html('<?php echo io_safe_output($errorOutput); ?>');
-            $("#modalAlert").dialog ({
-                title: '<?php echo __('Error'); ?>',
-                resizable: false,
-                draggable: false,
-                width: 450
-            });
-        <?php endif; ?>
         function show_form_create_folder() {
             actions_dialog('create_folder');
             $("#create_folder").css("display", "block");
@@ -966,10 +950,11 @@ function filemanager_get_file_info(string $filepath)
 
     $realpath = realpath($filepath);
     $filepath = str_replace('\\', '/', $filepath);
+    $mimeExtend = mime_content_type($filepath);
     // Windows compatibility.
     $info = [
         'mime'          => MIME_UNKNOWN,
-        'mime_extend'   => mime_content_type($filepath),
+        'mime_extend'   => ($mimeExtend === false) ? '' : $mimeExtend,
         'link'          => 0,
         'is_dir'        => false,
         'name'          => basename($realpath),
@@ -985,13 +970,13 @@ function filemanager_get_file_info(string $filepath)
         'application/x-gzip',
         'application/x-bzip2',
     ];
-    if (is_dir($filepath)) {
+    if (is_dir($filepath) === true) {
         $info['mime'] = MIME_DIR;
         $info['is_dir'] = true;
         $info['size'] = 0;
     } else if (strpos($info['mime_extend'], 'image') !== false) {
         $info['mime'] = MIME_IMAGE;
-    } else if (in_array($info['mime_extend'], $zip_mimes)) {
+    } else if (in_array($info['mime_extend'], $zip_mimes) === true) {
         $info['mime'] = MIME_ZIP;
     } else if (strpos($info['mime_extend'], 'text') !== false) {
         $info['mime'] = MIME_TEXT;

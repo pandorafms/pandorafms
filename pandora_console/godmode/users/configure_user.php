@@ -301,7 +301,6 @@ if ($new_user && $config['admin_can_add_user']) {
 
     if (enterprise_installed() && is_metaconsole() === true) {
         $user_info['metaconsole_agents_manager'] = 0;
-        $user_info['metaconsole_assigned_server'] = '';
         $user_info['metaconsole_access_node'] = 0;
     }
 
@@ -375,7 +374,6 @@ if ($create_user) {
         if (defined('METACONSOLE')) {
             $values['metaconsole_access'] = get_parameter('metaconsole_access', 'basic');
             $values['metaconsole_agents_manager'] = ($user_is_admin == 1 ? 1 : get_parameter('metaconsole_agents_manager', '0'));
-            $values['metaconsole_assigned_server'] = get_parameter('metaconsole_assigned_server', '');
             $values['metaconsole_access_node'] = ($user_is_admin == 1 ? 1 : get_parameter('metaconsole_access_node', '0'));
         }
     }
@@ -588,7 +586,6 @@ if ($update_user) {
     if (enterprise_installed() && defined('METACONSOLE')) {
         $values['metaconsole_access'] = get_parameter('metaconsole_access');
         $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
-        $values['metaconsole_assigned_server'] = get_parameter('metaconsole_assigned_server', '');
         $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
     }
 
@@ -1373,15 +1370,6 @@ if ($meta) {
         true
     ).'</div>';
 
-    $metaconsole_assigned_server = '<div class="label_select" id="metaconsole_assigned_server_div"><p class="edit_user_labels">'.__('Assigned node').ui_print_help_tip(__('Server where the agents created of this user will be placed'), true).'</p>';
-    $servers = metaconsole_get_servers();
-    $servers_for_select = [];
-    foreach ($servers as $server) {
-        $servers_for_select[$server['id']] = $server['server_name'];
-    }
-
-    $metaconsole_assigned_server .= html_print_select($servers_for_select, 'metaconsole_assigned_server', $user_info['metaconsole_assigned_server'], '', '', -1, true, false, false).'</div>';
-
     $metaconsole_access_node = '<div class="label_select_simple" id="metaconsole_access_node_div"><p class="edit_user_labels">'.__('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true).'</p>';
     $metaconsole_access_node .= html_print_checkbox(
         'metaconsole_access_node',
@@ -1432,7 +1420,7 @@ if (!is_metaconsole()) {
                         <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
                     </div>';
 } else {
-    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_assigned_server.$metaconsole_access_node;
+    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
 }
 
 echo '</div>
@@ -1548,35 +1536,23 @@ $(document).ready (function () {
             } else {
                 show_double_auth_deactivation();
             }
-    }); 
+    });
 
     $('input:radio[name="is_admin"]').change(function() {
-        if($('#radiobtn0002').prop('checked')) {     
+        if($('#radiobtn0002').prop('checked')) {
             $('#metaconsole_agents_manager_div').show();
             $('#metaconsole_access_node_div').show();
-            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
-                $('#metaconsole_assigned_server_div').show();
-            }
-        }
-        else {            
-            $('#metaconsole_agents_manager_div').hide();
-            $('#metaconsole_access_node_div').hide();
-            $('#metaconsole_assigned_server_div').hide();
-        }
-    });
-    
-    $('#checkbox-metaconsole_agents_manager').change(function() { 
-        if($('#checkbox-metaconsole_agents_manager').prop('checked')) {            
-            $('#metaconsole_assigned_server_div').show();
         }
         else {
-            $('#metaconsole_assigned_server_div').hide();
+            $('#metaconsole_agents_manager_div').hide();
+            $('#metaconsole_access_node_div').hide();
         }
     });
-    
+
+
     $('input:radio[name="is_admin"]').trigger('change');
     $('#checkbox-metaconsole_agents_manager').trigger('change');
-    
+
     show_data_section();
     $('#checkbox-ehorus_user_level_enabled').change(function () {
         switch_ehorus_conf();

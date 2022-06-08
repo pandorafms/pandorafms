@@ -606,6 +606,7 @@ switch ($action) {
                     $event_graph_by_criticity = $style['event_graph_by_criticity'];
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
                     $include_extended_events = $item['show_extended_events'];
+                    $custom_data_events = $style['custom_data_events'];
 
                     $filter_search = $style['event_filter_search'];
                     $filter_exclude = $style['event_filter_exclude'];
@@ -631,6 +632,7 @@ switch ($action) {
 
 
                     $include_extended_events = $item['show_extended_events'];
+                    $custom_data_events = $style['custom_data_events'];
                 break;
 
                 case 'event_report_module':
@@ -665,6 +667,7 @@ switch ($action) {
 
 
                     $include_extended_events = $item['show_extended_events'];
+                    $custom_data_events = $style['custom_data_events'];
                 break;
 
                 case 'general':
@@ -2906,6 +2909,23 @@ $class = 'databox filters';
                     'include_extended_events',
                     true,
                     $include_extended_events
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_custom_data_events" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Show custom data');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'custom_data_events',
+                    true,
+                    $custom_data_events
                 );
                 ?>
             </td>
@@ -5974,6 +5994,7 @@ function chooseType() {
     $("#row_event_graph_by_criticity").hide();
     $("#row_event_graph_by_validated").hide();
     $("#row_extended_events").hide();
+    $("#row_custom_data_events").hide();
     $("#row_netflow_filter").hide();
     $("#row_max_values").hide();
     $("#row_resolution").hide();
@@ -6044,6 +6065,7 @@ function chooseType() {
             $("#row_event_graph_by_criticity").show();
             $("#row_event_graph_by_validated").show();
             $("#row_extended_events").show();
+            $("#row_custom_data_events").show();
 
             $("#row_filter_search").show();
             $("#row_filter_exclude").show();
@@ -6371,6 +6393,7 @@ function chooseType() {
             $("#row_event_graph_by_validated").show();
             $("#row_event_type").show();
             $("#row_extended_events").show();
+            $("#row_custom_data_events").show();
 
             $("#row_filter_search").show();
             $("#row_filter_exclude").show();
@@ -6389,7 +6412,7 @@ function chooseType() {
             $("#row_event_graphs").show();
             $("#row_event_type").show();
             $("#row_extended_events").show();
-            $("#row_extended_events").show();
+            $("#row_custom_data_events").show();
 
             $("#row_event_graph_by_user").show();
             $("#row_event_graph_by_criticity").show();
@@ -6414,6 +6437,7 @@ function chooseType() {
             $("#row_event_graphs").show();
             $("#row_event_type").show();
             $("#row_extended_events").show();
+            $("#row_custom_data_events").show();
 
             $("#row_event_graph_by_user").show();
             $("#row_event_graph_by_criticity").show();

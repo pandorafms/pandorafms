@@ -5988,6 +5988,56 @@ function send_test_email(
 }
 
 
+/**
+ * Return array of ancestors of item, given array.
+ *
+ * @param integer     $item    From index.
+ * @param array       $data    Array data.
+ * @param string      $key     Pivot key (identifies the parent).
+ * @param string|null $extract Extract certain column or index.
+ * @param array       $visited Cycle detection.
+ *
+ * @return array Array of ancestors.
+ */
+function get_ancestors(
+    int $item,
+    array $data,
+    string $key,
+    ?string $extract=null,
+    array &$visited=[]
+) :array {
+    if (isset($visited[$item]) === true) {
+        return [];
+    }
+
+    $visited[$item] = 1;
+
+    if (isset($data[$item]) === false) {
+        return [];
+    }
+
+    if (isset($data[$item][$key]) === false) {
+        if ($extract !== null) {
+            return [$data[$item][$extract]];
+        }
+
+        return [$item];
+    }
+
+    if ($extract !== null) {
+        return array_merge(
+            get_ancestors($data[$item][$key], $data, $key, $extract, $visited),
+            [$data[$item][$extract]]
+        );
+    }
+
+    return array_merge(
+        get_ancestors($data[$item][$key], $data, $key, $extract, $visited),
+        [$item]
+    );
+}
+
+
 if (function_exists('str_contains') === false) {
 
 

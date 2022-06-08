@@ -1403,7 +1403,7 @@ if ($agent_interfaces_count > 0) {
         ]
     ).'</a>';
 
-    if ($tab == 'interface') {
+    if ($tab === 'interface') {
         $interfacetab['active'] = true;
     } else {
         $interfacetab['active'] = false;
@@ -1420,18 +1420,18 @@ $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_ag
     ]
 ).'</a>';
 
-if ($tab == 'alert') {
+if ($tab === 'alert') {
     $alerttab['active'] = true;
 } else {
     $alerttab['active'] = false;
 }
 
 // Inventory.
+$inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
 $inventorytab = enterprise_hook('inventory_tab');
-if ($inventorytab == -1) {
+if ($inventorytab == -1 || $inventoryCount === 0) {
     $inventorytab = '';
 }
-
 
 // Collection.
 $collectiontab = enterprise_hook('collection_tab');

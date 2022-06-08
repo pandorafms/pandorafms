@@ -424,8 +424,12 @@ if (is_ajax() === true) {
                                 )
                             );
 
-                            $tmp->timestamp = $max_event['timestamp'];
-                            $tmp->criticity = $max_event['criticity'];
+                            if ($max_event !== false
+                                && empty($max_event) === false
+                            ) {
+                                $tmp->timestamp = $max_event['timestamp'];
+                                $tmp->criticity = $max_event['criticity'];
+                            }
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
@@ -1588,34 +1592,9 @@ try {
             'class' => 'no-padding',
         ],
         'id_evento',
-            // 'id_agente',
-            // 'id_usuario',
-            // 'id_grupo',
-            // 'estado',
         'agent_name',
         'timestamp',
-            // 'utimestamp',
-            // 'event_type',
-            // 'id_agentmodule',
-            // 'id_alert_am',
         'event_type',
-            // 'user_comment',
-            // 'tags',
-            // 'source',
-            // 'id_extra',
-            // 'critical_instructions',
-            // 'warning_instructions',
-            // 'unknown_instructions',
-            // 'owner_user',
-            // 'ack_utimestamp',
-            // 'custom_data',
-            // 'data',
-            // 'module_status',
-            // 'similar_ids',
-            // 'event_rep',
-            // 'timestamp_rep',
-            // 'timestamp_rep_min',
-            // 'module_name',
         [
             'text'  => 'options',
             'class' => 'action_buttons w120px',

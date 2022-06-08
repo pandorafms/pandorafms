@@ -731,95 +731,51 @@ class Events
     {
         $system = System::getInstance();
 
-        // --------------Fill the SQL POST-------------------------------
-        $sql_post = ' WHERE 1=1 ';
+        $filters = [];
 
-        if ($this->status != null) {
-            switch ($this->status) {
-                case 0:
-                case 1:
-                case 2:
-                    $sql_post .= ' AND estado = '.$this->status;
-                break;
-
-                case 3:
-                    $sql_post .= ' AND (estado = 0 OR estado = 2)';
-                break;
-
-                default:
-                    // Not posible.
-                break;
-            }
+        // Status.
+        if (empty($this->status) === false) {
+            $filters['status'] = $this->status;
         }
 
-        if ($this->free_search != '') {
-            $sql_post .= " AND evento LIKE '%".io_safe_input($this->free_search)."%'";
+        // Filter search.
+        if (empty($this->free_search) === false) {
+            $filters['search'] = $this->free_search;
         }
 
-        if ($this->severity != null && $this->severity != -1) {
-            switch ($this->severity) {
-                case EVENT_CRIT_WARNING_OR_CRITICAL:
-                    $sql_post .= ' AND (criticity = '.EVENT_CRIT_WARNING.' OR 
-						criticity = '.EVENT_CRIT_CRITICAL.')';
-                break;
-
-                case EVENT_CRIT_NOT_NORMAL:
-                    $sql_post .= ' AND criticity != '.EVENT_CRIT_NORMAL;
-                break;
-
-                default:
-                    $sql_post .= ' AND criticity = '.$this->severity;
-                break;
-            }
+        // Severity.
+        if (empty($this->severity) === false) {
+            $filters['severity'] = $this->severity;
         }
 
-        if ($this->hours_old > 0) {
-            $unixtime = (get_system_time() - ($this->hours_old * SECONDS_1HOUR));
-            $sql_post .= ' AND (utimestamp > '.$unixtime.')';
-        }
-
-        if ($this->type != '') {
-            // If normal, warning, could be several (going_up_warning, going_down_warning... too complex
-            // for the user so for him is presented only "warning, critical and normal"
-            if ($this->type == 'warning' || $this->type == 'critical'
-                || $this->type == 'normal'
-            ) {
-                $sql_post .= " AND event_type LIKE '%".$this->type."%' ";
-            } else if ($this->type == 'not_normal') {
-                $sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
-            } else if ($this->type != 'all') {
-                $sql_post .= " AND event_type = '".$this->type."'";
-            }
-        }
-
-        $system = System::getInstance();
-        $groups = users_get_groups($system->getConfig('id_user'), 'ER');
-
-        // Group selection
-        if ($this->group > 0 && in_array($this->group, array_keys($groups))) {
-            // If a group is selected and it's in the groups allowed
-            $sql_post .= ' AND id_grupo = '.$this->group;
+        // Hours.
+        if (empty($this->hours_old) === false) {
+            $filters['event_view_hr'] = $this->hours_old;
         } else {
-            if (is_user_admin($system->getConfig('id_user'))) {
-                // Do nothing if you're admin, you get full access
-                $sql_post .= '';
-            } else {
-                // Otherwise select all groups the user has rights to.
-                $sql_post .= ' AND id_grupo IN ('.implode(',', array_keys($groups)).')';
-            }
+            $filters['event_view_hr'] = 8;
         }
 
-        if ($this->id_agent > 0) {
-            $sql_post .= ' AND id_agente = '.$this->id_agent;
+        // Type.
+        if (empty($this->type) === false) {
+            $filters['event_type'] = $this->type;
         }
 
-        // Skip system messages if user is not PM
-        if (!check_acl($system->getConfig('id_user'), 0, 'PM')) {
-            $sql_post .= ' AND id_grupo != 0';
+        // ID group.
+        if (empty($this->group) === false) {
+            $filters['id_group_filter'] = $this->group;
         }
+
+        // Id Agent.
+        if ($this->id_agent !== false && empty($this->id_agent) === false) {
+            $filters['id_agent'] = $this->id_agent;
+        }
+
+        $filters['group_rep'] = 1;
 
         // --------------------------------------------------------------
-        if (isset($this->limit) && $this->limit != -1) {
+        if (isset($this->limit) === true
+            && $this->limit !== -1
+        ) {
             $offset = 0;
             $pagination = $this->limit;
         } else {
@@ -827,24 +783,41 @@ class Events
             $pagination = $system->getPageSize();
         }
 
-        $meta = false;
-        if ($system->getConfig('metaconsole')) {
-            $meta = true;
-        }
-
-        $events_db = events_get_events_grouped(
-            $sql_post,
+        $events_db = events_get_all(
+            // Fields.
+            [
+                'te.*',
+                'ta.alias',
+            ],
+            // Filter.
+            $filters,
+            // Offset.
             $offset,
+            // Limit.
             $pagination,
-            $meta,
-            false
+            // Order.
+            'desc',
+            // Sort field.
+            'timestamp'
         );
 
-        if (empty($events_db)) {
-            $events_db = [];
+        if (is_metaconsole() === false) {
+            $count = events_get_all(
+                'count',
+                $filters,
+            );
+
+            if ($count !== false) {
+                $total_events = $count['0']['nitems'];
+            }
+        } else {
+            $total_events = $events_db['total'];
+            $events_db = $events_db['data'];
         }
 
-        $total_events = events_get_total_events_grouped($sql_post, $meta);
+        if (empty($events_db) === true) {
+            $events_db = [];
+        }
 
         return [
             'events' => $events_db,

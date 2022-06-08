@@ -57,7 +57,6 @@ if (! check_acl($config['id_user'], 0, 'ER')
 }
 
 $get_events_details = (bool) get_parameter('get_events_details');
-$get_list_events_agents = (bool) get_parameter('get_list_events_agents');
 $get_extended_event = (bool) get_parameter('get_extended_event');
 $change_status = (bool) get_parameter('change_status');
 $change_owner = (bool) get_parameter('change_owner');
@@ -1890,53 +1889,6 @@ if ($table_events) {
             true
         );
     }
-}
-
-if ($get_list_events_agents) {
-    global $config;
-
-    $id_agent = get_parameter('id_agent');
-    $server_id = get_parameter('server_id');
-    $event_type = get_parameter('event_type');
-    $severity = implode(',', get_parameter('severity', -1));
-    $status = get_parameter('status');
-    $search = get_parameter('search');
-    $id_agent_module = get_parameter('id_agent_module');
-    $event_view_hr = get_parameter('event_view_hr');
-    $id_user_ack = get_parameter('id_user_ack');
-    $tag_with = get_parameter('tag_with');
-    $tag_without = get_parameter('tag_without');
-    $filter_only_alert = get_parameter('filter_only_alert');
-    $date_from = get_parameter('date_from');
-    $time_from = get_parameter('time_from', '00:00:00');
-    $date_to = get_parameter('date_to');
-    $time_to = get_parameter('time_to', '23:59:59');
-    $id_user = $config['id_user'];
-
-    $returned_sql = events_sql_events_grouped_agents(
-        $id_agent,
-        $server_id,
-        $event_type,
-        $severity,
-        $status,
-        $search,
-        $id_agent_module,
-        $event_view_hr,
-        $id_user_ack,
-        $tag_with,
-        $tag_without,
-        $filter_only_alert,
-        $date_from,
-        $time_from,
-        $date_to,
-        $time_to,
-        $id_user
-    );
-
-    $returned_list = events_list_events_grouped_agents($returned_sql);
-
-    echo $returned_list;
-    return;
 }
 
 if ($total_events) {

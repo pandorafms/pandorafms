@@ -2222,7 +2222,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         $values['history_data'] = get_parameter('history_data');
     }
 
-    if (get_parameter('quiet_select', -1) !== -1) {
+    if (get_parameter('quiet_select', -1) != -1) {
         $values['quiet'] = get_parameter('quiet_select');
     }
 

@@ -168,7 +168,7 @@ $table->data[1][2] .= '<a href="javascript:">'.html_print_image(
     true,
     [
         'onclick' => 'sortUpDown(\'up\');',
-        'title'   => __('Move down selected fields'),
+        'title'   => __('Move up selected fields'),
     ]
 ).'</a>';
 $table->data[1][2] .= '<a href="javascript:">'.html_print_image(
@@ -176,7 +176,7 @@ $table->data[1][2] .= '<a href="javascript:">'.html_print_image(
     true,
     [
         'onclick' => 'sortUpDown(\'down\');',
-        'title'   => __('Move up selected fields'),
+        'title'   => __('Move down selected fields'),
     ]
 ).'</a>';
 $table->data[1][2] .= '</div></div>';

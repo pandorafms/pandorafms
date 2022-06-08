@@ -7483,6 +7483,11 @@ div.graph div.legend table {
   align-items: center;
 }
 
+.flex_justify {
+  display: flex;
+  justify-content: center;
+}
+
 .span_priority {
   width: 20px;
   height: 10px;

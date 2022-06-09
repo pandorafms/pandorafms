@@ -2315,7 +2315,7 @@ function process_datatables_item(item) {
     item.evento = evn;
 
     /* Group name */
-    if (item.id_grupo == "0") {
+    if (typeof item.id_grupo === 'undefined' || item.id_grupo == "0") {
         item.id_grupo = "<?php echo __('All'); ?>";
     } else {
         item.id_grupo = item.group_name;
@@ -2335,7 +2335,7 @@ function process_datatables_item(item) {
         }
         })(item.custom_data);
 
-        if (item_custom_data_obj !== false) {
+        if (item_custom_data_obj !== false && item_custom_data_obj !== null) {
             for (const [attr_name, val] of Object.entries(item_custom_data_obj)) {
                 custom_data_str += attr_name + ' = ' + val + '<br>';
             }

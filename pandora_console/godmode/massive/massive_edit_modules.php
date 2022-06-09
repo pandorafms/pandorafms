@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -89,9 +89,9 @@ if ($update) {
         $agents_ = [];
     }
 
-    // If the option to select all of one group or module type is checked
+    // If the option to select all of one group or module type is checked.
     if ($force) {
-        if ($force == 'type') {
+        if ($force === 'type') {
             $type_condition = '';
             if ($module_type != 0) {
                 $type_condition = "AND tam.id_tipo_modulo = $module_type";
@@ -109,7 +109,7 @@ if ($update) {
                 $agents_ = [];
             }
 
-            // Create an array of agent ids
+            // Create an array of agent ids.
             $agents_ = extract_column($agents_, 'id_agente');
 
             foreach ($agents_ as $id_agent) {
@@ -136,7 +136,7 @@ if ($update) {
             if ($success == 0) {
                 $error_msg = __('Error updating the modules from a module type');
             }
-        } else if ($force == 'group') {
+        } else if ($force === 'group') {
             $agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
 
             foreach ($agents_ as $id_agent) {
@@ -2226,28 +2226,30 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         $values['quiet'] = get_parameter('quiet_select');
     }
 
-    $filter_modules = false;
-
-    if (!is_numeric($module_name) or ($module_name != 0)) {
-        $filter_modules['nombre'] = $module_name;
-    }
-
-    // Whether to update module tag info
+    // Whether to update module tag info.
     $update_tags = get_parameter('id_tag', false);
 
     if (array_search(0, $agents_select) !== false) {
-        // Apply at All agents.
-        $modules = db_get_all_rows_filter(
-            'tagente_modulo',
-            $filter_modules,
-            [
-                'id_agente_modulo',
-                'id_tipo_modulo',
-            ]
+        if (is_numeric($module_name) === false || ($module_name !== 0)) {
+            $filterModules = sprintf('AND tam.nombre = \'%s\'', $module_name);
+        } else {
+            $filterModules = '';
+        }
+
+        // Apply at All agents (within valid groups).
+        $modules = db_get_all_rows_sql(
+            sprintf(
+                'SELECT tam.id_agente_modulo, tam.id_tipo_modulo
+                FROM tagente_modulo tam INNER JOIN tagente ta
+                ON ta.id_agente = tam.id_agente
+                WHERE ta.id_grupo IN (%s) %s;',
+                implode(',', array_keys(users_get_groups())),
+                $filterModules
+            )
         );
     } else {
-        if ($module_name == '0') {
-            // Any module
+        if ($module_name === '0') {
+            // Any module.
             $modules = db_get_all_rows_filter(
                 'tagente_modulo',
                 ['id_agente' => $agents_select],
@@ -2275,12 +2277,12 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         return false;
     }
 
-    if (($module_status == 'unknown') && ($module_name == '0')) {
+    if (($module_status === 'unknown') && ($module_name == '0')) {
         $modules_to_delete = [];
         foreach ($modules as $mod_id) {
             $mod_status = (int) db_get_value_filter('estado', 'tagente_estado', ['id_agente_modulo' => $mod_id]);
 
-            // Unknown, not init and no data modules
+            // Unknown, not init and no data modules.
             if ($mod_status == 3 || $mod_status == 4 || $mod_status == 5) {
                 $modules_to_delete[$mod_id] = $mod_id;
             }

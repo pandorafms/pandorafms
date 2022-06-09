@@ -562,7 +562,6 @@ if (enterprise_installed()) {
     $table_adv_cascade .= $cps_html;
 }
 
-
 $table_adv_parent = '<div class="label_select"><label class="input_label">'.__('Parent').'</label>';
 $params = [];
 $params['return'] = true;
@@ -575,6 +574,11 @@ $params['value'] = db_get_value('alias', 'tagente', 'id_agente', $id_parent);
 $params['selectbox_id'] = 'cascade_protection_module';
 $params['javascript_is_function_select'] = true;
 $params['cascade_protection'] = true;
+if ($id_agente !== 0) {
+    // Deletes the agent's offspring.
+    $params['delete_offspring_agents'] = $id_agente;
+}
+
 $table_adv_parent .= '<div class="label_simple_items">';
 $table_adv_parent .= ui_print_agent_autocomplete_input($params);
 if (enterprise_installed()) {

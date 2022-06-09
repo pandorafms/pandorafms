@@ -393,8 +393,15 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
 
         case '1':
             // Group by events.
+            $event = events_get_event($id_evento, ['estado', 'event_type', 'id_agente', 'id_agentmodule']);
+            $filter['group_rep'] = 0;
+            $filter['status'] = $event['estado'];
+            $filter['event_type'] = $event['event_type'];
+            $filter['id_agent'] = $event['id_agente'];
+            $filter['id_agentmodule'] = $event['id_agentmodule'];
+
             $sql = events_get_all(
-                ['te.*'],
+                ['te.id_evento'],
                 $filter,
                 // Offset.
                 null,
@@ -410,19 +417,7 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
                 true
             );
 
-            $target_ids = db_get_all_rows_sql(
-                sprintf(
-                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
-                    ON tu.estado = tf.estado
-                    AND tu.evento = tf.evento
-                    AND tu.id_agente = tf.id_agente
-                    AND tu.id_agentmodule = tf.id_agentmodule
-                    AND tf.max_id_evento = %d',
-                    $table,
-                    $sql,
-                    $id_evento
-                )
-            );
+            $target_ids = db_get_all_rows_sql($sql);
 
             // Try to avoid deadlock while updating full set.
             if ($target_ids !== false && count($target_ids) > 0) {
@@ -495,7 +490,14 @@ function events_get_related_events(
 
         case '1':
             // Group by events.
-            $sql = events_get_all(
+            $event = events_get_event($id_evento, ['estado', 'event_type', 'id_agente', 'id_agentmodule']);
+            $filter['group_rep'] = 0;
+            $filter['status'] = $event['estado'];
+            $filter['event_type'] = $event['event_type'];
+            $filter['id_agent'] = $event['id_agente'];
+            $filter['id_agentmodule'] = $event['id_agentmodule'];
+
+            $related_sql = events_get_all(
                 ['te.*'],
                 $filter,
                 // Offset.
@@ -510,18 +512,6 @@ function events_get_related_events(
                 $history,
                 // Return_sql.
                 true
-            );
-            $related_sql = sprintf(
-                'SELECT %s FROM %s tu INNER JOIN ( %s ) tf
-                WHERE tu.estado = tf.estado
-                AND tu.evento = tf.evento
-                AND tu.id_agente = tf.id_agente
-                AND tu.id_agentmodule = tf.id_agentmodule
-                AND tf.max_id_evento = %d',
-                $select,
-                $table,
-                $sql,
-                $id_evento
             );
         break;
     }
@@ -584,8 +574,15 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
 
         case '1':
             // Group by events.
+            $event = events_get_event($id_evento, ['estado', 'event_type', 'id_agente', 'id_agentmodule']);
+            $filter['group_rep'] = 0;
+            $filter['status'] = $event['estado'];
+            $filter['event_type'] = $event['event_type'];
+            $filter['id_agent'] = $event['id_agente'];
+            $filter['id_agentmodule'] = $event['id_agentmodule'];
+
             $sql = events_get_all(
-                ['te.*'],
+                ['te.id_evento'],
                 $filter,
                 // Offset.
                 null,
@@ -601,19 +598,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
                 true
             );
 
-            $target_ids = db_get_all_rows_sql(
-                sprintf(
-                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
-                    ON tu.estado = tf.estado
-                    AND tu.evento = tf.evento
-                    AND tu.id_agente = tf.id_agente
-                    AND tu.id_agentmodule = tf.id_agentmodule
-                    AND tf.max_id_evento = %d',
-                    $table,
-                    $sql,
-                    $id_evento
-                )
-            );
+            $target_ids = db_get_all_rows_sql($sql);
 
             // Try to avoid deadlock while updating full set.
             if ($target_ids !== false && count($target_ids) > 0) {
@@ -823,6 +808,13 @@ function events_get_all(
         $sql_filters[] = sprintf(
             ' AND te.id_agente = %d ',
             $filter['id_agent']
+        );
+    }
+
+    if (isset($filter['id_agentmodule']) === true && $filter['id_agentmodule'] > 0) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_agentmodule = %d ',
+            $filter['id_agentmodule']
         );
     }
 
@@ -1875,6 +1867,59 @@ function events_get_similar_ids($id, $meta=false, $history=false)
     if ($events === false) {
         return $ids;
     }
+
+    foreach ($events as $event) {
+        $ids[] = $event['id_evento'];
+    }
+
+    return $ids;
+}
+
+
+/**
+ * Gets the ids of grouped events to a given event id.
+ *
+ * Events are grouped together if status, type, id_agent and id_agentmodule are
+ * the same.
+ *
+ * @param integer $id      Event id.
+ * @param boolean $meta    Metaconsole mode flag.
+ * @param boolean $history History mode flag.
+ *
+ * @return array A list of events ids.
+ */
+function events_get_grouped_ids($id, $meta=false, $history=false)
+{
+    if ($meta === true) {
+        $event = events_meta_get_event(
+            $id,
+            [
+                'evento',
+                'id_agentmodule',
+            ],
+            $history
+        );
+    } else {
+        $event = events_get_event($id, ['estado', 'event_type', 'id_agente', 'id_agentmodule']);
+    }
+
+    $ids = [];
+    if ($event === false) {
+        return $ids;
+    }
+
+    $events_table = events_get_events_table($meta, $history);
+
+    $events = db_get_all_rows_filter(
+        $events_table,
+        [
+            'estado'         => $event['estado'],
+            'event_type'     => $event['event_type'],
+            'id_agente'      => $event['id_agente'],
+            'id_agentmodule' => $event['id_agentmodule'],
+        ],
+        ['id_evento']
+    );
 
     foreach ($events as $event) {
         $ids[] = $event['id_evento'];

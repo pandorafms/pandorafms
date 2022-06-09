@@ -375,20 +375,17 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        if (strlen($tmp->evento) >= 255) {
-                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
-                        }
 
-                        if ($tmp->module_name) {
+                        if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }
 
-                        if ($tmp->comments) {
+                        if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
                         // Show last event.
-                        if (isset($tmp->max_id_evento) && $tmp->max_id_evento !== $tmp->id_evento) {
+                        if (isset($tmp->max_id_evento) === true && $tmp->max_id_evento !== $tmp->id_evento) {
                             $max_event = db_get_row_sql(
                                 sprintf(
                                     'SELECT criticity, timestamp FROM %s

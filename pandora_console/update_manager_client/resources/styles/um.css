@@ -26,10 +26,10 @@
 
 #um-loading {
   background-image: url(../images/spinner.gif);
-  height: 1.3em;
+  height: 1em;
   background-repeat: no-repeat;
   background-size: contain;
-  text-indent: 6em;
+  text-indent: 4.5em;
 }
 
 #um-buttons {
@@ -72,10 +72,10 @@
   background-color: #343434;
   background-repeat: no-repeat;
   background-position: 50% 20%;
-  height: 3em;
+  height: 1.8em;
   text-align: center;
   display: block;
-  padding-top: 5.7em;
+  padding-top: 5.3em;
   width: 100%;
 }
 #um-update-details-content {

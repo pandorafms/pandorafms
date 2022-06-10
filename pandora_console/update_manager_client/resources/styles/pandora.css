@@ -156,19 +156,18 @@
 
 #box_online {
   background-image: url("../images/update_manager_background.jpg");
-  background-position: center center;
+  background-position: top right;
   background-repeat: no-repeat;
   background-color: #fff;
   padding: 40px 50px;
   border: 1px solid #f3f3f3;
   border-radius: 5px;
-  min-height: 600px;
+  min-height: 400px;
   background-size: contain;
 }
 
 div#box_online * {
-  font-size: 16pt;
-  /*margin-bottom: 50px;*/
+  font-size: 14pt;
 }
 
 #box_online .content {
@@ -226,7 +225,7 @@ a.update_manager_button:after {
   color: #82b92e;
   font-size: 6em;
   font-weight: bold;
-  margin: 35px 0 !important;
+  margin: 30px 0 !important;
 }
 
 /* METACONSOLE */

@@ -168,7 +168,7 @@
 
 div#box_online * {
   font-size: 16pt;
-  margin-bottom: 50px;
+  /*margin-bottom: 50px;*/
 }
 
 #box_online .content {
@@ -224,9 +224,9 @@ a.update_manager_button:after {
 
 #box_online #pkg_version {
   color: #82b92e;
-  font-size: 75pt;
+  font-size: 6em;
   font-weight: bold;
-  margin-bottom: 50px;
+  margin: 35px 0 !important;
 }
 
 /* METACONSOLE */

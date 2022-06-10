@@ -469,7 +469,7 @@ function umShowUpdateDetails(update) {
     if (typeof $ == "function") {
       $("#um-update-details").dialog({
         title: update,
-        width: 650,
+        width: 800,
         height: 600
       });
     }

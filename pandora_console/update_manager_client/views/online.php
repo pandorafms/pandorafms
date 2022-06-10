@@ -41,7 +41,7 @@
         <img src="images/wait.gif">
     </span>
 
-    <p style="font-weight: 600;margin-top: 3em;"><?php echo __('The latest version of package installed is').':'; ?></p>
+    <p style="font-weight: 600;"><?php echo __('The latest version of package installed is').':'; ?></p>
     <div id="pkg_version"><?php echo $version; ?></div>
 
     <div class="content">

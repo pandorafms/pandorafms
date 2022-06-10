@@ -802,7 +802,7 @@ define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
 define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');
 define('AUDIT_LOG_SERVICE_MANAGEMENT', 'Service management');
 define('AUDIT_LOG_INCIDENT_MANAGEMENT', 'Incident management');
-define('AUDIT_LOG_UMC', 'Update Manager');
+define('AUDIT_LOG_UMC', 'Warp Manager');
 
 // MIMEs.
 define(

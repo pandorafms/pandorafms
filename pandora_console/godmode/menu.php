@@ -525,7 +525,7 @@ $menu_godmode['links']['sub'] = $sub;
 
 // Update Manager
 if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) {
-    $menu_godmode['messages']['text'] = __('WARP Update');
+    $menu_godmode['messages']['text'] = __('Warp Update');
     $menu_godmode['messages']['id'] = 'god-um_messages';
     $menu_godmode['messages']['sec2'] = '';
 
@@ -539,7 +539,7 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Options');
     $sub['godmode/update_manager/update_manager&tab=setup']['id'] = 'Options';
 
-    $sub['godmode/update_manager/update_manager&tab=history']['text'] = __('WARP journal');
+    $sub['godmode/update_manager/update_manager&tab=history']['text'] = __('Warp journal');
     $sub['godmode/update_manager/update_manager&tab=history']['id'] = 'Journal';
 
     $menu_godmode['messages']['sub'] = $sub;

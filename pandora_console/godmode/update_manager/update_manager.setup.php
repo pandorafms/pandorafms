@@ -268,7 +268,7 @@ $table->style[$i] = 'font-weight: bolder;width:250px';
 
 $url_update_manager = update_manager_get_url();
 
-$table->data[$i][0] = __('WARP Update URL');
+$table->data[$i][0] = __('Warp Update URL');
 $table->data[$i++][1] = html_print_input_text(
     'url_update_manager',
     $url_update_manager,
@@ -279,7 +279,7 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Use secured WARP Update');
+$table->data[$i][0] = __('Use secured Warp Update');
 $table->data[$i++][1] = html_print_input(
     [
         'type'  => 'switch',

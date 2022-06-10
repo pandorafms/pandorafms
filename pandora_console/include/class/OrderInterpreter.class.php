@@ -336,7 +336,7 @@ class OrderInterpreter extends Wizard
                 ),
             ],
             [
-                'name' => __('WARP Update'),
+                'name' => __('Warp Update'),
                 'icon' => ui_get_full_url(
                     'images/menu/um_messages.menu_gray.png'
                 ),

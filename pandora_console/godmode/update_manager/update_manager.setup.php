@@ -268,17 +268,18 @@ $table->style[$i] = 'font-weight: bolder;width:250px';
 
 $url_update_manager = update_manager_get_url();
 
-$table->data[$i][0] = __('URL update manager:');
+$table->data[$i][0] = __('WARP Update URL');
 $table->data[$i++][1] = html_print_input_text(
     'url_update_manager',
     $url_update_manager,
     __('URL update manager'),
     80,
     255,
+    true,
     true
 );
 
-$table->data[$i][0] = __('Use secured update manager:');
+$table->data[$i][0] = __('Use secured WARP Update');
 $table->data[$i++][1] = html_print_input(
     [
         'type'  => 'switch',
@@ -287,7 +288,7 @@ $table->data[$i++][1] = html_print_input(
     ]
 );
 
-$table->data[$i][0] = __('Proxy server:');
+$table->data[$i][0] = __('Proxy server');
 $table->data[$i++][1] = html_print_input_text(
     'update_manager_proxy_server',
     $update_manager_proxy_server,
@@ -297,7 +298,7 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Proxy port:');
+$table->data[$i][0] = __('Proxy port');
 $table->data[$i++][1] = html_print_input_text(
     'update_manager_proxy_port',
     $update_manager_proxy_port,
@@ -307,7 +308,7 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Proxy user:');
+$table->data[$i][0] = __('Proxy user');
 $table->data[$i++][1] = html_print_input_text(
     'update_manager_proxy_user',
     $update_manager_proxy_user,
@@ -317,7 +318,7 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Proxy password:');
+$table->data[$i][0] = __('Proxy password');
 $table->data[$i++][1] = html_print_input_password(
     'update_manager_proxy_password',
     $update_manager_proxy_password,
@@ -327,7 +328,7 @@ $table->data[$i++][1] = html_print_input_password(
     true
 );
 
-$table->data[$i][0] = __('Allow no-consecutive patches:');
+$table->data[$i][0] = __('Allow no-consecutive patches');
 $table->data[$i++][1] = html_print_switch(
     [
         'name'   => 'allow_offline_patches',
@@ -336,7 +337,7 @@ $table->data[$i++][1] = html_print_switch(
     ]
 );
 
-$table->data[$i][0] = __('Limit to LTS updates:');
+$table->data[$i][0] = __('Limit to LTS updates');
 $table->data[$i++][1] = html_print_switch(
     [
         'name'   => 'lts_updates',
@@ -346,11 +347,11 @@ $table->data[$i++][1] = html_print_switch(
 );
 
 
-$table->data[$i][0] = __('Registration ID:');
-$table->data[$i++][1] = '<i>'.$config['pandora_uid'].'</i>';
+$table->data[$i][0] = __('Registration ID');
+$table->data[$i++][1] = '<i>'.($config['pandora_uid'] ?? __('Not registred yet')).'</i>';
 
 if (update_manager_verify_registration() === true && users_is_admin()) {
-    $table->data[$i][0] = __('Cancel registration:');
+    $table->data[$i][0] = __('Cancel registration');
     $table->data[$i][1] = '<a href="';
     if ((bool) is_metaconsole() === true) {
         $table->data[$i][1] .= ui_get_full_url(
@@ -367,7 +368,7 @@ if (update_manager_verify_registration() === true && users_is_admin()) {
 
 if (license_free()) {
     $config['identification_reminder'] = isset($config['identification_reminder']) ? $config['identification_reminder'] : 1;
-    $table->data[$i][0] = __('Pandora FMS community reminder').ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
+    $table->data[$i][0] = __('%s community reminder', get_product_name()).ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this %s instance', get_product_name()), true);
     $table->data[$i][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 1, '', $config['identification_reminder'], true).'&nbsp;&nbsp;';
     $table->data[$i++][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 0, '', $config['identification_reminder'], true);
 }

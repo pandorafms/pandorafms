@@ -45,7 +45,7 @@ $product_name = get_product_name(); ?>
 </head>
 
 <div id="registration_wizard" title="
-    <?php echo __('Register to Update Manager'); ?>
+    <?php echo __('Register to WARP Update'); ?>
     " class="invisible">
     <div class="register_update_manager">
         <?php echo html_print_image('images/pandora_circle_big.png', true); ?>
@@ -59,10 +59,10 @@ $product_name = get_product_name(); ?>
         <p>
             <?php
             echo __(
-                'When you subscribe to the %s Update Manager service, you accept that we
+                'When you subscribe to the WARP update service for %s, you accept that we
             register your %s instance as an identifier on a database owned by %s. This data will solely be used to
             provide you with information about %s and will not be conceded to third parties. You can unregister from
-            said database at any time from the Update Manager options.',
+            said database at any time from the WARP update options.',
                 $product_name,
                 $product_name,
                 $product_name,
@@ -72,7 +72,7 @@ $product_name = get_product_name(); ?>
         </p>
 
         <p>
-            <?php echo __('Visit our privacy policy for more information'); ?>: 
+            <?php echo __('Visit our privacy policy for more information'); ?>:
             <a href="https://pandorafms.com/privacy-policy/" target="_blank">https://pandorafms.com/privacy-policy/</a>
         </p>
 
@@ -109,7 +109,7 @@ $product_name = get_product_name(); ?>
 <!-- Verification modal.. -->
 <div id="reg_ensure_cancel" title="Confirmation Required" class="invisible">
     <div class="font_12_20">
-        <?php echo __('Are you sure you don\'t want to use update manager?'); ?>
+        <?php echo __('Are you sure you don\'t want to use WARP update?'); ?>
         <p>
             <?php
             echo __(

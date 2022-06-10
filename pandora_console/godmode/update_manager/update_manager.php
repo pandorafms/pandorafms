@@ -39,7 +39,7 @@ $buttons['setup'] = [
     'active' => ($tab == 'setup') ? true : false,
     'text'   => '<a href="'.ui_get_full_url(
         'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup'
-    ).'">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options'), 'class' => 'invert_filter']).'</a>',
+    ).'">'.html_print_image('images/gm_setup.png', true, ['title' => __('Setup'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['history'] = [
@@ -53,42 +53,48 @@ $buttons['offline'] = [
     'active' => ($tab == 'offline') ? true : false,
     'text'   => '<a href="'.ui_get_full_url(
         'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offli'
-    ).'ne">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
+    ).'ne">'.html_print_image('images/box.png', true, ['title' => __('Offline update'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['online'] = [
     'active' => ($tab == 'online') ? true : false,
     'text'   => '<a href="'.ui_get_full_url(
         'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=onlin'
-    ).'e">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager'), 'class' => 'invert_filter']).'</a>',
+    ).'e">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update'), 'class' => 'invert_filter']).'</a>',
 ];
 
 switch ($tab) {
     case 'history':
-        $title = __('Update manager » Journal');
+        $title = __('Journal');
     break;
 
     case 'setup':
-        $title = __('Update manager » Setup');
+        $title = __('Setup');
     break;
 
     case 'offline':
-        $title = __('Update manager » Offline');
+        $title = __('Offline');
     break;
 
     case 'online':
     default:
-        $title = __('Update manager » Online');
+        $title = __('Online');
     break;
 }
 
-ui_print_page_header(
+ui_print_standard_header(
     $title,
     'images/gm_setup.png',
     false,
     '',
     true,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => 'Warp Update',
+        ],
+    ]
 );
 
 switch ($tab) {

@@ -31,7 +31,6 @@
 ?>
 <head>
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/pandora.css'); ?>">
     <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
 </head>
 

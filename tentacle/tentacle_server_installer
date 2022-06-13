@@ -1,0 +1,438 @@
+#!/bin/sh
+
+# Tentacle Server Installer
+# Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu and FreeBSD only
+# other Linux distros could not work properly without modifications
+# Please see http://www.pandorafms.org
+# v1.0 Build 13062022
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+PI_VERSION="7.0NG.762"
+PI_BUILD="220613"
+
+MODE=$1
+if [ $# -gt 1 ]; then
+	shift
+fi
+
+# Defaults
+PREFIX=/usr
+PANDORA_SPOOL=/var/spool/pandora
+TENTACLE_SERVER=/etc/init.d/tentacle_serverd
+TENTACLE_CFG_DIR=/etc/tentacle
+TENTACLE_CFG_FILE=$TENTACLE_CFG_DIR/tentacle_server.conf
+TENTACLE_CFG_FILE_DIST=conf/tentacle_server.conf.new
+TENTACLE_INIT_SCRIPT=util/tentacle_serverd
+PERL=perl
+MANDIR=$PREFIX/share/man/man1
+INITDIR=/etc/init.d
+WITHOUT_TENTACLE=0
+
+#
+# set_global_vars
+#	Check platform and set DISTRO, OS_VERSION and LINUX.
+#	Also, define some platform sepcific variables (e.g. PANDORA_RC_VAR for (Free|Net)BSD) 
+#	and override some of defaults defined above if needed.
+#
+set_global_vars () {
+	# Default
+	LINUX=NO
+	OS_VERSION=`uname -r`
+	DISTRO=`uname -s`
+
+	# set correct value for LINUX_DISTRO
+	case $DISTRO in
+	Linux)
+		# Default for Linux
+		LINUX=YES
+		DISTRO="GENERIC"
+		# Get Linux Distro type and version
+		# We assume we are on Linux unless told otherwise
+		if [ -f "/etc/SuSE-release" ]
+		then
+			OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+			DISTRO=SUSE
+		elif [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
+		then
+			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+			DISTRO=UBUNTU
+			OS_VERSION="UBUNTU $OS_VERSION"
+		elif [ -f "/etc/debian_version" ]
+		then
+			OS_VERSION=`cat /etc/debian_version`
+			OS_VERSION="DEBIAN $OS_VERSION"
+			DISTRO=DEBIAN
+		elif [ -f "/etc/fedora-release" ]
+		then
+			OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+			OS_VERSION="FEDORA $OS_VERSION"
+			DISTRO=FEDORA
+		fi
+		;;
+	Darwin|AIX)
+		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons.
+		# AIX doesn't have /etc/init.d
+		;;
+	SunOS)
+		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
+		DISTRO="Solaris"
+		;;
+	FreeBSD)
+		PREFIX=/usr/local
+		TENTACLE_SERVER=$PREFIX/etc/rc.d/tentacle_server
+		TENTACLE_CFG_DIR=$PREFIX/etc/tentacle
+		TENTACLE_CFG_FILE=$TENTACLE_CFG_DIR/tentacle_server.conf
+		TENTACLE_INIT_SCRIPT=$DISTRO/tentacle_server
+		MANDIR=$PREFIX/man/man1
+		INITDIR=$PREFIX/etc/rc.d
+		PERL=/usr/local/bin/perl
+		TENTACLE_RC_VAR="tentacle_server_enable"
+		;;
+	NetBSD)
+		PREFIX=/usr/local
+		TENTACLE_CFG_DIR=$PREFIX/etc/tentacle
+		TENTACLE_CFG_FILE=$TENTACLE_CFG_DIR/tentacle_server.conf
+		TENTACLE_SERVER=/etc/rc.d/tentacle_server
+		TENTACLE_INIT_SCRIPT=$DISTRO/tentacle_server
+		PERL=/usr/pkg/bin/perl
+		INITDIR=/etc/rc.d
+		PANDORA_RC_VAR="pandora_server"
+		TENTACLE_RC_VAR="tentacle_server"
+		;;
+	esac
+}
+
+#
+# install_startup_script [options...] SRC
+#	copy SRC into the $INITDIR and do additional required operation according to $DISTRO
+#	if $INITDIR is not set or empty, do nothing.
+#	If $DESTDIR is set, skip enabling service
+#	OPTIONS:
+#		-s SPRIO  specify startup priority for service
+#
+install_startup_script () {
+	[ "$INITDIR" ] || return 1
+	if [ "$1" = "-s" ]
+	then
+		SPRIO=$2
+		shift;shift
+	fi
+	SRC=$1
+	SCRIPT_NAME=`basename $SRC`
+
+	echo "Copying the daemon script into $INITDIR"
+	[ -d $DESTDIR$INITDIR ] || mkdir -p $DESTDIR$INITDIR
+	cp $SRC $DESTDIR$INITDIR
+
+	[ "$DESTDIR" ] && return
+
+	case $DISTRO in
+	UBUNTU|DEBIAN)
+		echo "Linking startup script to /etc/rc2.d"
+		update-rc.d $SCRIPT_NAME defaults
+		;;
+	SUSE)
+		echo "Creating startup daemons"
+		insserv $SCRIPT_NAME
+		;;
+	FeeBSD|NetBSD)
+		chmod 555 $DESTDIR$INITDIR/$SCRIPT_NAME
+		;;
+	*)
+		if [ "$LINUX" = YES ]
+		then
+			# Pandora FMS Server install (Other Distros)
+			INITLV=`grep '[0-9]:initdefault' /etc/inittab | cut -f 2 -d ':'`
+			: ${INITLV:=2}
+			echo "Linking startup script to /etc/rc.d/rc$INITLV.d/S$SPRIO$SCRIPT_NAME"
+			ln -s $INITDIR/$SCRIPT_NAME /etc/rc.d/rc$INITLV.d/S$SPRIO$SCRIPT_NAME
+		fi
+		;;
+	esac
+}
+
+install () {
+	set_global_vars
+
+	FORCE=0
+
+	# parse options
+	while :
+	do
+		case $1 in
+		--force) FORCE=1;;
+		--destdir) DESTDIR=$2;shift;;
+		*) break;;
+		esac
+		shift
+	done
+	
+	if [ "$LINUX" = YES ]
+	then
+		echo "$DISTRO distribution detected"
+	else 
+		echo "$DISTRO detected"
+	fi
+	
+	$PERL -v &> /dev/null
+	if [ $? != 0 ]; then
+		echo ' '
+		echo 'Error, no PERL Interpeter found, please install perl on your system'
+		exit 1
+	fi
+
+	#Check dependenciaes.
+	if [ $FORCE -eq 0 ]; then
+		# Execute tools check
+		execute_cmd "ps --version" 'Checking dependencies: ps' "Error ps not found, please install procps"
+		execute_cmd "sudo --version" 'Checking dependencies: sudo' "Error sudo not found, please install sudo"
+	fi
+
+	# install tentacle
+	$PERL Makefile.PL INSTALLMAN1DIR=none > output 2>&1
+	#&& sleep 2 && cat output | grep "found" | wc -l 
+	DEPENDENCIAS=`cat output | grep "found" | wc -l`
+
+	if [ $DEPENDENCIAS -gt 0 ] && [ $FORCE -eq 0 ]
+	then
+		echo "You are missing the following dependencies"
+		echo " "
+		cat output | awk -F ": prerequisite" '{print $2}' | awk -F " " '{print $1}'
+		echo "The complete installation guide is at: https://pandorafms.com/docs/"
+		echo " "
+		rm output
+		exit 1
+	fi		
+
+	echo "Installing binaries and libraries"
+	make
+	make DESTDIR=$DESTDIR install
+		
+	echo "Checking binaries at /usr/local/bin -> /usr/bin"
+	if [ ! -f "$DESTDIR/usr/bin/tentacle_server" ] 
+	then
+		if [ ! -f "$DESTDIR/usr/local/bin/tentacle_server" ]
+		then
+			echo "ERROR compiling Tentacle Server from sources. Aborting"
+			exit 1
+		fi
+		if [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
+		then
+			[ -d $DESTDIR$PREFIX/bin ] || mkdir -p $DESTDIR$PREFIX/bin
+			ln -s /usr/local/bin/tentacle_server $DESTDIR$PREFIX/bin
+
+		fi
+	fi
+	
+
+	echo "Creating common Pandora FMS directories"
+	id pandora 2> /dev/null
+	if [ $? -eq 0 ]; then
+		echo " "
+		echo "User pandora does exist, make sure the SSH directories are correct"
+	elif [ "$DESTDIR" ]
+	then
+		# chown can fail with fakeroot installation
+		echo "User 'pandora' does not exist. All chown operations may fail."
+		echo "You should manualy set proper ownership to $DESTDIR$PANDORA_SPOOL if needed."
+		echo
+	else
+		echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
+		read AREYOUSURE
+		if [ "$AREYOUSURE" = "y" ]; then
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				echo "pandora:41121:::::Pandora FMS:/home/pandora:/usr/sbin/nologin:" | adduser -f - -w no 2> /dev/null
+			else
+				useradd pandora 
+				mkdir /home/pandora 2> /dev/null
+				mkdir /home/pandora/.ssh 2> /dev/null
+				chown -R pandora /home/pandora 
+			fi
+		else
+			echo "Please create the 'pandora' user manually according to your authentication scheme, then start again the installation"
+			echo "Aborting..."
+			exit 1
+		fi
+	fi
+
+	mkdir -p $DESTDIR$PANDORA_SPOOL/data_in 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/conf 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/conf
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/md5 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/md5
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/collections 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/collections
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/netflow 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/trans 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/trans
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/commands 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/commands
+
+
+	echo "Giving proper permission to /var/spool/pandora"
+	for group in "www-data" wwwrun www apache
+	do
+		IDGROUP=`id -g "$group" 2> /dev/null`
+		if [ $? -eq 0 ]
+		then
+			GROUPNAME=`grep ":$IDGROUP:" /etc/group | awk -F":" '{print $1}'`
+			break
+		fi
+	done
+	if [ -z "$GROUPNAME" ]
+	then
+		echo "No web server user found, some functionality might not perform correctly"
+		GROUPNAME=0
+	fi
+	# when fakeroot installation, this can fail
+	chown -R pandora:$GROUPNAME $DESTDIR$PANDORA_SPOOL 2>/dev/null
+
+	chown apache:$GROUPNAME $DESTDIR$PANDORA_SPOOL/data_in/customer_key 2>/dev/null
+	
+	# install tentacle_server
+	install_startup_script -s 80 $TENTACLE_INIT_SCRIPT
+
+	# Create the directory to locate the Tentacle configuration file
+	echo "Creating setup Tentacle directory in $TENTACLE_CFG_DIR"
+	mkdir -p $DESTDIR$TENTACLE_CFG_DIR 2> /dev/null
+	if [ -f "$DESTDIR$TENTACLE_CFG_FILE" ]
+	then
+		echo cp $TENTACLE_CFG_FILE_DIST $DESTDIR$TENTACLE_CFG_DIR
+		cp $TENTACLE_CFG_FILE_DIST $DESTDIR$TENTACLE_CFG_DIR
+	else
+		echo cp $TENTACLE_CFG_FILE_DIST $DESTDIR$TENTACLE_CFG_FILE
+		cp $TENTACLE_CFG_FILE_DIST $DESTDIR$TENTACLE_CFG_FILE
+		chmod 774 $DESTDIR$TENTACLE_CFG_FILE
+	fi
+	
+	echo "Installing Tentacle Server manual"
+	[ -d $DESTDIR$MANDIR ] || mkdir -p $DESTDIR$MANDIR
+	cp man/man1/tentacle_server.1.gz $DESTDIR$MANDIR
+
+	# Fix util paths
+	sed -i -e "s|directory.*|directory $DESTDIR$PANDORA_SPOOL/data_in|g" $DESTDIR$TENTACLE_CFG_FILE 
+	sed -i -e "s|TENTACLE_PATH=\"/usr/bin\"|TENTACLE_PATH=$DESTDIR$PREFIX/bin|g" $DESTDIR$TENTACLE_SERVER
+	sed -i -e "s|^TENTACLE_CONFIG_FILE=.*|TENTACLE_CONFIG_FILE=$DESTDIR$TENTACLE_CFG_FILE|g" $DESTDIR$TENTACLE_SERVER
+
+	echo "Tentacle Server installed"
+
+
+}
+
+uninstall () {
+	set_global_vars
+
+	# parse options
+	while :
+	do
+		case $1 in
+		--destdir) DESTDIR=$2;shift;;
+		*) break;;
+		esac
+		shift
+	done
+
+	if [ "$LINUX" != "YES" ] && [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
+	then
+		echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+		exit 1
+	fi
+
+
+	echo "Removing Tentacle Server"
+	if [ -d $DESTDIR$PANDORA_SPOOL/data_out ]; then
+		rm -Rf $DESTDIR$PANDORA_SPOOL/data_in
+	else
+		rm -Rf $DESTDIR$PANDORA_SPOOL
+	fi
+
+	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
+	if [ "$DISTRO" != "FreeBSD" ] || [ "$DISTRO" != "NetBSD" ]
+	then
+		echo "  rmuser pandora"
+	else
+		echo "	userdel pandora"
+		echo "	rm -Rf /home/pandora/"
+	fi
+
+	## Just to clarify here. Some people (like me) are using the pandora user 
+	## for other purposes and/or using an LDAP-based user management
+	## I would hate to have a script clear out this users' information without any notification
+
+
+	rm -f  $DESTDIR$TENTACLE_CFG_FILE 2> /dev/null
+	rm -f  "$DESTDIR$TENTACLE_CFG_FILE.new" 2> /dev/null
+	# Do not remove tentacle files if agent is still installed...
+	[ -e $DESTDIR$PREFIX/bin/pandora_agent ] || rm -f  $DESTDIR$PREFIX/bin/tentacle_server 2> /dev/null
+	[ -e $DESTDIR$PREFIX/bin/pandora_agent ] || rm -f  $DESTDIR$PREFIX/bin/tentacle_client 2> /dev/null
+	if [ "$DESTDIR" ]
+	then
+		rm -f $DESTDIR$TENTACLE_SERVER
+	elif [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
+	then
+		update-rc.d -f tentacle_serverd remove
+	fi
+
+	rm -f $DESTDIR/etc/rc2.d/S80tentacle_serverd 2> /dev/null 
+	rm -f $DESTDIR/etc/rc.d/rc3.d/S80tentacle_serverd 2> /dev/null 
+
+	echo "Done"
+	echo $DESTDIR$TENTACLE_SERVER
+}
+
+help () {
+	echo "  --install	To install Pandora FMS Servers on this system (You have to be root)"
+	echo "  --uninstall	To uninstall and remove Pandora FMS Servers on this System"
+	echo " "
+	echo " Additional second parameter (after --install) "
+	echo " "
+	echo "  --force			Ignore dependency problems and do the install"
+	echo "  --destdir DIR	Specify root directory for \"fakeroot\" installation"
+	echo " "
+}
+
+execute_cmd () {
+    cmd="$1"
+    msg="$2"
+
+    echo "$msg"
+    $cmd &>> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Fail"
+        [ "$3" ] && echo "$3"
+        echo "Error installing Tentacle server"
+        exit 1
+    else
+        echo "Ok"
+        return 0
+    fi
+}
+
+##Main
+
+# Script banner at start
+echo " "
+echo "Tentacle Server Installer $PI_VERSION $PI_BUILD (c) 2008-2022 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+case "$MODE" in
+
+'--install')
+	install "$@"
+	exit 0
+	;;
+
+'--uninstall')
+	uninstall "$@"
+	exit 0
+	;;
+
+*)
+	help
+esac
+

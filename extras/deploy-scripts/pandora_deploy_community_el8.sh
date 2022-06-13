@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022050501'
+S_VERSION='2022052501'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -86,7 +86,6 @@ check_pre_pandora () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
     execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
@@ -420,7 +419,9 @@ echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
 check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
 echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -uroot -P$DBPORT -h$DBHOST
+echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST        
 echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -uroot -P$DBPORT -h$DBHOST
+
 export MYSQL_PWD=$DBPASS
 
 #Generating my.cnf

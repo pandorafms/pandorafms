@@ -79,10 +79,6 @@ dbssl 0
 
 # dbsslcapath
 
-# By default, parent agent will not be updated
-
-#update_parent 0
-
 # verbosity: level of detail on errors/messages (0 default, 1 verbose, 2 debug.... 10 noisy)
 # -v in command line (verbose) or -d (debug). Set this to 10 when try to locate problems and
 # set to 1 or 3 on production enviroments.
@@ -434,6 +430,7 @@ sample_agent_interval 600
 # Update parent from the agent xml
 
 update_parent 1
+
 #
 #
 # This enable realtime reverse geocoding using Google Maps public api.

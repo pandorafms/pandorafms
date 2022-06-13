@@ -86,6 +86,8 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $addedItems = json_decode($addedItems);
     $all = (string) get_parameter('all', 'all');
 
+    $delete_offspring_agents = (int) get_parameter('delete_offspring_agents', 0);
+
     if ($addedItems != null) {
         foreach ($addedItems as $item) {
             echo $item."|\n";
@@ -111,21 +113,9 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     }
 
     $data = [];
-    // Get agents for only the alias
+    // Get agents for only the alias.
     $filter_alias = $filter;
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $filter_alias[] = '(UPPER(alias) LIKE "%'.$string.'%")';
-        break;
-
-        case 'postgresql':
-            $filter_alias[] = '(UPPER(alias) LIKE \'%'.$string.'%\')';
-        break;
-
-        case 'oracle':
-            $filter_alias[] = '(UPPER(alias) LIKE UPPER(\'%'.$string.'%\'))';
-        break;
-    }
+    $filter_alias[] = '(UPPER(alias) LIKE "%'.$string.'%")';
 
     $agents = agents_get_agents($filter_alias, ['id_agente', 'nombre', 'direccion', 'alias']);
     if ($agents !== false) {
@@ -142,19 +132,7 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 
     // Get agents for only the name.
     $filter_agents = $filter;
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $filter_agents[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) LIKE "%'.$string.'%")';
-        break;
-
-        case 'postgresql':
-            $filter_agents[] = '(UPPER(alias) NOT LIKE \'%'.$string.'%\' AND UPPER(nombre) LIKE \'%'.$string.'%\')';
-        break;
-
-        case 'oracle':
-            $filter_agents[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
-        break;
-    }
+    $filter_agents[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) LIKE "%'.$string.'%")';
 
     $agents = agents_get_agents($filter_agents, ['id_agente', 'nombre', 'direccion', 'alias']);
     if ($agents !== false) {
@@ -169,21 +147,9 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
         }
     }
 
-    // Get agents for only the address
+    // Get agents for only the address.
     $filter_address = $filter;
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $filter_address[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) NOT LIKE "%'.$string.'%" AND UPPER(direccion) LIKE "%'.$string.'%")';
-        break;
-
-        case 'postgresql':
-            $filter_address[] = '(UPPER(alias) NOT LIKE \'%'.$string.'%\' AND UPPER(nombre) NOT LIKE \'%'.$string.'%\' AND UPPER(direccion) LIKE \'%'.$string.'%\')';
-        break;
-
-        case 'oracle':
-            $filter_address[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
-        break;
-    }
+    $filter_address[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) NOT LIKE "%'.$string.'%" AND UPPER(direccion) LIKE "%'.$string.'%")';
 
     $agents = agents_get_agents($filter_address, ['id_agente', 'nombre', 'direccion', 'alias']);
     if ($agents !== false) {
@@ -198,21 +164,9 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
         }
     }
 
-    // Get agents for only the description
+    // Get agents for only the description.
     $filter_description = $filter;
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $filter_description[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) NOT LIKE "%'.$string.'%" AND UPPER(direccion) NOT LIKE "%'.$string.'%" AND UPPER(comentarios) LIKE "%'.$string.'%")';
-        break;
-
-        case 'postgresql':
-            $filter_description[] = '(UPPER(alias) NOT LIKE \'%'.$string.'%\' AND UPPER(nombre) NOT LIKE \'%'.$string.'%\' AND UPPER(direccion) NOT LIKE \'%'.$string.'%\' AND UPPER(comentarios) LIKE \'%'.$string.'%\')';
-        break;
-
-        case 'oracle':
-            $filter_description[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
-        break;
-    }
+    $filter_description[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) NOT LIKE "%'.$string.'%" AND UPPER(direccion) NOT LIKE "%'.$string.'%" AND UPPER(comentarios) LIKE "%'.$string.'%")';
 
     $agents = agents_get_agents($filter_description, ['id_agente', 'nombre', 'direccion', 'alias']);
     if ($agents !== false) {
@@ -224,6 +178,18 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
                 'ip'     => io_safe_output($agent['direccion']),
                 'filter' => 'description',
             ];
+        }
+    }
+
+    if (empty($data) === false && $delete_offspring_agents !== 0) {
+        // Gets offspring and deletes them, including himself.
+        $agents_offspring = agents_get_offspring($delete_offspring_agents);
+        if (empty($agents_offspring) === false) {
+            foreach ($data as $key => $value) {
+                if (isset($agents_offspring[$value['id']]) === true) {
+                    unset($data[$key]);
+                }
+            }
         }
     }
 

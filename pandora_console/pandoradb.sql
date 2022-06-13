@@ -2578,7 +2578,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdashboard` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(60) NOT NULL DEFAULT '',
+  `name` TEXT NOT NULL DEFAULT '',
   `id_user` VARCHAR(60) NOT NULL DEFAULT '',
   `id_group` INT NOT NULL DEFAULT 0,
   `active` TINYINT NOT NULL DEFAULT 0,
@@ -2817,6 +2817,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
   `cascade_protection` TINYINT NOT NULL DEFAULT 0,
   `evaluate_sla` INT NOT NULL DEFAULT 0,
   `is_favourite` TINYINT NOT NULL DEFAULT 0,
+  `enable_sunburst` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 

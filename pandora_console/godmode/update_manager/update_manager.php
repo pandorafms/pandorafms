@@ -107,11 +107,40 @@ switch ($tab) {
 
     case 'online':
     default:
-        if ($config['node_metaconsole'] === 0) {
-            $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
-            include $config['homedir'].'/godmode/um_client/index.php';
-        } else {
-            ui_print_warning_message(__('Please register on metaconsole.'));
+        if (is_metaconsole() === false && has_metaconsole() === true) {
+            $meta_puid = null;
+
+            $server_id = $config['metaconsole_node_id'];
+            $dbh = (object) $config['dbconnection'];
+
+            // Connect to metaconsole.
+            $result_code = metaconsole_load_external_db(
+                [
+                    'dbhost' => $config['replication_dbhost'],
+                    'dbuser' => $config['replication_dbuser'],
+                    'dbpass' => io_output_password($config['replication_dbpass']),
+                    'dbname' => $config['replication_dbname'],
+                ]
+            );
+
+            if ($result_code < 0) {
+                break;
+            }
+
+            $value = db_get_value('value', 'tconfig', 'token', 'pandora_uid');
+
+            $meta_puid = $value;
+
+            // Return connection to node.
+            metaconsole_restore_db();
+
+            if ($meta_puid === false || $meta_puid === null) {
+                ui_print_warning_message(__('Please register on metaconsole first.'));
+                break;
+            }
         }
+
+        $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
+        include $config['homedir'].'/godmode/um_client/index.php';
     break;
 }

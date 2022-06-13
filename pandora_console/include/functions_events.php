@@ -1338,13 +1338,18 @@ function events_get_all(
     $id_server = 0;
     if (empty($filter['id_server']) === false) {
         $id_server = $filter['id_server'];
+    } else if (empty($filter['server_id']) === false) {
+        $id_server = $filter['server_id'];
     }
 
     // Pagination.
     $pagination = '';
-    if (is_metaconsole() === true) {
-        // TODO: XXX TOTAL 10000 - 10000000. settins meta 300000; TIP. capturra el error.
-        $pagination = ' LIMIT 100000 ';
+    if (is_metaconsole() === true && empty($id_server) === true) {
+        // TODO: XXX TIP. capturra el error.
+        $pagination = sprintf(
+            ' LIMIT  %d',
+            $config['max_number_of_events_per_node']
+        );
     } else if (isset($limit, $offset) === true && $limit > 0) {
         $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
     }
@@ -1512,63 +1517,70 @@ function events_get_all(
                 ('.$sql.') tbase';
     }
 
-    if ($count !== true) {
-        if (is_metaconsole() === true) {
-            $result_meta = [];
-            $metaconsole_connections = metaconsole_get_names();
-            if (isset($metaconsole_connections) === true
-                && is_array($metaconsole_connections) === true
-            ) {
-                try {
-                    if (empty($id_server) === true) {
-                        $metaconsole_connections = array_flip($metaconsole_connections);
-                        $metaconsole_connections['meta'] = 0;
-                    } else {
-                        $only_id_server[$metaconsole_connections[$id_server]] = $id_server;
-                        $metaconsole_connections = $only_id_server;
-                    }
+    if ($count === true
+        && (is_metaconsole() !== false
+        || (is_metaconsole() === true && empty($filter['server_id']) === false))
+    ) {
+        $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
+    }
 
-                    $result_meta = Promise\wait(
-                        parallelMap(
-                            $metaconsole_connections,
-                            function ($node) use ($sql) {
-                                if ($node !== 0) {
-                                    $node = new Node((int) $node);
-                                    $node->connect();
-                                }
+    if (is_metaconsole() === true) {
+        $result_meta = [];
+        $metaconsole_connections = metaconsole_get_names();
+        if (isset($metaconsole_connections) === true
+            && is_array($metaconsole_connections) === true
+        ) {
+            try {
+                if (empty($id_server) === true) {
+                    $metaconsole_connections = array_flip($metaconsole_connections);
+                    $metaconsole_connections['meta'] = 0;
+                } else {
+                    $only_id_server[$metaconsole_connections[$id_server]] = $id_server;
+                    $metaconsole_connections = $only_id_server;
+                }
 
-                                $res = db_get_all_rows_sql($sql);
-                                if ($res === false) {
-                                    $res = [];
-                                }
-
-                                if ($node !== 0) {
-                                    $node->disconnect();
-                                }
-
-                                return $res;
+                $result_meta = Promise\wait(
+                    parallelMap(
+                        $metaconsole_connections,
+                        function ($node) use ($sql) {
+                            if ($node !== 0) {
+                                $node = new Node((int) $node);
+                                $node->connect();
                             }
-                        )
-                    );
-                } catch (\Exception $e) {
-                    $e->getReasons();
-                }
-            }
 
-            $data = [];
-            if (empty($result_meta) === false) {
-                foreach ($result_meta as $node => $value) {
-                    if (empty($value) === false) {
-                        foreach ($value as $k => $v) {
-                            $value[$k]['server_id'] = $metaconsole_connections[$node];
-                            $value[$k]['server_name'] = $node;
+                            $res = db_get_all_rows_sql($sql);
+                            if ($res === false) {
+                                $res = [];
+                            }
+
+                            if ($node !== 0) {
+                                $node->disconnect();
+                            }
+
+                            return $res;
                         }
+                    )
+                );
+            } catch (\Exception $e) {
+                $e->getReasons();
+            }
+        }
 
-                        $data = array_merge($data, $value);
+        $data = [];
+        if (empty($result_meta) === false) {
+            foreach ($result_meta as $node => $value) {
+                if (empty($value) === false) {
+                    foreach ($value as $k => $v) {
+                        $value[$k]['server_id'] = $metaconsole_connections[$node];
+                        $value[$k]['server_name'] = $node;
                     }
+
+                    $data = array_merge($data, $value);
                 }
             }
+        }
 
+        if (empty($filter['server_id']) === true) {
             // TODO: XXX;
             hd($sort_field, true);
             hd($order, true);
@@ -1620,20 +1632,23 @@ function events_get_all(
                 $count = count($data);
                 $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);
-
                 $return = [
                     'data'  => $finally,
                     'total' => $count,
                 ];
             } else {
-                // TODO: XXX limit * nodes.
-                $return = array_slice($data, 0, 1000000, true);
+                $return = array_slice(
+                    $data,
+                    0,
+                    ($config['max_number_of_events_per_node'] * count($metaconsole_connections)),
+                    true
+                );
             }
 
             return $return;
+        } else {
+            return $data;
         }
-    } else {
-        $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
     }
 
     if ($return_sql) {

@@ -352,7 +352,10 @@ if (is_ajax() === true) {
                 $history
             );
 
-            if (is_metaconsole() === false) {
+            if (is_metaconsole() === false
+                || (is_metaconsole() === true
+                && empty($filter['server_id']) === false)
+            ) {
                 $count = events_get_all(
                     'count',
                     $filter,

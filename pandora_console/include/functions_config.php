@@ -2054,6 +2054,10 @@ function config_process_config()
         config_update_value('max_execution_event_response', 10);
     }
 
+    if (!isset($config['max_number_of_events_per_node'])) {
+        config_update_value('max_number_of_events_per_node', 100000);
+    }
+
     if (!isset($config['max_macro_fields'])) {
         config_update_value('max_macro_fields', 10);
     }

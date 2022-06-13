@@ -2358,11 +2358,11 @@ function config_process_config()
     }
 
     if (isset($config['custom_logo']) === false) {
-        config_update_value('custom_logo', 'logo-pandorafms-1.png');
+        config_update_value('custom_logo', HEADER_LOGO_DEFAULT_CLASSIC);
     }
 
     if (isset($config['custom_logo_collapsed']) === false) {
-        config_update_value('custom_logo_collapsed', 'logo-pandorafms-1-collapsed.png');
+        config_update_value('custom_logo_collapsed', HEADER_LOGO_DEFAULT_COLLAPSED);
     }
 
     if (is_metaconsole()) {

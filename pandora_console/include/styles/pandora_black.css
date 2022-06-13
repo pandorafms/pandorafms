@@ -65,6 +65,9 @@ table.agent_info_table tr {
   color: #fff !important;
 }
 
+.logo_green {
+  background-color: #000;
+}
 #um-next:hover,
 #um-last:hover {
   border: 1px solid #888 !important;

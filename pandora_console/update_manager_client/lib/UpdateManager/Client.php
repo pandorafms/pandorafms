@@ -2077,7 +2077,8 @@ class Client
                     'status'         => $status,
                     'message'        => $msg,
                     'extra'          => $extra,
-                ]
+                ],
+                JSON_UNESCAPED_UNICODE
             );
 
             if ($field_exists === false) {

@@ -41,7 +41,6 @@ $product_name = get_product_name(); ?>
     <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
     <link rel="stylesheet" href="<?php $asset('resources/styles/jquery-ui.min.css'); ?>">
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/pandora.css'); ?>">
 </head>
 
 <div id="registration_wizard" title="
@@ -51,12 +50,12 @@ $product_name = get_product_name(); ?>
         <?php echo html_print_image('images/pandora_circle_big.png', true); ?>
     </div>
 
-    <div class="newsletter_div">
-        <?php echo __('Keep this %s console up to date with latest updates.', $product_name); ?>
+    <div class="newsletter_div lato font_10pt">
+            <?php echo __('Keep this %s console up to date with latest updates.', $product_name); ?>
     </div>
 
     <div class="license_text both">
-        <p>
+        <p class="lato font_10pt">
             <?php
             echo __(
                 'When you subscribe to the Warp update service for %s, you accept that we
@@ -71,12 +70,12 @@ $product_name = get_product_name(); ?>
             ?>
         </p>
 
-        <p>
+        <p class="lato font_10pt">
             <?php echo __('Visit our privacy policy for more information'); ?>:
             <a href="https://pandorafms.com/privacy-policy/" target="_blank">https://pandorafms.com/privacy-policy/</a>
         </p>
 
-        <input id="registration-email" type="email" placeholder="<?php echo __('Your email'); ?>" />
+        <input id="registration-email" class="lato" type="email" placeholder="<?php echo __('Your email'); ?>" />
     </div>
 
     <div class="submit_buttons_container">
@@ -86,7 +85,8 @@ $product_name = get_product_name(); ?>
                 __('Cancel'),
                 'cancel_registration',
                 false,
-                'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel"',
+                'class="lato ui-widget
+            ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel"',
                 true
             );
             ?>
@@ -97,7 +97,7 @@ $product_name = get_product_name(); ?>
                 __('OK!'),
                 'register',
                 false,
-                'class="ui-widget
+                'class="lato ui-widget
             ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
                 true
             );
@@ -108,7 +108,7 @@ $product_name = get_product_name(); ?>
 
 <!-- Verification modal.. -->
 <div id="reg_ensure_cancel" title="Confirmation Required" class="invisible">
-    <div class="font_12_20">
+    <div class="lato font_10pt">
         <?php echo __('Are you sure you don\'t want to use Warp update?'); ?>
         <p>
             <?php
@@ -124,7 +124,7 @@ $product_name = get_product_name(); ?>
 
 <!-- Results modal. -->
 <div id="reg_result" title="Registration process result" class="invisible">
-    <div id="reg_result_content" class="font_12_20">
+    <div id="reg_result_content" class="lato font_10pt">
     </div>
 </div>
 

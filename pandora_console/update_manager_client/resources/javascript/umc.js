@@ -460,7 +460,9 @@ function umShowUpdateDetails(update) {
   var um_update_details = document.getElementById("um-update-details");
   var header = document.getElementById("um-update-details-header");
   var content = document.getElementById("um-update-details-content");
-
+  var detailTitle = document
+    .getElementsByClassName("um-package-details")
+    .item(0).innerText;
   header.innerText = texts.updateText + " " + updates[update].version;
   content.innerText = updates[update].description;
 
@@ -468,7 +470,7 @@ function umShowUpdateDetails(update) {
     um_update_details.style.display = "block";
     if (typeof $ == "function") {
       $("#um-update-details").dialog({
-        title: update,
+        title: detailTitle,
         width: 800,
         height: 600
       });

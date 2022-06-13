@@ -1156,7 +1156,10 @@ $data = html_print_select(
     true,
     true,
     '',
-    false
+    false,
+    false,
+    false,
+    3
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';

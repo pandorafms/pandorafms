@@ -3664,7 +3664,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig` (
   `name` VARCHAR(100) NOT NULL,
   `order` INT NOT NULL DEFAULT 0,
   `description` TEXT,
-
+  `disabled` TINYINT DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

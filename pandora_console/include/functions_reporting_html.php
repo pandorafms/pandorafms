@@ -1156,7 +1156,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp_last']).'</font>';
             } else {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
             }
@@ -1381,7 +1381,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                         $data[3] = get_priority_name($event['criticity']);
                         if ($show_summary_group) {
                             $data[4] = $event['event_rep'];
-                            $data[5] = date($config['date_format'], $event['timestamp_rep']);
+                            $data[5] = date($config['date_format'], $event['timestamp_last']);
                         } else {
                             $data[4] = date($config['date_format'], strtotime($event['timestamp']));
                         }

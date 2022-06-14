@@ -10637,7 +10637,7 @@ function reporting_get_agents_detailed_event(
                     'type'         => $e['event_type'],
                     'criticity'    => $e['criticity'],
                     'validated_by' => $e['id_usuario'],
-                    'timestamp'    => $e['timestamp_rep'],
+                    'timestamp'    => $e['timestamp_last'],
                     'id_evento'    => $e['id_evento'],
                     'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
                 ];

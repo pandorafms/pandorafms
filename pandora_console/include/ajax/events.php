@@ -31,7 +31,6 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 // Begin.
 global $config;
 
-
 require_once 'include/functions_events.php';
 require_once 'include/functions_agents.php';
 require_once 'include/functions_ui.php';
@@ -88,81 +87,70 @@ $get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
+
 if ($get_comments === true) {
     $event = get_parameter('event', false);
-    $filter = get_parameter('filter', false);
-
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
 
     $eventsGrouped = [];
-
-    if ($filter['group_rep'] == 1) {
-        $events = events_get_all(
-            ['te.*'],
-            // Filter.
-            $filter,
-            // Offset.
-            null,
-            // Limit.
-            null,
-            // Order.
-            null,
-            // Sort_field.
-            null,
-            // History.
-            $filter['history'],
-            // Return_sql.
-            false,
-            // Having.
-            sprintf(
-                ' HAVING max_id_evento = %d',
-                $event['id_evento']
-            ),
-            // True for show comments of validated events.
-            true
+    // Consider if the event is grouped.
+    if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
+        // Default grouped message filtering (evento and estado).
+        $whereGrouped = sprintf(
+            '`evento` = "%s" AND `estado` = "%s" AND `event_type` = "%s" ',
+            $event['evento'],
+            $event['estado'],
+            $event['event_type']
         );
 
-        if ($events !== false) {
-            $event = $events[0];
-        }
-    } else {
-        // Consider if the event is grouped.
-        if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
-            // Evaluate if we are in metaconsole or not.
-            $eventTable = 'tevento';
-            // Default grouped message filtering (evento and estado).
-            $whereGrouped = sprintf(
-                '`evento` = "%s" AND `estado` = "%s"',
-                $event['evento'],
-                $event['estado']
+        // If id_agente is reported, filter the messages by them as well.
+        if ((int) $event['id_agente'] > 0) {
+            $whereGrouped .= sprintf(
+                ' AND `id_agente` = %d',
+                (int) $event['id_agente']
             );
-            // If id_agente is reported, filter the messages by them as well.
-            if ((int) $event['id_agente'] > 0) {
-                $whereGrouped .= sprintf(' AND `id_agente` = "%s"', $event['id_agente']);
+        }
+
+        if ((int) $event['id_agentmodule'] > 0) {
+            $whereGrouped .= sprintf(
+                ' AND `id_agentmodule` = %d',
+                (int) $event['id_agentmodule']
+            );
+        }
+
+        try {
+            if (is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                $node = new Node($event['server_id']);
+                $node->connect();
             }
 
-            // Get grouped comments.
-            $eventsGrouped = db_get_all_rows_sql(
-                sprintf(
-                    'SELECT `user_comment`
-                    FROM `%s`
-                    WHERE %s',
-                    $eventTable,
-                    $whereGrouped
-                )
-            );
-        } else {
-            $events = events_get_event(
-                $event['id_evento'],
-                false,
-                is_metaconsole(),
-                $history
+            $sql = sprintf(
+                'SELECT `user_comment`
+                FROM tevento
+                WHERE %s',
+                $whereGrouped
             );
 
-            if ($events !== false) {
-                $event = $events;
+            // Get grouped comments.
+            $eventsGrouped = db_get_all_rows_sql($sql);
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $eventsGrouped = [];
+        } finally {
+            if (is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                $node->disconnect();
             }
         }
     }
@@ -1270,12 +1258,44 @@ if ($dialogue_event_response) {
 if ($add_comment === true) {
     $comment = (string) get_parameter('comment');
     $eventId = (int) get_parameter('event_id');
+    $server_id = 0;
+    if (is_metaconsole() === true) {
+        $server_id = (int) get_parameter('server_id');
+    }
 
     // Safe comments for hacks.
     if (preg_match('/script/i', io_safe_output($comment))) {
         $return = false;
     } else {
-        $return = events_comment($eventId, $comment, 'Added comment', $meta, $history);
+        try {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node = new Node($server_id);
+                $node->connect();
+            }
+
+            $return = events_comment(
+                $eventId,
+                $comment,
+                'Added comment'
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $return = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+        }
     }
 
     echo ($return === true) ? 'comment_ok' : 'comment_error';
@@ -1283,35 +1303,38 @@ if ($add_comment === true) {
     return;
 }
 
-if ($change_status) {
+if ($change_status === true) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
 
-    if ($node_id > 0) {
-        try {
+    try {
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
             $node = new Node($node_id);
             $node->connect();
-            $return = events_change_status(
-                explode(',', $event_ids),
-                $new_status,
-                $meta,
-                $history
-            );
-        } catch (\Exception $e) {
-            // Unexistent agent.
-            $node->disconnect();
-            $success = false;
-            echo 'owner_error';
-        } finally {
-            $node->disconnect();
         }
-    } else {
+
         $return = events_change_status(
             explode(',', $event_ids),
-            $new_status,
-            $meta,
-            $history
+            $new_status
         );
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $success = false;
+        echo 'owner_error';
+    } finally {
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
 
     if ($return !== false) {
@@ -1320,7 +1343,12 @@ if ($change_status) {
         echo json_encode(
             [
                 'status_title' => $event_st['title'],
-                'status_img'   => html_print_image($event_st['img'], true, false, true),
+                'status_img'   => html_print_image(
+                    $event_st['img'],
+                    true,
+                    false,
+                    true
+                ),
                 'status'       => 'status_ok',
                 'user'         => db_get_value(
                     'fullname',
@@ -1356,24 +1384,37 @@ if ($change_owner) {
         $new_owner = '';
     }
 
-    if ($node_id > 0) {
-        try {
+    try {
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
             $node = new Node($node_id);
             $node->connect();
-            $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
-        } catch (\Exception $e) {
-            // Unexistent agent.
-            $node->disconnect();
-            $success = false;
-            echo 'owner_error';
-        } finally {
+        }
+
+        $return = events_change_owner(
+            $event_id,
+            $new_owner,
+            true
+        );
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
             $node->disconnect();
         }
-    } else {
-        $return = events_change_owner($event_id, $new_owner, true, $meta, $history);
+
+        $return = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
 
-    if ($return) {
+    if ($return === true) {
         echo 'owner_ok';
     } else {
         echo 'owner_error';
@@ -1427,8 +1468,8 @@ if ($get_extended_event) {
     $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
     $event_rep = $event['event_rep'];
-    $timestamp_first = $event['min_timestamp'];
-    $timestamp_last = $event['max_timestamp'];
+    $timestamp_first = $event['timestamp_first'];
+    $timestamp_last = $event['timestamp_last'];
     $server_id = $event['server_id'];
     if (empty($server_id) && !empty($event['server_name']) && is_metaconsole()) {
         $server_id = metaconsole_get_id_server($event['server_name']);
@@ -1521,19 +1562,19 @@ if ($get_extended_event) {
             $event['id_grupo'],
             'EM',
             $event['clean_tags'],
-            $childrens_ids
+            []
         )) || (tags_checks_event_acl(
             $config['id_user'],
             $event['id_grupo'],
             'EW',
             $event['clean_tags'],
-            $childrens_ids
+            []
         )) || (tags_checks_event_acl(
             $config['id_user'],
             $event['id_grupo'],
             'ER',
             $event['clean_tags'],
-            $childrens_ids
+            []
         )))
     ) {
         $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image(
@@ -1590,19 +1631,19 @@ if ($get_extended_event) {
             $event['id_grupo'],
             'EM',
             $event['clean_tags'],
-            $childrens_ids
+            []
         )) || (tags_checks_event_acl(
             $config['id_user'],
             $event['id_grupo'],
             'EW',
             $event['clean_tags'],
-            $childrens_ids
+            []
         )) || (tags_checks_event_acl(
             $config['id_user'],
             $event['id_grupo'],
             'ER',
             $event['clean_tags'],
-            $childrens_ids
+            []
         )))
     ) {
         $responses = events_page_responses($event);
@@ -1620,6 +1661,7 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
+    $related = '';
     if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
@@ -1721,8 +1763,7 @@ if ($get_extended_event) {
                 data : {
                     page: "include/ajax/events",
                     get_comments: 1,
-                    meta: '.(int) is_metaconsole().',
-                    event: '.json_encode($event).',
+                    event: '.json_encode($event).'
                 },
                 dataType : "html",
                 success: function (data) {

@@ -11661,53 +11661,16 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
             break;
         }
     } else {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                db_process_sql('SET group_concat_max_len = 9999999');
+        db_process_sql('SET group_concat_max_len = 9999999');
 
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                        GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-                    FROM ".$table_events.'
-                    WHERE 1=1 '.$sql_post.'
-                    GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC';
-            break;
-
-            case 'postgresql':
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                        array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-                    FROM ".$table_events.'
-                    WHERE 1=1 '.$sql_post.'
-                    GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC';
-            break;
-
-            case 'oracle':
-                $set = [];
-                // TODO: Remove duplicate user comments
-                $sql = 'SELECT a.*, b.event_rep, b.timestamp_rep
-                    FROM (SELECT *
-                        FROM tevento
-                        WHERE 1=1 '.$sql_post.") a, 
-                    (SELECT MAX (id_evento) AS id_evento,
-                        to_char(evento) AS evento, id_agentmodule,
-                        COUNT(*) AS event_rep, MIN(estado) AS min_estado,
-                        MAX(estado) AS max_estado,
-                        LISTAGG(user_comment, '') AS user_comment,
-                        MAX(utimestamp) AS timestamp_rep 
-                    FROM ".$table_events.' 
-                    WHERE 1=1 '.$sql_post.' 
-                    GROUP BY to_char(evento), id_agentmodule) b 
-                    WHERE a.id_evento=b.id_evento AND 
-                        to_char(a.evento)=to_char(b.evento) AND
-                        a.id_agentmodule=b.id_agentmodule';
-                $sql = oracle_recode_query($sql, $set);
-            break;
-        }
+        $sql = "SELECT *, MAX(id_evento) AS id_evento,
+                GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+                MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+                COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_last
+            FROM ".$table_events.'
+            WHERE 1=1 '.$sql_post.'
+            GROUP BY evento, id_agentmodule
+            ORDER BY timestamp_last DESC';
     }
 
     if ($other['type'] == 'string') {
@@ -13500,9 +13463,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                 $res = events_comment(
                     $return,
                     $user_comment,
-                    'Added comment',
-                    is_metaconsole(),
-                    $config['history_db_enabled']
+                    'Added comment'
                 );
                 if ($other['data'][13] != '') {
                     // owner user
@@ -13512,9 +13473,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         events_change_owner(
                             $return,
                             $owner_user,
-                            true,
-                            is_metaconsole(),
-                            $config['history_db_enabled']
+                            true
                         );
                     }
                 }
@@ -13570,9 +13529,7 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         $status = events_comment(
             $id,
             $comment,
-            'Added comment',
-            $meta,
-            $history
+            'Added comment'
         );
         if (is_error($status)) {
             returnError(

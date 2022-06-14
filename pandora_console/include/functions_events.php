@@ -458,11 +458,10 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
  * @param integer $id_evento Master event.
  * @param integer $status    Target status.
  * @param array   $filter    Optional. Filter options.
- * @param boolean $history   Apply on historical table.
  *
  * @return integer Events validated or false if error.
  */
-function events_update_status($id_evento, $status, $filter=null, $history=false)
+function events_update_status($id_evento, $status, $filter=null)
 {
     global $config;
 
@@ -558,7 +557,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
 
     $result = db_process_sql($update_sql);
 
-    if ($result) {
+    if ($result !== false) {
         switch ($status) {
             case EVENT_STATUS_NEW:
                 $status_string = 'New';
@@ -568,9 +567,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
                 events_change_owner(
                     $id_evento,
                     $config['id_user'],
-                    false,
-                    is_metaconsole() ? true : false,
-                    $history
+                    false
                 );
 
                 $status_string = 'Validated';
@@ -856,7 +853,7 @@ function events_get_all(
         }
     }
 
-    $groups = $filter['id_group_filter'];
+    $groups = isset($filter['id_group_filter']) === true ? $filter['id_group_filter'] : null;
     if ((bool) $user_is_admin === false
         && isset($groups) === false
     ) {
@@ -1345,7 +1342,7 @@ function events_get_all(
     // Pagination.
     $pagination = '';
     if (is_metaconsole() === true && empty($id_server) === true) {
-        // TODO: XXX TIP. capturra el error.
+        // TODO: XXX TIP. captura el error.
         $pagination = sprintf(
             ' LIMIT  %d',
             $config['max_number_of_events_per_node']
@@ -1354,7 +1351,6 @@ function events_get_all(
         $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
     }
 
-    $extra = '';
     // Group by.
     $group_by = 'GROUP BY ';
     $tagente_join = 'LEFT';
@@ -1367,8 +1363,7 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.estado, te.event_type, te.id_agente, te.id_agentmodule';
-            $group_by .= $extra;
+            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule, te.estado';
         break;
 
         case '2':
@@ -1584,9 +1579,9 @@ function events_get_all(
             // TODO: XXX;
             hd($sort_field, true);
             hd($order, true);
-
             if ($sort_field !== 'agent_name'
                 && $sort_field !== 'server_name'
+                && $sort_field !== 'timestamp'
             ) {
                 $sort_field = explode('.', $sort_field)[1];
                 if ($sort_field === 'user_comment') {
@@ -1736,9 +1731,7 @@ function events_get_event($id, $fields=false, $meta=false, $history=false)
         }
     }
 
-    $table = 'tevento';
-
-    $event = db_get_row($table, 'id_evento', $id, $fields);
+    $event = db_get_row('tevento', 'id_evento', $id, $fields);
     if ((bool) check_acl($config['id_user'], $event['id_grupo'], 'ER') === false) {
         return false;
     }
@@ -1752,31 +1745,24 @@ function events_get_event($id, $fields=false, $meta=false, $history=false)
  *
  * @param mixed   $id_event   Event ID or array of events.
  * @param integer $new_status New status of the event.
- * @param boolean $meta       Metaconsole mode flag.
- * @param boolean $history    History mode flag.
  *
  * @return boolean Whether or not it was successful
  */
 function events_change_status(
     $id_event,
-    $new_status,
-    $meta=false,
-    $history=false
+    $new_status
 ) {
     global $config;
 
-    $event_table = 'tevento';
-
-    // Cleans up the selection for all unwanted values also casts any single values as an array.
+    // Cleans up the selection for all unwanted
+    // values also casts any single values as an array.
     $id_event = (array) safe_int($id_event, 1);
 
     // Update ack info if the new status is validated.
-    if ($new_status == EVENT_STATUS_VALIDATED) {
+    $ack_utimestamp = 0;
+    $ack_user = $config['id_user'];
+    if ((int) $new_status === EVENT_STATUS_VALIDATED) {
         $ack_utimestamp = time();
-        $ack_user = $config['id_user'];
-    } else {
-        $acl_utimestamp = 0;
-        $ack_user = $config['id_user'];
     }
 
     switch ($new_status) {
@@ -1800,16 +1786,11 @@ function events_change_status(
     $alerts = [];
 
     foreach ($id_event as $k => $id) {
-        if ($meta) {
-            $event_group = events_meta_get_group($id, $history);
-            $event = events_meta_get_event($id, false, $history);
-            $server_id = $event['server_id'];
-        } else {
-            $event_group = events_get_group($id);
-            $event = events_get_event($id);
-        }
-
-        if ($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
+        $event_group = events_get_group($id);
+        $event = events_get_event($id);
+        if ($event['id_alert_am'] > 0
+            && in_array($event['id_alert_am'], $alerts) === false
+        ) {
             $alerts[] = $event['id_alert_am'];
         }
 
@@ -1823,7 +1804,7 @@ function events_change_status(
         }
     }
 
-    if (empty($id_event)) {
+    if (empty($id_event) === true) {
         return false;
     }
 
@@ -1834,7 +1815,7 @@ function events_change_status(
     ];
 
     $ret = db_process_sql_update(
-        $event_table,
+        'tevento',
         $values,
         ['id_evento' => $id_event]
     );
@@ -1843,49 +1824,38 @@ function events_change_status(
         return false;
     }
 
-    if ($new_status == EVENT_STATUS_VALIDATED) {
+    if ($new_status === EVENT_STATUS_VALIDATED) {
         events_change_owner(
             $id_event,
             $config['id_user'],
-            false,
-            $meta,
-            $history
+            false
         );
     }
 
     events_comment(
         $id_event,
         '',
-        'Change status to '.$status_string,
-        $meta,
-        $history
+        'Change status to '.$status_string
     );
 
-    if ($meta && !empty($alerts)) {
-        $server = metaconsole_get_connection_by_id($server_id);
-        metaconsole_connect($server);
-    }
-
     // Put the alerts in standby or not depends the new status.
-    foreach ($alerts as $alert) {
-        switch ($new_status) {
-            case EVENT_NEW:
-            case EVENT_VALIDATE:
-                alerts_agent_module_standby($alert, 0);
-            break;
+    if (empty($alerts) === false) {
+        foreach ($alerts as $alert) {
+            switch ($new_status) {
+                case EVENT_NEW:
+                case EVENT_VALIDATE:
+                    alerts_agent_module_standby($alert, 0);
+                break;
 
-            case EVENT_PROCESS:
-                alerts_agent_module_standby($alert, 1);
-            break;
+                case EVENT_PROCESS:
+                    alerts_agent_module_standby($alert, 1);
+                break;
 
-            default:
-                // Ignore.
-            break;
+                default:
+                    // Ignore.
+                break;
+            }
         }
-    }
-
-    if ($meta && !empty($alerts)) {
-        metaconsole_restore_db();
     }
 
     return true;
@@ -1908,24 +1878,15 @@ function events_change_status(
 function events_change_owner(
     $id_event,
     $new_owner=false,
-    $force=false,
-    $meta=false,
-    $history=false
+    $force=false
 ) {
     global $config;
-
-    $event_table = 'tevento';
-
     // Cleans up the selection for all unwanted values also casts any single
     // values as an array.
     $id_event = (array) safe_int($id_event, 1);
 
     foreach ($id_event as $k => $id) {
-        if ($meta) {
-            $event_group = events_meta_get_group($id, $history);
-        } else {
-            $event_group = events_get_group($id);
-        }
+        $event_group = events_get_group($id);
 
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
             db_pandora_audit(
@@ -1936,7 +1897,7 @@ function events_change_owner(
         }
     }
 
-    if (empty($id_event)) {
+    if (empty($id_event) === true) {
         return false;
     }
 
@@ -1944,17 +1905,13 @@ function events_change_owner(
         $new_owner = $config['id_user'];
     }
 
-    // Only generate comment when is forced (sometimes is owner changes when
-    // comment).
-    if ($force) {
+    // Only generate comment when is forced
+    // (sometimes is owner changes when comment).
+    if ($force === true) {
         events_comment(
             $id_event,
             '',
-            'Change owner to '.$new_owner,
-            $meta,
-            $history,
-            true,
-            false
+            'Change owner to '.$new_owner
         );
     }
 
@@ -1963,12 +1920,12 @@ function events_change_owner(
     $where = ['id_evento' => $id_event];
 
     // If not force, add to where if owner_user = ''.
-    if (!$force) {
+    if ($force === false) {
         $where['owner_user'] = '';
     }
 
     $ret = db_process_sql_update(
-        $event_table,
+        'tevento',
         $values,
         $where,
         'AND',
@@ -1986,41 +1943,25 @@ function events_change_owner(
 /**
  * Comment events in a transresponse
  *
- * @param mixed   $id_event     Event ID or array of events.
- * @param string  $comment      Comment to be registered.
- * @param string  $action       Action performed with comment. By default just add
- *                              a comment.
- * @param boolean $meta         Flag of metaconsole mode.
- * @param boolean $history      Flag of history mode.
- * @param boolean $similars     Similars.
- * @param boolean $update_owner Update owner.
+ * @param mixed  $id_event Event ID or array of events.
+ * @param string $comment  Comment to be registered.
+ * @param string $action   Action performed with comment. By default just add
+ *                         a comment.
  *
  * @return boolean Whether or not it was successful
  */
 function events_comment(
     $id_event,
     $comment='',
-    $action='Added comment',
-    $meta=false,
-    $history=false,
-    $similars=true,
-    $update_owner=true
+    $action='Added comment'
 ) {
     global $config;
-
-    $event_table = 'tevento';
-
     // Cleans up the selection for all unwanted values also casts any single
     // values as an array.
     $id_event = (array) safe_int($id_event, 1);
-
+    // Check ACL.
     foreach ($id_event as $k => $id) {
-        if ($meta) {
-            $event_group = events_meta_get_group($id, $history);
-        } else {
-            $event_group = events_get_group($id);
-        }
-
+        $event_group = events_get_group($id);
         if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
@@ -2031,35 +1972,38 @@ function events_comment(
         }
     }
 
-    if (empty($id_event)) {
+    if (empty($id_event) === true) {
         return false;
-    }
-
-    if ($update_owner) {
-        // If the event hasn't owner, assign the user as owner.
-        events_change_owner($id_event);
     }
 
     // Get the current event comments.
     $first_event = $id_event;
-    if (is_array($id_event)) {
+    if (is_array($id_event) === true) {
         $first_event = reset($id_event);
     }
 
-    $event_comments = mysql_db_process_sql(
-        'SELECT user_comment FROM '.$event_table.' WHERE id_evento = '.$first_event,
-        'affected_rows',
-        '',
-        false
+    $sql = sprintf(
+        'SELECT user_comment
+        FROM tevento
+        WHERE id_evento = %d',
+        $first_event
     );
 
+    $event_comments = db_get_all_rows_sql($sql);
     $event_comments_array = [];
 
     if ($event_comments[0]['user_comment'] == '') {
         $comments_format = 'new';
     } else {
         // If comments are not stored in json, the format is old.
-        $event_comments[0]['user_comment'] = str_replace(["\n", '&#x0a;'], '<br>', $event_comments[0]['user_comment']);
+        $event_comments[0]['user_comment'] = str_replace(
+            [
+                "\n",
+                '&#x0a;',
+            ],
+            '<br>',
+            $event_comments[0]['user_comment']
+        );
         $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
         if (empty($event_comments_array) === true) {
@@ -2083,7 +2027,7 @@ function events_comment(
 
             // Update comment.
             $ret = db_process_sql_update(
-                $event_table,
+                'tevento',
                 ['user_comment' => $event_comments],
                 ['id_evento' => implode(',', $id_event)]
             );
@@ -2110,7 +2054,7 @@ function events_comment(
                 'UPDATE %s
                 SET user_comment = concat("%s", user_comment)
                 WHERE id_evento in (%s)',
-                $event_table,
+                'tevento',
                 $comment,
                 implode(',', $id_event)
             );
@@ -3284,12 +3228,12 @@ function events_page_responses($event, $childrens_ids=[])
         $status_blocked
     );
 
-    if (!$status_blocked) {
+    if ($status_blocked === false) {
         $data[2] .= html_print_button(
             __('Update'),
             'status_button',
             false,
-            'event_change_status(\''.$event['similar_ids'].'\');',
+            'event_change_status(\''.$event['similar_ids'].'\','.$event['server_id'].');',
             'class="sub next w70p"',
             true
         );
@@ -4764,6 +4708,10 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
+    if (isset($event['user_comment']) === false) {
+        $event['user_comment'] = '';
+    }
+
     $comments = (empty($groupedComments) === true) ? $event['user_comment'] : $groupedComments;
 
     if (empty($comments) === true) {
@@ -4793,8 +4741,12 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             // Plain comments. Can be improved.
             $sortedCommentsArray = [];
             foreach ($comments_array as $comm) {
-                foreach ($comm as $subComm) {
-                    $sortedCommentsArray[] = $subComm;
+                if (isset($comm) === true
+                    && empty($comm) === false
+                ) {
+                    foreach ($comm as $subComm) {
+                        $sortedCommentsArray[] = $subComm;
+                    }
                 }
             }
 
@@ -4820,7 +4772,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         }
 
         foreach ($comments_array as $comm) {
-            $comments_format = (empty($comm) === true) ? 'old' : 'new';
+            $comments_format = (empty($comm) === true && is_array($comments) === false) ? 'old' : 'new';
 
             switch ($comments_format) {
                 case 'new':
@@ -4895,13 +4847,13 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         $event['id_grupo'],
         'EM',
         $event['clean_tags'],
-        $childrens_ids
+        []
     )) || (tags_checks_event_acl(
         $config['id_user'],
         $event['id_grupo'],
         'EW',
         $event['clean_tags'],
-        $childrens_ids
+        []
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
         $event['evento'] = io_safe_output($event['evento']);
@@ -5047,7 +4999,7 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
         break;
 
         case 'timestamp':
-            $sort_field_translated = ($group_rep == 0) ? 'timestamp' : 'timestamp_rep';
+            $sort_field_translated = ($group_rep == 0) ? 'timestamp' : 'timestamp_last';
         break;
 
         case 'user_id':

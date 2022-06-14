@@ -10,6 +10,8 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 class Events
 {
 
@@ -68,7 +70,7 @@ class Events
     {
         $system = System::getInstance();
 
-        if (!$this->correct_acl) {
+        if ($this->correct_acl === false) {
             return;
         } else {
             switch ($parameter2) {
@@ -121,7 +123,7 @@ class Events
                         $status_icon = html_print_image($img_st, true, false, false, false, false, true);
 
                         $row = [];
-                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="#" onclick="openDetails('.$event['id_evento'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
+                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="#" onclick="openDetails('.$event['id_evento'].','.$event['server_id'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
 
                         if ($event['id_agente'] == 0) {
                             $agent_name = __('System');
@@ -130,7 +132,7 @@ class Events
                         }
 
                         $row_1 = '<span class="events_agent">'.$agent_name.'</span>';
-                        $row_1 .= '<span class="events_timestamp">'.ui_print_timestamp($event['timestamp_rep'], true, ['units' => 'tiny']).$status_icon.'</span>';
+                        $row_1 .= '<span class="events_timestamp">'.ui_print_timestamp($event['timestamp_last'], true, ['units' => 'tiny']).$status_icon.'</span>';
 
                         $row[] = $row_1;
 
@@ -139,179 +141,279 @@ class Events
                     }
 
                     echo json_encode(['end' => $end, 'events' => $events]);
-
                 break;
 
                 case 'get_detail_event':
                     $system = System::getInstance();
 
                     $id_event = $system->getRequest('id_event', 0);
+                    $server_id = $system->getRequest('server_id', 0);
 
-                    $meta = false;
-                    if ($system->getConfig('metaconsole')) {
-                        $meta = true;
-                    }
-
-                    $event = events_get_event($id_event, false, $meta);
-                    if ($event) {
-                        // Check if it is a event from module.
-                        if ($event['id_agentmodule'] > 0) {
-                            $event['module_graph_link'] = '<a data-ajax="false" href="index.php?page=module_graph&id='.$event['id_agentmodule'].'">'.html_print_image('images/chart_curve.png', true, ['style' => 'vertical-align: middle;'], false, false, false, true).'</a>';
-                        } else {
-                            $event['module_graph_link'] = '<i>'.__('N/A').'</i>';
+                    try {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node = new Node($server_id);
+                            $node->connect();
                         }
 
-                        if ($event['id_agente'] > 0) {
-                            $event['agent'] = "<a class='black'"."href='index.php?page=agent&id=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</a>';
-                        } else {
-                            $event['agent'] = '<i>'.__('N/A').'</i>';
-                        }
+                        $event = events_get_event($id_event, false);
 
-                        $event['evento'] = io_safe_output($event['evento']);
-
-                        $event['clean_tags'] = events_clean_tags($event['tags']);
-                        $event['timestamp'] = date($system->getConfig('date_format'), $event['utimestamp']);
-                        if (empty($event['owner_user'])) {
-                            $event['owner_user'] = '<i>'.__('N/A').'</i>';
-                        } else {
-                            $user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
-                            if (empty($user_owner)) {
-                                $user_owner = $event['owner_user'];
-                            }
-
-                            $event['owner_user'] = $user_owner;
-                        }
-
-                        $event['event_type'] = events_print_type_description($event['event_type'], true);
-                        $event['event_type'] .= ' ';
-                        $event['event_type'] .= events_print_type_img($event['event_type'], true);
-
-                        if (!isset($group_rep)) {
-                            $group_rep = 0;
-                        }
-
-                        if ($group_rep != 0) {
-                            if ($event['event_rep'] <= 1) {
-                                $event['event_repeated'] = '<i>'.__('No').'</i>';
+                        if ($event !== false
+                            && empty($event) === false
+                        ) {
+                            // Check if it is a event from module.
+                            if ($event['id_agentmodule'] > 0) {
+                                $event['module_graph_link'] = '<a data-ajax="false" href="index.php?page=module_graph&id='.$event['id_agentmodule'].'">'.html_print_image('images/chart_curve.png', true, ['style' => 'vertical-align: middle;'], false, false, false, true).'</a>';
                             } else {
-                                $event['event_repeated'] = sprintf('%d Times', $event['event_rep']);
-                            }
-                        } else {
-                            $event['event_repeated'] = '<i>'.__('No').'</i>';
-                        }
-
-                        $event_criticity = get_priority_name($event['criticity']);
-
-                        switch ($event['criticity']) {
-                            default:
-                            case 0:
-                                $img_sev = 'images/status_sets/default/severity_maintenance.png';
-                            break;
-                            case 1:
-                                $img_sev = 'images/status_sets/default/severity_informational.png';
-                            break;
-
-                            case 2:
-                                $img_sev = 'images/status_sets/default/severity_normal.png';
-                            break;
-
-                            case 3:
-                                $img_sev = 'images/status_sets/default/severity_warning.png';
-                            break;
-
-                            case 4:
-                                $img_sev = 'images/status_sets/default/severity_critical.png';
-                            break;
-
-                            case 5:
-                                $img_sev = 'images/status_sets/default/severity_minor.png';
-                            break;
-
-                            case 6:
-                                $img_sev = 'images/status_sets/default/severity_major.png';
-                            break;
-                        }
-
-                        $event['criticity'] = ' '.$event_criticity;
-                        $event['criticity'] .= html_print_image(
-                            $img_sev,
-                            true,
-                            [
-                                'class'  => 'image_status',
-                                'width'  => 12,
-                                'height' => 12,
-                                'title'  => $event_criticity,
-                            ],
-                            false,
-                            false,
-                            false,
-                            true
-                        );
-
-                        if ($event['estado'] == 1) {
-                            $user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-                            if (empty($user_ack)) {
-                                $user_ack = $event['id_usuario'];
+                                $event['module_graph_link'] = '<i>'.__('N/A').'</i>';
                             }
 
-                            $date_ack = date($system->getConfig('date_format'), $event['ack_utimestamp']);
-                            $event['acknowledged_by'] = $user_ack.' ('.$date_ack.')';
-                        } else {
-                            $event['acknowledged_by'] = '<i>'.__('N/A').'</i>';
-                        }
-
-                        // Get Status
-                        switch ($event['estado']) {
-                            case 0:
-                                $img_st = 'images/star_dark.png';
-                                $title_st = __('New event');
-                            break;
-
-                            case 1:
-                                $img_st = 'images/tick.png';
-                                $title_st = __('Event validated');
-                            break;
-
-                            case 2:
-                                $img_st = 'images/hourglass.png';
-                                $title_st = __('Event in process');
-                            break;
-                        }
-
-                        $event['status'] = $title_st;
-                        $event['status'] .= ' ';
-                        $event['status'] .= html_print_image($img_st, true, false, false, false, false, true);
-
-                        $event['group'] = groups_get_name($event['id_grupo'], true);
-                        $event['group'] .= ui_print_group_icon($event['id_grupo'], true);
-
-                        $event['tags'] = tags_get_tags_formatted($event['tags']);
-                        if (empty($event['tags'])) {
-                            $event['tags'] = '<i>'.__('N/A').'</i>';
-                        }
-
-                        $event_comments = db_get_value('user_comment', 'tevento', 'id_evento', $id_event);
-                        $event_comments_array = [];
-                        $event_comments_array = json_decode($event_comments, true);
-                        // Support for new format only.
-                        if (empty($event_comments_array)) {
-                            $comment = '<i>'.__('N/A').'</i>';
-                        } else {
-                            $comment = '';
-                            $event_comments_array = array_reverse($event_comments_array);
-                            foreach ($event_comments_array as $c) {
-                                $comment .= date($system->getConfig('date_format'), $c['utimestamp']).' ('.$c['id_user'].')';
-                                $c['comment'] = io_safe_output($c['comment']);
-                                $c['comment'] = str_replace("\n", '<br>', $c['comment']);
-                                $comment .= '<br>'.$c['comment'].'<br>';
+                            if ($event['id_agente'] > 0) {
+                                $event['agent'] = "<a class='black'";
+                                $event['agent'] .= "href='index.php?page=agent&id=";
+                                $event['agent'] .= $event['id_agente']."'>";
+                                $event['agent'] .= agents_get_alias(
+                                    $event['id_agente']
+                                );
+                                $event['agent'] .= '</a>';
+                            } else {
+                                $event['agent'] = '<i>'.__('N/A').'</i>';
                             }
+
+                            $event['evento'] = io_safe_output(
+                                $event['evento']
+                            );
+
+                            $event['clean_tags'] = events_clean_tags(
+                                $event['tags']
+                            );
+                            $event['timestamp'] = date(
+                                $system->getConfig('date_format'),
+                                $event['utimestamp']
+                            );
+                            if (empty($event['owner_user']) === true) {
+                                $event['owner_user'] = '<i>'.__('N/A').'</i>';
+                            } else {
+                                $user_owner = db_get_value(
+                                    'fullname',
+                                    'tusuario',
+                                    'id_user',
+                                    $event['owner_user']
+                                );
+                                if (empty($user_owner) === true) {
+                                    $user_owner = $event['owner_user'];
+                                }
+
+                                $event['owner_user'] = $user_owner;
+                            }
+
+                            $event['event_type'] = events_print_type_description(
+                                $event['event_type'],
+                                true
+                            );
+                            $event['event_type'] .= ' ';
+                            $event['event_type'] .= events_print_type_img(
+                                $event['event_type'],
+                                true
+                            );
+
+                            if (isset($group_rep) === false) {
+                                $group_rep = 0;
+                            }
+
+                            if ((int) $group_rep !== 0) {
+                                if ($event['event_rep'] <= 1) {
+                                    $event['event_repeated'] = '<i>'.__('No').'</i>';
+                                } else {
+                                    $event['event_repeated'] = sprintf(
+                                        '%d Times',
+                                        $event['event_rep']
+                                    );
+                                }
+                            } else {
+                                $event['event_repeated'] = '<i>'.__('No').'</i>';
+                            }
+
+                            $event_criticity = get_priority_name(
+                                $event['criticity']
+                            );
+
+                            switch ($event['criticity']) {
+                                default:
+                                case 0:
+                                    $img_sev = 'images/status_sets/default/severity_maintenance.png';
+                                break;
+                                case 1:
+                                    $img_sev = 'images/status_sets/default/severity_informational.png';
+                                break;
+
+                                case 2:
+                                    $img_sev = 'images/status_sets/default/severity_normal.png';
+                                break;
+
+                                case 3:
+                                    $img_sev = 'images/status_sets/default/severity_warning.png';
+                                break;
+
+                                case 4:
+                                    $img_sev = 'images/status_sets/default/severity_critical.png';
+                                break;
+
+                                case 5:
+                                    $img_sev = 'images/status_sets/default/severity_minor.png';
+                                break;
+
+                                case 6:
+                                    $img_sev = 'images/status_sets/default/severity_major.png';
+                                break;
+                            }
+
+                            $event['criticity'] = ' '.$event_criticity;
+                            $event['criticity'] .= html_print_image(
+                                $img_sev,
+                                true,
+                                [
+                                    'class'  => 'image_status',
+                                    'width'  => 12,
+                                    'height' => 12,
+                                    'title'  => $event_criticity,
+                                ],
+                                false,
+                                false,
+                                false,
+                                true
+                            );
+
+                            if ((int) $event['estado'] === 1) {
+                                $user_ack = db_get_value(
+                                    'fullname',
+                                    'tusuario',
+                                    'id_user',
+                                    $event['id_usuario']
+                                );
+                                if (empty($user_ack) === true) {
+                                    $user_ack = $event['id_usuario'];
+                                }
+
+                                $date_ack = date(
+                                    $system->getConfig('date_format'),
+                                    $event['ack_utimestamp']
+                                );
+                                $event['acknowledged_by'] = $user_ack.' ('.$date_ack.')';
+                            } else {
+                                $event['acknowledged_by'] = '<i>'.__('N/A').'</i>';
+                            }
+
+                            // Get Status.
+                            switch ($event['estado']) {
+                                case 0:
+                                    $img_st = 'images/star_dark.png';
+                                    $title_st = __('New event');
+                                break;
+
+                                case 1:
+                                    $img_st = 'images/tick.png';
+                                    $title_st = __('Event validated');
+                                break;
+
+                                case 2:
+                                    $img_st = 'images/hourglass.png';
+                                    $title_st = __('Event in process');
+                                break;
+
+                                default:
+                                    // Not posible.
+                                break;
+                            }
+
+                            $event['status'] = $title_st;
+                            $event['status'] .= ' ';
+                            $event['status'] .= html_print_image(
+                                $img_st,
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                true
+                            );
+
+                            $event['group'] = groups_get_name(
+                                $event['id_grupo'],
+                                true
+                            );
+                            $event['group'] .= ui_print_group_icon(
+                                $event['id_grupo'],
+                                true
+                            );
+
+                            $event['tags'] = tags_get_tags_formatted(
+                                $event['tags']
+                            );
+                            if (empty($event['tags']) === true) {
+                                $event['tags'] = '<i>'.__('N/A').'</i>';
+                            }
+
+                            $event_comments = db_get_value(
+                                'user_comment',
+                                'tevento',
+                                'id_evento',
+                                $id_event
+                            );
+                            $event_comments_array = [];
+                            $event_comments_array = json_decode(
+                                $event_comments,
+                                true
+                            );
+                            // Support for new format only.
+                            if (empty($event_comments_array) === true) {
+                                $comment = '<i>'.__('N/A').'</i>';
+                            } else {
+                                $comment = '';
+                                $event_comments_array = array_reverse(
+                                    $event_comments_array
+                                );
+                                foreach ($event_comments_array as $c) {
+                                    $comment .= date(
+                                        $system->getConfig(
+                                            'date_format'
+                                        ),
+                                        $c['utimestamp']
+                                    ).' ('.$c['id_user'].')';
+                                    $c['comment'] = io_safe_output(
+                                        $c['comment']
+                                    );
+                                    $c['comment'] = str_replace(
+                                        "\n",
+                                        '<br>',
+                                        $c['comment']
+                                    );
+                                    $comment .= '<br>'.$c['comment'].'<br>';
+                                }
+                            }
+
+                            $event['comments'] = $comment;
+
+                            echo json_encode(['correct' => 1, 'event' => $event]);
+                        } else {
+                            echo json_encode(['correct' => 0, 'event' => []]);
+                        }
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
                         }
 
-                        $event['comments'] = $comment;
-
-                        echo json_encode(['correct' => 1, 'event' => $event]);
-                    } else {
                         echo json_encode(['correct' => 0, 'event' => []]);
+                    } finally {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
                     }
                 break;
 
@@ -319,11 +421,36 @@ class Events
                     $system = System::getInstance();
 
                     $id_event = $system->getRequest('id_event', 0);
+                    $server_id = $system->getRequest('server_id', 0);
 
-                    if (events_change_status($id_event, EVENT_VALIDATE, $system->getConfig('metaconsole'))) {
-                        echo json_encode(['correct' => 1]);
-                    } else {
+                    try {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node = new Node($server_id);
+                            $node->connect();
+                        }
+
+                        if (events_change_status($id_event, EVENT_VALIDATE) === true) {
+                            echo json_encode(['correct' => 1]);
+                        } else {
+                            echo json_encode(['correct' => 0]);
+                        }
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
+
                         echo json_encode(['correct' => 0]);
+                    } finally {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
                     }
                 break;
             }
@@ -443,11 +570,18 @@ class Events
     {
         $filter = db_get_row('tevent_filter', 'id_filter', $this->filter);
 
-        $this->free_search = $filter['search'];
-        $this->hours_old = $filter['event_view_hr'];
-        $this->status = $filter['status'];
-        $this->type = $filter['event_type'];
-        $this->severity = $filter['severity'];
+        $this->free_search = null;
+        $this->hours_old = null;
+        $this->status = null;
+        $this->type = null;
+        $this->severity = null;
+        if ($filter !== false && empty($filter) === false) {
+            $this->free_search = $filter['search'];
+            $this->hours_old = $filter['event_view_hr'];
+            $this->status = $filter['status'];
+            $this->type = $filter['event_type'];
+            $this->severity = $filter['severity'];
+        }
     }
 
 
@@ -574,6 +708,12 @@ class Events
         $options['content_text'] .= $ui->createButton($options_button);
         $options_hidden = [
             'id'    => 'event_id',
+            'value' => 0,
+            'type'  => 'hidden',
+        ];
+        $options['content_text'] .= $ui->getInput($options_hidden);
+        $options_hidden = [
+            'id'    => 'server_id',
             'value' => 0,
             'type'  => 'hidden',
         ];
@@ -872,25 +1012,24 @@ class Events
         $ui->contentAddHtml(
             '
 			<script type="text/javascript">
-				function openDetails(id_event) {
+				function openDetails(id_event, server_id) {
                     $.mobile.loading("show");
-					
 					postvars = {};
 					postvars["action"] = "ajax";
 					postvars["parameter1"] = "events";
 					postvars["parameter2"] = "get_detail_event";
 					postvars["id_event"] = id_event;
-					
+                    postvars["server_id"] = server_id;
+
 					$.ajax ({
 						type: "POST",
 						url: "index.php",
 						dataType: "json",
 						data: postvars,
-						success: 
+						success:
 							function (data) {
 								if (data.correct) {
 									event = data.event;
-									
 									//Fill the dialog
 									$("#detail_event_dialog h1.dialog_title")
 										.html(event["evento"]);
@@ -917,16 +1056,16 @@ class Events
 									$("#detail_event_dialog .cell_event_tags")
 										.html(event["tags"]);
 									$("#detail_event_dialog .cell_event_comments")
-
-.html(event["comments"]);
+                                        .html(event["comments"]);
 									$("#detail_event_dialog .cell_agent")
 										.html(event["agent"]);
-									
+
 									//The link to module graph
 									$(".cell_module_graph").html(event["module_graph_link"]);
-									
+
 									$("#event_id").val(id_event);
-									
+                                    $("#server_id").val(server_id);
+
 									if (event["estado"] != 1) {
 										$("#validate_button").show();
 									}
@@ -937,9 +1076,7 @@ class Events
 									$("#validate_button_loading").hide();
 									$("#validate_button_fail").hide();
 									$("#validate_button_correct").hide();
-									
                                     $.mobile.loading( "hide" );
-									
 									$("#detail_event_dialog_hook").click();
 								}
 								else {
@@ -954,40 +1091,41 @@ class Events
 							}
 						});
 				}
-				
-				
+
 				function validateEvent() {
 					id_event = $("#event_id").val();
-					
+                    server_id = $("#server_id").val();
+
 					$("#validate_button").hide();
 					$("#validate_button_loading").show();
-					
+
 					//Hide the button to close
 					$("#detail_event_dialog div.ui-header a.ui-btn-right")
 						.hide();
-					
+
 					postvars = {};
 					postvars["action"] = "ajax";
 					postvars["parameter1"] = "events";
 					postvars["parameter2"] = "validate_event";
 					postvars["id_event"] = id_event;
-					
+                    postvars["server_id"] = server_id;
+
 					$.ajax ({
 						type: "POST",
 						url: "index.php",
 						dataType: "json",
 						data: postvars,
-						success: 
+						success:
 							function (data) {
 								$("#validate_button_loading").hide();
-								
+
 								if (data.correct) {
 									$("#validate_button_correct").show();
 								}
 								else {
 									$("#validate_button_fail").show();
 								}
-								
+
 								$("#detail_event_dialog div.ui-header a.ui-btn-right")
 									.show();
 							},
@@ -998,7 +1136,7 @@ class Events
 								$("#detail_event_dialog div.ui-header a.ui-btn-right")
 									.show();
 							}
-						});
+					});
 				}
 			</script>'
         );
@@ -1027,18 +1165,17 @@ class Events
 									\"<td class='vertical_middle'>\" + event[1] + \"</td>\" +
 								\"</tr>\" + new_rows;
 							});
-							
+
 						$(\"table#\"+table_id+\" tbody\").append(new_rows);
-						
+
 						load_more_rows = 1;
 						refresh_link_listener_list_events();
 					}
 				}
-				
+
 				function ajax_load_rows() {
 					if (load_more_rows) {
 						load_more_rows = 0;
-						
 						postvars = {};
 						postvars[\"action\"] = \"ajax\";
 						postvars[\"parameter1\"] = \"events\";
@@ -1052,12 +1189,12 @@ class Events
 						postvars[\"hours_old\"] = $(\"input[name='hours_old']\").val();
 						postvars[\"page\"] = page;
 						page++;
-						
+
 						$.post(\"index.php\",
 							postvars,
 							function (data) {
 								add_rows(data, 'list_events');
-												
+
 								if($('#list_events').offset() != undefined) {
 									//For large screens load the new events
 									//Check if the end of the event list tables is in the client limits
@@ -1066,7 +1203,7 @@ class Events
 										ajax_load_rows();
 									}
 								}
-								
+
 								if (data.events.length == 0 && page == 1) {
 									$('#empty_advice_events').show();
 								}
@@ -1074,7 +1211,7 @@ class Events
 							\"json\");
 					}
 				}
-				
+
 				function ajax_load_latest_agent_events(id_agent, limit) {
 					postvars = {};
 					postvars[\"action\"] = \"ajax\";
@@ -1083,7 +1220,7 @@ class Events
 					postvars[\"agent_events\"] = \"1\";
 					postvars[\"id_agent\"] = id_agent;
 					postvars[\"limit\"] = limit;
-					
+
 					$.post(\"index.php\",
 						postvars,
 						function (data) {
@@ -1095,23 +1232,20 @@ class Events
 						},
 						\"json\");
 				}
-				
+
 				$(document).ready(function() {
 						ajax_load_rows();
-						
 						$(window).bind(\"scroll\", function () {
 							custom_scroll();
 						});
-						
 						$(window).on(\"touchmove\", function(event) {
 							custom_scroll();
 						});
 				});
-				
+
 				function custom_scroll() {
 					if ($(this).scrollTop() + $(this).height()
 							>= ($(document).height() - 100)) {
-							
 							ajax_load_rows();
 						}
 				}

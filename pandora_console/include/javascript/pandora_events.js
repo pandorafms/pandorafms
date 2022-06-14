@@ -81,20 +81,6 @@ function show_event_dialog(event, dialog_page, result) {
           }
         })
         .show();
-      $.post({
-        url: "ajax.php",
-        data: {
-          page: "include/ajax/events",
-          get_comments: 1,
-          event: event,
-          filter: values
-        },
-        dataType: "html",
-        success: function(data) {
-          $("#extended_event_comments_page").empty();
-          $("#extended_event_comments_page").html(data);
-        }
-      });
 
       $("#refrcounter").countdown("pause");
       $("div.vc-countdown").countdown("pause");
@@ -472,11 +458,8 @@ function perform_response_massive(response, response_id, out_iterator) {
 }
 
 // Change the status of an event to new, in process or validated.
-function event_change_status(event_ids) {
+function event_change_status(event_ids, node_id) {
   var new_status = $("#estado").val();
-  var meta = $("#hidden-meta").val();
-  var history = $("#hidden-history").val();
-  var node_id = $("#hidden-node_id").val();
 
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -487,13 +470,10 @@ function event_change_status(event_ids) {
       change_status: 1,
       event_ids: event_ids,
       new_status: new_status,
-      meta: meta,
-      node_id: node_id,
-      history: history
+      node_id: node_id
     },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
-    async: true,
     dataType: "json",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
@@ -607,10 +587,6 @@ function event_comment(current_event) {
   }
 
   var comment = $("#textarea_comment").val();
-  var meta = 0;
-  if ($("#hidden-meta").val() != undefined) {
-    meta = $("#hidden-meta").val();
-  }
 
   var history = 0;
   if ($("#hidden-history").val() != undefined) {
@@ -631,7 +607,7 @@ function event_comment(current_event) {
     params.push("event_id=" + event.id_evento);
   }
   params.push("comment=" + comment);
-  params.push("meta=" + meta);
+  params.push("server_id=" + event.server_id);
   params.push("history=" + history);
 
   $("#button-comment_button").attr("disabled", "disabled");

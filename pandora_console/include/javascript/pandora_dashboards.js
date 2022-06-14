@@ -1480,21 +1480,6 @@ function dashboardShowEventDialog(settings) {
         })
         .show();
 
-      $.post({
-        url: settings.ajaxUrl,
-        data: {
-          page: "include/ajax/events",
-          get_comments: 1,
-          event: settings.event,
-          filter: []
-        },
-        dataType: "html",
-        success: function(data) {
-          $("#extended_event_comments_page").empty();
-          $("#extended_event_comments_page").html(data);
-        }
-      });
-
       //$("#refrcounter").countdown("pause");
       //$("div.vc-countdown").countdown("pause");
 

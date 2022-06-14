@@ -838,8 +838,6 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `treport_template` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
-
 -- -----------------------------------------------------
 -- Table `treport_content_template`
 -- -----------------------------------------------------
@@ -1056,7 +1054,6 @@ ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_stat
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
 ALTER TABLE `tmetaconsole_event` MODIFY `data` TINYTEXT default NULL;
-ALTER TABLE `tmetaconsole_event` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1107,8 +1104,6 @@ ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(50,5) default 
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_estado_idx` (`estado`);
 ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
-ALTER TABLE `tmetaconsole_event_history` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
-
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
 -- ---------------------------------------------------------------------
@@ -1459,7 +1454,6 @@ ALTER TABLE `talert_commands` MODIFY COLUMN `id_group` mediumint(8) unsigned NUL
 -- Table `tmap`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
-ALTER TABLE `tmap` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `ttag`
@@ -1755,7 +1749,6 @@ ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL def
 ALTER TABLE tgraph ADD COLUMN `modules_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE `tgraph` MODIFY COLUMN `percentil` tinyint(1) unsigned NOT NULL DEFAULT '0';
-ALTER TABLE `tgraph` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1959,8 +1952,6 @@ CREATE TABLE IF NOT EXISTS `treset_pass_history` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `treset_pass_history` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL;
-
 -- ---------------------------------------------------------------------
 -- Table `tcontainer_item`
 -- ---------------------------------------------------------------------
@@ -1987,9 +1978,6 @@ CREATE TABLE IF NOT EXISTS `tcontainer_item` (
 
 ALTER TABLE tusuario add default_event_filter int(10) unsigned NOT NULL DEFAULT 0;
 
--- ---------------------------------------------------------------------
--- Table `treset_pass`
--- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treset_pass` (
     `id` bigint(10) unsigned NOT NULL auto_increment,
     `id_user` varchar(100) NOT NULL default '',
@@ -1997,8 +1985,6 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
     `reset_time` int(10) unsigned NOT NULL default 0,
     PRIMARY KEY (`id`) 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE `treset_pass` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
 
 UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
 
@@ -2061,7 +2047,6 @@ INSERT INTO `ttipo_modulo` VALUES
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;
-ALTER TABLE `tdashboard` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `tsnmp_filter`
@@ -2371,7 +2356,6 @@ ALTER TABLE `treport` ADD COLUMN `orientation` varchar(25) NOT NULL default 'ver
 ALTER TABLE `treport` MODIFY COLUMN `hidden` tinyint(1) NULL DEFAULT '0' AFTER `non_interactive`;
 ALTER TABLE `treport` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
 ALTER TABLE `treport` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
-ALTER TABLE `treport` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
 
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';
@@ -2408,8 +2392,6 @@ ALTER TABLE `tevento` ADD COLUMN `data` double(50,5) default NULL;
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 
 ALTER TABLE `tevento` MODIFY `data` TINYTEXT default NULL;
-
-ALTER TABLE `tevento` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_extended`
@@ -2480,8 +2462,6 @@ CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `tuser_task_scheduled` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
-
 -- -----------------------------------------------------
 -- Table `tnotification_source`
 -- -----------------------------------------------------
@@ -2520,8 +2500,6 @@ ALTER TABLE `tmensajes` ADD COLUMN `hidden_sent` TINYINT(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tmensajes` ADD CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `tmensajes` DROP COLUMN `id_usuario_destino`,
 	ADD UNIQUE INDEX `id_mensaje` (`id_mensaje`);
-
-ALTER TABLE `tmensajes` MODIFY COLUMN `id_usuario_origen` VARCHAR(255) NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Table `tnotification_user`
@@ -2818,7 +2796,6 @@ UPDATE `trecon_script` SET `description`='Specific&#x20;Pandora&#x20;FMS&#x20;In
 -- Table `tusuario_perfil`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tusuario_perfil` MODIFY COLUMN `no_hierarchy` tinyint(1) NOT NULL DEFAULT '0';
-ALTER TABLE `tusuario_perfil` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '';
 
 
 -- Extra tnetwork_component
@@ -4376,53 +4353,3 @@ ALTER TABLE `tnotification_user` ADD CONSTRAINT `tnotification_user_ibfk_2` FORE
 ALTER TABLE `tnotification_source_user` ADD CONSTRAINT `tnotification_source_user_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `tnotification_source_group_user` ADD CONSTRAINT `tnotification_source_group_user_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `tvisual_console_elements_cache` ADD CONSTRAINT `tvisual_console_elements_cache_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- ----------------------------------------------------------------------
--- Table `tattachment`
--- ----------------------------------------------------------------------
-ALTER TABLE `tattachment` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '';
-
--- ----------------------------------------------------------------------
--- Table `tincidencia`
--- ----------------------------------------------------------------------
-ALTER TABLE `tincidencia` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '';
-
--- ----------------------------------------------------------------------
--- Table `tnota`
--- ----------------------------------------------------------------------
-ALTER TABLE `tnota` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
-
--- ----------------------------------------------------------------------
--- Table `tsesion`
--- ----------------------------------------------------------------------
-ALTER TABLE `tsesion` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
-
--- ----------------------------------------------------------------------
--- Table `ttrap`
--- ----------------------------------------------------------------------
-ALTER TABLE `ttrap` MODIFY COLUMN `id_usuario` VARCHAR(255) DEFAULT '';
-
--- ----------------------------------------------------------------------
--- Table `tplanned_downtime`
--- ----------------------------------------------------------------------
-ALTER TABLE `tplanned_downtime` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '0';
-
--- ----------------------------------------------------------------------
--- Table `tnetwork_map`
--- ----------------------------------------------------------------------
-ALTER TABLE `tnetwork_map` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL;
-
--- ----------------------------------------------------------------------
--- Table `tpassword_history`
--- ----------------------------------------------------------------------
-ALTER TABLE `tpassword_history` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL;
-
--- ----------------------------------------------------------------------
--- Table `tupdate_journal`
--- ----------------------------------------------------------------------
-ALTER TABLE `tupdate_journal` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT '';
-
--- ----------------------------------------------------------------------
--- Table `tbackup`
--- ----------------------------------------------------------------------
-ALTER TABLE `tbackup` MODIFY COLUMN `id_user` VARCHAR(255) DEFAULT '';

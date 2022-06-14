@@ -644,9 +644,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $data[1] = html_print_image(
@@ -687,9 +686,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $tabletags_with->data[] = $data;
@@ -721,9 +719,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -760,9 +757,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
@@ -1189,7 +1185,10 @@ $data = html_print_select(
     true,
     true,
     '',
-    false
+    false,
+    false,
+    false,
+    3
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';

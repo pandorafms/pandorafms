@@ -307,6 +307,8 @@ console_dependencies=" \
     poppler-data \
     php-yaml \
     mod_ssl \
+    libzstd \
+    openldap-clients \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"

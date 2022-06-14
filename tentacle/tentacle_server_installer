@@ -121,7 +121,7 @@ install_startup_script () {
 	SRC=$1
 	SCRIPT_NAME=`basename $SRC`
 
-	echo "Copying the daemon script into $INITDIR"
+	echo "Copying the daemon script into $DESTDIR$INITDIR"
 	[ -d $DESTDIR$INITDIR ] || mkdir -p $DESTDIR$INITDIR
 	cp $SRC $DESTDIR$INITDIR
 
@@ -187,56 +187,22 @@ install () {
 		# Execute tools check
 		execute_cmd "ps --version" 'Checking dependencies: ps' "Error ps not found, please install procps"
 		execute_cmd "sudo --version" 'Checking dependencies: sudo' "Error sudo not found, please install sudo"
+		execute_cmd "perl -MIO::Compress::Zip -le 'pass'" 'Checking dependencies: perl IO::Compress' "Error perl IO::Compress not found, please install perl IO::Compress"
 	fi
 
 	# install tentacle
-	$PERL Makefile.PL INSTALLMAN1DIR=none > output 2>&1
-	#&& sleep 2 && cat output | grep "found" | wc -l 
-	DEPENDENCIAS=`cat output | grep "found" | wc -l`
+	[ -d $DESTDIR$PREFIX/bin/ ] || mkdir -p $DESTDIR$PREFIX/bin/
+	echo ">Installing the tentacle_server binary to $DESTDIR$PREFIX/bin/..."
+	cp -f tentacle_server "$DESTDIR$PREFIX/bin/"
 
-	if [ $DEPENDENCIAS -gt 0 ] && [ $FORCE -eq 0 ]
-	then
-		echo "You are missing the following dependencies"
-		echo " "
-		cat output | awk -F ": prerequisite" '{print $2}' | awk -F " " '{print $1}'
-		echo "The complete installation guide is at: https://pandorafms.com/docs/"
-		echo " "
-		rm output
-		exit 1
-	fi		
-
-	echo "Installing binaries and libraries"
-	make
-	make DESTDIR=$DESTDIR install
-		
-	echo "Checking binaries at /usr/local/bin -> /usr/bin"
-	if [ ! -f "$DESTDIR/usr/bin/tentacle_server" ] 
-	then
-		if [ ! -f "$DESTDIR/usr/local/bin/tentacle_server" ]
-		then
-			echo "ERROR compiling Tentacle Server from sources. Aborting"
-			exit 1
-		fi
-		if [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
-		then
-			[ -d $DESTDIR$PREFIX/bin ] || mkdir -p $DESTDIR$PREFIX/bin
-			ln -s /usr/local/bin/tentacle_server $DESTDIR$PREFIX/bin
-
-		fi
-	fi
-	
+	echo ">Installing the tentacle_client binary to $DESTDIR$PREFIX/bin/..."
+	cp -f tentacle_client "$DESTDIR$PREFIX/bin/"
 
 	echo "Creating common Pandora FMS directories"
 	id pandora 2> /dev/null
 	if [ $? -eq 0 ]; then
 		echo " "
 		echo "User pandora does exist, make sure the SSH directories are correct"
-	elif [ "$DESTDIR" ]
-	then
-		# chown can fail with fakeroot installation
-		echo "User 'pandora' does not exist. All chown operations may fail."
-		echo "You should manualy set proper ownership to $DESTDIR$PANDORA_SPOOL if needed."
-		echo
 	else
 		echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
 		read AREYOUSURE
@@ -273,7 +239,7 @@ install () {
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/commands
 
 
-	echo "Giving proper permission to /var/spool/pandora"
+	echo "Giving proper permission to $DESTDIR$PANDORA_SPOOL/"
 	for group in "www-data" wwwrun www apache
 	do
 		IDGROUP=`id -g "$group" 2> /dev/null`
@@ -297,7 +263,7 @@ install () {
 	install_startup_script -s 80 $TENTACLE_INIT_SCRIPT
 
 	# Create the directory to locate the Tentacle configuration file
-	echo "Creating setup Tentacle directory in $TENTACLE_CFG_DIR"
+	echo "Creating setup Tentacle directory in $DESTDIR$TENTACLE_CFG_DIR"
 	mkdir -p $DESTDIR$TENTACLE_CFG_DIR 2> /dev/null
 	if [ -f "$DESTDIR$TENTACLE_CFG_FILE" ]
 	then

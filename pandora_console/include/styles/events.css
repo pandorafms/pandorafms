@@ -33,7 +33,6 @@ form.flex-row ul {
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex-wrap: wrap;
   align-content: center;
   justify-content: space-between;
   flex: 1;
@@ -315,4 +314,32 @@ div.multi-response-buttons {
 
 .event_detail_tab_menu li {
   max-width: 160px;
+}
+
+.select_tags {
+  width: 200px;
+}
+
+@media screen and (max-width: 1400px) {
+  .select_tags {
+    width: 165px;
+  }
+}
+
+@media screen and (max-width: 1250px) {
+  .select_tags {
+    width: 125px;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .select_tags {
+    width: 100px;
+  }
+
+  form.flex-row div.filter_input.large {
+    flex: 1;
+    min-width: 600px;
+    max-width: 100%;
+  }
 }

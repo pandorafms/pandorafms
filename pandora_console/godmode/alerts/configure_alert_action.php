@@ -261,7 +261,7 @@ $table->data[2][1] = html_print_select_from_sql(
     'id_command',
     $id_command,
     '',
-    __('None'),
+    '',
     0,
     true,
     false,

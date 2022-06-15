@@ -556,7 +556,7 @@ function config_update_config()
                         $error_update[] = __('Autocreate profile group');
                     }
 
-                    if (config_update_value('default_assign_tags', implode(',', get_parameter('default_assign_tags')), true) === false) {
+                    if (config_update_value('default_assign_tags', implode(',', get_parameter('default_assign_tags', [])), true) === false) {
                         $error_update[] = __('Autocreate profile tags');
                     }
 
@@ -2098,6 +2098,10 @@ function config_process_config()
 
     if (!isset($config['metaconsole_events_history'])) {
         config_update_value('metaconsole_events_history', 0);
+    }
+
+    if (!isset($config['realtimestats'])) {
+        config_update_value('realtimestats', 1);
     }
 
     if (!isset($config['trap_purge'])) {

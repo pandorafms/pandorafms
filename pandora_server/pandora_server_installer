@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.761"
-PI_BUILD="220513"
+PI_VERSION="7.0NG.762"
+PI_BUILD="220615"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -333,7 +333,9 @@ install () {
 	fi
 	# when fakeroot installation, this can fail
 	chown -R pandora:$GROUPNAME $DESTDIR$PANDORA_SPOOL 2>/dev/null
-		
+
+	chown apache:$GROUPNAME $DESTDIR$PANDORA_SPOOL/data_in/customer_key 2>/dev/null
+
 	echo "Creating setup directory in $PANDORA_CFG_DIR"
 	mkdir -p $DESTDIR$PANDORA_CFG_DIR 2> /dev/null
 	if [ -f "$DESTDIR$PANDORA_CFG_FILE" ]

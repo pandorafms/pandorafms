@@ -2209,10 +2209,10 @@ function process_datatables_item(item) {
             // Validate.
             item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
             if (item.max_id_evento) {
-                item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="val-'+item.max_id_evento+'">';
+                item.options += item.max_id_evento+', '+ item.event_rep +', this, '+item.server_id+')" id="val-'+item.max_id_evento+'">';
                 item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events'), 'class' => 'invert_filter']); ?></a>';
             } else {
-                item.options += item.id_evento+', 0, this)" id="val-'+item.id_evento+'">';
+                item.options += item.id_evento+', 0, this, '+item.server_id+')" id="val-'+item.id_evento+'">';
                 item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event'), 'class' => 'invert_filter']); ?></a>';
             }
         }
@@ -2221,9 +2221,9 @@ function process_datatables_item(item) {
             // In process.
             item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
             if (item.max_id_evento) {
-                item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="proc-'+item.max_id_evento+'">';
+                item.options += item.max_id_evento+', '+ item.event_rep +', this, '+item.server_id+')" id="proc-'+item.max_id_evento+'">';
             } else {
-                item.options += item.id_evento+', 0, this)" id="proc-'+item.id_evento+'">';
+                item.options += item.id_evento+', 0, this, '+item.server_id+')" id="proc-'+item.id_evento+'">';
             }
             item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status'), 'class' => 'invert_filter']); ?></a>';
         }
@@ -2233,10 +2233,10 @@ function process_datatables_item(item) {
         // Delete.
         item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
         if (item.max_id_evento) {
-            item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="del-'+item.max_id_evento+'">';
+            item.options += item.max_id_evento+', '+ item.event_rep +', this, '+item.server_id+')" id="del-'+item.max_id_evento+'">';
             item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events'), 'class' => 'invert_filter']); ?></a>';
         } else {
-            item.options += item.id_evento+', 0, this)" id="del-'+item.id_evento+'">';
+            item.options += item.id_evento+', 0, this, '+item.server_id+')" id="del-'+item.id_evento+'">';
             item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event'), 'class' => 'invert_filter']); ?></a>';
         }
     }

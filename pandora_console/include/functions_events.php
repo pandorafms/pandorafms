@@ -466,16 +466,14 @@ function events_update_status($id_evento, $status, $filter=null)
     global $config;
 
     if (!$status) {
-        error_log('No hay estado');
         return false;
     }
 
-    if (!isset($id_evento) || $id_evento <= 0) {
-        error_log('No hay id_evento');
+    if (isset($id_evento) === false || $id_evento <= 0) {
         return false;
     }
 
-    if (!isset($filter) || !is_array($filter)) {
+    if (isset($filter) === false || is_array($filter) === false) {
         $filter = ['group_rep' => 0];
     }
 
@@ -510,7 +508,7 @@ function events_update_status($id_evento, $status, $filter=null)
                 // Sort_field.
                 null,
                 // Historical table.
-                $history,
+                false,
                 // Return_sql.
                 true
             );
@@ -1475,6 +1473,10 @@ function events_get_all(
         $having
     );
 
+    if ($return_sql === true) {
+        return $sql;
+    }
+
     if (!$user_is_admin) {
         // XXX: Confirm there's no extra grants unhandled!.
         $can_manage = '0 as user_can_manage';
@@ -1644,10 +1646,6 @@ function events_get_all(
         } else {
             return $data;
         }
-    }
-
-    if ($return_sql) {
-        return $sql;
     }
 
     return db_get_all_rows_sql($sql);
@@ -1870,8 +1868,6 @@ function events_change_status(
  *                           owner will be set, if empty, will be cleaned.
  * @param boolean $force     Flag to force the change or not (not force is
  *                           change only when it hasn't owner).
- * @param boolean $meta      Metaconsole mode flag.
- * @param boolean $history   History mode flag.
  *
  * @return boolean Whether or not it was successful.
  */
@@ -3057,17 +3053,13 @@ function events_get_event_filter_select($manage=true)
  * Events pages functions to load modal window with advanced view of an event.
  * Called from include/ajax/events.php.
  *
- * @param mixed $event         Event.
- * @param array $childrens_ids Children_ids.
+ * @param mixed $event Event.
  *
  * @return string HTML.
  */
-function events_page_responses($event, $childrens_ids=[])
+function events_page_responses($event)
 {
     global $config;
-    //
-    // Responses.
-    //
     $table_responses = new StdClass();
     $table_responses->cellspacing = 2;
     $table_responses->cellpadding = 2;
@@ -3079,51 +3071,47 @@ function events_page_responses($event, $childrens_ids=[])
     $table_responses->style[2] = 'text-align:right;';
     $table_responses->class = 'table_modal_alternate';
 
-    if (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) {
+    $acl_tags_event_manager = tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EM',
+        $event['clean_tags']
+    );
+
+    if ($acl_tags_event_manager === true) {
         // Owner.
         $data = [];
         $data[0] = __('Change owner');
         // Owner change can be done to users that belong to the event group
         // with ER permission.
-        $profiles_view_events = db_get_all_rows_filter('tperfil', ['event_view' => '1'], 'id_perfil');
+        $profiles_view_events = db_get_all_rows_filter(
+            'tperfil',
+            ['event_view' => '1'],
+            'id_perfil'
+        );
+
         foreach ($profiles_view_events as $k => $v) {
             $profiles_view_events[$k] = reset($v);
         }
 
-        // Juanma (05/05/2014) Fix : Propagate ACL.
         $_user_groups = array_keys(
-            users_get_groups($config['id_user'], 'ER', users_can_manage_group_all())
+            users_get_groups(
+                $config['id_user'],
+                'ER',
+                users_can_manage_group_all()
+            )
         );
-        $strict_user = db_get_value(
-            'strict_acl',
-            'tusuario',
-            'id_user',
-            $config['id_user']
+        $users = groups_get_users(
+            $_user_groups,
+            ['id_perfil' => $profiles_view_events],
+            true
         );
-        if ($strict_user) {
-            $user_name = db_get_value(
-                'id_user',
-                'tusuario',
-                'id_user',
-                $config['id_user']
-            );
-
-            $users = [];
-            $users[0]['id_user'] = $config['id_user'];
-            $users[0]['fullname'] = $user_name;
-        } else {
-            $users = groups_get_users(
-                $_user_groups,
-                ['id_perfil' => $profiles_view_events],
-                true
-            );
-        }
 
         foreach ($users as $u) {
             $owners[$u['id_user']] = $u['id_user'];
         }
 
-        if ($event['owner_user'] == '') {
+        if (empty($event['owner_user']) === true) {
             $owner_name = __('None');
         } else {
             $owner_name = db_get_value(
@@ -3153,7 +3141,7 @@ function events_page_responses($event, $childrens_ids=[])
             __('Update'),
             'owner_button',
             false,
-            'event_change_owner();',
+            'event_change_owner('.$event['id_evento'].', '.$event['server_id'].');',
             'class="sub next w70p"',
             true
         );
@@ -3171,8 +3159,7 @@ function events_page_responses($event, $childrens_ids=[])
         $config['id_user'],
         $event['id_grupo'],
         'EM',
-        $event['clean_tags'],
-        $childrens_ids
+        $event['clean_tags']
     )
     ) {
         // If the user has manager acls, the status can be changed to all
@@ -3243,14 +3230,12 @@ function events_page_responses($event, $childrens_ids=[])
         $config['id_user'],
         $event['id_grupo'],
         'EM',
-        $event['clean_tags'],
-        $childrens_ids
+        $event['clean_tags']
     )) || (tags_checks_event_acl(
         $config['id_user'],
         $event['id_grupo'],
         'EW',
-        $event['clean_tags'],
-        $childrens_ids
+        $event['clean_tags']
     ))
     ) {
         $table_responses->data[] = $data;
@@ -3275,8 +3260,7 @@ function events_page_responses($event, $childrens_ids=[])
         $config['id_user'],
         $event['id_grupo'],
         'EM',
-        $event['clean_tags'],
-        $childrens_ids
+        $event['clean_tags']
     )
     ) {
         // Delete.
@@ -3357,17 +3341,16 @@ function events_page_responses($event, $childrens_ids=[])
 				var params = get_response_params(id_response);
 				var description = get_response_description(id_response);
 				$('.params_rows').remove();
-				
 				$('#responses_table')
 					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"height_30px\" colspan=\"2\">'+description+'</td></tr>');
-				
+
 				if (params.length == 1 && params[0] == '') {
 					return;
 				}
-				
+
 				$('#responses_table')
 					.append('<tr class=\"params_rows\"><td class=\"left pdd_l_20px height_30px\" colspan=\"3\">".__('Parameters')."</td></tr>');
-				
+
 				for (i = 0; i < params.length; i++) {
 					add_row_param('responses_table',params[i]);
 				}
@@ -3383,20 +3366,15 @@ function events_page_responses($event, $childrens_ids=[])
 
 /**
  * Replace macros in the target of a response and return it.
- * If server_id > 0, it's a metaconsole query.
  *
  * @param integer $event_id    Event identifier.
  * @param integer $response_id Event response identifier.
- * @param integer $server_id   Node identifier (for metaconsole).
- * @param boolean $history     Use the history database or not.
  *
  * @return string The response text with the macros applied.
  */
 function events_get_response_target(
     int $event_id,
-    int $response_id,
-    int $server_id=0,
-    bool $history=false
+    int $response_id
 ) {
     global $config;
 
@@ -3408,59 +3386,28 @@ function events_get_response_target(
         $eventObjt = new PandoraFMS\Event();
     }
 
-    // If server_id > 0, it's a metaconsole query.
-    $meta = $server_id > 0 || is_metaconsole();
-    $event_table = 'tevento';
-    $event = db_get_row($event_table, 'id_evento', $event_id);
-
+    $event = db_get_row('tevento', 'id_evento', $event_id);
     $event_response = db_get_row('tevent_response', 'id', $response_id);
     $target = io_safe_output($event_response['target']);
 
     if (strpos($target, '_agent_alias_') !== false) {
-        if ($meta) {
-            $agente_table_name = 'tmetaconsole_agent';
-            $filter = [
-                'id_tagente'            => $event['id_agente'],
-                'id_tmetaconsole_setup' => $server_id,
-            ];
-        } else {
-            $agente_table_name = 'tagente';
-            $filter = ['id_agente' => $event['id_agente']];
-        }
-
+        $agente_table_name = 'tagente';
+        $filter = ['id_agente' => $event['id_agente']];
         $alias = db_get_value_filter('alias', $agente_table_name, $filter);
         $target = str_replace('_agent_alias_', io_safe_output($alias), $target);
     }
 
     if (strpos($target, '_agent_name_') !== false) {
-        if ($meta) {
-            $agente_table_name = 'tmetaconsole_agent';
-            $filter = [
-                'id_tagente'            => $event['id_agente'],
-                'id_tmetaconsole_setup' => $server_id,
-            ];
-        } else {
-            $agente_table_name = 'tagente';
-            $filter = ['id_agente' => $event['id_agente']];
-        }
-
+        $agente_table_name = 'tagente';
+        $filter = ['id_agente' => $event['id_agente']];
         $name = db_get_value_filter('nombre', $agente_table_name, $filter);
         $target = str_replace('_agent_name_', io_safe_output($name), $target);
     }
 
     // Substitute each macro.
     if (strpos($target, '_agent_address_') !== false) {
-        if ($meta) {
-            $agente_table_name = 'tmetaconsole_agent';
-            $filter = [
-                'id_tagente'            => $event['id_agente'],
-                'id_tmetaconsole_setup' => $server_id,
-            ];
-        } else {
-            $agente_table_name = 'tagente';
-            $filter = ['id_agente' => $event['id_agente']];
-        }
-
+        $agente_table_name = 'tagente';
+        $filter = ['id_agente' => $event['id_agente']];
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent has not an IP, display N/A.
         if ($ip === false || $ip === '') {
@@ -3478,18 +3425,21 @@ function events_get_response_target(
         || (strpos($target, '_module_name_') !== false)
     ) {
         if ($event['id_agentmodule'] !== 0) {
-            if ($meta) {
-                $server = metaconsole_get_connection_by_id($server_id);
-                metaconsole_connect($server);
-            }
-
-            $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
-            if (empty($module['ip_target'])) {
+            $module = db_get_row(
+                'tagente_modulo',
+                'id_agente_modulo',
+                $event['id_agentmodule']
+            );
+            if (empty($module['ip_target']) === true) {
                 $module['ip_target'] = __('N/A');
             }
 
-            $target = str_replace('_module_address_', $module['ip_target'], $target);
-            if (empty($module['nombre'])) {
+            $target = str_replace(
+                '_module_address_',
+                $module['ip_target'],
+                $target
+            );
+            if (empty($module['nombre']) === true) {
                 $module['nombre'] = __('N/A');
             }
 
@@ -3498,10 +3448,6 @@ function events_get_response_target(
                 io_safe_output($module['nombre']),
                 $target
             );
-
-            if ($meta) {
-                metaconsole_restore_db();
-            }
         } else {
             $target = str_replace('_module_address_', __('N/A'), $target);
             $target = str_replace('_module_name_', __('N/A'), $target);
@@ -3513,7 +3459,7 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_user_id_') !== false) {
-        if (!empty($event['id_usuario'])) {
+        if (empty($event['id_usuario']) === false) {
             $target = str_replace('_user_id_', $event['id_usuario'], $target);
         } else {
             $target = str_replace('_user_id_', __('N/A'), $target);
@@ -3567,13 +3513,17 @@ function events_get_response_target(
     if (strpos($target, '_alert_id_') !== false) {
         $target = str_replace(
             '_alert_id_',
-            empty($event['id_alert_am']) ? __('N/A') : $event['id_alert_am'],
+            (empty($event['id_alert_am']) === true) ? __('N/A') : $event['id_alert_am'],
             $target
         );
     }
 
     if (strpos($target, '_event_severity_id_') !== false) {
-        $target = str_replace('_event_severity_id_', $event['criticity'], $target);
+        $target = str_replace(
+            '_event_severity_id_',
+            $event['criticity'],
+            $target
+        );
     }
 
     if (strpos($target, '_event_severity_text_') !== false) {
@@ -3593,15 +3543,27 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_event_extra_id_') !== false) {
-        if (empty($event['id_extra'])) {
-            $target = str_replace('_event_extra_id_', __('N/A'), $target);
+        if (empty($event['id_extra']) === true) {
+            $target = str_replace(
+                '_event_extra_id_',
+                __('N/A'),
+                $target
+            );
         } else {
-            $target = str_replace('_event_extra_id_', $event['id_extra'], $target);
+            $target = str_replace(
+                '_event_extra_id_',
+                $event['id_extra'],
+                $target
+            );
         }
     }
 
     if (strpos($target, '_event_source_') !== false) {
-        $target = str_replace('_event_source_', $event['source'], $target);
+        $target = str_replace(
+            '_event_source_',
+            $event['source'],
+            $target
+        );
     }
 
     if (strpos($target, '_event_instruction_') !== false) {
@@ -3673,7 +3635,7 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_owner_user_') !== false) {
-        if (empty($event['owner_user'])) {
+        if (empty($event['owner_user']) === true) {
             $target = str_replace('_owner_user_', __('N/A'), $target);
         } else {
             $target = str_replace('_owner_user_', $event['owner_user'], $target);
@@ -3894,18 +3856,21 @@ function events_page_related($event, $server='')
 /**
  * Generates the 'details' page in event view.
  *
- * @param array  $event  To be displayed.
- * @param string $server Server (if in metaconsole environment).
+ * @param array   $event  To be displayed.
+ * @param integer $server Server (if in metaconsole environment).
  *
  * @return string HTML to be displayed.
  */
-function events_page_details($event, $server='')
+function events_page_details($event, $server_id=0)
 {
     global $img_sev;
     global $config;
 
-    // If server is provided, get the hash parameters.
-    if (!empty($server) && is_metaconsole()) {
+    // If metaconsole switch to node to get details and custom fields.
+    $hashstring = '';
+    $serverstring = '';
+    if (is_metaconsole() === true && empty($server_id) === false) {
+        $server = metaconsole_get_connection_by_id($server_id);
         $hashdata = metaconsole_get_server_hashdata($server);
         $hashstring = '&amp;loginhash=auto&loginhash_data='.$hashdata.'&loginhash_user='.str_rot13($config['id_user']);
         $serverstring = $server['server_url'].'/';
@@ -3913,9 +3878,6 @@ function events_page_details($event, $server='')
         if (metaconsole_connect($server) !== NOERR) {
             return ui_print_error_message(__('There was an error connecting to the node'), '', true);
         }
-    } else {
-        $hashstring = '';
-        $serverstring = '';
     }
 
     $table_class = 'table_modal_alternate';
@@ -3929,21 +3891,6 @@ function events_page_details($event, $server='')
     $table_details->cellpadding = 0;
     $table_details->class = $table_class;
 
-    /*
-     * Useless switch.
-
-        switch ($event['event_type']) {
-        case 'going_unknown':
-        case 'going_up_warning':
-        case 'going_down_warning':
-        case 'going_up_critical':
-        case 'going_down_critical':
-        default:
-            // Ignore.
-        break;
-        }
-     */
-
     if ($event['id_agente'] != 0) {
         $agent = db_get_row('tagente', 'id_agente', $event['id_agente']);
     } else {
@@ -3954,7 +3901,7 @@ function events_page_details($event, $server='')
     $data[1] = empty($agent) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
-    if (!empty($agent)) {
+    if (empty($agent) === false) {
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Name').'</div>';
         if (can_user_access_node() && is_metaconsole() && empty($event['server_id']) === true) {
@@ -3996,7 +3943,7 @@ function events_page_details($event, $server='')
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('OS').'</div>';
         $data[1] = ui_print_os_icon($agent['id_os'], true, true);
-        if (!empty($agent['os_version'])) {
+        if (empty($agent['os_version']) === false) {
             $data[1] .= ' ('.$agent['os_version'].')';
         }
 
@@ -4042,7 +3989,7 @@ function events_page_details($event, $server='')
     $data[1] = empty($module) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
-    if (!empty($module)) {
+    if (empty($module) === false) {
         // Module name.
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Name').'</div>';
@@ -4071,14 +4018,7 @@ function events_page_details($event, $server='')
 
         // ACL.
         $acl_graph = false;
-        $strict_user = (bool) db_get_value(
-            'strict_acl',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
-
-        if (!empty($agent['id_grupo'])) {
+        if (empty($agent['id_grupo']) === false) {
             $acl_graph = check_acl(
                 $config['id_user'],
                 $agent['id_grupo'],
@@ -4114,7 +4054,7 @@ function events_page_details($event, $server='')
                 'refresh' => SECONDS_10MINUTES,
             ];
 
-            if (defined('METACONSOLE')) {
+            if (is_metaconsole() === true && empty($server_id) === false) {
                 // Set the server id.
                 $graph_params['server'] = $server['id'];
             }
@@ -4229,7 +4169,7 @@ function events_page_details($event, $server='')
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
-    if (!empty($server) && is_metaconsole()) {
+    if (is_metaconsole() === true && empty($server_id) === false) {
         metaconsole_restore_db();
     }
 

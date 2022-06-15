@@ -1,4 +1,4 @@
-/*global jQuery,$,forced_title_callback,Base64, dt_events*/
+/*global jQuery, $, forced_title_callback, dt_events, confirmDialog*/
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page, result) {
@@ -117,7 +117,7 @@ function show_event_dialog(event, dialog_page, result) {
 function execute_response(event_id, server_id) {
   var response_id = $("#select_custom_response option:selected").val();
 
-  var response = get_response(response_id);
+  var response = get_response(response_id, server_id);
 
   // If cannot get response abort it
   if (response == null) {
@@ -232,13 +232,14 @@ function show_massive_response_dialog(
 }
 
 // Get an event response from db
-function get_response(response_id) {
+function get_response(response_id, server_id) {
   var response = "";
 
   var params = [];
   params.push("page=include/ajax/events");
   params.push("get_response=1");
   params.push("response_id=" + response_id);
+  params.push("server_id=" + server_id);
 
   jQuery.ajax({
     data: params.join("&"),
@@ -298,31 +299,6 @@ function get_response_description(response_id) {
   });
 
   return response_description;
-}
-
-// Get an event response description from db
-function get_event_name(event_id, meta, history) {
-  var name = "";
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_event_name=1");
-  params.push("event_id=" + event_id);
-  params.push("meta=" + meta);
-  params.push("history=" + history);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "html",
-    success: function(data) {
-      name = data;
-    }
-  });
-
-  return name;
 }
 
 function add_row_param(id_table, param) {
@@ -458,7 +434,7 @@ function perform_response_massive(response, response_id, out_iterator) {
 }
 
 // Change the status of an event to new, in process or validated.
-function event_change_status(event_ids, node_id) {
+function event_change_status(event_ids, server_id) {
   var new_status = $("#estado").val();
 
   $("#button-status_button").attr("disabled", "disabled");
@@ -470,7 +446,7 @@ function event_change_status(event_ids, node_id) {
       change_status: 1,
       event_ids: event_ids,
       new_status: new_status,
-      node_id: node_id
+      server_id: server_id
     },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
@@ -517,12 +493,8 @@ function event_change_status(event_ids, node_id) {
 }
 
 // Change te owner of an event to one user of empty
-function event_change_owner() {
-  var event_id = $("#hidden-id_event").val();
+function event_change_owner(event_id, server_id) {
   var new_owner = $("#id_owner").val();
-  var meta = $("#hidden-meta").val();
-  var history = $("#hidden-history").val();
-  var node_id = $("#hidden-node_id").val();
 
   $("#button-owner_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -532,10 +504,8 @@ function event_change_owner() {
       page: "include/ajax/events",
       change_owner: 1,
       event_id: event_id,
-      new_owner: new_owner,
-      meta: meta,
-      node_id: node_id,
-      history: history
+      server_id: server_id,
+      new_owner: new_owner
     },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
@@ -588,11 +558,6 @@ function event_comment(current_event) {
 
   var comment = $("#textarea_comment").val();
 
-  var history = 0;
-  if ($("#hidden-history").val() != undefined) {
-    history = $("#hidden-history").val();
-  }
-
   if (comment == "") {
     show_event_dialog(current_event, "comments", "comment_error");
     return false;
@@ -608,7 +573,6 @@ function event_comment(current_event) {
   }
   params.push("comment=" + comment);
   params.push("server_id=" + event.server_id);
-  params.push("history=" + history);
 
   $("#button-comment_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -617,9 +581,8 @@ function event_comment(current_event) {
     data: params.join("&"),
     type: "POST",
     url: $("#hidden-ajax_file").val(),
-    async: true,
     dataType: "html",
-    success: function(data) {
+    success: function() {
       $("#button-comment_button").removeAttr("disabled");
       $("#response_loading").hide();
       $("#link_comments").click();
@@ -678,7 +641,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
 }
 
 var processed = 0;
-function update_event(table, id_evento, type, event_rep, row) {
+function update_event(table, id_evento, type, event_rep, row, server_id) {
   var inputs = $("#events_form :input");
   var values = {};
   var redraw = false;
@@ -697,6 +660,7 @@ function update_event(table, id_evento, type, event_rep, row) {
       in_process_event: type.in_process_event,
       delete_event: type.delete_event,
       id_evento: id_evento,
+      server_id: server_id,
       event_rep: event_rep,
       filter: values
     },
@@ -726,7 +690,7 @@ function update_event(table, id_evento, type, event_rep, row) {
 }
 // Update events matching current filters and id_evento selected.
 
-function validate_event(table, id_evento, event_rep, row) {
+function validate_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("val-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -736,10 +700,17 @@ function validate_event(table, id_evento, event_rep, row) {
 
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { validate_event: 1 }, event_rep, row);
+  return update_event(
+    table,
+    id_evento,
+    { validate_event: 1 },
+    event_rep,
+    row,
+    server_id
+  );
 }
 
-function in_process_event(table, id_evento, event_rep, row) {
+function in_process_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("proc-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -754,11 +725,12 @@ function in_process_event(table, id_evento, event_rep, row) {
     id_evento,
     { in_process_event: 1 },
     event_rep,
-    row
+    row,
+    server_id
   );
 }
 
-function delete_event(table, id_evento, event_rep, row) {
+function delete_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("del-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -779,7 +751,8 @@ function delete_event(table, id_evento, event_rep, row) {
         id_evento,
         { delete_event: 1 },
         event_rep,
-        row
+        row,
+        server_id
       );
     },
     onDeny: function() {

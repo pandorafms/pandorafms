@@ -227,6 +227,8 @@ abstract class Model
         $ratio_visualconsole = $this->getRatio();
         $ratio_w = ($size['width'] / $this->data['width']);
         $ratio_h = ($size['height'] / $this->data['height']);
+        $acum_height = $this->data['height'];
+        $acum_width = $this->data['width'];
 
         $this->data['width'] = $size['width'];
         $this->data['height'] = ($size['width'] * $ratio_visualconsole);
@@ -240,6 +242,11 @@ abstract class Model
                         $this->data['height'] = $size['height'];
                         $this->data['width'] = ($size['height'] / $ratio_visualconsole);
                     }
+                } else {
+                    $ratio = $ratio_w;
+                    $height = (($acum_height * ($size['width'])) / $acum_width);
+                    $this->data['height'] = $height;
+                    $this->data['width'] = ($height / $ratio_visualconsole);
                 }
             } else {
                 if ($this->data['height'] > $this->data['width']) {

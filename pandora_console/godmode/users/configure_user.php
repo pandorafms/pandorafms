@@ -860,7 +860,7 @@ if (!$new_user) {
         '',
         '',
         20,
-        100,
+        255,
         !$new_user || $view_mode,
         '',
         [

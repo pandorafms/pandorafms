@@ -404,6 +404,16 @@ function treeMap(recipient, data, width, height) {
   var isIE = true;
   var chartWidth = width;
   var chartHeight = height;
+  var consoleStyle = document.getElementById("hidden-selected_style_theme")
+    .value;
+  $("#tooltip").css(
+    "color",
+    consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)"
+  );
+  $("#tooltip").css(
+    "background-color",
+    consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)"
+  );
   if (width === "auto") {
     chartWidth = $(recipient).innerWidth();
   }

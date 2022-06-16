@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,19 +46,19 @@ check_login();
 
 enterprise_include_once('/include/class/CommandCenter.class.php');
 
-$event_a = check_acl($config['id_user'], 0, 'ER');
-$event_w = check_acl($config['id_user'], 0, 'EW');
-$event_m = check_acl($config['id_user'], 0, 'EM');
+$event_a = (bool) check_acl($config['id_user'], 0, 'ER');
+$event_w = (bool) check_acl($config['id_user'], 0, 'EW');
+$event_m = (bool) check_acl($config['id_user'], 0, 'EM');
 
-if (! $event_a
-    && ! $event_w
-    && ! $event_m
+if ($event_a === false
+    && $event_w === false
+    && $event_m === false
 ) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
-    if (is_ajax()) {
+    if (is_ajax() === true) {
         return ['error' => 'noaccess'];
     }
 
@@ -67,14 +67,14 @@ if (! $event_a
 }
 
 
-$access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
+$access = ($event_a === true) ? 'ER' : (($event_w === true) ? 'EW' : (($event_m === true) ? 'EM' : 'ER'));
 
 
 $readonly = false;
 if (is_metaconsole() === false
-    && isset($config['event_replication'])
-    && $config['event_replication'] == 1
-    && $config['show_events_in_local'] == 1
+    && isset($config['event_replication']) === true
+    && (int) $config['event_replication'] === 1
+    && (int) $config['show_events_in_local'] === 1
 ) {
     $readonly = true;
 }
@@ -100,7 +100,7 @@ $default_filter = [
 ];
 
 $fb64 = get_parameter('fb64', null);
-if (isset($fb64)) {
+if (isset($fb64) === true) {
     $filter = json_decode(base64_decode($fb64), true);
     $filter['tag_with'] = [];
     $filter['tag_without'] = [];
@@ -238,20 +238,20 @@ $custom_data = get_parameter(
 
 if (is_metaconsole() === true) {
     // Connect to node database.
-    $id_node = $server_id;
-    if ($id_node != 0) {
-        if (metaconsole_connect(null, $id_node) != NOERR) {
+    $id_node = (int) $server_id;
+    if ($id_node !== 0) {
+        if (metaconsole_connect(null, $id_node) !== NOERR) {
             return false;
         }
     }
 }
 
 
-if (empty($text_agent) && empty($id_agent) === false) {
+if (empty($text_agent) === true && empty($id_agent) === false) {
     $text_agent = agents_get_alias($id_agent);
 }
 
-if (empty($text_module) && empty($id_agent_module) === false) {
+if (empty($text_module) === true && empty($id_agent_module) === false) {
     $text_module = modules_get_agentmodule_name($id_agent_module);
     $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
 }
@@ -501,7 +501,7 @@ if ($load_filter_id === 0) {
 
 // Do not load the user filter if we come from the 24h event graph.
 $from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
-if ($loaded_filter !== false && $from_event_graph != 1 && !isset($fb64)) {
+if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false) {
     $filter = events_get_event_filter($loaded_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];
@@ -611,9 +611,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $data[1] = html_print_image(
@@ -654,9 +653,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $tabletags_with->data[] = $data;
@@ -688,9 +686,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -727,9 +724,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
@@ -1136,15 +1132,19 @@ $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-if (empty($severity) === true && $severity !== '0') {
-    $severity = -1;
+if (is_array($severity) === false) {
+    if (empty($severity) === true && $severity !== '0') {
+        $severity = -1;
+    } else {
+        $severity = explode(',', $severity);
+    }
 }
 
 // Criticity - severity.
 $data = html_print_select(
     get_priorities(),
     'severity',
-    explode(',', $severity),
+    $severity,
     '',
     __('All'),
     -1,
@@ -1152,7 +1152,10 @@ $data = html_print_select(
     true,
     true,
     '',
-    false
+    false,
+    false,
+    false,
+    3
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';

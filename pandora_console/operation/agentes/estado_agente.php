@@ -249,23 +249,18 @@ echo '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente
 
 echo '<table cellpadding="4" cellspacing="4" class="databox filters bolder mrgn_btn_10px" width="100%">';
 
-echo '<tr><td class="nowrap mw180px padding-right-2-imp">';
+echo '<tr><td class="nowrap w100px padding-right-2-imp">';
 
-echo __('Group').'&nbsp;';
+echo __('Group').'&nbsp;'.'&nbsp;'.'&nbsp;';
 
 $groups = users_get_groups(false, $access);
 
 html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false);
 
-echo '</td><td class="nowrap">';
+echo '</td><td class="nowrap">'.'&nbsp;'.'&nbsp;'.'&nbsp;'.'&nbsp;'.'&nbsp;';
 
-echo __('Recursion').'&nbsp;';
+echo __('Recursion').'&nbsp;'.'&nbsp;'.'&nbsp;';
 html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
-
-echo '</td><td class="nowrap">';
-
-echo __('Search').'&nbsp;';
-html_print_input_text('search', $search, '', 15);
 
 echo '</td><td class="nowrap">';
 
@@ -277,12 +272,17 @@ $fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
-echo __('Status').'&nbsp;';
+echo __('Status').'&nbsp;'.'&nbsp;'.'&nbsp;';
 html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
 
-echo '</td><td class="nowrap">';
+echo '</td><td class="nowrap w100px">';
 
-echo __('Search in custom fields').'&nbsp;';
+echo __('Search').'&nbsp;'.'&nbsp;'.'&nbsp;';
+html_print_input_text('search', $search, '', 15);
+
+echo '</td><td class="nowrap w100px">';
+
+echo __('Search in custom fields').'&nbsp;'.'&nbsp;'.'&nbsp;';
 html_print_input_text('search_custom', $search_custom, '', 15);
 
 echo '</td><td class="nowrap">';

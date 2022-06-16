@@ -4,7 +4,7 @@
 
 # define variables
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
-S_VERSION='2022042501'
+S_VERSION='2022052301'
 LOGFILE="/tmp/pandora-agent-deploy-$(date +%F).log"
 
 # Ansi color code variables
@@ -49,7 +49,6 @@ check_cmd_status () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
 }
 
@@ -78,6 +77,10 @@ install_autodiscover () {
 echo "Starting PandoraFMS Agent deployment ver. $S_VERSION"
 
 execute_cmd  "[ $PANDORA_SERVER_IP ]" 'Check Server IP Address' 'Please define env variable PANDORA_SERVER_IP'
+
+#Detect OS
+os_name=$(grep ^PRETTY_NAME= /etc/os-release | cut -d '=' -f2 | tr -d '"')
+execute_cmd "echo $os_name" "OS detected: ${os_name}"
 
 # Check OS.
 OS=$([[ $(grep '^ID_LIKE=' /etc/os-release) ]] && grep ^ID_LIKE= /etc/os-release | cut -d '=' -f2 | tr -d '"' || grep ^ID= /etc/os-release | cut -d '=' -f2 | tr -d '"')
@@ -115,16 +118,39 @@ execute_cmd "cd $HOME/pandora_deploy_tmp" "Moving to workspace:  $HOME/pandora_d
 # Downloading and installing packages
 
 if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
-    yum install -y perl wget curl perl-Sys-Syslog unzip &>> $LOGFILE 
-    echo -e "${cyan}Instaling agent dependencies...${reset}" ${green}OK${reset}
+    ## Extra steps on redhat
+    if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
+        ## In case REDHAT
+        # Check susbscription manager status:
+        echo -en "${cyan}Checking Red Hat Enterprise subscription... ${reset}"
+        subscription-manager list &>> "$LOGFILE"
+        subscription-manager status &>> "$LOGFILE"
+        check_cmd_status 'Error checking subscription status, make sure your server is activated and suscribed to Red Hat Enterprise repositories'
+
+    fi
+
+    # Check rh version
+    if [ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '8' ] ; then
+        package_manager_cmd=dnf
+    elif [ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '7' ] ; then
+        package_manager_cmd=yum
+
+    fi
+
+    # Install dependencies
+    $package_manager_cmd install -y perl wget curl perl-Sys-Syslog unzip &>> $LOGFILE 
+    echo -e "${cyan}Installing agent dependencies...${reset}" ${green}OK${reset}
     
-    yum install -y http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm &>> $LOGFILE
-    echo -e "${cyan}Instaling Pandora FMS agent...${reset}" ${green}OK${reset}
+    # Insatall pandora agent  
+    $package_manager_cmd install -y http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm &>> $LOGFILE
+    echo -en "${cyan}Installing Pandora FMS agent...${reset}"
+    check_cmd_status 'Error installing Pandora FMS agent'
+
 fi
 
 if [[ $OS_RELEASE == 'debian' ]]; then
     execute_cmd "apt update" 'Updating repos'
-    execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Instaling agent dependencies' 
+    execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies' 
     execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Debian_Ubuntu/pandorafms.agent_unix_7.0NG.deb' 'Downloading Pandora FMS agent dependencies'
     execute_cmd 'apt install -y ./pandorafms.agent_unix_7.0NG.deb' 'Installing Pandora FMS agent'
 fi

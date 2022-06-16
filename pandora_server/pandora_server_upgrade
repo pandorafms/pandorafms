@@ -31,8 +31,6 @@ install () {
 	cp -R util /usr/share/pandora_server
 	
 	echo "Rebuilding links /usr/local/bin -> /usr/bin"
-	#rm /usr/local/bin/pandora_server 2> /dev/null
-	#rm /usr/local/bin/pandora_exec 2> /dev/null
 	ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server 2> /dev/null
 	ln -s /usr/local/bin/pandora_exec /usr/bin/pandora_exec 2> /dev/null
 

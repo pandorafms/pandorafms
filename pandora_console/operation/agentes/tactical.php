@@ -241,10 +241,10 @@ if ($is_admin) {
 }
 
 $out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td>';
-    $out .= '<fieldset class="databox tactical_set" id="total_event_graph">
+    $out .= '<fieldset class="padding-0 databox tactical_set" id="total_event_graph">
 			<legend>'.__('Event graph').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']).'</fieldset>';
     $out .= '</td><td>';
-    $out .= '<fieldset class="databox tactical_set" id="graphic_event_group">
+    $out .= '<fieldset class="padding-0 databox tactical_set" id="graphic_event_group">
 			<legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
     $out .= '</td></tr></table>';
 

@@ -1406,17 +1406,15 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.estado, te.evento, te.id_agente, te.id_agentmodule';
+            $group_by .= 'te.estado, te.event_type, te.id_agente, te.id_agentmodule';
             $group_by .= $extra;
         break;
 
         case '2':
             // Group by agents.
             $tagente_join = 'INNER';
-            // $group_by .= 'te.id_agente, te.event_type';
-            // $group_by .= $extra;
             $group_by = '';
-            $order_by = events_get_sql_order('id_agente', 'asc');
+            $order_by = events_get_sql_order('te.id_agente', 'asc');
             if (isset($order, $sort_field)) {
                 $order_by .= ','.events_get_sql_order(
                     $sort_field,
@@ -1477,13 +1475,13 @@ function events_get_all(
 
     $group_selects = '';
     if ($group_by != '') {
-        $group_selects = ',COUNT(id_evento) AS event_rep
-        ,GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
-        MAX(utimestamp) as timestamp_last,
-        MIN(utimestamp) as timestamp_first,
-        MAX(id_evento) as max_id_evento';
-
         if ($count === false) {
+            $group_selects = ',COUNT(id_evento) AS event_rep,
+            GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
+            MAX(utimestamp) as timestamp_last,
+            MIN(utimestamp) as timestamp_first,
+            MAX(id_evento) as max_id_evento';
+
             $idx = array_search('te.user_comment', $fields);
             if ($idx !== false) {
                 unset($fields[$idx]);
@@ -1573,7 +1571,7 @@ function events_get_all(
                 ('.$sql.') tbase';
     }
 
-    if ($count) {
+    if ($count === true) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
     }
 
@@ -2299,6 +2297,7 @@ function events_comment(
         $comments_format = 'new';
     } else {
         // If comments are not stored in json, the format is old.
+        $event_comments[0]['user_comment'] = str_replace(["\n", '&#x0a;'], '<br>', $event_comments[0]['user_comment']);
         $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
         if (empty($event_comments_array) === true) {
@@ -5228,6 +5227,8 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
                 if (isset($comm['user_comment']) === true) {
                     $comm = $comm['user_comment'];
                 }
+
+                $comm = str_replace(["\n", '&#x0a;'], '<br>', $comm);
 
                 $comments_array[] = io_safe_output(json_decode($comm, true));
             }

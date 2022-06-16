@@ -140,7 +140,7 @@ function process_manage_delete($id_agents)
 }
 
 
-$id_group = (int) get_parameter('id_group');
+$id_group = (is_metaconsole() === true) ? get_parameter('id_group', '') : (int) get_parameter('id_group');
 $id_agents = get_parameter('id_agents');
 $recursion = get_parameter('recursion');
 $delete = (bool) get_parameter_post('delete');
@@ -282,15 +282,15 @@ $table->data[3][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[3][0] .= html_print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
 
-$agents = agents_get_group_agents(
-    array_keys(users_get_groups($config['id_user'], 'AW', false)),
-    ['disabled' => 2],
-    'none',
-    false,
-    false,
-    is_metaconsole(),
-    '|'
-);
+$agents = [];
+if (is_metaconsole() === false) {
+    $agents = agents_get_group_agents(
+        array_keys(users_get_groups($config['id_user'], 'AW', false)),
+        ['disabled' => 2],
+        'none'
+    );
+}
+
 
 $table->data[3][1] = html_print_select(
     $agents,

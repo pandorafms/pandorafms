@@ -737,7 +737,7 @@ function delete_event(table, id_evento, event_rep, row, server_id) {
     processed += 1;
     return;
   }
-  var message = "<h4 style = 'text-align: center;' > Are you sure?</h4> ";
+  var message = "<h3 style = 'text-align: center;' > Are you sure?</h3> ";
   confirmDialog({
     title: "ATTENTION",
     message: message,

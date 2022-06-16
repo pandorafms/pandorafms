@@ -477,18 +477,15 @@ function events_update_status($id_evento, $status, $filter=null)
         $filter = ['group_rep' => 0];
     }
 
-    $table = 'tevento';
-
     switch ($filter['group_rep']) {
         case '0':
         case '2':
         default:
             // No groups option direct update.
             $update_sql = sprintf(
-                'UPDATE %s
+                'UPDATE tevento
                  SET estado = %d
                  WHERE id_evento = %d',
-                $table,
                 $status,
                 $id_evento
             );
@@ -515,13 +512,12 @@ function events_update_status($id_evento, $status, $filter=null)
 
             $target_ids = db_get_all_rows_sql(
                 sprintf(
-                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
+                    'SELECT tu.id_evento FROM tevento tu INNER JOIN ( %s ) tf
                     ON tu.estado = tf.estado
                     AND tu.evento = tf.evento
                     AND tu.id_agente = tf.id_agente
                     AND tu.id_agentmodule = tf.id_agentmodule
                     AND tf.max_id_evento = %d',
-                    $table,
                     $sql,
                     $id_evento
                 )
@@ -538,12 +534,11 @@ function events_update_status($id_evento, $status, $filter=null)
                 );
 
                 $update_sql = sprintf(
-                    'UPDATE %s
+                    'UPDATE tevento
                     SET estado = %d,
                         ack_utimestamp = %d,
                         id_usuario = "%s"
                     WHERE id_evento IN (%s)',
-                    $table,
                     $status,
                     time(),
                     $config['id_user'],
@@ -583,9 +578,7 @@ function events_update_status($id_evento, $status, $filter=null)
         events_comment(
             $id_evento,
             '',
-            'Change status to '.$status_string,
-            is_metaconsole() ? true : false,
-            $history
+            'Change status to '.$status_string
         );
     }
 
@@ -3137,7 +3130,8 @@ function events_page_responses($event)
             false,
             'width: 70%'
         );
-        $data[2] .= html_print_button(
+
+        $data[2] = html_print_button(
             __('Update'),
             'owner_button',
             false,
@@ -3216,7 +3210,7 @@ function events_page_responses($event)
     );
 
     if ($status_blocked === false) {
-        $data[2] .= html_print_button(
+        $data[2] = html_print_button(
             __('Update'),
             'status_button',
             false,
@@ -3323,7 +3317,7 @@ function events_page_responses($event)
             $server_id = 0;
         }
 
-        $data[2] .= html_print_button(
+        $data[2] = html_print_button(
             __('Execute'),
             'custom_response_button',
             false,
@@ -4567,7 +4561,7 @@ function events_page_general($event)
     $data[0] = __('Contact');
     $data[1] = '';
     $contact = db_get_value('contact', 'tgrupo', 'id_grupo', $event['id_grupo']);
-    if (empty($contact)) {
+    if (empty($contact) === true) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $data[1] = $contact;
@@ -4609,20 +4603,25 @@ function events_page_general($event)
     $table_general->data[] = $data;
 
     $table_data = $table_general->data;
-    if (is_array($table_data)) {
+    if (is_array($table_data) === true) {
         $table_data_total = count($table_data);
     } else {
         $table_data_total = -1;
     }
 
     for ($i = 0; $i <= $table_data_total; $i++) {
-        if (is_array($table_data[$i]) && count($table_data[$i]) == 2) {
+        if (isset($table_data[$i]) === true
+            && is_array($table_data[$i]) === true
+            && count($table_data[$i]) === 2
+        ) {
             $table_general->colspan[$i][1] = 2;
             $table_general->style[2] = 'text-align:center; width:10%;';
         }
     }
 
-    $general = '<div id="extended_event_general_page" class="extended_event_pages">'.html_print_table($table_general, true).'</div>';
+    $general = '<div id="extended_event_general_page" class="extended_event_pages">';
+    $general .= html_print_table($table_general, true);
+    $general .= '</div>';
 
     return $general;
 }
@@ -4786,13 +4785,13 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         $config['id_user'],
         $event['id_grupo'],
         'EM',
-        $event['clean_tags'],
+        (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
         []
     )) || (tags_checks_event_acl(
         $config['id_user'],
         $event['id_grupo'],
         'EW',
-        $event['clean_tags'],
+        (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
         []
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {

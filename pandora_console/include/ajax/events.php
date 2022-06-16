@@ -1185,6 +1185,7 @@ if ($perform_event_response === true) {
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id', 0);
 
+    $event_response = false;
     if (empty($target) === true) {
         try {
             if (is_metaconsole() === true
@@ -1194,15 +1195,21 @@ if ($perform_event_response === true) {
                 $node->connect();
             }
 
-            $event_response = db_get_row('tevent_response', 'id', $response_id);
+            $event_response = db_get_row(
+                'tevent_response',
+                'id',
+                $response_id
+            );
 
             if (empty($event_response) === true) {
                 return;
             }
 
-            $command = events_get_response_target($event_id, $response_id, $server_id);
-
-            $command_timeout = ($event_response !== false) ? $event_response['command_timeout'] : 90;
+            $command = events_get_response_target(
+                $event_id,
+                $response_id,
+                $server_id
+            );
         } catch (\Exception $e) {
             // Unexistent agent.
             if (is_metaconsole() === true
@@ -1223,8 +1230,12 @@ if ($perform_event_response === true) {
         $command = $target;
     }
 
+    $command_timeout = ($event_response !== false) ? $event_response['command_timeout'] : 90;
     if (enterprise_installed() === true) {
-        if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
+        if ($event_response !== false
+            && (int) $event_response['server_to_exec'] !== 0
+            && $event_response['type'] === 'command'
+        ) {
             $commandExclusions = [
                 'vi',
                 'vim',
@@ -1237,7 +1248,7 @@ if ($perform_event_response === true) {
                 $event_response['server_to_exec']
             );
 
-            if (in_array(strtolower($command), $commandExclusions)) {
+            if (in_array(strtolower($command), $commandExclusions) === true) {
                 echo 'Only stdin/stdout commands are supported';
             } else {
                 switch (PHP_OS) {
@@ -1254,10 +1265,16 @@ if ($perform_event_response === true) {
                     break;
                 }
 
-                if (empty($server_data['port'])) {
-                    system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                if (empty($server_data['port']) === true) {
+                    system(
+                        'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"',
+                        $ret_val
+                    );
                 } else {
-                    system('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                    system(
+                        'ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"',
+                        $ret_val
+                    );
                 }
             }
         } else {

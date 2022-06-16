@@ -1304,6 +1304,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `ehorus_user_level_enabled` TINYINT,
   `integria_user_level_user` VARCHAR(60),
   `integria_user_level_pass` VARCHAR(45),
+  `api_token` VARCHAR(255) NOT NULL DEFAULT '',
   CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

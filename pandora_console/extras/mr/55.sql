@@ -37,6 +37,7 @@ ALTER TABLE `tbackup` MODIFY COLUMN `id_user` VARCHAR(255) DEFAULT '';
 
 ALTER TABLE `tservice` ADD COLUMN `enable_sunburst` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tdashboard` MODIFY `name` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `tusuario` ADD COLUMN `api_token` VARCHAR(255) NOT NULL DEFAULT '';
 
 SET @st_oum763 = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tautoconfig' AND table_schema = DATABASE() AND column_name = 'disabled') > 0,

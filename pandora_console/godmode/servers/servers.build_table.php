@@ -1,24 +1,39 @@
 <?php
+/**
+ * Table builder for Servers View.
+ *
+ * @category   View
+ * @package    Pandora FMS
+ * @subpackage Monitoring.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 require_once 'include/functions_clippy.php';
 
 global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Server Management'
@@ -57,7 +72,6 @@ $table->headstyle[1] = 'text-align:center';
 $table->headstyle[3] = 'text-align:center';
 $table->headstyle[8] = 'text-align:right;width: 120px;';
 
-// $table->title = __('Tactical server information');
 $table->titleclass = 'tabletitle';
 $table->titlestyle = 'text-transform:uppercase;';
 
@@ -69,11 +83,11 @@ $table->head[3] = __('Version');
 $table->head[4] = __('Modules');
 $table->head[5] = __('Lag').ui_print_help_tip(__('Avg. Delay(sec)/Modules delayed'), true);
 $table->head[6] = __('T/Q').ui_print_help_tip(__('Threads / Queued modules currently'), true);
-// This will have a column of data such as "6 hours"
+// This will have a column of data such as "6 hours".
 $table->head[7] = __('Updated');
 
-// Only Pandora Administrator can delete servers
-if (check_acl($config['id_user'], 0, 'PM')) {
+// Only Pandora Administrator can delete servers.
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     $table->head[8] = '<span title="Operations">'.__('Op.').'</span>';
 }
 
@@ -89,14 +103,14 @@ foreach ($servers as $server) {
 
 foreach ($servers as $server) {
     $data = [];
-    // $table->cellclass[][3] = 'progress_bar';
+
     $table->cellclass[] = [
         3 => 'progress_bar',
         8 => 'action_buttons',
     ];
     $data[0] = '<span title="'.$server['version'].'">'.strip_tags($server['name']).'</span>';
 
-    // Status
+    // Status.
     $data[1] = ui_print_status_image(STATUS_SERVER_OK, '', true);
     if ($server['status'] == -1) {
         $data[1] = ui_print_status_image(
@@ -104,7 +118,7 @@ foreach ($servers as $server) {
             __('Server has crashed.'),
             true
         );
-    } else if (($server['status'] == 0)
+    } else if ((int) ($server['status'] === 0)
         || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)
     ) {
         $data[1] = ui_print_status_image(
@@ -114,13 +128,13 @@ foreach ($servers as $server) {
         );
     }
 
-    // Type
+    // Type.
     $data[2] = '<span class="nowrap">'.$server['img'];
     if ($server['master'] == $master) {
         $data[2] .= ui_print_help_tip(__('This is a master server'), true);
     }
 
-    if ($server['exec_proxy'] == 1) {
+    if ((int) $server['exec_proxy'] === 1) {
         $data[2] .= html_print_image('images/star.png', true, ['title' => __('Exec server enabled')]);
     }
 
@@ -169,11 +183,11 @@ foreach ($servers as $server) {
         }
     }
 
-    // Only Pandora Administrator can delete servers
-    if (check_acl($config['id_user'], 0, 'PM')) {
+    // Only Pandora Administrator can delete servers.
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
          $data[8] = '';
 
-        if ($server['type'] == 'recon') {
+        if ($server['type'] === 'recon') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist').'">';
             $data[8] .= html_print_image(
                 'images/first_task/icono_grande_reconserver.png',
@@ -188,7 +202,7 @@ foreach ($servers as $server) {
             $data[8] .= '</a>';
         }
 
-        if ($server['type'] == 'data') {
+        if ($server['type'] === 'data') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server['id_server']).'">';
             $data[8] .= html_print_image(
                 'images/target.png',
@@ -199,7 +213,7 @@ foreach ($servers as $server) {
                 ]
             );
             $data[8] .= '</a>';
-        } else if ($server['type'] == 'enterprise snmp') {
+        } else if ($server['type'] === 'enterprise snmp') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server['id_server']).'">';
             $data[8] .= html_print_image(
                 'images/target.png',
@@ -223,7 +237,7 @@ foreach ($servers as $server) {
         );
         $data[8] .= '</a>';
 
-        if (($names_servers[$safe_server_name] === true) && ($server['type'] == 'data' || $server['type'] == 'enterprise satellite')) {
+        if (($names_servers[$safe_server_name] === true) && ($server['type'] === 'data' || $server['type'] === 'enterprise satellite')) {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext).'">';
             $data[8] .= html_print_image(
                 'images/remote_configuration.png',

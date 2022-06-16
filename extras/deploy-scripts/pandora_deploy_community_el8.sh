@@ -14,11 +14,13 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022020801'
+S_VERSION='2022052501'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
+[ "$MYVER" ] || MYVER=57
+[ "$PHPVER" ] || PHPVER=7
 [ "$DBHOST" ] || DBHOST=127.0.0.1
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
@@ -84,7 +86,6 @@ check_pre_pandora () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
     execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
@@ -166,9 +167,8 @@ if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
     ## In case REDHAT
     # Check susbscription manager status:
     echo -en "${cyan}Checking Red Hat Enterprise subscription... ${reset}"
-    subscription-manager status &>> "$LOGFILE"
     subscription-manager list &>> "$LOGFILE"
-    subscription-manager list | grep 'Status:' | grep Subscribed &>> "$LOGFILE"
+    subscription-manager status &>> "$LOGFILE"
     check_cmd_status 'Error checking subscription status, make sure your server is activated and suscribed to Red Hat Enterprise repositories'
 
     # Ckeck repolist
@@ -204,15 +204,28 @@ fi
 #Installing wget
 execute_cmd "dnf install -y wget" "Installing wget"
 
-#Installing extra repositiries
-
+#Installing php
 execute_cmd "dnf module reset -y php " "Disabling standard PHP module"
-execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP"
+if [ "$PHPVER" -ne '8' ] ; then
+    execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP 7"
+fi
+
+if [ "$PHPVER" -eq '8' ] ; then
+    execute_cmd "dnf module install -y php:remi-8.0" "Configuring PHP 8"
+fi
 
 # Install percona Database
 execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
-#rm -rf /etc/my.cnf
-execute_cmd "dnf install -y Percona-Server-server-57" "Installing Percona Server"
+
+if [ "$MYVER" -eq '80' ] ; then
+    execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
+    execute_cmd "dnf install -y percona-server-server percona-xtrabackup-24" "Installing Percona Server 80"
+fi
+
+if [ "$MYVER" -ne '80' ] ; then
+    execute_cmd "dnf install -y Percona-Server-server-57 percona-xtrabackup-24" "Installing Percona Server 57"
+fi
+
 
 # Console dependencies
 console_dependencies=" \
@@ -294,6 +307,8 @@ console_dependencies=" \
     poppler-data \
     php-yaml \
     mod_ssl \
+    libzstd \
+    openldap-clients \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
@@ -321,7 +336,8 @@ server_dependencies=" \
     openssh-clients \
     java \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
-    http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
+    http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
+    https://firefly.artica.es/centos8/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
 # SDK VMware perl dependencies
@@ -381,20 +397,33 @@ EO_CONFIG_TMP
 
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
-execute_cmd "systemctl start mysqld" "Starting database engine"
-export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
-echo """
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
-    UNINSTALL PLUGIN validate_password;
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
-    """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
+    execute_cmd "systemctl start mysqld" "Starting database engine"
+    export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
+    if [ "$MYVER" -eq '80' ] ; then
+        echo """
+        SET PASSWORD FOR 'root'@'localhost' = 'Pandor4!';
+        UNINSTALL COMPONENT 'file://component_validate_password';
+        SET PASSWORD FOR 'root'@'localhost' = '$DBROOTPASS';
+        """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
+    fi
+
+    if [ "$MYVER" -ne '80' ] ; then
+        echo """
+        SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
+        UNINSTALL PLUGIN validate_password;
+        SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
+        """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"fi
+    fi
 fi
 export MYSQL_PWD=$DBROOTPASS
 echo -en "${cyan}Creating Pandora FMS database...${reset}"
 echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
 check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
-echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST
+echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -uroot -P$DBPORT -h$DBHOST
+echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST        
+echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -uroot -P$DBPORT -h$DBHOST
+
 export MYSQL_PWD=$DBPASS
 
 #Generating my.cnf
@@ -442,6 +471,10 @@ pid-file=/var/run/mysqld/mysqld.pid
 
 EO_CONFIG_F
 
+if [ "$MYVER" -eq '80' ] ; then
+    sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+fi
+
 execute_cmd "systemctl restart mysqld" "Configuring database engine"
 
 
@@ -465,7 +498,7 @@ execute_cmd "curl -LSs --output pandorafms_agent_unix-7.0NG.noarch.rpm ${PANDORA
 execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "Installing Pandora FMS packages"
 
 # Copy gotty utility
-execute_cmd "wget https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+execute_cmd "wget https://pandorafms.com/library/wp-content/uploads/2019/11/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
 tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 
@@ -540,6 +573,10 @@ sed -i -e "s/^max_input_time.*/max_input_time = -1/g" /etc/php.ini
 sed -i -e "s/^max_execution_time.*/max_execution_time = 0/g" /etc/php.ini
 sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 800M/g" /etc/php.ini
 sed -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.ini
+sed -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
+
+#adding 900s to httpd timeout
+echo 'TimeOut 900' > /etc/httpd/conf.d/timeout.conf
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">

@@ -3320,7 +3320,9 @@ function ui_print_datatable(array $parameters)
         ];
     }
 
-    if (!is_array($parameters['datacolumns'])) {
+    if (isset($parameters['datacolumns']) === false
+        || is_array($parameters['datacolumns']) === false
+    ) {
         $parameters['datacolumns'] = $parameters['columns'];
     }
 
@@ -3369,7 +3371,9 @@ function ui_print_datatable(array $parameters)
         $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
 
         // Extra buttons.
-        if (is_array($parameters['form']['extra_buttons'])) {
+        if (isset($parameters['form']['extra_buttons']) === true
+            && is_array($parameters['form']['extra_buttons']) === true
+        ) {
             foreach ($parameters['form']['extra_buttons'] as $button) {
                 $filter .= '<button id="'.$button['id'].'" ';
                 $filter .= ' class="'.$button['class'].'" ';
@@ -3469,7 +3473,9 @@ function ui_print_datatable(array $parameters)
     }
 
     $export_columns = '';
-    if ($parameters['csv_exclude_latest'] === true) {
+    if (isset($parameters['csv_exclude_latest']) === true
+        && $parameters['csv_exclude_latest'] === true
+    ) {
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
@@ -5441,6 +5447,10 @@ function ui_print_agent_autocomplete_input($parameters)
 			}',
         'q'             => 'term',
     ];
+
+    if (isset($parameters['delete_offspring_agents']) === true) {
+        $javascript_change_ajax_params_original['delete_offspring_agents'] = $parameters['delete_offspring_agents'];
+    }
 
     if (!$metaconsole_enabled) {
         $javascript_change_ajax_params_original['force_local'] = 1;

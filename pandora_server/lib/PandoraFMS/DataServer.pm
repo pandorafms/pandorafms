@@ -583,6 +583,11 @@ sub process_xml_data ($$$$$) {
 							
 				$module_data->{'data'} = $data->{'value'};
 				my $data_timestamp = get_tag_value ($data, 'timestamp', $timestamp);
+
+				if ($pa_config->{'use_xml_timestamp'} eq '0' && defined($timestamp)) {
+					$data_timestamp = $timestamp;
+				}
+
 				process_module_data ($pa_config, $module_data, $server_id, $agent, $module_name,
 									 $module_type, $interval, $data_timestamp, $dbh, $new_agent);
 			}

@@ -22,5 +22,22 @@ CREATE TABLE IF NOT EXISTS `tbackup` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+ALTER TABLE `treport_content` ADD COLUMN `macros_definition` TEXT;
+ALTER TABLE `treport_content` ADD COLUMN `render_definition` TEXT;
+ALTER TABLE `treport_content_template` ADD COLUMN `macros_definition` TEXT;
+ALTER TABLE `treport_content_template` ADD COLUMN `render_definition` TEXT;
+
+DROP TABLE IF EXISTS `tupdate_journal`;
+DROP TABLE IF EXISTS `tupdate`;
+DROP TABLE IF EXISTS `tupdate_package`;
+
+CREATE TABLE `tupdate_journal` (
+  `id` SERIAL,
+  `utimestamp` BIGINT DEFAULT 0,
+  `version` VARCHAR(25) DEFAULT '',
+  `type` VARCHAR(25) DEFAULT '',
+  `origin` VARCHAR(25) DEFAULT '',
+  `id_user` VARCHAR(250) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 COMMIT;

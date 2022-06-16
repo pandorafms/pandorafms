@@ -33,8 +33,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.760";
-my $pandora_build = "220406";
+my $pandora_version = "7.0NG.762";
+my $pandora_build = "220616";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -609,15 +609,14 @@ sub print_module {
 	$data->{critical_instructions} = $conf->{critical_instructions} unless (defined($data->{critical_instructions}) || (!defined($conf->{critical_instructions})));
 
 	# Translation compatibility
-	$data->{'min_warning'}      = $data->{'wmin'} if empty($data->{'min_warning'});
-	$data->{'max_warning'}      = $data->{'wmax'} if empty($data->{'max_warning'});
-	$data->{'min_critical'}     = $data->{'cmin'} if empty($data->{'min_critical'});
-	$data->{'max_critical'}     = $data->{'cmax'} if empty($data->{'max_critical'});
-	$data->{'warning_inverse'}  = $data->{'winv'} if empty($data->{'warning_inverse'});
-	$data->{'critical_inverse'} = $data->{'cinv'} if empty($data->{'critical_inverse'});
-	$data->{'str_warning'}      = $data->{'wstr'} if empty($data->{'str_warning'});
-	$data->{'str_critical'}     = $data->{'cstr'} if empty($data->{'str_critical'});
-
+	$data->{min_warning}      = $data->{'wmin'} if empty($data->{min_warning});
+	$data->{max_warning}      = $data->{'wmax'} if empty($data->{max_warning});
+	$data->{min_critical}     = $data->{'cmin'} if empty($data->{min_critical});
+	$data->{max_critical}     = $data->{'cmax'} if empty($data->{max_critical});
+	$data->{warning_inverse}  = $data->{'winv'} if empty($data->{warning_inverse});
+	$data->{critical_inverse} = $data->{'cinv'} if empty($data->{critical_inverse});
+	$data->{str_warning}      = $data->{'wstr'} if empty($data->{str_warning});
+	$data->{str_critical}     = $data->{'cstr'} if empty($data->{str_critical});
 
 	$xml_module .= "<module>\n";
 	$xml_module .= "\t<name><![CDATA[" . $data->{name} . "]]></name>\n";
@@ -2206,73 +2205,93 @@ sub snmp_get {
 			'error' => 'snmpwalk not found'
 		};
 	}
-	
-	$snmp->{extra} = '' unless defined $snmp->{extra};
 
-	if ( defined ($snmp->{version} )
-	  && (($snmp->{version} eq "1")
-	   || ($snmp->{version} eq "2")
-	   || ($snmp->{version} eq "2c"))) {
-
-		if (defined $snmp->{port}){
-			$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host}:$snmp->{port} $snmp->{oid}";
-		}
-		else {
-			$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host} $snmp->{oid}";
-		}
-
-	}
-	elsif ( defined ($snmp->{version} )
-	  && ($snmp->{version} eq "3") ) { # SNMP v3
-		# Authentication required
-
-		# $securityLevel = (noAuthNoPriv|authNoPriv|authPriv);
-
-		# unauthenticated request
-		# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u noAuthUser -l noAuthNoPriv test.net-snmp.org sysUpTime
-
-		# authenticated request
-		# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5User -a MD5 -A "The Net-SNMP Demo Password" -l authNoPriv test.net-snmp.org sysUpTime
-
-		# authenticated and encrypted request
-		# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5DESUser -a MD5 -A "The Net-SNMP Demo Password" -x DES -X "The Net-SNMP Demo Password" -l authPriv test.net-snmp.org system
-
-		if ($snmp->{securityLevel} =~ /^noAuthNoPriv$/i){
-			# Unauthenticated request
-
-			if (defined $snmp->{port}){
-				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
-			}
-			else {
-				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
-			}
-		}
-		elsif ($snmp->{securityLevel} =~ /^authNoPriv$/i){ 
-			# Authenticated request
-
-			if (defined $snmp->{port}){
-				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
-			}
-			else {
-				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
-			}
-		}
-		elsif ($snmp->{securityLevel} =~ /^authPriv$/i){
-			# Authenticated and encrypted request
-
-			if (defined $snmp->{port}){
-				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host}:$snmp->{port} $snmp->{oid}";
-			}
-			else {
-				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host} $snmp->{oid}";
-			}
-		}
-	}
-	else {
+	if (!defined $snmp->{version}) {
 		return {
-			error => "Only SNMP 1 2 2c and 3 are supported."
+			'error' => "Only SNMP 1 2 2c and 3 are supported."
+		};
+	} elsif (!defined $snmp->{host}) {
+		return {
+			'error' => "Destination host must be defined."
+		};
+	} elsif (!defined $snmp->{oid}) {
+		return {
+			'error' => "OID must be defined"
+		};
+	} else {
+		$snmp->{extra} = '' unless defined $snmp->{extra};
+		$snmp->{context} = '' unless defined $snmp->{context};
+		$snmp->{community} = 'public' unless defined $snmp->{community};
+
+		if (($snmp->{version} eq "1")
+			|| ($snmp->{version} eq "2")
+			|| ($snmp->{version} eq "2c")) {
+
+			if (defined $snmp->{port}){
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+			}
+			else {
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host} $snmp->{oid}";
+			}
+
+		}
+		elsif ( defined ($snmp->{version} )
+			&& ($snmp->{version} eq "3") ) {
+
+			$snmp->{securityLevel} = '' unless defined $snmp->{securityLevel};
+
+			# SNMP v3
+			# Authentication required
+
+			# $securityLevel = (noAuthNoPriv|authNoPriv|authPriv);
+
+			# unauthenticated request
+			# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u noAuthUser -l noAuthNoPriv test.net-snmp.org sysUpTime
+
+			# authenticated request
+			# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5User -a MD5 -A "The Net-SNMP Demo Password" -l authNoPriv test.net-snmp.org sysUpTime
+
+			# authenticated and encrypted request
+			# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5DESUser -a MD5 -A "The Net-SNMP Demo Password" -x DES -X "The Net-SNMP Demo Password" -l authPriv test.net-snmp.org system
+
+			if ($snmp->{securityLevel} =~ /^noAuthNoPriv$/i){
+				# Unauthenticated request
+
+				if (defined $snmp->{port}){
+					$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				}
+				else {
+					$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
+				}
+			}
+			elsif ($snmp->{securityLevel} =~ /^authNoPriv$/i){
+				# Authenticated request
+
+				if (defined $snmp->{port}){
+					$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				}
+				else {
+					$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
+				}
+			}
+			elsif ($snmp->{securityLevel} =~ /^authPriv$/i){
+				# Authenticated and encrypted request
+
+				if (defined $snmp->{port}){
+					$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				}
+				else {
+					$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host} $snmp->{oid}";
+				}
+			}
+			else {
+				return {
+					'error' => "Security Level not defined."
+				};
+			}
 		}
 	}
+
 	#print STDERR "Launched: $cmd\n";
 	my $result = `$cmd`;
 	if ($? != 0) {
@@ -2293,7 +2312,7 @@ sub snmp_data_switcher {
 
 	my $pure_data = trim($st_data[1]) or undef;
 	$data{data} = $pure_data;
-	
+
 	if ( uc($st_data[0]) eq uc("INTEGER")) {
 		$data{type} = "generic_data";
 	}

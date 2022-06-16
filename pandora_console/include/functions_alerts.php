@@ -118,6 +118,9 @@ function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby
         $sql .= ' AND t3.id_agente = '.$id_agent;
     }
 
+    // Only enabled agent.
+    $sql .= ' AND t3.disabled = 0';
+
     $row_alerts = db_get_all_rows_sql($sql);
 
     if ($total) {
@@ -1159,7 +1162,13 @@ function alerts_create_alert_agent_module($id_agent_module, $id_alert_template, 
     $values['id_alert_template'] = (int) $id_alert_template;
     $values['last_reference'] = time();
 
-    return @db_process_sql_insert('talert_template_modules', $values);
+    $sql = sprintf(
+        'INSERT IGNORE INTO talert_template_modules(%s) VALUES(%s)',
+        implode(', ', array_keys($values)),
+        implode(', ', array_values($values))
+    );
+
+    return @db_process_sql($sql, 'insert_id');
 }
 
 

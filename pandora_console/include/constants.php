@@ -294,7 +294,11 @@ define('SERVICE_ELEMENT_DYNAMIC', 'dynamic');
 define('SERVICE_MODE_MANUAL', 0);
 define('SERVICE_MODE_SMART', 1);
 
-
+// New installation Product Logo.
+define('HEADER_LOGO_DEFAULT_CLASSIC', 'logo-default-pandorafms.png');
+define('HEADER_LOGO_DEFAULT_COLLAPSED', 'logo-default-pandorafms-collapsed.png');
+define('HEADER_LOGO_BLACK_CLASSIC', 'logo-black-pandorafms.png');
+define('HEADER_LOGO_BLACK_COLLAPSED', 'logo-default-pandorafms-collapsed.png');
 
 // Status images.
 // For modules.
@@ -802,6 +806,7 @@ define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
 define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');
 define('AUDIT_LOG_SERVICE_MANAGEMENT', 'Service management');
 define('AUDIT_LOG_INCIDENT_MANAGEMENT', 'Incident management');
+define('AUDIT_LOG_UMC', 'Warp Manager');
 
 // MIMEs.
 define(

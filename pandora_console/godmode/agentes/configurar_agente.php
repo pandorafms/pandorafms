@@ -1065,9 +1065,9 @@ if ($update_agent) {
         if ($action_delete_ip) {
             $delete_ip = get_parameter_post('address_list');
             if (empty($direccion_agente) === true) {
-                $direccideon_agente = agents_delete_address($id_agente, $delete_ip);
+                $direccion_agente = agents_delete_address($id_agente, $delete_ip, true);
             } else {
-                agents_delete_address($id_agente, $delete_ip);
+                $direccion_agente = agents_delete_address($id_agente, $delete_ip, true);
             }
         }
 
@@ -1088,7 +1088,6 @@ if ($update_agent) {
             'custom_id'                 => $custom_id,
             'icon_path'                 => $icon_path,
             'update_gis_data'           => $update_gis_data,
-            'url_address'               => $url_description,
             'url_address'               => $url_description,
             'quiet'                     => $quiet,
             'cps'                       => $cps,

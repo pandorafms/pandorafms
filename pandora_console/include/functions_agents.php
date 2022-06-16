@@ -2118,7 +2118,7 @@ function agents_add_address($id_agent, $ip_address)
  * @param int Agent id
  * @param string IP address to unassign
  */
-function agents_delete_address($id_agent, $ip_address)
+function agents_delete_address($id_agent, $ip_address, $return=false)
 {
     global $config;
 
@@ -2151,13 +2151,20 @@ function agents_delete_address($id_agent, $ip_address)
             $new_ip = reset($new_ips);
         }
 
-        // Change main address in agent to first one in the list
+        // Change main address in agent to first one in the list.
         db_process_sql_update(
             'tagente',
             ['direccion' => $new_ip],
             ['id_agente' => $id_agent]
         );
+    } else {
+        $new_ip = agents_get_address($id_agent);
+        if (empty($new_ip)) {
+            $new_ip = '';
+        }
+    }
 
+    if ($return === true) {
         return $new_ip;
     }
 }
@@ -3229,8 +3236,8 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     $ni_by_agents = [];
     foreach ($agents as $agent) {
         $agent_id = (isset($agent['id_agente'])) ? $agent['id_agente'] : $agent;
-        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : '';
-        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : '';
+        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : agents_get_agent_group($agent_id);
+        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : agents_get_alias($agent_id);
         $agent_interfaces = [];
 
         $accepted_module_types = [];
@@ -4260,4 +4267,31 @@ function get_status_data_agent_modules($id_group, $agents=[], $modules=[])
     }
 
     return $res;
+}
+
+
+function agents_get_offspring(int $id_agent)
+{
+    $return = [];
+    // Get parent.
+    $agents = db_get_all_rows_filter(
+        'tagente',
+        [
+            'id_parent' => $id_agent,
+            'disabled'  => 0,
+        ],
+        'id_agente'
+    );
+
+    if ($agents !== false) {
+        foreach ($agents as $agent) {
+            if ((int) $agent['id_agente'] !== 0) {
+                $return += agents_get_offspring((int) $agent['id_agente']);
+            }
+        }
+    }
+
+    $return += [$id_agent => 0];
+
+    return $return;
 }

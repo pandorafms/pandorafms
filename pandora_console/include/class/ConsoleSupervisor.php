@@ -34,7 +34,7 @@ require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
-require_once $config['homedir'].'/godmode/um_client/vendor/autoload.php';
+require_once $config['homedir'].'/vendor/autoload.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');

@@ -1815,7 +1815,7 @@ class Diagnostics extends Wizard
                                 'images/exito.png',
                                 true,
                                 [
-                                    'title' => __('Succesfuly'),
+                                    'title' => __('Successfully'),
                                     'style' => 'width:15px;',
                                 ]
                             );

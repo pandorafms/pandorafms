@@ -811,7 +811,7 @@ class Tree
             }
         }
 
-        // Counters
+        // Counters.
         if (empty($agent['counters'])) {
             $agent['counters'] = [];
 
@@ -824,7 +824,7 @@ class Tree
             $agent['counters']['alerts'] = isset($agent['fired_count']) ? $agent['fired_count'] : 0;
         }
 
-        // Status image
+        // Status image.
         $agent['statusImageHTML'] = agents_tree_view_status_img_ball(
             $agent['counters']['critical'],
             $agent['counters']['warning'],
@@ -834,7 +834,14 @@ class Tree
             $agent['counters']['alerts']
         );
 
-        // search module recalculate counters
+        $agent['agentStatus'] = -1;
+        if ((bool) $this->filter['show_not_init_agents'] === true) {
+            if ($agent['total_count'] === 0 || $agent['total_count'] === $agent['notinit_count']) {
+                $agent['agentStatus'] = AGENT_STATUS_NOT_INIT;
+            }
+        }
+
+        // Search module recalculate counters.
         if (array_key_exists('state_normal', $agent)) {
             $agent['counters']['unknown'] = $agent['state_unknown'];
             $agent['counters']['critical'] = $agent['state_critical'];
@@ -935,7 +942,8 @@ class Tree
             foreach ($agents as $iterator => $agent) {
                 $this->processAgent($agents[$iterator], $server);
                 if ($agents[$iterator]['counters']['total'] !== '0'
-                    || (bool) $this->filter['show_not_init_agents'] === true
+                    || ((bool) $this->filter['show_not_init_agents'] === true
+                    && $agents[$iterator]['agentStatus'] === AGENT_STATUS_NOT_INIT)
                 ) {
                     $agents_aux[] = $agents[$iterator];
                 }

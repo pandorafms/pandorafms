@@ -556,7 +556,7 @@ function config_update_config()
                         $error_update[] = __('Autocreate profile group');
                     }
 
-                    if (config_update_value('default_assign_tags', implode(',', get_parameter('default_assign_tags')), true) === false) {
+                    if (config_update_value('default_assign_tags', implode(',', get_parameter('default_assign_tags', [])), true) === false) {
                         $error_update[] = __('Autocreate profile tags');
                     }
 
@@ -632,6 +632,38 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP password');
                     }
 
+                    if (config_update_value('ldap_server_secondary', get_parameter('ldap_server_secondary'), true) === false) {
+                        $error_update[] = __('Secondary LDAP server');
+                    }
+
+                    if (config_update_value('ldap_port_secondary', get_parameter('ldap_port_secondary'), true) === false) {
+                        $error_update[] = __('Secondary LDAP port');
+                    }
+
+                    if (config_update_value('ldap_version_secondary', get_parameter('ldap_version_secondary'), true) === false) {
+                        $error_update[] = __('Secondary LDAP version');
+                    }
+
+                    if (config_update_value('ldap_start_tls_secondary', get_parameter('ldap_start_tls_secondary'), true) === false) {
+                        $error_update[] = __('Secontary start TLS');
+                    }
+
+                    if (config_update_value('ldap_base_dn_secondary', get_parameter('ldap_base_dn_secondary'), true) === false) {
+                        $error_update[] = __('Secondary base DN');
+                    }
+
+                    if (config_update_value('ldap_login_attr_secondary', get_parameter('ldap_login_attr_secondary'), true) === false) {
+                        $error_update[] = __('Secondary login attribute');
+                    }
+
+                    if (config_update_value('ldap_admin_login_secondary', get_parameter('ldap_admin_login_secondary'), true) === false) {
+                        $error_update[] = __('Admin secondary LDAP login');
+                    }
+
+                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(io_safe_output(get_parameter('ldap_admin_pass_secondary'))), true) === false) {
+                        $error_update[] = __('Admin secondary LDAP password');
+                    }
+
                     if (config_update_value('fallback_local_auth', get_parameter('fallback_local_auth'), true) === false) {
                         $error_update[] = __('Fallback to local authentication');
                     }
@@ -654,6 +686,10 @@ function config_update_config()
 
                     if (config_update_value('ldap_save_profile', get_parameter('ldap_save_profile'), true) === false) {
                         $error_update[] = __('Save profile');
+                    }
+
+                    if (config_update_value('secondary_ldap_enabled', get_parameter('secondary_ldap_enabled'), true) === false) {
+                        $error_update[] = __('LDAP secondary enabled');
                     }
 
                     if (config_update_value('rpandora_server', get_parameter('rpandora_server'), true) === false) {
@@ -1571,7 +1607,7 @@ function config_update_config()
                                 'port' => $config['history_db_port'],
                                 'name' => $config['history_db_name'],
                                 'user' => $config['history_db_user'],
-                                'pass' => $config['history_db_pass'],
+                                'pass' => io_output_password($config['history_db_pass']),
                             ]
                         );
 
@@ -1583,48 +1619,47 @@ function config_update_config()
                             $dbm->process();
                         } else if ($dbm->check() !== true) {
                             $errors[] = $dbm->getLastError();
+                            config_update_value('history_db_enabled', false);
+                        }
+
+                        if ($dbm->check() === true) {
+                            // Historical configuration tokens (stored in historical db).
+                            if ($dbm->setConfigToken(
+                                'days_purge',
+                                get_parameter('history_dbh_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'history_partitions_auto',
+                                get_parameter_switch('history_partitions_auto', 0)
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database partitions');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'event_purge',
+                                get_parameter('history_dbh_events_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database events purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'string_purge',
+                                get_parameter('history_dbh_string_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database string purge');
+                            }
+
+                            // Disable history db in history db.
+                            $dbm->setConfigToken('history_db_enabled', 0);
                         }
                     }
-
-                    // Historical configuration tokens (stored in historical db).
-                    if (Config::set(
-                        'days_purge',
-                        get_parameter('history_dbh_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database purge');
-                    }
-
-                    if (Config::set(
-                        'history_partitions_auto',
-                        get_parameter_switch('history_partitions_auto', 0),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database partitions');
-                    }
-
-                    if (Config::set(
-                        'event_purge',
-                        get_parameter('history_dbh_events_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database events purge');
-                    }
-
-                    if (Config::set(
-                        'string_purge',
-                        get_parameter('history_dbh_string_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database string purge');
-                    }
-
-                    // Disable history db in history db.
-                    Config::set('history_db_enabled', 0, true);
                 break;
 
                 case 'ehorus':
@@ -2060,6 +2095,10 @@ function config_process_config()
         config_update_value('metaconsole_events_history', 0);
     }
 
+    if (!isset($config['realtimestats'])) {
+        config_update_value('realtimestats', 1);
+    }
+
     if (!isset($config['trap_purge'])) {
         config_update_value('trap_purge', 7);
     }
@@ -2317,12 +2356,12 @@ function config_process_config()
         config_update_value('custom_favicon', '');
     }
 
-    if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_4.png');
+    if (isset($config['custom_logo']) === false) {
+        config_update_value('custom_logo', HEADER_LOGO_DEFAULT_CLASSIC);
     }
 
-    if (!isset($config['custom_logo_collapsed'])) {
-        config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
+    if (isset($config['custom_logo_collapsed']) === false) {
+        config_update_value('custom_logo_collapsed', HEADER_LOGO_DEFAULT_COLLAPSED);
     }
 
     if (is_metaconsole()) {
@@ -2626,6 +2665,41 @@ function config_process_config()
 
     if (!isset($config['ldap_admin_pass'])) {
         config_update_value('ldap_admin_pass', '');
+    }
+
+    if (!isset($config['ldap_server_secondary'])) {
+        config_update_value('ldap_server_secondary', 'localhost');
+    }
+
+    if (!isset($config['ldap_port_secondary'])) {
+        config_update_value('ldap_port_secondary', 389);
+    }
+
+    if (!isset($config['ldap_version_secondary'])) {
+        config_update_value('ldap_version_secondary', '3');
+    }
+
+    if (!isset($config['ldap_start_tls_secondary'])) {
+        config_update_value('ldap_start_tls_secondary', 0);
+    }
+
+    if (!isset($config['ldap_base_dn_secondary'])) {
+        config_update_value(
+            'ldap_base_dn_secondary',
+            'ou=People,dc=edu,dc=example,dc=org'
+        );
+    }
+
+    if (!isset($config['ldap_login_attr_secondary'])) {
+        config_update_value('ldap_login_attr_secondary', 'uid');
+    }
+
+    if (!isset($config['ldap_admin_login_secondary'])) {
+        config_update_value('ldap_admin_login_secondary', '');
+    }
+
+    if (!isset($config['ldap_admin_pass_secondary'])) {
+        config_update_value('ldap_admin_pass_secondary', '');
     }
 
     if (!isset($config['ldap_function'])) {

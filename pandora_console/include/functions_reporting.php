@@ -688,6 +688,15 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'custom_render':
+                $report['contents'][] = reporting_custom_render(
+                    $report,
+                    $content,
+                    $type,
+                    $pdf
+                );
+            break;
+
             case 'group_configuration':
                 $report['contents'][] = reporting_group_configuration(
                     $report,
@@ -801,7 +810,7 @@ function reporting_make_reporting_data(
                     break;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'event_report_module':
@@ -817,7 +826,7 @@ function reporting_make_reporting_data(
                     break;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'event_report_group':
@@ -1934,6 +1943,8 @@ function reporting_event_report_group(
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
+    $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
+
     // Filter.
     $show_summary_group         = $event_filter['show_summary_group'];
     $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
@@ -2237,6 +2248,8 @@ function reporting_event_report_module(
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
+    $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
+
     // Filter.
     $show_summary_group = $event_filter['show_summary_group'];
     $filter_event_severity = json_decode(
@@ -3770,6 +3783,8 @@ function reporting_event_report_agent(
     $filter_event_status = json_decode($style['filter_event_status'], true);
     $filter_event_filter_search = $style['event_filter_search'];
     $filter_event_filter_exclude = $style['event_filter_exclude'];
+    $show_custom_data = (isset($style['custom_data_events']) === true) ? (bool) $style['custom_data_events'] : false;
+    $return['show_custom_data'] = $show_custom_data;
 
     // Graph.
     $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -3789,7 +3804,8 @@ function reporting_event_report_agent(
         $filter_event_status,
         $filter_event_filter_search,
         $filter_event_filter_exclude,
-        $id_server
+        $id_server,
+        $show_custom_data
     );
 
     if (is_metaconsole() === true) {
@@ -4670,6 +4686,294 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
             $id_meta
         );
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
+{
+    global $config;
+
+    $return['type'] = 'custom_render';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Custom render report');
+    }
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = '';
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['failed'] = null;
+
+    $macros = [];
+    $patterns = [];
+    $substitutions = [];
+    if (isset($content['macros_definition']) === true
+        && empty($content['macros_definition']) === false
+    ) {
+        $macros = json_decode(
+            io_safe_output($content['macros_definition']),
+            true
+        );
+        if (empty($macros) === false && is_array($macros) === true) {
+            foreach ($macros as $key_macro => $data_macro) {
+                switch ($data_macro['type']) {
+                    case 0:
+                        // Type: String.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+                        $substitutions[] = $data_macro['value'];
+                    break;
+
+                    case 1:
+                        // Type Sql value.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+
+                        $regex = '/(UPDATE|INSERT INTO|DELETE FROM|TRUNCATE|DROP|ALTER|CREATE|GRANT|REVOKE)\s+(.*?)\s+/i';
+                        if (preg_match($regex, $data_macro['value']) > 0) {
+                            $value_query = __('This query is insecure, it could apply unwanted modiffications on the schema');
+                        } else {
+                            $error_reporting = error_reporting();
+                            error_reporting(0);
+                            $value_query = db_get_value_sql(
+                                trim($data_macro['value'], ';')
+                            );
+
+                            if ($value_query === false) {
+                                $value_query = __('Error: %s', $config['dbconnection']->error);
+                            }
+
+                            error_reporting($error_reporting);
+                        }
+
+                        $substitutions[] = $value_query;
+                    break;
+
+                    case 2:
+                        // Type: SQL graph.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+
+                        $regex = '/(UPDATE|INSERT INTO|DELETE FROM|TRUNCATE|DROP|ALTER|CREATE|GRANT|REVOKE)\s+(.*?)\s+/i';
+                        if (preg_match($regex, $data_macro['value']) > 0) {
+                            $value_query = __('This query is insecure, it could apply unwanted modiffications on the schema');
+                        } else {
+                            $error_reporting = error_reporting();
+                            error_reporting(0);
+                            $data_query = db_get_all_rows_sql(
+                                trim($data_macro['value'], ';')
+                            );
+
+                            error_reporting($error_reporting);
+
+                            if ($data_query === false) {
+                                $value_query = __('Error: %s', $config['dbconnection']->error);
+                            } else {
+                                $width = 210;
+                                if (isset($data_macro['width']) === true
+                                    && empty($data_macro['width']) === false
+                                ) {
+                                    $width = $data_macro['width'];
+                                }
+
+                                $height = 210;
+                                if (isset($data_macro['height']) === true
+                                    && empty($data_macro['height']) === false
+                                ) {
+                                    $height = $data_macro['height'];
+                                }
+
+                                // TODO: Allow to paint horizontal and vertical bar graphs for the moment only pie graphs.
+                                $type = 'sql_graph_pie';
+
+                                $SQL_GRAPH_MAX_LABEL_SIZE = 5;
+
+                                $count = 0;
+                                $flagOther = false;
+                                foreach ($data_query as $data_item) {
+                                    $count++;
+                                    $value = 0;
+                                    if (empty($data_item['value']) === false) {
+                                        $value = $data_item['value'];
+                                    }
+
+                                    if ($count <= 5) {
+                                        $label = __('Data');
+                                        if (empty($data_item['label']) === false) {
+                                            $label = io_safe_output($data_item['label']);
+                                            if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
+                                                $first_label = $label;
+                                                $label = substr(
+                                                    $first_label,
+                                                    0,
+                                                    floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                                                );
+                                                $label .= '...<br>';
+                                                $label .= substr(
+                                                    $first_label,
+                                                    floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                                                );
+                                            }
+                                        }
+
+                                        switch ($type) {
+                                            case 'sql_graph_vbar':
+                                            default:
+                                                // Vertical bar.
+                                                $data[] = [
+                                                    'tick' => $label.'_'.$count,
+                                                    'data' => $value,
+                                                ];
+                                            break;
+
+                                            case 'sql_graph_hbar':
+                                                // Horizontal bar.
+                                                $data[$label.'_'.$count]['g'] = $value;
+                                            break;
+
+                                            case 'sql_graph_pie':
+                                                // Pie.
+                                                $data[$label.'_'.$count] = $value;
+                                            break;
+                                        }
+                                    } else {
+                                        switch ($type) {
+                                            case 'sql_graph_vbar':
+                                            default:
+                                                // Vertical bar.
+                                                if ($flagOther === false) {
+                                                    $data[] = [
+                                                        'tick' => __('Other'),
+                                                        'data' => $value,
+                                                    ];
+
+                                                    $flagOther = true;
+                                                }
+
+                                                $data[(count($data) - 1)]['data'] += $value;
+                                            break;
+
+                                            case 'sql_graph_hbar':
+                                                // Horizontal bar.
+                                                if (isset($data[__('Other')]['g']) === false) {
+                                                    $data[__('Other')]['g'] = 0;
+                                                }
+
+                                                $data[__('Other')]['g'] += $value;
+                                            break;
+
+                                            case 'sql_graph_pie':
+                                                // Pie.
+                                                if (isset($data[__('Other')]) === false) {
+                                                    $data[__('Other')] = 0;
+                                                }
+
+                                                $data[__('Other')] += $value;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                $value_query = pie_graph(
+                                    $data,
+                                    $width,
+                                    $height,
+                                    __('other'),
+                                    ui_get_full_url(false, false, false, false),
+                                    '',
+                                    $config['fontpath'],
+                                    $config['font_size'],
+                                    ($pdf === true) ? 2 : 1,
+                                    'hidden',
+                                    '',
+                                    true
+                                );
+                            }
+                        }
+
+                        $substitutions[] = $value_query;
+                    break;
+
+                    case 3:
+                        // Type: Simple graph.
+                        $patterns[] = addslashes(
+                            '/_'.$data_macro['name'].'_/'
+                        );
+
+                        $height = $config['graph_image_height'];
+                        if (isset($data_macro['height']) === true
+                            && empty($data_macro['height']) === false
+                        ) {
+                            $height = $data_macro['height'];
+                        }
+
+                        $period = SECONDS_1DAY;
+                        if (isset($data_macro['period']) === true
+                            && empty($data_macro['period']) === false
+                        ) {
+                            $period = $data_macro['period'];
+                        }
+
+                        if (is_metaconsole() === true) {
+                            $server = db_get_row(
+                                'tmetaconsole_setup',
+                                'id',
+                                $data_macro['server_id']
+                            );
+                            if (metaconsole_connect($server) != NOERR) {
+                                continue;
+                            }
+                        }
+
+                        $params = [
+                            'agent_module_id'    => $data_macro['id_agent_module'],
+                            'period'             => $period,
+                            'title'              => '',
+                            'label'              => '',
+                            'pure'               => false,
+                            'only_image'         => true,
+                            'homeurl'            => ui_get_full_url(
+                                false,
+                                false,
+                                false,
+                                false
+                            ),
+                            'ttl'                => ($pdf === true) ? 2 : 1,
+                            'show_unknown'       => true,
+                            'height'             => $height,
+                            'backgroundColor'    => 'transparent',
+                            'return_img_base_64' => true,
+                            'server_id'          => (is_metaconsole() === true) ? $data_macro['server_id'] : 0,
+                        ];
+
+                        $substitutions[] = '<img style="max-width:100%;" src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
+
+                        if (is_metaconsole() === true) {
+                            metaconsole_restore_db();
+                        }
+                    break;
+
+                    default:
+                        // Not possible.
+                    break;
+                }
+            }
+        }
+    }
+
+    $return['data'] = preg_replace(
+        $patterns,
+        $substitutions,
+        $content['render_definition']
+    );
 
     return reporting_check_structure_content($return);
 }
@@ -6657,7 +6961,7 @@ function sla_truncate($num, $accurancy=2)
  *
  * @param integer $value            Value.
  * @param integer $min              Treshold min SLA.
- * @param boolean $max              Treshold max SLA.
+ * @param integer $max              Treshold max SLA.
  * @param boolean $inverse_interval Treshold inverse SLA.
  *
  * @return boolean Returns the interval in downtime (false if no matches).
@@ -9961,10 +10265,12 @@ function reporting_get_date_text($report=null, $content=null)
     if (!empty($report) && !empty($content)) {
         if ($content['period'] == 0) {
             $es = json_decode($content['external_source'], true);
-            if ($es['date'] == 0) {
-                $return['period'] = 0;
-            } else {
-                $return['date'] = $es['date'];
+            if (empty($es) === false) {
+                if ($es['date'] == 0) {
+                    $return['period'] = 0;
+                } else {
+                    $return['date'] = $es['date'];
+                }
             }
         } else {
             $return['period'] = $content['period'];
@@ -10295,7 +10601,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_status=false,
     $filter_event_filter_search=false,
     $filter_event_filter_exclude=false,
-    $id_server=0
+    $id_server=0,
+    $show_custom_data=false
 ) {
     global $config;
 
@@ -10352,6 +10659,7 @@ function reporting_get_agents_detailed_event(
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp_rep'],
                         'id_evento'    => $e['id_evento'],
+                        'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
                     ];
                 } else {
                     $return_data[] = [
@@ -10362,6 +10670,7 @@ function reporting_get_agents_detailed_event(
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp'],
                         'id_evento'    => $e['id_evento'],
+                        'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
                     ];
                 }
             }
@@ -14440,8 +14749,10 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     if ($modules_is_string === false) {
         if ($agentmodule_info['max_critical'] == 0) {
             $max_value_critical = null;
-            if ((bool) $content['dinamic_proc'] === true) {
-                $max_value_critical = 0.01;
+            if ($agentmodule_info['min_critical'] == 0) {
+                if ((bool) $content['dinamic_proc'] === true) {
+                    $max_value_critical = 0.01;
+                }
             }
         } else {
             $max_value_critical = $agentmodule_info['max_critical'];

@@ -846,6 +846,11 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
 
   // Change attributes to be unique and with identificable class
   $macro_field.attr("id", row_id);
+  $macro_field
+    .find("input")
+    .first()
+    .attr("name", macro_macro)
+    .val(macro_value);
 
   $macro_field.attr("class", "macro_field");
 

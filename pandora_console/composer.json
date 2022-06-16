@@ -21,7 +21,8 @@
       "Models\\": "include/rest-api/models",
       "Enterprise\\Models\\": "enterprise/include/rest-api/models",
       "PandoraFMS\\": "include/lib",
-      "PandoraFMS\\Enterprise\\": "enterprise/include/lib"
+      "PandoraFMS\\Enterprise\\": "enterprise/include/lib",
+      "UpdateManager\\": "update_manager_client/lib/UpdateManager"
     }
   },
   "autoload-dev": {

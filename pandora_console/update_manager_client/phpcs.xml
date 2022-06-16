@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<ruleset name="PandoraFMS Standard" namespace="PandoraFMS\Standard">
+
+  <!--
+    The name attribute of the ruleset tag is displayed
+    when running PHP_CodeSniffer with the -v command line
+    argument.
+
+    If you have custom sniffs, and they use a namespace prefix
+    that is different to the name of the directory containing
+    your ruleset.xml file, you can set the namespace prefix using
+    the namespace attribute of the ruleset tag.
+
+    For example, if your namespace format for sniffs is
+    MyProject\CS\Standard\Sniffs\Category, set the namespace to
+    MyProject\CS\Standard (everything up to \Sniffs\)
+  -->
+
+  <!--
+    The content of the description tag is not displayed anywhere
+    except in this file, so it can contain information for
+    developers who may change this file in the future.
+  -->
+  <description>Pandora FMS coding standard</description>
+
+  <!--
+    If no files or directories are specified on the command line
+    your custom standard can specify what files should be checked
+    instead.
+
+    Note that file and directory paths specified in a ruleset are
+    relative to the ruleset's location, and that specifying any file or
+    directory path on the command line will ignore all file tags.
+  -->
+  <file>./src</file>
+
+  <!--
+    You can hard-code ignore patterns directly into your
+    custom standard so you don't have to specify the
+    patterns on the command line.
+    
+    The following two tags are equivalent to the command line argument:
+    -ignore=*/tests/*,*/data/*
+  -->
+  <!-- Community -->
+  <exclude-pattern>*/*.old</exclude-pattern>
+  <exclude-pattern>*/*.bak</exclude-pattern>
+  <exclude-pattern>*/src/public/css/*</exclude-pattern>
+  <exclude-pattern>*/src/public/js/*</exclude-pattern>
+  <exclude-pattern>*/src/public/fonts/*</exclude-pattern>
+
+  <!--
+    You can hard-code command line values into your custom standard.
+    Note that this does not work for the command line values:
+    -v[v][v], -l, -d, -sniffs and -standard
+    
+    The following tags are equivalent to the command line arguments:
+    -report=summary -colors -sp
+  -->
+  <!-- <arg name="report" value="summary"/> -->
+  <arg name="colors"/>
+  <arg value="s"/>
+  <arg name="extensions" value="php"/>
+
+  <!--
+    You can hard-code custom php.ini settings into your custom standard.
+  -->
+  <ini name="memory_limit" value="512M"/>
+  <ini name="max_execution_time" value="0"/>
+
+  <!--
+    If your helper classes need custom autoloading rules that you are
+    not able to include in other ways, you can hard-code files to include
+    before the ruleset is processed and any sniff classes have been loaded.
+
+    This is different to bootstrap files, which are loaded after the ruleset
+    has already been processed.
+  -->
+  <!-- <autoload>/path/to/autoload.php</autoload> -->
+
+  <!--
+    Include all sniffs in the PSR2 standard. Note that the
+    path to the standard does not have to be specified as the
+    PSR2 standard exists inside the PHP_CodeSniffer install
+    directory.
+  -->
+  <rule ref="Squiz">
+    <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace" />
+    <exclude name="Squiz.NamingConventions.ValidFunctionName.ScopeNotCamelCaps" />
+    <exclude name="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps" />
+    <exclude name="Squiz.Commenting.FileComment.MissingPackageTag" />
+    <exclude name="Squiz.Commenting.FileComment.Missing" />
+    <exclude name="Squiz.Commenting.FileComment.PackageTagOrder" />
+    <exclude name="Squiz.Commenting.FileComment.SubpackageTagOrder" />
+    <exclude name="Squiz.Commenting.FileComment.AuthorTagOrder" />
+    <exclude name="Squiz.Commenting.FileComment.MissingAuthorTag" />
+    <exclude name="Squiz.Commenting.FileComment.CopyrightTagOrder" />
+    <exclude name="Squiz.Commenting.FileComment.MissingCopyrightTag" />
+    <exclude name="Squiz.Commenting.FileComment.IncorrectAuthor" />
+    <exclude name="Squiz.Commenting.ClosingDeclarationComment.Missing" />
+    <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing" />
+    <exclude name="Squiz.Classes.ClassFileName.NoMatch" />
+    <exclude name="Squiz.Files.FileExtension.ClassFound" />
+    <exclude name="Squiz.Functions.GlobalFunction.Found" />
+    <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose" />
+    <exclude name="Squiz.PHP.DisallowBooleanStatement.Found" />
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison" />
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedBool" />
+    <exclude name="Squiz.PHP.DisallowInlineIf.Found" />
+    <exclude name="Squiz.PHP.GlobalKeyword.NotAllowed" />
+    <exclude name="Squiz.NamingConventions.ValidFunctionName.NotCamelCaps" />
+    <exclude name="Squiz.NamingConventions.ValidVariableName.NotCamelCaps" />
+    <exclude name="Squiz.NamingConventions.ValidVariableName.StringNotCamelCaps" />
+    <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame" />
+  </rule>
+
+  <rule ref="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue">
+    <message>Implicit true comparisons discouraged. Try to check the return type with the === operator instead.</message>
+    <type>warning</type>
+  </rule>
+
+  <rule ref="Squiz.Operators.ComparisonOperatorUsage.NotAllowed">
+    <message>The === comparision operator is preferred. Check if the == operator is really needed here. The === operator, unlike the == operator, compares also the type of the variables, so things like 0 === false would be false.</message>
+    <type>warning</type>
+  </rule>
+
+  <rule ref="Squiz.Commenting.FunctionComment.ScalarTypeHintMissing">
+    <type>warning</type>
+  </rule>
+  <rule ref="Squiz.Commenting.FunctionComment.TypeHintMissing">
+    <type>warning</type>
+  </rule>
+
+
+  <!-- <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+    <properties>
+      <property name="spacing" value="1" />
+    </properties>
+  </rule> -->
+
+  <!--
+    Include some specific sniffs from the Generic standard.
+    Note again that the name of the sniff is the code that
+    PHP_CodeSniffer gives it.
+  -->
+  <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+  <rule ref="Generic.Commenting"/>
+
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="120"/>
+      <property name="absoluteLineLimit" value="0"/>
+    </properties>
+  </rule>
+
+  <rule ref="Generic.Debug.ESLint">
+    <properties>
+      <property name="configFile" value=".eslintrc"/>
+    </properties>
+  </rule>
+
+  <!-- <rule ref="Squiz.Strings.DoubleQuoteUsage">
+  <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+    <severity>0</severity>
+  </rule> -->
+
+</ruleset>

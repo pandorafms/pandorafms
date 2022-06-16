@@ -808,7 +808,7 @@ function html_print_select(
         $output .= '<div class="flex-row-center">';
     }
 
-    $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -4238,6 +4238,82 @@ function html_print_image(
 
 
 /**
+ * Function for print the logo in menu header.
+ *
+ * @param boolean $menuCollapsed If true, the menu is collapsed.
+ * @param boolean $return        If true, the formed element is returned.
+ *
+ * @return mixed.
+ */
+function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
+{
+    global $config;
+
+    if (defined('PANDORA_ENTERPRISE') === false) {
+        if ($config['style'] === 'pandora_black') {
+            $custom_logo = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
+            $custom_logo_collapsed = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_COLLAPSED;
+        } else if ($config['style'] === 'pandora') {
+            $custom_logo = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
+            $custom_logo_collapsed = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_COLLAPSED;
+        }
+
+        $logo_title = get_product_name().' Opensource';
+    } else {
+        // Handle default logos when change theme.
+        if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
+            $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
+        } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
+            $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
+        }
+
+        $logo_title = get_product_name().' Enterprise';
+        $custom_logo = 'images/custom_logo/'.$config['custom_logo'];
+
+        $custom_logo_collapsed = 'images/custom_logo/'.$config['custom_logo_collapsed'];
+
+        if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo) === true) {
+            $custom_logo = ENTERPRISE_DIR.'/'.$custom_logo;
+        }
+    }
+
+    if (isset($config['custom_logo']) === true) {
+        $output = html_print_image(
+            $custom_logo,
+            true,
+            [
+                'border' => '0',
+                'width'  => '215',
+                'alt'    => $logo_title,
+                'class'  => 'logo_full',
+                'style'  => ($menuCollapsed === true) ? 'display:none' : 'display:block',
+            ]
+        );
+    }
+
+    if (isset($config['custom_logo_collapsed']) === true) {
+        $output .= html_print_image(
+            $custom_logo_collapsed,
+            true,
+            [
+                'border' => '0',
+                'width'  => '60',
+                'alt'    => $logo_title,
+                'class'  => 'logo_icon',
+                'style'  => ($menuCollapsed === true) ? 'display:block' : 'display:none',
+            ]
+        );
+    }
+
+    if ($return === false) {
+        echo $output;
+    } else {
+        return $output;
+    }
+}
+
+
+/**
  * Render an input text element. Extended version, use html_print_input_text() to simplify.
  *
  * @param string Input name.
@@ -4766,17 +4842,22 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     enterprise_include_once('include/functions_metaconsole.php');
 
+    $style = '';
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $style = 'style="color: white"';
+    }
+
+    if (isset($data['label_class']) === false) {
+        $data['label_class'] = '';
     }
 
     $output = '';
 
     if (($data['label'] ?? false) && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
-        $output .= ' class="'.$data['input_class'].'">';
-        $output .= '<label '.$style.' class="'.$data['label_class'].'">';
-        $output .= $data['label'];
+        $output .= ' class="'.($data['input_class'] ?? '').'">';
+        $output .= '<label '.$style.' class="'.($data['label_class'] ?? '').'">';
+        $output .= ($data['label'] ?? '');
         $output .= '</label>';
 
         if (!$data['return']) {
@@ -4801,7 +4882,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'text':
             $output .= html_print_input_text(
                 $data['name'],
-                $data['value'],
+                ($data['value'] ?? ''),
                 ((isset($data['alt']) === true) ? $data['alt'] : ''),
                 ((isset($data['size']) === true) ? $data['size'] : 50),
                 ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),

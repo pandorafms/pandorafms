@@ -350,6 +350,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_network_interfaces_report($table, $item);
             break;
 
+            case 'custom_render':
+                reporting_html_custom_render($table, $item);
+            break;
+
             case 'group_configuration':
                 reporting_html_group_configuration($table, $item);
             break;
@@ -1021,6 +1025,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
     global $config;
 
     $show_extended_events = $item['show_extended_events'];
+    $show_custom_data = (bool) $item['show_custom_data'];
 
     if ($item['total_events']) {
         $table1 = new stdClass();
@@ -1054,6 +1059,10 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             $table1->head[4] = __('Severity');
             $table1->head[5] = __('Val. by');
             $table1->head[6] = __('Timestamp');
+        }
+
+        if ($show_custom_data === true) {
+            $table1->head[8] = __('Custom data');
         }
 
         foreach ($item['data'] as $k => $event) {
@@ -1126,6 +1135,16 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
             } else {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+            }
+
+            if ($show_custom_data === true) {
+                $custom_data = json_decode($event['custom_data'], true);
+                $custom_data_text = '';
+                foreach ($custom_data as $key => $value) {
+                    $custom_data_text .= $key.' = '.$value.'<br>';
+                }
+
+                $data[] = $custom_data_text;
             }
 
             array_push($table1->data, $data);
@@ -1242,10 +1261,10 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
 function reporting_html_event_report_module($table, $item, $pdf=0)
 {
     global $config;
-
     $show_extended_events = $item['show_extended_events'];
 
     $show_summary_group = $item['show_summary_group'];
+    $show_custom_data = (bool) $item['show_custom_data'];
     if ($item['total_events']) {
         if (!empty($item['failed'])) {
             $table->colspan['events']['cell'] = 3;
@@ -1273,6 +1292,10 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     $table1->head[3]  = __('Severity');
                     $table1->head[4]  = __('Timestamp');
                     $table1->style[0] = 'text-align: center;';
+                }
+
+                if ($show_custom_data === true) {
+                    $table1->head[6]  = __('Custom data');
                 }
 
                 if (is_array($item['data']) || is_object($item['data'])) {
@@ -1325,6 +1348,16 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             $data[5] = date($config['date_format'], $event['timestamp_rep']);
                         } else {
                             $data[4] = date($config['date_format'], strtotime($event['timestamp']));
+                        }
+
+                        if ($show_custom_data === true) {
+                            $custom_data = json_decode($event['custom_data'], true);
+                            $custom_data_text = '';
+                            foreach ($custom_data as $key => $value) {
+                                $custom_data_text .= $key.' = '.$value.'<br>';
+                            }
+
+                            $data[6] = $custom_data_text;
                         }
 
                         $table1->data[] = $data;
@@ -2337,6 +2370,13 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         $table1->align[0] = 'center';
         $table1->align[1] = 'center';
         $table1->align[3] = 'center';
+        if ((bool) $item['show_custom_data'] === true) {
+            if ($item['show_summary_group']) {
+                $table1->align[7] = 'left';
+            } else {
+                $table1->align[6] = 'left';
+            }
+        }
 
         $table1->data = [];
 
@@ -2351,6 +2391,9 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         $table1->head[4] = __('Severity');
         $table1->head[5] = __('Val. by');
         $table1->head[6] = __('Timestamp');
+        if ((bool) $item['show_custom_data'] === true) {
+            $table1->head[7] = __('Custom data');
+        }
 
         foreach ($item['data'] as $i => $event) {
             if ($item['show_summary_group']) {
@@ -2414,6 +2457,16 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
             } else {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+            }
+
+            if ((bool) $item['show_custom_data'] === true) {
+                $custom_data = json_decode($event['custom_data'], true);
+                $custom_data_text = '';
+                foreach ($custom_data as $key => $value) {
+                    $custom_data_text .= $key.' = '.$value.'<br>';
+                }
+
+                $data[] = $custom_data_text;
             }
 
             array_push($table1->data, $data);
@@ -3051,6 +3104,47 @@ function reporting_html_network_interfaces_report($table, $item, $pdf=0)
                 $table_agent,
                 true
             );
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
+/**
+ * This type of report element will generate the interface graphs
+ * of all those devices that belong to the selected group.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string HTML code.
+ */
+function reporting_html_custom_render($table, $item, $pdf=0)
+{
+    $return_pdf = '';
+    if (empty($item['failed']) === false) {
+        if ($pdf === 0) {
+            $table->colspan['interfaces']['cell'] = 3;
+            $table->cellstyle['interfaces']['cell'] = 'text-align: left;';
+            $table->data['interfaces']['cell'] = $item['failed'];
+        } else {
+            $return_pdf .= $item['failed'];
+        }
+    } else {
+        $output = '<div id="reset-styles">';
+        $output .= $item['data'];
+        $output .= '</div>';
+
+        if ($pdf === 1) {
+            $return_pdf .= $output;
+        } else {
+            $id = uniqid();
+            $table->colspan[$id][0] = 3;
+            $table->data[$id] = $output;
         }
     }
 

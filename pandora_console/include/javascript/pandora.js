@@ -1040,7 +1040,7 @@ function adjustTextUnits(name) {
         "selected",
         true
       );
-      $("#" + name + "_units").trigger("change");
+
       $("#text-" + name + "_text").val(restPrev);
       unitsSelected = true;
     }
@@ -1049,9 +1049,7 @@ function adjustTextUnits(name) {
   });
 
   if (unitsSelected == false) {
-    //$("#" + name + "_units option:last").prop("selected", true);
     $("#" + name + "_units option:last").prop("selected", true);
-    $("#" + name + "_units").trigger("change");
     $("#text-" + name + "_text").val(restPrev);
   }
 
@@ -1361,7 +1359,8 @@ function defineTinyMCE(added_config) {
     element_format: "html",
     object_resizing: true,
     autoresize_bottom_margin: 50,
-    autoresize_on_init: true
+    autoresize_on_init: true,
+    extended_valid_elements: "img[*]"
   });
 
   if (!isEmptyObject(added_config)) {
@@ -2028,3 +2027,33 @@ function inArray(needle, haystack) {
   }
   return false;
 }
+
+/**
+ * Filter selector item by text based on a text input.
+ *
+ * @param {string} textbox Text input.
+ *
+ * @return {void}
+ */
+$.fn.filterByText = function(textbox) {
+  var select = this;
+
+  $(textbox).bind("change keyup", function() {
+    var search = $.trim($(textbox).val());
+    var regex = new RegExp(search, "gi");
+
+    $(select)
+      .find("option")
+      .each(function() {
+        if (
+          $(this)
+            .text()
+            .match(regex) !== null
+        ) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+  });
+};

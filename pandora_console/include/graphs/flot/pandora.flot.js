@@ -15,6 +15,8 @@ function pandoraFlotPie(
   colors,
   hide_labels
 ) {
+  height = parseInt(height);
+
   labels = labels.split(separator);
   var data = values.split(separator);
 
@@ -79,10 +81,21 @@ function pandoraFlotPie(
       break;
   }
 
+  var discount = 20;
+  if (water_mark) {
+    discount = 40;
+  }
+
   var plot = $.plot($("#" + graph_id), data, conf_pie);
 
   var legends = $("#" + graph_id + " .legendLabel");
   legends.css("font-size", font_size + "pt");
+
+  var tableDiv = $("#" + graph_id + " .legend > div");
+  tableDiv.css("max-height", height - discount + "px");
+
+  var tableLegend = $("#" + graph_id + " .legend table");
+  tableLegend.css("max-height", height - discount + "px");
 
   // Events
   $("#" + graph_id).bind("plothover", pieHover);
@@ -104,7 +117,7 @@ function pandoraFlotPie(
       '<div style="font-size:' +
       font_size +
       "pt;" +
-      'text-align:center;padding:2px;color:white;">' +
+      'text-align:center;padding:2px;color:#4a4a4a;">' +
       label +
       "<br/>" +
       series.percent.toFixed(2) +
@@ -443,14 +456,15 @@ function pandoraFlotHBars(
         "pt !important;" +
         "margin: 0; max-width: 200px;" +
         "margin-right:5px;" +
-        "margin-left: -1.5em" +
-        "text-align: right" +
+        "margin-left: -1.5em;" +
+        "text-align: right;" +
         "text-overflow: ellipsis;" +
         "overflow: hidden;" +
         "white-space: pre;";
 
       if (label.indexOf("<br>") != -1) {
-        div_attributes += "min-height: 2.5em;";
+        var label_array = label.split("<br>");
+        label = label_array[0] + label_array[1];
       }
 
       div_attributes += '" title="' + label + '" style="overflow: hidden;"';
@@ -2455,6 +2469,8 @@ function pandoraFlotArea(
                 number_format(value[x].max, 0, unit, short_data, divisor) +
                 " Avg: " +
                 number_format(value[x].avg, 0, unit, short_data, divisor);
+            } else {
+              data_legend[index] = " Min: " + 0 + " Max: " + 0 + " Avg: " + 0;
             }
           });
 

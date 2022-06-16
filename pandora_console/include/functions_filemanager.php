@@ -670,16 +670,16 @@ function filemanager_file_explorer(
             }
 
             if ($fileinfo['is_dir']) {
-                $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['server_unique_identifier']).'">'.$fileinfo['name'].'</a>';
+                $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.io_safe_input($fileinfo['name']).'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['server_unique_identifier']).'">'.io_safe_input($fileinfo['name']).'</a>';
             } else if (empty($url_file) === false) {
                 // Set the custom url file.
                 $url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
 
-                $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
+                $data[1] = '<a href="'.$url_file_clean.'">'.io_safe_input($fileinfo['name']).'</a>';
             } else {
                 $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
                 $hash = md5($filename.$config['server_unique_identifier']);
-                $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
+                $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.io_safe_input($fileinfo['name']).'</a>';
             }
 
             // Notice that uploaded php files could be dangerous.

@@ -1624,44 +1624,40 @@ function config_update_config()
 
                         if ($dbm->check() === true) {
                             // Historical configuration tokens (stored in historical db).
-                            if (Config::set(
+                            if ($dbm->setConfigToken(
                                 'days_purge',
-                                get_parameter('history_dbh_purge'),
-                                true
+                                get_parameter('history_dbh_purge')
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database purge');
                             }
 
-                            if (Config::set(
+                            if ($dbm->setConfigToken(
                                 'history_partitions_auto',
-                                get_parameter_switch('history_partitions_auto', 0),
-                                true
+                                get_parameter_switch('history_partitions_auto', 0)
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database partitions');
                             }
 
-                            if (Config::set(
+                            if ($dbm->setConfigToken(
                                 'event_purge',
-                                get_parameter('history_dbh_events_purge'),
-                                true
+                                get_parameter('history_dbh_events_purge')
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database events purge');
                             }
 
-                            if (Config::set(
+                            if ($dbm->setConfigToken(
                                 'string_purge',
-                                get_parameter('history_dbh_string_purge'),
-                                true
+                                get_parameter('history_dbh_string_purge')
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database string purge');
                             }
 
                             // Disable history db in history db.
-                            Config::set('history_db_enabled', 0, true);
+                            $dbm->setConfigToken('history_db_enabled', 0);
                         }
                     }
                 break;

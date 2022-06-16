@@ -84,10 +84,7 @@ function get_notification_targets(int $id_message)
 
     if (is_array($ret)) {
         foreach ($ret as $row) {
-            array_push(
-                $targets['users'],
-                get_user_fullname($row['id_user'])
-            );
+            array_push($targets['users'], get_user_fullname($row['id_user']));
         }
     }
 
@@ -227,8 +224,10 @@ function check_notification_readable(int $id_message)
  *
  * @return array [users] and [groups] with the targets.
  */
-function get_notification_source_targets(int $id_source, ?string $subtype=null)
-{
+function get_notification_source_targets(
+    int $id_source,
+    ?string $subtype=null
+) {
     $ret = [];
 
     $filter = '';
@@ -484,7 +483,8 @@ function notifications_add_group_to_source($source_id, $groups)
             continue;
         }
 
-        $res = $res && db_process_sql_insert(
+        $res = $res &&
+        db_process_sql_insert(
             'tnotification_source_group',
             [
                 'id_group'  => $group,
@@ -525,7 +525,8 @@ function notifications_add_users_to_source($source_id, $users)
             continue;
         }
 
-        $res = $res && db_process_sql_insert(
+        $res = $res &&
+        db_process_sql_insert(
             'tnotification_source_user',
             [
                 'id_user'   => $user,
@@ -551,7 +552,13 @@ function notifications_add_users_to_source($source_id, $users)
 function notifications_get_group_source_not_configured($source_id)
 {
     $groups_selected = notifications_get_group_sources_for_select($source_id);
-    $all_groups = users_get_groups_for_select(false, 'AR', false, true, $groups_selected);
+    $all_groups = users_get_groups_for_select(
+        false,
+        'AR',
+        false,
+        true,
+        $groups_selected
+    );
     return array_diff($all_groups, $groups_selected);
 }
 
@@ -566,12 +573,10 @@ function notifications_get_group_source_not_configured($source_id)
  */
 function notifications_get_user_source_not_configured($source_id)
 {
-    $users_selected = array_keys(notifications_get_user_sources_for_select($source_id));
-    $users = get_users(
-        'id_user',
-        ['!id_user' => $users_selected],
-        ['id_user']
+    $users_selected = array_keys(
+        notifications_get_user_sources_for_select($source_id)
     );
+    $users = get_users('id_user', ['!id_user' => $users_selected], ['id_user']);
     return index_array($users, 'id_user', 'id_user');
 }
 
@@ -587,8 +592,8 @@ function notifications_get_user_source_not_configured($source_id)
 function notifications_build_user_enable_return($status, $enabled)
 {
     return [
-        'status'  => ((bool) $status === true) ? 1 : 0,
-        'enabled' => ((bool) $enabled === true) ? 1 : 0,
+        'status'  => (bool) $status === true ? 1 : 0,
+        'enabled' => (bool) $enabled === true ? 1 : 0,
     ];
 }
 
@@ -625,16 +630,11 @@ function notifications_get_user_label_status($source, $user, $label)
 
     $common_groups = array_intersect(
         array_keys(users_get_groups($user)),
-        array_keys(
-            notifications_get_group_sources_for_select($source['id'])
-        )
+        array_keys(notifications_get_group_sources_for_select($source['id']))
     );
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
-    return notifications_build_user_enable_return(
-        $value,
-        false
-    );
+    return notifications_build_user_enable_return($value, false);
 }
 
 
@@ -681,13 +681,7 @@ function notifications_get_counters()
 {
     $num_notifications = 0;
     $last_id = 0;
-    $last_message = messages_get_overview(
-        'timestamp',
-        'DESC',
-        false,
-        false,
-        1
-    );
+    $last_message = messages_get_overview('timestamp', 'DESC', false, false, 1);
     if (!empty($last_message)) {
         $num_notifications = messages_get_count();
         $last_id = $last_message[0]['id_mensaje'];
@@ -718,7 +712,9 @@ function notifications_get_counters()
 function notifications_print_ball($num_notifications, $last_id)
 {
     $no_notifications = (int) $num_notifications === 0;
-    $class_status = ($no_notifications) ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
+    $class_status = $no_notifications
+    ? 'notification-ball-no-messages'
+    : 'notification-ball-new-messages';
     return sprintf(
         '<div
             %s
@@ -728,7 +724,7 @@ function notifications_print_ball($num_notifications, $last_id)
         >
             %s
         </div>',
-        ($no_notifications) ? '' : 'onclick="addNotifications(event)"',
+        $no_notifications ? '' : 'onclick="addNotifications(event)"',
         $class_status,
         $last_id,
         $num_notifications
@@ -799,7 +795,7 @@ function notifications_print_global_source_configuration($source)
                     'type'        => 'switch',
                     'id'          => 'nt-'.$source['id'].'.'.$type.'-subtype',
                     'class'       => 'elem-clickable',
-                    'value'       => (isset($blacklist[$type]) === false),
+                    'value'       => isset($blacklist[$type]) === false,
                     'return'      => true,
                 ]
             );
@@ -833,14 +829,11 @@ function notifications_print_global_source_configuration($source)
  *
  * @return string HTML with the generated selector
  */
-function notifications_print_source_select_box(
-    $info_selec,
-    $id,
-    $source_id
-) {
-    $title = ($id === 'users') ? __('Notified users') : __('Notified groups');
-    $add_title = ($id === 'users') ? __('Add users') : __('Add groups');
-    $delete_title = ($id === 'users') ? __('Delete users') : __('Delete groups');
+function notifications_print_source_select_box($info_selec, $id, $source_id)
+{
+    $title = $id === 'users' ? __('Notified users') : __('Notified groups');
+    $add_title = $id === 'users' ? __('Add users') : __('Add groups');
+    $delete_title = $id === 'users' ? __('Delete users') : __('Delete groups');
 
     // Generate the HTML.
     return sprintf(
@@ -873,11 +866,7 @@ function notifications_print_source_select_box(
             true,
             [
                 'title'   => $add_title,
-                'onclick' => sprintf(
-                    "add_source_dialog('%s', '%s')",
-                    $id,
-                    $source_id
-                ),
+                'onclick' => sprintf("add_source_dialog('%s', '%s')", $id, $source_id),
             ]
         ),
         html_print_image(
@@ -1062,12 +1051,28 @@ function notifications_print_dropdown()
 function notifications_print_dropdown_element($message_info)
 {
     $action = '';
-
     switch ($message_info['description']) {
         case 'Official&#x20;communication':
             $action = 'show_modal(this.id);';
             $target = '';
             $body_preview = __('Click here to get more information');
+            preg_match(
+                '/LTS\s+(\d*)/',
+                io_safe_output($message_info['subject']),
+                $array_version
+            );
+
+            if (empty($array_version) === false
+                && isset($array_version[1]) === true
+            ) {
+                  $version = (int) $array_version[1];
+                  $result = notifications_curl_new_version_description($version);
+                if (empty($result) === false) {
+                    $title = explode('\n', $result);
+                    hd($title, true);
+                    $action = 'show_modal_lts("'.base64_encode(io_safe_output($message_info['subject'])).'","'.base64_encode($result).'")';
+                }
+            }
         break;
 
         default:
@@ -1127,4 +1132,46 @@ function notifications_print_dropdown_element($message_info)
         io_safe_output($message_info['subject']),
         $body_preview
     );
+}
+
+
+function notifications_curl_new_version_description(int $version)
+{
+    global $config;
+
+    $pandora_license = db_get_value('value', 'tupdate_settings', '`key`', 'customer_key');
+
+    $params = [
+        'action'          => 'newer_packages',
+        'puid'            => $config['pandora_uid'],
+        'build'           => ($version - 1),
+        'current_package' => ($version - 1),
+        'license'         => $pandora_license,
+        'limit_count'     => 1,
+        'language'        => $config['language'],
+        'timezone'        => $config['timezone'],
+        'version'         => 'v7.0NG.'.$config['current_package'],
+        'email'           => '',
+        'format'          => 'lts',
+    ];
+    $defaults = [
+        CURLOPT_URL            => $config['url_update_manager'],
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $params,
+        CURLOPT_RETURNTRANSFER => 1,
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, $defaults);
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    $result = json_decode($result, true);
+
+    if (isset($result[0]['description']) === false) {
+        $result = '';
+    } else {
+        $result = $result[0]['description'];
+    }
+
+    return $result;
 }

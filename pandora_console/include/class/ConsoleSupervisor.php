@@ -2145,8 +2145,8 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
                     'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click <a class="bolder underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
-                    'url'     => 'javascript: force_run_register();',
+                    'message' => __('Click here to start the registration process'),
+                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                 ]
             );
         } else {
@@ -2166,7 +2166,7 @@ class ConsoleSupervisor
         // Check default password for "admin".
         $admin_with_default_pass = db_get_value_sql(
             'SELECT count(*) FROM tusuario
-            WHERE 
+            WHERE
                 id_user="admin"
                 AND password="1da7ee7d45b96d0e1f45ee4ee23da560"
                 AND is_admin=1
@@ -2441,11 +2441,11 @@ class ConsoleSupervisor
         config_update_value('last_um_check', $future, true);
 
         $messages = update_manager_get_messages();
+
         if (is_array($messages) === true) {
             $source_id = get_notification_source_id(
                 'Official&#x20;communication'
             );
-
             foreach ($messages as $message) {
                 if (isset($message['url']) === false) {
                     $message['url'] = '#';
@@ -2476,8 +2476,8 @@ class ConsoleSupervisor
         // List all servers except satellite server.
         $server_version_list = db_get_all_rows_sql(
             sprintf(
-                'SELECT `name`, `version` 
-                FROM tserver 
+                'SELECT `name`, `version`
+                FROM tserver
                 WHERE server_type != %d
                 GROUP BY `version`',
                 SERVER_TYPE_ENTERPRISE_SATELLITE

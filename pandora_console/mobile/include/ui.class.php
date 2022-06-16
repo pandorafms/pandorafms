@@ -1004,11 +1004,10 @@ class Ui
             $(document).ready(function () {
                 dashboardLoadVC(settings);
                 if(settings.mobile_view_orientation_vc === false) {
-                    //$(".container-center").css("transform", "rotate(90deg)");
-                    //$(".container-center").css("margin-top", "40px");
                     $("#main_page > .ui-content").css("display", "block");
 
                     $(".container-center").css("padding", "50% 0");
+                    $(".container-center").css("height", "100vh");
                     $(".visual-console-container-dashboard").css("display", "block");
                     $(".visual-console-container-dashboard").css("transform-origin", "left top");
                     $(".visual-console-container-dashboard").css("transform", "rotate(-90deg) translate(-100%)");

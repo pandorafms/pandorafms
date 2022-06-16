@@ -44,7 +44,7 @@ ALTER TABLE `tevent_alert` ADD COLUMN `field5_recovery` text DEFAULT '' AFTER `f
 ALTER TABLE `tevent_alert` ADD COLUMN `field6_recovery` text DEFAULT '' AFTER `field5_recovery`;
 ALTER TABLE `tevent_alert` ADD COLUMN `field7_recovery` text DEFAULT '' AFTER `field6_recovery`;
 ALTER TABLE `tevent_alert` ADD COLUMN `field8_recovery` text DEFAULT '' AFTER `field7_recovery`;
-ALTER TABLE `tevent_alert` ADD COLUMN `field0_recovery` text DEFAULT '' AFTER `field8_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field9_recovery` text DEFAULT '' AFTER `field8_recovery`;
 ALTER TABLE `tevent_alert` ADD COLUMN `field10_recovery` text DEFAULT '' AFTER `field9_recovery`;
 
 SET @st_oum763 = (SELECT IF(

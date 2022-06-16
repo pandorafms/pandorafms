@@ -536,9 +536,54 @@ sub PandoraFMS::Recon::Base::test_module($$) {
         # Column
         $test->{'tcp_port'}
       );
+    } elsif ($test->{'id_modulo'} == 4) {
+      # SNMP Bandwith plugin modules.
+      # Check if plugin is running.
+      if ($module->{'macros'} ne '') {
+
+      # Get Bandwidth plugin.
+      my $plugin = get_db_single_row(
+        $self->{'dbh'},
+        'SELECT * FROM tplugin WHERE name = "Network&#x20;bandwidth&#x20;SNMP"',
+      );
+
+      return 0 unless defined($plugin);
+        my $parameters =  safe_output($plugin->{'parameters'});
+        my $plugin_exec = $plugin->{'plugin_exec'};
+
+        # Decode macros.
+        my $macros = p_decode_json($self->{'config'}, safe_output($test->{'macros'}));
+
+        my %macros = %{$macros};
+        if(ref($macros) eq "HASH") {
+          foreach my $macro_id (keys(%macros))
+          {
+            my $macro_field = safe_output($macros{$macro_id}{'macro'});
+            my $macro_desc  = safe_output($macros{$macro_id}{'desc'});
+            my $macro_value = (defined($macros{$macro_id}{'hide'}) && $macros{$macro_id}{'hide'} eq '1') ?
+                              pandora_output_password($self->{'config'}, safe_output($macros{$macro_id}{'value'})) :
+                              safe_output($macros{$macro_id}{'value'});
+
+            # build parameters to invoke plugin
+            $parameters =~ s/\'$macros{$macro_id}{'macro'}\'/$macro_value/g;
+
+          }
+        }
+        my $command = safe_output($plugin_exec);
+
+        # Execute the plugin.
+        my $output = `$command 2>$DEVNULL`;
+        # Do not save the output if there was an error.
+        if ($? != 0) {
+          return 0;
+        } else {
+          $value = 1;
+        }
+     }
     } elsif(is_enabled($test->{'id_plugin'})) {
       # XXX TODO: Test plugins. How to identify arguments? and values?
       # Disabled until we can ensure result.
+      
       return 0;
     }
 
@@ -702,7 +747,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
         'id_modulo' => 2,
         'name' => $if_name."_ifOperStatus",
         'descripcion' => safe_input(
-          $if_desc
+          'The current operational state of the interface: up(1), down(2), testing(3), unknown(4), dormant(5), notPresent(6), lowerLayerDown(7)',
         ),
         'ip_target' => $device,
         'tcp_send' => $self->{'task_data'}{'snmp_version'},
@@ -833,6 +878,130 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
         }
       );
     }
+
+    # Bandwidth plugin.
+    my $plugin = get_db_single_row(
+      $self->{'dbh'},
+      'SELECT id, macros FROM tplugin WHERE name = "Network&#x20;bandwidth&#x20;SNMP"',
+    );
+     next unless defined($plugin);
+
+      # Network Bandwidth is installed.
+			my $macros = p_decode_json($self->{'config'}, safe_output($plugin->{'macros'}));
+      my $id_plugin = $plugin->{'id'};
+
+      if(ref($macros) eq "HASH") {
+      
+          # SNMP Version.
+          $macros->{'1'}->{'value'} = $self->{'task_data'}->{'snmp_version'};
+          # Community.
+          $macros->{'2'}->{'value'} = $community;
+          # Host.
+          $macros->{'3'}->{'value'} = $device;
+          # Port.
+          $macros->{'4'}->{'value'} = 161;
+          # Interface index filter.
+          $macros->{'5'}->{'value'} = $if_index;
+          # SecurityName.
+          $macros->{'6'}->{'value'} = $self->{'task_data'}->{'snmp_auth_method'};
+          # SecurityContext.
+          $macros->{'7'}->{'value'} = $community;
+          # SecurityLevel.
+          $macros->{'8'}->{'value'} = $self->{'task_data'}->{'snmp_security_level'};
+          # AuthProtocol.
+          $macros->{'9'}->{'value'} = $self->{'task_data'}->{'snmp_auth_method'};
+          # AuthKey.
+          $macros->{'10'}->{'value'} = $self->{'task_data'}->{'snmp_auth_pass'};
+          # PrivProtocol.
+          $macros->{'11'}->{'value'} = $self->{'task_data'}->{'snmp_privacy_method'};
+          # PrivKey.
+          $macros->{'12'}->{'value'} = $self->{'task_data'}->{'snmp_privacy_pass'};
+          # Hash identifier.
+          $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
+          # Get input usage.
+          $macros->{'14'}->{'value'} = 0;
+          # Get output usage.
+          $macros->{'15'}->{'value'} = 0;
+
+          $self->call(
+            'add_module',
+            $device,
+            {
+              'id_tipo_modulo' => 1,
+              'id_modulo' => 4,
+              'name' => $if_name."_Bandwith",
+              'description' => safe_input(
+			          'Amount of digital information sent and received from this interface over a particular time',
+              ),
+              'unit' => '%',
+              'macros' => p_encode_json($self->{'config'}, $macros),
+              'id_plugin' => $id_plugin,
+              'unit' => '%',
+              'min_warning'   => '0',
+              'max_warning'   => '0',
+              'min_critical'  => '85',
+              'max_critical'  => '0',
+            }
+          );
+
+          # inUsage
+          # Hash identifier.
+          $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
+          # Get input usage.
+          $macros->{'14'}->{'value'} = 1;
+          # Get output usage.
+          $macros->{'15'}->{'value'} = 0;
+          
+          $self->call(
+          'add_module',
+          $device,
+          {
+            'id_tipo_modulo' => 1,
+            'id_modulo' => 4,
+            'name' => $if_name."_outUsage",
+            'description' => safe_input(
+			        'Bandwidth usage received from this interface over a particular time',
+            ),
+            'unit' => '%',
+            'macros' => p_encode_json($self->{'config'}, $macros),
+            'id_plugin' => $id_plugin,
+            'unit' => '%',
+            'min_warning'   => '0',
+            'max_warning'   => '0',
+            'min_critical'  => '85',
+            'max_critical'  => '0',
+          }
+        );
+
+          # OutUsage.
+          # Hash identifier.
+          $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
+          # Get input usage.
+          $macros->{'14'}->{'value'} = 0;
+          # Get output usage.
+          $macros->{'15'}->{'value'} = 1;
+
+          $self->call(
+          'add_module',
+          $device,
+          {
+            'id_tipo_modulo' => 1,
+            'id_modulo' => 4,
+            'name' => $if_name."_outUsage",
+            'description' => safe_input(
+			        'Bandwidth usage sent from this interface over a particular time',
+            ),
+            'unit' => '%',
+            'macros' => p_encode_json($self->{'config'}, $macros),
+            'id_plugin' => $id_plugin,
+            'unit' => '%',
+            'min_warning'   => '0',
+            'max_warning'   => '0',
+            'min_critical'  => '85',
+            'max_critical'  => '0',
+          }
+        );
+      }
   }
 
 }

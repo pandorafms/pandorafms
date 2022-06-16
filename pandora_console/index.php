@@ -1536,6 +1536,7 @@ require 'include/php_to_js_values.php';
                         draggable: true,
                         modal: true,
                         width: 800,
+                        height: 600,
                         buttons: [{
                             text: "OK",
                             click: function() {
@@ -1564,46 +1565,6 @@ require 'include/php_to_js_values.php';
             "html"
         );
     }
-
-    function show_modal_lts(title, description) {
-        notifications_hide();
-        // Launch modal.
-        try {
-            $('#um_msg_receiver').prop('title', atob(title));
-
-            $('#um_msg_receiver')
-                .empty()
-                .html('<div style="width:700px;height:500px">'+
-                '<pre>'+atob(description)+'</pre>'
-                +'</div>');
-
-                $("#um_msg_receiver").dialog({
-                    resizable: true,
-                    draggable: true,
-                    modal: true,
-                    width: 800,
-                    height: 600,
-                    overflow: 'auto',
-                    buttons: [{
-                        text: "OK",
-                        click: function() {
-                            $(this).dialog("close");
-                        }
-                    }],
-                    overlay: {
-                        opacity: 0.5,
-                        background: "black"
-                    },
-                    closeOnEscape: false,
-                    open: function(event, ui) {
-                        $(".ui-dialog-titlebar-close").hide();
-                    }
-                });
-            }
-            catch (error) {
-                console.log(error);
-            }
-        }
 
         //Dynamically assign footer position and width.
         function adjustFooter() {

@@ -1056,23 +1056,6 @@ function notifications_print_dropdown_element($message_info)
             $action = 'show_modal(this.id);';
             $target = '';
             $body_preview = __('Click here to get more information');
-            preg_match(
-                '/LTS\s+(\d*)/',
-                io_safe_output($message_info['subject']),
-                $array_version
-            );
-
-            if (empty($array_version) === false
-                && isset($array_version[1]) === true
-            ) {
-                  $version = (int) $array_version[1];
-                  $result = notifications_curl_new_version_description($version);
-                if (empty($result) === false) {
-                    $title = explode('\n', $result);
-                    hd($title, true);
-                    $action = 'show_modal_lts("'.base64_encode(io_safe_output($message_info['subject'])).'","'.base64_encode($result).'")';
-                }
-            }
         break;
 
         default:
@@ -1132,46 +1115,4 @@ function notifications_print_dropdown_element($message_info)
         io_safe_output($message_info['subject']),
         $body_preview
     );
-}
-
-
-function notifications_curl_new_version_description(int $version)
-{
-    global $config;
-
-    $pandora_license = db_get_value('value', 'tupdate_settings', '`key`', 'customer_key');
-
-    $params = [
-        'action'          => 'newer_packages',
-        'puid'            => $config['pandora_uid'],
-        'build'           => ($version - 1),
-        'current_package' => ($version - 1),
-        'license'         => $pandora_license,
-        'limit_count'     => 1,
-        'language'        => $config['language'],
-        'timezone'        => $config['timezone'],
-        'version'         => 'v7.0NG.'.$config['current_package'],
-        'email'           => '',
-        'format'          => 'lts',
-    ];
-    $defaults = [
-        CURLOPT_URL            => $config['url_update_manager'],
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $params,
-        CURLOPT_RETURNTRANSFER => 1,
-    ];
-    $ch = curl_init();
-    curl_setopt_array($ch, $defaults);
-    $result = curl_exec($ch);
-    curl_close($ch);
-
-    $result = json_decode($result, true);
-
-    if (isset($result[0]['description']) === false) {
-        $result = '';
-    } else {
-        $result = $result[0]['description'];
-    }
-
-    return $result;
 }

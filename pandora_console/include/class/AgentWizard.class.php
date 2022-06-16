@@ -3559,7 +3559,8 @@ class AgentWizard extends HTML
             $this->targetPort,
             $this->server,
             $this->extraArguments,
-            (($full_output === false) ? '-Oa -On' : '-Oa')
+            (($full_output === false) ? '-On' : '-Oa'),
+            ''
         );
 
         if ($pure === true) {

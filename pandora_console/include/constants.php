@@ -294,7 +294,11 @@ define('SERVICE_ELEMENT_DYNAMIC', 'dynamic');
 define('SERVICE_MODE_MANUAL', 0);
 define('SERVICE_MODE_SMART', 1);
 
-
+// New installation Product Logo.
+define('HEADER_LOGO_DEFAULT_CLASSIC', 'logo-default-pandorafms.png');
+define('HEADER_LOGO_DEFAULT_COLLAPSED', 'logo-default-pandorafms-collapsed.png');
+define('HEADER_LOGO_BLACK_CLASSIC', 'logo-black-pandorafms.png');
+define('HEADER_LOGO_BLACK_COLLAPSED', 'logo-default-pandorafms-collapsed.png');
 
 // Status images.
 // For modules.

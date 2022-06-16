@@ -5116,7 +5116,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
 function api_set_new_network_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 
@@ -5218,7 +5218,7 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 
@@ -5498,7 +5498,7 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 

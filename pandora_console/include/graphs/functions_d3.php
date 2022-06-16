@@ -150,7 +150,7 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 }
 
 
-function d3_sunburst_graph($data, $width=700, $height=700, $return=false)
+function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true)
 {
     global $config;
 
@@ -167,7 +167,7 @@ function d3_sunburst_graph($data, $width=700, $height=700, $return=false)
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					sunburst('#sunburst', $data, '$width', '$height');
+					sunburst('#sunburst', $data, '$width', '$height', '$tooltip');
 				</script>";
 
     if (!$return) {

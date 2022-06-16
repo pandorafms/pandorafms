@@ -336,7 +336,7 @@ class OrderInterpreter extends Wizard
                 ),
             ],
             [
-                'name' => __('Update Manager'),
+                'name' => __('Warp Update'),
                 'icon' => ui_get_full_url(
                     'images/menu/um_messages.menu_gray.png'
                 ),
@@ -404,10 +404,10 @@ class OrderInterpreter extends Wizard
                         '.$value['name'].'</a><br>';
                     }
 
-                    $iterator ++;
+                    $iterator++;
 
                     if ($iterator > 10) {
-                        $more_results ++;
+                        $more_results++;
                     }
                 }
             }

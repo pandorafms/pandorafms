@@ -157,7 +157,7 @@ sub prepare_tree {
   } else {
     $snmp_call{'oid'} = $config->{'oid_base'} . $config->{'x86_indexes'}{'__idx__'}.$ifIndex;
   }
-
+    
   my $raw = snmp_walk(\%snmp_call);
   return $raw if (ref($raw) eq "HASH");
 
@@ -485,35 +485,38 @@ foreach my $pk (keys %{$_config}) {
     $config->{$pk} = $_config->{$pk};
   }
 }
-
+# Validate config
 $config->{'host'} = '127.0.0.1'   if empty($config->{'host'});
 $config->{'port'} = '161'         if empty($config->{'port'});
 $config->{'tmp_separator'} = ';'  if empty($config->{'tmp_separator'});
 $config->{'tmp'}           = (($^O =~ /win/)?$ENV{'TMP'}:'/tmp')  if empty($config->{'tmp'});
 
-if(snmp_walk({
-    %{$config},
-    'oid' => '.1.3.6.1.2.1.31.1.1.1.6'
-  })
-) {
-  # x64 counters available.
-  $config->{'use_x64'} = 1;
-} else {
-  # x64 counters not available.
-  $config->{'use_x64'} = 1;
-}
-
 # Create unique name for tmp and log file for host
 my $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'host'};
-
 if (!empty($config->{'uniqid'})) {
   $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'uniqid'};
 }
-
 # Replace every dot for underscore
 $filename =~ tr/./_/;
 $config->{'tmp_file'} = $filename.'.idx' if empty($config->{'tmp_file'});
 $config->{'log'}      = $filename.'.log' if empty($config->{'log'});
+
+# Check snmp connectivity
+my $sysobjectid = snmp_get({%{$config}, 'oid' => '.1.3.6.1.2.1.1.2.0'});
+
+if ( defined($sysobjectid->{'error'})  || $sysobjectid->{'data'} eq '' ) {
+  logger($config, 'info', "Failed: connecting snmp protocol: sysobjectid") if (is_enabled($config->{'debug'}));
+  exit(0);
+}
+
+# Check SNMP x64 interfaces
+my $walk64 = snmp_walk({%{$config}, 'oid' => '.1.3.6.1.2.1.31.1.1.1.6'});
+if ( $walk64 =~ 'No Such Instance currently exists at this OID' || $walk64 =~ 'No more variables left in this MIB View') {
+  $config->{'use_x64'} = 0;
+} else {
+  $config->{'use_x64'} = 1;
+}
+
 
 my @int_exc = split /,/, trim($config->{'interface_exceptions'}) if (!empty($config->{'interface_exceptions'}));
 if ($#int_exc >= 0) {

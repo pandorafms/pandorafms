@@ -256,7 +256,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                     $ignored_params['refr'] = '';
                     $values = get_refresh_time_array();
 
-                    $autorefresh_additional = '<span id="combo_refr" class="invisible">';
+                    $autorefresh_additional = '<span id="combo_refr" class="invisible_events">';
                     $autorefresh_additional .= html_print_select(
                         $values,
                         'ref',
@@ -875,9 +875,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $('div#head').addClass('fixed_header');
             $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
-      
+
         /* Temporal fix to hide graphics when ui_dialog are displayed */
-        $("#yougotalert").click(function () { 
+        $("#yougotalert").click(function () {
             $("#agent_access").css("display", "none");
         });
         $("#ui_close_dialog_titlebar").click(function () {
@@ -912,7 +912,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
             var autorefresh_draw = '<?php echo $autorefresh_draw; ?>';
             $("#header_autorefresh").css('padding-right', '5px');
-            if(autorefresh_draw == true) { 
+            if(autorefresh_draw == true) {
                 var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
                 var until_time='';
 
@@ -921,7 +921,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                     until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
 
                     $("#refrcounter").countdown ({
-                        until: until_time, 
+                        until: until_time,
                         layout: '%M%nn%M:%S%nn%S',
                         labels: ['', '', '', '', '', '', ''],
                         onExpiry: function () {
@@ -936,9 +936,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             } else {
                 var refr_time = <?php echo (int) get_parameter('refr', $config['refr']); ?>;
                 var t = new Date();
-                t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>)); 
+                t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
                 $("#refrcounter").countdown ({
-                    until: t, 
+                    until: t,
                     layout: '%M%nn%M:%S%nn%S',
                     labels: ['', '', '', '', '', '', ''],
                     onExpiry: function () {
@@ -954,10 +954,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         
         $("a.autorefresh").click (function () {
             $("a.autorefresh_txt").toggle ();
-            $("#combo_refr").toggle ();
+            $("#combo_refr").toggle();
             $("select#ref").change (function () {
                 href = $("a.autorefresh").attr ("href");
-            
+
                 if(autorefresh_draw == true){
                     inputs = $("#events_form :input");
                     values = {};
@@ -965,17 +965,17 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                         values[this.name] = $(this).val();
                     })
 
-                    var newValue = btoa(JSON.stringify(values));           
+                    var newValue = btoa(JSON.stringify(values));
                     <?php
                     // Check if the url has the parameter fb64.
                     if (isset($_GET['fb64']) === true) {
                         $fb64 = $_GET['fb64'];
                         ?>
-                            var fb64 = '<?php echo $fb64; ?>';  
+                            var fb64 = '<?php echo $fb64; ?>';
                             // Check if the filters have changed.
                             if(fb64 !== newValue){
                                 href = href.replace(fb64, newValue);
-                            } 
+                            }
 
                             $(document).attr("location", href+ '&refr=' + this.value);
                         <?php
@@ -989,7 +989,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                     $(document).attr ("location", href + this.value);
                 }
         });
-            
+
             return false;
         });
     });

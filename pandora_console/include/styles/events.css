@@ -115,6 +115,7 @@ table.dataTable tbody td {
   padding-top: 7px;
   padding-bottom: 7px;
   border-bottom: 2px solid #dedede;
+  word-break: break-all;
 }
 
 .filter_input {

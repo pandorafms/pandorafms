@@ -616,7 +616,7 @@ CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
 CREATE TABLE IF NOT EXISTS `tattachment` (
   `id_attachment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_incidencia` INT UNSIGNED NOT NULL DEFAULT 0,
-  `id_usuario` VARCHAR(60) NOT NULL DEFAULT '',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
   `filename` VARCHAR(255) NOT NULL DEFAULT '',
   `description` VARCHAR(150) DEFAULT '',
   `size` BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -689,7 +689,7 @@ CREATE TABLE IF NOT EXISTS `tcontainer_item` (
 CREATE TABLE IF NOT EXISTS `tevento` (
   `id_evento` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_agente` INT NOT NULL DEFAULT 0,
-  `id_usuario` VARCHAR(100) NOT NULL DEFAULT '0',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `id_grupo` MEDIUMINT NOT NULL DEFAULT 0,
   `estado` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `timestamp` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -779,7 +779,7 @@ CREATE TABLE IF NOT EXISTS `tincidencia` (
   `cierre` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
   `titulo` TEXT,
   `descripcion` TEXT,
-  `id_usuario` VARCHAR(60) NOT NULL DEFAULT '',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
   `origen` VARCHAR(100) NOT NULL DEFAULT '',
   `estado` INT NOT NULL DEFAULT 0,
   `prioridad` INT NOT NULL DEFAULT 0,
@@ -1059,7 +1059,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
 CREATE TABLE IF NOT EXISTS `tnota` (
   `id_nota` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_incident` BIGINT UNSIGNED NOT NULL,
-  `id_usuario` VARCHAR(100) NOT NULL DEFAULT '0',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `nota` MEDIUMTEXT,
   PRIMARY KEY  (`id_nota`),
@@ -1172,7 +1172,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tsesion` (
   `id_sesion` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_usuario` VARCHAR(60) NOT NULL DEFAULT '0',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `ip_origen` VARCHAR(100) NOT NULL DEFAULT '',
   `accion` VARCHAR(100) NOT NULL DEFAULT '',
   `descripcion` TEXT,
@@ -1208,7 +1208,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `value_custom` TEXT,
   `alerted` SMALLINT NOT NULL DEFAULT 0,
   `status` SMALLINT NOT NULL DEFAULT 0,
-  `id_usuario` VARCHAR(150) DEFAULT '',
+  `id_usuario` VARCHAR(255) DEFAULT '',
   `timestamp` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
   `priority` TINYINT UNSIGNED NOT NULL DEFAULT 2,
   `text` VARCHAR(255) DEFAULT '',
@@ -1260,7 +1260,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 -- Table `tusuario`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tusuario` (
-  `id_user` VARCHAR(60) NOT NULL DEFAULT '0',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '0',
   `fullname` VARCHAR(255) NOT NULL,
   `firstname` VARCHAR(255) NOT NULL,
   `lastname` VARCHAR(255) NOT NULL,
@@ -1313,7 +1313,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
   `id_up` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_usuario` VARCHAR(100) NOT NULL DEFAULT '',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
   `id_perfil` INT UNSIGNED NOT NULL DEFAULT 0,
   `id_grupo` INT NOT NULL DEFAULT 0,
   `no_hierarchy` TINYINT NOT NULL DEFAULT 0,
@@ -1328,7 +1328,7 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(60) NOT NULL,
+  `id_user` VARCHAR(255) NOT NULL,
   `secret` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`id_user`),
@@ -1340,7 +1340,7 @@ CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treset_pass_history` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(60) NOT NULL,
+  `id_user` VARCHAR(255) NOT NULL,
   `reset_moment` DATETIME NOT NULL,
   `success` TINYINT NOT NULL,
   PRIMARY KEY (`id`)
@@ -1366,7 +1366,7 @@ CREATE TABLE IF NOT EXISTS `tnotification_source` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmensajes` (
   `id_mensaje` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_usuario_origen` VARCHAR(60) NOT NULL DEFAULT '',
+  `id_usuario_origen` VARCHAR(255) NOT NULL DEFAULT '',
   `mensaje` TEXT,
   `timestamp` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `subject` VARCHAR(255) NOT NULL DEFAULT '',
@@ -1388,7 +1388,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnotification_user` (
   `id_mensaje` INT UNSIGNED NOT NULL,
-  `id_user` VARCHAR(60) NOT NULL,
+  `id_user` VARCHAR(255) NOT NULL,
   `utimestamp_read` BIGINT,
   `utimestamp_erased` BIGINT,
   `postpone` INT,
@@ -1415,7 +1415,7 @@ CREATE TABLE IF NOT EXISTS `tnotification_group` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnotification_source_user` (
   `id_source` BIGINT UNSIGNED NOT NULL,
-  `id_user` VARCHAR(60),
+  `id_user` VARCHAR(255),
   `enabled` INT DEFAULT NULL,
   `also_mail` INT DEFAULT NULL,
   PRIMARY KEY (`id_source`,`id_user`),
@@ -1443,7 +1443,7 @@ CREATE TABLE IF NOT EXISTS `tnotification_source_group` (
 CREATE TABLE IF NOT EXISTS `tnotification_source_group_user` (
   `id_source` BIGINT UNSIGNED NOT NULL,
   `id_group` MEDIUMINT UNSIGNED NOT NULL,
-  `id_user` VARCHAR(60),
+  `id_user` VARCHAR(255),
   `enabled` INT DEFAULT NULL,
   `also_mail` INT DEFAULT NULL,
   PRIMARY KEY (`id_source`,`id_user`),
@@ -1476,7 +1476,7 @@ CREATE TABLE IF NOT EXISTS `tnews` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgraph` (
   `id_graph` INT UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_user` VARCHAR(100) NOT NULL DEFAULT '',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `name` VARCHAR(150) NOT NULL DEFAULT '',
   `description` TEXT,
   `period` INT NOT NULL DEFAULT 0,
@@ -1514,7 +1514,7 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport` (
   `id_report` INT UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_user` VARCHAR(100) NOT NULL DEFAULT '',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `name` VARCHAR(150) NOT NULL DEFAULT '',
   `description` TEXT,
   `private` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -1813,7 +1813,7 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
   `type_downtime` VARCHAR(100) NOT NULL DEFAULT 'disabled_agents_alerts',
   `type_execution` VARCHAR(100) NOT NULL DEFAULT 'once',
   `type_periodicity` VARCHAR(100) NOT NULL DEFAULT 'weekly',
-  `id_user` VARCHAR(100) NOT NULL DEFAULT '0',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '0',
   PRIMARY KEY (  `id` ) 
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2036,7 +2036,7 @@ CREATE TABLE IF NOT EXISTS `tgroup_stat` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_map` (
   `id_networkmap` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(60)  NOT NULL,
+  `id_user` VARCHAR(255)  NOT NULL,
   `name` VARCHAR(100)  NOT NULL,
   `type` VARCHAR(20)  NOT NULL,
   `layout` VARCHAR(20)  NOT NULL,
@@ -2196,7 +2196,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpassword_history` (
   `id_pass`  INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(60) NOT NULL,
+  `id_user` VARCHAR(255) NOT NULL,
   `password` VARCHAR(45) DEFAULT NULL,
   `date_begin` DATETIME,
   `date_end` DATETIME,
@@ -2249,7 +2249,7 @@ CREATE TABLE `tupdate_journal` (
   `version` VARCHAR(25) DEFAULT '',
   `type` VARCHAR(25) DEFAULT '',
   `origin` VARCHAR(25) DEFAULT '',
-  `id_user` VARCHAR(250) NOT NULL DEFAULT ''
+  `id_user` VARCHAR(255) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
@@ -2298,7 +2298,7 @@ CREATE TABLE IF NOT EXISTS `tsessions_php` (
 CREATE TABLE IF NOT EXISTS `tmap` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_group` INT UNSIGNED NOT NULL DEFAULT 0,
-  `id_user` VARCHAR(250) NOT NULL DEFAULT '',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `type` INT UNSIGNED NOT NULL DEFAULT 0,
   `subtype` INT UNSIGNED NOT NULL DEFAULT 0,
   `name` VARCHAR(250) DEFAULT '',
@@ -2579,7 +2579,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
 CREATE TABLE IF NOT EXISTS `tdashboard` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` TEXT NOT NULL DEFAULT '',
-  `id_user` VARCHAR(60) NOT NULL DEFAULT '',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `id_group` INT NOT NULL DEFAULT 0,
   `active` TINYINT NOT NULL DEFAULT 0,
   `cells` INT UNSIGNED DEFAULT 0,
@@ -3136,7 +3136,7 @@ CREATE TABLE IF NOT EXISTS `tnetworkmap_ent_rel_nodes` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_template` (
   `id_report` INT UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_user` VARCHAR(100) NOT NULL DEFAULT '',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `name` VARCHAR(150) NOT NULL DEFAULT '',
   `description` TEXT,
   `private` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -3305,7 +3305,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
   `id_source_event` BIGINT UNSIGNED NOT NULL,
   `id_agente` INT NOT NULL DEFAULT 0,
   `agent_name` VARCHAR(600) NOT NULL DEFAULT '',
-  `id_usuario` VARCHAR(100) NOT NULL DEFAULT '0',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `id_grupo` MEDIUMINT NOT NULL DEFAULT 0,
   `group_name` VARCHAR(100) NOT NULL DEFAULT '',
   `estado` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -3357,7 +3357,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
   `id_source_event` BIGINT UNSIGNED NOT NULL,
   `id_agente` INT NOT NULL DEFAULT 0,
   `agent_name` VARCHAR(600) NOT NULL DEFAULT '',
-  `id_usuario` VARCHAR(100) NOT NULL DEFAULT '0',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `id_grupo` MEDIUMINT NOT NULL DEFAULT 0,
   `group_name` VARCHAR(100) NOT NULL DEFAULT '',
   `estado` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -3521,7 +3521,7 @@ CREATE TABLE IF NOT EXISTS `tphase`(
 
 CREATE TABLE IF NOT EXISTS `treset_pass` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(100) NOT NULL DEFAULT '',
+  `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `cod_hash` VARCHAR(100) NOT NULL DEFAULT '',
   `reset_time` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
@@ -3672,7 +3672,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig` (
   `name` VARCHAR(100) NOT NULL,
   `order` INT NOT NULL DEFAULT 0,
   `description` TEXT,
-
+  `disabled` TINYINT DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3826,7 +3826,7 @@ CREATE TABLE IF NOT EXISTS `tuser_task` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_usuario` VARCHAR(60) NOT NULL DEFAULT '0',
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `id_user_task` INT UNSIGNED NOT NULL DEFAULT 0,
   `args` TEXT,
   `scheduled` ENUM('no','hourly','daily','weekly','monthly','yearly','custom') DEFAULT 'no',
@@ -3845,7 +3845,7 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `vc_id` INT UNSIGNED NOT NULL,
   `vc_item_id` INT UNSIGNED NOT NULL,
-  `user_id` VARCHAR(60) DEFAULT NULL,
+  `user_id` VARCHAR(255) DEFAULT NULL,
   `data` TEXT,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expiration` INT UNSIGNED NOT NULL COMMENT 'Seconds to expire',
@@ -4225,7 +4225,7 @@ CREATE TABLE IF NOT EXISTS `tbackup` (
   `id` SERIAL,
   `utimestamp` BIGINT DEFAULT 0,
   `filename` VARCHAR(512) DEFAULT '',
-  `id_user` VARCHAR(60) DEFAULT '',
+  `id_user` VARCHAR(255) DEFAULT '',
   `description` MEDIUMTEXT,
   `pid` INT UNSIGNED DEFAULT 0,
   `filepath` VARCHAR(512) DEFAULT '',

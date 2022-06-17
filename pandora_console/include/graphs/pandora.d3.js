@@ -782,6 +782,7 @@ function treeMap(recipient, data, width, height) {
     $("#tooltip").attr(
       "style",
       "background: #fff;" +
+        "color: #111;" +
         "position: absolute;" +
         "display: block;" +
         "width: 200px;" +
@@ -1028,6 +1029,7 @@ function sunburst(recipient, data, width, height) {
     $("#tooltip").attr(
       "style",
       "background: #fff;" +
+        "color: #111;" +
         "position: absolute;" +
         "display: block;" +
         "width: 200px;" +

@@ -262,12 +262,13 @@ $user_id .= '<span>'.$id.'</span></div>';
 $user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').': </p>';
 $user_id .= html_print_input_hidden('api_token', $user_info['api_token'], true);
 $user_id .= sprintf(
-    '<i class="clickable" onClick="javascript:renewAPIToken(\'%s\',\'%s\', \'%s\')">%s</i>',
+    '<i class="button-as-link clickable" onClick="javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')">%s</i>',
     __('Warning'),
     __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
-    'user_mod',
-    $user_info['api_token']
+    'user_profile_form',
+    __('Renew')
 );
+$user_id .= '<br><i>'.$user_info['api_token'].'</i>';
 $user_id .= '</div>';
 
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(

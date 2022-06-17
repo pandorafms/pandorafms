@@ -28,7 +28,7 @@
 
 // Begin.
 global $config;
-hd($_REQUEST);
+
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -1289,16 +1289,17 @@ $session_time .= html_print_input_text(
 $apiToken = '<div class="label_select_simple">';
 $apiToken .= '<p class="edit_user_labels">'.__('API Token');
 $apiToken .= ui_print_help_tip(
-    __('The next string is your passphrase for use with the API instead user/password. Click over the string for renew the token.'),
+    __('The next string is your passphrase for use with the API instead user/password.'),
     true
 ).'</p>';
 $apiToken .= html_print_input_hidden('api_token', $user_info['api_token'], true);
+$apiToken .= '<i>'.$user_info['api_token'].'</i>&nbsp;&nbsp;&nbsp;';
 $apiToken .= sprintf(
-    '<i class="clickable" onClick="javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')">%s</i>',
+    '<i class="button-as-link clickable" onClick="javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')">%s</i>',
     __('Warning'),
     __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
     'user_profile_form',
-    $user_info['api_token']
+    __('Renew')
 );
 $apiToken .= '</div>';
 

@@ -814,6 +814,13 @@ select:-internal-list-box {
 .margin-left-2 {
   margin-left: 2em;
 }
+.margin-right-05 {
+  margin-right: 0.5em;
+}
+
+.margin-left-05 {
+  margin-left: 0.5em;
+}
 .no-border {
   border: none;
 }

@@ -1628,9 +1628,14 @@ sub database_scan($$$) {
   $self->{'summary'}->{'discovered'} += 1;
   $self->{'summary'}->{'alive'} += 1;
 
+  my $name = $type . ' connection';
+  if (defined $obj->{'prefix_module_name'} && $obj->{'prefix_module_name'} ne '') {
+    $name = $obj->{'prefix_module_name'} . $type . ' connection';
+  }
+
   push @modules,
     {
-    name => $type . ' connection',
+    name => $name,
     type => 'generic_proc',
     data => 1,
     description => $type . ' availability'
@@ -1778,8 +1783,14 @@ sub app_scan($) {
         # Update progress
         $self->call('update_progress', $global_percent + (90 / (scalar @targets)));
         $self->{'summary'}->{'not_alive'} += 1;
+
+        my $name = $type . ' connection';
+        if (defined $obj->{'prefix_module_name'} && $obj->{'prefix_module_name'} ne '') {
+          $name = $obj->{'prefix_module_name'} . $type . ' connection';
+        }
+
         push @modules, {
-          name => $type . ' connection',
+          name => $name,
           type => 'generic_proc',
           data => 0,
           description => $type . ' availability'

@@ -337,13 +337,15 @@ function events_get_column_name($field, $table_alias=false)
  */
 function events_get_column_names($fields, $table_alias=false)
 {
-    if (!isset($fields) || !is_array($fields)) {
+    if (isset($fields) === false
+        || is_array($fields) === false
+    ) {
         return [];
     }
 
     $names = [];
     foreach ($fields as $f) {
-        if (is_array($f)) {
+        if (is_array($f) === true) {
             $name = [];
             $name['text'] = events_get_column_name($f['text'], $table_alias);
             $name['class'] = ($f['class'] ?? '');
@@ -373,15 +375,17 @@ function events_get_column_names($fields, $table_alias=false)
  */
 function events_delete($id_evento, $filter=null, $history=false, $force_node=false)
 {
-    if (!isset($id_evento) || $id_evento <= 0) {
+    if (isset($id_evento) === false
+        || $id_evento <= 0
+    ) {
         return false;
     }
 
-    if (!isset($filter) || !is_array($filter)) {
+    if (isset($filter) === false
+        || is_array($filter) === true
+    ) {
         $filter = ['group_rep' => 0];
     }
-
-    $table = 'tevento';
 
     switch ($filter['group_rep']) {
         case '0':
@@ -389,9 +393,8 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
         default:
             // No groups option direct update.
             $delete_sql = sprintf(
-                'DELETE FROM %s
+                'DELETE FROM tevento
                  WHERE id_evento = %d',
-                $table,
                 $id_evento
             );
         break;
@@ -417,13 +420,12 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
 
             $target_ids = db_get_all_rows_sql(
                 sprintf(
-                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
+                    'SELECT tu.id_evento FROM tevento tu INNER JOIN ( %s ) tf
                     ON tu.estado = tf.estado
                     AND tu.evento = tf.evento
                     AND tu.id_agente = tf.id_agente
                     AND tu.id_agentmodule = tf.id_agentmodule
                     AND tf.max_id_evento = %d',
-                    $table,
                     $sql,
                     $id_evento
                 )
@@ -440,8 +442,7 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
                 );
 
                 $delete_sql = sprintf(
-                    'DELETE FROM %s WHERE id_evento IN (%s)',
-                    $table,
+                    'DELETE FROM tevento WHERE id_evento IN (%s)',
                     join(', ', $target_ids)
                 );
             }
@@ -1557,8 +1558,21 @@ function events_get_all(
         }
 
         $data = [];
+        $buffers = [
+            'settings' => [
+                'total'     => $config['max_number_of_events_per_node'],
+                'translate' => [
+                    'tev'  => __('Total Events'),
+                    'nev'  => __('Total Events per node'),
+                    'ev'   => __('Events'),
+                    'tevn' => __('Total number of events in this node reached'),
+                ],
+            ],
+            'data'     => [],
+        ];
         if (empty($result_meta) === false) {
             foreach ($result_meta as $node => $value) {
+                $buffers['data'][$node] = count($value);
                 if (empty($value) === false) {
                     foreach ($value as $k => $v) {
                         $value[$k]['server_id'] = $metaconsole_connections[$node];
@@ -1623,8 +1637,9 @@ function events_get_all(
                 $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
-                    'data'  => $finally,
-                    'total' => $count,
+                    'buffers' => $buffers,
+                    'data'    => $finally,
+                    'total'   => $count,
                 ];
             } else {
                 $return = array_slice(
@@ -5017,21 +5032,12 @@ function events_get_field_value_by_event_id(
 ) {
     global $config;
 
-    $meta = false;
     $event = db_get_row('tevento', 'id_evento', $event_id);
 
     // Replace each macro.
     if (strpos($value, '_agent_address_') !== false) {
-        if ($meta) {
-            $agente_table_name = 'tmetaconsole_agent';
-            $filter = [
-                'id_tagente'            => $event['id_agente'],
-                'id_tmetaconsole_setup' => $server_id,
-            ];
-        } else {
-            $agente_table_name = 'tagente';
-            $filter = ['id_agente' => $event['id_agente']];
-        }
+        $agente_table_name = 'tagente';
+        $filter = ['id_agente' => $event['id_agente']];
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent does not have an IP, display N/A.
@@ -5048,11 +5054,6 @@ function events_get_field_value_by_event_id(
 
     if (strpos($value, '_module_address_') !== false) {
         if ($event['id_agentmodule'] != 0) {
-            if ($meta) {
-                $server = metaconsole_get_connection_by_id($server_id);
-                metaconsole_connect($server);
-            }
-
             $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
             if (empty($module['ip_target'])) {
                 $module['ip_target'] = __('N/A');
@@ -5062,10 +5063,6 @@ function events_get_field_value_by_event_id(
             if (empty($module['nombre'])) {
                 $module['nombre'] = __('N/A');
             }
-
-            if ($meta) {
-                metaconsole_restore_db();
-            }
         } else {
             $value = str_replace('_module_address_', __('N/A'), $value);
         }
@@ -5073,11 +5070,6 @@ function events_get_field_value_by_event_id(
 
     if (strpos($value, '_module_name_') !== false) {
         if ($event['id_agentmodule'] != 0) {
-            if ($meta) {
-                $server = metaconsole_get_connection_by_id($server_id);
-                metaconsole_connect($server);
-            }
-
             $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
             if (empty($module['ip_target'])) {
                 $module['ip_target'] = __('N/A');
@@ -5088,10 +5080,6 @@ function events_get_field_value_by_event_id(
                 io_safe_output($module['nombre']),
                 $value
             );
-
-            if ($meta) {
-                metaconsole_restore_db();
-            }
         } else {
             $value = str_replace('_module_name_', __('N/A'), $value);
         }
@@ -5274,33 +5262,49 @@ function events_get_field_value_by_event_id(
 
 function events_get_instructions($event)
 {
-    if (!is_array($event)) {
+    if (is_array($event) === false) {
         return '';
     }
 
     switch ($event['event_type']) {
         case 'going_unknown':
             if ($event['unknown_instructions'] != '') {
-                $value = str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']));
+                $value = str_replace(
+                    "\n",
+                    '<br>',
+                    io_safe_output($event['unknown_instructions'])
+                );
             }
         break;
 
         case 'going_up_warning':
         case 'going_down_warning':
             if ($event['warning_instructions'] != '') {
-                $value = str_replace("\n", '<br>', io_safe_output($event['warning_instructions']));
+                $value = str_replace(
+                    "\n",
+                    '<br>',
+                    io_safe_output($event['warning_instructions'])
+                );
             }
         break;
 
         case 'going_up_critical':
         case 'going_down_critical':
             if ($event['critical_instructions'] != '') {
-                $value = str_replace("\n", '<br>', io_safe_output($event['critical_instructions']));
+                $value = str_replace(
+                    "\n",
+                    '<br>',
+                    io_safe_output($event['critical_instructions'])
+                );
             }
+        break;
+
+        default:
+            // Not posible.
         break;
     }
 
-    if (!isset($value)) {
+    if (isset($value) === false) {
         return '';
     }
 
@@ -5318,7 +5322,11 @@ function events_get_instructions($event)
     $output .= '<span id="value_event_'.$event['id_evento'].'" class="nowrap">';
     $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
     $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
-    $output .= html_print_image('images/default_list.png', true, ['title' => $over_text]).'</a></span>';
+    $output .= html_print_image(
+        'images/default_list.png',
+        true,
+        ['title' => $over_text]
+    ).'</a></span>';
     $output .= '</center>';
 
     return $output;

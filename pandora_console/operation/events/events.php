@@ -352,6 +352,7 @@ if (is_ajax() === true) {
                 $history
             );
 
+            $buffers = [];
             if (is_metaconsole() === false
                 || (is_metaconsole() === true
                 && empty($filter['server_id']) === false)
@@ -370,6 +371,7 @@ if (is_ajax() === true) {
                     $count = $count['0']['nitems'];
                 }
             } else {
+                $buffers = $events['buffers'];
                 $count = $events['total'];
                 $events = $events['data'];
             }
@@ -471,6 +473,7 @@ if (is_ajax() === true) {
             echo json_encode(
                 [
                     'data'            => ($data ?? []),
+                    'buffers'         => $buffers,
                     'recordsTotal'    => $count,
                     'recordsFiltered' => $count,
                 ]
@@ -1740,6 +1743,7 @@ try {
 
     // Close.
     $active_filters_div .= '</div>';
+    $active_filters_div .= '<div id="events_buffers_display"></div>';
 
     $table_id = 'events';
     $form_id = 'events_form';
@@ -1747,23 +1751,23 @@ try {
     // Print datatable.
     ui_print_datatable(
         [
-            'id'                  => $table_id,
-            'class'               => 'info_table events',
-            'style'               => 'width: 100%;',
-            'ajax_url'            => 'operation/events/events',
-            'ajax_data'           => [
+            'id'                             => $table_id,
+            'class'                          => 'info_table events',
+            'style'                          => 'width: 100%;',
+            'ajax_url'                       => 'operation/events/events',
+            'ajax_data'                      => [
                 'get_events' => 1,
                 'history'    => (int) $history,
             ],
-            'form'                => [
+            'form'                           => [
                 'id'            => $form_id,
                 'class'         => 'flex-row',
                 'html'          => $filter,
                 'inputs'        => [],
                 'extra_buttons' => $buttons,
             ],
-            'extra_html'          => $active_filters_div,
-            'pagination_options'  => [
+            'extra_html'                     => $active_filters_div,
+            'pagination_options'             => [
                 [
                     $config['block_size'],
                     10,
@@ -1785,19 +1789,21 @@ try {
                     'All',
                 ],
             ],
-            'order'               => [
+            'order'                          => [
                 'field'     => 'timestamp',
                 'direction' => 'desc',
             ],
-            'column_names'        => $column_names,
-            'columns'             => $fields,
-            'no_sortable_columns' => [
+            'column_names'                   => $column_names,
+            'columns'                        => $fields,
+            'no_sortable_columns'            => [
                 -1,
                 -2,
                 'column-instructions',
             ],
-            'ajax_postprocess'    => 'process_datatables_item(item)',
-            'drawCallback'        => 'process_datatables_callback(this, settings)',
+            'ajax_postprocess'               => 'process_datatables_item(item)',
+            'ajax_return_operation'          => 'buffers',
+            'ajax_return_operation_function' => 'process_buffers',
+            'drawCallback'                   => 'process_datatables_callback(this, settings)',
         ]
     );
 } catch (Exception $e) {
@@ -2013,8 +2019,46 @@ function process_datatables_callback(table, settings) {
     }
 }
 
-function process_datatables_item(item) {
+function process_buffers(buffers) {
+    $('#events_buffers_display').empty();
+    console.log(buffers);
+    if(buffers.settings != undefined && buffers.data.length > 0) {
+        var html = '<h3>'+buffers.settings.translate.nev;
+        html += ': ('+buffers.settings.total+')</h3>';
+        html += '<ul>';
+        Object.entries(buffers.data).forEach(function (element) {
+            html += '<li>';
+            html += '<span><b>';
+            html += buffers.settings.translate.ev+' ';
+            html += element[0];
+            html += ': ';
+            html += '</b></span>';
 
+            var class_total = 'info';
+            var str_total = '';
+            if(buffers.settings.total == element[1]) {
+                class_total += ' danger';
+                str_total = buffers.settings.translate.tevn;
+            }
+            html += '<span class='+class_total+'>';
+            html += element[1];
+            if(str_total != '') {
+                html += '<span class="text">';
+                html += ' '+str_total;
+                html += '</span>';
+            }
+
+            html += '</span>';
+
+            html += '</li>';
+        });
+        html += '</ul>';
+
+        $('#events_buffers_display').html(html);
+    }
+}
+
+function process_datatables_item(item) {
     // Url to go to node from meta.
     var server_url = '';
     var hashdata = '';

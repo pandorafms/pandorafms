@@ -3519,7 +3519,7 @@ function ui_print_datatable(array $parameters)
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
-                        console.log(json.error);
+                        console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
                         $("#error-'.$table_id.'").dialog({
                             title: "Filter failed",
@@ -3535,6 +3535,19 @@ function ui_print_datatable(array $parameters)
                             }
                         }).parent().addClass("ui-state-error");
                     } else {';
+
+    if (isset($parameters['ajax_return_operation']) === true
+        && empty($parameters['ajax_return_operation']) === false
+        && isset($parameters['ajax_return_operation_function']) === true
+        && empty($parameters['ajax_return_operation_function']) === false
+    ) {
+        $js .= '
+            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
+                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
+            }
+        ';
+    }
+
     if (isset($parameters['ajax_postprocess'])) {
         $js .= '
                     if (json.data) {

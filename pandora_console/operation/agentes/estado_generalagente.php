@@ -284,7 +284,7 @@ if ($has_remote_conf) {
             true,
             ['class' => 'invert_filter']
         );
-        $remote_cfg .= __('Satellite server: ').$satellite_name.'</p>';
+        $remote_cfg .= $satellite_name.'</p>';
     }
 } else {
     $remote_cfg = '';

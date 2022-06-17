@@ -80,6 +80,7 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
+    $upd_info['api_token'] = ((bool) get_parameter('renewAPIToken') === true) ? api_token_generate() : (string) get_parameter('api_token');
 
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
@@ -111,14 +112,14 @@ if (isset($_GET['modified']) && !$view_mode) {
 
     $section = io_safe_output($upd_info['section']);
 
-    if (($section == 'Event list') || ($section == 'Group view')
-        || ($section == 'Alert detail') || ($section == 'Tactical view')
-        || ($section == 'Default')
+    if (($section === 'Event list') || ($section === 'Group view')
+        || ($section === 'Alert detail') || ($section === 'Tactical view')
+        || ($section === 'Default')
     ) {
         $upd_info['data_section'] = '';
-    } else if ($section == 'Dashboard') {
+    } else if ($section === 'Dashboard') {
         $upd_info['data_section'] = $dashboard;
-    } else if ($section == 'Visual console') {
+    } else if ($section === 'Visual console') {
         $upd_info['data_section'] = $visual_console;
     }
 
@@ -257,6 +258,17 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
 
 $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
 $user_id .= '<span>'.$id.'</span></div>';
+
+$user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').': </p>';
+$user_id .= html_print_input_hidden('api_token', $user_info['api_token'], true);
+$user_id .= sprintf(
+    '<i class="clickable" onClick="javascript:renewAPIToken(\'%s\',\'%s\', \'%s\')">%s</i>',
+    __('Warning'),
+    __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
+    'user_mod',
+    $user_info['api_token']
+);
+$user_id .= '</div>';
 
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',

@@ -1,19 +1,34 @@
 <?php
+/**
+ * User definition.
+ *
+ * @category   Manage users
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
-
+hd($_REQUEST);
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -47,7 +62,7 @@ if ($enterprise_include) {
 }
 
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
@@ -113,7 +128,7 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
     return;
 }
 
-if (is_ajax()) {
+if (is_ajax() === true) {
     $delete_profile = (bool) get_parameter('delete_profile');
     if ($delete_profile) {
         $id2 = (string) get_parameter('id_user');
@@ -158,14 +173,14 @@ if (is_ajax()) {
                 __('There was a problem deleting the user')
             );
 
-            // Delete the user in all the consoles
+            // Delete the user in all the consoles.
             if (defined('METACONSOLE')) {
                 $servers = metaconsole_get_servers();
                 foreach ($servers as $server) {
-                    // Connect to the remote console
+                    // Connect to the remote console.
                     metaconsole_connect($server);
 
-                    // Delete the user
+                    // Delete the user.
                     $result = delete_user($id_user);
                     if ($result) {
                         db_pandora_audit(
@@ -174,10 +189,10 @@ if (is_ajax()) {
                         );
                     }
 
-                    // Restore the db connection
+                    // Restore the db connection.
                     metaconsole_restore_db();
 
-                    // Log to the metaconsole too
+                    // Log to the metaconsole too.
                     if ($result) {
                         db_pandora_audit(
                             AUDIT_LOG_USER_MANAGEMENT,
@@ -208,7 +223,7 @@ if ($id) {
     $header_title = ' &raquo; '.__('Create user');
 }
 
-// Header
+// Header.
 if ($meta) {
     user_meta_print_header();
     $sec = 'advanced';
@@ -262,6 +277,7 @@ $new_user = (bool) get_parameter('new_user');
 $create_user = (bool) get_parameter('create_user');
 $add_profile = (bool) get_parameter('add_profile');
 $update_user = (bool) get_parameter('update_user');
+$renewAPIToken = (bool) get_parameter('renewAPIToken');
 $status = get_parameter('status', -1);
 $json_profile = get_parameter('json_profile', '');
 
@@ -398,8 +414,13 @@ if ($create_user) {
         }
     }
 
+    // Generate a new API Token if user has login capability.
+    if ($values['not_login'] === false) {
+        // Generate new API token.
+        $values['api_token'] = api_token_generate();
+    }
 
-    if ($id == '') {
+    if (empty($id) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
         $user_info = $values;
@@ -547,6 +568,7 @@ if ($update_user) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['api_token'] = ((bool) get_parameter('renewAPIToken') === true) ? api_token_generate() : (string) get_parameter('api_token');
 
     if (users_is_admin() === false && (bool) $values['is_admin'] !== false) {
         db_pandora_audit(
@@ -1264,6 +1286,21 @@ $session_time .= html_print_input_text(
     'class="input_line_small"'
 ).'</div>';
 
+$apiToken = '<div class="label_select_simple">';
+$apiToken .= '<p class="edit_user_labels">'.__('API Token');
+$apiToken .= ui_print_help_tip(
+    __('The next string is your passphrase for use with the API instead user/password. Click over the string for renew the token.'),
+    true
+).'</p>';
+$apiToken .= html_print_input_hidden('api_token', $user_info['api_token'], true);
+$apiToken .= sprintf(
+    '<i class="clickable" onClick="javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')">%s</i>',
+    __('Warning'),
+    __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
+    'user_profile_form',
+    $user_info['api_token']
+);
+$apiToken .= '</div>';
 
 $user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
 
@@ -1402,7 +1439,7 @@ if (!$id) {
     $user_id_create = $user_id;
 }
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $access_or_pagination = $meta_access;
 } else {
     $access_or_pagination = $size_pagination;
@@ -1418,14 +1455,14 @@ if ($id != '' && !$is_err) {
 
 echo '<div id="user_form">
 <div class="user_edit_first_row">
-    <div class="edit_user_info white_box">'.$div_user_info.'</div>  
-    <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
-</div> 
+    <div class="edit_user_info white_box">'.$div_user_info.'</div>
+    <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.$apiToken.'</div>
+</div>
 <div class="user_edit_second_row white_box">
     <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$double_authentication.'</div>
 
     <div class="edit_user_timezone">'.$timezone;
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
                         <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" class="pdd_t_4px" />

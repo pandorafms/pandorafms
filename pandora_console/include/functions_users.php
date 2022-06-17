@@ -877,3 +877,61 @@ function users_get_users_group_by_group($id_group)
 
     return $users;
 }
+
+
+/**
+ * Generates a cryptographically secure chain for use with API.
+ *
+ * @return string
+ */
+function api_token_generate()
+{
+    // Generate a cryptographically secure chain.
+    $generateToken = bin2hex(openssl_random_pseudo_bytes(16));
+    // Check if token exists in DB.
+    $tokenExists = (bool) api_token_check($generateToken);
+    // If not exists, can be assigned. In other case, try again.
+    return ($tokenExists === false) ? $generateToken : api_token_generate();
+}
+
+
+/**
+ * Returns User API Token
+ *
+ * @param integer $idUser Id of the user.
+ *
+ * @return string
+ */
+function users_get_API_token(int $idUser)
+{
+    $apiToken = db_get_value('api_token', 'tusuario', 'id_user', $idUser);
+
+    return $apiToken;
+}
+
+
+/**
+ * Renews the API Token.
+ *
+ * @param integer $idUser Id of the user.
+ *
+ * @return boolean Return true if the token was renewed.
+ */
+function users_renew_API_token(int $idUser)
+{
+    $apiToken = api_token_generate();
+
+    if (empty($apiToken) === false) {
+        $result = db_process_sql_update(
+            'tusuario',
+            ['api_token' => $apiToken],
+            ['id_user' => $idUser]
+        );
+
+        if ($result !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}

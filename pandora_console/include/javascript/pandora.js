@@ -2057,3 +2057,22 @@ $.fn.filterByText = function(textbox) {
       });
   });
 };
+
+/**
+ * Confirm Dialog for API token renewal request.
+ *
+ * @param {string} title Title for show.
+ * @param {string} message Message for show.
+ * @param {string} form Form to attach renewAPIToken element.
+ */
+function renewAPIToken(title, message, form) {
+  confirmDialog({
+    title: title,
+    message: message,
+    onAccept: function() {
+      $("#" + form)
+        .append("<input type='hidden' name='renewAPIToken' value='1'>")
+        .submit();
+    }
+  });
+}

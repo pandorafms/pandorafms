@@ -17707,3 +17707,20 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
         }
     }
 }
+
+
+/**
+ * Check if token is correct.
+ *
+ * @param string $token Token for check.
+ *
+ * @return integer Id of user. If returns 0 there is not valid token.
+ */
+function api_token_check(string $token)
+{
+    if (empty($token) === true) {
+        return 0;
+    } else {
+        return (int) db_get_value('id_user', 'tusuario', 'api_token', $token);
+    }
+}

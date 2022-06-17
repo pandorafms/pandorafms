@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022050501'
+S_VERSION='2022052501'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -86,7 +86,6 @@ check_pre_pandora () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
     execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
@@ -308,6 +307,8 @@ console_dependencies=" \
     poppler-data \
     php-yaml \
     mod_ssl \
+    libzstd \
+    openldap-clients \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
@@ -420,7 +421,9 @@ echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
 check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
 echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -uroot -P$DBPORT -h$DBHOST
+echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST        
 echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -uroot -P$DBPORT -h$DBHOST
+
 export MYSQL_PWD=$DBPASS
 
 #Generating my.cnf
@@ -495,7 +498,7 @@ execute_cmd "curl -LSs --output pandorafms_agent_unix-7.0NG.noarch.rpm ${PANDORA
 execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "Installing Pandora FMS packages"
 
 # Copy gotty utility
-execute_cmd "wget https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+execute_cmd "wget https://pandorafms.com/library/wp-content/uploads/2019/11/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
 tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 

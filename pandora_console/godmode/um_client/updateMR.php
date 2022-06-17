@@ -5,10 +5,11 @@ if ($argv === null) {
     exit(0);
 }
 
-// UMC dependencies.
-require_once __DIR__.'/vendor/autoload.php';
-
 chdir(__DIR__.'/../../');
+
+// UMC dependencies.
+require_once 'vendor/autoload.php';
+// Config file.
 $cnf_file = 'include/config.php';
 
 if (file_exists($cnf_file) === false) {
@@ -18,9 +19,6 @@ if (file_exists($cnf_file) === false) {
 ini_set('display_errors', 1);
 
 require_once $cnf_file;
-
-// PandoraFMS dependencies.
-require_once __DIR__.'/vendor/autoload.php';
 
 use PandoraFMS\Core\Config;
 use PandoraFMS\Core\DBMaintainer;

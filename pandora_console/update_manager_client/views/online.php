@@ -31,7 +31,6 @@
 ?>
 <head>
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/pandora.css'); ?>">
     <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
 </head>
 
@@ -40,10 +39,10 @@
     <span class="loading" style="font-size: 18pt; display: none;">
         <img src="images/wait.gif">
     </span>
-    
-    <p style="font-weight: 600;">The latest version of package installed is:</p>
+
+    <p style="font-weight: 600;"><?php echo __('The latest version of package installed is').':'; ?></p>
     <div id="pkg_version"><?php echo $version; ?></div>
-    
+
     <div class="content">
         <?php
         if (empty($error) !== true) {

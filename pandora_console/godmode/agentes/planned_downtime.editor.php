@@ -539,6 +539,12 @@ if ($id_downtime > 0) {
 // only action to postpone on once type is enabled and the other are disabled.
 $disabled_in_execution = (int) $running;
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('AW') === true || $disabled) {
+    $return_all_group = true;
+}
+
 $table = new StdClass();
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -557,7 +563,7 @@ $table->data[1][0] = __('Group');
 $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     false,
     $access,
-    true,
+    $return_all_group,
     'id_group',
     $id_group,
     '',
@@ -793,7 +799,7 @@ $table->width = '100%';
 $table->data = [];
 
 $table->data[0][0] = __('Group filter');
-$table->data[0][1] = html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', true, false, true, '', false, 'min-width:180px;margin-right:15px;');
+$table->data[0][1] = html_print_select_groups(false, $access, $return_all_group, 'filter_group', $filter_group, '', '', '', true, false, true, '', false, 'min-width:180px;margin-right:15px;');
 $table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
 
 $table->data[1][0] = __('Available agents');

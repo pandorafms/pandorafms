@@ -315,7 +315,20 @@ html_print_select_groups(
     '',
     false
 );
-echo '</div>';
+echo '</div></td>';
+
+// Recursion checkbox.
+echo '<td>';
+echo __('Recursion').'&nbsp;';
+html_print_checkbox(
+    'recursion',
+    1,
+    $recursion,
+    false,
+    false,
+    'this.form.submit()'
+);
+echo '</td>';
 echo '<td>';
 echo __('Show Agents').'&nbsp;';
 $fields = [
@@ -345,19 +358,6 @@ foreach ($pre_fields as $key => $value) {
 }
 
 html_print_select($fields, 'os', $os, 'this.form.submit()', 'All', 0);
-
-echo '</td>';
-
-echo '<td>';
-echo __('Recursion').'&nbsp;';
-html_print_checkbox(
-    'recursion',
-    1,
-    $recursion,
-    false,
-    false,
-    'this.form.submit()'
-);
 
 echo '</td><td>';
 echo __('Search').'&nbsp;';

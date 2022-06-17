@@ -412,6 +412,10 @@ class Widget
                     $className .= '\WuxWidget';
                 break;
 
+                case 'os_quick_report':
+                    $className .= '\OsQuickReportWidget';
+                break;
+
                 default:
                     $className = false;
                 break;

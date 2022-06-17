@@ -1607,7 +1607,7 @@ function config_update_config()
                                 'port' => $config['history_db_port'],
                                 'name' => $config['history_db_name'],
                                 'user' => $config['history_db_user'],
-                                'pass' => $config['history_db_pass'],
+                                'pass' => io_output_password($config['history_db_pass']),
                             ]
                         );
 
@@ -1619,48 +1619,47 @@ function config_update_config()
                             $dbm->process();
                         } else if ($dbm->check() !== true) {
                             $errors[] = $dbm->getLastError();
+                            config_update_value('history_db_enabled', false);
+                        }
+
+                        if ($dbm->check() === true) {
+                            // Historical configuration tokens (stored in historical db).
+                            if ($dbm->setConfigToken(
+                                'days_purge',
+                                get_parameter('history_dbh_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'history_partitions_auto',
+                                get_parameter_switch('history_partitions_auto', 0)
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database partitions');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'event_purge',
+                                get_parameter('history_dbh_events_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database events purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'string_purge',
+                                get_parameter('history_dbh_string_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database string purge');
+                            }
+
+                            // Disable history db in history db.
+                            $dbm->setConfigToken('history_db_enabled', 0);
                         }
                     }
-
-                    // Historical configuration tokens (stored in historical db).
-                    if (Config::set(
-                        'days_purge',
-                        get_parameter('history_dbh_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database purge');
-                    }
-
-                    if (Config::set(
-                        'history_partitions_auto',
-                        get_parameter_switch('history_partitions_auto', 0),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database partitions');
-                    }
-
-                    if (Config::set(
-                        'event_purge',
-                        get_parameter('history_dbh_events_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database events purge');
-                    }
-
-                    if (Config::set(
-                        'string_purge',
-                        get_parameter('history_dbh_string_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database string purge');
-                    }
-
-                    // Disable history db in history db.
-                    Config::set('history_db_enabled', 0, true);
                 break;
 
                 case 'ehorus':

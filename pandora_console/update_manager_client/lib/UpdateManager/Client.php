@@ -2229,7 +2229,7 @@ class Client
         if (is_callable($this->postUpdateFN) === true) {
             call_user_func(
                 $this->postUpdateFN,
-                $this->currentPackage,
+                (string) $version,
                 'server'
             );
         }

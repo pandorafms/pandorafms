@@ -34,7 +34,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.762";
-my $pandora_build = "220609";
+my $pandora_build = "220617";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -609,15 +609,14 @@ sub print_module {
 	$data->{critical_instructions} = $conf->{critical_instructions} unless (defined($data->{critical_instructions}) || (!defined($conf->{critical_instructions})));
 
 	# Translation compatibility
-	$data->{'min_warning'}      = $data->{'wmin'} if empty($data->{'min_warning'});
-	$data->{'max_warning'}      = $data->{'wmax'} if empty($data->{'max_warning'});
-	$data->{'min_critical'}     = $data->{'cmin'} if empty($data->{'min_critical'});
-	$data->{'max_critical'}     = $data->{'cmax'} if empty($data->{'max_critical'});
-	$data->{'warning_inverse'}  = $data->{'winv'} if empty($data->{'warning_inverse'});
-	$data->{'critical_inverse'} = $data->{'cinv'} if empty($data->{'critical_inverse'});
-	$data->{'str_warning'}      = $data->{'wstr'} if empty($data->{'str_warning'});
-	$data->{'str_critical'}     = $data->{'cstr'} if empty($data->{'str_critical'});
-
+	$data->{min_warning}      = $data->{'wmin'} if empty($data->{min_warning});
+	$data->{max_warning}      = $data->{'wmax'} if empty($data->{max_warning});
+	$data->{min_critical}     = $data->{'cmin'} if empty($data->{min_critical});
+	$data->{max_critical}     = $data->{'cmax'} if empty($data->{max_critical});
+	$data->{warning_inverse}  = $data->{'winv'} if empty($data->{warning_inverse});
+	$data->{critical_inverse} = $data->{'cinv'} if empty($data->{critical_inverse});
+	$data->{str_warning}      = $data->{'wstr'} if empty($data->{str_warning});
+	$data->{str_critical}     = $data->{'cstr'} if empty($data->{str_critical});
 
 	$xml_module .= "<module>\n";
 	$xml_module .= "\t<name><![CDATA[" . $data->{name} . "]]></name>\n";

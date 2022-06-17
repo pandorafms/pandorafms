@@ -313,7 +313,7 @@ if (is_array($config) === true) {
         if ($mode === Manager::MODE_ONLINE
             && ($puid === null || $puid === 'OFFLINE')
         ) {
-            ui_print_error_message(__('Update manager online requires registration.'));
+            ui_print_error_message(__('Update online requires registration.'));
         }
 
         if ($mode === Manager::MODE_OFFLINE) {

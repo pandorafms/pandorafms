@@ -375,20 +375,17 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        if (strlen($tmp->evento) >= 255) {
-                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
-                        }
 
-                        if ($tmp->module_name) {
+                        if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }
 
-                        if ($tmp->comments) {
+                        if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
                         // Show last event.
-                        if (isset($tmp->max_id_evento) && $tmp->max_id_evento !== $tmp->id_evento) {
+                        if (isset($tmp->max_id_evento) === true && $tmp->max_id_evento !== $tmp->id_evento) {
                             $max_event = db_get_row_sql(
                                 sprintf(
                                     'SELECT criticity, timestamp FROM %s
@@ -611,9 +608,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $data[1] = html_print_image(
@@ -654,9 +650,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $tabletags_with->data[] = $data;
@@ -688,9 +683,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -727,9 +721,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
@@ -1156,7 +1149,10 @@ $data = html_print_select(
     true,
     true,
     '',
-    false
+    false,
+    false,
+    false,
+    3
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';

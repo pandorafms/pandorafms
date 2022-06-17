@@ -506,7 +506,7 @@ B<Returns>:
 ##########################################################################
 sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh,
-	  $last_data_value, $correlatedItems, $event, $log) = @_;
+	  $last_data_value, $correlated_items, $event, $log) = @_;
 	
 	if (defined ($agent)) {
 		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output ($agent->{'nombre'}) . "'.", 10);
@@ -604,13 +604,16 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			
 			# Cease on valid data
 			$status = 3;
-			
+		
+			# Unlike module alerts, correlated alerts recover when they cease!
+			$status = 4 if ($alert->{'recovery_notify'} == 1 && !defined($alert->{'id_template_module'}));
+
 			# Always reset
 			($alert->{'internal_counter'}, $alert->{'times_fired'}) = (0, 0);
 		}
 		
 		# Recover takes precedence over cease
-		$status = 4 if ($alert->{'recovery_notify'} == 1);
+		$status = 4 if ($alert->{'recovery_notify'} == 1 && defined ($alert->{'id_template_module'}));
 		
 	}
 	elsif ($utimestamp > $limit_utimestamp && $alert->{'internal_counter'} > 0) {
@@ -691,7 +694,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 				$pa_config,
 				$dbh,
 				$alert,
-				$correlatedItems,
+				$correlated_items,
 				$event,
 				$log
 			]

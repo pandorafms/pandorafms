@@ -235,6 +235,10 @@ class ServiceMapWidget extends Widget
             $values['showLegend'] = $decoder['showLegend'];
         }
 
+        if (isset($decoder['sunburst']) === true) {
+            $values['sunburst'] = $decoder['sunburst'];
+        }
+
         return $values;
     }
 
@@ -268,7 +272,20 @@ class ServiceMapWidget extends Widget
             $fields = array_reduce(
                 $services_res,
                 function ($carry, $item) {
-                    $carry[$item['id']] = $item['name'];
+                    $parents = '';
+                    if (class_exists('\PandoraFMS\Enterprise\Service') === true) {
+                        try {
+                            $service = new \PandoraFMS\Enterprise\Service($item['id']);
+                            $ancestors = $service->getAncestors();
+                            if (empty($ancestors) === false) {
+                                $parents = '('.join('/', $ancestors).')';
+                            }
+                        } catch (\Exception $e) {
+                            $parents = '';
+                        }
+                    }
+
+                    $carry[$item['id']] = $item['name'].' '.$parents;
                     return $carry;
                 },
                 []
@@ -296,19 +313,16 @@ class ServiceMapWidget extends Widget
             ],
         ];
 
-        // TODO refactoriced services: Hidden legend.
-        /*
-            // Show legend.
-            $inputs[] = [
-            'label'     => __('Show legend'),
+        $inputs[] = [
+            'label'     => __('Enable sunburst'),
             'arguments' => [
-                'name'  => 'showLegend',
-                'id'    => 'showLegend',
-                'type'  => 'switch',
-                'value' => $values['showLegend'],
+                'type'   => 'switch',
+                'name'   => 'sunburst',
+                'class'  => 'event-widget-input',
+                'value'  => $values['sunburst'],
+                'return' => true,
             ],
-            ];
-        */
+        ];
 
         return $inputs;
     }
@@ -325,7 +339,9 @@ class ServiceMapWidget extends Widget
         $values = parent::getPost();
 
         $values['serviceId'] = \get_parameter('serviceId', 0);
-        // $values['showLegend'] = \get_parameter_switch('showLegend');
+
+        $values['sunburst'] = \get_parameter_switch('sunburst', 0);
+
         return $values;
     }
 
@@ -341,6 +357,7 @@ class ServiceMapWidget extends Widget
 
         $size = parent::getSize();
 
+        $output = '';
         if (check_acl($config['id_user'], 0, 'AR') === 0) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_error_message(
@@ -367,42 +384,6 @@ class ServiceMapWidget extends Widget
         $style = 'position: relative; text-align: center;';
         $output .= "<div id='".$containerId."' style='".$style."'>";
 
-        // TODO refactoriced services: Hidden legend.
-        /*
-            if ($this->values['showLegend'] === 1) {
-            $output .= "<div id='container_servicemap_legend".$this->values['serviceId'].'_'.$this->cellId."'>";
-            $output .= '<table>';
-            $output .= "<tr class='legend_servicemap_title'><td colspan='3' style='padding-bottom: 10px; min-width: 177px;'><b>".__('Legend').'</b></td>';
-            $output .= "<td><img class='legend_servicemap_toggle' style='padding-bottom: 10px;' src='images/darrowup.png'></td></tr>";
-
-            $output .= "<tr class='legend_servicemap_item'><td>";
-            $output .= "<img src='images/service.png'>";
-            $output .= '</td><td>'.__('Services').'</td>';
-
-            // Coulour legend.
-            $output .= "<td rowspan='3'>";
-            $output .= '<table>';
-            $output .= "<tr><td class='legend_square'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Critical').'</td></tr>';
-            $output .= "<tr><td class='legend_square'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Warning').'</td></tr>';
-            $output .= "<tr><td class='legend_square'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Ok').'</td></tr>';
-            $output .= "<tr><td class='legend_square'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Unknown').'</td></tr>';
-            $output .= '</table>';
-            $output .= '</td></tr>';
-
-            $output .= "<tr class='legend_servicemap_item'><td>";
-            $output .= "<img src='images/agent.png'>";
-            $output .= '</td><td>'.__('Agents').'</td>';
-            $output .= '</tr>';
-
-            $output .= "<tr class='legend_servicemap_item'><td>";
-            $output .= "<img src='images/module.png'>";
-            $output .= '</td><td>'.__('Modules').'</td>';
-            $output .= '</tr>';
-            $output .= '</table>';
-            $output .= '</div>';
-            }
-        */
-
         // TODO: removed refactoriced services. Only 1 widget Zoom.
         $sql = sprintf(
             'SELECT COUNT(*)
@@ -425,14 +406,21 @@ class ServiceMapWidget extends Widget
         );
         // TODO:XXX fix draw service map.
         ob_start();
-        servicemap_print_servicemap(
-            $this->values['serviceId'],
-            false,
-            $size['width'],
-            $size['height'],
-            $this->cellId,
-            $disableZoom
-        );
+
+        if ($this->values['sunburst'] === 0) {
+            servicemap_print_servicemap(
+                $this->values['serviceId'],
+                false,
+                $size['width'],
+                $size['height'],
+                $this->cellId,
+                $disableZoom
+            );
+        } else {
+            include_once $config['homedir'].'/include/graphs/functions_d3.php';
+            servicemap_print_sunburst($this->values['serviceId'], $size['width'], $size['height'], false);
+        }
+
         $output .= ob_get_clean();
         $output .= '</div>';
         return $output;

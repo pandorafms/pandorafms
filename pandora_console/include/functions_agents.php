@@ -3236,8 +3236,8 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     $ni_by_agents = [];
     foreach ($agents as $agent) {
         $agent_id = (isset($agent['id_agente'])) ? $agent['id_agente'] : $agent;
-        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : '';
-        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : '';
+        $agent_group_id = (isset($agent['id_grupo']) === true) ? $agent['id_grupo'] : agents_get_agent_group($agent_id);
+        $agent_name = (isset($agent['alias']) === true) ? $agent['alias'] : agents_get_alias($agent_id);
         $agent_interfaces = [];
 
         $accepted_module_types = [];
@@ -4267,4 +4267,31 @@ function get_status_data_agent_modules($id_group, $agents=[], $modules=[])
     }
 
     return $res;
+}
+
+
+function agents_get_offspring(int $id_agent)
+{
+    $return = [];
+    // Get parent.
+    $agents = db_get_all_rows_filter(
+        'tagente',
+        [
+            'id_parent' => $id_agent,
+            'disabled'  => 0,
+        ],
+        'id_agente'
+    );
+
+    if ($agents !== false) {
+        foreach ($agents as $agent) {
+            if ((int) $agent['id_agente'] !== 0) {
+                $return += agents_get_offspring((int) $agent['id_agente']);
+            }
+        }
+    }
+
+    $return += [$id_agent => 0];
+
+    return $return;
 }

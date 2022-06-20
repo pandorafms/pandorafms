@@ -14,7 +14,7 @@ function help {
 	echo -e "\t\t-t target"
         echo -e "\t\t-v version"
 	echo -e "Other options\n";
-	echo -e "\t\t-s show defined tags and indexes"
+	echo -e "\t\t-s show defined tags for cisco ipsla device and exit"
         echo -e "\t\t-l <auth-type> "
         echo -e "\t\t-u <user> "
         echo -e "\t\t-a <authentication> "
@@ -23,12 +23,12 @@ function help {
         echo -e "\t\t-X <encryption-pass> "
 	echo -e "\t\t-g <tag> "
 	echo -e "\t\t-m <module>\n"
-	echo -e "Modules can be: \n"
+	echo -e "Available Modules list: \n"
 	echo -e "\tICPIF - Calculated Planning Impairment Factor for specified tag"
 	echo -e "\tMOS - Mean Opinion Score"
 	echo -e "\tPacket_Out_of_Sequence - Packets arriving out of sequence "
 	echo -e "\tPacket_Late_Arrival - Packets arriving late"
-	echo -e "\tvAerage_Jitter - Average jitter is the estimated average jitter observed in the last XX RTP packets"
+	echo -e "\tAverage_Jitter - Average jitter is the estimated average jitter observed in the last XX RTP packets"
 	echo -e "\tPacketLossSD - Packet loss from source to destination"
 	echo -e "\tPacketLossDS - Packet loss from destination to source"
 	echo -e "\tPacketLost -  The number of packets that are lost for which we cannot determine the direction "
@@ -50,167 +50,212 @@ function help {
 	echo -e "\tHTTPOperTCPConnectRTT - Round Trip Time taken to connect to the HTTP server."
 	echo -e "\tIcmpJitterAvgJitter The average of positive and negative jitter values in Source-to-Destionation and Destination-to-Source direction."
 	echo -e "\tHTTPOperTransactionRTT - Round Trip Time taken to download the object specified by the URL."
+	echo -e ""
+	echo -e " Example execution"
+	echo -e " snmp version 3:     ./pandora_ipsla.sh -t <ip_target> -v 3 -l authPriv -u pandorafms -a MD5 -A pandorafms -x AES -X pandorafms -g jitter -m Average_Jitter"
+	echo -e " snmp version 2c:    ./pandora_ipsla.sh -t <ip_target> -v 2c -c public -g jitter -m Average_Jitter"
+
 			
 	echo ""
 	exit
 }
 
 function show_tags {
-	TAG_TABLE_CACHE=$TAG_TABLE_CACHE.$TARGET
+	local TAG_TABLE_CACHE=$TAG_TABLE_CACHE.$TARGET
+	
+        if [ $version != "3" ]
+        then  
+                snmpwalk -v 1 -Onq -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
+        fi
+        if [ $version == "3" ]
+        #if snmp v3 snmpget with v3
+        then
+                if [ $auth == "authPriv" ]
+                # if authpriv snmpget with all parameters
+                then
+                        snmpwalk -v 3 -Onq -l $auth -u $user -a $hash1 -A $hash1pass -x $hash2 -X $hash2pass  $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
+                fi
+                if [ $auth == "authNoPriv" ]
+                then
 
-	# If not exist the cache, then create it
-	if [ ! -f "$TAG_TABLE_CACHE" ]
-	then
-		snmpwalk -v 1 -Onq -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
-	fi
+                        snmpget -v 3 -Onq -l $auth -u $user -a $hash1 -A $hash1pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
+                fi
+        fi
+	
 	cat $TAG_TABLE_CACHE | awk '{ print $2 }' | tr -d "\"" | grep -ve '^$'
 	exit
 }
 
+function update_tags {
+	local TAG_TABLE_CACHE=$TAG_TABLE_CACHE.$TARGET
+
+        if [ $version != "3" ]
+        then  
+		snmpwalk -v 1 -Onq -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
+        fi
+        if [ $version == "3" ]
+         #if snmp v3 snmpget with v3
+        then
+                if [ $auth == "authPriv" ]
+                # if authpriv snmpget with all parameters
+                then
+                        snmpwalk -v 3 -Onq -l $auth -u $user -a $hash1 -A $hash1pass -x $hash2 -X $hash2pass  $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
+                fi
+                if [ $auth == "authNoPriv" ]
+                then
+       
+                        snmpget -v 3 -Onq -l $auth -u $user -a $hash1 -A $hash1pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.1.1.3 > $TAG_TABLE_CACHE
+                fi
+        fi
+
+	
+}
+
 function get_index {
-	cat $TAG_TABLE_CACHE.$TARGET | grep $1 | grep -o "[0-9]*\s"
+	cat $TAG_TABLE_CACHE.$TARGET | grep "\"$1\"" | grep -o "[0-9]*\s"
 }
 
 # This function requires two arguments. MODULE_TYPE TAG
 function get_module {
 	MODULE_TYPE=$1
         TAG=$2
+        update_tags
 	INDICE=`get_index $TAG`
 
-        if [ $version != "v3" ]
+        if [ $version != "3" ]
 
         then
     
 	if [ "$MODULE_TYPE" == "ICPIF" ]
         then
-            VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.43.$INDICE`
+            VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.43.$INDICE`
         fi
         if [ "$MODULE_TYPE" == "MOS" ]
             then
-                    VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.42.$INDICE`
+                    VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.42.$INDICE`
             fi
         if [ "$MODULE_TYPE" == "Packet_Out_of_Sequence" ]
             then
-                    VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.28.$INDICE`
+                    VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.28.$INDICE`
             fi 
             
         if [ "$MODULE_TYPE" == "Packet_Late_Arrival" ]
             then
-                    VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.30.$INDICE`
+                    VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.30.$INDICE`
             fi    
             
         if [ "$MODULE_TYPE" == "Average_Jitter" ]
             then
-                    VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.46.$INDICE`
+                    VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.46.$INDICE`
             fi 
             
         if [ "$MODULE_TYPE" == "PacketLossSD" ]
             then
-                    VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.26.$INDICE`
+                    VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.26.$INDICE`
             fi 
             
         if [ "$MODULE_TYPE" == "PacketLossDS" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
                 fi     
                     
         if [ "$MODULE_TYPE" == "PacketLost" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.29.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.29.$INDICE`
                 fi     
                     
         if [ "$MODULE_TYPE" == "NegativesSD" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.12.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.12.$INDICE`
                 fi      
                     
         if [ "$MODULE_TYPE" == "NegativesDS" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.22.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.22.$INDICE`
                 fi       
                     
         if [ "$MODULE_TYPE" == "PositivesSD" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.7.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.7.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "PositivesDS" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.17.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.17.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "RTTMax" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.5.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.5.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "RTTMin" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.4.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.4.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "OperNumOfRTT" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.1.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.1.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "OperPacketLossSD" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.26.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.26.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "OperPacketLossDS" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
-                fi                
-                    
-        if [ "$MODULE_TYPE" == "RttOperSense" ]
-                then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.1.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.2.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.1.$INDICE`
+                fi                
+                    
+        if [ "$MODULE_TYPE" == "RttOperSense" ]
+                then
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.2.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "RttOperTime" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.5.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.5.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "RttOperAddress" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.6.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.6.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "HTTPOperRTT" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.1.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.1.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "HTTPOperDNSRTT" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.2.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.2.$INDICE`
                 fi                
                     
         if [ "$MODULE_TYPE" == "HTTPOperTCPConnectRTT" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.3.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.3.$INDICE`
                 fi                 
                     
         if [ "$MODULE_TYPE" == "IcmpJitterAvgJitter" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.4.1.44.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.4.1.44.$INDICE`
                 fi                 
                     
         if [ "$MODULE_TYPE" == "HTTPOperTransactionRTT" ]
                 then
-                        VALOR=`snmpget -$version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.4.$INDICE`
+                        VALOR=`snmpget -v $version -Oqv -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.1.1.4.$INDICE`
                 fi 
         fi                
 
-        if [ $version == "v3" ]
+        if [ $version == "3" ]
 
         #if snmp v3 snmpget with v3
         then
@@ -300,12 +345,12 @@ function get_module {
                                         VALOR=`snmpget -v 3 -l $auth -u $user -a $hash1 -A $hash1pass -x $hash2 -X $hash2pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
                                 fi                
                                 
-                        if [ "$MODULE_TYPE" == "RttOperSense" ]
+                        if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
                                 then
                                         VALOR=`snmpget -v 3 -l $auth -u $user -a $hash1 -A $hash1pass -x $hash2 -X $hash2pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.1.$INDICE`
                                 fi                
                                 
-                        if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
+                        if [ "$MODULE_TYPE" == "RttOperSense" ]
                                 then
                                         VALOR=`snmpget -v 3 -l $auth -u $user -a $hash1 -A $hash1pass -x $hash2 -X $hash2pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.2.$INDICE`
                                 fi                
@@ -432,12 +477,12 @@ function get_module {
                                                 VALOR=`snmpget -v 3 -l $auth -u $user -a $hash1 -A $hash1pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
                                         fi                
                                         
-                                if [ "$MODULE_TYPE" == "RttOperSense" ]
+                                if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
                                         then
                                                 VALOR=`snmpget -v 3 -l $auth -u $user -a $hash1 -A $hash1pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.1.$INDICE`
                                         fi                
                                         
-                                if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
+                                if [ "$MODULE_TYPE" == "RttOperSense" ]
                                         then
                                                 VALOR=`snmpget -v 3 -l $auth -u $user -a $hash1 -A $hash1pass -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.2.$INDICE`
                                         fi                
@@ -560,12 +605,12 @@ function get_module {
                                                 VALOR=`snmpget -v 3 -l $auth -u $user -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.5.2.1.27.$INDICE`
                                         fi                
                                         
-                                if [ "$MODULE_TYPE" == "RttOperSense" ]
+                                if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
                                         then
                                                 VALOR=`snmpget -v 3 -l $auth -u $user -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.1.$INDICE`
                                         fi                
                                         
-                                if [ "$MODULE_TYPE" == "RttOperCompletionTime" ]
+                                if [ "$MODULE_TYPE" == "RttOperSense" ]
                                         then
                                                 VALOR=`snmpget -v 3 -l $auth -u $user -c $COMMUNITY $TARGET 1.3.6.1.4.1.9.9.42.1.2.10.1.2.$INDICE`
                                         fi                
@@ -610,7 +655,7 @@ function get_module {
                 fi              
     fi
       
-	echo -n $VALOR
+	echo -n $VALOR | awk '{print $NF}'
 	exit 0
 }
 
@@ -664,10 +709,10 @@ while getopts ":hc:t:v:l:u:a:A:x:X:sm:g:" optname
 		TAG=$OPTARG
 	;;
       "s")
-		show_tags
+		SHOWTAGS=1
         ;;
       "m")
-		get_module $OPTARG $TAG
+                MODULE=$OPTARG
 	;;
         ?)
 		help
@@ -680,6 +725,56 @@ while getopts ":hc:t:v:l:u:a:A:x:X:sm:g:" optname
 done
 
 # Execution
+[ "$SHOWTAGS" ] && echo "Showing avaliables  ipsla tags for the device $TARGET" && show_tags
+
+[ -z "$TARGET" ] && echo "Error missing target ip definition please use -t to difine it or -h to see help" && exit 1
+[ -z "$MODULE" ] && echo "Error missing module definition please use -m to difine it or -h to see help" && exit 1
+[ -z "$TAG" ] && echo "Error missing tag definition please use -g to difine it or -h to see help" && exit 1
+[ -z "$version" ] && echo "Error missing snmp version definition please use -v to difine it or -h to see help" && exit 1
+
+
+get_module $MODULE $TAG
 echo "DEBUG"
 
 exit 0
+
+#RttOperSense
+# 0:other
+# 1:ok
+# 2:disconnected
+# 3:overThreshold
+# 4:timeout
+# 5:busy
+# 6:notConnected
+# 7:dropped
+# 8:sequenceError
+# 9:verifyError
+# 10:applicationSpecific
+# 11:dnsServerTimeout
+# 12:tcpConnectTimeout
+# 13:httpTransactionTimeout
+# 14:dnsQueryError
+# 15:httpError
+# 16:error
+# 17:mplsLspEchoTxError
+# 18:mplsLspUnreachable
+# 19:mplsLspMalformedReq
+# 20:mplsLspReachButNotFEC
+# 21:enableOk
+# 22:enableNoConnect
+# 23:enableVersionFail
+# 24:enableInternalError
+# 25:enableAbort
+# 26:enableFail
+# 27:enableAuthFail
+# 28:enableFormatError
+# 29:enablePortInUse
+# 30:statsRetrieveOk
+# 31:statsRetrieveNoConnect
+# 32:statsRetrieveVersionFail
+# 33:statsRetrieveInternalError
+# 34:statsRetrieveAbort
+# 35:statsRetrieveFail
+# 36:statsRetrieveAuthFail
+# 37:statsRetrieveFormatError
+# 38:statsRetrievePortInUse

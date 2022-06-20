@@ -1528,7 +1528,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.UPLOAD_MAX_FILESIZE');
         }
 
-        if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+        if ($PHPmemory_limit < $PHPmemory_limit_min && (int) $PHPmemory_limit !== -1) {
             $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
             if ($config['language'] == 'es') {
                 $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
@@ -2490,7 +2490,7 @@ class ConsoleSupervisor
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    $config['current_package']
+                    (string) floor($config['current_package'])
                 ) === false
                 ) {
                     $missed++;
@@ -2511,6 +2511,8 @@ class ConsoleSupervisor
                             'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                         ]
                     );
+
+                    break;
                 }
             }
         }

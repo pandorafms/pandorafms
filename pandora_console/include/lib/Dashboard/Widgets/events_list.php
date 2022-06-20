@@ -502,6 +502,7 @@ class EventsListWidget extends Widget
 
         \ui_require_css_file('events', 'include/styles/', true);
         \ui_require_css_file('tables', 'include/styles/', true);
+        \ui_require_javascript_file('pandora_events');
         \ui_require_javascript_file('pandora_events', 'include/javascript/', true);
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
@@ -643,8 +644,14 @@ class EventsListWidget extends Widget
             // Recursive Groups.
             (bool) $this->values['groupRecursion'],
             // Already connected.
-            ($this->nodeId > 0)
+            // ($this->nodeId > 0)
         );
+
+        if (is_metaconsole() === true
+            && empty($filter['server_id']) !== false
+        ) {
+            $events = $events['data'];
+        }
 
         if ($events === false) {
             $events = [];
@@ -688,6 +695,8 @@ class EventsListWidget extends Widget
                 $home_url = $result[0]['server_url'];
                 metaconsole_connect(null, $this->nodeId);
             }
+
+            hd($events, true);
 
             foreach ($events as $event) {
                 $data = [];

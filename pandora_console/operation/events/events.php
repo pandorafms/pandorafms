@@ -2021,8 +2021,7 @@ function process_datatables_callback(table, settings) {
 
 function process_buffers(buffers) {
     $('#events_buffers_display').empty();
-    console.log(buffers);
-    if(buffers.settings != undefined && buffers.data.length > 0) {
+    if(buffers != null && buffers.settings != undefined && buffers.data) {
         var html = '<h3>'+buffers.settings.translate.nev;
         html += ': ('+buffers.settings.total+')</h3>';
         html += '<ul>';
@@ -2040,7 +2039,7 @@ function process_buffers(buffers) {
                 class_total += ' danger';
                 str_total = buffers.settings.translate.tevn;
             }
-            html += '<span class='+class_total+'>';
+            html += '<span class="'+class_total+'">';
             html += element[1];
             if(str_total != '') {
                 html += '<span class="text">';

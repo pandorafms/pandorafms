@@ -763,7 +763,13 @@ function delete_event(table, id_evento, event_rep, row, server_id) {
   });
 }
 
-function execute_delete_event_reponse(table, id_evento, event_rep, row) {
+function execute_delete_event_reponse(
+  table,
+  id_evento,
+  event_rep,
+  row,
+  server_id
+) {
   var button = document.getElementById("del-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -772,7 +778,14 @@ function execute_delete_event_reponse(table, id_evento, event_rep, row) {
   }
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { delete_event: 1 }, event_rep, row);
+  return update_event(
+    table,
+    id_evento,
+    { delete_event: 1 },
+    event_rep,
+    row,
+    server_id
+  );
 }
 
 // Imported from old files.
@@ -855,6 +868,9 @@ function execute_event_response(event_list_btn) {
           });
         }
       } else {
+        var event_id = $(this).val();
+        var server_id = $("#hidden-server_id_" + event_id).val();
+
         // It is not a custom response
         switch (response_id) {
           case "in_progress_selected":
@@ -864,7 +880,8 @@ function execute_event_response(event_list_btn) {
                 dt_events,
                 $(this).val(),
                 $(this).attr("event_rep"),
-                this.parentElement.parentElement
+                this.parentElement.parentElement,
+                server_id
               );
             });
             break;
@@ -872,9 +889,10 @@ function execute_event_response(event_list_btn) {
             $(".chk_val:checked").each(function() {
               validate_event(
                 dt_events,
-                $(this).val(),
+                event_id,
                 $(this).attr("event_rep"),
-                this.parentElement.parentElement
+                this.parentElement.parentElement,
+                server_id
               );
             });
             break;
@@ -882,9 +900,10 @@ function execute_event_response(event_list_btn) {
             $(".chk_val:checked").each(function() {
               execute_delete_event_reponse(
                 dt_events,
-                $(this).val(),
+                event_id,
                 $(this).attr("event_rep"),
-                this.parentElement.parentElement
+                this.parentElement.parentElement,
+                server_id
               );
             });
             break;

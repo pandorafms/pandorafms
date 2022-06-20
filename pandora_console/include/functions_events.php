@@ -592,33 +592,6 @@ function events_update_status($id_evento, $status, $filter=null)
  *
  * @param array   $fields          Fields to retrieve.
  * @param array   $filter          Filters to be applied.
- *                    Available filters:
- *                    [
- *                       'date_from'
- *                       'time_from'
- *                       'date_to'
- *                       'time_to'
- *                       'event_view_hr'
- *                       'id_agent'
- *                       'event_type'
- *                       'severity'
- *                       'id_group_filter'
- *                       'status'
- *                       'agent_alias'
- *                       'search'
- *                       'id_extra'
- *                       'id_source_event'
- *                       'user_comment'
- *                       'source'
- *                       'id_user_ack'
- *                       'tag_with'
- *                       'tag_without'
- *                       'filter_only_alert'
- *                       'module_search'
- *                       'group_rep'
- *                       'server_id'
- *                    ].
- *
  * @param integer $offset          Offset (pagination).
  * @param integer $limit           Limit (pagination).
  * @param string  $order           Sort order.
@@ -630,6 +603,33 @@ function events_update_status($id_evento, $status, $filter=null)
  * @param boolean $recursiveGroups If true, filtered groups and their children
  *                                 will be search.
  * @param boolean $nodeConnected   Already connected to node (uses tevento).
+ *
+ * Available filters:
+ *  [
+ *     'date_from'
+ *     'time_from'
+ *     'date_to'
+ *     'time_to'
+ *     'event_view_hr'
+ *     'id_agent'
+ *     'event_type'
+ *     'severity'
+ *     'id_group_filter'
+ *     'status'
+ *     'agent_alias'
+ *     'search'
+ *     'id_extra'
+ *     'id_source_event'
+ *     'user_comment'
+ *     'source'
+ *     'id_user_ack'
+ *     'tag_with'
+ *     'tag_without'
+ *     'filter_only_alert'
+ *     'module_search'
+ *     'group_rep'
+ *     'server_id'
+ *  ].
  *
  * @return array Events.
  * @throws Exception On error.
@@ -845,7 +845,7 @@ function events_get_all(
         }
     }
 
-    $groups = isset($filter['id_group_filter']) === true ? $filter['id_group_filter'] : null;
+    $groups = (isset($filter['id_group_filter']) === true) ? $filter['id_group_filter'] : null;
     if ((bool) $user_is_admin === false
         && isset($groups) === false
     ) {
@@ -1088,7 +1088,7 @@ function events_get_all(
     // Validated or in process by.
     if (empty($filter['id_user_ack']) === false) {
         $sql_filters[] = sprintf(
-            ' AND te.id_usuario like lower("%%%s%%") ',
+            ' AND te.owner_user like lower("%%%s%%") ',
             $filter['id_user_ack']
         );
     }
@@ -1333,7 +1333,11 @@ function events_get_all(
 
     // Pagination.
     $pagination = '';
-    if (is_metaconsole() === true && empty($id_server) === true) {
+    if (is_metaconsole() === true
+        && empty($id_server) === true
+        && isset($filter['csv_all']) === false
+        && $filter['csv_all'] !== 1
+    ) {
         // TODO: XXX TIP. captura el error.
         $pagination = sprintf(
             ' LIMIT  %d',
@@ -1632,7 +1636,11 @@ function events_get_all(
                 }
             );
 
-            if (isset($limit, $offset) === true && $limit > 0) {
+            if (isset($limit, $offset) === true
+                && $limit !== 0
+                && isset($filter['csv_all']) === false
+                && $filter['csv_all'] !== 1
+            ) {
                 $count = count($data);
                 $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);

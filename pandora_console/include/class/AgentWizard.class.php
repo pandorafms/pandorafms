@@ -2814,7 +2814,7 @@ class AgentWizard extends HTML
             // Unpack the query filters.
             $queryFilters = json_decode($module['query_filters'], true);
             // Name of query filter field.
-            $fieldValueName = $fieldSet[$queryFilters['field']];
+            $fieldValueName = (empty($fieldSet[$queryFilters['field']]) === false) ? $fieldSet[$queryFilters['field']] : '1';
 
             // Evaluate type of scan and execution.
             if ($module['scan_type'] == SCAN_TYPE_FIXED) {
@@ -2900,6 +2900,7 @@ class AgentWizard extends HTML
                     $dataCombined = array_combine($columnsList, $rowList);
                     // Change the macros for values.
                     foreach ($dataCombined as $macroKey => $macroValue) {
+                        $macroKey = trim($macroKey);
                         if (preg_match('/_'.$macroKey.'_/', $valueOperation) !== 0) {
                             $valueOperation = preg_replace(
                                 '/_'.$macroKey.'_/',
@@ -3003,6 +3004,7 @@ class AgentWizard extends HTML
                             );
                             // Change the macros for values.
                             foreach ($dataCombined as $macroKey => $macroValue) {
+                                $macroKey = trim($macroKey);
                                 if (preg_match('/_'.$macroKey.'_/', $valueOperation) !== 0) {
                                     $valueOperation = preg_replace(
                                         '/_'.$macroKey.'_/',
@@ -3030,39 +3032,48 @@ class AgentWizard extends HTML
             }
         }
 
-        // Create the final table with all of data received.
-        foreach ($moduleBlocks as $module) {
-            // Prepare the blocks. If its new, create a new index.
-            if (key_exists($module['group'], $blockTables) === false) {
-                $blockTables[$module['group']] = [
-                    'name' => $module['group_name'],
-                    'data' => [],
-                ];
+        // If we not retrieve information (P.E. connection refused).
+        if (empty($moduleBlocks) === true) {
+            $this->message['type'][]    = 'warning';
+            $this->message['message'][] = __(
+                'No information could be retrieved.'
+            );
+            $this->showMessage();
+        } else {
+            // Create the final table with all of data received.
+            foreach ($moduleBlocks as $module) {
+                // Prepare the blocks. If its new, create a new index.
+                if (key_exists($module['group'], $blockTables) === false) {
+                    $blockTables[$module['group']] = [
+                        'name' => $module['group_name'],
+                        'data' => [],
+                    ];
+                }
+
+                // Add the module info in the block.
+                $blockTables[$module['group']]['data'][] = $module;
+                if (isset($blockTables[$module['group']]['activeModules']) === false
+                    && (int) $module['module_enabled'] === 1
+                ) {
+                    $blockTables[$module['group']]['activeModules'] = 2;
+                } else if (isset($blockTables[$module['group']]['activeModules']) === true
+                    && (int) $module['module_enabled'] === 0
+                ) {
+                    $blockTables[$module['group']]['activeModules'] = 1;
+                }
             }
 
-            // Add the module info in the block.
-            $blockTables[$module['group']]['data'][] = $module;
-            if (isset($blockTables[$module['group']]['activeModules']) === false
-                && (int) $module['module_enabled'] === 1
-            ) {
-                $blockTables[$module['group']]['activeModules'] = 2;
-            } else if (isset($blockTables[$module['group']]['activeModules']) === true
-                && (int) $module['module_enabled'] === 0
-            ) {
-                $blockTables[$module['group']]['activeModules'] = 1;
-            }
+            // General Default monitoring.
+            html_print_div(
+                [
+                    'class'   => 'wizard wizard-result',
+                    'style'   => 'margin-top: 20px;',
+                    'content' => $this->toggleTableModules($blockTables),
+                ]
+            );
+            // Add Create Modules form.
+            $this->createModulesForm();
         }
-
-        // General Default monitoring.
-        html_print_div(
-            [
-                'class'   => 'wizard wizard-result',
-                'style'   => 'margin-top: 20px;',
-                'content' => $this->toggleTableModules($blockTables),
-            ]
-        );
-        // Add Create Modules form.
-        $this->createModulesForm();
     }
 
 
@@ -5544,13 +5555,13 @@ class AgentWizard extends HTML
         string $unit='',
         ?int $type=0
     ) {
+        $output = '';
         try {
             // Avoid non-numeric or arithmetic chars for security reasons.
             if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
                 throw new Exception(sprintf(__("The operation '%s' is not permitted. Review for remote components."), $operation));
             } else {
                 // Get the result of the operation and set it.
-                $output = '';
                 eval('$output = '.$operation.';');
                 // If this module has unit, attach to current value.
                 $output = $this->replacementUnit(

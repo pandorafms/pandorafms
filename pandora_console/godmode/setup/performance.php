@@ -667,7 +667,7 @@ $table_other->data[$i++][1] = html_print_input_text(
     $config['wmiBinary'],
     '',
     50,
-    10,
+    50,
     true
 );
 

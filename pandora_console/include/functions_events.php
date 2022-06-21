@@ -985,7 +985,6 @@ function events_get_all(
     // Prepare agent join sql filters.
     $table = 'tevento';
     $tevento = 'tevento te';
-    // TODO: XXX.
     $agent_join_filters = [];
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
@@ -1592,9 +1591,6 @@ function events_get_all(
         }
 
         if (empty($filter['server_id']) === true) {
-            // TODO: XXX;
-            hd($sort_field, true);
-            hd($order, true);
             if ($sort_field !== 'agent_name'
                 && $sort_field !== 'server_name'
                 && $sort_field !== 'timestamp'

@@ -835,7 +835,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'id_modulo' => 2,
           'name' => $if_name."_ifHCOutOctets",
           'descripcion' => safe_input(
-            'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifOutOctets.'
+            'The total number of octets transmitted out of the interface, including framing characters. This object is a 64-bit version of ifOutOctets.'
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
@@ -862,7 +862,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'id_modulo' => 2,
           'name' => $if_name."_ifOutOctets",
           'descripcion' => safe_input(
-            'The total number of octets received on the interface, including framing characters.'
+            'The total number of octets transmitted out of the interface, including framing characters.'
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
@@ -903,7 +903,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           # Interface index filter.
           $macros->{'5'}->{'value'} = $if_index;
           # SecurityName.
-          $macros->{'6'}->{'value'} = $self->{'task_data'}->{'snmp_auth_method'};
+          $macros->{'6'}->{'value'} = $self->{'task_data'}->{'snmp_auth_user'};
           # SecurityContext.
           $macros->{'7'}->{'value'} = $community;
           # SecurityLevel.
@@ -930,7 +930,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
               'id_tipo_modulo' => 1,
               'id_modulo' => 4,
               'name' => $if_name."_Bandwith",
-              'description' => safe_input(
+              'descripcion' => safe_input(
 			          'Amount of digital information sent and received from this interface over a particular time',
               ),
               'unit' => '%',
@@ -958,9 +958,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           {
             'id_tipo_modulo' => 1,
             'id_modulo' => 4,
-            'name' => $if_name."_outUsage",
-            'description' => safe_input(
-			        'Bandwidth usage received from this interface over a particular time',
+            'name' => $if_name."_inUsage",
+            'descripcion' => safe_input(
+			        'Bandwidth usage received into this interface over a particular time',
             ),
             'unit' => '%',
             'macros' => p_encode_json($self->{'config'}, $macros),
@@ -988,7 +988,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
             'id_tipo_modulo' => 1,
             'id_modulo' => 4,
             'name' => $if_name."_outUsage",
-            'description' => safe_input(
+            'descripcion' => safe_input(
 			        'Bandwidth usage sent from this interface over a particular time',
             ),
             'unit' => '%',

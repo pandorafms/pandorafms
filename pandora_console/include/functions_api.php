@@ -1469,22 +1469,22 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     // Check parameters.
     if ($idGroup == 0) {
         $agent_update_error = __('The agent could not be modified. For security reasons, use a group other than 0.');
-        returnError('generic error', $agent_update_error);
+        returnError($agent_update_error);
         return;
     }
 
     $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$nameServer.'"');
     if ($alias == '' && $alias_as_name === 0) {
-        returnError('alias_not_specified', 'No agent alias specified');
+        returnError('No agent alias specified');
         return;
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$idGroup) === false) {
-        returnError('id_grupo_not_exist', 'The group doesn`t exist.');
+        returnError('The group doesn`t exist.');
         return;
     } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$idOS) === false) {
-        returnError('id_os_not_exist', 'The OS doesn`t exist.');
+        returnError('The OS doesn`t exist.');
         return;
     } else if ($server_name === false) {
-        returnError('server_not_exist', 'The '.get_product_name().' Server doesn`t exist.');
+        returnError('The '.get_product_name().' Server doesn`t exist.');
         return;
     }
 
@@ -1524,6 +1524,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
         if ($parentCheck === false) {
             returnError('The user cannot access to parent agent.');
             return;
+        }
+
+        $agents_offspring = agents_get_offspring($id_agent);
+        if (empty($agents_offspring) === false) {
+            if (isset($agents_offspring[$idParent]) === true) {
+                returnError('The parent cannot be a offspring');
+                return;
+            }
         }
     }
 
@@ -1751,6 +1759,14 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
                     returnError('The user cannot access to parent agent.');
                     return;
                 }
+
+                $agents_offspring = agents_get_offspring($id_agent);
+                if (empty($agents_offspring) === false) {
+                    if (isset($agents_offspring[$data]) === true) {
+                        returnError('The parent cannot be a offspring');
+                        return;
+                    }
+                }
             break;
 
             default:
@@ -1855,7 +1871,19 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
+    $alias                     = io_safe_input(
+        trim(
+            preg_replace(
+                '/[\/\\\|%#&$]/',
+                '',
+                preg_replace(
+                    '/x20;/',
+                    ' ',
+                    $other['data'][0]
+                )
+            )
+        )
+    );
     $direccion_agente          = io_safe_input($other['data'][1]);
     $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
     $id_parent                 = (int) $other['data'][2];
@@ -5088,7 +5116,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
 function api_set_new_network_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 
@@ -5190,7 +5218,7 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 
@@ -5470,7 +5498,7 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 

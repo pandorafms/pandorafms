@@ -181,7 +181,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
 
     $data = [];
     $data[0] = __('Subject').'<br>';
-    $data[0] .= '<input type="text" name="subject" size="35" value="'.$subject.'" >';
+    $data[0] .= '<input type="text" class="text_input" name="subject" size="35" value="'.$subject.'" >';
 
     $data[1] = __('Group').'<br>';
     $data[1] .= '<div class="w250px">';

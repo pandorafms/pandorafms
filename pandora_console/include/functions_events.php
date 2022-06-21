@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2688,10 +2688,10 @@ function events_print_event_table(
                     // Get class name, for the link color, etc.
                     $data[$i] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
                     // For System or SNMP generated alerts.
-                } else if ($event['event_type'] == 'system') {
+                } else if ($event['event_type'] === 'system') {
                     $data[$i] = __('System');
                 } else {
-                    $data[$i] = __('Alert').'SNMP';
+                    $data[$i] = '';
                 }
 
                 $i++;

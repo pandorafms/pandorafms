@@ -3559,7 +3559,8 @@ class AgentWizard extends HTML
             $this->targetPort,
             $this->server,
             $this->extraArguments,
-            (($full_output === false) ? '-Oa -On' : '-Oa')
+            (($full_output === false) ? '-On' : '-Oa'),
+            ''
         );
 
         if ($pure === true) {
@@ -3572,7 +3573,12 @@ class AgentWizard extends HTML
                 if ($full_output === true) {
                     $output[] = $key.' = '.$oid_unit;
                 } else {
-                    preg_match('/\.\d+$/', $key, $index);
+                    $index = [];
+                    $index[] = preg_replace('/^'.$oid.'/', '', $key);
+                    if (empty($index) === true) {
+                        preg_match('/\.\d+$/', $key, $index);
+                    }
+
                     $tmp = explode(': ', $oid_unit);
                     $output[$index[0]] = str_replace('"', '', ($tmp[1] ?? ''));
                 }

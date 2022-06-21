@@ -3254,7 +3254,7 @@ function ui_print_datatable(array $parameters)
         $parameters['paging'] = true;
     }
 
-    $no_sortable_columns = [];
+    $no_sortable_columns = json_encode([]);
     if (isset($parameters['no_sortable_columns'])) {
         $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
     }
@@ -3326,6 +3326,11 @@ function ui_print_datatable(array $parameters)
         $parameters['datacolumns'] = $parameters['columns'];
     }
 
+    if (isset($parameters['csv']) === false) {
+        $parameters['csv'] = 1;
+    }
+
+    $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
         if (isset($parameters['form']['id'])) {
@@ -3496,7 +3501,7 @@ function ui_print_datatable(array $parameters)
             language: {
                 processing:"'.$processing.'"
             },
-            buttons: [
+            buttons: '.$parameters['csv'].'== 1 ? [
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
@@ -3512,7 +3517,7 @@ function ui_print_datatable(array $parameters)
                         }'.$export_columns.'
                     }
                 }
-            ],
+            ] : [],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",

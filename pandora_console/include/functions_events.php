@@ -1336,7 +1336,6 @@ function events_get_all(
     if (is_metaconsole() === true
         && empty($id_server) === true
         && isset($filter['csv_all']) === false
-        && $filter['csv_all'] !== 1
     ) {
         // TODO: XXX TIP. captura el error.
         $pagination = sprintf(
@@ -1350,6 +1349,10 @@ function events_get_all(
     // Group by.
     $group_by = 'GROUP BY ';
     $tagente_join = 'LEFT';
+    if (isset($filter['group_rep']) === false) {
+        $filter['group_rep'] = 0;
+    }
+
     switch ($filter['group_rep']) {
         case '0':
         default:
@@ -1639,7 +1642,6 @@ function events_get_all(
             if (isset($limit, $offset) === true
                 && $limit !== 0
                 && isset($filter['csv_all']) === false
-                && $filter['csv_all'] !== 1
             ) {
                 $count = count($data);
                 $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;

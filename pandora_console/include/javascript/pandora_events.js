@@ -1,7 +1,7 @@
-/*global jQuery, $, forced_title_callback, dt_events, confirmDialog*/
+/*global jQuery, $, forced_title_callback, confirmDialog*/
 
 // Show the modal window of an event
-function show_event_dialog(event, dialog_page, result) {
+function show_event_dialog(event, dialog_page) {
   var ajax_file = $("#hidden-ajax_file").val();
 
   if (dialog_page == undefined) {
@@ -85,6 +85,7 @@ function show_event_dialog(event, dialog_page, result) {
       $("#refrcounter").countdown("pause");
       $("div.vc-countdown").countdown("pause");
 
+      /*
       switch (result) {
         case "comment_ok":
           $("#notification_comment_success").show();
@@ -105,6 +106,7 @@ function show_event_dialog(event, dialog_page, result) {
           $("#notification_owner_error").show();
           break;
       }
+      */
 
       forced_title_callback();
     },
@@ -675,7 +677,9 @@ function update_event(table, id_evento, type, event_rep, row, server_id) {
           redraw = true;
         }
         if (redraw) {
-          table.draw(false);
+          $("#" + table)
+            .DataTable()
+            .draw(false);
         } else {
           $(row)
             .closest("tr")
@@ -692,6 +696,11 @@ function update_event(table, id_evento, type, event_rep, row, server_id) {
 
 function validate_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("val-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta) {
+    button = document.getElementById("val-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -712,6 +721,11 @@ function validate_event(table, id_evento, event_rep, row, server_id) {
 
 function in_process_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("proc-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta) {
+    button = document.getElementById("proc-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -732,6 +746,11 @@ function in_process_event(table, id_evento, event_rep, row, server_id) {
 
 function delete_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("del-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta) {
+    button = document.getElementById("del-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -771,6 +790,11 @@ function execute_delete_event_reponse(
   server_id
 ) {
   var button = document.getElementById("del-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta) {
+    button = document.getElementById("del-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -868,17 +892,22 @@ function execute_event_response(event_list_btn) {
           });
         }
       } else {
-        var event_id = $(this).val();
-        var server_id = $("#hidden-server_id_" + event_id).val();
-
         // It is not a custom response
         switch (response_id) {
           case "in_progress_selected":
             $(".chk_val:checked").each(function() {
-              // Parent: TD. GrandParent: TR.
+              var event_id = $(this).val();
+              var meta = $("#hidden-meta").val();
+              var server_id = 0;
+              if (meta) {
+                var split_id = event_id.split("|");
+                event_id = split_id[0];
+                server_id = split_id[1];
+              }
+
               in_process_event(
-                dt_events,
-                $(this).val(),
+                "events",
+                event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
                 server_id
@@ -887,8 +916,17 @@ function execute_event_response(event_list_btn) {
             break;
           case "validate_selected":
             $(".chk_val:checked").each(function() {
+              var event_id = $(this).val();
+              var meta = $("#hidden-meta").val();
+              var server_id = 0;
+              if (meta) {
+                var split_id = event_id.split("|");
+                event_id = split_id[0];
+                server_id = split_id[1];
+              }
+
               validate_event(
-                dt_events,
+                "events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -898,8 +936,17 @@ function execute_event_response(event_list_btn) {
             break;
           case "delete_selected":
             $(".chk_val:checked").each(function() {
+              var event_id = $(this).val();
+              var meta = $("#hidden-meta").val();
+              var server_id = 0;
+              if (meta) {
+                var split_id = event_id.split("|");
+                event_id = split_id[0];
+                server_id = split_id[1];
+              }
+
               execute_delete_event_reponse(
-                dt_events,
+                "events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -931,7 +978,9 @@ function check_massive_response_event(
     var meta = $("#hidden-meta").val();
     var server_id = 0;
     if (meta) {
-      server_id = $("#hidden-server_id_" + event_id).val();
+      var split_id = event_id.split("|");
+      event_id = split_id[0];
+      server_id = split_id[1];
     }
 
     response["target"] = get_response_target(
@@ -956,5 +1005,43 @@ function event_widget_options() {
     $(".event-widget-input").disable();
   } else {
     $(".event-widget-input").enable();
+  }
+}
+
+function process_buffers(buffers) {
+  $("#events_buffers_display").empty();
+  if (buffers != null && buffers.settings != undefined && buffers.data) {
+    var html = "<h3>" + buffers.settings.translate.nev;
+    html += ": (" + buffers.settings.total + ")</h3>";
+    html += "<ul>";
+    Object.entries(buffers.data).forEach(function(element) {
+      html += "<li>";
+      html += "<span><b>";
+      html += buffers.settings.translate.ev + " ";
+      html += element[0];
+      html += ": ";
+      html += "</b></span>";
+
+      var class_total = "info";
+      var str_total = "";
+      if (buffers.settings.total == element[1]) {
+        class_total += " danger";
+        str_total = buffers.settings.translate.tevn;
+      }
+      html += '<span class="' + class_total + '">';
+      html += element[1];
+      if (str_total != "") {
+        html += '<span class="text">';
+        html += " " + str_total;
+        html += "</span>";
+      }
+
+      html += "</span>";
+
+      html += "</li>";
+    });
+    html += "</ul>";
+
+    $("#events_buffers_display").html(html);
   }
 }

@@ -17395,7 +17395,7 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
  * Function for get event id and node id, then we get in return the Metaconsole event ID.
  *
  * @param [string] $server_id        id server (Node)
- * @param [string] $console_event_id console Id node event in tmetaconsole_event
+ * @param [string] $console_event_id console Id node event in tevent
  * @param [string] $trash2           don't use
  * @param [string] $returnType
  *
@@ -17406,19 +17406,54 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
  */
 function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
 {
-    global $config;
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
 
-    if (is_metaconsole()) {
-        $mc_event_id = db_get_all_rows_sql("SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ");
+        // Get grouped comments.
+        $mc_event_id = db_get_all_rows_sql(
+            sprintf(
+                'SELECT id_evento
+                FROM tevento
+                WHERE id_evento = %d
+                ',
+                $console_event_id
+            )
+        );
+
         if ($mc_event_id !== false) {
-            returnData($returnType, ['type' => 'string', 'data' => $mc_event_id]);
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => $mc_event_id,
+                ]
+            );
         } else {
             returnError('id_not_found', 'string');
         }
-    } else {
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
         returnError('forbidden', 'string');
-        return;
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
+
+    return;
 }
 
 

@@ -94,6 +94,7 @@ if ($get_comments === true) {
 
     $eventsGrouped = [];
     // Consider if the event is grouped.
+    $whereGrouped = '1=1';
     if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
@@ -117,39 +118,39 @@ if ($get_comments === true) {
                 (int) $event['id_agentmodule']
             );
         }
+    }
 
-        try {
-            if (is_metaconsole() === true
-                && $event['server_id'] > 0
-            ) {
-                $node = new Node($event['server_id']);
-                $node->connect();
-            }
+    try {
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node = new Node($event['server_id']);
+            $node->connect();
+        }
 
-            $sql = sprintf(
-                'SELECT `user_comment`
-                FROM tevento
-                WHERE %s',
-                $whereGrouped
-            );
+        $sql = sprintf(
+            'SELECT `user_comment`
+            FROM tevento
+            WHERE %s',
+            $whereGrouped
+        );
 
-            // Get grouped comments.
-            $eventsGrouped = db_get_all_rows_sql($sql);
-        } catch (\Exception $e) {
-            // Unexistent agent.
-            if (is_metaconsole() === true
-                && $event['server_id'] > 0
-            ) {
-                $node->disconnect();
-            }
+        // Get grouped comments.
+        $eventsGrouped = db_get_all_rows_sql($sql);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node->disconnect();
+        }
 
-            $eventsGrouped = [];
-        } finally {
-            if (is_metaconsole() === true
-                && $event['server_id'] > 0
-            ) {
-                $node->disconnect();
-            }
+        $eventsGrouped = [];
+    } finally {
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node->disconnect();
         }
     }
 

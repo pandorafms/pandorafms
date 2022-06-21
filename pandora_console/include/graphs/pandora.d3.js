@@ -29,6 +29,12 @@ function chordDiagram(recipient, elements, matrix, width) {
     var width = 700;
     var margin = 150;
     var padding = 0.02;
+    var consoleStyle = document.getElementById("hidden-selected_style_theme")
+      .value;
+    var textColor =
+      consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)";
+    var tooltipColor =
+      consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)";
 
     function chart(selection) {
       selection.each(function(data) {
@@ -103,7 +109,6 @@ function chordDiagram(recipient, elements, matrix, width) {
               const chords = chord.chords();
               let aux = 0;
               $.each(chords, function(key, value) {
-                console.log(aux);
                 if (aux < 5) {
                   if (
                     (value.source.index == i && value.target.subindex == i) ||
@@ -159,6 +164,7 @@ function chordDiagram(recipient, elements, matrix, width) {
           .attr("text-anchor", function(d) {
             return d.angle > Math.PI ? "end" : null;
           })
+          .attr("style", "fill: " + textColor)
           .attr("transform", function(d) {
             return (
               "rotate(" +
@@ -266,7 +272,12 @@ function chordDiagram(recipient, elements, matrix, width) {
 
           $("#tooltip").attr(
             "style",
-            "background: #fff;" +
+            "background: " +
+              tooltipColor +
+              ";" +
+              "color: " +
+              textColor +
+              ";" +
               "position: absolute;" +
               "display: inline-block;" +
               "width: auto;" +
@@ -393,6 +404,16 @@ function treeMap(recipient, data, width, height) {
   var isIE = true;
   var chartWidth = width;
   var chartHeight = height;
+  var consoleStyle = document.getElementById("hidden-selected_style_theme")
+    .value;
+  $("#tooltip").css(
+    "color",
+    consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)"
+  );
+  $("#tooltip").css(
+    "background-color",
+    consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)"
+  );
   if (width === "auto") {
     chartWidth = $(recipient).innerWidth();
   }
@@ -761,6 +782,7 @@ function treeMap(recipient, data, width, height) {
     $("#tooltip").attr(
       "style",
       "background: #fff;" +
+        "color: #111;" +
         "position: absolute;" +
         "display: block;" +
         "width: 200px;" +
@@ -796,7 +818,7 @@ function treeMap(recipient, data, width, height) {
 // The area (or angle, depending on implementation) of each arc corresponds to its value.
 // Sunburst design by John Stasko. Data courtesy Jeff Heer.
 // http://bl.ocks.org/mbostock/4348373
-function sunburst(recipient, data, width, height) {
+function sunburst(recipient, data, width, height, tooltip = true) {
   if (width === "auto") {
     width = $(recipient).innerWidth();
   }
@@ -858,11 +880,14 @@ function sunburst(recipient, data, width, height) {
     })
     .style("cursor", "pointer")
     .on("click", click)
-    .on("mouseover", over_user)
+    .on("mouseover", tooltip === "1" ? over_user : "")
     .on("mouseout", out_user)
     .on("mousemove", move_tooltip);
 
   function computeTextRotation(d) {
+    if (d.type === "central_service") {
+      return 0;
+    }
     var ang = ((x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI) * 180;
     return ang > 90 ? 180 + ang : ang;
   }
@@ -882,9 +907,18 @@ function sunburst(recipient, data, width, height) {
       return computeTextRotation(d) > 180 ? -40 : -30;
     })
     .attr("dx", "6") // margin
-    .attr("dy", ".35em") // vertical-align
+    .attr("dy", function(d) {
+      if (d.type === "central_service") {
+        return "-7em";
+      }
+      return ".35em";
+    }) // vertical-align
     .attr("opacity", function(d) {
-      if (typeof d.show_name != "undefined" && d.show_name) return 1;
+      if (
+        (typeof d.show_name != "undefined" && d.show_name) ||
+        d.type === "central_service"
+      )
+        return 1;
       else return 0;
     })
     .text(function(d) {
@@ -899,7 +933,11 @@ function sunburst(recipient, data, width, height) {
       window.location.href = d.link;
     } else {
       // fade out all text elements
-      text.transition().attr("opacity", 0);
+      if (d.type === "central_service") {
+        text.transition().attr("opacity", 1);
+      } else {
+        text.transition().attr("opacity", 0);
+      }
 
       path
         .transition()
@@ -965,8 +1003,8 @@ function sunburst(recipient, data, width, height) {
   }
 
   function move_tooltip(d) {
-    var x = d3.event.pageX + 10;
-    var y = d3.event.pageY + 10;
+    var x = d3.event.pageX + 10 - $("#menu_full").width();
+    var y = d3.event.pageY - 90;
 
     $("#tooltip").css("left", x + "px");
     $("#tooltip").css("top", y + "px");
@@ -1007,6 +1045,7 @@ function sunburst(recipient, data, width, height) {
     $("#tooltip").attr(
       "style",
       "background: #fff;" +
+        "color: #111;" +
         "position: absolute;" +
         "display: block;" +
         "width: 200px;" +
@@ -1017,10 +1056,10 @@ function sunburst(recipient, data, width, height) {
         "-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
         "box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
         "left: " +
-        x +
+        100 +
         "px;" +
         "top: " +
-        y +
+        100 +
         "px;"
     );
   }

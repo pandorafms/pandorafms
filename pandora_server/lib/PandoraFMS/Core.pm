@@ -3002,10 +3002,10 @@ defined also the parent is updated.
 
 =cut
 ##########################################################################
-sub pandora_update_agent ($$$$$$$;$$) {
+sub pandora_update_agent ($$$$$$$;$$$) {
 	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
 		$agent_version, $agent_interval, $dbh, $timezone_offset,
-		$parent_agent_id) = @_;
+		$parent_agent_id, $satellite_server_id) = @_;
 	
 	# No access update for data without interval.
 	# Single modules from network server, for example. This could be very Heavy for Pandora FMS
@@ -3026,6 +3026,7 @@ sub pandora_update_agent ($$$$$$$;$$) {
 	                                         'os_version' => $os_version,
 	                                         'timezone_offset' => $timezone_offset,
 	                                         'id_parent' => $parent_agent_id,
+	                                         'satellite_server' => $satellite_server_id
 	                                        });
 	
 	db_do ($dbh, "UPDATE tagente SET $set WHERE id_agente = ?", @{$values}, $agent_id);

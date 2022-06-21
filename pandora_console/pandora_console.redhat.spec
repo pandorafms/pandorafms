@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.761
-%define release     220518
+%define version     7.0NG.762
+%define release     220621
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -31,6 +31,7 @@ Requires:           php-gd, php-ldap, php-snmp, php-session, php-gettext
 Requires:           php-mysqlnd, php-mbstring, php-zip, php-zlib, php-curl
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc, php-pecl-zip
 Requires:           graphviz
+Requires:           openldap-clients libzstd
 Provides:           %{name}-%{version}
 
 

@@ -5448,6 +5448,10 @@ function ui_print_agent_autocomplete_input($parameters)
         'q'             => 'term',
     ];
 
+    if (isset($parameters['delete_offspring_agents']) === true) {
+        $javascript_change_ajax_params_original['delete_offspring_agents'] = $parameters['delete_offspring_agents'];
+    }
+
     if (!$metaconsole_enabled) {
         $javascript_change_ajax_params_original['force_local'] = 1;
     }

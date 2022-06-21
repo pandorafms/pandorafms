@@ -1993,7 +1993,8 @@ function get_snmpwalk(
     $snmp_port='',
     $server_to_exec=0,
     $extra_arguments='',
-    $format='-Oa'
+    $format='-Oa',
+    $load_mibs='-m ALL'
 ) {
     global $config;
 
@@ -2057,15 +2058,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -2074,7 +2075,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 
@@ -5983,6 +5984,56 @@ function send_test_email(
 
     return $result;
 
+}
+
+
+/**
+ * Return array of ancestors of item, given array.
+ *
+ * @param integer     $item    From index.
+ * @param array       $data    Array data.
+ * @param string      $key     Pivot key (identifies the parent).
+ * @param string|null $extract Extract certain column or index.
+ * @param array       $visited Cycle detection.
+ *
+ * @return array Array of ancestors.
+ */
+function get_ancestors(
+    int $item,
+    array $data,
+    string $key,
+    ?string $extract=null,
+    array &$visited=[]
+) :array {
+    if (isset($visited[$item]) === true) {
+        return [];
+    }
+
+    $visited[$item] = 1;
+
+    if (isset($data[$item]) === false) {
+        return [];
+    }
+
+    if (isset($data[$item][$key]) === false) {
+        if ($extract !== null) {
+            return [$data[$item][$extract]];
+        }
+
+        return [$item];
+    }
+
+    if ($extract !== null) {
+        return array_merge(
+            get_ancestors($data[$item][$key], $data, $key, $extract, $visited),
+            [$data[$item][$extract]]
+        );
+    }
+
+    return array_merge(
+        get_ancestors($data[$item][$key], $data, $key, $extract, $visited),
+        [$item]
+    );
 }
 
 

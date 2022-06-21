@@ -53,8 +53,10 @@ enterprise_include_once('include/functions_clusters.php');
 enterprise_include_once('include/functions_alerts.php');
 
 // Clases.
+use PandoraFMS\Agent;
 use PandoraFMS\Module;
 use PandoraFMS\Enterprise\Cluster;
+use PandoraFMS\Enterprise\Metaconsole\Node;
 use PandoraFMS\SpecialDay;
 
 
@@ -1469,22 +1471,22 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     // Check parameters.
     if ($idGroup == 0) {
         $agent_update_error = __('The agent could not be modified. For security reasons, use a group other than 0.');
-        returnError('generic error', $agent_update_error);
+        returnError($agent_update_error);
         return;
     }
 
     $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$nameServer.'"');
     if ($alias == '' && $alias_as_name === 0) {
-        returnError('alias_not_specified', 'No agent alias specified');
+        returnError('No agent alias specified');
         return;
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$idGroup) === false) {
-        returnError('id_grupo_not_exist', 'The group doesn`t exist.');
+        returnError('The group doesn`t exist.');
         return;
     } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$idOS) === false) {
-        returnError('id_os_not_exist', 'The OS doesn`t exist.');
+        returnError('The OS doesn`t exist.');
         return;
     } else if ($server_name === false) {
-        returnError('server_not_exist', 'The '.get_product_name().' Server doesn`t exist.');
+        returnError('The '.get_product_name().' Server doesn`t exist.');
         return;
     }
 
@@ -1524,6 +1526,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
         if ($parentCheck === false) {
             returnError('The user cannot access to parent agent.');
             return;
+        }
+
+        $agents_offspring = agents_get_offspring($id_agent);
+        if (empty($agents_offspring) === false) {
+            if (isset($agents_offspring[$idParent]) === true) {
+                returnError('The parent cannot be a offspring');
+                return;
+            }
         }
     }
 
@@ -1751,6 +1761,14 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
                     returnError('The user cannot access to parent agent.');
                     return;
                 }
+
+                $agents_offspring = agents_get_offspring($id_agent);
+                if (empty($agents_offspring) === false) {
+                    if (isset($agents_offspring[$data]) === true) {
+                        returnError('The parent cannot be a offspring');
+                        return;
+                    }
+                }
             break;
 
             default:
@@ -1826,18 +1844,18 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
 /**
  * Create a new agent, and print the id for new agent.
  *
- * @param $thrash1 Don't use.
+ * @param $id_node Id_node target (if metaconsole)
  * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param is <agent_name>;<ip>;<id_parent>;<id_group>;
- *              <cascade_protection>;<interval_sec>;<id_os>;<id_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
- *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *              example:
+ * @param array                                   $other it's array, $other as param is <agent_name>;<ip>;<id_parent>;<id_group>;
+ *                                    <cascade_protection>;<interval_sec>;<id_os>;<id_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
+ *                                    and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *                                    example:
  *
- *              api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|10||0|0|nose%20nose&other_mode=url_encode_separator_|
+ *                                    api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|10||0|0|nose%20nose&other_mode=url_encode_separator_|
  *
  * @param $thrash3 Don't use.
  */
-function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
+function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
 {
     global $config;
 
@@ -1846,146 +1864,117 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
     if ((int) $other['data'][3] == 0) {
         returnError('For security reasons, the agent was not created. Use a group other than 0.');
         return;
     }
 
-    $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
-    $direccion_agente          = io_safe_input($other['data'][1]);
-    $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
-    $id_parent                 = (int) $other['data'][2];
-    $grupo                     = (int) $other['data'][3];
-    $cascade_protection        = (int) $other['data'][4];
-    $cascade_protection_module = (int) $other['data'][5];
-    $intervalo                 = (string) $other['data'][6];
-    $id_os                     = (int) $other['data'][7];
-    $server_name               = (string) $other['data'][8];
-    $custom_id                 = (string) $other['data'][9];
-    $modo                      = (int) $other['data'][10];
-    $disabled                  = (int) $other['data'][11];
-    $comentarios               = (string) $other['data'][12];
-    $alias_as_name             = (int) $other['data'][13];
-    $update_module_count       = (int) $config['metaconsole_agent_cache'] == 1;
+    try {
+        $agent = new Agent();
 
-    if ($cascade_protection == 1) {
-        if (($id_parent != 0) && (db_get_value_sql(
-            'SELECT id_agente_modulo
-            FROM tagente_modulo
-            WHERE id_agente = '.$id_parent.' AND id_agente_modulo = '.$cascade_protection_module
-        ) === false)
-        ) {
-                returnError('Cascade protection is not applied because it is not a parent module.');
-                return;
-        }
-    } else {
-        $cascadeProtectionModule = 0;
-    }
-
-    $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$server_name.'"');
-
-    // Check if agent exists (BUG WC-50518-2).
-    if ($alias == '' && $alias_as_name === 0) {
-        returnError('No agent alias specified');
-    } else if (agents_get_agent_id($nombre_agente)) {
-        returnError('The agent name already exists in DB.');
-    } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
-        returnError('The group does not exist.');
-    } else if (group_allow_more_agents($grupo, true, 'create') === false) {
-        returnError('Agent cannot be created due to the maximum agent limit for this group');
-    } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
-        returnError('The OS does not exist.');
-    } else if ($server_name === false) {
-        returnError('The '.get_product_name().' Server does not exist.');
-    } else {
-        if ($alias_as_name === 1) {
-            $exists_alias  = db_get_row_sql('SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"');
-            $nombre_agente = $alias;
-        }
-
-        $exists_ip = false;
-
-        if ($config['unique_ip'] && $direccion_agente != '') {
-            $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
-        }
-
-        if (!$exists_alias && !$exists_ip) {
-            $id_agente = db_process_sql_insert(
-                'tagente',
-                [
-                    'nombre'                    => $nombre_agente,
-                    'alias'                     => $alias,
-                    'alias_as_name'             => $alias_as_name,
-                    'direccion'                 => $direccion_agente,
-                    'id_grupo'                  => $grupo,
-                    'intervalo'                 => $intervalo,
-                    'comentarios'               => $comentarios,
-                    'modo'                      => $modo,
-                    'id_os'                     => $id_os,
-                    'disabled'                  => $disabled,
-                    'cascade_protection'        => $cascade_protection,
-                    'cascade_protection_module' => $cascade_protection_module,
-                    'server_name'               => $server_name,
-                    'id_parent'                 => $id_parent,
-                    'custom_id'                 => $custom_id,
-                    'os_version'                => '',
-                    'agent_version'             => '',
-                    'timezone_offset'           => 0,
-                    'icon_path'                 => '',
-                    'url_address'               => '',
-                    'update_module_count'       => $update_module_count,
-                ]
-            );
-            enterprise_hook('update_agent', [$id_agente]);
-        } else {
-            $id_agente = false;
-        }
-
-        if ($id_agente !== false) {
-            // Create address for this agent in taddress.
-            if ($direccion_agente != '') {
-                agents_add_address($id_agente, $direccion_agente);
+        if (is_metaconsole() === true) {
+            if ($id_node <= 0) {
+                throw new Exception('No node id specified');
             }
 
-            $info = '{"Name":"'.$nombre_agente.'",
-                "IP":"'.$direccion_agente.'",
-                "Group":"'.$grupo.'",
-                "Interval":"'.$intervalo.'",
-                "Comments":"'.$comentarios.'",
-                "Mode":"'.$modo.'",
-                "ID_parent:":"'.$id_parent.'",
-                "Server":"'.$server_name.'",
-                "ID os":"'.$id_os.'",
-                "Disabled":"'.$disabled.'",
-                "Custom ID":"'.$custom_id.'",
-                "Cascade protection":"'.$cascade_protection.'",
-                "Cascade protection module":"'.$cascade_protection_module.'"}';
-
-            $unsafe_alias = io_safe_output($alias);
-            db_pandora_audit(
-                AUDIT_LOG_AGENT_MANAGEMENT,
-                'Created agent '.$unsafe_alias,
-                false,
-                true,
-                $info
+            $node = new Node($id_node);
+            $id_agente = $node->callApi(
+                'new_agent',
+                'set',
+                null,
+                null,
+                $other['data'],
+                null
             );
         } else {
-            $id_agente = 0;
+            $alias                     = io_safe_input(
+                trim(
+                    preg_replace(
+                        '/[\/\\\|%#&$]/',
+                        '',
+                        preg_replace(
+                            '/x20;/',
+                            ' ',
+                            $other['data'][0]
+                        )
+                    )
+                )
+            );
 
-            if ($exists_alias) {
-                $agent_creation_error = 'Could not be created because name already exists';
-            } else if ($exists_ip) {
-                $agent_creation_error = 'Could not be created because IP already exists';
+            $direccion_agente          = io_safe_input($other['data'][1]);
+            $id_parent                 = (int) $other['data'][2];
+            $grupo                     = (int) $other['data'][3];
+            $cascade_protection        = (int) $other['data'][4];
+            $cascade_protection_module = (int) $other['data'][5];
+            $intervalo                 = (string) $other['data'][6];
+            $id_os                     = (int) $other['data'][7];
+            $server_name               = (string) $other['data'][8];
+            $custom_id                 = (string) $other['data'][9];
+            $modo                      = (int) $other['data'][10];
+            $disabled                  = (int) $other['data'][11];
+            $comentarios               = (string) html_entity_decode($other['data'][12]);
+            $alias_as_name             = (int) $other['data'][13];
+            $update_module_count       = (int) $config['metaconsole_agent_cache'] == 1;
+
+            $agent->nombre($alias);
+            $agent->alias($alias);
+            $agent->alias_as_name($alias_as_name);
+            $agent->direccion($direccion_agente);
+            $agent->id_grupo($grupo);
+            $agent->intervalo($intervalo);
+            $agent->comentarios($comentarios);
+            $agent->modo($modo);
+            $agent->id_os($id_os);
+            $agent->disabled($disabled);
+            $agent->cascade_protection($cascade_protection);
+            $agent->cascade_protection_module($cascade_protection_module);
+            $agent->server_name($server_name);
+            $agent->id_parent($id_parent);
+            $agent->custom_id($custom_id);
+            $agent->timezone_offset(0);
+            $agent->update_module_count($update_module_count);
+
+            if ($cascade_protection == 1) {
+                if ($id_parent != 0) {
+                    try {
+                        $parent = new Agent($id_parent);
+                    } catch (\Exception $e) {
+                        returnError('Cascade protection is not applied because it is not a parent module.');
+                    }
+                }
+            }
+
+            $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$server_name.'"');
+
+            // Check if agent exists (BUG WC-50518-2).
+            if ($alias == '' && $alias_as_name === 0) {
+                returnError('No agent alias specified');
+            } else if (agents_get_agent_id($nombre_agente)) {
+                returnError('The agent name already exists in DB.');
+            } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
+                returnError('The group does not exist.');
+            } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+                returnError('Agent cannot be created due to the maximum agent limit for this group');
+            } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
+                returnError('The OS does not exist.');
+            } else if ($server_name === false) {
+                returnError('The '.get_product_name().' Server does not exist.');
             } else {
-                $agent_creation_error = 'Could not be created for unknown reason';
-            }
+                if ($alias_as_name === 1) {
+                    $exists_alias  = db_get_row_sql('SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"');
+                    $nombre_agente = $alias;
+                }
 
-            returnError($agent_creation_error);
-            return;
+                $exists_ip = false;
+
+                if ($config['unique_ip'] && $direccion_agente != '') {
+                    $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
+                }
+
+                $agent->save((bool) $alias_as_name);
+                $id_agente = $agent->id_agente();
+                $agent->updateFromCache();
+            }
         }
 
         returnData(
@@ -1995,6 +1984,9 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
                 'data' => $id_agente,
             ]
         );
+    } catch (\Exception $e) {
+        returnError($e->getMessage());
+        return;
     }
 }
 
@@ -5088,7 +5080,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
 function api_set_new_network_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 
@@ -5190,7 +5182,7 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 
@@ -5470,7 +5462,7 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         return;
     }
 

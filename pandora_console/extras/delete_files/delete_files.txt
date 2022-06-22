@@ -1665,4 +1665,4 @@ godmode/um_client/vendor/sebastian/object-enumerator/tests
 godmode/um_client/vendor/sebastian/object-enumerator
 godmode/um_client/vendor/sebastian
 godmode/um_client/vendor
-/update_manager_client/resources/styles/pandora.css
+update_manager_client/resources/styles/pandora.css

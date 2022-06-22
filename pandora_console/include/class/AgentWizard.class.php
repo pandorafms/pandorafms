@@ -1098,19 +1098,26 @@ class AgentWizard extends HTML
         // the host is Windows (and allow WMI).
         $commandQuery = $this->wmiCommand;
         $commandQuery .= ' "SELECT Caption FROM Win32_ComputerSystem"';
-        // Execute the wmic command.
+        // Declare the vars.
         $result = [];
-        exec($commandQuery, $result);
-        $execCorrect = true;
+        $returnVar = 0;
         $tmpError = '';
-
-        // Look for the response if we have ERROR messages.
-        foreach ($result as $info) {
-            if (preg_match('/ERROR:/', $info) !== 0) {
-                $execCorrect = false;
-                $tmpError = strrchr($info, 'ERROR:');
-                break;
+        $execCorrect = true;
+        // Execute the command.
+        exec($commandQuery, $result, $returnVar);
+        // Only is valid if return code is 0.
+        if ($returnVar === 0) {
+            // Look for the response if we have ERROR messages.
+            foreach ($result as $info) {
+                if (preg_match('/ERROR:/', $info) !== 0) {
+                    $execCorrect = false;
+                    $tmpError = strrchr($info, 'ERROR:');
+                    break;
+                }
             }
+        } else {
+            $tmpError = sprintf('Return Code %s', $returnVar);
+            $execCorrect = false;
         }
 
         // FOUND ERRORS: TIMEOUT.
@@ -2849,13 +2856,13 @@ class AgentWizard extends HTML
 
                 // If name of the module have a macro.
                 $moduleBlocks[$k]['name'] = $this->macroFilter(
-                    $module['name'],
+                    io_safe_output($module['name']),
                     $columnsList,
                     $rowList
                 );
                 // Description can have macros too.
                 $moduleBlocks[$k]['description'] = $this->macroFilter(
-                    $module['description'],
+                    io_safe_output($module['description']),
                     $columnsList,
                     $rowList
                 );
@@ -2867,7 +2874,7 @@ class AgentWizard extends HTML
                 );
 
                 foreach ($columnsList as $columnKey => $columnValue) {
-                    $macros['macros']['_'.$columnValue.'_'] = $rowList[$columnKey];
+                    $macros['macros']['_'.trim($columnValue).'_'] = $rowList[trim($columnKey)];
                 }
 
                 $moduleBlocks[$k]['macros'] = json_encode($macros);
@@ -2946,19 +2953,19 @@ class AgentWizard extends HTML
                         $rowList = explode('|', $rowContent);
                         // If name of the module have a macro.
                         $newModule['name'] = $this->macroFilter(
-                            $module['name'],
+                            io_safe_output($module['name']),
                             $columnsList,
                             $rowList
                         );
                         // Description can have macros too.
                         $newModule['description'] = $this->macroFilter(
-                            $module['description'],
+                            io_safe_output($module['description']),
                             $columnsList,
                             $rowList
                         );
 
                         $newModule['query_filters'] = $this->macroFilter(
-                            $module['query_filters'],
+                            io_safe_output($module['query_filters']),
                             $columnsList,
                             $rowList
                         );

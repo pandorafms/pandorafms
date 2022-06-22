@@ -40,15 +40,68 @@ a.update_manager_button:after {
 }
 
 #box_online {
-  background-image: url("../images/update_manager_background.jpg");
-  background-position: top right;
-  background-repeat: no-repeat;
-  background-color: #fff;
   padding: 40px 50px;
   border: 1px solid #f3f3f3;
   border-radius: 5px;
   min-height: 400px;
-  background-size: contain;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#box_online .wu-bg {
+  position: relative;
+  width: 720px;
+  height: 684px;
+  background-image: url("../images/Warp-Update-bg.png");
+  background-position: center center;
+  background-size: auto;
+  background-repeat: no-repeat;
+  margin: 0px !important;
+  display: flex;
+  align-items: center;
+}
+#box_online .wu-gear {
+  animation-timing-function: linear;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  width: 202px;
+  margin: auto;
+  animation-name: ani;
+}
+@keyframes ani {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+#box_online .wu-box {
+  animation-timing-function: linear;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  width: 69px;
+  left: 325px;
+  z-index: 2;
+  position: absolute;
+  animation-name: ani2;
+}
+@keyframes ani2 {
+  0% {
+    opacity: 0;
+    transform: translateY(-250px) translateX(0px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0px) translateX(0px);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 #box_online #pkg_version {

@@ -754,6 +754,10 @@ if (is_ajax() === true) {
                         );
                         $tmp->options .= '</a>';
 
+                        if (isset($tmp->server_id) === false) {
+                            $tmp->server_id = 0;
+                        }
+
                         if ((int) $tmp->user_can_write === 1) {
                             if ((int) $tmp->estado !== 1) {
                                 // Validate.

@@ -697,7 +697,7 @@ function update_event(table, id_evento, type, event_rep, row, server_id) {
 function validate_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("val-" + id_evento);
   var meta = $("#hidden-meta").val();
-  if (meta) {
+  if (meta != 0) {
     button = document.getElementById("val-" + id_evento + "-" + server_id);
   }
 
@@ -722,7 +722,7 @@ function validate_event(table, id_evento, event_rep, row, server_id) {
 function in_process_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("proc-" + id_evento);
   var meta = $("#hidden-meta").val();
-  if (meta) {
+  if (meta != 0) {
     button = document.getElementById("proc-" + id_evento + "-" + server_id);
   }
 
@@ -747,7 +747,7 @@ function in_process_event(table, id_evento, event_rep, row, server_id) {
 function delete_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("del-" + id_evento);
   var meta = $("#hidden-meta").val();
-  if (meta) {
+  if (meta != 0) {
     button = document.getElementById("del-" + id_evento + "-" + server_id);
   }
 
@@ -791,7 +791,7 @@ function execute_delete_event_reponse(
 ) {
   var button = document.getElementById("del-" + id_evento);
   var meta = $("#hidden-meta").val();
-  if (meta) {
+  if (meta != 0) {
     button = document.getElementById("del-" + id_evento + "-" + server_id);
   }
 
@@ -899,7 +899,7 @@ function execute_event_response(event_list_btn) {
               var event_id = $(this).val();
               var meta = $("#hidden-meta").val();
               var server_id = 0;
-              if (meta) {
+              if (meta != 0) {
                 var split_id = event_id.split("|");
                 event_id = split_id[0];
                 server_id = split_id[1];
@@ -919,7 +919,7 @@ function execute_event_response(event_list_btn) {
               var event_id = $(this).val();
               var meta = $("#hidden-meta").val();
               var server_id = 0;
-              if (meta) {
+              if (meta != 0) {
                 var split_id = event_id.split("|");
                 event_id = split_id[0];
                 server_id = split_id[1];
@@ -939,7 +939,7 @@ function execute_event_response(event_list_btn) {
               var event_id = $(this).val();
               var meta = $("#hidden-meta").val();
               var server_id = 0;
-              if (meta) {
+              if (meta != 0) {
                 var split_id = event_id.split("|");
                 event_id = split_id[0];
                 server_id = split_id[1];
@@ -977,7 +977,7 @@ function check_massive_response_event(
     var event_id = $(this).val();
     var meta = $("#hidden-meta").val();
     var server_id = 0;
-    if (meta) {
+    if (meta != 0) {
       var split_id = event_id.split("|");
       event_id = split_id[0];
       server_id = split_id[1];

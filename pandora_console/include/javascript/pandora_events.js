@@ -1028,6 +1028,12 @@ function process_buffers(buffers) {
         class_total += " danger";
         str_total = buffers.settings.translate.tevn;
       }
+
+      if (buffers.error[element[0]] !== undefined) {
+        class_total += " danger";
+        str_total = buffers.error[element[0]];
+      }
+
       html += '<span class="' + class_total + '">';
       html += element[1];
       if (str_total != "") {

@@ -902,6 +902,7 @@ if (is_ajax() === true) {
                         $hashdata = '';
                         if ($tmp->meta === true) {
                             if (isset($tmp->data_server) === true
+                                && $tmp->data_server !== false
                                 && isset($tmp->server_url_hash) === true
                             ) {
                                 $server_url = $tmp->data_server['server_url'];

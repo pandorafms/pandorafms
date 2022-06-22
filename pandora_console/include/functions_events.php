@@ -1523,7 +1523,7 @@ function events_get_all(
 
     if (is_metaconsole() === true) {
         $result_meta = [];
-        $metaconsole_connections = metaconsole_get_names();
+        $metaconsole_connections = metaconsole_get_names(['disabled' => 0]);
         if (isset($metaconsole_connections) === true
             && is_array($metaconsole_connections) === true
         ) {
@@ -1539,19 +1539,35 @@ function events_get_all(
                 $result_meta = Promise\wait(
                     parallelMap(
                         $metaconsole_connections,
-                        function ($node) use ($sql) {
-                            if ($node !== 0) {
-                                $node = new Node((int) $node);
-                                $node->connect();
-                            }
+                        function ($node_int) use ($sql) {
+                            try {
+                                if (is_metaconsole() === true
+                                    && (int) $node_int > 0
+                                ) {
+                                    $node = new Node($node_int);
+                                    $node->connect();
+                                }
 
-                            $res = db_get_all_rows_sql($sql);
-                            if ($res === false) {
-                                $res = [];
-                            }
+                                $res = db_get_all_rows_sql($sql);
+                                if ($res === false) {
+                                    $res = [];
+                                }
+                            } catch (\Exception $e) {
+                                // Unexistent agent.
+                                if (is_metaconsole() === true
+                                    && $node_int > 0
+                                ) {
+                                    $node->disconnect();
+                                }
 
-                            if ($node !== 0) {
-                                $node->disconnect();
+                                error_log('[events_get_all]'.$e->getMessage());
+                                return __('Could not connect: %s', $e->getMessage());
+                            } finally {
+                                if (is_metaconsole() === true
+                                    && $node_int > 0
+                                ) {
+                                    $node->disconnect();
+                                }
                             }
 
                             return $res;
@@ -1575,17 +1591,24 @@ function events_get_all(
                 ],
             ],
             'data'     => [],
+            'error'    => [],
         ];
+
         if (empty($result_meta) === false) {
             foreach ($result_meta as $node => $value) {
-                $buffers['data'][$node] = count($value);
-                if (empty($value) === false) {
-                    foreach ($value as $k => $v) {
-                        $value[$k]['server_id'] = $metaconsole_connections[$node];
-                        $value[$k]['server_name'] = $node;
-                    }
+                if (is_array($value) === false) {
+                    $buffers['error'][$node] = $value;
+                    $buffers['data'][$node] = 0;
+                } else {
+                    $buffers['data'][$node] = count($value);
+                    if (empty($value) === false) {
+                        foreach ($value as $k => $v) {
+                            $value[$k]['server_id'] = $metaconsole_connections[$node];
+                            $value[$k]['server_name'] = $node;
+                        }
 
-                    $data = array_merge($data, $value);
+                        $data = array_merge($data, $value);
+                    }
                 }
             }
         }

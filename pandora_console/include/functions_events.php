@@ -1515,7 +1515,7 @@ function events_get_all(
     }
 
     if ($count === true
-        && (is_metaconsole() !== false
+        && (is_metaconsole() === false
         || (is_metaconsole() === true && empty($filter['server_id']) === false))
     ) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';

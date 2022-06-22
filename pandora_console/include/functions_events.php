@@ -2740,7 +2740,11 @@ function events_get_agent(
         'te.utimestamp'
     );
 
-    return $events['data'];
+    if (is_metaconsole() === true) {
+        $events = $events['data'];
+    }
+
+    return $events;
 }
 
 

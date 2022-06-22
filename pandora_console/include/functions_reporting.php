@@ -10454,14 +10454,14 @@ function reporting_get_module_detailed_event(
             $event['data'] = [];
         }
 
-        // total_events
+        // Total events.
         if (isset($event['data'])) {
             $event['total_events'] = count($event['data']);
         } else {
             $event['total_events'] = 0;
         }
 
-        // graphs
+        // Graphs.
         if (!empty($force_width_chart)) {
             $width = $force_width_chart;
         }

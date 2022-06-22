@@ -35,7 +35,10 @@ ALTER TABLE `treset_pass` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT 
 ALTER TABLE `tuser_task_scheduled` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
 ALTER TABLE `tbackup` MODIFY COLUMN `id_user` VARCHAR(255) DEFAULT '';
 
-ALTER TABLE `tservice` ADD COLUMN `enable_sunburst` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `enable_sunburst` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tservice` ADD COLUMN `asynchronous` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tservice` ADD COLUMN `rca` TEXT;
+
 ALTER TABLE `tdashboard` MODIFY `name` TEXT NOT NULL DEFAULT '';
 
 ALTER TABLE `tagente` ADD COLUMN `satellite_server` INT NOT NULL default 0;

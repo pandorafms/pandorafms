@@ -9054,3 +9054,21 @@ div#err_msg_centralised {
     padding-top: 15px;
   }
 }
+
+.text_input {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 4px;
+  padding: 2px 5px;
+}
+
+.password_input {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #ccc !important;
+  margin-bottom: 4px !important;
+  padding: 2px 5px !important;
+}

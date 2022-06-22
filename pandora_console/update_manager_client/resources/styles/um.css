@@ -46,15 +46,15 @@ a.update_manager_button:after {
   min-height: 400px;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  /*flex-wrap: wrap;*/
+  justify-content: space-around;
   align-items: center;
 }
 
 #box_online .wu-bg {
   position: relative;
-  width: 720px;
-  height: 684px;
+  width: 500px;
+  height: 450px;
   background-image: url("../images/Warp-Update-bg.png");
   background-position: center center;
   background-size: auto;
@@ -82,7 +82,7 @@ a.update_manager_button:after {
   animation-duration: 1s;
   animation-iteration-count: infinite;
   width: 69px;
-  left: 325px;
+  left: 215px;
   z-index: 2;
   position: absolute;
   animation-name: ani2;

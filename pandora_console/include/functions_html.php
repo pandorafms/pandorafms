@@ -2690,7 +2690,9 @@ function html_print_input_password(
     }
 
     if ($class) {
-        $attr['class'] = $class;
+        $attr['class'] = $class.' '.'password_input';
+    } else {
+        $attr['class'] = 'password_input';
     }
 
     if ($disabled === false) {
@@ -2761,7 +2763,9 @@ function html_print_input_text(
     }
 
     if ($class != '') {
-        $attr['class'] = $class;
+        $attr['class'] = $class.' '.'text_input';
+    } else {
+        $attr['class'] = 'text_input';
     }
 
     if ($onChange != '') {
@@ -4554,7 +4558,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url('.$module_icon.') no-repeat right; '.$text_color.'']
+        ['style' => 'border: none; padding: 2px 5px; margin-bottom: 4px; border-bottom: 1px solid #ccc; border-radius: 0; background: url('.$module_icon.') no-repeat right; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 

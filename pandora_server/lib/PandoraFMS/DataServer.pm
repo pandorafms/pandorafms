@@ -452,6 +452,16 @@ sub process_xml_data ($$$$$) {
 		logger($pa_config, "Error retrieving information for agent ID $agent_id",10);
 		return;
 	}
+
+	# Get the ID of the Satellite Server if available.
+	my $satellite_server_id = 0;
+	if (defined($data->{'satellite_server'})) {
+		$satellite_server_id = get_server_id($dbh, $data->{'satellite_server'}, SATELLITESERVER);
+		if ($satellite_server_id < 0) {
+			logger($pa_config, "Satellite Server '" . $data->{'satellite_server'} . "' does not exist.", 10);
+			$satellite_server_id = 0;
+		}
+	}
 	
 	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
 	# in order to avoid not only events, also possible invalid data coming from agents.
@@ -536,7 +546,7 @@ sub process_xml_data ($$$$$) {
 	}
 	
 	# Update agent information
-	pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $parent_id);
+	pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $parent_id, $satellite_server_id);
 
 	# Update GIS data
 	if ($pa_config->{'activate_gis'} != 0 && $agent->{'update_gis_data'} == 1) {

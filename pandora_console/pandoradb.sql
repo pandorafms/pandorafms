@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
+  `satellite_server` INT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -2818,6 +2819,8 @@ CREATE TABLE IF NOT EXISTS `tservice` (
   `evaluate_sla` INT NOT NULL DEFAULT 0,
   `is_favourite` TINYINT NOT NULL DEFAULT 0,
   `enable_sunburst` TINYINT NOT NULL DEFAULT 0,
+  `asynchronous` TINYINT NOT NULL DEFAULT 0,
+  `rca` TEXT,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 
@@ -3476,6 +3479,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
+  `satellite_server` INT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),

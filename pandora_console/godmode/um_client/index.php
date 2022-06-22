@@ -203,20 +203,22 @@ if (is_ajax() !== true) {
         var clientMode = '<?php echo $mode; ?>';
     </script>
     <?php
-    $server_version = (string) db_get_value_sql(
-        'SELECT `version` FROM `tserver` ORDER BY `master` DESC'
-    );
-    if ($server_version !== false
-        && preg_match('/NG\.(\d\.*\d*?) /', $server_version, $matches) > 0
-    ) {
-        if ((float) $matches[1]  !== (float) $current_package) {
-            ui_print_warning_message(
-                __(
-                    'Master server version %s does not match console version %s.',
-                    (float) $matches[1],
-                    (float) $current_package
-                )
-            );
+    if (function_exists('db_get_value_sql') === true) {
+        $server_version = (string) db_get_value_sql(
+            'SELECT `version` FROM `tserver` ORDER BY `master` DESC'
+        );
+        if ($server_version !== false
+            && preg_match('/NG\.(\d\.*\d*?) /', $server_version, $matches) > 0
+        ) {
+            if ((float) $matches[1] !== floor((float) $current_package)) {
+                ui_print_warning_message(
+                    __(
+                        'Master server version %s does not match console version %s.',
+                        (float) $matches[1],
+                        (float) $current_package
+                    )
+                );
+            }
         }
     }
 

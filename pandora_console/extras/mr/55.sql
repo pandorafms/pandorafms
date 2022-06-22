@@ -35,7 +35,10 @@ ALTER TABLE `treset_pass` MODIFY COLUMN `id_user` VARCHAR(255) NOT NULL DEFAULT 
 ALTER TABLE `tuser_task_scheduled` MODIFY COLUMN `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0';
 ALTER TABLE `tbackup` MODIFY COLUMN `id_user` VARCHAR(255) DEFAULT '';
 
-ALTER TABLE `tservice` ADD COLUMN `enable_sunburst` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `enable_sunburst` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tservice` ADD COLUMN `asynchronous` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tservice` ADD COLUMN `rca` TEXT;
+
 ALTER TABLE `tdashboard` MODIFY `name` TEXT NOT NULL DEFAULT '';
 
 ALTER TABLE `tevent_alert` ADD COLUMN `field1_recovery` TEXT AFTER `recovery_notify`;
@@ -47,6 +50,8 @@ ALTER TABLE `tevent_alert` ADD COLUMN `field8_recovery` TEXT AFTER `field7_recov
 ALTER TABLE `tevent_alert` ADD COLUMN `field9_recovery` TEXT AFTER `field8_recovery`;
 ALTER TABLE `tevent_alert` ADD COLUMN `field10_recovery` TEXT AFTER `field9_recovery`;
 
+ALTER TABLE `tagente` ADD COLUMN `satellite_server` INT NOT NULL default 0;
+ALTER TABLE `tmetaconsole_agent` ADD COLUMN `satellite_server` INT NOT NULL default 0;
 SET @st_oum763 = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tautoconfig' AND table_schema = DATABASE() AND column_name = 'disabled') > 0,
     "SELECT 1",
@@ -58,3 +63,4 @@ EXECUTE pr_oum763;
 DEALLOCATE PREPARE pr_oum763;
 
 COMMIT;
+

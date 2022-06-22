@@ -2598,10 +2598,9 @@ function agents_delete_agent($id_agents, $disableACL=false)
                 'tagente_modulo',
                 $filter
             );
-
             if (is_array($rows) === true) {
                 foreach ($rows as $row) {
-                    $modules[] = PandoraFMS\Module::build($row);
+                    $modules[] = PandoraFMS\Module::build($row, '\PandoraFMS\Module', true);
                 }
             }
 

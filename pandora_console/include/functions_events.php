@@ -1582,13 +1582,7 @@ function events_get_all(
         $data = [];
         $buffers = [
             'settings' => [
-                'total'     => $config['max_number_of_events_per_node'],
-                'translate' => [
-                    'tev'  => __('Total Events'),
-                    'nev'  => __('Total Events per node'),
-                    'ev'   => __('Events'),
-                    'tevn' => __('Total number of events in this node reached'),
-                ],
+                'total' => $config['max_number_of_events_per_node'],
             ],
             'data'     => [],
             'error'    => [],

@@ -55,6 +55,7 @@ if (! check_acl($config['id_user'], 0, 'ER')
     return;
 }
 
+$process_buffers = (bool) get_parameter('process_buffers', false);
 $get_extended_event = (bool) get_parameter('get_extended_event');
 $change_status = (bool) get_parameter('change_status');
 $change_owner = (bool) get_parameter('change_owner');
@@ -2135,6 +2136,92 @@ if ($get_table_response_command) {
         true
     );
 
+    return;
+}
+
+if ($process_buffers === true) {
+    $buffers = get_parameter('buffers', '');
+
+    $buffers = json_decode(io_safe_output($buffers), true);
+
+    $alert = false;
+    $content = '<ul>';
+    foreach ($buffers['data'] as $node => $data) {
+        $content .= '<li>';
+        $content .= '<span><b>';
+        $content .= __('Events').': ';
+        $content .= $node;
+        $content .= '</b></span>';
+
+        $class_total = 'info';
+        $str_total = '';
+        if ($buffers['settings']['total'] == $data) {
+            $alert = true;
+            $class_total .= ' danger';
+            $str_total = html_print_image(
+                'images/error_red.png',
+                true,
+                [
+                    'title' => __('Total number of events in this node reached'),
+                    'class' => 'forced-title',
+                ]
+            );
+        }
+
+        if (isset($buffers['error'][$node]) === true) {
+            $alert = true;
+            $class_total .= ' danger';
+            $str_total = html_print_image(
+                'images/error_red.png',
+                true,
+                [
+                    'title' => $buffers['error'][$node],
+                    'class' => 'forced-title',
+                ]
+            );
+        }
+
+        $content .= '<span class="'.$class_total.'">';
+        $content .= $data;
+        if (empty($str_total) === false) {
+            $content .= '<span class="text">';
+            $content .= ' '.$str_total;
+            $content .= '</span>';
+        }
+
+        $content .= '</span>';
+
+        $content .= '</li>';
+    }
+
+    $content .= '</ul>';
+
+    $title = __('Total Events per node').': (';
+    $title .= $buffers['settings']['total'].')';
+    if ($alert === true) {
+        $title .= html_print_image(
+            'images/error_red.png',
+            true,
+            [
+                'title' => __('Error'),
+                'class' => 'forced-title',
+                'style' => 'margin-top: -2px;',
+            ]
+        );
+    }
+
+    $output = ui_toggle(
+        $content,
+        $title,
+        '',
+        '',
+        true,
+        true,
+        'white_box white_box_opened',
+        'no-border flex-row'
+    );
+
+    echo $output;
     return;
 }
 

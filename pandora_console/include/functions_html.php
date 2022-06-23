@@ -4924,7 +4924,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'image':
             $output .= html_print_input_image(
-                $data['name'],
+                ((isset($data['name']) === true) ? $data['name'] : ''),
                 $data['src'],
                 $data['value'],
                 ((isset($data['style']) === true) ? $data['style'] : ''),

@@ -41,6 +41,15 @@ ALTER TABLE `tservice` ADD COLUMN `rca` TEXT;
 
 ALTER TABLE `tdashboard` MODIFY `name` TEXT NOT NULL DEFAULT '';
 
+ALTER TABLE `tevent_alert` ADD COLUMN `field1_recovery` TEXT AFTER `recovery_notify`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field4_recovery` TEXT AFTER `field3_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field5_recovery` TEXT AFTER `field4_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field6_recovery` TEXT AFTER `field5_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field7_recovery` TEXT AFTER `field6_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field8_recovery` TEXT AFTER `field7_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field9_recovery` TEXT AFTER `field8_recovery`;
+ALTER TABLE `tevent_alert` ADD COLUMN `field10_recovery` TEXT AFTER `field9_recovery`;
+
 ALTER TABLE `tagente` ADD COLUMN `satellite_server` INT NOT NULL default 0;
 ALTER TABLE `tmetaconsole_agent` ADD COLUMN `satellite_server` INT NOT NULL default 0;
 

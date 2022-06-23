@@ -1223,6 +1223,8 @@ function dashboardLoadVC(settings) {
     var ratio_visualconsole = props.height / props.width;
     var ratio_w = size.width / props.width;
     var ratio_h = size.height / props.height;
+    var acum_height = props.height;
+    var acum_width = props.width;
 
     props.width = size.width;
     props.height = size.width * ratio_visualconsole;
@@ -1235,6 +1237,11 @@ function dashboardLoadVC(settings) {
           props.height = size.height;
           props.width = size.height / ratio_visualconsole;
         }
+      } else {
+        ratio = ratio_w;
+        var height = (acum_height * size.width) / acum_width;
+        props.height = height;
+        props.width = height / ratio_visualconsole;
       }
     } else {
       if (props.height > size.height) {
@@ -1290,20 +1297,28 @@ function dashboardLoadVC(settings) {
           var regex_hash = /(hash=)[^&]+(&?)/gi;
           var replacement_hash = "$1" + props.hash + "$2";
 
+          /*
           var regex_width = /(width=)[^&]+(&?)/gi;
           var replacement_width = "$1" + size.width + "$2";
 
           var regex_height = /(height=)[^&]+(&?)/gi;
           var replacement_height =
             "$1" + (size.height + headerMobileFix) + "$2";
+            */
 
           // Change the URL (if the browser has support).
           if ("history" in window) {
             var href = window.location.href.replace(regex, replacement);
             href = href.replace(regex_hash, replacement_hash);
-            href = href.replace(regex_width, replacement_width);
-            href = href.replace(regex_height, replacement_height);
+            //href = href.replace(regex_width, replacement_width);
+            //href = href.replace(regex_height, replacement_height);
             window.history.replaceState({}, document.title, href);
+          }
+
+          if (props.height > props.width) {
+            $(".container-center").css("overflow", "auto");
+          } else {
+            $(".container-center").css("overflow", "inherit");
           }
 
           container.classList.remove("cv-overflow");
@@ -1351,40 +1366,42 @@ function dashboardLoadVC(settings) {
       : "dashboard"
   );
 
-  $(window).on("orientationchange", function() {
-    $(container).width($(window).height());
-    $(container).height($(window).width() - headerMobileFix);
-    //Remove spinner change VC.
-    container.classList.remove("is-updating");
-    container.classList.remove("cv-overflow");
+  if (settings.mobile_view_orientation_vc === true) {
+    $(window).on("orientationchange", function() {
+      $(container).width($(window).height());
+      $(container).height($(window).width() - headerMobileFix);
+      //Remove spinner change VC.
+      container.classList.remove("is-updating");
+      container.classList.remove("cv-overflow");
 
-    var div = container.querySelector(".div-visual-console-spinner");
+      var div = container.querySelector(".div-visual-console-spinner");
 
-    if (div !== null) {
-      var parent = div.parentElement;
-      if (parent !== null) {
-        parent.removeChild(div);
+      if (div !== null) {
+        var parent = div.parentElement;
+        if (parent !== null) {
+          parent.removeChild(div);
+        }
       }
-    }
 
-    container.classList.add("is-updating");
-    container.classList.add("cv-overflow");
-    const divParent = document.createElement("div");
-    divParent.className = "div-visual-console-spinner";
+      container.classList.add("is-updating");
+      container.classList.add("cv-overflow");
+      const divParent = document.createElement("div");
+      divParent.className = "div-visual-console-spinner";
 
-    const divSpinner = document.createElement("div");
-    divSpinner.className = "visual-console-spinner";
+      const divSpinner = document.createElement("div");
+      divSpinner.className = "visual-console-spinner";
 
-    divParent.appendChild(divSpinner);
-    container.appendChild(divParent);
+      divParent.appendChild(divSpinner);
+      container.appendChild(divParent);
 
-    var dimensions = {
-      width: $(window).height(),
-      height: $(window).width() - 40
-    };
+      var dimensions = {
+        width: $(window).height(),
+        height: $(window).width() - 40
+      };
 
-    visualConsoleManager.changeDimensionsVc(dimensions, interval);
-  });
+      visualConsoleManager.changeDimensionsVc(dimensions, interval);
+    });
+  }
 }
 
 // eslint-disable-next-line no-unused-vars

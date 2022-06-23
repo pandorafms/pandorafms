@@ -1187,6 +1187,10 @@ function config_update_config()
                         $error_update[] = __('Default line thickness for the Visual Console');
                     }
 
+                    if (config_update_value('mobile_view_orientation_vc', (int) get_parameter('mobile_view_orientation_vc'), true) === false) {
+                        $error_update[] = __('Mobile view not allow visual console orientation');
+                    }
+
                     if (config_update_value('ser_menu_items', (int) get_parameter('ser_menu_items', 10), true) === false) {
                         $error_update[] = __('Default line menu items for the Services');
                     }
@@ -3071,6 +3075,10 @@ function config_process_config()
 
     if (!isset($config['vc_line_thickness'])) {
         config_update_value('vc_line_thickness', 2);
+    }
+
+    if (isset($config['mobile_view_orientation_vc']) === false) {
+        config_update_value('mobile_view_orientation_vc', 0);
     }
 
     if (!isset($config['agent_size_text_small'])) {

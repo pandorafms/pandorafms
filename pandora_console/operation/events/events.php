@@ -69,16 +69,7 @@ if ($event_a === false
 
 $access = ($event_a === true) ? 'ER' : (($event_w === true) ? 'EW' : (($event_m === true) ? 'EM' : 'ER'));
 
-
 $readonly = false;
-if (is_metaconsole() === false
-    && isset($config['event_replication']) === true
-    && (int) $config['event_replication'] === 1
-    && (int) $config['show_events_in_local'] === 1
-) {
-    $readonly = true;
-}
-
 // Load specific stylesheet.
 ui_require_css_file('events');
 ui_require_css_file('tables');
@@ -1529,31 +1520,6 @@ html_print_div(
     ]
 );
 
-// Controls.
-if (is_metaconsole() !== true) {
-    if (isset($config['event_replication']) === true
-        && $config['event_replication'] == 1
-    ) {
-        if ($config['show_events_in_local'] == 0) {
-            db_pandora_audit(
-                AUDIT_LOG_ACL_VIOLATION,
-                'Trying to access event viewer. View disabled due event replication.'
-            );
-            ui_print_info_message(
-                [
-                    'message'  => __(
-                        'Event viewer is disabled due event replication. For more information, please contact with the administrator'
-                    ),
-                    'no_close' => true,
-                ]
-            );
-            return;
-        } else {
-            $readonly = true;
-        }
-    }
-}
-
 if (enterprise_hook(
     'enterprise_acl',
     [
@@ -2315,18 +2281,6 @@ if (is_user_admin($config['id_user'])) {
             'type'     => 'command',
         ]
     );
-}
-
-
-if ($config['event_replication'] != 1) {
-    if ($event_w && !$readonly) {
-        $array_events_actions['in_progress_selected'] = __('In progress selected');
-        $array_events_actions['validate_selected'] = __('Validate selected');
-    }
-
-    if ($event_m == 1 && !$readonly) {
-        $array_events_actions['delete_selected'] = __('Delete selected');
-    }
 }
 
 foreach ($event_responses as $val) {

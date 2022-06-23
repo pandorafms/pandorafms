@@ -409,32 +409,6 @@ function config_update_config()
                             $error_update[] = __('Size of collection');
                         }
 
-                        if (config_update_value('event_replication', (int) get_parameter('event_replication'), true) === false) {
-                            $error_update[] = __('Events replication');
-                        }
-
-                        if ((int) get_parameter('event_replication') === 1) {
-                            if (config_update_value('replication_interval', (int) get_parameter('replication_interval'), true) === false) {
-                                $error_update[] = __('Replication interval');
-                            }
-
-                            if (config_update_value('replication_limit', (int) get_parameter('replication_limit'), true) === false) {
-                                $error_update[] = __('Replication limit');
-                            }
-
-                            if (config_update_value('replication_mode', (string) get_parameter('replication_mode'), true) === false) {
-                                $error_update[] = __('Replication mode');
-                            }
-
-                            if (config_update_value('show_events_in_local', (string) get_parameter('show_events_in_local'), true) === false) {
-                                $error_update[] = __('Show events list in local console (read only)');
-                            }
-                        }
-
-                        if (config_update_value('replication_dbengine', (string) get_parameter('replication_dbengine'), true) === false) {
-                            $error_update[] = __('Replication DB engine');
-                        }
-
                         if (config_update_value('replication_dbhost', (string) get_parameter('replication_dbhost'), true) === false) {
                             $error_update[] = __('Replication DB host');
                         }
@@ -2135,22 +2109,6 @@ function config_process_config()
         config_update_value('policy_add_max_agents', 200);
     }
 
-    if (!isset($config['event_replication'])) {
-        config_update_value('event_replication', 0);
-    }
-
-    if (!isset($config['replication_interval'])) {
-        config_update_value('replication_interval', 10);
-    }
-
-    if (!isset($config['replication_limit'])) {
-        config_update_value('replication_limit', 50);
-    }
-
-    if (!isset($config['replication_dbengine'])) {
-        config_update_value('replication_dbengine', 'mysql');
-    }
-
     if (!isset($config['replication_dbhost'])) {
         config_update_value('replication_dbhost', '');
     }
@@ -2171,16 +2129,8 @@ function config_process_config()
         config_update_value('replication_dbport', '');
     }
 
-    if (!isset($config['replication_mode'])) {
-        config_update_value('replication_mode', 'only_validated');
-    }
-
     if (!isset($config['metaconsole_agent_cache'])) {
         config_update_value('metaconsole_agent_cache', 0);
-    }
-
-    if (!isset($config['show_events_in_local'])) {
-        config_update_value('show_events_in_local', 0);
     }
 
     if (!isset($config['log_collector'])) {

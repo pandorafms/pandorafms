@@ -4841,7 +4841,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         'EW',
         (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
         []
-    ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
+    )))
     ) {
         $event['evento'] = io_safe_output($event['evento']);
         $comments_form = '<br><div id="comments_form" style="width:98%;">';

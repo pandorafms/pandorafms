@@ -2766,7 +2766,6 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
   `api_password` TEXT,
   `disabled` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `unified` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `last_event_replication` BIGINT DEFAULT 0,
   `server_uid` TEXT ,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB

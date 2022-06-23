@@ -388,23 +388,6 @@ function api_get_test_agent_cache()
 }
 
 
-// Returs the string OK if a connection to the event replication DB can be established.
-function api_get_test_event_replication_db()
-{
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    $status = enterprise_hook('events_test_replication_db', []);
-    if ($status === ENTERPRISE_NOT_HOOK) {
-        echo 'ERR';
-        return;
-    }
-
-    echo $status;
-}
-
-
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 
 

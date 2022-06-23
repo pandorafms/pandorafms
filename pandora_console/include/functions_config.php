@@ -928,6 +928,10 @@ function config_update_config()
                         $error_update[] = __('SNMP walk binary path (fallback for v1)');
                     }
 
+                    if (config_update_value('wmiBinary', get_parameter('wmiBinary'), true) === false) {
+                        $error_update[] = __('Default WMI Binary');
+                    }
+
                     $pjs = get_parameter('phantomjs_cache_interval');
                     switch ($pjs) {
                         case $config['phantomjs_cache_interval']:
@@ -2085,6 +2089,10 @@ function config_process_config()
 
     if (!isset($config['snmpwalk_fallback'])) {
         config_update_value('snmpwalk_fallback', 'snmpwalk');
+    }
+
+    if (isset($config['wmiBinary']) === false) {
+        config_update_value('wmiBinary', 'pandorawmic');
     }
 
     if (!isset($config['event_purge'])) {

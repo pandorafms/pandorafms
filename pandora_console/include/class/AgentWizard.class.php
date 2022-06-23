@@ -278,6 +278,13 @@ class AgentWizard extends HTML
      */
     private $extraArguments = '';
 
+    /**
+     * Binary of wmic.
+     *
+     * @var string
+     */
+    private $wmiBinary = '';
+
 
     /**
      * Constructor
@@ -291,7 +298,7 @@ class AgentWizard extends HTML
         // Check access.
         check_login();
 
-        if (!check_acl($config['id_user'], 0, 'AR')) {
+        if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
@@ -311,6 +318,7 @@ class AgentWizard extends HTML
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
+        $this->wmiBinary = $config['wmiBinary'];
 
         if (empty($this->idAgent) === false) {
             $array_aux = db_get_all_rows_sql(
@@ -1044,7 +1052,7 @@ class AgentWizard extends HTML
             $oidExplore = '.1.3.6.1.2.1.1.2.0';
         }
 
-        // Explore general or interfaces
+        // Explore general or interfaces.
         $receivedOid = $this->snmpWalkValues(
             $oidExplore,
             false,
@@ -1080,7 +1088,7 @@ class AgentWizard extends HTML
         // Capture the parameters.
         // Call WMI Explorer function.
         $this->wmiCommand = wmi_compose_query(
-            'wmic',
+            $this->wmiBinary,
             $this->usernameWMI,
             $this->passwordWMI,
             $this->targetIp,
@@ -1090,19 +1098,26 @@ class AgentWizard extends HTML
         // the host is Windows (and allow WMI).
         $commandQuery = $this->wmiCommand;
         $commandQuery .= ' "SELECT Caption FROM Win32_ComputerSystem"';
-        // Execute the wmic command.
+        // Declare the vars.
         $result = [];
-        exec($commandQuery, $result);
-        $execCorrect = true;
+        $returnVar = 0;
         $tmpError = '';
-
-        // Look for the response if we have ERROR messages.
-        foreach ($result as $info) {
-            if (preg_match('/ERROR:/', $info) !== 0) {
-                $execCorrect = false;
-                $tmpError = strrchr($info, 'ERROR:');
-                break;
+        $execCorrect = true;
+        // Execute the command.
+        exec($commandQuery, $result, $returnVar);
+        // Only is valid if return code is 0.
+        if ($returnVar === 0) {
+            // Look for the response if we have ERROR messages.
+            foreach ($result as $info) {
+                if (preg_match('/ERROR:/', $info) !== 0) {
+                    $execCorrect = false;
+                    $tmpError = strrchr($info, 'ERROR:');
+                    break;
+                }
             }
+        } else {
+            $tmpError = sprintf('Return Code %s', $returnVar);
+            $execCorrect = false;
         }
 
         // FOUND ERRORS: TIMEOUT.
@@ -2806,7 +2821,7 @@ class AgentWizard extends HTML
             // Unpack the query filters.
             $queryFilters = json_decode($module['query_filters'], true);
             // Name of query filter field.
-            $fieldValueName = $fieldSet[$queryFilters['field']];
+            $fieldValueName = (empty($fieldSet[$queryFilters['field']]) === false) ? $fieldSet[$queryFilters['field']] : '1';
 
             // Evaluate type of scan and execution.
             if ($module['scan_type'] == SCAN_TYPE_FIXED) {
@@ -2841,13 +2856,13 @@ class AgentWizard extends HTML
 
                 // If name of the module have a macro.
                 $moduleBlocks[$k]['name'] = $this->macroFilter(
-                    $module['name'],
+                    io_safe_output($module['name']),
                     $columnsList,
                     $rowList
                 );
                 // Description can have macros too.
                 $moduleBlocks[$k]['description'] = $this->macroFilter(
-                    $module['description'],
+                    io_safe_output($module['description']),
                     $columnsList,
                     $rowList
                 );
@@ -2859,7 +2874,7 @@ class AgentWizard extends HTML
                 );
 
                 foreach ($columnsList as $columnKey => $columnValue) {
-                    $macros['macros']['_'.$columnValue.'_'] = $rowList[$columnKey];
+                    $macros['macros']['_'.trim($columnValue).'_'] = $rowList[trim($columnKey)];
                 }
 
                 $moduleBlocks[$k]['macros'] = json_encode($macros);
@@ -2892,6 +2907,7 @@ class AgentWizard extends HTML
                     $dataCombined = array_combine($columnsList, $rowList);
                     // Change the macros for values.
                     foreach ($dataCombined as $macroKey => $macroValue) {
+                        $macroKey = trim($macroKey);
                         if (preg_match('/_'.$macroKey.'_/', $valueOperation) !== 0) {
                             $valueOperation = preg_replace(
                                 '/_'.$macroKey.'_/',
@@ -2937,19 +2953,19 @@ class AgentWizard extends HTML
                         $rowList = explode('|', $rowContent);
                         // If name of the module have a macro.
                         $newModule['name'] = $this->macroFilter(
-                            $module['name'],
+                            io_safe_output($module['name']),
                             $columnsList,
                             $rowList
                         );
                         // Description can have macros too.
                         $newModule['description'] = $this->macroFilter(
-                            $module['description'],
+                            io_safe_output($module['description']),
                             $columnsList,
                             $rowList
                         );
 
                         $newModule['query_filters'] = $this->macroFilter(
-                            $module['query_filters'],
+                            io_safe_output($module['query_filters']),
                             $columnsList,
                             $rowList
                         );
@@ -2995,6 +3011,7 @@ class AgentWizard extends HTML
                             );
                             // Change the macros for values.
                             foreach ($dataCombined as $macroKey => $macroValue) {
+                                $macroKey = trim($macroKey);
                                 if (preg_match('/_'.$macroKey.'_/', $valueOperation) !== 0) {
                                     $valueOperation = preg_replace(
                                         '/_'.$macroKey.'_/',
@@ -3022,39 +3039,48 @@ class AgentWizard extends HTML
             }
         }
 
-        // Create the final table with all of data received.
-        foreach ($moduleBlocks as $module) {
-            // Prepare the blocks. If its new, create a new index.
-            if (key_exists($module['group'], $blockTables) === false) {
-                $blockTables[$module['group']] = [
-                    'name' => $module['group_name'],
-                    'data' => [],
-                ];
+        // If we not retrieve information (P.E. connection refused).
+        if (empty($moduleBlocks) === true) {
+            $this->message['type'][]    = 'warning';
+            $this->message['message'][] = __(
+                'No information could be retrieved.'
+            );
+            $this->showMessage();
+        } else {
+            // Create the final table with all of data received.
+            foreach ($moduleBlocks as $module) {
+                // Prepare the blocks. If its new, create a new index.
+                if (key_exists($module['group'], $blockTables) === false) {
+                    $blockTables[$module['group']] = [
+                        'name' => $module['group_name'],
+                        'data' => [],
+                    ];
+                }
+
+                // Add the module info in the block.
+                $blockTables[$module['group']]['data'][] = $module;
+                if (isset($blockTables[$module['group']]['activeModules']) === false
+                    && (int) $module['module_enabled'] === 1
+                ) {
+                    $blockTables[$module['group']]['activeModules'] = 2;
+                } else if (isset($blockTables[$module['group']]['activeModules']) === true
+                    && (int) $module['module_enabled'] === 0
+                ) {
+                    $blockTables[$module['group']]['activeModules'] = 1;
+                }
             }
 
-            // Add the module info in the block.
-            $blockTables[$module['group']]['data'][] = $module;
-            if (isset($blockTables[$module['group']]['activeModules']) === false
-                && (int) $module['module_enabled'] === 1
-            ) {
-                $blockTables[$module['group']]['activeModules'] = 2;
-            } else if (isset($blockTables[$module['group']]['activeModules']) === true
-                && (int) $module['module_enabled'] === 0
-            ) {
-                $blockTables[$module['group']]['activeModules'] = 1;
-            }
+            // General Default monitoring.
+            html_print_div(
+                [
+                    'class'   => 'wizard wizard-result',
+                    'style'   => 'margin-top: 20px;',
+                    'content' => $this->toggleTableModules($blockTables),
+                ]
+            );
+            // Add Create Modules form.
+            $this->createModulesForm();
         }
-
-        // General Default monitoring.
-        html_print_div(
-            [
-                'class'   => 'wizard wizard-result',
-                'style'   => 'margin-top: 20px;',
-                'content' => $this->toggleTableModules($blockTables),
-            ]
-        );
-        // Add Create Modules form.
-        $this->createModulesForm();
     }
 
 
@@ -5542,13 +5568,13 @@ class AgentWizard extends HTML
         string $unit='',
         ?int $type=0
     ) {
+        $output = '';
         try {
             // Avoid non-numeric or arithmetic chars for security reasons.
             if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
                 throw new Exception(sprintf(__("The operation '%s' is not permitted. Review for remote components."), $operation));
             } else {
                 // Get the result of the operation and set it.
-                $output = '';
                 eval('$output = '.$operation.';');
                 // If this module has unit, attach to current value.
                 $output = $this->replacementUnit(
@@ -5723,7 +5749,7 @@ class AgentWizard extends HTML
                         $(this).removeClass('hidden');
                         return;
                     }
-                    
+
                     if (this.id.match(regex)) {
                         $(this).removeClass('hidden');
                     } else {
@@ -5735,7 +5761,7 @@ class AgentWizard extends HTML
                             $(this).addClass('hidden');
                         }
                     }
-                    
+
                     if (filter_up == true) {
                         if ($(this).attr('operstatus') != 1) {
                             $(this).addClass('hidden');

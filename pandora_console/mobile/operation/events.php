@@ -1,52 +1,135 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-use PandoraFMS\Enterprise\Metaconsole\Node;
+/**
+ * Events Mobile.
+ *
+ * @category   Events
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+/**
+ * Event class mobile.
+ */
 class Events
 {
 
+    /**
+     * Acl.
+     *
+     * @var boolean
+     */
     private $correct_acl = false;
 
+    /**
+     * Acl mode.
+     *
+     * @var string
+     */
     private $acl = 'ER';
 
+    /**
+     * Default
+     *
+     * @var boolean
+     */
     private $default = true;
 
+    /**
+     * Default filters.
+     *
+     * @var array
+     */
     private $default_filters = [];
 
+    /**
+     * Search.
+     *
+     * @var string
+     */
     private $free_search = '';
 
+    /**
+     * Hours.
+     *
+     * @var integer
+     */
     private $hours_old = 8;
 
+    /**
+     * Status.
+     *
+     * @var integer
+     */
     private $status = 3;
 
+    /**
+     * Type.
+     *
+     * @var string
+     */
     private $type = 'all';
 
+    /**
+     * Severity.
+     *
+     * @var integer
+     */
     private $severity = -1;
 
+    /**
+     * Filter.
+     *
+     * @var integer
+     */
     private $filter = 0;
 
+    /**
+     * Group.
+     *
+     * @var integer
+     */
     private $group = 0;
 
+    /**
+     * Agent.
+     *
+     * @var integer
+     */
     private $id_agent = 0;
 
-    private $all_events = false;
-
+    /**
+     * Columns.
+     *
+     * @var [type]
+     */
     private $columns = null;
 
-    private $readOnly = false;
 
-
-    function __construct()
+    /**
+     * Construcy
+     */
+    public function __construct()
     {
         $system = System::getInstance();
 
@@ -60,12 +143,24 @@ class Events
     }
 
 
+    /**
+     * Set read only
+     *
+     * @return void
+     */
     public function setReadOnly()
     {
         $this->readOnly = true;
     }
 
 
+    /**
+     * Ajax function.
+     *
+     * @param boolean $parameter2 Rarameters.
+     *
+     * @return void
+     */
     public function ajax($parameter2=false)
     {
         $system = System::getInstance();
@@ -80,10 +175,9 @@ class Events
                         $filters = ['id_agent' => $system->getRequest('id_agent', 0)];
                         $this->setFilters($filters);
                         $this->setReadOnly();
-                        $this->eventsGetFilters();
-                    } else {
-                        $this->eventsGetFilters();
                     }
+
+                    $this->eventsGetFilters();
 
                     $page = $system->getRequest('page', 0);
 
@@ -111,28 +205,72 @@ class Events
                             case 2:
                                 $img_st = 'images/hourglass_white.png';
                             break;
+
+                            default:
+                                // Not possible.
+                            break;
                         }
 
-                        if ($event['criticity'] == EVENT_CRIT_WARNING
-                            || $event['criticity'] == EVENT_CRIT_MAINTENANCE
-                            || $event['criticity'] == EVENT_CRIT_MINOR
+                        if ($event['criticity'] === EVENT_CRIT_WARNING
+                            || $event['criticity'] === EVENT_CRIT_MAINTENANCE
+                            || $event['criticity'] === EVENT_CRIT_MINOR
                         ) {
                             $img_st = str_replace('white.png', 'dark.png', $img_st);
                         }
 
-                        $status_icon = html_print_image($img_st, true, false, false, false, false, true);
+                        $status_icon = html_print_image(
+                            $img_st,
+                            true,
+                            false,
+                            false,
+                            false,
+                            false,
+                            true
+                        );
+
+                        if (isset($event['server_id']) === false) {
+                            $event['server_id'] = 0;
+                        }
 
                         $row = [];
-                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="#" onclick="openDetails('.$event['id_evento'].','.$event['server_id'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
+                        $row_0 = '<b class="ui-table-cell-label">';
+                        $row_0 .= __('Event Name');
+                        $row_0 .= '</b><a href="#" onclick="openDetails('.$event['id_evento'].','.$event['server_id'].')">';
+                        $row_0 .= '<div class="event_name">';
+                        $row_0 .= io_safe_output(
+                            str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])
+                        );
+                        $row_0 .= '</div></a>';
+
+                        $row[] = $row_0;
 
                         if ($event['id_agente'] == 0) {
                             $agent_name = __('System');
                         } else {
-                            $agent_name = '<span class="nobold">'.ui_print_agent_name($event['id_agente'], true, 'agent_small', '', false, '', '', false, false).'</span>';
+                            $agent_name = '<span class="nobold">';
+                            $agent_name .= ui_print_agent_name(
+                                $event['id_agente'],
+                                true,
+                                'agent_small',
+                                '',
+                                false,
+                                '',
+                                '',
+                                false,
+                                false
+                            );
+                            $agent_name .= '</span>';
                         }
 
                         $row_1 = '<span class="events_agent">'.$agent_name.'</span>';
-                        $row_1 .= '<span class="events_timestamp">'.ui_print_timestamp($event['timestamp_last'], true, ['units' => 'tiny']).$status_icon.'</span>';
+                        $row_1 .= '<span class="events_timestamp">';
+                        $row_1 .= ui_print_timestamp(
+                            $event['timestamp_last'],
+                            true,
+                            ['units' => 'tiny']
+                        );
+                        $row_1 .= $status_icon;
+                        $row_1 .= '</span>';
 
                         $row[] = $row_1;
 
@@ -453,14 +591,25 @@ class Events
                         }
                     }
                 break;
+
+                default:
+                    // Not possible.
+                break;
             }
         }
     }
 
 
+    /**
+     * Disable columns.
+     *
+     * @param array $columns Columns.
+     *
+     * @return void
+     */
     public function disabledColumns($columns=null)
     {
-        if (!empty($columns)) {
+        if (empty($columns) === false) {
             foreach ($columns as $column) {
                 $this->columns[$column] = 1;
             }
@@ -468,6 +617,11 @@ class Events
     }
 
 
+    /**
+     * Events get filters.
+     *
+     * @return void
+     */
     private function eventsGetFilters()
     {
         $system = System::getInstance();
@@ -529,79 +683,67 @@ class Events
             $this->default_filters['severity'] = false;
         }
 
-        if ($system->getRequest('filter', __('Preset Filters')) === __('Preset Filters')) {
-            // Set filter as default user event filter (only first time)
-            $this->filter = db_get_value('default_event_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
-
-            // Use user set default filter if admin set default filter is "none"
-            if ($this->filter == 0) {
-                $this->filter = db_get_value('id_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
-            }
-        } else {
-                 $this->filter = $system->getRequest('filter', __('Preset Filters'));
-        }
+        $this->filter = $system->getRequest('filter', 0);
 
         if ($this->filter != 0) {
             $this->default = false;
         }
 
-        // The user set a preset filter
+        // The user set a preset filter.
         if ($this->filter > 0) {
-            $this->loadPresetFilter();
+            // $this->loadPresetFilter();
         }
 
         $this->limit = $system->getRequest('limit', -1);
     }
 
 
+    /**
+     * Set filters.
+     *
+     * @param array $filters Filters.
+     *
+     * @return void
+     */
     public function setFilters($filters)
     {
-        if (isset($filters['id_agent'])) {
+        if (isset($filters['id_agent']) === true) {
             $this->id_agent = $filters['id_agent'];
         }
 
-        if (isset($filters['all_events'])) {
+        if (isset($filters['all_events']) === true) {
             $this->all_events = $filters['all_events'];
         }
     }
 
 
-    private function loadPresetFilter()
-    {
-        $filter = db_get_row('tevent_filter', 'id_filter', $this->filter);
-
-        $this->free_search = null;
-        $this->hours_old = null;
-        $this->status = null;
-        $this->type = null;
-        $this->severity = null;
-        if ($filter !== false && empty($filter) === false) {
-            $this->free_search = $filter['search'];
-            $this->hours_old = $filter['event_view_hr'];
-            $this->status = $filter['status'];
-            $this->type = $filter['event_type'];
-            $this->severity = $filter['severity'];
-        }
-    }
-
-
+    /**
+     * Show.
+     *
+     * @return void
+     */
     public function show()
     {
         if (!$this->correct_acl) {
-            $this->show_fail_acl();
+            $this->showFailAcl();
         } else {
             $this->eventsGetFilters();
-            $this->show_events();
+            $this->showEvents();
         }
     }
 
 
-    private function show_fail_acl()
+    /**
+     * Show fail.
+     *
+     * @return void
+     */
+    private function showFailAcl()
     {
         $error['type'] = 'onStart';
         $error['title_text'] = __('You don\'t have access to this page');
         $error['content_text'] = System::getDefaultACLFailText();
-        if (class_exists('HomeEnterprise')) {
+        if (class_exists('HomeEnterprise') === true) {
             $home = new HomeEnterprise();
         } else {
             $home = new Home();
@@ -611,7 +753,14 @@ class Events
     }
 
 
-    public function get_event_dialog_error_options($options)
+    /**
+     * Event dialog error.
+     *
+     * @param array $options Options.
+     *
+     * @return array Array.
+     */
+    public function getEventDialogErrorOptions($options)
     {
         $options['type'] = 'hidden';
 
@@ -623,7 +772,12 @@ class Events
     }
 
 
-    public function get_event_dialog_options()
+    /**
+     * Event dialog options.
+     *
+     * @return array
+     */
+    public function getEventDialogOptions()
     {
         $ui = Ui::getInstance();
 
@@ -634,7 +788,7 @@ class Events
         $options['title_close_button'] = true;
         $options['title_text'] = __('Event detail');
 
-        // Content
+        // Content.
         ob_start();
         ?>
         <table class="pandora_responsive alternate event_details">
@@ -731,17 +885,22 @@ class Events
     }
 
 
-    private function show_events()
+    /**
+     * Show events.
+     *
+     * @return void
+     */
+    private function showEvents()
     {
         $ui = Ui::getInstance();
 
         $ui->createPage();
 
-        $options = $this->get_event_dialog_options();
+        $options = $this->getEventDialogOptions();
 
         $ui->addDialog($options);
 
-        $options = $this->get_event_dialog_error_options($options);
+        $options = $this->getEventDialogErrorOptions($options);
 
         $ui->addDialog($options);
 
@@ -759,114 +918,113 @@ class Events
         );
         $ui->showFooter(false);
         $ui->beginContent();
-            $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
-            $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
+        $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
+        $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
-            $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
-            $ui->contentBeginCollapsible($filter_title);
-                $ui->beginForm('index.php?page=events');
-                /*
-                    $options = array(
-                        'name' => 'page',
-                        'type' => 'hidden',
-                        'value' => 'events'
-                        );
-                    $ui->formAddInput($options);*/
+        $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
+        $ui->contentBeginCollapsible($filter_title);
+        $ui->beginForm('index.php?page=events');
+        $items = db_get_all_rows_in_table('tevent_filter');
+        $items[] = [
+            'id_filter' => 0,
+            'id_name'   => __('None'),
+        ];
+        $options = [
+            'name'       => 'filter',
+            'title'      => __('Preset Filters'),
+            'label'      => __('Preset Filters'),
+            'items'      => $items,
+            'item_id'    => 'id_filter',
+            'item_value' => 'id_name',
+            'selected'   => $this->filter,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $items = db_get_all_rows_in_table('tevent_filter');
-                    $items[] = [
-                        'id_filter' => 0,
-                        'id_name'   => __('None'),
-                    ];
-                    $options = [
-                        'name'       => 'filter',
-                        'title'      => __('Preset Filters'),
-                        'label'      => __('Preset Filters'),
-                        'items'      => $items,
-                        'item_id'    => 'id_filter',
-                        'item_value' => 'id_name',
-                        'selected'   => $this->filter,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $system = System::getInstance();
+        $groups = users_get_groups_for_select(
+            $system->getConfig('id_user'),
+            'ER',
+            true,
+            true,
+            false,
+            'id_grupo'
+        );
+        $options = [
+            'name'     => 'group',
+            'title'    => __('Group'),
+            'label'    => __('Group'),
+            'items'    => $groups,
+            'selected' => $this->group,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $system = System::getInstance();
-                    $groups = users_get_groups_for_select(
-                        $system->getConfig('id_user'),
-                        'ER',
-                        true,
-                        true,
-                        false,
-                        'id_grupo'
-                    );
-                    $options = [
-                        'name'     => 'group',
-                        'title'    => __('Group'),
-                        'label'    => __('Group'),
-                        'items'    => $groups,
-                        'selected' => $this->group,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'     => 'status',
+            'title'    => __('Status'),
+            'label'    => __('Status'),
+            'items'    => events_get_all_status(),
+            'selected' => $this->status,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $options = [
-                        'name'     => 'status',
-                        'title'    => __('Status'),
-                        'label'    => __('Status'),
-                        'items'    => events_get_all_status(),
-                        'selected' => $this->status,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'     => 'type',
+            'title'    => __('Type'),
+            'label'    => __('Type'),
+            'items'    => array_merge(['all' => __('All')], get_event_types()),
+            'selected' => $this->type,
+        ];
 
-                    $options = [
-                        'name'     => 'type',
-                        'title'    => __('Type'),
-                        'label'    => __('Type'),
-                        'items'    => array_merge(['all' => __('All')], get_event_types()),
-                        'selected' => $this->type,
-                    ];
+        $ui->formAddSelectBox($options);
 
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'     => 'severity',
+            'title'    => __('Severity'),
+            'label'    => __('Severity'),
+            'items'    => (['-1' => __('All')] + get_priorities()),
+            'selected' => $this->severity,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $options = [
-                        'name'     => 'severity',
-                        'title'    => __('Severity'),
-                        'label'    => __('Severity'),
-                        'items'    => (['-1' => __('All')] + get_priorities()),
-                        'selected' => $this->severity,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'        => 'free_search',
+            'value'       => $this->free_search,
+            'placeholder' => __('Free search'),
+        ];
+        $ui->formAddInputSearch($options);
 
-                    $options = [
-                        'name'        => 'free_search',
-                        'value'       => $this->free_search,
-                        'placeholder' => __('Free search'),
-                    ];
-                    $ui->formAddInputSearch($options);
+        $options = [
+            'label' => __('Max. hours old'),
+            'name'  => 'hours_old',
+            'value' => $this->hours_old,
+            'min'   => 0,
+            'max'   => (24 * 7),
+            'step'  => 8,
+        ];
+        $ui->formAddSlider($options);
 
-                    $options = [
-                        'label' => __('Max. hours old'),
-                        'name'  => 'hours_old',
-                        'value' => $this->hours_old,
-                        'min'   => 0,
-                        'max'   => (24 * 7),
-                        'step'  => 8,
-                    ];
-                    $ui->formAddSlider($options);
-
-                    $options = [
-                        'icon'     => 'refresh',
-                        'icon_pos' => 'right',
-                        'text'     => __('Apply Filter'),
-                    ];
-                    $ui->formAddSubmitButton($options);
-                    $html = $ui->getEndForm();
-                    $ui->contentCollapsibleAddItem($html);
-                    $ui->contentEndCollapsible();
-                    $this->listEventsHtml();
-                    $ui->endContent();
-                    $ui->showPage();
+        $options = [
+            'icon'     => 'refresh',
+            'icon_pos' => 'right',
+            'text'     => __('Apply Filter'),
+        ];
+        $ui->formAddSubmitButton($options);
+        $html = $ui->getEndForm();
+        $ui->contentCollapsibleAddItem($html);
+        $ui->contentEndCollapsible();
+        $this->listEventsHtml();
+        $ui->endContent();
+        $ui->showPage();
     }
 
 
+    /**
+     * List events.
+     *
+     * @param integer $page Page.
+     *
+     * @return array
+     */
     private function getListEvents($page=0)
     {
         $system = System::getInstance();
@@ -912,7 +1070,6 @@ class Events
 
         $filters['group_rep'] = 1;
 
-        // --------------------------------------------------------------
         if (isset($this->limit) === true
             && $this->limit !== -1
         ) {
@@ -966,12 +1123,21 @@ class Events
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param integer $page     Page.
+     * @param boolean $return   Return.
+     * @param string  $id_table Id table.
+     *
+     * @return mixed
+     */
     public function listEventsHtml($page=0, $return=false, $id_table='list_events')
     {
         $system = System::getInstance();
         $ui = Ui::getInstance();
 
-        // Create an empty table to be filled from ajax
+        // Create an empty table to be filled from ajax.
         $table = new Table();
         $table->id = $id_table;
 
@@ -997,6 +1163,13 @@ class Events
     }
 
 
+    /**
+     * Events table.
+     *
+     * @param integer $id_agent Id agent.
+     *
+     * @return string
+     */
     public function putEventsTableJS($id_agent)
     {
         return '<script type="text/javascript">
@@ -1005,6 +1178,11 @@ class Events
     }
 
 
+    /**
+     * Js dialog.
+     *
+     * @return void
+     */
     public function addJavascriptDialog()
     {
         $ui = Ui::getInstance();
@@ -1143,6 +1321,11 @@ class Events
     }
 
 
+    /**
+     * Js button.
+     *
+     * @return void
+     */
     private function addJavascriptAddBottom()
     {
         $ui = Ui::getInstance();
@@ -1168,7 +1351,7 @@ class Events
 
 						$(\"table#\"+table_id+\" tbody\").append(new_rows);
 
-						load_more_rows = 1;
+						load_more_rows = 0;
 						refresh_link_listener_list_events();
 					}
 				}
@@ -1254,6 +1437,11 @@ class Events
     }
 
 
+    /**
+     * Filter events.
+     *
+     * @return string
+     */
     private function filterEventsGetString()
     {
         global $system;

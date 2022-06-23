@@ -2819,6 +2819,8 @@ CREATE TABLE IF NOT EXISTS `tservice` (
   `evaluate_sla` INT NOT NULL DEFAULT 0,
   `is_favourite` TINYINT NOT NULL DEFAULT 0,
   `enable_sunburst` TINYINT NOT NULL DEFAULT 0,
+  `asynchronous` TINYINT NOT NULL DEFAULT 0,
+  `rca` TEXT,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 

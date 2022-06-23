@@ -1187,14 +1187,7 @@ a.pandora_pagination,
   padding-right: 35px;
   background-color: #222;
 }
-#box_online {
-  background-image: url("../../images/update_pandora_black.jpg") !important;
-  background-color: #000 !important;
-  padding: 40px 50px;
-  border: 1px solid #111 !important;
-  background-size: contain;
-  box-shadow: 1px 1px 4px rgba(160, 160, 160, 0.514);
-}
+
 .legend_background {
   background-color: #222;
   color: #fff !important;

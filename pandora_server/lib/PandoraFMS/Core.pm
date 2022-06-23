@@ -229,7 +229,6 @@ our @EXPORT = qw(
 	pandora_planned_downtime_weekly_start
 	pandora_planned_downtime_weekly_stop
 	pandora_process_alert
-	pandora_process_event_replication
 	pandora_process_module
 	pandora_reset_server
 	pandora_safe_mode_modules_update
@@ -3791,7 +3790,6 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 		$source, $user_name, $comment, $id_extra, $tags,
 		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data,
 		$module_data, $module_status, $server_id) = @_;
-	my $event_table = is_metaconsole($pa_config) ? 'tmetaconsole_event' : 'tevento';
 
 	my $agent = undef;
 	if (defined($id_agente) && $id_agente != 0) {
@@ -3854,20 +3852,15 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
-		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
+		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
 	my $event_id = undef;
 
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	if (is_metaconsole($pa_config)) {
-			$event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, server_id, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $server_id, $custom_data, safe_input($module_data), $module_status);
-	} else {
-			$event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
-	}
 
 	# Do not write to the event file
 	return $event_id if ($pa_config->{'event_file'} eq '');
@@ -5477,85 +5470,6 @@ sub pandora_server_statistics ($$) {
 		# Update server record
 		db_do ($dbh, "UPDATE tserver SET lag_time = '".$server->{"lag"}."', lag_modules = '".$server->{"module_lag"}."', total_modules_running = '".$server->{"modules_total"}."', my_modules = '".$server->{"modules"}."' , stat_utimestamp = UNIX_TIMESTAMP() WHERE id_server = " . $server->{"id_server"} );
 	}
-}
-
-##########################################################################
-=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
-
-Process groups statistics for statistics table
-
-=cut
-##########################################################################
-sub pandora_process_event_replication ($) {
-	my $pa_config = shift;
-	my $dbh_metaconsole;
-	my %pa_config = %{$pa_config};
-
-	# Get the console DB connection
-	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
-						$pa_config{'dbuser'}, $pa_config{'dbpass'});
-
-	my $is_event_replication_enabled = enterprise_hook('get_event_replication_flag', [$dbh]);
-	my $replication_interval = enterprise_hook('get_event_replication_interval', [$dbh]);
-		
-	# If there are not installed the enterprise version,  
-	# desactivated the event replication or the replication
-	# interval is wrong: abort
-	if($is_event_replication_enabled == 0) {
-		db_disconnect($dbh);
-		return;
-	}
-	
-	if($replication_interval <= 0) {
-		logger($pa_config, "The event replication interval must be greater than 0. Event replication aborted.", 1);
-		db_disconnect($dbh);
-		return;
-	}
-	
-	logger($pa_config, "Started event replication thread.", 1);
-
-	while($THRRUN == 1) { 
-		eval {{
-			local $SIG{__DIE__};
-			
-			# Get the metaconsole DB connection
-			$dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
-			$dbh_metaconsole = undef if $dbh_metaconsole eq '';
-			if (!defined($dbh_metaconsole)) {
-				logger($pa_config, "Metaconsole DB connection error. Event replication postponed.", 5);
-				next;
-			}
-			
-			# Get server id on metaconsole
-			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh]);
-		
-			# If the server name is not found in metaconsole setup: abort
-			if($metaconsole_server_id == -1) {
-				logger($pa_config, "The server name is not configured in metaconsole. Event replication postponed.", 5);
-				db_disconnect($dbh_metaconsole);
-				next;
-			}
-			
-			my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
-						
-			while($THRRUN == 1) { 
-		
-				# If we are not the master server sleep and check again.
-				if (pandora_is_master($pa_config) == 0) {
-					sleep ($pa_config->{'server_threshold'});
-					next;
-				}
-		
-				# Check the queue each N seconds
-				enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
-				sleep ($replication_interval);
-			}
-		}};
-		db_disconnect($dbh_metaconsole) if defined($dbh_metaconsole);
-		sleep ($replication_interval);
-	}
-
-	db_disconnect($dbh);
 }
 
 ##########################################################################

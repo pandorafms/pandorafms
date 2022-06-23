@@ -52,6 +52,14 @@ ALTER TABLE `tevent_alert` ADD COLUMN `field10_recovery` TEXT AFTER `field9_reco
 
 ALTER TABLE `tagente` ADD COLUMN `satellite_server` INT NOT NULL default 0;
 ALTER TABLE `tmetaconsole_agent` ADD COLUMN `satellite_server` INT NOT NULL default 0;
+
+ALTER TABLE `tmetaconsole_setup` DROP COLUMN `last_event_replication`;
+DELETE FROM `tconfig` WHERE `token` LIKE 'event_replication';
+DELETE FROM `tconfig` WHERE `token` LIKE 'replication_interval';
+DELETE FROM `tconfig` WHERE `token` LIKE 'replication_limit';
+DELETE FROM `tconfig` WHERE `token` LIKE 'replication_mode';
+DELETE FROM `tconfig` WHERE `token` LIKE 'show_events_in_local';
+
 SET @st_oum763 = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tautoconfig' AND table_schema = DATABASE() AND column_name = 'disabled') > 0,
     "SELECT 1",

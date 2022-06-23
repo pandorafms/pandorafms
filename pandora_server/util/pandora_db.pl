@@ -168,33 +168,13 @@ sub pandora_purgedb ($$) {
 	}
 	if ($conf->{'_event_purge'} > 0) {
 		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
-		my $events_table = 'tevento';
 		
-		# If is installed enterprise version and enabled metaconsole, 
-		# check the events history copy and set the name of the metaconsole events table
-		if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
-			defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
-		
-			# If events history is enabled, save the new events (not validated or in process) to history database
-			if(defined($conf->{'_metaconsole_events_history'}) && $conf->{'_metaconsole_events_history'} eq '1') {
-				log_message ('PURGE', "Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days).");
-
-				my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
-				foreach my $event (@events) {
-					db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
-					db_do($dbh, "DELETE FROM tmetaconsole_event WHERE id_evento =".$event->{'id_evento'});
-				}
-			}
-			
-			$events_table = 'tmetaconsole_event';
-		}
-		
-		log_message ('PURGE', "Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days).", '');
+		log_message ('PURGE', "Deleting old event data from tevento (More than " . $conf->{'_event_purge'} . " days).", '');
 
 		# Delete with buffer to avoid problems with performance
-		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
+		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tevento WHERE utimestamp < ?", $event_limit);
 		while($events_to_delete > 0) {
-			db_delete_limit($dbh, $events_table, "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
+			db_delete_limit($dbh, 'tevento', "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
 			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 			
 			# Mark the progress
@@ -204,23 +184,6 @@ sub pandora_purgedb ($$) {
 			usleep (10000);
 		}
 		log_message ('', "\n");
-
-		if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
-			defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
-			log_message ('PURGE', "Deleting validated events from tmetaconsole_event_history.", '');
-			$events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tmetaconsole_event_history WHERE estado = 1");
-			while($events_to_delete > 0) {
-				db_delete_limit($dbh, 'tmetaconsole_event_history',  'estado = 1', $BIG_OPERATION_STEP);
-				$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
-			
-				# Mark the progress
-				log_message ('', ".");
-			
-				# Do not overload the MySQL server
-				usleep (10000);
-			}
-			log_message ('', "\n");
-		}
 	}
 	else {
 		log_message ('PURGE', 'event_purge is set to 0. Old events will not be deleted.');

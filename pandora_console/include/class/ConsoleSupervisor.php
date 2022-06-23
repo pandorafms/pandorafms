@@ -2743,7 +2743,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.%');
         }
 
-        $items_min = $config['sync_queue_items_max'];
+        $items_min = (isset($config['sync_queue_items_max']) === true) ? $config['sync_queue_items_max'] : 0;
         if (is_numeric($items_min) !== true && $items_min <= 0) {
             $items_min = self::MIN_SYNC_QUEUE_LENGTH;
         }

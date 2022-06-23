@@ -348,10 +348,11 @@ div.multi-response-buttons {
 #events_buffers_display {
   margin-bottom: 10px;
   width: fit-content;
+  min-width: 300px;
 }
 
 #events_buffers_display ul {
-  min-width: 400px;
+  min-width: 300px;
 }
 
 #events_buffers_display li {
@@ -359,6 +360,8 @@ div.multi-response-buttons {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  position: relative;
+  height: 20px;
 }
 
 #events_buffers_display ul li span.info {
@@ -368,8 +371,20 @@ div.multi-response-buttons {
 
 #events_buffers_display ul li span.danger {
   color: red;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
 }
 
+#events_buffers_display ul li span.danger img {
+  position: absolute;
+  top: -3px;
+}
 #events_buffers_display ul li span.text {
   color: #3f3f3f;
+}
+
+.white_table_graph_header {
+  align-items: center;
 }

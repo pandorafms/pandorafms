@@ -1011,43 +1011,20 @@ function event_widget_options() {
 function process_buffers(buffers) {
   $("#events_buffers_display").empty();
   if (buffers != null && buffers.settings != undefined && buffers.data) {
-    var html = "<h3>" + buffers.settings.translate.nev;
-    html += ": (" + buffers.settings.total + ")</h3>";
-    html += "<ul>";
-    Object.entries(buffers.data).forEach(function(element) {
-      html += "<li>";
-      html += "<span><b>";
-      html += buffers.settings.translate.ev + " ";
-      html += element[0];
-      html += ": ";
-      html += "</b></span>";
+    var params = [];
+    params.push("page=include/ajax/events");
+    params.push("process_buffers=1");
+    params.push("buffers=" + JSON.stringify(buffers));
 
-      var class_total = "info";
-      var str_total = "";
-      if (buffers.settings.total == element[1]) {
-        class_total += " danger";
-        str_total = buffers.settings.translate.tevn;
+    jQuery.ajax({
+      data: params.join("&"),
+      type: "POST",
+      url: $("#hidden-ajax_file").val(),
+      async: true,
+      dataType: "html",
+      success: function(data) {
+        $("#events_buffers_display").html(data);
       }
-
-      if (buffers.error[element[0]] !== undefined) {
-        class_total += " danger";
-        str_total = buffers.error[element[0]];
-      }
-
-      html += '<span class="' + class_total + '">';
-      html += element[1];
-      if (str_total != "") {
-        html += '<span class="text">';
-        html += " " + str_total;
-        html += "</span>";
-      }
-
-      html += "</span>";
-
-      html += "</li>";
     });
-    html += "</ul>";
-
-    $("#events_buffers_display").html(html);
   }
 }

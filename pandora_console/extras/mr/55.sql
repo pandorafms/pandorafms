@@ -60,6 +60,8 @@ DELETE FROM `tconfig` WHERE `token` LIKE 'replication_limit';
 DELETE FROM `tconfig` WHERE `token` LIKE 'replication_mode';
 DELETE FROM `tconfig` WHERE `token` LIKE 'show_events_in_local';
 
+UPDATE tconfig SET value='' WHERE token='lts_name';
+
 SET @st_oum763 = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tautoconfig' AND table_schema = DATABASE() AND column_name = 'disabled') > 0,
     "SELECT 1",

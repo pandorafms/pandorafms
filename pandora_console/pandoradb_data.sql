@@ -143,7 +143,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('gotty', '/usr/bin/gotty'),
 ('custom_module_units', '{"bytes":"bytes","entries":"entries","files":"files","hits":"hits","sessions":"sessions","users":"users","ºC":"ºC","ºF":"ºF"}'),
 ('server_unique_identifier', replace(uuid(),'-','')),
-('lts_name', 'Akira');
+('lts_name', '');
 UNLOCK TABLES;
 
 --

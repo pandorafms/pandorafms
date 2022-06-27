@@ -115,6 +115,7 @@ table.dataTable tbody td {
   padding-top: 7px;
   padding-bottom: 7px;
   border-bottom: 2px solid #dedede;
+  word-break: break-all;
 }
 
 .filter_input {
@@ -342,4 +343,48 @@ div.multi-response-buttons {
     min-width: 600px;
     max-width: 100%;
   }
+}
+
+#events_buffers_display {
+  margin-bottom: 10px;
+  width: fit-content;
+  min-width: 300px;
+}
+
+#events_buffers_display ul {
+  min-width: 300px;
+}
+
+#events_buffers_display li {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  height: 20px;
+}
+
+#events_buffers_display ul li span.info {
+  flex: 1 1 100px;
+  text-align: right;
+}
+
+#events_buffers_display ul li span.danger {
+  color: red;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+#events_buffers_display ul li span.danger img {
+  position: absolute;
+  top: -3px;
+}
+#events_buffers_display ul li span.text {
+  color: #3f3f3f;
+}
+
+.white_table_graph_header {
+  align-items: center;
 }

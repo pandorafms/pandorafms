@@ -235,7 +235,7 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
     if (isset($config['remote_addr']) === true) {
         $ip = $config['remote_addr'];
     } else {
-        if ($_SERVER['REMOTE_ADDR']) {
+        if (isset($_SERVER['REMOTE_ADDR']) === true) {
             $ip = $_SERVER['REMOTE_ADDR'];
         } else {
             $ip = __('N/A');

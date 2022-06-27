@@ -1,0 +1,185 @@
+#!/bin/bash
+# Copyright (c) 2005-2010 Artica ST
+#
+# Author: Sancho Lerena <slerena@artica.es> 2006-2010
+#
+# /etc/init.d/tentacle_server
+#
+# System startup script for Tentacle Server
+#
+# Comments to support chkconfig on RedHat Linux
+# chkconfig: 2345 90 90
+# description: Tentacle Server startup script
+#
+# Comments to support LSB init script conventions
+### BEGIN INIT INFO
+# Provides:       tentacle_server
+# Required-Start: $network
+# Should-Start:   $syslog
+# Required-Stop:  $network
+# Should-Stop:    $network
+# Default-Start:  2 3 5
+# Default-Stop:   0 1 6
+# Short-Description: Tentacle Server startup script
+# Description:    Tentacle Server startup script
+### END INIT INFO
+
+if [ -x /lib/lsb/init-functions ]; then
+. /lib/lsb/init-functions
+fi
+
+# Uses a wait limit before sending a KILL signal, before trying to stop
+# Pandora FMS server nicely. Some big systems need some time before close
+# all pending tasks / threads.
+
+export MAXWAIT=60
+
+# Check for SUSE status scripts
+if [ -f /etc/rc.status ]
+then
+	. /etc/rc.status
+	rc_reset
+else
+	# Define part of rc functions for non-suse systems
+	function rc_status () {
+		RETVAL=$?
+		case $1 in
+			-v) RETVAL=0;;
+		esac
+	}
+	function rc_exit () { exit $RETVAL; }
+	function rc_failed () { RETVAL=${1:-1}; }
+	RETVAL=0
+fi
+
+function get_pid {
+	# This sets COLUMNS to XXX chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep "$TENTACLE_CONFIG_FILE" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	echo $TENTACLE_PID
+}
+
+function get_all_pid {
+	# This sets COLUMNS to XXX chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	TENTACLE_PIDS=`ps aux | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | awk '{ print $2 }'`
+	TENTACLE_PID="${TENTACLE_PIDS//\\n/' '}"
+	echo $TENTACLE_PID
+}
+
+# Tentacle server settings
+TENTACLE_DAEMON="tentacle_server"
+TENTACLE_PATH="/usr/bin"
+TENTACLE_USER="pandora"
+TENTACLE_CONFIG_FILE="/etc/tentacle/tentacle_server.conf"
+TENTACLE_EXT_OPTS=""
+
+# Set umask to 0002, because group MUST have access to write files to
+# use remote file management on Pandora FMS Enterprise.
+
+umask 0007
+
+# Main script
+TENTACLE_OPTS="-F $TENTACLE_CONFIG_FILE $TENTACLE_EXT_OPTS"
+
+# Fix TENTACLE_PATH
+case "$TENTACLE_PATH" in
+	*\/)
+	;;
+	*)
+		TENTACLE_PATH="${TENTACLE_PATH}/"
+	;;
+esac
+
+if [ ! -f "${TENTACLE_PATH}$TENTACLE_DAEMON" ]; then
+	echo "Tentacle Server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON"
+	rc_failed 5 # program is not installed
+	rc_exit
+fi
+
+case "$1" in
+	start)
+		TENTACLE_PID=`get_pid`
+		if [ ! -z "$TENTACLE_PID" ]; then
+			echo "Tentacle Server is already running with PID $TENTACLE_PID"
+			rc_exit	# running start on a service already running
+		fi
+
+		# Init the tentacle process
+		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
+		sleep 1
+
+		TENTACLE_PID=`get_pid`
+		if [ ! -z "$TENTACLE_PID" ]; then
+			echo "Tentacle Server is now running with PID $TENTACLE_PID"
+			rc_status -v
+		else
+			echo "Tentacle Server could not be started."
+			echo "Verify that Tentacle port is not used."
+			rc_failed 7 # program not running
+		fi
+
+	;;
+	
+	stop)
+		TENTACLE_PID=`get_all_pid`
+		if [ -z "$TENTACLE_PID" ]; then
+			echo "Tentacle Server does not seem to be running"
+			rc_exit # running stop on a service already stopped or not running
+		else
+			kill $TENTACLE_PID
+			
+			COUNTER=0
+			while [ $COUNTER -lt $MAXWAIT ]
+	 		do
+ 				_PID=`get_all_pid`
+				if [ "$_PID" != "$TENTACLE_PID" ]
+					# tentacle already stopped
+ 				then
+					COUNTER=$MAXWAIT
+				fi
+				COUNTER=`expr $COUNTER + 1`
+				sleep 1
+			done
+
+			if [ "$_PID" = "$TENTACLE_PID" ]
+			then
+				kill -9 $TENTACLE_PID   > /dev/null 2>&1
+			fi
+			
+			echo "Stopping Tentacle Server"
+			rc_status -v
+		fi
+
+	;;
+
+	force-reload|restart)
+		$0 stop
+		sleep 1
+		$0 start
+		rc_status
+	;;
+
+	status)
+		TENTACLE_PID=`get_pid`
+		if [ -z "$TENTACLE_PID" ]; then
+			echo "Tentacle Server is not running."
+			rc_failed 7 # program is not running
+		else
+			echo "Tentacle Server is running with PID $TENTACLE_PID."
+			rc_status 
+		fi
+		
+	;;
+
+	*)
+		echo "Usage: $0  {start | stop | restart | status}"
+		exit 1
+	;;
+esac
+
+rc_exit

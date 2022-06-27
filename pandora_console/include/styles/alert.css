@@ -94,6 +94,7 @@ form#advanced_filters_alert textarea {
   flex: 1 1 auto;
   height: 5em;
   min-height: 5em;
+  width: 2em;
 }
 
 form#advanced_filters_alert ul li label img {

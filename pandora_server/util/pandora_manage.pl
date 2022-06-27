@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.762 Build 220613";
+my $version = "7.0NG.763 Build 220627";
 
 # save program name for logging
 my $progname = basename($0);
@@ -231,6 +231,7 @@ sub help_screen{
 	print "\nTOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', "Execute any CLI option \n\t  with macros from CSV file");
     help_screen_line('--create_snmp_trap', '<name> <oid> <description> <severity>', "Create a new trap definition. \n\tSeverity 0 (Maintenance), 1(Info) , 2 (Normal), 3 (Warning), 4 (Critical), 5 (Minor) and 6 (Major)");
+    help_screen_line('--start_snmptrapd', '[no parameters needed]', "Start the snmptrap process or restart if it is running");
     print "\nSETUP:\n\n" unless $param ne '';
 	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
 	
@@ -279,7 +280,7 @@ sub api_call($$$;$$$$) {
 		my $ua = new LWP::UserAgent;
 		my $url = $pa_config->{"console_api_url"};
 		my $response = $ua->post($url, $params);
-		
+
 		if ($response->is_success) {
 			$content = $response->decoded_content();
 		}
@@ -1186,6 +1187,16 @@ sub cli_enable_group() {
 	}
 	
 	pandora_enable_group ($conf, $dbh, $id_group);
+}
+
+##############################################################################
+# Start snmptrap process.
+# Related option: --start_snmptrapd
+##############################################################################
+sub cli_start_snmptrapd() {
+	use PandoraFMS::SNMPServer;
+	print_log "[INFO] Starting snmptrap process. \n";
+	PandoraFMS::SNMPServer::start_snmptrapd(\%conf);
 }
 
 ##############################################################################
@@ -4440,12 +4451,7 @@ sub cli_get_event_info () {
 	
 	$csv_separator = '|' unless defined($csv_separator);
 
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-	
-	my $query = "SELECT * FROM " . $event_table . " where id_evento=" . $id_event;
+	my $query = "SELECT * FROM tevento WHERE id_evento=" . $id_event;
 
 	my $header = "Event ID".$csv_separator."Event name".$csv_separator."Agent ID".$csv_separator."User ID".$csv_separator.
 				"Group ID".$csv_separator."Status".$csv_separator."Timestamp".$csv_separator."Event type".$csv_separator.
@@ -6448,12 +6454,7 @@ sub cli_set_event_storm_protection () {
 sub pandora_get_event_name($$) {
 	my ($dbh,$id_event) = @_;
 	
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_name = get_db_value($dbh, 'SELECT evento FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
+	my $event_name = get_db_value($dbh, 'SELECT evento FROM tevento WHERE id_evento = ?',$id_event);
 	
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -6464,12 +6465,7 @@ sub pandora_get_event_name($$) {
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_id = db_process_update($dbh, $event_table, $parameters, {$where_column => $where_value});
+	my $event_id = db_process_update($dbh, 'tevento', $parameters, {$where_column => $where_value});
 	return $event_id;
 }
 
@@ -6480,12 +6476,7 @@ sub pandora_update_event_from_hash ($$$$) {
 sub pandora_get_event_comment($$) {
 	my ($dbh,$id_event) = @_;
 
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
+	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
 
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -7545,6 +7536,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--enable_group') {
 			param_check($ltotal, 1);
 			cli_enable_group();
+		}
+		elsif ($param eq '--start_snmptrapd') {
+			#param_check($ltotal, 0);
+			cli_start_snmptrapd();
 		}
 		elsif ($param eq '--create_agent') {
 			param_check($ltotal, 8, 4);

@@ -2945,39 +2945,6 @@ function set_watermark(graph_id, plot, watermark_src) {
   );
 }
 
-function get_event_details(event_ids) {
-  table = "";
-  if (typeof event_ids != "undefined") {
-    var inputs = [];
-    var table;
-    inputs.push("get_events_details=1");
-    inputs.push("event_ids=" + event_ids);
-    inputs.push("page=include/ajax/events");
-
-    // Autologin
-    if ($("#hidden-loginhash").val() != undefined) {
-      inputs.push("loginhash=" + $("#hidden-loginhash").val());
-      inputs.push("loginhash_data=" + $("#hidden-loginhash_data").val());
-      inputs.push("loginhash_user=" + $("#hidden-loginhash_user").val());
-    }
-
-    jQuery.ajax({
-      data: inputs.join("&"),
-      type: "GET",
-      url: (action = "../../ajax.php"),
-      timeout: 10000,
-      dataType: "html",
-      async: false,
-      success: function(data) {
-        table = data;
-        //forced_title_callback();
-      }
-    });
-  }
-
-  return table;
-}
-
 //Ajusta la grafica pequenña con el desplazamiento del eje y
 function adjust_left_width_canvas(adapter_id, adapted_id) {
   var adapter_left_margin = $("#" + adapter_id + " .yAxis .tickLabel").width();

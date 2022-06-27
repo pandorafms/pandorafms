@@ -399,7 +399,8 @@ ul li {
 }
 
 .logo_green {
-  height: 60px;
+  background-color: #fff;
+  min-height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;

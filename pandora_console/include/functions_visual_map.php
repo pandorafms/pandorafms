@@ -82,7 +82,7 @@ function visual_map_print_user_line_handles($layoutData)
 
 function visual_map_print_item(
     $mode='read',
-    $layoutData,
+    $layoutData=[],
     $proportion=null,
     $show_links=true,
     $isExternalLink=false,
@@ -2554,13 +2554,13 @@ function visual_map_process_wizard_add(
     $range,
     $width=0,
     $height=0,
-    $period,
-    $process_value,
-    $percentileitem_width,
-    $max_value,
-    $type_percentile,
-    $value_show,
-    $type
+    $period='',
+    $process_value='',
+    $percentileitem_width='',
+    $max_value=0,
+    $type_percentile='',
+    $value_show='',
+    $type=''
 ) {
     if (empty($id_agents)) {
         print_error_message(__('No agents selected'));
@@ -3956,7 +3956,15 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         sort_by_column($valid_layout_items, 'id_metaconsole');
     }
 
-    $num_elements_by_status = [];
+    $num_elements_by_status = [
+        VISUAL_MAP_STATUS_CRITICAL_BAD   => 0,
+        VISUAL_MAP_STATUS_CRITICAL_ALERT => 0,
+        VISUAL_MAP_STATUS_NORMAL         => 0,
+        VISUAL_MAP_STATUS_WARNING        => 0,
+        VISUAL_MAP_STATUS_UNKNOWN        => 0,
+        VISUAL_MAP_STATUS_WARNING_ALERT  => 0,
+    ];
+
     $meta_connected_to = null;
 
     foreach ($valid_layout_items as $layout_item_data) {
@@ -3993,7 +4001,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 
         $ent_element_status = enterprise_hook(
             'enterprise_visual_map_get_status_element',
-            [$layoutData]
+            [$layout_item_data]
         );
         if ($ent_element_status === ENTERPRISE_NOT_HOOK) {
             $ent_element_status = false;
@@ -4558,7 +4566,7 @@ function css_label_styles_visual_console($uniq, $ratio=1)
     $output .= '.c-'.$uniq.' a {color: #3f3f3f } ';
     $output .= '.c-'.$uniq.' .label p strong span {display: inline-block !important; line-height: normal !important} ';
     $output .= '.c-'.$uniq.' *:not(.parent_graph p table tr td span) { font-size: '.(8 * $ratio).'pt; line-height:'.(8 * ($ratio)).'pt; }';
-    $output .= '.c-'.$uniq.' .visual-console-item-label table tr td { padding: 0; margin: 0; }';
+    $output .= '.c-'.$uniq.' .visual-console-item-label table tr td { padding: 0; margin: 0; white-space: pre-wrap; }';
     $output .= '.c-'.$uniq.' .visual_font_size_4pt, .c-'.$uniq.' .visual_font_size_4pt * { font-size: '.(4 * $ratio).'pt !important; line-height:'.(4 * ($ratio)).'pt !important; }';
     $output .= '.c-'.$uniq.' .visual_font_size_6pt, .c-'.$uniq.' .visual_font_size_6pt * { font-size: '.(6 * $ratio).'pt !important; line-height:'.(6 * ($ratio)).'pt !important; }';
     $output .= '.c-'.$uniq.' .visual_font_size_8pt, .c-'.$uniq.' .visual_font_size_8pt * { font-size: '.(8 * $ratio).'pt !important; line-height:'.(8 * ($ratio)).'pt !important; }';

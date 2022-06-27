@@ -265,6 +265,27 @@ if ($has_remote_conf) {
         ['class' => 'invert_filter']
     );
     $remote_cfg .= __('Remote configuration enabled').'</p>';
+
+    $satellite_server = (int) db_get_value_filter(
+        'satellite_server',
+        'tagente',
+        ['id_agente' => $id_agente]
+    );
+
+    if (empty($satellite_server) === false) {
+        $satellite_name = db_get_value_filter(
+            'name',
+            'tserver',
+            ['id_server' => $satellite_server]
+        );
+
+        $remote_cfg .= '<p>'.html_print_image(
+            'images/satellite.png',
+            true,
+            ['class' => 'invert_filter']
+        );
+        $remote_cfg .= $satellite_name.'</p>';
+    }
 } else {
     $remote_cfg = '';
 }

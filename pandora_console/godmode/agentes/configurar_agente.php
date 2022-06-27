@@ -155,6 +155,7 @@ $alert_d7 = 1;
 $alert_recovery = 0;
 $alert_priority = 0;
 $server_name = '';
+$satellite_server = 0;
 $grupo = 0;
 $id_os = 9;
 // Windows.
@@ -985,6 +986,7 @@ if ($update_agent) {
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $satellite_server = (int) get_parameter('satellite_server', 0);
 
     if ($fields === false) {
         $fields = [];
@@ -1092,6 +1094,7 @@ if ($update_agent) {
             'quiet'                     => $quiet,
             'cps'                       => $cps,
             'safe_mode_module'          => $safe_mode_module,
+            'satellite_server'          => $satellite_server,
         ];
 
         if ($config['metaconsole_agent_cache'] == 1) {
@@ -1230,6 +1233,7 @@ if ($id_agente) {
     $cps = $agent['cps'];
     $safe_mode_module = $agent['safe_mode_module'];
     $safe_mode = ($safe_mode_module) ? 1 : 0;
+    $satellite_server = (int) $agent['satellite_server'];
 }
 
 $update_module = (bool) get_parameter('update_module');

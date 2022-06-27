@@ -245,8 +245,11 @@ if (!$new_agent && $alias != '') {
     }
 
     // Remote configuration available.
+    $remote_agent = false;
     if (isset($filename)) {
         if (file_exists($filename['md5'])) {
+            $remote_agent = true;
+
             $agent_name = agents_get_name($id_agente);
             $agent_name = io_safe_output($agent_name);
             $agent_md5 = md5($agent_name, false);
@@ -427,6 +430,42 @@ $table_server .= html_print_select(
     true
 ).'<div class="label_select_child_icons"></div></div></div>';
 
+
+$table_satellite = '';
+if ($remote_agent === true) {
+    // Satellite server selector.
+    $satellite_servers = db_get_all_rows_filter(
+        'tserver',
+        ['server_type' => SERVER_TYPE_ENTERPRISE_SATELLITE],
+        [
+            'id_server',
+            'name',
+        ]
+    );
+
+    $satellite_names = [];
+    if (empty($satellite_servers) === false) {
+        foreach ($satellite_servers as $s_server) {
+            $satellite_names[$s_server['id_server']] = $s_server['name'];
+        }
+
+            $table_satellite = '<div class="label_select"><p class="input_label">'.__('Satellite').'</p>';
+            $table_satellite .= '<div class="label_select_parent">';
+
+            $table_satellite .= html_print_input(
+                [
+                    'type'          => 'select',
+                    'fields'        => $satellite_names,
+                    'name'          => 'satellite_server',
+                    'selected'      => $satellite_server,
+                    'nothing'       => __('None'),
+                    'nothinf_value' => 0,
+                    'return'        => true,
+                ]
+            ).'<div class="label_select_child_icons"></div></div></div>';
+    }
+}
+
 // Description.
 $table_description = '<div class="label_select"><p class="input_label">'.__('Description').'</p>';
 $table_description .= html_print_textarea(
@@ -443,7 +482,7 @@ $table_description .= html_print_textarea(
 echo '<div class="first_row">
         <div class="box-shadow agent_options '.$agent_options_update.' white_box">
             <div class="agent_options_column_left">'.$table_agent_name.$table_alias.$table_ip.$table_primary_group.'</div>
-            <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_description.'</div>
+            <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_satellite.$table_description.'</div>
         </div>';
 if (!$new_agent && $alias != '') {
     echo $table_qr_code;

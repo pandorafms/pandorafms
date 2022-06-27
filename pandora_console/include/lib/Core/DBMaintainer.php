@@ -384,7 +384,7 @@ final class DBMaintainer
      *
      * @return boolean Success or not.
      */
-    private function setConfigToken(string $token, $value)
+    public function setConfigToken(string $token, $value)
     {
         $prev = $this->getValue('tconfig', 'value', ['token' => $token]);
         // If failed or not found, then insert.

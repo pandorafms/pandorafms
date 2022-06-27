@@ -663,3 +663,8 @@ form.modal-dashboard
   padding-top: 10px;
   text-align: initial;
 }
+
+.content-widget .dataTables_wrapper {
+  width: 98%;
+  margin-top: 5px;
+}

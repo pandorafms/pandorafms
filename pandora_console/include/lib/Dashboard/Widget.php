@@ -412,6 +412,10 @@ class Widget
                     $className .= '\WuxWidget';
                 break;
 
+                case 'os_quick_report':
+                    $className .= '\OsQuickReportWidget';
+                break;
+
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
                     $className .= '\\'.$name;

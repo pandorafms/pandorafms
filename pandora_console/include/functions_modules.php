@@ -1133,7 +1133,7 @@ function modules_get_table_data(?int $id_agent_module, ?int $id_type)
 
 function modules_get_raw_data($id_agent_module, $date_init, $date_end)
 {
-    $table = modules_get_table_data($id_agent_module);
+    $table = modules_get_table_data($id_agent_module, null);
 
     $datelimit = ($date_init - $date_end);
     $search_in_history_db = db_search_in_history_db($datelimit);
@@ -4247,7 +4247,7 @@ function modules_get_min_max_data($id_agent_module, $time_init=0)
         $data[0]['max'] = $min_max['max'];
     } else {
         // Search limits of the last two days.
-        $table = modules_get_table_data($id_agent_module);
+        $table = modules_get_table_data($id_agent_module, null);
         $data = db_get_all_rows_sql(
             'SELECT min(datos) as min, max(datos) as max
             FROM '.$table.'

@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.762";
-my $pandora_build = "220524";
+my $pandora_version = "7.0NG.763";
+my $pandora_build = "220627";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -155,10 +155,6 @@ sub pandora_get_sharedconfig ($$) {
 	# Pandora FMS Console's attachment directory
 	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
 
-	#Limit of events replicate in metaconsole
-	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
-	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
-
 	#Public url
 	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
 
@@ -171,12 +167,6 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
 	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
-
-	$pa_config->{"event_replication"} = pandora_get_tconfig_token ($dbh, 'event_replication', 0);
-
-	if ($pa_config->{'include_agents'} eq '') {
-		$pa_config->{'include_agents'} = 0;
-	}
 
 	# PandoraFMS product name
 	$pa_config->{'rb_product_name'} = enterprise_hook(
@@ -438,9 +428,6 @@ sub pandora_load_config {
 	# Patrol process of policies queue
 	$pa_config->{"policy_manager"} = 0; # 5.0
 
-	# Event replication process
-	$pa_config->{"event_replication"} = 0; # 5.0
-
 	# Event auto-validation
 	$pa_config->{"event_auto_validation"} = 1; # 5.0
 
@@ -537,8 +524,6 @@ sub pandora_load_config {
 	$pa_config->{"syslog_max"} = 65535; # 7.0.716
 	$pa_config->{"syslog_threads"} = 4; # 7.0.716
 
-	#$pa_config->{'include_agents'} = 0; #6.1
-	#
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
 
@@ -1187,9 +1172,6 @@ sub pandora_load_config {
 			$pa_config->{'warmup_unknown_interval'}= clean_blank($1);
 			$pa_config->{'warmup_unknown_on'} = 0 if ($pa_config->{'warmup_unknown_interval'} == 0); # On by default.
 		}
-		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
-		#	$pa_config->{'include_agents'}= clean_blank($1);
-		#}
 		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
 			$pa_config->{'enc_dir'} = clean_blank($1);
 		}

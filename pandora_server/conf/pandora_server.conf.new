@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.762
+# Version 7.0NG.763
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -78,10 +78,6 @@ dbssl 0
 # dbsslcapath: Path to a directory that contains trusted SSL certificate authority certificates in PEM format.
 
 # dbsslcapath
-
-# By default, parent agent will not be updated
-
-#update_parent 0
 
 # verbosity: level of detail on errors/messages (0 default, 1 verbose, 2 debug.... 10 noisy)
 # -v in command line (verbose) or -d (debug). Set this to 10 when try to locate problems and
@@ -434,6 +430,7 @@ sample_agent_interval 600
 # Update parent from the agent xml
 
 update_parent 1
+
 #
 #
 # This enable realtime reverse geocoding using Google Maps public api.

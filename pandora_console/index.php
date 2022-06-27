@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Index.
  *
@@ -53,8 +54,8 @@ $develop_bypass = 0;
 
 if ($develop_bypass != 1) {
     // If no config file, automatically try to install.
-    if (! file_exists('include/config.php')) {
-        if (! file_exists('install.php')) {
+    if (!file_exists('include/config.php')) {
+        if (!file_exists('install.php')) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
             $flag_url = 0;
             foreach ($url as $key => $value) {
@@ -128,8 +129,8 @@ if ($develop_bypass != 1) {
     }
 }
 
-if ((! file_exists('include/config.php'))
-    || (! is_readable('include/config.php'))
+if ((!file_exists('include/config.php'))
+    || (!is_readable('include/config.php'))
 ) {
     $login_screen = 'error_noconfig';
     include 'general/error_screen.php';
@@ -224,9 +225,9 @@ ob_start('ui_process_page_head');
 enterprise_include_once('index.php');
 
 echo '<script type="text/javascript">';
-    echo 'var dispositivo = navigator.userAgent.toLowerCase();';
-    echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
-        echo 'document.location = "'.ui_get_full_url('/mobile').'";  }';
+echo 'var dispositivo = navigator.userAgent.toLowerCase();';
+echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
+echo 'document.location = "'.ui_get_full_url('/mobile').'";  }';
 echo '</script>';
 
 // This tag is included in the buffer passed to ui_process_page_head so
@@ -275,7 +276,7 @@ if (strlen($search) > 0) {
 
 // Login process.
 enterprise_include_once('include/auth/saml.php');
-if (! isset($config['id_user'])) {
+if (!isset($config['id_user'])) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
     setcookie('errormsg', null, -1);
@@ -731,9 +732,9 @@ if (! isset($config['id_user'])) {
         }
 
         // Boolean parameters.
-        $correct_pass_change = (boolean) get_parameter('correct_pass_change', false);
-        $reset               = (boolean) get_parameter('reset', false);
-        $first               = (boolean) get_parameter('first', false);
+        $correct_pass_change = (bool) get_parameter('correct_pass_change', false);
+        $reset               = (bool) get_parameter('reset', false);
+        $first               = (bool) get_parameter('first', false);
         // Strings.
         $reset_hash          = get_parameter('reset_hash');
         $pass1               = get_parameter_post('pass1');
@@ -955,7 +956,7 @@ if (! isset($config['id_user'])) {
         exit('</html>');
     } else {
         if (((bool) $user_in_db['is_admin'] === false)
-            && (            (bool) $user_in_db['not_login'] === true
+            && ((bool) $user_in_db['not_login'] === true
             || (is_metaconsole() === false
             && has_metaconsole() === true
             && is_management_allowed() === false
@@ -1170,7 +1171,7 @@ if (has_metaconsole() === true
         $err .= '</div>';
         ?>
         <script type="text/javascript">
-            $(document).ready(function () {
+            $(document).ready(function() {
                 infoMessage({
                     title: '<?php echo __('Warning'); ?>',
                     text: '<?php echo $err; ?>',
@@ -1208,7 +1209,7 @@ if ($searchPage) {
                     $main_sec = $sec;
                 }
             } else if ($sec == 'gextensions') {
-                    $main_sec = get_parameter('extension_in_menu');
+                $main_sec = get_parameter('extension_in_menu');
                 if (empty($main_sec) === true) {
                     $main_sec = $sec;
                 }
@@ -1379,12 +1380,12 @@ if ($config['pure'] == 0) {
     // Main pure.
 }
 
-html_print_div(
+echo html_print_div(
     ['id' => 'wiz_container'],
     true
 );
 
-html_print_div(
+echo html_print_div(
     ['id' => 'um_msg_receiver'],
     true
 );
@@ -1426,26 +1427,27 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
-
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
-        if(theme === 'pandora'){
-        if($('table.info_table tr').length < 5){
+    if (theme === 'pandora') {
+        if ($('table.info_table tr').length < 5) {
             $('table.info_table tbody > tr').css('background-color', '#fff');
         }
     }
 
     // When the user scrolls down 400px from the top of the document, show the
     // button.
-    window.onscroll = function() {scrollFunction()};
+    window.onscroll = function() {
+        scrollFunction()
+    };
 
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            if(document.getElementById("top_btn")){
+            if (document.getElementById("top_btn")) {
                 document.getElementById("top_btn").style.display = "block";
             }
         } else {
-            if(document.getElementById("top_btn")){
+            if (document.getElementById("top_btn")) {
                 document.getElementById("top_btn").style.display = "none";
             }
         }
@@ -1455,48 +1457,49 @@ require 'include/php_to_js_values.php';
     function topFunction() {
 
         /*
-        * Safari.
-        * document.body.scrollTop = 0;
-        * For Chrome, Firefox, IE and Opera.
-        * document.documentElement.scrollTop = 0; 
-        */
+         * Safari.
+         * document.body.scrollTop = 0;
+         * For Chrome, Firefox, IE and Opera.
+         * document.documentElement.scrollTop = 0; 
+         */
 
-        $("HTML, BODY").animate({ scrollTop: 0 }, 500);
+        $("HTML, BODY").animate({
+            scrollTop: 0
+        }, 500);
     }
 
     // Initial load of page.
     $(document).ready(adjustFooter);
-    
+
     // Every resize of window.
     $(window).resize(adjustFooter);
-    
+
     // Every show/hide call may need footer re-layout.
     (function() {
         var oShow = jQuery.fn.show;
         var oHide = jQuery.fn.hide;
-        
-        jQuery.fn.show = function () {
+
+        jQuery.fn.show = function() {
             var rv = oShow.apply(this, arguments);
             adjustFooter();
             return rv;
         };
-        jQuery.fn.hide = function () {
+        jQuery.fn.hide = function() {
             var rv = oHide.apply(this, arguments);
             adjustFooter();
             return rv;
         };
     })();
 
-    function first_time_identification () {
-        jQuery.post ("ajax.php",
-            {
+    function first_time_identification() {
+        jQuery.post("ajax.php", {
                 "page": "general/register",
                 "load_wizards": 'initial'
             },
-            function (data) {
-                $('#wiz_container').empty ()
-                    .html (data);
-                run_configuration_wizard ();
+            function(data) {
+                $('#wiz_container').empty()
+                    .html(data);
+                run_configuration_wizard();
             },
             "html"
         );
@@ -1512,42 +1515,42 @@ require 'include/php_to_js_values.php';
             );
             return;
         }
-        jQuery.post ("ajax.php",
-            {
+        jQuery.post("ajax.php", {
                 "page": "godmode/setup/setup_notifications",
                 "get_notification": 1,
                 "id": match[2]
             },
-            function (data) {
+            function(data) {
                 notifications_hide();
                 try {
                     var json = JSON.parse(data);
                     $('#um_msg_receiver')
-                        .empty ()
-                        .html (json.mensaje);
+                        .empty()
+                        .html(json.mensaje);
 
                     $('#um_msg_receiver').prop('title', json.subject);
-                    
+
                     // Launch modal.
                     $("#um_msg_receiver").dialog({
                         resizable: true,
                         draggable: true,
                         modal: true,
                         width: 800,
-                        buttons: [
-                            {
-                                text: "OK",
-                                click: function() {
-                                    $( this ).dialog( "close" );
-                                }
+                        height: 600,
+                        buttons: [{
+                            text: "OK",
+                            click: function() {
+                                $(this).dialog("close");
                             }
-                        ],
+                        }],
                         overlay: {
-                                opacity: 0.5,
-                                background: "black"
-                            },
+                            opacity: 0.5,
+                            background: "black"
+                        },
                         closeOnEscape: false,
-                        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+                        open: function(event, ui) {
+                            $(".ui-dialog-titlebar-close").hide();
+                        }
                     });
 
                     $(".ui-widget-overlay").css("background", "#000");
@@ -1563,30 +1566,30 @@ require 'include/php_to_js_values.php';
         );
     }
 
-    //Dynamically assign footer position and width.
-    function adjustFooter() {
-        /*
-        if (document.readyState !== 'complete' || $('#container').position() == undefined) {
-            return;
+        //Dynamically assign footer position and width.
+        function adjustFooter() {
+            /*
+            if (document.readyState !== 'complete' || $('#container').position() == undefined) {
+                return;
+            }
+            // minimum top value (upper limit) for div#foot
+            var ulim = $('#container').position().top + $('#container').outerHeight(true);
+            // window height. $(window).height() returns wrong value on Opera and Google Chrome.
+            var wh = document.documentElement.clientHeight;
+            // save div#foot's height for latter use
+            var h = $('#foot').height();
+            // new top value for div#foot
+            var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
+            /*
+            if ($('#foot').position().top != t) {
+                $('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+                $('#foot').height(h);
+            }
+            if ($('#foot').width() !=  $(window).width()) {
+                $('#foot').width($(window).width());
+            }
+            */
         }
-        // minimum top value (upper limit) for div#foot
-        var ulim = $('#container').position().top + $('#container').outerHeight(true);
-        // window height. $(window).height() returns wrong value on Opera and Google Chrome.
-        var wh = document.documentElement.clientHeight;
-        // save div#foot's height for latter use
-        var h = $('#foot').height();
-        // new top value for div#foot
-        var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
-        /*
-        if ($('#foot').position().top != t) {
-            $('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
-            $('#foot').height(h);
-        }
-        if ($('#foot').width() !=  $(window).width()) {
-            $('#foot').width($(window).width());
-        }
-        */
-    }
 </script>
 <?php
 if (__PAN_XHPROF__ === 1) {

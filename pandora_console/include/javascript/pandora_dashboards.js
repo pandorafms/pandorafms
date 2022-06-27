@@ -1223,6 +1223,8 @@ function dashboardLoadVC(settings) {
     var ratio_visualconsole = props.height / props.width;
     var ratio_w = size.width / props.width;
     var ratio_h = size.height / props.height;
+    var acum_height = props.height;
+    var acum_width = props.width;
 
     props.width = size.width;
     props.height = size.width * ratio_visualconsole;
@@ -1235,6 +1237,11 @@ function dashboardLoadVC(settings) {
           props.height = size.height;
           props.width = size.height / ratio_visualconsole;
         }
+      } else {
+        ratio = ratio_w;
+        var height = (acum_height * size.width) / acum_width;
+        props.height = height;
+        props.width = height / ratio_visualconsole;
       }
     } else {
       if (props.height > size.height) {
@@ -1290,20 +1297,28 @@ function dashboardLoadVC(settings) {
           var regex_hash = /(hash=)[^&]+(&?)/gi;
           var replacement_hash = "$1" + props.hash + "$2";
 
+          /*
           var regex_width = /(width=)[^&]+(&?)/gi;
           var replacement_width = "$1" + size.width + "$2";
 
           var regex_height = /(height=)[^&]+(&?)/gi;
           var replacement_height =
             "$1" + (size.height + headerMobileFix) + "$2";
+            */
 
           // Change the URL (if the browser has support).
           if ("history" in window) {
             var href = window.location.href.replace(regex, replacement);
             href = href.replace(regex_hash, replacement_hash);
-            href = href.replace(regex_width, replacement_width);
-            href = href.replace(regex_height, replacement_height);
+            //href = href.replace(regex_width, replacement_width);
+            //href = href.replace(regex_height, replacement_height);
             window.history.replaceState({}, document.title, href);
+          }
+
+          if (props.height > props.width) {
+            $(".container-center").css("overflow", "auto");
+          } else {
+            $(".container-center").css("overflow", "inherit");
           }
 
           container.classList.remove("cv-overflow");
@@ -1351,180 +1366,42 @@ function dashboardLoadVC(settings) {
       : "dashboard"
   );
 
-  $(window).on("orientationchange", function() {
-    $(container).width($(window).height());
-    $(container).height($(window).width() - headerMobileFix);
-    //Remove spinner change VC.
-    container.classList.remove("is-updating");
-    container.classList.remove("cv-overflow");
+  if (settings.mobile_view_orientation_vc === true) {
+    $(window).on("orientationchange", function() {
+      $(container).width($(window).height());
+      $(container).height($(window).width() - headerMobileFix);
+      //Remove spinner change VC.
+      container.classList.remove("is-updating");
+      container.classList.remove("cv-overflow");
 
-    var div = container.querySelector(".div-visual-console-spinner");
+      var div = container.querySelector(".div-visual-console-spinner");
 
-    if (div !== null) {
-      var parent = div.parentElement;
-      if (parent !== null) {
-        parent.removeChild(div);
-      }
-    }
-
-    container.classList.add("is-updating");
-    container.classList.add("cv-overflow");
-    const divParent = document.createElement("div");
-    divParent.className = "div-visual-console-spinner";
-
-    const divSpinner = document.createElement("div");
-    divSpinner.className = "visual-console-spinner";
-
-    divParent.appendChild(divSpinner);
-    container.appendChild(divParent);
-
-    var dimensions = {
-      width: $(window).height(),
-      height: $(window).width() - 40
-    };
-
-    visualConsoleManager.changeDimensionsVc(dimensions, interval);
-  });
-}
-
-// eslint-disable-next-line no-unused-vars
-function dashboardShowEventDialog(settings) {
-  settings = JSON.parse(atob(settings));
-  var dialog_exist = $("div[aria-describedby='event_details_window']");
-  if (dialog_exist.length == 1) {
-    $("div[aria-describedby='event_details_window']").remove();
-  }
-  $.ajax({
-    method: "post",
-    url: settings.ajaxUrl,
-    data: {
-      page: settings.page,
-      get_extended_event: 1,
-      event: settings.event,
-      dialog_page: "",
-      meta: 0,
-      history: 0,
-      filter: [],
-      node_id: settings.node_id
-    },
-    dataType: "html",
-    success: function(data) {
-      $("#event_details_window")
-        .hide()
-        .empty()
-        .append(data)
-        .dialog({
-          title: settings.event.evento,
-          resizable: true,
-          draggable: true,
-          modal: true,
-          create: function() {
-            $("#button-delete_button").removeAttr("onclick");
-            $("#button-delete_button").click(function() {
-              var confirm_message = $("#hidden-delete_confirm_message").val();
-              if (confirm(confirm_message) == false) {
-                return false;
-              }
-              $.ajax({
-                method: "post",
-                url: settings.ajaxUrl,
-                data: {
-                  page: "include/ajax/events",
-                  delete_event: 1,
-                  node_id: settings.node_id,
-                  id_evento: settings.event.id_evento,
-                  filter: []
-                },
-                success: function() {
-                  $("#notification_delete_error").show();
-                  $("#event_details_window").dialog("close");
-                },
-                error: function(error) {
-                  console.error(error);
-                }
-              });
-            });
-          },
-          close: function() {
-            //$("#refrcounter").countdown("resume");
-            //$("div.vc-countdown").countdown("resume");
-            $.ajax({
-              method: "post",
-              url: settings.ajaxUrl,
-              data: {
-                page: "operation/dashboard/dashboard",
-                method: "drawWidget",
-                dashboardId: settings.dashboardId,
-                cellId: settings.cellId,
-                widgetId: settings.widgetId,
-                redraw: 1
-              },
-              success: function(dataWidget) {
-                // Widget empty and reload.
-                $("#widget-" + settings.cellId + " .content-widget").empty();
-                $("#widget-" + settings.cellId + " .content-widget").append(
-                  dataWidget
-                );
-              },
-              error: function(error) {
-                console.error(error);
-              }
-            });
-          },
-          overlay: {
-            opacity: 0.5,
-            background: "black"
-          },
-          width: 710,
-          height: 600
-        })
-        .show();
-
-      $.post({
-        url: settings.ajaxUrl,
-        data: {
-          page: "include/ajax/events",
-          get_comments: 1,
-          event: settings.event,
-          filter: []
-        },
-        dataType: "html",
-        success: function(data) {
-          $("#extended_event_comments_page").empty();
-          $("#extended_event_comments_page").html(data);
+      if (div !== null) {
+        var parent = div.parentElement;
+        if (parent !== null) {
+          parent.removeChild(div);
         }
-      });
-
-      //$("#refrcounter").countdown("pause");
-      //$("div.vc-countdown").countdown("pause");
-
-      switch (settings.result) {
-        case "comment_ok":
-          $("#notification_comment_success").show();
-          break;
-        case "comment_error":
-          $("#notification_comment_error").show();
-          break;
-        case "status_ok":
-          $("#notification_status_success").show();
-          break;
-        case "status_error":
-          $("#notification_status_error").show();
-          break;
-        case "owner_ok":
-          $("#notification_owner_success").show();
-          break;
-        case "owner_error":
-          $("#notification_owner_error").show();
-          break;
       }
 
-      forced_title_callback();
-    },
-    error: function(error) {
-      console.error(error);
-    }
-  });
+      container.classList.add("is-updating");
+      container.classList.add("cv-overflow");
+      const divParent = document.createElement("div");
+      divParent.className = "div-visual-console-spinner";
+
+      const divSpinner = document.createElement("div");
+      divSpinner.className = "visual-console-spinner";
+
+      divParent.appendChild(divSpinner);
+      container.appendChild(divParent);
+
+      var dimensions = {
+        width: $(window).height(),
+        height: $(window).width() - 40
+      };
+
+      visualConsoleManager.changeDimensionsVc(dimensions, interval);
+    });
+  }
 }
 
 // eslint-disable-next-line no-unused-vars

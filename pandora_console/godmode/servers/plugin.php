@@ -337,7 +337,7 @@ if (($create != '') || ($view != '')) {
 
     $data = [];
     $data[0] = __('Name');
-    $data[1] = '<input type="text" name="form_name" size=100 value="'.$form_name.'">';
+    $data[1] = '<input type="text" class="text_input" name="form_name" size=100 value="'.$form_name.'">';
     $table->colspan['plugin_name'][1] = 3;
     $table->data['plugin_name'] = $data;
 
@@ -399,7 +399,7 @@ if (($create != '') || ($view != '')) {
 
     $data = [];
     $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
-    $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
+    $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf text_input" size=100 value="'.$form_execute.'" '.$disabled.'>';
     if ($locked) {
         $data[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_advanced_conf lock', 'class' => 'invert_filter']);
     }
@@ -411,7 +411,7 @@ if (($create != '') || ($view != '')) {
 
     $data = [];
     $data[0] = __('Plug-in parameters');
-    $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
+    $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf text_input" size=100 value="'.$parameters.'" '.$disabled.'>';
     if ($locked) {
         $data[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_advanced_conf lock', 'class' => 'invert_filter']);
     }
@@ -484,13 +484,13 @@ if (($create != '') || ($view != '')) {
         $datam = [];
         $datam[0] = __('Description')."<span class='normal_weight'> ($macro_name)</span>";
         $datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-        $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_macro'", true);
+        $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_macro text_input'", true);
         if ($locked) {
             $datam[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_macro lock', 'class' => 'invert_filter']);
         }
 
         $datam[2] = __('Default value')."<span class='normal_weight'> ($macro_name)</span>";
-        $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_macro'", true);
+        $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_macro text_input'", true);
         if ($locked) {
             $datam[3] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_macro lock', 'class' => 'invert_filter']);
         }

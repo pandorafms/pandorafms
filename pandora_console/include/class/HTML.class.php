@@ -851,6 +851,8 @@ class HTML
 
         foreach ($inputs as $input) {
             if (is_array(($input['arguments'] ?? null)) === true
+                && isset($input['arguments']) === true
+                && isset($input['arguments']['type']) === true
                 && $input['arguments']['type'] === 'submit'
             ) {
                 $output_submit .= self::printBlock($input, true);

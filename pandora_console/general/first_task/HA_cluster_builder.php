@@ -37,7 +37,7 @@ ui_require_css_file('first_task');
 ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clusters defined yet.') ]);
 ?>
 
-<div class="new_task_cluster">
+<div class="new_task">
     <div class="image_task_cluster">
         <?php echo html_print_image('images/first_task/slave-mode.png', true, ['title' => __('Clusters')]); ?>
     </div>

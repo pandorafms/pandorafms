@@ -2020,6 +2020,7 @@ function progressBarSvg(option) {
   return svg;
 }
 
+// eslint-disable-next-line no-unused-vars
 function inArray(needle, haystack) {
   var length = haystack.length;
   for (var i = 0; i < length; i++) {
@@ -2088,3 +2089,33 @@ function selection_multiple_change(info) {
     "json"
   );
 }
+
+/**
+ * Filter selector item by text based on a text input.
+ *
+ * @param {string} textbox Text input.
+ *
+ * @return {void}
+ */
+$.fn.filterByText = function(textbox) {
+  var select = this;
+
+  $(textbox).bind("change keyup", function() {
+    var search = $.trim($(textbox).val());
+    var regex = new RegExp(search, "gi");
+
+    $(select)
+      .find("option")
+      .each(function() {
+        if (
+          $(this)
+            .text()
+            .match(regex) !== null
+        ) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+  });
+};

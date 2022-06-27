@@ -438,16 +438,22 @@ class MapsMadeByUser extends Widget
 
         $settings = \json_encode(
             [
-                'props'   => $visualConsoleData,
-                'items'   => $visualConsoleItems,
-                'baseUrl' => ui_get_full_url('/', false, false, false),
-                'ratio'   => $ratio,
-                'size'    => $size,
-                'cellId'  => $this->cellId,
-                'hash'    => User::generatePublicHash(),
-                'id_user' => $config['id_user'],
-                'page'    => 'include/ajax/visual_console.ajax',
-                'uniq'    => $uniq,
+                'props'                      => $visualConsoleData,
+                'items'                      => $visualConsoleItems,
+                'baseUrl'                    => ui_get_full_url(
+                    '/',
+                    false,
+                    false,
+                    false
+                ),
+                'ratio'                      => $ratio,
+                'size'                       => $size,
+                'cellId'                     => $this->cellId,
+                'hash'                       => User::generatePublicHash(),
+                'id_user'                    => $config['id_user'],
+                'page'                       => 'include/ajax/visual_console.ajax',
+                'uniq'                       => $uniq,
+                'mobile_view_orientation_vc' => false,
             ]
         );
 
@@ -507,7 +513,6 @@ class MapsMadeByUser extends Widget
                     },
                     dataType: 'JSON',
                     success: function(data) {
-                        console.log(data);
                         $('#vcId').empty();
                         Object.entries(data).forEach(e => {
                             key = e[0];

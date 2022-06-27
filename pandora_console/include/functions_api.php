@@ -388,23 +388,6 @@ function api_get_test_agent_cache()
 }
 
 
-// Returs the string OK if a connection to the event replication DB can be established.
-function api_get_test_event_replication_db()
-{
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    $status = enterprise_hook('events_test_replication_db', []);
-    if ($status === ENTERPRISE_NOT_HOOK) {
-        echo 'ERR';
-        return;
-    }
-
-    echo $status;
-}
-
-
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 
 
@@ -10892,11 +10875,6 @@ function api_set_event_validate_filter_pro($trash1, $trash2, $other, $trash3)
         return;
     }
 
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
-    }
-
     if ($other['type'] == 'string') {
         if ($other['data'] != '') {
             returnError('Parameter error.');
@@ -10962,7 +10940,7 @@ function api_set_event_validate_filter_pro($trash1, $trash2, $other, $trash3)
     }
 
     $count = db_process_sql_update(
-        $table_events,
+        'tevento',
         ['estado' => 1],
         $filterString
     );
@@ -10988,12 +10966,6 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
     }
 
     $simulate = false;
-
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
-    }
-
     if ($other['type'] == 'string') {
         if ($other['data'] != '') {
             returnError('Parameter error.');
@@ -11028,14 +11000,14 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
     }
 
     if ($simulate) {
-        $rows = db_get_all_rows_filter($table_events, $filterString);
+        $rows = db_get_all_rows_filter('tevento', $filterString);
         if ($rows !== false) {
             returnData('string', count($rows));
             return;
         }
     } else {
         $count = db_process_sql_update(
-            $table_events,
+            'tevento',
             ['estado' => 1],
             $filterString
         );
@@ -11305,9 +11277,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     global $config;
 
     $table_events = 'tevento';
-    if (is_metaconsole() === true) {
-        $table_events = 'tmetaconsole_event';
-    }
 
     // By default.
     $status = 3;
@@ -11525,21 +11494,19 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     }
 
     if ($group_rep == 0) {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                if ($filter['total']) {
-                    $sql = 'SELECT COUNT(*)
+        if ($filter['total']) {
+            $sql = 'SELECT COUNT(*)
                         FROM '.$table_events.'
                         WHERE 1=1 '.$sql_post;
-                } else if ($filter['more_criticity']) {
-                    $sql = 'SELECT criticity
+        } else if ($filter['more_criticity']) {
+            $sql = 'SELECT criticity
                         FROM '.$table_events.'
                         WHERE 1=1 '.$sql_post.'
                         ORDER BY criticity DESC
                         LIMIT 1';
-                } else {
-                    if (is_metaconsole() === true) {
-                        $sql = 'SELECT *,
+        } else {
+            if (is_metaconsole() === true) {
+                $sql = 'SELECT *,
                             (SELECT t2.nombre
                                 FROM tgrupo t2
                                 WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_name,
@@ -11549,8 +11516,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                             FROM '.$table_events.$alert_join.'
                             WHERE 1=1 '.$sql_post.'
                             ORDER BY utimestamp DESC';
-                    } else {
-                        $sql = 'SELECT *,
+            } else {
+                $sql = 'SELECT *,
                             (SELECT t1.alias
                                 FROM tagente t1
                                 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
@@ -11569,109 +11536,19 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                             FROM '.$table_events.$alert_join.'
                             WHERE 1=1 '.$sql_post.'
                             ORDER BY utimestamp DESC';
-                    }
-                }
-            break;
-
-            case 'postgresql':
-                // TODO TOTAL
-                $sql = 'SELECT *,
-                    (SELECT t1.alias
-                        FROM tagente t1
-                        WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-                    (SELECT t2.nombre
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-                    (SELECT t2.icon
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-                    (SELECT tmodule.name
-                        FROM tmodule
-                        WHERE id_module IN (
-                            SELECT tagente_modulo.id_modulo
-                            FROM tagente_modulo
-                            WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                    FROM tevento
-                    WHERE 1=1 '.$sql_post.'
-                    ORDER BY utimestamp DESC';
-            break;
-
-            case 'oracle':
-                // TODO TOTAL
-                $set = [];
-
-                $sql = 'SELECT *,
-                    (SELECT t1.alias
-                        FROM tagente t1
-                        WHERE t1.id_agente = tevento.id_agente) AS alias,
-                    (SELECT t1.nombre
-                        FROM tagente t1
-                        WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-                    (SELECT t2.nombre
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-                    (SELECT t2.icon
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-                    (SELECT tmodule.name
-                        FROM tmodule
-                        WHERE id_module IN (
-                            SELECT tagente_modulo.id_modulo
-                            FROM tagente_modulo
-                            WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                    FROM tevento
-                    WHERE 1=1 '.$sql_post.' ORDER BY utimestamp DESC';
-                $sql = oracle_recode_query($sql, $set);
-            break;
+            }
         }
     } else {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                db_process_sql('SET group_concat_max_len = 9999999');
+        db_process_sql('SET group_concat_max_len = 9999999');
 
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                        GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-                    FROM ".$table_events.'
-                    WHERE 1=1 '.$sql_post.'
-                    GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC';
-            break;
-
-            case 'postgresql':
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                        array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-                    FROM ".$table_events.'
-                    WHERE 1=1 '.$sql_post.'
-                    GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC';
-            break;
-
-            case 'oracle':
-                $set = [];
-                // TODO: Remove duplicate user comments
-                $sql = 'SELECT a.*, b.event_rep, b.timestamp_rep
-                    FROM (SELECT *
-                        FROM tevento
-                        WHERE 1=1 '.$sql_post.") a, 
-                    (SELECT MAX (id_evento) AS id_evento,
-                        to_char(evento) AS evento, id_agentmodule,
-                        COUNT(*) AS event_rep, MIN(estado) AS min_estado,
-                        MAX(estado) AS max_estado,
-                        LISTAGG(user_comment, '') AS user_comment,
-                        MAX(utimestamp) AS timestamp_rep 
-                    FROM ".$table_events.' 
-                    WHERE 1=1 '.$sql_post.' 
-                    GROUP BY to_char(evento), id_agentmodule) b 
-                    WHERE a.id_evento=b.id_evento AND 
-                        to_char(a.evento)=to_char(b.evento) AND
-                        a.id_agentmodule=b.id_agentmodule';
-                $sql = oracle_recode_query($sql, $set);
-            break;
-        }
+        $sql = "SELECT *, MAX(id_evento) AS id_evento,
+                GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+                MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+                COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_last
+            FROM ".$table_events.'
+            WHERE 1=1 '.$sql_post.'
+            GROUP BY evento, id_agentmodule
+            ORDER BY timestamp_last DESC';
     }
 
     if ($other['type'] == 'string') {
@@ -11802,17 +11679,9 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
         }
     }
 
-    // In meta or node.
-    if (is_metaconsole() === true) {
-        $table = 'tmetaconsole_event';
-    } else {
-        $table = 'tevento';
-    }
-
-    // TODO. Stablish security for prevent sql injection?
     // Update the row
     $result = db_process_sql_update(
-        $table,
+        'tevento',
         $paramsSerialize,
         [ 'id_evento' => $id_event ]
     );
@@ -11883,15 +11752,7 @@ function api_get_events($node_id, $trash2, $other, $returnType, $user_in_db=null
         $filterString = otherParameter2Filter($other, false, $use_agent_name);
     }
 
-    if (is_metaconsole()) {
-        if ((int) $node_id !== 0) {
-            $filterString .= ' AND server_id = '.$node_id;
-        }
-
-        $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
-    } else {
-        $dataRows = db_get_all_rows_filter('tevento', $filterString);
-    }
+    $dataRows = db_get_all_rows_filter('tevento', $filterString);
 
     $last_error = error_get_last();
     if (empty($dataRows)) {
@@ -13108,18 +12969,20 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType)
 {
     global $config;
 
-    $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
-        $table_events = 'tmetaconsole_event';
-    }
+    $sql = sprintf(
+        'SELECT *
+        FROM tevento
+        WHERE id_evento= %d',
+        $id_event
+    );
 
-    $sql = 'SELECT *
-        FROM '.$table_events."
-        WHERE id_evento=$id_event";
     $event_data = db_get_row_sql($sql);
 
     // Check the access to group
-    if (!empty($event_data['id_grupo']) && $event_data['id_grupo'] > 0 && !$event_data['id_agente']) {
+    if (!empty($event_data['id_grupo'])
+        && $event_data['id_grupo'] > 0
+        && !$event_data['id_agente']
+    ) {
         if (!check_acl($config['id_user'], $event_data['id_grupo'], 'ER')) {
             returnError('forbidden', $returnType);
             return;
@@ -13127,8 +12990,14 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType)
     }
 
     // Check the access to agent
-    if (!empty($event_data['id_agente']) && $event_data['id_agente'] > 0) {
-        if (!util_api_check_agent_and_print_error($event_data['id_agente'], $returnType)) {
+    if (!empty($event_data['id_agente'])
+        && $event_data['id_agente'] > 0
+    ) {
+        if (!util_api_check_agent_and_print_error(
+            $event_data['id_agente'],
+            $returnType
+        )
+        ) {
             return;
         }
     }
@@ -13416,13 +13285,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            if (is_metaconsole()) {
-                $table_event = 'tmetaconsole_event';
-            } else {
-                $table_event = 'tevento';
-            }
-
-            $sql_validation = 'SELECT id_evento FROM '.$table_event.' where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {
@@ -13464,9 +13327,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                 $res = events_comment(
                     $return,
                     $user_comment,
-                    'Added comment',
-                    is_metaconsole(),
-                    $config['history_db_enabled']
+                    'Added comment'
                 );
                 if ($other['data'][13] != '') {
                     // owner user
@@ -13476,9 +13337,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         events_change_owner(
                             $return,
                             $owner_user,
-                            true,
-                            is_metaconsole(),
-                            $config['history_db_enabled']
+                            true
                         );
                     }
                 }
@@ -13534,9 +13393,7 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         $status = events_comment(
             $id,
             $comment,
-            'Added comment',
-            $meta,
-            $history
+            'Added comment'
         );
         if (is_error($status)) {
             returnError(
@@ -13699,17 +13556,12 @@ function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnTy
         return;
     }
 
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
-    }
-
     $data['type'] = 'string';
-    $check_id = db_get_value('id_evento', $table_events, 'id_evento', $id);
+    $check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
 
     if ($check_id) {
         // event exists
-        $status = db_get_value('estado', $table_events, 'id_evento', $id);
+        $status = db_get_value('estado', 'tevento', 'id_evento', $id);
         if ($status == 1) {
             // event already validated
             $data['data'] = 'Event already validated.';
@@ -13723,7 +13575,7 @@ function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnTy
                 'estado'         => 1,
             ];
 
-            $result = db_process_sql_update($table_events, $values, ['id_evento' => $id]);
+            $result = db_process_sql_update('tevento', $values, ['id_evento' => $id]);
 
             if ($result === false) {
                 $data['data'] = 'The event could not be validated.';
@@ -17490,7 +17342,7 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
  * Function for get event id and node id, then we get in return the Metaconsole event ID.
  *
  * @param [string] $server_id        id server (Node)
- * @param [string] $console_event_id console Id node event in tmetaconsole_event
+ * @param [string] $console_event_id console Id node event in tevent
  * @param [string] $trash2           don't use
  * @param [string] $returnType
  *
@@ -17501,19 +17353,54 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
  */
 function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
 {
-    global $config;
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
 
-    if (is_metaconsole()) {
-        $mc_event_id = db_get_all_rows_sql("SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ");
+        // Get grouped comments.
+        $mc_event_id = db_get_all_rows_sql(
+            sprintf(
+                'SELECT id_evento
+                FROM tevento
+                WHERE id_evento = %d
+                ',
+                $console_event_id
+            )
+        );
+
         if ($mc_event_id !== false) {
-            returnData($returnType, ['type' => 'string', 'data' => $mc_event_id]);
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => $mc_event_id,
+                ]
+            );
         } else {
             returnError('id_not_found', 'string');
         }
-    } else {
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
         returnError('forbidden', 'string');
-        return;
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
+
+    return;
 }
 
 
@@ -17561,20 +17448,14 @@ function api_get_is_centralized($server_id, $thrash1, $thrash2, $returnType)
 function api_set_event_in_progress($event_id, $trash2, $returnType)
 {
     global $config;
-    if (is_metaconsole()) {
-        $table = 'tmetaconsole_event';
-    } else {
-        $table = 'tevento';
-    }
-
     $event = db_process_sql_update(
-        $table,
+        'tevento',
         ['estado' => 2],
         ['id_evento' => $event_id]
     );
 
     if ($event !== false) {
-            returnData('string', ['data' => $event]);
+        returnData('string', ['data' => $event]);
     } else {
         returnError('id_not_found', 'string');
     }

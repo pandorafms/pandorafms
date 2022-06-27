@@ -572,3 +572,8 @@ div#main_pure {
 #main_page > .ui-content div.label > p {
   margin: 0;
 }
+
+.content-widget .dataTables_wrapper {
+  width: 98%;
+  margin-top: 5px;
+}

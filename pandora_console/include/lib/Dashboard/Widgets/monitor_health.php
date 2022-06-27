@@ -358,7 +358,7 @@ class MonitorHealthWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 250,
+            'height' => 210,
         ];
 
         return $size;

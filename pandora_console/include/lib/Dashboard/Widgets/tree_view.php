@@ -735,7 +735,7 @@ class TreeViewWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 520,
+            'height' => 590,
         ];
 
         return $size;

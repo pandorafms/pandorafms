@@ -544,7 +544,7 @@ class MapsMadeByUser extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 360,
+            'height' => 270,
         ];
 
         return $size;

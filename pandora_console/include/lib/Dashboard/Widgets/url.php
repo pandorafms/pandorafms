@@ -307,7 +307,7 @@ class UrlWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 300,
+            'height' => 270,
         ];
 
         return $size;

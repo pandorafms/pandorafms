@@ -418,7 +418,7 @@ class ModuleTableValueWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 460,
+            'height' => 430,
         ];
 
         return $size;

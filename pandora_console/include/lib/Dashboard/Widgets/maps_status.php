@@ -409,7 +409,7 @@ class MapsStatusWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 450,
+            'height' => 410,
         ];
 
         return $size;

@@ -381,7 +381,7 @@ class AlertsFiredWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 370,
+            'height' => 260,
         ];
 
         return $size;

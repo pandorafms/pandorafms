@@ -462,7 +462,7 @@ class ServiceMapWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 300,
+            'height' => 320,
         ];
 
         return $size;

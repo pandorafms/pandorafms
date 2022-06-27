@@ -415,7 +415,7 @@ class SingleGraphWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 480,
+            'height' => 430,
         ];
 
         return $size;

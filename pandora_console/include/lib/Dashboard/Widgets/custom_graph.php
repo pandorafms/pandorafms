@@ -542,7 +542,7 @@ class CustomGraphWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 480,
+            'height' => 440,
         ];
 
         return $size;

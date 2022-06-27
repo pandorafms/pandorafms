@@ -499,7 +499,7 @@ class NetworkMapWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 470,
+            'height' => 430,
         ];
 
         return $size;

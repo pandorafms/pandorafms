@@ -289,6 +289,19 @@ ul.wizard li > textarea {
   display: inline-block;
 }
 
+.container-block-column {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.container-block-column ul.wizard {
+  width: 100%;
+}
+
 .hidden {
   display: none;
 }

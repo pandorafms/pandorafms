@@ -477,7 +477,7 @@ class ServiceViewWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 300,
+            'height' => 270,
         ];
 
         return $size;

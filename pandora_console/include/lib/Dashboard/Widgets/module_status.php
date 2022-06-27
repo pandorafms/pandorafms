@@ -559,7 +559,7 @@ class ModuleStatusWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 700,
+            'height' => 650,
         ];
 
         return $size;

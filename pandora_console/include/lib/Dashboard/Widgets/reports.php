@@ -508,7 +508,7 @@ class ReportsWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 360,
+            'height' => 260,
         ];
 
         return $size;

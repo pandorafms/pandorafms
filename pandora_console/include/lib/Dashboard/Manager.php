@@ -1375,7 +1375,14 @@ class Manager implements PublicLogin
         global $config;
 
         $instance = $this->instanceWidget();
+        $blocks = [];
         $htmlInputs = $instance->getFormInputs([]);
+
+        if (isset($htmlInputs['blocks']) === true) {
+            $blocks = $htmlInputs['blocks'];
+            $htmlInputs = $htmlInputs['inputs'];
+        }
+
         $js = $instance->getFormJS();
 
         View::render(
@@ -1383,6 +1390,7 @@ class Manager implements PublicLogin
             [
                 'dashboardId' => $this->dashboardId,
                 'cellId'      => $this->cellId,
+                'blocks'      => $blocks,
                 'htmlInputs'  => $htmlInputs,
                 'js'          => $js,
             ]

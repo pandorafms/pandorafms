@@ -297,8 +297,8 @@ class WelcomeWidget extends Widget
     public function getSizeModalConfiguration(): array
     {
         $size = [
-            'width'  => 400,
-            'height' => 250,
+            'width'  => 500,
+            'height' => 210,
         ];
 
         return $size;

@@ -289,8 +289,19 @@ class EventsListWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        $blocks = [
+            'row1',
+            'row2',
+        ];
+
+        $inputs['blocks'] = $blocks;
+
+        foreach ($inputs as $kInput => $vInput) {
+            $inputs['inputs']['row1'][] = $vInput;
+        }
+
         // Select pre built filter.
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => \__('Custom filters'),
             'arguments' => [
                 'type'          => 'select',
@@ -317,7 +328,7 @@ class EventsListWidget extends Widget
         }
 
         // Event Type.
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => \__('Event type'),
             'arguments' => [
                 'type'          => 'select',
@@ -332,7 +343,7 @@ class EventsListWidget extends Widget
         ];
 
         // Max. hours old. Default 8.
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => \__('Max. hours old'),
             'arguments' => [
                 'name'   => 'maxHours',
@@ -355,7 +366,7 @@ class EventsListWidget extends Widget
             ($config['block_size'] * 3) => ($config['block_size'] * 3),
         ];
 
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => \__('Limit'),
             'arguments' => [
                 'type'     => 'select',
@@ -374,7 +385,7 @@ class EventsListWidget extends Widget
             0  => \__('Only pending'),
         ];
 
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => \__('Event status'),
             'arguments' => [
                 'type'     => 'select',
@@ -389,7 +400,7 @@ class EventsListWidget extends Widget
         // Severity.
         $fields = \get_priorities();
 
-        $inputs[] = [
+        $inputs['inputs']['row2'][] = [
             'label'     => \__('Severity'),
             'arguments' => [
                 'type'          => 'select',
@@ -416,7 +427,7 @@ class EventsListWidget extends Widget
         }
 
         // Groups.
-        $inputs[] = [
+        $inputs['inputs']['row2'][] = [
             'label'     => \__('Groups'),
             'arguments' => [
                 'type'           => 'select_groups',
@@ -432,7 +443,7 @@ class EventsListWidget extends Widget
         ];
 
         // Group recursion.
-        $inputs[] = [
+        $inputs['inputs']['row2'][] = [
             'label'     => \__('Group recursion'),
             'arguments' => [
                 'type'   => 'switch',
@@ -446,7 +457,7 @@ class EventsListWidget extends Widget
         // Tags.
         $fields = \tags_get_user_tags($config['id_user'], 'AR');
 
-        $inputs[] = [
+        $inputs['inputs']['row2'][] = [
             'label'     => \__('Tags'),
             'arguments' => [
                 'type'          => 'select',
@@ -668,7 +679,6 @@ class EventsListWidget extends Widget
                 'columns'                        => $fields,
                 'ajax_return_operation'          => 'buffers',
                 'ajax_return_operation_function' => 'process_buffers',
-                // 'drawCallback'                   => 'process_datatables_callback(this, settings)',
                 'return'                         => true,
                 'csv'                            => 0,
             ]
@@ -708,8 +718,8 @@ class EventsListWidget extends Widget
     public function getSizeModalConfiguration(): array
     {
         $size = [
-            'width'  => 450,
-            'height' => 700,
+            'width'  => 800,
+            'height' => 520,
         ];
 
         return $size;

@@ -399,7 +399,7 @@ class WuxStatsWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 400,
+            'height' => 370,
         ];
 
         return $size;

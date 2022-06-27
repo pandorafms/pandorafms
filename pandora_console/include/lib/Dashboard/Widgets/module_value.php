@@ -454,7 +454,7 @@ class ModuleValueWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 500,
+            'height' => 490,
         ];
 
         return $size;

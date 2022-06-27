@@ -643,7 +643,7 @@ class SystemGroupStatusWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 600,
+            'height' => 520,
         ];
 
         return $size;

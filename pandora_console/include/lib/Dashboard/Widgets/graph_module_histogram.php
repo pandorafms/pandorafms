@@ -452,7 +452,7 @@ class GraphModuleHistogramWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 500,
+            'height' => 480,
         ];
 
         return $size;

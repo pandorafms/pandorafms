@@ -400,7 +400,7 @@ class EventsListWidget extends Widget
         // Severity.
         $fields = \get_priorities();
 
-        $inputs['inputs']['row2'][] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => \__('Severity'),
             'arguments' => [
                 'type'          => 'select',
@@ -719,7 +719,7 @@ class EventsListWidget extends Widget
     {
         $size = [
             'width'  => 800,
-            'height' => 520,
+            'height' => (is_metaconsole() === true) ? 600 : 550,
         ];
 
         return $size;

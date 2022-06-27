@@ -735,7 +735,7 @@ class TreeViewWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 590,
+            'height' => (is_metaconsole() === true) ? 500 : 590,
         ];
 
         return $size;

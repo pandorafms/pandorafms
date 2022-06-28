@@ -319,7 +319,7 @@ class MonitorHealthWidget extends Widget
             20
         );
 
-        $output = '<div class="container-center mw200px min-height-320px">';
+        $output = '<div>';
         $output .= \html_print_table($table, true);
         $output .= '</div>';
 
@@ -346,6 +346,22 @@ class MonitorHealthWidget extends Widget
     public static function getName()
     {
         return 'monitor_health';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 220,
+        ];
+
+        return $size;
     }
 
 

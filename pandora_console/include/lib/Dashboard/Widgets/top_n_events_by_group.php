@@ -514,4 +514,20 @@ class TopNEventByGroupWidget extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 520,
+        ];
+
+        return $size;
+    }
+
+
 }

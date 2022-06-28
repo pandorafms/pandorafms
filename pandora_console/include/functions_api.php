@@ -17714,13 +17714,13 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
  *
  * @param string $token Token for check.
  *
- * @return integer Id of user. If returns 0 there is not valid token.
+ * @return mixed Id of user. If returns 0 there is not valid token.
  */
 function api_token_check(string $token)
 {
     if (empty($token) === true) {
-        return 0;
+        return -1;
     } else {
-        return (int) db_get_value('id_user', 'tusuario', 'api_token', $token);
+        return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
 }

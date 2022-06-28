@@ -78,7 +78,7 @@ $config['admin_can_make_admin'] = true;
  * @return mixed False in case of error or invalid credentials, the username in
  * case it's correct.
  */
-function process_user_login($login, $pass, $api=false)
+function process_user_login($login, $pass, $api=false, $passAlreadyEncrypted=false)
 {
     global $config;
 
@@ -114,10 +114,10 @@ function process_user_login($login, $pass, $api=false)
         if ($config['fallback_local_auth']
             || is_user_admin($login)
             || $local_user === true
-            || strtolower($config['auth']) == 'mysql'
+            || strtolower($config['auth']) === 'mysql'
             || (bool) $user_not_login === true
         ) {
-            return process_user_login_local($login, $pass, $api);
+            return process_user_login_local($login, $pass, $api, $passAlreadyEncrypted);
         } else {
             return false;
         }
@@ -128,88 +128,44 @@ function process_user_login($login, $pass, $api=false)
 }
 
 
-function process_user_login_local($login, $pass, $api=false)
+function process_user_login_local($login, $pass, $api=false, $passAlreadyEncrypted=false)
 {
     global $config, $mysql_cache;
 
-    // Connect to Database
-    switch ($config['dbtype']) {
-        case 'mysql':
-            if (!$api) {
-                $sql = sprintf(
-                    "SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s' AND `not_login` = 0
-						AND `disabled` = 0",
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    "SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s'
-						AND `disabled` = 0",
-                    $login
-                );
-            }
-        break;
-
-        case 'postgresql':
-            if (!$api) {
-                $sql = sprintf(
-                    'SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\' AND "not_login" = 0
-						AND "disabled" = 0',
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\'
-						AND "disabled" = 0',
-                    $login
-                );
-            }
-        break;
-
-        case 'oracle':
-            if (!$api) {
-                $sql = sprintf(
-                    'SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\' AND not_login = 0
-						AND disabled = 0',
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\'
-						AND disabled = 0',
-                    $login
-                );
-            }
-        break;
+    if ($api === false) {
+        $sql = sprintf(
+            "SELECT `id_user`, `password`
+            FROM `tusuario`
+            WHERE `id_user` = '%s' AND `not_login` = 0
+                AND `disabled` = 0",
+            $login
+        );
+    } else {
+        $sql = sprintf(
+            "SELECT `id_user`, `password`
+            FROM `tusuario`
+            WHERE `id_user` = '%s'
+                AND `disabled` = 0",
+            $login
+        );
     }
 
     $row = db_get_row_sql($sql);
 
-    // Check that row exists, that password is not empty and that password is the same hash
-    if ($row !== false && $row['password'] !== md5('')
-        && $row['password'] == md5($pass)
+    // Check that row exists, that password is not empty and that password is the same hash.
+    if (($row !== false && $row['password'] !== md5('')
+        && (string) $row['password'] === md5($pass))
+        || ($passAlreadyEncrypted === true && (string) $row['password'] === (string) $pass)
     ) {
         // Login OK
         // Nick could be uppercase or lowercase (select in MySQL
         // is not case sensitive)
         // We get DB nick to put in PHP Session variable,
         // to avoid problems with case-sensitive usernames.
-        // Thanks to David Muñiz for Bug discovery :)
+        // Thanks to David Muñiz for Bug discovery :).
         $filter = ['id_usuario' => $login];
         $user_profile = db_get_row_filter('tusuario_perfil', $filter);
-        if (!users_is_admin($login) && !$user_profile) {
+        if ((bool) users_is_admin($login) === false && (bool) $user_profile === false) {
             $mysql_cache['auth_error'] = 'User does not have any profile';
             $config['auth_error'] = 'User does not have any profile';
             return false;
@@ -217,7 +173,7 @@ function process_user_login_local($login, $pass, $api=false)
 
         return $row['id_user'];
     } else {
-        if (!user_can_login($login)) {
+        if (user_can_login($login) === false) {
             $mysql_cache['auth_error'] = 'User only can use the API.';
             $config['auth_error'] = 'User only can use the API.';
         } else {

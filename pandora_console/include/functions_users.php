@@ -886,6 +886,7 @@ function users_get_users_group_by_group($id_group)
  */
 function api_token_generate()
 {
+    include_once 'functions_api.php';
     // Generate a cryptographically secure chain.
     $generateToken = bin2hex(openssl_random_pseudo_bytes(16));
     // Check if token exists in DB.
@@ -898,15 +899,13 @@ function api_token_generate()
 /**
  * Returns User API Token
  *
- * @param integer $idUser Id of the user.
+ * @param string $idUser Id of the user.
  *
  * @return string
  */
-function users_get_API_token(int $idUser)
+function users_get_API_token(string $idUser)
 {
-    $apiToken = db_get_value('api_token', 'tusuario', 'id_user', $idUser);
-
-    return $apiToken;
+    return db_get_value('api_token', 'tusuario', 'id_user', $idUser);
 }
 
 

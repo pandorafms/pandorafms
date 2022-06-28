@@ -9038,6 +9038,14 @@ div#err_msg_centralised {
   width: 75%;
 }
 
+.renew_api_token_link {
+  margin: 3px 0.5em 0 0;
+  float: right;
+}
+
+.renew_api_token_image {
+  width: 16px;
+}
 @media screen and (max-width: 1369px) {
   .div-col {
     width: 50%;

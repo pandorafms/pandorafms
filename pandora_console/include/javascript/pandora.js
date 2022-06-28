@@ -2076,3 +2076,17 @@ function renewAPIToken(title, message, form) {
     }
   });
 }
+
+/**
+ * Show Dialog for view the API token.
+ *
+ * @param {string} title Title for show.
+ * @param {string} message Base64 encoded message for show.
+ */
+function showAPIToken(title, message) {
+  confirmDialog({
+    title: title,
+    message: atob(message),
+    hideCancelButton: true
+  });
+}

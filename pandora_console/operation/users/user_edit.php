@@ -80,10 +80,12 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['api_token'] = ((bool) get_parameter('renewAPIToken') === true) ? api_token_generate() : (string) get_parameter('api_token');
+    // API Token information.
+    $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
+    $upd_info['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($config['id_user']);
 
     $default_block_size = get_parameter('default_block_size', 0);
-    if ($default_block_size) {
+    if ($default_block_size > 0) {
         $upd_info['block_size'] = 0;
     }
 
@@ -159,17 +161,17 @@ if (isset($_GET['modified']) && !$view_mode) {
         } else if ($password_new !== 'NON-INIT') {
             $error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
         }
-    } else if (empty($password_new) && empty($password_confirm)) {
+    } else if (empty($password_new) === true && empty($password_confirm) === true) {
         $return = true;
-    } else if (empty($password_new) || empty($password_confirm)) {
+    } else if (empty($password_new) === true || empty($password_confirm) === true) {
         $return = false;
     }
 
     // No need to display "error" here, because when no update is needed
     // (no changes in data) SQL function returns 0 (FALSE), but is not an error,
     // just no change. Previous error message could be confussing to the user.
-    if ($return) {
-        if (!empty($password_new) && !empty($password_confirm)) {
+    if ($return !== false) {
+        if (empty($password_new) === false && empty($password_confirm) === false) {
             $success_msg = __('Password successfully updated');
         }
 
@@ -182,9 +184,13 @@ if (isset($_GET['modified']) && !$view_mode) {
             if ($return_update_user === false) {
                 $error_msg = __('Error updating user info');
             } else if ($return_update_user == true) {
-                $success_msg = __('User info successfully updated');
+                if ($apiTokenRenewed === true) {
+                    $success_msg = __('You have generated a new API Token.');
+                } else {
+                    $success_msg = __('User info successfully updated');
+                }
             } else {
-                if (!empty($password_new) && !empty($password_confirm)) {
+                if (empty($password_new) === false && empty($password_confirm) === false) {
                     $success_msg = __('Password successfully updated');
                 } else if ($upd_info['id_skin'] !== $user_info['id_skin']) {
                     $success_msg = __('Skin successfully updated');
@@ -224,7 +230,7 @@ if (isset($_GET['modified']) && !$view_mode) {
 }
 
 // Prints action status for current message.
-if ($status != -1) {
+if ((int) $status !== -1) {
     ui_print_result_message(
         $status,
         __('User info successfully updated'),
@@ -259,16 +265,41 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
 $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
 $user_id .= '<span>'.$id.'</span></div>';
 
-$user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').': </p>';
-$user_id .= html_print_input_hidden('api_token', $user_info['api_token'], true);
-$user_id .= sprintf(
-    '<i class="button-as-link clickable" onClick="javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')">%s</i>',
-    __('Warning'),
-    __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
-    'user_profile_form',
-    __('Renew')
+$user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').'</p>';
+$user_id .= html_print_anchor(
+    [
+        'onClick' => sprintf(
+            'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
+            __('Warning'),
+            __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
+            'user_profile_form',
+        ),
+        'content' => html_print_image(
+            'images/icono-refrescar.png',
+            true,
+            ['class' => 'renew_api_token_image clickable']
+        ),
+        'class'   => 'renew_api_token_link',
+    ],
+    true
 );
-$user_id .= '<br><i>'.$user_info['api_token'].'</i>';
+
+$user_id .= html_print_anchor(
+    [
+        'onClick' => sprintf(
+            'javascript:showAPIToken(\'%s\', \'%s\')',
+            __('API Token'),
+            base64_encode(__('Your API Token is:').'<br><span class="font_12pt bolder">'.users_get_API_token($config['id_user']).'</span><br>'.__('Please, avoid share this string with others.')),
+        ),
+        'content' => html_print_image(
+            'images/eye_show.png',
+            true,
+            ['class' => 'renew_api_token_image clickable']
+        ),
+        'class'   => 'renew_api_token_link',
+    ],
+    true
+);
 $user_id .= '</div>';
 
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
@@ -288,7 +319,7 @@ $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended
 ).'</div>';
 
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
-if (is_user_admin($id)) {
+if (is_user_admin($id) === true) {
     $avatar = html_print_image('images/people_1.png', true, ['class' => 'user_avatar']);
 } else {
     $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
@@ -646,10 +677,10 @@ foreach ($timezones as $timezone_name => $tz) {
     }
 }
 
-if (is_metaconsole()) {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
+if (is_metaconsole() === true) {
+    echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
 } else {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
+    echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
 }
 
     html_print_input_hidden('id', $id, false, false, false, 'id');
@@ -668,7 +699,7 @@ if (is_metaconsole()) {
 
 
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
                         <img class="timezone-pin pdd_t_4px" src="include/javascript/timezonepicker/images/pin.png" />
@@ -677,10 +708,10 @@ if (!is_metaconsole()) {
 }
 
                 echo '</div>
-            </div> 
+            </div>
             <div class="user_edit_third_row white_box">
                 <div class="edit_user_comments">'.$comments.'</div>
-            </div>    
+            </div>
         </div>';
 
 if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {

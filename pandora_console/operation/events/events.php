@@ -1455,15 +1455,19 @@ if ($pure) {
 
     if (is_metaconsole() === false) {
         unset($onheader['history']);
-        ui_print_page_header(
-            __('Events'),
+        ui_print_standard_header(
+            __('Events list'),
             'images/lightning_go.png',
             false,
             'eventview',
             false,
-            $onheader,
-            true,
-            'eventsmodal'
+            (array) $onheader,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Events'),
+                ],
+            ]
         );
     } else {
         unset($onheader['rss']);

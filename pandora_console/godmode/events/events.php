@@ -77,7 +77,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
             'images/custom_columns.png',
             true,
             [
-                'title' => __('Custom fields'),
+                'title' => __('Custom columns'),
                 'class' => 'invert_filter',
             ]
         ).'</a>',
@@ -87,18 +87,17 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 switch ($section) {
     case 'filter':
         $buttons['filter']['active'] = true;
-        $subpage = ' - '.__('Filters');
+        $subpage = __('Filters');
     break;
 
     case 'fields':
         $buttons['fields']['active'] = true;
-        $subpage = ' - '.__('Custom fields');
+        $subpage = __('Custom columns');
     break;
 
     case 'responses':
         $buttons['responses']['active'] = true;
-        $subpage = ' - '.__('Responses');
-        $help_header = '';
+        $subpage = __('Responses');
     break;
 
     case 'view':
@@ -107,18 +106,28 @@ switch ($section) {
 
     default:
         $buttons['filter']['active'] = true;
-        $subpage = ' - '.__('Filters');
+        $subpage = __('Filters');
     break;
 }
 
-if (! defined('METACONSOLE')) {
-    ui_print_page_header(
-        __('Manage events').$subpage,
+if (is_metaconsole() === false) {
+    ui_print_standard_header(
+        $subpage,
         'images/gm_events.png',
         false,
-        $help_header,
+        '',
         true,
-        $buttons
+        (array) $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Events'),
+            ],
+        ]
     );
 } else {
     ui_meta_print_header(__('Manage events').$subpage, '', $buttons);

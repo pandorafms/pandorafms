@@ -220,12 +220,11 @@ if ($writeDashboards === 1) {
     $output = '<a href="#" class="float-right" onclick=\'';
     $output .= 'show_option_dialog('.json_encode(
         [
-            'title'       => $text,
-            'btn_text'    => __('Ok'),
-            'btn_cancel'  => __('Cancel'),
-            'url'         => $ajaxController,
-            'url_ajax'    => ui_get_full_url('ajax.php'),
-            'dashboardId' => $dashboardId,
+            'title'      => $text,
+            'btn_text'   => __('Ok'),
+            'btn_cancel' => __('Cancel'),
+            'url'        => $ajaxController,
+            'url_ajax'   => ui_get_full_url('ajax.php'),
         ]
     );
     $output .= ')\'>';

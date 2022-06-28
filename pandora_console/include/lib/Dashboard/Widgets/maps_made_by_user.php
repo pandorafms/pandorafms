@@ -544,7 +544,7 @@ class MapsMadeByUser extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 270,
+            'height' => (is_metaconsole() === true) ? 330 : 270,
         ];
 
         return $size;

@@ -298,7 +298,7 @@ class WelcomeWidget extends Widget
     {
         $size = [
             'width'  => 500,
-            'height' => 210,
+            'height' => 220,
         ];
 
         return $size;

@@ -508,7 +508,7 @@ class ReportsWidget extends Widget
     {
         $size = [
             'width'  => 400,
-            'height' => 260,
+            'height' => (is_metaconsole() === true) ? 330 : 260,
         ];
 
         return $size;

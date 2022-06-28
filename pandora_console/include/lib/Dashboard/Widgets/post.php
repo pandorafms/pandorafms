@@ -296,8 +296,8 @@ class PostWidget extends Widget
     public function getSizeModalConfiguration(): array
     {
         $size = [
-            'width'  => 480,
-            'height' => 480,
+            'width'  => 500,
+            'height' => 500,
         ];
 
         return $size;

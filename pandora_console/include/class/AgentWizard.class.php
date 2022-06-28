@@ -1196,7 +1196,7 @@ class AgentWizard extends HTML
         $table->head[1] = '<b>'.__('Server').'</b>';
         $table->head[2] = '<b>'.__('Type').'</b>';
         $table->head[3] = '<b>'.__('Description').'</b>';
-        $table->head[4] = '<b>'.__('Treshold').'</b>';
+        $table->head[4] = '<b>'.__('Threshold').'</b>';
 
         $table->data = [];
 

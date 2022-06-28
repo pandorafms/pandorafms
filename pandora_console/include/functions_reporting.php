@@ -10159,6 +10159,11 @@ function reporting_simple_graph(
         $fullscale = (bool) $content['style']['fullscale'];
     }
 
+    $image_threshold = false;
+    if (isset($content['style']['image_threshold'])) {
+        $image_threshold = (bool) $content['style']['image_threshold'];
+    }
+
     $return['chart'] = '';
 
     // Get chart.
@@ -10213,6 +10218,7 @@ function reporting_simple_graph(
                 'backgroundColor'    => 'transparent',
                 'return_img_base_64' => true,
                 'graph_render'       => $content['graph_render'],
+                'image_threshold'    => $image_threshold,
             ];
 
             if ($only_image === false) {

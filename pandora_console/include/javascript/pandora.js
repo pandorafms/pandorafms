@@ -2090,6 +2090,60 @@ function selection_multiple_change(info) {
   );
 }
 
+/*
+ *  Creates a progressbar.
+ *  @param id the id of the div we want to transform in a progressbar.
+ *  @param duration the duration of the timer example: '10s'.
+ *  @param iteration.
+ *  @param callback, optional function which is called when the progressbar reaches 0.
+ */
+function createProgressTimeBar(id, duration, iteration, callback) {
+  // We select the div that we want to turn into a progressbar
+  var progressbar = document.getElementById(id);
+  progressbar.className = "progressbar";
+
+  // We create the div that changes width to show progress
+  var progressbarinner = document.createElement("div");
+  progressbarinner.className = "inner";
+
+  // Now we set the animation parameters
+  progressbarinner.style.animationDuration = duration;
+
+  progressbarinner.style.animationIterationCount = iteration;
+
+  // Eventually couple a callback
+  if (typeof callback === "function") {
+    if (iteration === "infinite") {
+      progressbarinner.addEventListener("animationiteration", callback);
+    } else {
+      progressbarinner.addEventListener("animationend", callback);
+    }
+  }
+
+  // Append the progressbar to the main progressbardiv
+  progressbar.appendChild(progressbarinner);
+
+  // When everything is set up we start the animation
+  progressbarinner.style.animationPlayState = "running";
+
+  return progressbarinner;
+}
+
+function progressTimeBar(id, interval, iteration, callback) {
+  var progress = createProgressTimeBar(id, interval + "s", iteration, callback);
+
+  var controls = {
+    start: function() {
+      progress.style.animationPlayState = "running";
+    },
+    paused: function() {
+      progress.style.animationPlayState = "paused";
+    }
+  };
+
+  return controls;
+}
+
 /**
  * Filter selector item by text based on a text input.
  *

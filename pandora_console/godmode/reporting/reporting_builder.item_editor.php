@@ -135,6 +135,7 @@ $current_month = true;
 // Only avg is selected by default for the simple graphs.
 $fullscale = false;
 $percentil = false;
+$image_threshold = false;
 $time_compare_overlapped = false;
 
 // Added for events items.
@@ -307,6 +308,7 @@ switch ($action) {
                 case 'simple_graph':
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
+                    $image_threshold = (isset($style['image_threshold']) === true) ? (bool) $style['image_threshold'] : false;
                     $graph_render = $item['graph_render'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
@@ -2499,6 +2501,23 @@ $class = 'databox filters';
                 'fullscale',
                 1,
                 $fullscale
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_image_threshold"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Show threshold');
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'image_threshold',
+                1,
+                $image_threshold
             );
             ?>
             </td>
@@ -5965,6 +5984,7 @@ function chooseType() {
     $("#row_show_graph").hide();
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
+    $("#row_image_threshold").hide();
     $("#row_graph_render").hide();
     $("#row_macros_definition").hide();
     $("#row_render_definition").hide();
@@ -6099,6 +6119,7 @@ function chooseType() {
         case 'simple_graph':
             $("#row_time_compare_overlapped").show();
             $("#row_fullscale").show();
+            $("#row_image_threshold").show();
             $("#row_graph_render").show();
             $("#row_percentil").show();
 

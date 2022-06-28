@@ -777,6 +777,7 @@ class HTML
     ) {
         $form = ($data['form'] ?? null);
         $inputs = ($data['inputs'] ?? []);
+        $blocks = ($data['blocks'] ?? []);
         $rawInputs = ($data['rawInputs'] ?? null);
         $js = ($data['js'] ?? null);
         $rawjs = ($data['js_block'] ?? null);
@@ -843,36 +844,59 @@ class HTML
         $output_submit = '';
         $output = '';
 
-        if ($print_white_box === true) {
-            $output .= '<div class="white_box">';
-        }
+        if (empty($blocks) === false) {
+            $output .= '<div class="container-block-column">';
+            foreach ($blocks as $valueblock) {
+                $output .= '<ul class="wizard">';
+                foreach ($inputs[$valueblock] as $input) {
+                    if (is_array(($input['arguments'] ?? null)) === true
+                        && isset($input['arguments']) === true
+                        && isset($input['arguments']['type']) === true
+                        && $input['arguments']['type'] === 'submit'
+                    ) {
+                        $output_submit .= self::printBlock($input, true);
+                    } else {
+                        $output .= self::printBlock($input, true);
+                    }
+                }
 
-        $output .= '<ul class="wizard">';
-
-        foreach ($inputs as $input) {
-            if (is_array(($input['arguments'] ?? null)) === true
-                && isset($input['arguments']) === true
-                && isset($input['arguments']['type']) === true
-                && $input['arguments']['type'] === 'submit'
-            ) {
-                $output_submit .= self::printBlock($input, true);
-            } else {
-                $output .= self::printBlock($input, true);
+                $output .= '</ul>';
             }
-        }
 
-        $output .= '</ul>';
-
-        // There is possible add raw inputs for this form.
-        if (empty($rawInputs) === false) {
-            $output .= $rawInputs;
-        }
-
-        if ($print_white_box === true) {
             $output .= '</div>';
+        } else {
+            if ($print_white_box === true) {
+                $output .= '<div class="white_box">';
+            }
+
+            $output .= '<ul class="wizard">';
+
+            foreach ($inputs as $input) {
+                if (is_array(($input['arguments'] ?? null)) === true
+                    && isset($input['arguments']) === true
+                    && isset($input['arguments']['type']) === true
+                    && $input['arguments']['type'] === 'submit'
+                ) {
+                    $output_submit .= self::printBlock($input, true);
+                } else {
+                    $output .= self::printBlock($input, true);
+                }
+            }
+
+            $output .= '</ul>';
+
+            // There is possible add raw inputs for this form.
+            if (empty($rawInputs) === false) {
+                $output .= $rawInputs;
+            }
+
+            if ($print_white_box === true) {
+                $output .= '</div>';
+            }
+
+            $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         }
 
-        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';

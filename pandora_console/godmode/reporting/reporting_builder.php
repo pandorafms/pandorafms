@@ -2255,6 +2255,9 @@ switch ($action) {
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
                                 );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
+                                );
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -3005,6 +3008,9 @@ switch ($action) {
                                 );
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
+                                );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
                                 );
                                 if ($label != '') {
                                     $style['label'] = $label;

@@ -626,7 +626,7 @@ function grafico_modulo_sparse_data(
  * 'show_legend'         => true,
  * 'show_overview'       => true,
  * 'return_img_base_64'  => false,
- * 'image_treshold'      => false,
+ * 'image_threshold'      => false,
  * 'graph_combined'      => false,
  * 'graph_render'        => 0,
  * 'zoom'                => 1,
@@ -782,8 +782,8 @@ function grafico_modulo_sparse($params)
         $params['return_img_base_64'] = false;
     }
 
-    if (isset($params['image_treshold']) === false) {
-        $params['image_treshold'] = false;
+    if (isset($params['image_threshold']) === false) {
+        $params['image_threshold'] = false;
     }
 
     if (isset($params['graph_combined']) === false) {
@@ -1305,8 +1305,8 @@ function graphic_combined_module(
         $params['return_img_base_64'] = false;
     }
 
-    if (isset($params['image_treshold']) === false) {
-        $params['image_treshold'] = false;
+    if (isset($params['image_threshold']) === false) {
+        $params['image_threshold'] = false;
     }
 
     if (isset($params['show_unknown']) === false) {

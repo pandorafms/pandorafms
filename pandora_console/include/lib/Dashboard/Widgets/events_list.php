@@ -605,7 +605,7 @@ class EventsListWidget extends Widget
         }
 
         if (empty($filter['search']) === false || empty($filter['user_comment']) === false) {
-            $fields[] = 'te.user_comment';
+            $fields[] = 'user_comment';
         }
 
         // Get column names.

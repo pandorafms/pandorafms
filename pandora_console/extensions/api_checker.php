@@ -193,6 +193,11 @@ function extension_api_checker()
     $table->data[] = $row;
 
     $row = [];
+    $row[] = __('API Token').ui_print_help_tip(__('Use API Token instead API Pass, User and Password.'), true);
+    $row[] = html_print_input_text('token', $token, '', 50, 255, true);
+    $table->data[] = $row;
+
+    $row = [];
     $row[] = __('API Pass');
     $row[] = html_print_input_password('apipass', $apipass, '', 50, 255, true);
     $table->data[] = $row;
@@ -243,11 +248,6 @@ function extension_api_checker()
     $row = [];
     $row[] = __('Other Mode');
     $row[] = html_print_input_text('other_mode', $other_mode, '', 50, 255, true);
-    $table2->data[] = $row;
-
-    $row = [];
-    $row[] = __('API Token');
-    $row[] = html_print_input_text('token', $token, '', 50, 255, true);
     $table2->data[] = $row;
 
     $table3 = new stdClass();

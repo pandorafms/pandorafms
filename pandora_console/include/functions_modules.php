@@ -4224,3 +4224,50 @@ function modules_get_min_max_data($id_agent_module, $time_init=0)
 
     return $data;
 }
+
+
+/**
+ * Get modules match regex.
+ *
+ * @param string $regex_alias       Regex alias.
+ * @param string $regex_name_module Regex module name.
+ * @param string $server_name       Name server.
+ *
+ * @return array
+ */
+function modules_get_regex(
+    $regex_alias,
+    $regex_name_module='',
+    $server_name=''
+) {
+    $agent_regexp = sprintf('AND tagente.alias REGEXP "%s"', $regex_alias);
+    $module_regexp = '';
+    if (empty($regex_name_module) === false) {
+        $module_regexp = sprintf(
+            'AND tagente_modulo.nombre REGEXP "%s"',
+            $regex_name_module
+        );
+    }
+
+    $sql = sprintf(
+        'SELECT tagente_modulo.id_agente_modulo as id_agent_module,
+            "%s" as server_name
+        FROM tagente_modulo
+        INNER JOIN tagente
+            ON tagente.id_agente = tagente_modulo.id_agente
+        WHERE 1=1
+        %s
+        %s',
+        $server_name,
+        $agent_regexp,
+        $module_regexp
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    return $result;
+}

@@ -180,6 +180,9 @@ $uncompressed_module = true;
 $macros_definition = '';
 $render_definition = '';
 
+$text_agent = '';
+$text_agent_module = '';
+
 $only_data = false;
 
 // Users.
@@ -678,6 +681,21 @@ switch ($action) {
                     $period = $item['period'];
                     $order_uptodown = $item['order_uptodown'];
                     $show_resume = $item['show_resume'];
+
+                    $text_agent = '';
+                    if (isset($style['text_agent']) === true
+                        && empty($style['text_agent']) === false
+                    ) {
+                        $text_agent = base64_decode($style['text_agent']);
+                    }
+
+
+                    $text_agent_module = '';
+                    if (isset($style['text_agent_module']) === true
+                        && empty($style['text_agent_module']) === false
+                    ) {
+                        $text_agent_module = base64_decode($style['text_agent_module']);
+                    }
                 break;
 
                 case 'availability':
@@ -745,6 +763,21 @@ switch ($action) {
                     $show_resume = $item['show_resume'];
                     $show_graph = $item['show_graph'];
                     $order_uptodown = $item['order_uptodown'];
+
+                    $text_agent = '';
+                    if (isset($style['text_agent']) === true
+                        && empty($style['text_agent']) === false
+                    ) {
+                        $text_agent = base64_decode($style['text_agent']);
+                    }
+
+
+                    $text_agent_module = '';
+                    if (isset($style['text_agent_module']) === true
+                        && empty($style['text_agent_module']) === false
+                    ) {
+                        $text_agent_module = base64_decode($style['text_agent_module']);
+                    }
                 break;
 
                 case 'exception':
@@ -755,6 +788,21 @@ switch ($action) {
                     $show_resume = $item['show_resume'];
                     $show_graph = $item['show_graph'];
                     $order_uptodown = $item['order_uptodown'];
+
+                    $text_agent = '';
+                    if (isset($style['text_agent']) === true
+                        && empty($style['text_agent']) === false
+                    ) {
+                        $text_agent = base64_decode($style['text_agent']);
+                    }
+
+
+                    $text_agent_module = '';
+                    if (isset($style['text_agent_module']) === true
+                        && empty($style['text_agent_module']) === false
+                    ) {
+                        $text_agent_module = base64_decode($style['text_agent_module']);
+                    }
                 break;
 
                 case 'agent_module':
@@ -1089,6 +1137,52 @@ $class = 'databox filters';
             <td  >
                 <?php
                 echo html_print_textarea('description', 3, 25, $description);
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent').ui_print_help_tip(
+                    __('Case insensitive regular expression for agent name. For example: Network.* will match with the following agent names: network_agent1, NetworK CHECKS'),
+                    true
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_input_text(
+                    'text_agent',
+                    $text_agent,
+                    '',
+                    30,
+                    100,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_module_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Module').ui_print_help_tip(
+                    __('Case insensitive regular expression or string for module name. For example: if you use this field with "Module exact match" enabled then this field has to be fulfilled with the literally string of the module name, if not you can use a regular expression. Example: .*usage.* will match: cpu_usage, vram usage in matchine 1.'),
+                    true
+                );
+                ?>
+            </td>
+            <td class="mx180px">
+                <?php
+                html_print_input_text(
+                    'text_agent_module',
+                    $text_agent_module,
+                    '',
+                    30,
+                    100,
+                    false
+                );
                 ?>
             </td>
         </tr>
@@ -5990,6 +6084,8 @@ function chooseType() {
     $("#row_render_definition").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
+    $("#row_agent_regexp").hide();
+    $("#row_module_regexp").hide();
     $("#row_exception_condition_value").hide();
     $("#row_exception_condition").hide();
     $("#row_dyn_height").hide();
@@ -6480,6 +6576,8 @@ function chooseType() {
             $("#row_order_uptodown").show();
             $("#row_show_resume").show();
             $("#row_show_in_same_row").show();
+            $("#row_agent_regexp").show();
+            $("#row_module_regexp").show();
 
             var checked = $("input[name='last_value']").prop("checked");
 
@@ -6548,6 +6646,8 @@ function chooseType() {
             $("#row_description").show();
             $("#row_period").show();
             $("#row_max_min_avg").show();
+            $("#row_agent_regexp").show();
+            $("#row_module_regexp").show();
             $("#row_quantity").show();
             $("#general_list").show();
             $("#row_order_uptodown").show();
@@ -6565,6 +6665,8 @@ function chooseType() {
             $("#row_order_uptodown").show();
             $("#row_show_resume").show();
             $("#row_show_graph").show();
+            $("#row_agent_regexp").show();
+            $("#row_module_regexp").show();
 
             var checked = $("input[name='last_value']").prop("checked");
 

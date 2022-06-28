@@ -2323,6 +2323,20 @@ switch ($action) {
                                 // $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'top_n':
+                            case 'general':
+                            case 'exception':
+                                $text_agent = get_parameter('text_agent', '');
+                                $text_agent_module = get_parameter('text_agent_module', '');
+                                if (empty($text_agent) === false) {
+                                    $style['text_agent'] = base64_encode($text_agent);
+                                }
+
+                                if (empty($text_agent_module) === false) {
+                                    $style['text_agent_module'] = base64_encode($text_agent_module);
+                                }
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -3073,6 +3087,20 @@ switch ($action) {
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+                            break;
+
+                            case 'top_n':
+                            case 'general':
+                            case 'exception':
+                                $text_agent = get_parameter('text_agent', '');
+                                $text_agent_module = get_parameter('text_agent_module', '');
+                                if (empty($text_agent) === false) {
+                                    $style['text_agent'] = base64_encode($text_agent);
+                                }
+
+                                if (empty($text_agent_module) === false) {
+                                    $style['text_agent_module'] = base64_encode($text_agent_module);
+                                }
                             break;
 
                             default:

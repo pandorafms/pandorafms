@@ -524,23 +524,23 @@ foreach ($rows as $row) {
 
 $menu_godmode['links']['sub'] = $sub;
 
-// Update Manager.
+// Warp Manager.
 if ((bool) check_acl($config['id_user'], 0, 'PM') === true && (bool) $config['enable_update_manager'] === true) {
-    $menu_godmode['messages']['text'] = __('Update manager');
+    $menu_godmode['messages']['text'] = __('Warp Update');;
     $menu_godmode['messages']['id'] = 'god-um_messages';
     $menu_godmode['messages']['sec2'] = '';
 
     $sub = [];
-    $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
+    $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update offline');
     $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
 
-    $sub['godmode/update_manager/update_manager&tab=online']['text'] = __('Update Manager online');
+    $sub['godmode/update_manager/update_manager&tab=online']['text'] = __('Update online');
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';
 
-    $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Update Manager options');
+    $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Options');
     $sub['godmode/update_manager/update_manager&tab=setup']['id'] = 'Options';
 
-    $sub['godmode/update_manager/update_manager&tab=history']['text'] = __('Update Manager journal');
+    $sub['godmode/update_manager/update_manager&tab=history']['text'] = __('Warp journal');
     $sub['godmode/update_manager/update_manager&tab=history']['id'] = 'Journal';
 
     $menu_godmode['messages']['sub'] = $sub;

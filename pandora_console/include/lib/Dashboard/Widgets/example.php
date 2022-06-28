@@ -289,4 +289,20 @@ class WelcomeWidget extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 500,
+            'height' => 220,
+        ];
+
+        return $size;
+    }
+
+
 }

@@ -2224,12 +2224,18 @@ switch ($action) {
                                     $filter_event_status
                                 );
 
+                                $custom_data_events = get_parameter_switch(
+                                    'custom_data_events',
+                                    0
+                                );
+
                                 $style['event_graph_by_agent'] = $event_graph_by_agent;
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
                                 $style['event_filter_exclude'] = $event_filter_exclude;
+                                $style['custom_data_events'] = $custom_data_events;
 
 
                                 if ($label != '') {
@@ -2248,6 +2254,9 @@ switch ($action) {
                                 );
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
+                                );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
                                 );
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2957,6 +2966,11 @@ switch ($action) {
                                     ''
                                 );
 
+                                $custom_data_events = get_parameter_switch(
+                                    'custom_data_events',
+                                    0
+                                );
+
 
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
@@ -2976,6 +2990,7 @@ switch ($action) {
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
                                 $style['event_filter_exclude'] = $event_filter_exclude;
+                                $style['custom_data_events'] = $custom_data_events;
 
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2993,6 +3008,9 @@ switch ($action) {
                                 );
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
+                                );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
                                 );
                                 if ($label != '') {
                                     $style['label'] = $label;

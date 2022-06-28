@@ -245,7 +245,7 @@ class AgentsAlerts extends HTML
         );
 
         $table->width    = '100%';
-        $table->class    = 'databox data';
+        $table->class    = 'info_table';
         $table->id       = 'table_agent_module';
         $table->data     = [];
 
@@ -537,7 +537,7 @@ class AgentsAlerts extends HTML
             'alerts_agents'
         );
 
-        echo '<table cellpadding="4" cellspacing="4" border="0" class="agents_modules_table table">';
+        echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table">';
         echo '<tr>';
         echo '<th class="header_table_principal_cell">'.__('Agents').' / '.__('Alerts').'</th>';
 
@@ -576,10 +576,11 @@ class AgentsAlerts extends HTML
                         'images/arrow_left_green.png',
                         true,
                         [
-                            'style' => 'float: right;',
+                            'style' => 'display:flex;justify-content: center',
                             'title' => __('Previous alerts'),
                         ]
                     ),
+                    'style'   => 'display:flex;justify-content: center',
                 ]
             );
             echo '</th>';
@@ -612,9 +613,9 @@ class AgentsAlerts extends HTML
                 $outputLine = html_print_div(
                     [
                         'id'      => 'line_header_'.$id,
-                        'class'   => 'rotate_text_module position_text_module',
+                        'class'   => 'position_text_module',
                         'style'   => '',
-                        'content' => '<div title="'.io_safe_output($name).'">'.ui_print_truncate_text(io_safe_output($name), 20).'</div>',
+                        'content' => '<div style="font-size: 7.5pt !important" title="'.io_safe_output($name).'">'.ui_print_truncate_text(io_safe_output($name), 20).'</div>',
                     ],
                     true
                 );
@@ -657,7 +658,7 @@ class AgentsAlerts extends HTML
             $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
             echo '<tr>';
             // Name of the agent.
-            echo '<td class="bolder" style="text-align: right" >'.$alias['alias'].'</td>';
+            echo '<td style="text-align: left;font-weight: bold;color: #3f3f3f;">'.$alias['alias'].'</td>';
             // Alerts of the agent.
             foreach ($templates as $tid => $tname) {
                 $anyfired = 0;
@@ -669,18 +670,6 @@ class AgentsAlerts extends HTML
                 echo '<td class="center">';
 
                 if (isset($agent_alerts[$alias['alias']][$tid])) {
-                    foreach ($agent_alerts[$alias['alias']][$tid] as $alert) {
-                        if ((int) $alert['times_fired'] > 0) {
-                            $anyfired = true;
-                        }
-                    }
-
-                    if ($anyfired) {
-                        $cellstyle = 'background:'.COL_ALERTFIRED.';';
-                    } else {
-                        $cellstyle = 'background:'.COL_NORMAL.';';
-                    }
-
                     $uniqid = uniqid();
 
                     html_print_anchor(
@@ -689,8 +678,7 @@ class AgentsAlerts extends HTML
                             'content' => html_print_div(
                                 [
                                     'id'      => 'line_header_'.$temp['id'],
-                                    'class'   => 'status_rounded_rectangles text_inside',
-                                    'style'   => $cellstyle,
+                                    'style'   => 'font-size: 13pt;',
                                     'content' => count($agent_alerts[$alias['alias']][$tid]),
                                 ],
                                 true

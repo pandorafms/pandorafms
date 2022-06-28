@@ -29,7 +29,7 @@ input[type="button"].submit-next {
   background: #fff;
   padding: 5px;
   font-size: 1.3em;
-  margin: 0.5em 1em 0.5em 0;
+  margin: 0.5em 0em;
   cursor: pointer;
   text-align: center;
   height: 30px;
@@ -71,7 +71,7 @@ div.submit_buttons_container {
   position: relative;
   margin: 10px auto 0px;
   bottom: 0px;
-  width: 90%;
+  width: 95%;
   clear: both;
   height: 4em;
 }

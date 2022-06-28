@@ -378,7 +378,7 @@ class ModuleValueWidget extends Widget
     {
         global $config;
 
-        $output .= '';
+        $output = '';
 
         $id_agent = $this->values['agentId'];
         $id_group = agents_get_agent_group($id_agent);
@@ -442,6 +442,22 @@ class ModuleValueWidget extends Widget
     public static function getName()
     {
         return 'module_value';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 490,
+        ];
+
+        return $size;
     }
 
 

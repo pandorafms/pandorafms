@@ -372,4 +372,20 @@ class AlertsFiredWidget extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => (is_metaconsole() === true) ? 330 : 260,
+        ];
+
+        return $size;
+    }
+
+
 }

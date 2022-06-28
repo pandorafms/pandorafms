@@ -572,3 +572,22 @@ div#main_pure {
 #main_page > .ui-content div.label > p {
   margin: 0;
 }
+
+.content-widget .dataTables_wrapper {
+  width: 98%;
+  margin-top: 5px;
+}
+
+.ui-dialog .ui-dialog-title {
+  top: 0px !important;
+}
+
+.ui-dialog .ui-dialog-content {
+  padding: 0em 1em !important;
+  margin-bottom: 0 !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+  margin-top: 0px !important;
+  padding: 0.5em 1em 0em 0em !important;
+}

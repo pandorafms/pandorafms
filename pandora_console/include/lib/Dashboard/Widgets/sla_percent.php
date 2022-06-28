@@ -494,4 +494,20 @@ class SLAPercentWidget extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 550,
+        ];
+
+        return $size;
+    }
+
+
 }

@@ -2598,10 +2598,9 @@ function agents_delete_agent($id_agents, $disableACL=false)
                 'tagente_modulo',
                 $filter
             );
-
             if (is_array($rows) === true) {
                 foreach ($rows as $row) {
-                    $modules[] = PandoraFMS\Module::build($row);
+                    $modules[] = PandoraFMS\Module::build($row, '\PandoraFMS\Module', true);
                 }
             }
 
@@ -4267,4 +4266,31 @@ function get_status_data_agent_modules($id_group, $agents=[], $modules=[])
     }
 
     return $res;
+}
+
+
+function agents_get_offspring(int $id_agent)
+{
+    $return = [];
+    // Get parent.
+    $agents = db_get_all_rows_filter(
+        'tagente',
+        [
+            'id_parent' => $id_agent,
+            'disabled'  => 0,
+        ],
+        'id_agente'
+    );
+
+    if ($agents !== false) {
+        foreach ($agents as $agent) {
+            if ((int) $agent['id_agente'] !== 0) {
+                $return += agents_get_offspring((int) $agent['id_agente']);
+            }
+        }
+    }
+
+    $return += [$id_agent => 0];
+
+    return $return;
 }

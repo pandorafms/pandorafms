@@ -2077,7 +2077,8 @@ class Client
                     'status'         => $status,
                     'message'        => $msg,
                     'extra'          => $extra,
-                ]
+                ],
+                JSON_UNESCAPED_UNICODE
             );
 
             if ($field_exists === false) {
@@ -2228,7 +2229,7 @@ class Client
         if (is_callable($this->postUpdateFN) === true) {
             call_user_func(
                 $this->postUpdateFN,
-                $this->currentPackage,
+                (string) $version,
                 'server'
             );
         }

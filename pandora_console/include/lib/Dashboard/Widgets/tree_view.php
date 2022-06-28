@@ -726,4 +726,20 @@ class TreeViewWidget extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => (is_metaconsole() === true) ? 500 : 590,
+        ];
+
+        return $size;
+    }
+
+
 }

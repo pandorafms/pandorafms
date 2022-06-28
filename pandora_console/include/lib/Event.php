@@ -60,7 +60,7 @@ class Event extends Entity
      */
     public function __construct(?int $event_id=null)
     {
-        $this->table = ((bool) \is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+        $this->table = 'tevento';
 
         if ($event_id === 0) {
             parent::__construct($this->table);

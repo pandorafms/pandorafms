@@ -516,7 +516,9 @@ class Widget
         if (empty($values['background']) === true) {
             $values['background'] = '#ffffff';
 
-            if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+            if ($config['style'] === 'pandora_black'
+                && is_metaconsole() === false
+            ) {
                 $values['background'] = '#222222';
             }
         }
@@ -760,6 +762,22 @@ class Widget
     public function getFormJS()
     {
         return '';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration():array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 650,
+        ];
+
+        return $size;
     }
 
 

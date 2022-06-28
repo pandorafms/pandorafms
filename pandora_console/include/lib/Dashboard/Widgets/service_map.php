@@ -258,6 +258,9 @@ class ServiceMapWidget extends Widget
         $inputs = parent::getFormInputs();
 
         $services_res = services_get_services();
+        if ($services_res === false) {
+            $services_res = [];
+        }
 
         // If currently selected report is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
         // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
@@ -272,7 +275,20 @@ class ServiceMapWidget extends Widget
             $fields = array_reduce(
                 $services_res,
                 function ($carry, $item) {
-                    $carry[$item['id']] = $item['name'];
+                    $parents = '';
+                    if (class_exists('\PandoraFMS\Enterprise\Service') === true) {
+                        try {
+                            $service = new \PandoraFMS\Enterprise\Service($item['id']);
+                            $ancestors = $service->getAncestors();
+                            if (empty($ancestors) === false) {
+                                $parents = '('.join('/', $ancestors).')';
+                            }
+                        } catch (\Exception $e) {
+                            $parents = '';
+                        }
+                    }
+
+                    $carry[$item['id']] = $item['name'].' '.$parents;
                     return $carry;
                 },
                 []
@@ -345,6 +361,7 @@ class ServiceMapWidget extends Widget
         $size = parent::getSize();
 
         $output = '';
+
         if (check_acl($config['id_user'], 0, 'AR') === 0) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_error_message(
@@ -433,6 +450,22 @@ class ServiceMapWidget extends Widget
     public static function getName()
     {
         return 'service_map';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 320,
+        ];
+
+        return $size;
     }
 
 

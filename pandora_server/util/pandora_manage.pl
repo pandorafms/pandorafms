@@ -21,7 +21,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
 use LWP::Simple;
-use Data::Dumper;
+#use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.762 Build 220606";
+my $version = "7.0NG.763 Build 220628";
 
 # save program name for logging
 my $progname = basename($0);
@@ -231,6 +231,7 @@ sub help_screen{
 	print "\nTOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', "Execute any CLI option \n\t  with macros from CSV file");
     help_screen_line('--create_snmp_trap', '<name> <oid> <description> <severity>', "Create a new trap definition. \n\tSeverity 0 (Maintenance), 1(Info) , 2 (Normal), 3 (Warning), 4 (Critical), 5 (Minor) and 6 (Major)");
+    help_screen_line('--start_snmptrapd', '[no parameters needed]', "Start the snmptrap process or restart if it is running");
     print "\nSETUP:\n\n" unless $param ne '';
 	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
 	
@@ -279,7 +280,7 @@ sub api_call($$$;$$$$) {
 		my $ua = new LWP::UserAgent;
 		my $url = $pa_config->{"console_api_url"};
 		my $response = $ua->post($url, $params);
-		
+
 		if ($response->is_success) {
 			$content = $response->decoded_content();
 		}
@@ -375,29 +376,53 @@ sub pandora_disable_group ($$$) {
 		exit;
 	}
 
-	if ($group == 0){
-		# Extract all the names of the pandora agents if it is for all = 0.
-		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+	if(is_metaconsole($conf) == 1) {
+			my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+			my @servers_id = split(',',$servers);
+			foreach my $server (@servers_id) {
+					my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 
-		# Update bbdd.
-		db_do ($dbh, "UPDATE tagente SET disabled = 1");
-	}
-	else {
-		# Extract all the names of the pandora agents if it is for group.
-		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+					if ($group == 0){
+						# Extract all the names of the pandora agents if it is for all = 0.
+						@agents_bd = get_db_rows ($dbh_metaconsole, 'SELECT id_agente FROM tagente');
+					}
+					else {
+						# Extract all the names of the pandora agents if it is for group.
+						@agents_bd = get_db_rows ($dbh_metaconsole, 'SELECT id_agente FROM tagente WHERE id_grupo = ?', $group);
+					}
 
-		# Update bbdd.
-		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
-	}
+					foreach my $id_agent (@agents_bd) {
+							# Call the API.
+							$result += api_call(
+								$conf, 'set', 'disabled_and_standby', $id_agent->{'id_agente'}, $server, '1|1' 
+							);
+					}
+			}
+	} else {
+			if ($group == 0){
+				# Extract all the names of the pandora agents if it is for all = 0.
+				@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
 
-	foreach my $name_agent (@agents_bd) {
-		# Check the standby field I put it to 0.
-		my $new_conf = update_conf_txt(
-			$conf,
-			$name_agent->{'nombre'},
-			'standby',
-			'1'
-		);
+				# Update bbdd.
+				$result = db_update ($dbh, "UPDATE tagente SET disabled = 1");
+		}
+		else {
+				# Extract all the names of the pandora agents if it is for group.
+				@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+				# Update bbdd.
+				$result = db_update ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
+		}
+
+		foreach my $name_agent (@agents_bd) {
+			# Check the standby field I put it to 0.
+			my $new_conf = update_conf_txt(
+				$conf,
+				$name_agent->{'nombre'},
+				'standby',
+				'1'
+			);
+		}
 	}
 
     return $result;
@@ -1138,7 +1163,8 @@ sub cli_disable_group() {
 		print_log "[INFO] Disabling group '$group_name'\n\n";
 	}
 	
-	pandora_disable_group ($conf, $dbh, $id_group);
+	my $result = pandora_disable_group ($conf, $dbh, $id_group);
+	print_log "[INFO] Disabled ".$result." agents from group ".$group_name."\n\n";
 }
 
 ##############################################################################
@@ -1161,6 +1187,16 @@ sub cli_enable_group() {
 	}
 	
 	pandora_enable_group ($conf, $dbh, $id_group);
+}
+
+##############################################################################
+# Start snmptrap process.
+# Related option: --start_snmptrapd
+##############################################################################
+sub cli_start_snmptrapd() {
+	use PandoraFMS::SNMPServer;
+	print_log "[INFO] Starting snmptrap process. \n";
+	PandoraFMS::SNMPServer::start_snmptrapd(\%conf);
 }
 
 ##############################################################################
@@ -4415,12 +4451,7 @@ sub cli_get_event_info () {
 	
 	$csv_separator = '|' unless defined($csv_separator);
 
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-	
-	my $query = "SELECT * FROM " . $event_table . " where id_evento=" . $id_event;
+	my $query = "SELECT * FROM tevento WHERE id_evento=" . $id_event;
 
 	my $header = "Event ID".$csv_separator."Event name".$csv_separator."Agent ID".$csv_separator."User ID".$csv_separator.
 				"Group ID".$csv_separator."Status".$csv_separator."Timestamp".$csv_separator."Event type".$csv_separator.
@@ -5539,8 +5570,6 @@ sub cli_get_agents() {
 	
 	my $head_print = 0;
 
-	# use Data::Dumper;
-
 
 	foreach my $agent (@agents) {
 		if($status ne '') {
@@ -5952,6 +5981,24 @@ sub cli_delete_group() {
 	exist_check($group_id, 'group name', $group_name);
 
 	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
+
+	# Delete on nodes too if metaconsole.
+	if(is_metaconsole($conf) == 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+		my @servers_id = split(',',$servers);
+
+	foreach my $server (@servers_id) {
+
+		my $dbh_node = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+
+		my $group_id = get_group_id($dbh_node,$group_name);
+		exist_check($group_id, 'group name', $group_name);
+
+		$group_id = db_do ($dbh_node, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
+
+		}
+	}
+
 
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";
@@ -6407,12 +6454,7 @@ sub cli_set_event_storm_protection () {
 sub pandora_get_event_name($$) {
 	my ($dbh,$id_event) = @_;
 	
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_name = get_db_value($dbh, 'SELECT evento FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
+	my $event_name = get_db_value($dbh, 'SELECT evento FROM tevento WHERE id_evento = ?',$id_event);
 	
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -6423,12 +6465,7 @@ sub pandora_get_event_name($$) {
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_id = db_process_update($dbh, $event_table, $parameters, {$where_column => $where_value});
+	my $event_id = db_process_update($dbh, 'tevento', $parameters, {$where_column => $where_value});
 	return $event_id;
 }
 
@@ -6439,12 +6476,7 @@ sub pandora_update_event_from_hash ($$$$) {
 sub pandora_get_event_comment($$) {
 	my ($dbh,$id_event) = @_;
 
-	my $event_table = "tevento";
-	if (is_metaconsole($conf) == 1) {
-		$event_table = "tmetaconsole_event";
-	}
-
-	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
+	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
 
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -7504,6 +7536,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--enable_group') {
 			param_check($ltotal, 1);
 			cli_enable_group();
+		}
+		elsif ($param eq '--start_snmptrapd') {
+			#param_check($ltotal, 0);
+			cli_start_snmptrapd();
 		}
 		elsif ($param eq '--create_agent') {
 			param_check($ltotal, 8, 4);

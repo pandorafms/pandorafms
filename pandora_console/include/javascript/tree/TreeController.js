@@ -861,7 +861,7 @@ var TreeController = {
                 '<span><img class="invert_filter" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
                 'images/help.png" class="img_help" title="' +
-                element.name +
+                (element.title ? element.title : element.name) +
                 '" alt="' +
                 element.name +
                 '"/></span> ';
@@ -1314,6 +1314,7 @@ var TreeController = {
                       serverID: element.serverID,
                       rootType: element.rootType,
                       metaID: element.metaID,
+                      title: element.title,
                       filter: controller.filter,
                       auth_class: controller.auth_class,
                       id_user: controller.id_user,

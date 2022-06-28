@@ -145,14 +145,15 @@ class Module extends Entity
     /**
      * Creates a module object from given data. Avoid query duplication.
      *
-     * @param array  $data      Module information.
-     * @param string $class_str Class type.
-     *
+     * @param  array   $data                   Module information.
+     * @param  string  $class_str              Class type.
+     * @param  boolean $return_deleted_modules Check.
      * @return PandoraFMS\Module Object.
      */
     public static function build(
         array $data=[],
-        string $class_str='\PandoraFMS\Module'
+        string $class_str='\PandoraFMS\Module',
+        bool $return_deleted_modules=false
     ) {
         $obj = new $class_str();
 
@@ -161,8 +162,9 @@ class Module extends Entity
             $obj->{$k}($v);
         }
 
-        if ($obj->nombre() === 'delete_pending'
-            || $obj->nombre() === 'pendingdelete'
+        if (($obj->nombre() === 'delete_pending'
+            || $obj->nombre() === 'pendingdelete')
+            && $return_deleted_modules === false
         ) {
             return null;
         }
@@ -704,14 +706,19 @@ class Module extends Entity
             return false;
         }
 
-        return (bool) \db_process_sql_insert(
-            'talert_template_modules',
-            [
-                'id_agent_module'   => $this->id_agente_modulo(),
-                'id_alert_template' => $id_alert_template,
-                'last_reference'    => time(),
-            ]
-        );
+        $old = $this->alertTemplatesAssigned();
+        if (in_array($id_alert_template, $old) === false) {
+            return (bool) \db_process_sql_insert(
+                'talert_template_modules',
+                [
+                    'id_agent_module'   => $this->id_agente_modulo(),
+                    'id_alert_template' => $id_alert_template,
+                    'last_reference'    => time(),
+                ]
+            );
+        }
+
+        return false;
 
     }
 

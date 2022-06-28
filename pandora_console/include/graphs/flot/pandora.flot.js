@@ -15,6 +15,8 @@ function pandoraFlotPie(
   colors,
   hide_labels
 ) {
+  height = parseInt(height);
+
   labels = labels.split(separator);
   var data = values.split(separator);
 
@@ -79,10 +81,21 @@ function pandoraFlotPie(
       break;
   }
 
+  var discount = 20;
+  if (water_mark) {
+    discount = 40;
+  }
+
   var plot = $.plot($("#" + graph_id), data, conf_pie);
 
   var legends = $("#" + graph_id + " .legendLabel");
   legends.css("font-size", font_size + "pt");
+
+  var tableDiv = $("#" + graph_id + " .legend > div");
+  tableDiv.css("max-height", height - discount + "px");
+
+  var tableLegend = $("#" + graph_id + " .legend table");
+  tableLegend.css("max-height", height - discount + "px");
 
   // Events
   $("#" + graph_id).bind("plothover", pieHover);
@@ -443,14 +456,15 @@ function pandoraFlotHBars(
         "pt !important;" +
         "margin: 0; max-width: 200px;" +
         "margin-right:5px;" +
-        "margin-left: -1.5em" +
-        "text-align: right" +
+        "margin-left: -1.5em;" +
+        "text-align: right;" +
         "text-overflow: ellipsis;" +
         "overflow: hidden;" +
         "white-space: pre;";
 
       if (label.indexOf("<br>") != -1) {
-        div_attributes += "min-height: 2.5em;";
+        var label_array = label.split("<br>");
+        label = label_array[0] + label_array[1];
       }
 
       div_attributes += '" title="' + label + '" style="overflow: hidden;"';
@@ -2929,39 +2943,6 @@ function set_watermark(graph_id, plot, watermark_src) {
     },
     false
   );
-}
-
-function get_event_details(event_ids) {
-  table = "";
-  if (typeof event_ids != "undefined") {
-    var inputs = [];
-    var table;
-    inputs.push("get_events_details=1");
-    inputs.push("event_ids=" + event_ids);
-    inputs.push("page=include/ajax/events");
-
-    // Autologin
-    if ($("#hidden-loginhash").val() != undefined) {
-      inputs.push("loginhash=" + $("#hidden-loginhash").val());
-      inputs.push("loginhash_data=" + $("#hidden-loginhash_data").val());
-      inputs.push("loginhash_user=" + $("#hidden-loginhash_user").val());
-    }
-
-    jQuery.ajax({
-      data: inputs.join("&"),
-      type: "GET",
-      url: (action = "../../ajax.php"),
-      timeout: 10000,
-      dataType: "html",
-      async: false,
-      success: function(data) {
-        table = data;
-        //forced_title_callback();
-      }
-    });
-  }
-
-  return table;
 }
 
 //Ajusta la grafica pequenña con el desplazamiento del eje y

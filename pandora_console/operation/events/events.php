@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,19 +46,19 @@ check_login();
 
 enterprise_include_once('/include/class/CommandCenter.class.php');
 
-$event_a = check_acl($config['id_user'], 0, 'ER');
-$event_w = check_acl($config['id_user'], 0, 'EW');
-$event_m = check_acl($config['id_user'], 0, 'EM');
+$event_a = (bool) check_acl($config['id_user'], 0, 'ER');
+$event_w = (bool) check_acl($config['id_user'], 0, 'EW');
+$event_m = (bool) check_acl($config['id_user'], 0, 'EM');
 
-if (! $event_a
-    && ! $event_w
-    && ! $event_m
+if ($event_a === false
+    && $event_w === false
+    && $event_m === false
 ) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access event viewer'
     );
-    if (is_ajax()) {
+    if (is_ajax() === true) {
         return ['error' => 'noaccess'];
     }
 
@@ -67,18 +67,9 @@ if (! $event_a
 }
 
 
-$access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
-
+$access = ($event_a === true) ? 'ER' : (($event_w === true) ? 'EW' : (($event_m === true) ? 'EM' : 'ER'));
 
 $readonly = false;
-if (is_metaconsole() === false
-    && isset($config['event_replication'])
-    && $config['event_replication'] == 1
-    && $config['show_events_in_local'] == 1
-) {
-    $readonly = true;
-}
-
 // Load specific stylesheet.
 ui_require_css_file('events');
 ui_require_css_file('tables');
@@ -100,7 +91,7 @@ $default_filter = [
 ];
 
 $fb64 = get_parameter('fb64', null);
-if (isset($fb64)) {
+if (isset($fb64) === true) {
     $filter = json_decode(base64_decode($fb64), true);
     $filter['tag_with'] = [];
     $filter['tag_without'] = [];
@@ -113,106 +104,106 @@ if (isset($fb64)) {
 
 $id_group = get_parameter(
     'filter[id_group]',
-    $filter['id_group']
+    ($filter['id_group'] ?? '')
 );
 $event_type = get_parameter(
     'filter[event_type]',
-    $filter['event_type']
+    ($filter['event_type'] ?? '')
 );
 $severity = get_parameter(
     'filter[severity]',
-    $filter['severity']
+    ($filter['severity'] ?? '')
 );
 $status = get_parameter(
     'filter[status]',
-    $filter['status']
+    ($filter['status'] ?? '')
 );
 $search = get_parameter(
     'filter[search]',
-    $filter['search']
+    ($filter['search'] ?? '')
 );
 $text_agent = get_parameter(
     'filter[text_agent]',
-    $filter['text_agent']
+    ($filter['text_agent'] ?? '')
 );
 $id_agent = get_parameter(
     'filter[id_agent]',
-    $filter['id_agent']
+    ($filter['id_agent'] ?? '')
 );
 $text_module = get_parameter(
     'filter[module_search]',
-    $filter['module_search']
+    ($filter['module_search'] ?? '')
 );
 $id_agent_module = get_parameter(
     'id_agent_module',
     get_parameter(
         'filter[id_agent_module]',
-        $filter['id_agent_module']
+        ($filter['id_agent_module'] ?? '')
     )
 );
 $pagination = get_parameter(
     'filter[pagination]',
-    $filter['pagination']
+    ($filter['pagination'] ?? '')
 );
 $event_view_hr = get_parameter(
     'filter[event_view_hr]',
-    $filter['event_view_hr']
+    ($filter['event_view_hr'] ?? '')
 );
 $id_user_ack = get_parameter(
     'filter[id_user_ack]',
-    $filter['id_user_ack']
+    ($filter['id_user_ack'] ?? '')
 );
 $group_rep = get_parameter(
     'filter[group_rep]',
-    $filter['group_rep']
+    ($filter['group_rep'] ?? '')
 );
 $tag_with = get_parameter(
     'filter[tag_with]',
-    $filter['tag_with']
+    ($filter['tag_with'] ?? '')
 );
 $tag_without = get_parameter(
     'filter[tag_without]',
-    $filter['tag_without']
+    ($filter['tag_without'] ?? '')
 );
 $filter_only_alert = get_parameter(
     'filter[filter_only_alert]',
-    $filter['filter_only_alert']
+    ($filter['filter_only_alert'] ?? '')
 );
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
-    $filter['id_group_filter']
+    ($filter['id_group_filter'] ?? '')
 );
 $date_from = get_parameter(
     'filter[date_from]',
-    $filter['date_from']
+    ($filter['date_from'] ?? '')
 );
 $date_to = get_parameter(
     'filter[date_to]',
-    $filter['date_to']
+    ($filter['date_to'] ?? '')
 );
 $time_from = get_parameter(
     'filter[time_from]',
-    $filter['time_from']
+    ($filter['time_from'] ?? '')
 );
 $time_to = get_parameter(
     'filter[time_to]',
-    $filter['time_to']
+    ($filter['time_to'] ?? '')
 );
 $source = get_parameter(
     'filter[source]',
-    $filter['source']
+    ($filter['source'] ?? '')
 );
 $id_extra = get_parameter(
     'filter[id_extra]',
-    $filter['id_extra']
+    ($filter['id_extra'] ?? '')
 );
 $user_comment = get_parameter(
     'filter[user_comment]',
-    $filter['user_comment']
+    ($filter['user_comment'] ?? '')
 );
 $history = get_parameter(
     'history',
-    $filter['history']
+    ($filter['history'] ?? '')
 );
 $section = get_parameter('section', false);
 
@@ -223,35 +214,36 @@ $id_source_event = get_parameter(
 
 $server_id = get_parameter(
     'filter[server_id]',
-    $filter['id_server_meta']
+    ($filter['id_server_meta'] ?? 0)
 );
 
 $custom_data_filter_type = get_parameter(
     'filter[custom_data_filter_type]',
-    $filter['custom_data_filter_type']
+    ($filter['custom_data_filter_type'] ?? '')
 );
 
 $custom_data = get_parameter(
     'filter[custom_data]',
-    $filter['custom_data']
+    ($filter['custom_data'] ?? '')
 );
 
 if (is_metaconsole() === true) {
     // Connect to node database.
-    $id_node = $server_id;
-    if ($id_node != 0) {
-        if (metaconsole_connect(null, $id_node) != NOERR) {
+    $id_node = (int) $server_id;
+    if ($id_node !== 0) {
+        if (metaconsole_connect(null, $id_node) !== NOERR) {
             return false;
         }
     }
 }
 
-
-if (empty($text_agent) && empty($id_agent) === false) {
+if (empty($text_agent) === true
+    && empty($id_agent) === false
+) {
     $text_agent = agents_get_alias($id_agent);
 }
 
-if (empty($text_module) && empty($id_agent_module) === false) {
+if (empty($text_module) === true && empty($id_agent_module) === false) {
     $text_module = modules_get_agentmodule_name($id_agent_module);
     $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
 }
@@ -265,12 +257,18 @@ if (is_metaconsole() === true) {
 
 // Ajax responses.
 if (is_ajax() === true) {
-    $get_events = get_parameter('get_events', 0);
+    $get_events = (int) get_parameter('get_events', 0);
+    $table_id = get_parameter('table_id', '');
+    $groupRecursion = (bool) get_parameter('groupRecursion', false);
+
     // Datatables offset, limit.
     $start = get_parameter('start', 0);
-    $length = get_parameter('length', $config['block_size']);
+    $length = get_parameter(
+        'length',
+        $config['block_size']
+    );
 
-    if ($get_events) {
+    if ($get_events !== 0) {
         try {
             ob_start();
 
@@ -318,21 +316,24 @@ if (is_ajax() === true) {
             // Find the order field and set the table and field name.
             foreach ($fields as $field) {
                 if (str_contains($field, $order['field']) === true) {
-                    $order['field'] = $field;
-                    break;
+                    switch ($field) {
+                        case 'ta.alias as agent_name':
+                            $order['field'] = 'agent_name';
+                        break;
+
+                        default:
+                            $order['field'] = $field;
+                        break;
+                    }
+
+                    continue;
                 }
             }
 
-            if (is_metaconsole() === false) {
-                $fields[] = 'am.nombre as module_name';
-                $fields[] = 'am.id_agente_modulo as id_agentmodule';
-                $fields[] = 'am.custom_id as module_custom_id';
-                $fields[] = 'ta.server_name as server_name';
-            } else {
-                $fields[] = 'ts.server_name as server_name';
-                $fields[] = 'te.id_agentmodule';
-                $fields[] = 'te.server_id';
-            }
+            $fields[] = 'am.nombre as module_name';
+            $fields[] = 'am.id_agente_modulo as id_agentmodule';
+            $fields[] = 'am.custom_id as module_custom_id';
+            $fields[] = 'ta.server_name as server_name';
 
             $events = events_get_all(
                 // Fields.
@@ -348,64 +349,101 @@ if (is_ajax() === true) {
                 // Sort field.
                 $order['field'],
                 // History.
-                $history
-            );
-            $count = events_get_all(
-                'count',
-                $filter,
-                null,
-                null,
-                null,
-                null,
-                $history
+                $history,
+                false,
+                '',
+                false,
+                $groupRecursion
             );
 
-            if ($count !== false) {
-                $count = $count['0']['nitems'];
+            $buffers = [];
+            if (is_metaconsole() === false
+                || (is_metaconsole() === true
+                && empty($filter['server_id']) === false)
+            ) {
+                $count = events_get_all(
+                    'count',
+                    $filter,
+                    null,
+                    null,
+                    null,
+                    null,
+                    $history,
+                    false,
+                    '',
+                    false,
+                    $groupRecursion
+                );
+
+                if ($count !== false) {
+                    $count = $count['0']['nitems'];
+                }
+            } else {
+                $buffers = $events['buffers'];
+                $count = $events['total'];
+                $events = $events['data'];
             }
 
-            if ($events) {
+            if (empty($events) === false) {
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) {
+                    function ($carry, $item) use ($table_id) {
                         global $config;
 
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
+
                         // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
                         if ($tmp->meta === true) {
                             if ($tmp->server_name !== null) {
-                                $tmp->data_server = metaconsole_get_servers($tmp->server_id);
-                                $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
+                                $tmp->data_server = metaconsole_get_servers(
+                                    $tmp->server_id
+                                );
+                                $tmp->server_url_hash = metaconsole_get_servers_url_hash(
+                                    $tmp->data_server
+                                );
                             }
                         }
 
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         if (strlen($tmp->evento) >= 255) {
-                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
+                            $tmp->evento = ui_print_truncate_text(
+                                $tmp->evento,
+                                255,
+                                $tmp->evento,
+                                true,
+                                false
+                            );
                         }
 
-                        if ($tmp->module_name) {
+                        if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }
 
-                        if ($tmp->comments) {
+                        if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
                         // Show last event.
-                        if (isset($tmp->max_id_evento) && $tmp->max_id_evento !== $tmp->id_evento) {
+                        if (isset($tmp->max_id_evento) === true
+                            && $tmp->max_id_evento !== $tmp->id_evento
+                        ) {
                             $max_event = db_get_row_sql(
                                 sprintf(
-                                    'SELECT criticity, timestamp FROM %s
+                                    'SELECT criticity,
+                                        `timestamp`
+                                    FROM tevento
                                     WHERE id_evento = %s',
-                                    ($tmp->meta === true) ? 'tmetaconsole_event' : 'tevento',
                                     $tmp->max_id_evento
                                 )
                             );
 
-                            $tmp->timestamp = $max_event['timestamp'];
-                            $tmp->criticity = $max_event['criticity'];
+                            if ($max_event !== false
+                                && empty($max_event) === false
+                            ) {
+                                $tmp->timestamp = $max_event['timestamp'];
+                                $tmp->criticity = $max_event['criticity'];
+                            }
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
@@ -434,6 +472,484 @@ if (is_ajax() === true) {
 
                         $tmp->b64 = base64_encode(json_encode($tmp));
 
+                        // Show comments events.
+                        $tmp->user_comment = $tmp->comments;
+                        if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
+                            $tmp->user_comment .= '&nbsp;&nbsp;';
+                            $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+                            $tmp->user_comment .= $tmp->b64;
+                            $tmp->user_comment .= '\',\'comments\')>;';
+                            $tmp->user_comment .= html_print_image(
+                                'images/operation.png',
+                                true,
+                                [
+                                    'title' => __('Show more'),
+                                    'class' => 'invert_filter',
+                                ]
+                            );
+                            $tmp->user_comment .= '</a>';
+                        }
+
+                        // Grouped events.
+                        if (isset($tmp->max_id_evento) === true
+                            && empty($tmp->max_id_evento) === false
+                        ) {
+                            $tmp->id_evento = $tmp->max_id_evento;
+                        }
+
+                        // Event severity prepared.
+                        switch ($tmp->criticity) {
+                            case EVENT_CRIT_CRITICAL;
+                                $text = __('CRITICAL');
+                                $color = COL_CRITICAL;
+                            break;
+
+                            case EVENT_CRIT_MAINTENANCE;
+                                $text = __('MAINTENANCE');
+                                $color = COL_MAINTENANCE;
+                            break;
+
+                            case EVENT_CRIT_INFORMATIONAL;
+                                $text = __('INFORMATIONAL');
+                                $color = COL_INFORMATIONAL;
+                            break;
+
+                            case EVENT_CRIT_MAJOR;
+                                $text = __('MAJOR');
+                                $color = COL_MAJOR;
+                            break;
+
+                            case EVENT_CRIT_MINOR;
+                                $text = __('MINOR');
+                                $color = COL_MINOR;
+                            break;
+
+                            case EVENT_CRIT_NORMAL;
+                                $text = __('NORMAL');
+                                $color = COL_NORMAL;
+                            break;
+
+                            case EVENT_CRIT_WARNING;
+                                $text = __('WARNING');
+                                $color = COL_WARNING;
+                            break;
+
+                            default:
+                                $color = COL_UNKNOWN;
+                                $text = __('UNKNOWN');
+                            break;
+                        }
+
+                        $output = '<div data-title="';
+                        $output .= $text;
+                        $output .= '" data-use_title_for_force_title="1" ';
+                        $output .= 'class="forced_title mini-criticity h100p" ';
+                        $output .= ('style="background: '.$color.'">');
+                        $output .= '</div>';
+
+                        $tmp->mini_severity = '<div class="event flex-row h100p nowrap">';
+                        $tmp->mini_severity .= $output;
+                        $tmp->mini_severity .= '</div>';
+
+                        $criticity = '<div class="criticity" style="background: ';
+                        $criticity .= $color.'">'.$text.'</div>';
+                        $tmp->criticity = $criticity;
+
+                        // Add event severity to end of text.
+                        $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
+
+                        // Grouped events.
+                        if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
+                            $evn .= '('.$tmp->event_rep.') ';
+                        }
+
+                        $evn .= $tmp->evento.'</a>';
+
+                        // Add event severity format to itself.
+                        $tmp->evento = $evn;
+
+                        // Grouped events.
+                        if (isset($item->max_timestamp) === true
+                            && ($item->max_timestamp) === false
+                        ) {
+                            $item->timestamp = $item->max_timestamp;
+                        }
+
+                        // Event type prepared.
+                        switch ($tmp->event_type) {
+                            case EVENTS_ALERT_FIRED;
+                            case EVENTS_ALERT_RECOVERED;
+                            case EVENTS_ALERT_CEASED;
+                            case EVENTS_ALERT_MANUAL_VALIDATION;
+                                $text = __('ALERT');
+                                $color = COL_ALERTFIRED;
+                            break;
+
+                            case EVENTS_RECON_HOST_DETECTED;
+                            case EVENTS_SYSTEM;
+                            case EVENTS_ERROR;
+                            case EVENTS_NEW_AGENT;
+                            case EVENTS_CONFIGURATION_CHANGE;
+                                $text = __('SYSTEM');
+                                $color = COL_MAINTENANCE;
+                            break;
+
+                            case EVENTS_GOING_UP_WARNING;
+                            case EVENTS_GOING_DOWN_WARNING;
+                                $text = __('WARNING');
+                                $color = COL_WARNING;
+                            break;
+
+                            case EVENTS_GOING_DOWN_NORMAL;
+                            case EVENTS_GOING_UP_NORMAL;
+                                $text = __('NORMAL');
+                                $color = COL_NORMAL;
+                            break;
+
+                            case EVENTS_GOING_DOWN_CRITICAL;
+                            case EVENTS_GOING_UP_CRITICAL;
+                                $text = __('CRITICAL');
+                                $color = COL_CRITICAL;
+                            break;
+
+                            case EVENTS_UNKNOWN;
+                            case EVENTS_GOING_UNKNOWN;
+                            default:
+                                $text = __('UNKNOWN');
+                                $color = COL_UNKNOWN;
+                            break;
+                        }
+
+                        $event_type = '<div class="criticity" style="background: ';
+                        $event_type .= $color.'">'.$text.'</div>';
+                        $tmp->event_type = $event_type;
+
+                        // Module status.
+                        // Event severity prepared.
+                        switch ($tmp->module_status) {
+                            case AGENT_MODULE_STATUS_NORMAL;
+                                $text = __('NORMAL');
+                                $color = COL_NORMAL;
+                            break;
+
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD;
+                                $text = __('CRITICAL');
+                                $color = COL_CRITICAL;
+                            break;
+
+                            case AGENT_MODULE_STATUS_NO_DATA;
+                                $text = __('NOT INIT');
+                                $color = COL_NOTINIT;
+                            break;
+
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT;
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT;
+                            case AGENT_MODULE_STATUS_WARNING_ALERT;
+                                $text = __('ALERT');
+                                $color = COL_ALERTFIRED;
+                            break;
+
+                            case AGENT_MODULE_STATUS_WARNING;
+                                $text = __('WARNING');
+                                $color = COL_WARNING;
+                            break;
+
+                            default:
+                                $text = __('UNKNOWN');
+                                $color = COL_UNKNOWN;
+                            break;
+                        }
+
+                        $module_status = '<div class="criticity" style="background: ';
+                        $module_status .= $color.'">'.$text.'</div>';
+                        $tmp->module_status = $module_status;
+
+                        // Status.
+                        switch ($tmp->estado) {
+                            case EVENT_STATUS_NEW:
+                                $img = html_print_image(
+                                    'images/star.png',
+                                    true,
+                                    [
+                                        'title' => __('New event'),
+                                        'class' => 'forced-title',
+                                    ]
+                                );
+                                $state = 0;
+                            break;
+
+                            case EVENT_STATUS_VALIDATED:
+                                $state = 1;
+                                $img = html_print_image(
+                                    'images/tick.png',
+                                    true,
+                                    [
+                                        'title' => __('Event validated'),
+                                        'class' => 'forced-title invert_filter',
+                                    ]
+                                );
+                            break;
+
+                            case EVENT_STATUS_INPROCESS:
+                                $state = 2;
+                                $img = html_print_image(
+                                    'images/hourglass.png',
+                                    true,
+                                    [
+                                        'title' => __('Event in process'),
+                                        'class' => 'forced-title invert_filter',
+                                    ]
+                                );
+                            break;
+
+                            default:
+                                $img = html_print_image(
+                                    'images/star.png',
+                                    true,
+                                    [
+                                        'title' => __('Unknown'),
+                                        'class' => 'forced-title',
+                                    ]
+                                );
+                                $state = 0;
+                            break;
+                        }
+
+                        $draw_state = '<div>';
+                        $draw_state .= '<span class="invisible">';
+                        $draw_state .= $state;
+                        $draw_state .= '</span>';
+                        $draw_state .= $img;
+                        $draw_state .= '</div>';
+                        $tmp->estado = $draw_state;
+
+                        // Owner.
+                        if (empty($tmp->owner_user) === true) {
+                            $tmp->owner_user = __('System');
+                        }
+
+                        // Group name.
+                        if (empty($tmp->id_grupo) === true) {
+                            $tmp->id_grupo = __('All');
+                        } else {
+                            $tmp->id_grupo = $tmp->group_name;
+                        }
+
+                        // Module name.
+                        $tmp->id_agentmodule = $tmp->module_name;
+
+                        // Options.
+                        // Show more.
+                        $tmp->options = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
+                        $tmp->options .= html_print_image(
+                            'images/operation.png',
+                            true,
+                            [
+                                'title' => __('Show more'),
+                                'class' => 'invert_filter',
+                            ]
+                        );
+                        $tmp->options .= '</a>';
+
+                        if (isset($tmp->server_id) === false) {
+                            $tmp->server_id = 0;
+                        }
+
+                        if ((int) $tmp->user_can_write === 1) {
+                            if ((int) $tmp->estado !== 1) {
+                                // Validate.
+                                $tmp->options .= '<a href="javascript:" onclick="validate_event(\''.$table_id.'\',';
+                                if (isset($tmp->max_id_evento) === true
+                                    && empty($tmp->max_id_evento) === false
+                                ) {
+                                    $id_val = $tmp->max_id_evento;
+                                    if (is_metaconsole() === true) {
+                                        $id_val .= '-'.$tmp->server_id;
+                                    }
+
+                                    $tmp->options .= $tmp->max_id_evento.', ';
+                                    $tmp->options .= $tmp->event_rep.', this, '.$tmp->server_id.')"';
+                                    $tmp->options .= ' id="val-'.$id_val.'">';
+                                    $tmp->options .= html_print_image(
+                                        'images/tick.png',
+                                        true,
+                                        [
+                                            'title' => __('Validate events'),
+                                            'class' => 'invert_filter',
+                                        ]
+                                    );
+                                    $tmp->options .= '</a>';
+                                } else {
+                                    $id_val = $tmp->id_evento;
+                                    if (is_metaconsole() === true) {
+                                        $id_val .= '-'.$tmp->server_id;
+                                    }
+
+                                    $tmp->options .= $tmp->id_evento.', 0, this, ';
+                                    $tmp->options .= $tmp->server_id.')" id="val-'.$id_val.'">';
+                                    $tmp->options .= html_print_image(
+                                        'images/tick.png',
+                                        true,
+                                        [
+                                            'title' => __('Validate event'),
+                                            'class' => 'invert_filter',
+                                        ]
+                                    );
+                                    $tmp->options .= '</a>';
+                                }
+                            }
+
+                            if ((int) $tmp->estado !== 2) {
+                                // In process.
+                                $tmp->options .= '<a href="javascript:" onclick="in_process_event(\''.$table_id.'\',';
+                                if (isset($tmp->max_id_evento) === true
+                                    && empty($tmp->max_id_evento) === false
+                                ) {
+                                    $id_proc = $tmp->max_id_evento;
+                                    if (is_metaconsole() === true) {
+                                        $id_proc .= '-'.$tmp->server_id;
+                                    }
+
+                                    $tmp->options .= $tmp->max_id_evento.', '.$tmp->event_rep.', this, ';
+                                    $tmp->options .= $tmp->server_id.')" id="proc-'.$id_proc.'">';
+                                } else {
+                                    $id_proc = $tmp->id_evento;
+                                    if (is_metaconsole() === true) {
+                                        $id_proc .= '-'.$tmp->server_id;
+                                    }
+
+                                    $tmp->options .= $tmp->id_evento.', 0, this, ';
+                                    $tmp->options .= $tmp->server_id.')" id="proc-'.$id_proc.'">';
+                                }
+
+                                $tmp->options .= html_print_image(
+                                    'images/hourglass.png',
+                                    true,
+                                    [
+                                        'title' => __('Change to in progress status'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->options .= '</a>';
+                            }
+                        }
+
+                        if ((int) $tmp->user_can_manage === 1) {
+                            // Delete.
+                            $tmp->options .= '<a href="javascript:" onclick="delete_event(\''.$table_id.'\',';
+                            if (isset($tmp->max_id_evento) === true
+                                && empty($tmp->max_id_evento) === false
+                            ) {
+                                $id_del = $tmp->max_id_evento;
+                                if (is_metaconsole() === true) {
+                                    $id_del .= '-'.$tmp->server_id;
+                                }
+
+                                $tmp->options .= $tmp->max_id_evento.', '.$tmp->event_rep;
+                                $tmp->options .= ', this, '.$tmp->server_id.')" id="del-'.$id_del.'">';
+                                $tmp->options .= html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete events'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->options .= '</a>';
+                            } else {
+                                $id_del = $tmp->id_evento;
+                                if (is_metaconsole() === true) {
+                                    $id_del .= '-'.$tmp->server_id;
+                                }
+
+                                $tmp->options .= $tmp->id_evento.', 0, this, ';
+                                $tmp->options .= $tmp->server_id.')" id="del-'.$id_del.'">';
+                                $tmp->options .= html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete event'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->options .= '</a>';
+                            }
+                        }
+
+                        // Multi select.
+                        $value_checkbox = $tmp->id_evento;
+                        if (is_metaconsole() === true) {
+                            $value_checkbox .= '|'.$tmp->server_id;
+                        }
+
+                        $tmp->m = '<input name="checkbox-multi[]" type="checkbox" value="';
+                        $tmp->m .= $value_checkbox.'" id="checkbox-multi-'.$tmp->id_evento.'" ';
+                        if (isset($tmp->max_id_evento) === true
+                            && empty($tmp->max_id_evento) === false
+                        ) {
+                            $tmp->m .= ' event_rep="'.$tmp->event_rep.'" ';
+                        } else {
+                            $tmp->m .= ' event_rep="0" ';
+                        }
+
+                        $tmp->m .= 'class="candeleted chk_val">';
+
+                        // Url to go to node from meta.
+                        $server_url = '';
+                        $hashdata = '';
+                        if ($tmp->meta === true) {
+                            if (isset($tmp->data_server) === true
+                                && $tmp->data_server !== false
+                                && isset($tmp->server_url_hash) === true
+                            ) {
+                                $server_url = $tmp->data_server['server_url'];
+                                $hashdata = $tmp->server_url_hash;
+                            }
+                        }
+
+                        // Url to agent view.
+                        $url_link = ui_get_full_url(
+                            'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
+                        );
+                        $url_link_hash = '';
+                        if ($tmp->meta === true) {
+                            $url_link = $server_url;
+                            $url_link .= '/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
+                            $url_link_hash = $hashdata;
+                        }
+
+                        // Agent name link.
+                        if ($tmp->id_agente > 0) {
+                            $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            $draw_agent_name .= $tmp->agent_name;
+                            $draw_agent_name .= '</a>';
+                            $tmp->agent_name = $draw_agent_name;
+                        } else {
+                            $tmp->agent_name = '';
+                        }
+
+                        // Agent ID link.
+                        if ($tmp->id_agente > 0) {
+                            $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            $draw_agent_id .= $tmp->id_agente;
+                            $draw_agent_id .= '</a>';
+                            $tmp->id_agente = $draw_agent_id;
+                        } else {
+                            $tmp->id_agente = '';
+                        }
+
+                        if (empty($tmp->custom_data) === false) {
+                            $custom_data = json_decode(io_safe_output($tmp->custom_data), true);
+                            $custom_data_str = '';
+                            if (isset($custom_data) === true && empty($custom_data) === false) {
+                                foreach ($custom_data as $key => $value) {
+                                    $custom_data_str .= $value['attr_name'].' = '.$value['val'].'<br>';
+                                }
+                            }
+
+                            $tmp->custom_data = $custom_data_str;
+                        }
+
                         $carry[] = $tmp;
                         return $carry;
                     }
@@ -443,7 +959,8 @@ if (is_ajax() === true) {
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
-                    'data'            => $data,
+                    'data'            => ($data ?? []),
+                    'buffers'         => $buffers,
                     'recordsTotal'    => $count,
                     'recordsFiltered' => $count,
                 ]
@@ -506,8 +1023,8 @@ if ($load_filter_id === 0) {
 }
 
 // Do not load the user filter if we come from the 24h event graph.
-$from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
-if ($loaded_filter !== false && $from_event_graph != 1 && !isset($fb64)) {
+$from_event_graph = get_parameter('filter[from_event_graph]', ($filter['from_event_graph'] ?? ''));
+if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false) {
     $filter = events_get_event_filter($loaded_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];
@@ -617,9 +1134,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $data[1] = html_print_image(
@@ -635,7 +1151,7 @@ $data[1] = html_print_image(
 
 $data[1] .= html_print_input_hidden(
     'tag_with',
-    $tag_with_base64,
+    ($tag_with_base64 ?? ''),
     true
 );
 
@@ -660,9 +1176,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 
 $tabletags_with->data[] = $data;
@@ -694,9 +1209,8 @@ $data[0] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -710,7 +1224,7 @@ $data[1] = html_print_image(
 );
 $data[1] .= html_print_input_hidden(
     'tag_without',
-    $tag_without_base64,
+    ($tag_without_base64 ?? ''),
     true
 );
 $data[1] .= '<br><br>'.html_print_image(
@@ -733,9 +1247,8 @@ $data[2] = html_print_select(
     true,
     true,
     true,
-    '',
-    false,
-    'width: 200px;'
+    'select_tags',
+    false
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
@@ -869,7 +1382,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
         'images/csv.png',
         true,
         [
@@ -1013,31 +1526,6 @@ html_print_div(
     ]
 );
 
-// Controls.
-if (is_metaconsole() !== true) {
-    if (isset($config['event_replication']) === true
-        && $config['event_replication'] == 1
-    ) {
-        if ($config['show_events_in_local'] == 0) {
-            db_pandora_audit(
-                AUDIT_LOG_ACL_VIOLATION,
-                'Trying to access event viewer. View disabled due event replication.'
-            );
-            ui_print_info_message(
-                [
-                    'message'  => __(
-                        'Event viewer is disabled due event replication. For more information, please contact with the administrator'
-                    ),
-                    'no_close' => true,
-                ]
-            );
-            return;
-        } else {
-            $readonly = true;
-        }
-    }
-}
-
 if (enterprise_hook(
     'enterprise_acl',
     [
@@ -1142,15 +1630,19 @@ $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-if (empty($severity) === true && $severity !== '0') {
-    $severity = -1;
+if (is_array($severity) === false) {
+    if (empty($severity) === true && $severity !== '0') {
+        $severity = -1;
+    } else {
+        $severity = explode(',', $severity);
+    }
 }
 
 // Criticity - severity.
 $data = html_print_select(
     get_priorities(),
     'severity',
-    explode(',', $severity),
+    $severity,
     '',
     __('All'),
     -1,
@@ -1158,7 +1650,10 @@ $data = html_print_select(
     true,
     true,
     '',
-    false
+    false,
+    false,
+    false,
+    3
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
@@ -1222,7 +1717,7 @@ $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
 $params['return'] = true;
 
-if ($meta) {
+if (is_metaconsole() === true) {
     $params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
 
@@ -1232,7 +1727,7 @@ $params['hidden_input_idagent_value'] = $id_agent;
 $params['size'] = '';
 
 if ($id_agent !== null) {
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $metaconsole_agent = db_get_row_sql(
             sprintf(
                 'SELECT alias, server_name
@@ -1242,7 +1737,9 @@ if ($id_agent !== null) {
             )
         );
 
-        $params['value'] = $metaconsole_agent['alias'].' ('.$metaconsole_agent['server_name'].')';
+        if ($metaconsole_agent !== false) {
+            $params['value'] = $metaconsole_agent['alias'].' ('.$metaconsole_agent['server_name'].')';
+        }
     } else {
         $params['value'] = agents_get_alias($id_agent);
     }
@@ -1562,34 +2059,9 @@ try {
             'class' => 'no-padding',
         ],
         'id_evento',
-            // 'id_agente',
-            // 'id_usuario',
-            // 'id_grupo',
-            // 'estado',
         'agent_name',
         'timestamp',
-            // 'utimestamp',
-            // 'event_type',
-            // 'id_agentmodule',
-            // 'id_alert_am',
         'event_type',
-            // 'user_comment',
-            // 'tags',
-            // 'source',
-            // 'id_extra',
-            // 'critical_instructions',
-            // 'warning_instructions',
-            // 'unknown_instructions',
-            // 'owner_user',
-            // 'ack_utimestamp',
-            // 'custom_data',
-            // 'data',
-            // 'module_status',
-            // 'similar_ids',
-            // 'event_rep',
-            // 'timestamp_rep',
-            // 'timestamp_rep_min',
-            // 'module_name',
         [
             'text'  => 'options',
             'class' => 'action_buttons w120px',
@@ -1733,30 +2205,34 @@ try {
 
     // Close.
     $active_filters_div .= '</div>';
+    $active_filters_div .= '<div id="events_buffers_display"></div>';
 
     $table_id = 'events';
     $form_id = 'events_form';
 
+
+
     // Print datatable.
     ui_print_datatable(
         [
-            'id'                  => $table_id,
-            'class'               => 'info_table events',
-            'style'               => 'width: 100%;',
-            'ajax_url'            => 'operation/events/events',
-            'ajax_data'           => [
+            'id'                             => $table_id,
+            'class'                          => 'info_table events',
+            'style'                          => 'width: 100%;',
+            'ajax_url'                       => 'operation/events/events',
+            'ajax_data'                      => [
                 'get_events' => 1,
                 'history'    => (int) $history,
+                'table_id'   => $table_id,
             ],
-            'form'                => [
+            'form'                           => [
                 'id'            => $form_id,
                 'class'         => 'flex-row',
                 'html'          => $filter,
                 'inputs'        => [],
                 'extra_buttons' => $buttons,
             ],
-            'extra_html'          => $active_filters_div,
-            'pagination_options'  => [
+            'extra_html'                     => $active_filters_div,
+            'pagination_options'             => [
                 [
                     $config['block_size'],
                     10,
@@ -1778,19 +2254,20 @@ try {
                     'All',
                 ],
             ],
-            'order'               => [
+            'order'                          => [
                 'field'     => 'timestamp',
                 'direction' => 'desc',
             ],
-            'column_names'        => $column_names,
-            'columns'             => $fields,
-            'no_sortable_columns' => [
+            'column_names'                   => $column_names,
+            'columns'                        => $fields,
+            'no_sortable_columns'            => [
                 -1,
                 -2,
                 'column-instructions',
             ],
-            'ajax_postprocess'    => 'process_datatables_item(item)',
-            'drawCallback'        => 'process_datatables_callback(this, settings)',
+            'ajax_return_operation'          => 'buffers',
+            'ajax_return_operation_function' => 'process_buffers',
+            'drawCallback'                   => 'process_datatables_callback(this, settings)',
         ]
     );
 } catch (Exception $e) {
@@ -1810,18 +2287,6 @@ if (is_user_admin($config['id_user'])) {
             'type'     => 'command',
         ]
     );
-}
-
-
-if ($config['event_replication'] != 1) {
-    if ($event_w && !$readonly) {
-        $array_events_actions['in_progress_selected'] = __('In progress selected');
-        $array_events_actions['validate_selected'] = __('Validate selected');
-    }
-
-    if ($event_m == 1 && !$readonly) {
-        $array_events_actions['delete_selected'] = __('Delete selected');
-    }
 }
 
 foreach ($event_responses as $val) {
@@ -1887,7 +2352,6 @@ ui_require_jquery_file(
 // End. Load required JS.
 html_print_input_hidden('meta', (int) is_metaconsole());
 html_print_input_hidden('history', (int) $history);
-html_print_input_hidden('filterid', $is_filter);
 html_print_input_hidden(
     'ajax_file',
     ui_get_full_url('ajax.php', false, false, false)
@@ -1902,7 +2366,8 @@ echo "<div id='event_response_command_window' title='".__('Parameters')."'></div
 echo '<div id="load-modal-filter" style="display:none"></div>';
 echo '<div id="save-modal-filter" style="display:none"></div>';
 
-if ($_GET['refr'] || $do_refresh === true) {
+$autorefresh_draw = false;
+if ($_GET['refr'] || (bool) ($do_refresh ?? false) === true) {
     $autorefresh_draw = true;
 }
 
@@ -2005,349 +2470,6 @@ function process_datatables_callback(table, settings) {
         $('#checkbox-all_validate_box').uncheck();
     }
 }
-
-function process_datatables_item(item) {
-
-    // Url to go to node from meta.
-    var server_url = '';
-    var hashdata = '';
-    if(item.meta === true){
-        if(typeof item.data_server !== 'undefined' && typeof item.server_url_hash !== 'undefined'){
-            server_url = item.data_server.server_url;
-            hashdata = item.server_url_hash;
-        }
-    }
-
-
-    // Show comments events.
-    item.user_comment = item.comments
-
-    if(typeof item.comments !== 'undefined' && item.comments.length > 80) {
-        item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-        item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
-        item.user_comment += '<?php echo html_print_image('images/operation.png', true, ['title' => __('Show more'), 'class' => 'invert_filter']); ?></a>';
-    }
-
-    // Grouped events.
-    if(item.max_id_evento) {
-        item.id_evento = item.max_id_evento
-    }
-
-    /* Event severity prepared */
-    var color = "<?php echo COL_UNKNOWN; ?>";
-    var text = "<?php echo __('UNKNOWN'); ?>";
-    switch (item.criticity) {
-        case "<?php echo EVENT_CRIT_CRITICAL; ?>":
-            text = "<?php echo __('CRITICAL'); ?>";
-            color = "<?php echo COL_CRITICAL; ?>";
-        break;
-
-        case "<?php echo EVENT_CRIT_MAINTENANCE; ?>":
-            text = "<?php echo __('MAINTENANCE'); ?>";
-            color = "<?php echo COL_MAINTENANCE; ?>";
-        break;
-
-        case "<?php echo EVENT_CRIT_INFORMATIONAL; ?>":
-            text = "<?php echo __('INFORMATIONAL'); ?>";
-            color = "<?php echo COL_INFORMATIONAL; ?>";
-        break;
-
-        case "<?php echo EVENT_CRIT_MAJOR; ?>":
-            text = "<?php echo __('MAJOR'); ?>";
-            color = "<?php echo COL_MAJOR; ?>";
-        break;
-
-        case "<?php echo EVENT_CRIT_MINOR; ?>":
-            text = "<?php echo __('MINOR'); ?>";
-            color = "<?php echo COL_MINOR; ?>";
-        break;
-
-        case "<?php echo EVENT_CRIT_NORMAL; ?>":
-            text = "<?php echo __('NORMAL'); ?>";
-            color = "<?php echo COL_NORMAL; ?>";
-        break;
-
-        case "<?php echo EVENT_CRIT_WARNING; ?>":
-            text = "<?php echo __('WARNING'); ?>";
-            color = "<?php echo COL_WARNING; ?>";
-        break;
-    }
-    output = '<div data-title="';
-    output += text;
-    output += '" data-use_title_for_force_title="1" ';
-    output += 'class="forced_title mini-criticity h100p" ';
-    output += 'style="background: ' + color + '">';
-    output += '</div>';
-
-    // Add event severity to end of text.
-    evn = '<a href="javascript:" onclick="show_event_dialog(\'';
-    evn += item.b64+'\','+$("#group_rep").val()+');">';
-    // Grouped events.
-    if(item.event_rep && item.event_rep > 1) {
-        evn += '('+item.event_rep+') ';
-    }
-    evn += item.evento+'</a>';
-    if(item.meta === true) {
-        evn += '<input id="hidden-server_id_'+item.id_evento+'" type="hidden" value="'+item.server_id+'">';
-    }
-
-    item.mini_severity = '<div class="event flex-row h100p nowrap">';
-    item.mini_severity += output;
-    item.mini_severity += '</div>';
-
-    criticity = '<div class="criticity" style="background: ';
-    criticity += color + '">' + text + "</div>";
-
-    // Grouped events.
-    if(item.max_timestamp) {
-        item.timestamp = item.max_timestamp;
-    }
-
-    /* Event type prepared. */
-    switch (item.event_type) {
-        case "<?php echo EVENTS_ALERT_FIRED; ?>":
-        case "<?php echo EVENTS_ALERT_RECOVERED; ?>":
-        case "<?php echo EVENTS_ALERT_CEASED; ?>":
-        case "<?php echo EVENTS_ALERT_MANUAL_VALIDATION; ?>":
-            text = "<?php echo __('ALERT'); ?>";
-            color = "<?php echo COL_ALERTFIRED; ?>";
-        break;
-
-        case "<?php echo EVENTS_RECON_HOST_DETECTED; ?>":
-        case "<?php echo EVENTS_SYSTEM; ?>":
-        case "<?php echo EVENTS_ERROR; ?>":
-        case "<?php echo EVENTS_NEW_AGENT; ?>":
-        case "<?php echo EVENTS_CONFIGURATION_CHANGE; ?>":
-            text = "<?php echo __('SYSTEM'); ?>";
-            color = "<?php echo COL_MAINTENANCE; ?>";
-        break;
-
-        case "<?php echo EVENTS_GOING_UP_WARNING; ?>":
-        case "<?php echo EVENTS_GOING_DOWN_WARNING; ?>":
-            text = "<?php echo __('WARNING'); ?>";
-            color = "<?php echo COL_WARNING; ?>";
-        break;
-
-        case "<?php echo EVENTS_GOING_DOWN_NORMAL; ?>":
-        case "<?php echo EVENTS_GOING_UP_NORMAL; ?>":
-            text = "<?php echo __('NORMAL'); ?>";
-            color = "<?php echo COL_NORMAL; ?>";
-        break;
-
-        case "<?php echo EVENTS_GOING_DOWN_CRITICAL; ?>":
-        case "<?php echo EVENTS_GOING_UP_CRITICAL; ?>":
-            text = "<?php echo __('CRITICAL'); ?>";
-            color = "<?php echo COL_CRITICAL; ?>";
-        break;
-
-        case "<?php echo EVENTS_UNKNOWN; ?>":
-        case "<?php echo EVENTS_GOING_UNKNOWN; ?>":
-        default:
-            text = "<?php echo __('UNKNOWN'); ?>";
-            color = "<?php echo COL_UNKNOWN; ?>";
-        break;
-    }
-
-    event_type = '<div class="criticity" style="background: ';
-    event_type += color + '">' + text + "</div>";
-
-    /* Module status */
-    /* Event severity prepared */
-    var color = "<?php echo COL_UNKNOWN; ?>";
-    var text = "<?php echo __('UNKNOWN'); ?>";
-    switch (item.module_status) {
-        case "<?php echo AGENT_MODULE_STATUS_NORMAL; ?>":
-            text = "<?php echo __('NORMAL'); ?>";
-            color = "<?php echo COL_NORMAL; ?>";
-        break;
-
-        case "<?php echo AGENT_MODULE_STATUS_CRITICAL_BAD; ?>":
-            text = "<?php echo __('CRITICAL'); ?>";
-            color = "<?php echo COL_CRITICAL; ?>";
-        break;
-
-        case "<?php echo AGENT_MODULE_STATUS_NO_DATA; ?>":
-            text = "<?php echo __('NOT INIT'); ?>";
-            color = "<?php echo COL_NOTINIT; ?>";
-        break;
-
-        case "<?php echo AGENT_MODULE_STATUS_CRITICAL_ALERT; ?>":
-        case "<?php echo AGENT_MODULE_STATUS_NORMAL_ALERT; ?>":
-        case "<?php echo AGENT_MODULE_STATUS_WARNING_ALERT; ?>":
-            text = "<?php echo __('ALERT'); ?>";
-            color = "<?php echo COL_ALERTFIRED; ?>";
-        break;
-
-        case "<?php echo AGENT_MODULE_STATUS_WARNING; ?>":
-            text = "<?php echo __('WARNING'); ?>";
-            color = "<?php echo COL_WARNING; ?>";
-        break;
-    }
-
-    module_status = '<div class="criticity" style="background: ';
-    module_status += color + '">' + text + "</div>";
-
-    /* Options */
-    // Show more.
-    item.options = '<a href="javascript:" onclick="show_event_dialog(\'';
-    item.options += item.b64+'\','+$("#group_rep").val();
-    item.options += ')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show more'), 'class' => 'invert_filter']); ?></a>';
-
-    <?php
-    if (!$readonly) {
-        ?>
-
-    if (item.user_can_write == '1') {
-        if (item.estado != '1') {
-            // Validate.
-            item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
-            if (item.max_id_evento) {
-                item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="val-'+item.max_id_evento+'">';
-                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events'), 'class' => 'invert_filter']); ?></a>';
-            } else {
-                item.options += item.id_evento+', 0, this)" id="val-'+item.id_evento+'">';
-                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event'), 'class' => 'invert_filter']); ?></a>';
-            }
-        }
-
-        if (item.estado != '2') {
-            // In process.
-            item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
-            if (item.max_id_evento) {
-                item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="proc-'+item.max_id_evento+'">';
-            } else {
-                item.options += item.id_evento+', 0, this)" id="proc-'+item.id_evento+'">';
-            }
-            item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status'), 'class' => 'invert_filter']); ?></a>';
-        }
-    }
-
-    if (item.user_can_manage == '1') {
-        // Delete.
-        item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
-        if (item.max_id_evento) {
-            item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="del-'+item.max_id_evento+'">';
-            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events'), 'class' => 'invert_filter']); ?></a>';
-        } else {
-            item.options += item.id_evento+', 0, this)" id="del-'+item.id_evento+'">';
-            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event'), 'class' => 'invert_filter']); ?></a>';
-        }
-    }
-        <?php
-    }
-    ?>
-
-    // Multi select.
-    item.m = '<input name="checkbox-multi[]" type="checkbox" value="';
-    item.m += item.id_evento+'" id="checkbox-multi-'+item.id_evento+'" ';
-    if (item.max_id_evento) {
-        item.m += ' event_rep="' + item.event_rep +'" ';
-    } else {
-        item.m += ' event_rep="0" ';
-    }
-    item.m += 'class="candeleted chk_val">';
-
-    /* Status */
-    img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
-    state = '0';
-    switch (item.estado) {
-        case "<?php echo EVENT_STATUS_NEW; ?>":
-            img = '<?php echo html_print_image('images/star.png', true, ['title' => __('New event'), 'class' => 'forced-title']); ?>';
-        break;
-
-        case "<?php echo EVENT_STATUS_VALIDATED; ?>":
-
-            state = '1';
-            img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title invert_filter']); ?>';
-        break;
-
-        case "<?php echo EVENT_STATUS_INPROCESS; ?>":
-            state = '2';
-
-            img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title invert_filter']); ?>';
-        break;
-    }
-
-    /* Update column content now to avoid json poisoning. */
-
-
-    // Url to agent view.
-    var url_link = '<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>';
-    var url_link_hash = '';
-    if(item.meta === true){
-        url_link = server_url+'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
-        url_link_hash = hashdata;
-    }
-
-
-    /* Agent name link */
-    if (item.id_agente > 0) {
-        item.agent_name = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
-    } else {
-        item.agent_name = '';
-    }
-
-    /* Agent ID link */
-    if (item.id_agente > 0) {
-        item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
-    } else {
-        item.id_agente = '';
-    }
-
-    item.estado = '<div>';
-    item.estado += '<span class="invisible">';
-    item.estado += state;
-    item.estado += '</span>';
-    item.estado += img;
-    item.estado += '</div>';
-
-    item.criticity = criticity;
-    item.event_type = event_type;
-    item.module_status = module_status;
-
-    /* Event ID dash */
-    item.id_evento = "#"+item.id_evento;
-
-    /* Owner */
-    if (item.owner_user == "0") {
-        item.owner_user = '<?php echo __('System'); ?>';
-    }
-
-    // Add event severity format to itself.
-    item.evento = evn;
-
-    /* Group name */
-    if (item.id_grupo == "0") {
-        item.id_grupo = "<?php echo __('All'); ?>";
-    } else {
-        item.id_grupo = item.group_name;
-    }
-
-    /* Module name */
-    item.id_agentmodule = item.module_name;
-
-    if (item.custom_data !== '') {
-        var custom_data_str = '';
-
-        var item_custom_data_obj = (function(json_str) {
-        try {
-            return JSON.parse(json_str);
-        } catch (err) {
-            return false;
-        }
-        })(item.custom_data);
-
-        if (item_custom_data_obj !== false) {
-            for (const [attr_name, val] of Object.entries(item_custom_data_obj)) {
-                custom_data_str += attr_name + ' = ' + val + '<br>';
-            }
-            item.custom_data = custom_data_str;
-        } else {
-            item.custom_data = '';
-        }
-    }
-}
-
 /* Datatables auxiliary functions ends */
 
 /* Tag management starts */

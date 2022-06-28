@@ -45,7 +45,6 @@
     <script src="<?php $asset('resources/javascript/jquery.iframe-transport.js'); ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.knob.js'); ?>" type="text/javascript"></script>
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/pandora.css'); ?>">
 </head>
 
 <div id="box_offline">

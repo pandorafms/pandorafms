@@ -256,16 +256,18 @@ $table->style[0] = 'font-weight: bold';
 $table->size[0] = '70%';
 $table->size[1] = '30%';
 
-// enterprise_hook('enterprise_warnings_history_days');
 $table->data[1][0] = __('Max. days before delete events');
-
-$table->data[1][1] = html_print_input_text(
-    'event_purge',
-    $config['event_purge'],
-    '',
-    5,
-    5,
-    true
+$table->data[1][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => 99999,
+        'name'   => 'event_purge',
+        'value'  => $config['event_purge'],
+        'return' => true,
+        'min'    => ((((bool) $config['history_event_enabled'] === true) && $config['history_event_days'] > 0) ? $config['history_event_days'] + 1 : null),
+        'style'  => 'width:43px',
+    ]
 );
 
 $table->data[2][0] = __('Max. days before delete traps');
@@ -658,6 +660,16 @@ $tip = ui_print_help_tip(
         '%s web2image cache system cleanup. It is always cleaned up after perform an upgrade',
         get_product_name()
     ),
+    true
+);
+
+$table_other->data[$i][0] = __('WMI binary');
+$table_other->data[$i++][1] = html_print_input_text(
+    'wmiBinary',
+    $config['wmiBinary'],
+    '',
+    50,
+    50,
     true
 );
 

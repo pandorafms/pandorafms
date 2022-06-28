@@ -140,9 +140,6 @@ sub pandora_startup () {
 	# Start the policy queue thread.
 	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
 		
-	# Start the event replication thread. Do not start with start_server_thread, this thread may exit on its own.
-	start_server_thread(\&pandora_process_event_replication, [\%Config]) if($Config{'__enterprise_enabled'} == 1 && $Config{'event_replication'} == 1);
-
 	pandora_audit (\%Config, $Config{'rb_product_name'} . ' Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers

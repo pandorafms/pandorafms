@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use function PHPSTORM_META\map;
+
 // Begin.
 if (isset($config['id_user']) === false) {
     include 'general/login_page.php';
@@ -57,52 +59,22 @@ if (isset($config['autohidden_menu']) === true && (bool) $config['autohidden_men
 // Start of full lateral menu.
 echo sprintf('<div id="menu_full" class="menu_full_%s">', $menuTypeClass);
 
-$custom_logo = 'images/custom_logo/'.$config['custom_logo'];
-$custom_logo_collapsed = 'images/custom_logo/'.$config['custom_logo_collapsed'];
-
-if (defined('PANDORA_ENTERPRISE') === false) {
-    $logo_title = get_product_name().' Opensource';
-    $custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
-    $custom_logo_collapsed = 'images/custom_logo/pandora_logo_green_collapsed.png';
-} else {
-    if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo) === true) {
-        $custom_logo = ENTERPRISE_DIR.'/'.$custom_logo;
-    }
-
-    $logo_title = get_product_name().' Enterprise';
-}
-
-echo '<div class="logo_green"><a href="index.php?sec=main">';
-
-if (isset($config['custom_logo']) === true) {
-    echo html_print_image(
-        $custom_logo,
-        true,
-        [
-            'border' => '0',
-            'width'  => '215',
-            'alt'    => $logo_title,
-            'class'  => 'logo_full',
-            'style'  => ($menuCollapsed === true) ? 'display:none' : 'display:block',
-        ]
-    );
-}
-
-if (isset($config['custom_logo_collapsed']) === true) {
-    echo html_print_image(
-        $custom_logo_collapsed,
-        true,
-        [
-            'border' => '0',
-            'width'  => '60',
-            'alt'    => $logo_title,
-            'class'  => 'logo_icon',
-            'style'  => ($menuCollapsed === true) ? 'display:block' : 'display:none',
-        ]
-    );
-}
-
-echo '</a></div>';
+// Header logo.
+html_print_div(
+    [
+        'class'   => 'logo_green',
+        'content' => html_print_anchor(
+            [
+                'href'    => ui_get_full_url('index.php'),
+                'content' => html_print_header_logo_image(
+                    $menuCollapsed,
+                    true
+                ),
+            ],
+            true
+        ),
+    ]
+);
 
 require 'operation/menu.php';
 require 'godmode/menu.php';

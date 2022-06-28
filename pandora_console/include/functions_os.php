@@ -14,54 +14,190 @@
 // Get critical agents by using the status code in modules.
 function os_agents_critical($id_os)
 {
-    // TODO REVIEW ORACLE AND POSTGRES
-    return db_get_sql(
-        "
-		SELECT COUNT(*)
-		FROM tagente
-		WHERE tagente.disabled=0 AND
-			critical_count>0 AND id_os=$id_os"
-    );
+    global $config;
+
+    $table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+
+    if (users_is_admin() === true) {
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                critical_count>0 AND id_os=%d',
+                $table,
+                $id_os
+            )
+        );
+    } else {
+        $groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                critical_count>0 AND
+                id_os=%d AND id_grupo IN (%s)',
+                $table,
+                $id_os,
+                implode(',', $groups)
+            )
+        );
+    }
 }
 
 
 // Get ok agents by using the status code in modules.
 function os_agents_ok($id_os)
 {
-    return db_get_sql(
-        "
-		SELECT COUNT(*)
-		FROM tagente
-		WHERE tagente.disabled=0 AND
-			normal_count=total_count AND id_os=$id_os"
-    );
+    global $config;
+
+    $table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+
+    if (users_is_admin() === true) {
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                normal_count=total_count AND id_os=%d',
+                $table,
+                $id_os
+            )
+        );
+    } else {
+        $groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                normal_count=total_count AND
+                id_os=%d AND id_grupo IN (%s)',
+                $table,
+                $id_os,
+                implode(',', $groups)
+            )
+        );
+    }
 }
 
 
 // Get warning agents by using the status code in modules.
 function os_agents_warning($id_os)
 {
-    return db_get_sql(
-        "
-		SELECT COUNT(*)
-		FROM tagente
-		WHERE tagente.disabled=0 AND
-			critical_count=0 AND warning_count>0 AND id_os=$id_os"
-    );
+    global $config;
+
+    $table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+
+    if (users_is_admin() === true) {
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                critical_count=0 AND warning_count>0
+                AND id_os=%d',
+                $table,
+                $id_os
+            )
+        );
+    } else {
+        $groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                critical_count=0 AND warning_count>0 AND
+                id_os=%d AND id_grupo IN (%s)',
+                $table,
+                $id_os,
+                implode(',', $groups)
+            )
+        );
+    }
 }
 
 
 // Get unknown agents by using the status code in modules.
 function os_agents_unknown($id_os)
 {
-    return db_get_sql(
-        "
-		SELECT COUNT(*)
-		FROM tagente
-		WHERE tagente.disabled=0 AND
-			critical_count=0 AND warning_count=0 AND
-			unknown_count>0 AND id_os=$id_os"
-    );
+    global $config;
+
+    $table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+
+    if (users_is_admin() === true) {
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                critical_count=0 AND warning_count=0 AND
+                unknown_count>0 AND id_os=%d',
+                $table,
+                $id_os
+            )
+        );
+    } else {
+        $groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND
+                critical_count=0 AND warning_count=0 AND
+                unknown_count>0 AND id_os=%d AND id_grupo IN (%s)',
+                $table,
+                $id_os,
+                implode(',', $groups)
+            )
+        );
+    }
+}
+
+
+/**
+ * Get total agents
+ *
+ * @param integer $id_os OS id.
+ *
+ * @return array|boolean
+ */
+function os_agents_total(int $id_os)
+{
+    global $config;
+
+    $table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+
+    if (users_is_admin() === true) {
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND id_os=%d',
+                $table,
+                $id_os
+            )
+        );
+    } else {
+        $groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        return db_get_sql(
+            sprintf(
+                'SELECT COUNT(*)
+                FROM %s
+                WHERE tagente.disabled=0 AND id_os=%d AND id_grupo IN (%s)',
+                $table,
+                $id_os,
+                implode(',', $groups)
+            )
+        );
+    }
 }
 
 

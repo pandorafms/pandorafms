@@ -814,6 +814,13 @@ select:-internal-list-box {
 .margin-left-2 {
   margin-left: 2em;
 }
+.margin-right-05 {
+  margin-right: 0.5em;
+}
+
+.margin-left-05 {
+  margin-left: 0.5em;
+}
 .no-border {
   border: none;
 }
@@ -6048,9 +6055,9 @@ table.table_modal_alternate tr td:first-child {
   font-family: "lato" !important;
 }
 
-.flot-text {
-  width: 100%;
-  font-family: inherit !important;
+.flot-text .flot-x-axis div {
+  white-space: normal;
+  word-break: break-all;
 }
 
 /*Font header feedback*/
@@ -6226,6 +6233,9 @@ div.graph td.legendLabel {
 div.graph div.legend div,
 div.graph div.legend table {
   top: 25px !important;
+  display: block;
+  overflow: auto;
+  text-align: left;
 }
 
 .rotate_text_module {
@@ -9017,4 +9027,48 @@ div#err_msg_centralised {
 }
 #reset-styles var {
   font-style: italic;
+}
+
+.div-col {
+  width: 33%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 15px;
+}
+
+.div-span {
+  width: 25%;
+}
+
+.div-input {
+  width: 75%;
+}
+
+@media screen and (max-width: 1369px) {
+  .div-col {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 15px;
+  }
+}
+
+.text_input {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 4px;
+  padding: 2px 5px;
+}
+
+.password_input {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #ccc !important;
+  margin-bottom: 4px !important;
+  padding: 2px 5px !important;
 }

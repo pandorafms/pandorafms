@@ -469,15 +469,21 @@ sub parse_log ($$$$$$$$) {
     # Go to starting position
     seek(LOGFILE, $Idx_pos, 0);
 
-	$buffer .= "<module>\n";
-	$buffer .= "<name><![CDATA[" . $Module_name . "]]></name>\n";
-    $buffer .= "<description><![CDATA[" . $Description . "]]></description>\n";
-
-    if ($type eq "return_ocurrences"){
-    	$buffer .= "<type>generic_data</type>\n";        
+    if ($type eq "log_module"){
+    	$buffer = "<log_module>\n";
+        $buffer .= "<source><![CDATA[" . $Module_name . "]]></source>\n";  
+        $buffer .= "<data><![CDATA[";     
     } else {
-    	$buffer .= "<type><![CDATA[async_string]]></type>\n";
-    	$buffer .= "<datalist>\n";
+    	$buffer .= "<module>\n";
+        $buffer .= "<name><![CDATA[" . $Module_name . "]]></name>\n";
+        $buffer .= "<description><![CDATA[" . $Description . "]]></description>\n";
+
+        if ($type eq "return_ocurrences"){
+    	    $buffer .= "<type>generic_data</type>\n";        
+        } else {
+            $buffer .= "<type><![CDATA[async_string]]></type>\n";
+            $buffer .= "<datalist>\n";
+            }
     }
 
 	while ($line = <LOGFILE>) {
@@ -503,6 +509,11 @@ sub parse_log ($$$$$$$$) {
 	                $buffer .= "<data><value><![CDATA[".$line."]]></value></data>\n";
                 }
 
+                if ($type eq "log_module") {    
+                    $line =~ s/\]\]/]]]]><![CDATA[/g;         
+                    $buffer .= $line."\n";               
+                }
+
                 # Critical severity will prevail over other matches
                 if ($severity eq ""){
                     $severity = $value->{"severity"};
@@ -515,11 +526,12 @@ sub parse_log ($$$$$$$$) {
             }
         }
 	}
-
-    if ($type eq "return_ocurrences"){
-        $buffer .= "<data><![CDATA[".$count."]]></data>\n";
-    } else {
-    	$buffer .= "</datalist>\n";
+    if ($type ne "log_module"){
+        if ($type eq "return_ocurrences"){
+            $buffer .= "<data><![CDATA[".$count."]]></data>\n";
+        } else {
+            $buffer .= "</datalist>\n";
+        }
     }
 
     # Execute action if any match (always for last match) 
@@ -527,13 +539,18 @@ sub parse_log ($$$$$$$$) {
         `$action`;
     }        
 
-    # Write severity field in XML
-    if ($severity ne ""){
-        $buffer .= "<status>$severity</status>\n";
-    }
+    if ($type ne "log_module"){
+        # Write severity field in XML
+        if ($severity ne ""){
+            $buffer .= "<status>$severity</status>\n";
+        }
 
-    # End XML
-	$buffer .= "</module>\n";
+        # End XML
+        $buffer .= "</module>\n";
+    }else {
+        $buffer .= "]]></data>\n";
+        $buffer .= "</log_module>\n";
+        }
 
     # Update Index
 	$Idx_pos = tell(LOGFILE);

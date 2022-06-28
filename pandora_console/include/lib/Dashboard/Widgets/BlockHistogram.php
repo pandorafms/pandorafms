@@ -629,4 +629,20 @@ class BlockHistogram extends Widget
     }
 
 
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => (is_metaconsole() === true) ? 700 : 500,
+            'height' => 670,
+        ];
+
+        return $size;
+    }
+
+
 }

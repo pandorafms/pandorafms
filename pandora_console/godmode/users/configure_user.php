@@ -425,11 +425,8 @@ if ($create_user === true) {
         }
     }
 
-    // Generate a new API Token if user has login capability.
-    if ($values['not_login'] === false) {
-        // Generate new API token.
-        $values['api_token'] = api_token_generate();
-    }
+    // Generate new API token.
+    $values['api_token'] = api_token_generate();
 
     if (empty($id) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
@@ -901,7 +898,10 @@ if (!$new_user) {
             'content' => html_print_image(
                 'images/icono-refrescar.png',
                 true,
-                ['class' => 'renew_api_token_image clickable']
+                [
+                    'class' => 'renew_api_token_image clickable',
+                    'title' => __('Renew API Token'),
+                ]
             ),
             'class'   => 'renew_api_token_link',
         ],
@@ -918,7 +918,10 @@ if (!$new_user) {
             'content' => html_print_image(
                 'images/eye_show.png',
                 true,
-                ['class' => 'renew_api_token_image clickable']
+                [
+                    'class' => 'renew_api_token_image clickable',
+                    'title' => __('Show API Token'),
+                ]
             ),
             'class'   => 'renew_api_token_link',
         ],

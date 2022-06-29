@@ -905,7 +905,13 @@ function api_token_generate()
  */
 function users_get_API_token(string $idUser)
 {
-    return db_get_value('api_token', 'tusuario', 'id_user', $idUser);
+    $output = db_get_value('api_token', 'tusuario', 'id_user', $idUser);
+
+    if (empty($output) === true) {
+        $output = '<< '.__('NONE').' >>';
+    }
+
+    return $output;
 }
 
 

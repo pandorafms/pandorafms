@@ -277,7 +277,10 @@ $user_id .= html_print_anchor(
         'content' => html_print_image(
             'images/icono-refrescar.png',
             true,
-            ['class' => 'renew_api_token_image clickable']
+            [
+                'class' => 'renew_api_token_image clickable',
+                'title' => __('Renew API Token'),
+            ]
         ),
         'class'   => 'renew_api_token_link',
     ],
@@ -294,7 +297,10 @@ $user_id .= html_print_anchor(
         'content' => html_print_image(
             'images/eye_show.png',
             true,
-            ['class' => 'renew_api_token_image clickable']
+            [
+                'class' => 'renew_api_token_image clickable',
+                'title' => __('Show API Token'),
+            ]
         ),
         'class'   => 'renew_api_token_link',
     ],

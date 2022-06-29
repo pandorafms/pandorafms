@@ -182,6 +182,17 @@ class MapsMadeByUser extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['vcId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = db_get_value(
+                'id',
+                'tlayout',
+                'id',
+                $this->values['vcId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -368,7 +379,7 @@ class MapsMadeByUser extends Widget
             $visualConsole = VisualConsole::fromDB(
                 ['id' => $this->values['vcId']]
             );
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access visual console without Id'

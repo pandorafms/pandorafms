@@ -172,6 +172,17 @@ class ReportsWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['reportId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = db_get_value(
+                'id_report',
+                'treport',
+                'id_report',
+                $this->values['reportId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;

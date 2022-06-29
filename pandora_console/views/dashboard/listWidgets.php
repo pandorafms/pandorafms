@@ -31,7 +31,6 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 
 $form = [
     'id'       => 'form-search-widget',
-    'action'   => $url,
     'onsubmit' => 'return false;',
     'class'    => 'modal-dashboard',
     'enctype'  => 'multipart/form-data',

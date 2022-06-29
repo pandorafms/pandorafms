@@ -159,11 +159,17 @@ try {
         throw new Exception('Invalid filter. ['.$plain_filter.']');
     }
 
+    $filter['csv_all'] = true;
+
     $names = events_get_column_names($column_names);
 
     // Dump headers.
     foreach ($names as $n) {
         echo io_safe_output($n).$config['csv_divider'];
+    }
+
+    if (is_metaconsole() === true) {
+        echo 'server_id'.$config['csv_divider'];
     }
 
     echo chr(13);
@@ -178,11 +184,10 @@ try {
             (($step++) * $events_per_step),
             $events_per_step,
             'desc',
-            'timestamp',
-            $filter['history']
+            'timestamp'
         );
 
-        if ($events === false) {
+        if ($events === false || empty($events) === true) {
             break;
         }
 
@@ -247,6 +252,10 @@ try {
                 }
 
                 echo $config['csv_divider'];
+            }
+
+            if (is_metaconsole() === true) {
+                echo $row['server_id'].$config['csv_divider'];
             }
 
             echo chr(13);

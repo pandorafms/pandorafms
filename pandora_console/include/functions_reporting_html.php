@@ -1025,6 +1025,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
     global $config;
 
     $show_extended_events = $item['show_extended_events'];
+    $show_custom_data = (bool) $item['show_custom_data'];
 
     if ($item['total_events']) {
         $table1 = new stdClass();
@@ -1060,23 +1061,33 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             $table1->head[6] = __('Timestamp');
         }
 
+        if ($show_custom_data === true) {
+            $table1->head[8] = __('Custom data');
+        }
+
         foreach ($item['data'] as $k => $event) {
             // First pass along the class of this row.
             if ($item['show_summary_group']) {
-                $table1->cellclass[$k][1] = $table1->cellclass[$k][2] = $table1->cellclass[$k][4] = $table1->cellclass[$k][5] = $table1->cellclass[$k][6] = $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][1] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][8] = get_priority_class($event['criticity']);
             } else {
-                $table1->cellclass[$k][1] = $table1->cellclass[$k][3] = $table1->cellclass[$k][4] = $table1->cellclass[$k][5] = $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][1] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
             }
 
             $data = [];
 
             // Colored box.
             switch ($event['estado']) {
-                case 0:
-                    $img_st = 'images/star.png';
-                    $title_st = __('New event');
-                break;
-
                 case 1:
                     $img_st = 'images/tick.png';
                     $title_st = __('Event validated');
@@ -1085,6 +1096,12 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 case 2:
                     $img_st = 'images/hourglass.png';
                     $title_st = __('Event in process');
+                break;
+
+                default:
+                case 0:
+                    $img_st = 'images/star.png';
+                    $title_st = __('New event');
                 break;
             }
 
@@ -1112,24 +1129,50 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
 
             $data[] = events_print_type_img($event['event_type'], true);
 
-            if (!empty($event['id_agente'])) {
-                $data[] = agents_get_alias($event['id_agente']);
+            if (empty($event['alias']) === false) {
+                $alias = $event['alias'];
+                if (is_metaconsole() === true) {
+                    $alias = '('.$event['server_name'].') '.$event['alias'];
+                }
+
+                $data[] = $alias;
             } else {
                 $data[] = __('%s System', get_product_name());
             }
 
             $data[] = get_priority_name($event['criticity']);
-            if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
+            if (empty($event['id_usuario']) === true
+                && $event['estado'] == EVENT_VALIDATE
+            ) {
                 $data[] = '<i>'.__('System').'</i>';
             } else {
-                $user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+                $user_name = db_get_value(
+                    'fullname',
+                    'tusuario',
+                    'id_user',
+                    $event['id_usuario']
+                );
                 $data[] = io_safe_output($user_name);
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp_last']).'</font>';
             } else {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+            }
+
+            if ($show_custom_data === true) {
+                $custom_data_text = '';
+                if (empty($event['custom_data']) === false) {
+                    $custom_data = json_decode($event['custom_data'], true);
+                    if (empty($custom_data) === false) {
+                        foreach ($custom_data as $key => $value) {
+                            $custom_data_text .= $key.' = '.$value.'<br>';
+                        }
+                    }
+                }
+
+                $data[] = $custom_data_text;
             }
 
             array_push($table1->data, $data);
@@ -1246,10 +1289,10 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
 function reporting_html_event_report_module($table, $item, $pdf=0)
 {
     global $config;
-
     $show_extended_events = $item['show_extended_events'];
 
     $show_summary_group = $item['show_summary_group'];
+    $show_custom_data = (bool) $item['show_custom_data'];
     if ($item['total_events']) {
         if (!empty($item['failed'])) {
             $table->colspan['events']['cell'] = 3;
@@ -1279,6 +1322,10 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     $table1->style[0] = 'text-align: center;';
                 }
 
+                if ($show_custom_data === true) {
+                    $table1->head[6]  = __('Custom data');
+                }
+
                 if (is_array($item['data']) || is_object($item['data'])) {
                     $item_data = array_reverse($item['data']);
                 }
@@ -1287,9 +1334,17 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     foreach ($item_data as $i => $event) {
                         $data = [];
                         if ($show_summary_group) {
-                            $table1->cellclass[$i][1] = $table1->cellclass[$i][2] = $table1->cellclass[$i][3] = $table1->cellclass[$i][4] = $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
                         } else {
-                            $table1->cellclass[$i][1] = $table1->cellclass[$i][3] = $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
                         }
 
                         // Colored box.
@@ -1326,9 +1381,19 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                         $data[3] = get_priority_name($event['criticity']);
                         if ($show_summary_group) {
                             $data[4] = $event['event_rep'];
-                            $data[5] = date($config['date_format'], $event['timestamp_rep']);
+                            $data[5] = date($config['date_format'], $event['timestamp_last']);
                         } else {
                             $data[4] = date($config['date_format'], strtotime($event['timestamp']));
+                        }
+
+                        if ($show_custom_data === true) {
+                            $custom_data = json_decode($event['custom_data'], true);
+                            $custom_data_text = '';
+                            foreach ($custom_data as $key => $value) {
+                                $custom_data_text .= $key.' = '.$value.'<br>';
+                            }
+
+                            $data[6] = $custom_data_text;
                         }
 
                         $table1->data[] = $data;
@@ -2341,6 +2406,13 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         $table1->align[0] = 'center';
         $table1->align[1] = 'center';
         $table1->align[3] = 'center';
+        if ((bool) $item['show_custom_data'] === true) {
+            if ($item['show_summary_group']) {
+                $table1->align[7] = 'left';
+            } else {
+                $table1->align[6] = 'left';
+            }
+        }
 
         $table1->data = [];
 
@@ -2355,12 +2427,24 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         $table1->head[4] = __('Severity');
         $table1->head[5] = __('Val. by');
         $table1->head[6] = __('Timestamp');
+        if ((bool) $item['show_custom_data'] === true) {
+            $table1->head[7] = __('Custom data');
+        }
 
         foreach ($item['data'] as $i => $event) {
             if ($item['show_summary_group']) {
-                $table1->cellclass[$i][1] = $table1->cellclass[$i][2] = $table1->cellclass[$i][4] = $table1->cellclass[$i][5] = $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][7] = get_priority_class($event['criticity']);
             } else {
-                $table1->cellclass[$i][1] = $table1->cellclass[$i][3] = $table1->cellclass[$i][4] = $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
             }
 
             $data = [];
@@ -2415,9 +2499,19 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
             } else {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+            }
+
+            if ((bool) $item['show_custom_data'] === true) {
+                $custom_data = json_decode($event['custom_data'], true);
+                $custom_data_text = '';
+                foreach ($custom_data as $key => $value) {
+                    $custom_data_text .= $key.' = '.$value.'<br>';
+                }
+
+                $data[] = $custom_data_text;
             }
 
             array_push($table1->data, $data);
@@ -5898,7 +5992,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
 }
 
 
-function reporting_get_event_histogram_meta($width)
+function reporting_get_event_histogram_meta($width, $events)
 {
     global $config;
     if (!defined('METACONSOLE')) {
@@ -5941,21 +6035,6 @@ function reporting_get_event_histogram_meta($width)
         EVENT_CRIT_CRITICAL      => COL_CRITICAL,
     ];
 
-    $user_groups = users_get_groups($config['id_user'], 'ER');
-    $user_groups_ids = array_keys($user_groups);
-
-    if (empty($user_groups)) {
-        $groups_condition = ' AND 1 = 0 ';
-    } else {
-        $groups_condition = ' AND id_grupo IN ('.implode(',', $user_groups_ids).') ';
-    }
-
-    if (!check_acl($config['id_user'], 0, 'PM')) {
-        $groups_condition .= ' AND id_grupo != 0';
-    }
-
-    $status_condition = ' AND estado = 0 ';
-
     $cont = 0;
     for ($i = 0; $i < $interval; $i++) {
         $bottom = ($datelimit + ($periodtime * $i));
@@ -5979,23 +6058,12 @@ function reporting_get_event_histogram_meta($width)
 
         $top = ($datelimit + ($periodtime * ($i + 1)));
 
-        $time_condition = 'utimestamp > '.$bottom.' AND utimestamp < '.$top;
-        $sql = sprintf(
-            'SELECT criticity,utimestamp
-            FROM tmetaconsole_event
-            WHERE %s %s %s
-            ORDER BY criticity DESC',
-            $time_condition,
-            $groups_condition,
-            $status_condition
-        );
-
-        $events = db_get_all_rows_sql($sql);
-
         $events_criticity = [];
         if (is_array($events)) {
-            foreach ($events as $key => $value) {
-                array_push($events_criticity, $value['criticity']);
+            foreach ($events as $value) {
+                if ($value['utimestamp'] >= $bottom && $value['utimestamp'] < $top) {
+                    array_push($events_criticity, $value['criticity']);
+                }
             }
         }
 

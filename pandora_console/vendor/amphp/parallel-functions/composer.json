@@ -1,0 +1,44 @@
+{
+    "name": "amphp/parallel-functions",
+    "description": "Parallel processing made simple.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Niklas Keller",
+            "email": "me@kelunik.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Amp\\ParallelFunctions\\": "src"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Amp\\ParallelFunctions\\Test\\": "test"
+        }
+    },
+    "require": {
+        "php": ">=7",
+        "amphp/parallel": "^1.1",
+        "amphp/amp": "^2.0.3",
+        "opis/closure": "^3.0.7"
+    },
+    "require-dev": {
+        "amphp/phpunit-util": "^1.0",
+        "friendsofphp/php-cs-fixer": "^2.9",
+        "phpunit/phpunit": "^6.5"
+    },
+    "config": {
+        "platform": {
+            "php": "7.0.0"
+        }
+    },
+    "scripts": {
+        "fix-syntax": "php vendor/bin/php-cs-fixer --diff -v fix"
+    }
+}

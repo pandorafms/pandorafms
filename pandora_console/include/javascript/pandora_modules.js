@@ -849,7 +849,8 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
   $macro_field
     .find("input")
     .first()
-    .attr("name", macro_macro);
+    .attr("name", macro_macro)
+    .val(macro_value);
 
   $macro_field.attr("class", "macro_field");
 

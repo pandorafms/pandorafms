@@ -814,6 +814,13 @@ select:-internal-list-box {
 .margin-left-2 {
   margin-left: 2em;
 }
+.margin-right-05 {
+  margin-right: 0.5em;
+}
+
+.margin-left-05 {
+  margin-left: 0.5em;
+}
 .no-border {
   border: none;
 }
@@ -6249,7 +6256,7 @@ div.graph div.legend table {
 
 .sound_events {
   background-color: #494949;
-  margin: 40px 2em 0;
+  margin: 1em 2em;
   min-height: auto;
 }
 
@@ -9020,4 +9027,48 @@ div#err_msg_centralised {
 }
 #reset-styles var {
   font-style: italic;
+}
+
+.div-col {
+  width: 33%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 15px;
+}
+
+.div-span {
+  width: 25%;
+}
+
+.div-input {
+  width: 75%;
+}
+
+@media screen and (max-width: 1369px) {
+  .div-col {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 15px;
+  }
+}
+
+.text_input {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 4px;
+  padding: 2px 5px;
+}
+
+.password_input {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #ccc !important;
+  margin-bottom: 4px !important;
+  padding: 2px 5px !important;
 }

@@ -285,12 +285,12 @@ class AgentModuleWidget extends Widget
             'arguments' => [
                 'type'                     => 'select_multiple_modules_filtered',
                 'uniqId'                   => $this->cellId,
-                'mGroup'                   => $this->values['mGroup'],
-                'mRecursion'               => $this->values['mRecursion'],
-                'mModuleGroup'             => $this->values['mModuleGroup'],
-                'mAgents'                  => $this->values['mAgents'],
-                'mShowCommonModules'       => $this->values['mShowCommonModules'],
-                'mModules'                 => $this->values['mModules'],
+                'mGroup'                   => (isset($this->values['mGroup']) === true) ? $this->values['mGroup'] : '',
+                'mRecursion'               => (isset($this->values['mRecursion']) === true) ? $this->values['mRecursion'] : '',
+                'mModuleGroup'             => (isset($this->values['mModuleGroup']) === true) ? $this->values['mModuleGroup'] : '',
+                'mAgents'                  => (isset($this->values['mAgents']) === true) ? $this->values['mAgents'] : '',
+                'mShowCommonModules'       => (isset($this->values['mShowCommonModules']) === true) ? $this->values['mShowCommonModules'] : '',
+                'mModules'                 => (isset($this->values['mModules']) === true) ? $this->values['mModules'] : '',
                 'mShowSelectedOtherGroups' => true,
                 'mReturnAllGroup'          => $return_all_group,
                 'mMetaFields'              => ((bool) is_metaconsole()),
@@ -849,6 +849,22 @@ class AgentModuleWidget extends Widget
     public static function getName()
     {
         return 'agent_module';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 800,
+            'height' => 580,
+        ];
+
+        return $size;
     }
 
 

@@ -523,6 +523,14 @@ class TreeService extends Tree
                         continue 2;
                     }
 
+                    $title = get_parameter('title', '');
+                    if (empty($title) === true) {
+                        $tmp['title'] = '';
+                    } else {
+                        $tmp['title'] = $title.'/';
+                    }
+
+                    $tmp['title'] .= $service->name();
                     $tmp['id'] = (int) $item->service()->id();
                     $tmp['name'] = $item->service()->name();
                     $tmp['alias'] = $item->service()->name();

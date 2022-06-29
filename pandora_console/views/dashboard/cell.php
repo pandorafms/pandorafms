@@ -45,7 +45,7 @@ if ((int) $cellData['id_widget'] !== 0) {
 $output .= '</div>';
 $output .= '<div class="header-options">';
 
-if ($manageDashboards !== 0) {
+if ($manageDashboards !== 0 || $writeDashboards !== 0) {
     if ((int) $cellData['id_widget'] !== 0) {
         $output .= '<a id="configure-widget-'.$cellData['id'].'" class="">';
         $output .= html_print_image(

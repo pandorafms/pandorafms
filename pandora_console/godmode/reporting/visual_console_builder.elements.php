@@ -165,6 +165,7 @@ if ($layoutDatas === false) {
 
 $alternativeStyle = true;
 
+$parents = visual_map_get_items_parents($idVisualConsole);
 
 foreach ($layoutDatas as $layoutData) {
     $idLayoutData = $layoutData['id'];
@@ -473,7 +474,6 @@ foreach ($layoutDatas as $layoutData) {
         break;
 
         default:
-            $parents = visual_map_get_items_parents($idVisualConsole);
             $table->data[($i + 1)][4] = html_print_select(
                 $parents,
                 'parent_'.$idLayoutData,
@@ -740,9 +740,9 @@ foreach ($layoutDatas as $layoutData) {
 $pure = get_parameter('pure', 0);
 
 if (!defined('METACONSOLE')) {
-    echo '<form method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
+    echo '<form class="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
 } else {
-    echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
+    echo "<form class='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
 }
 
 if (!defined('METACONSOLE')) {
@@ -807,7 +807,30 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 <script type="text/javascript">
     $(document).ready (function () {
-       
+        $('form.vc_elem_form').submit(function() {
+            var inputs_array = $(this).serializeArray();
+            var form_action = {};
+
+            form_action.name = 'go';
+            form_action.value = 'Update';
+            inputs_array.push(form_action);
+
+            var serialized_form_inputs = JSON.stringify(inputs_array);
+            var ajax_url = "<?php echo (is_metaconsole() === true) ? 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console='.$idVisualConsole : 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id']; ?>";
+
+            $.post({
+                url: ajax_url,
+                data: { serialized_form_inputs },
+                dataType: "json",
+                async: false,
+                complete: function (data) {
+                    location.reload();
+                }
+            });
+
+            return false;
+        });
+
         var added_config = {
             "selector": "#tinyMCE_editor",
             "elements": "text-label",

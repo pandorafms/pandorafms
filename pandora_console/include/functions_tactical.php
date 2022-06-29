@@ -34,15 +34,22 @@
  *
  * @param  boolean $id_user
  * @param  boolean $user_strict
- * @param  [type]  $acltags
+ * @param  array   $acltags
  * @param  boolean $returnAllGroup
  * @param  string  $mode
  * @param  array   $agent_filter
  * @param  array   $module_filter
  * @return void
  */
-function tactical_get_data($id_user=false, $user_strict=false, $acltags, $returnAllGroup=false, $mode='group', $agent_filter=[], $module_filter=[])
-{
+function tactical_get_data(
+    $id_user=false,
+    $user_strict=false,
+    $acltags=[],
+    $returnAllGroup=false,
+    $mode='group',
+    $agent_filter=[],
+    $module_filter=[]
+) {
     global $config;
     if ($id_user == false) {
         $id_user = $config['id_user'];
@@ -527,10 +534,12 @@ function tactical_status_modules_agents($id_user=false, $user_strict=false, $acc
 
 function tactical_monitor_alerts($strict_user=false)
 {
+    global $config;
     $groups = users_get_groups($config['id_user'], 'AR', false);
     $id_groups = array_keys($groups);
 
-    if (empty($id_groups)) {
+    $where_clause = '';
+    if (empty($id_groups) === true) {
         $where_clause .= ' AND (1 = 0) ';
     } else {
         $where_clause .= sprintf(

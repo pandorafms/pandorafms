@@ -281,7 +281,7 @@ foreach ($sessions as $session) {
     array_push($table->data, $data);
 }
 
-$activity .= html_print_table($table, true);
+$activity = html_print_table($table, true);
 unset($table);
 
 ui_toggle(

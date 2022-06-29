@@ -73,6 +73,12 @@ if (empty($message) === false) {
     echo $message;
 }
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('LM') === true) {
+    $return_all_group = true;
+}
+
 $inputs = [];
 
 // Name.
@@ -91,7 +97,7 @@ $inputs[] = [
     'label'     => __('Group'),
     'arguments' => [
         'type'           => 'select_groups',
-        'returnAllGroup' => true,
+        'returnAllGroup' => $return_all_group,
         'name'           => 'id_group',
         'selected'       => $calendar->id_group(),
         'required'       => true,

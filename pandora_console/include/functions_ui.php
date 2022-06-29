@@ -3254,7 +3254,7 @@ function ui_print_datatable(array $parameters)
         $parameters['paging'] = true;
     }
 
-    $no_sortable_columns = [];
+    $no_sortable_columns = json_encode([]);
     if (isset($parameters['no_sortable_columns'])) {
         $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
     }
@@ -3326,6 +3326,11 @@ function ui_print_datatable(array $parameters)
         $parameters['datacolumns'] = $parameters['columns'];
     }
 
+    if (isset($parameters['csv']) === false) {
+        $parameters['csv'] = 1;
+    }
+
+    $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
         if (isset($parameters['form']['id'])) {
@@ -3377,7 +3382,7 @@ function ui_print_datatable(array $parameters)
             foreach ($parameters['form']['extra_buttons'] as $button) {
                 $filter .= '<button id="'.$button['id'].'" ';
                 $filter .= ' class="'.$button['class'].'" ';
-                $filter .= ' style="'.$button['style'].'" ';
+                $filter .= ' style="'.($button['style'] ?? '').'" ';
                 $filter .= ' onclick="'.$button['onclick'].'" >';
                 $filter .= $button['text'];
                 $filter .= '</button>';
@@ -3496,7 +3501,7 @@ function ui_print_datatable(array $parameters)
             language: {
                 processing:"'.$processing.'"
             },
-            buttons: [
+            buttons: '.$parameters['csv'].'== 1 ? [
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
@@ -3512,14 +3517,14 @@ function ui_print_datatable(array $parameters)
                         }'.$export_columns.'
                     }
                 }
-            ],
+            ] : [],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
-                        console.log(json.error);
+                        console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
                         $("#error-'.$table_id.'").dialog({
                             title: "Filter failed",
@@ -3535,6 +3540,19 @@ function ui_print_datatable(array $parameters)
                             }
                         }).parent().addClass("ui-state-error");
                     } else {';
+
+    if (isset($parameters['ajax_return_operation']) === true
+        && empty($parameters['ajax_return_operation']) === false
+        && isset($parameters['ajax_return_operation_function']) === true
+        && empty($parameters['ajax_return_operation_function']) === false
+    ) {
+        $js .= '
+            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
+                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
+            }
+        ';
+    }
+
     if (isset($parameters['ajax_postprocess'])) {
         $js .= '
                     if (json.data) {
@@ -5448,6 +5466,10 @@ function ui_print_agent_autocomplete_input($parameters)
         'q'             => 'term',
     ];
 
+    if (isset($parameters['delete_offspring_agents']) === true) {
+        $javascript_change_ajax_params_original['delete_offspring_agents'] = $parameters['delete_offspring_agents'];
+    }
+
     if (!$metaconsole_enabled) {
         $javascript_change_ajax_params_original['force_local'] = 1;
     }
@@ -5878,7 +5900,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'padding-right: 20px; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'padding-right: 20px; padding: 2px 5px; margin-bottom: 4px; border: none; border-bottom: 1px solid #ccc; border-radius: 0; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

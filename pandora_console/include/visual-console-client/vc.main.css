@@ -801,7 +801,7 @@ div.module-graph .gauge_d3_class {
 .visual-console-item .digital-clock {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   justify-items: center;
   align-content: center;
   align-items: center;

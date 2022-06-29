@@ -128,7 +128,7 @@ if (is_array($temp) === true) {
 }
 
 $form_filter .= "<td class='bolder''>".__('Actions').'</td><td>';
-$form_filter .= html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true);
+$form_filter .= html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true, false, true, '', false, 'width:95%');
 $form_filter .= '</td>';
 $form_filter .= "<td class='bolder''>".__('Field content').'</td><td>';
 $form_filter .= html_print_input_text('field_content', $fieldContent, '', 12, 255, true);
@@ -1192,8 +1192,8 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                             dropdownParent: $(`#update_action-div-${alert_id}`)
                         });
                     },
-                    width: 455,
-                    height: 500
+                    width: 600,
+                    height: 350
                 })
                 .show ();
         }

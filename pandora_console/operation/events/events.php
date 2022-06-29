@@ -390,11 +390,11 @@ if (is_ajax() === true) {
                         // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
                         if ($tmp->meta === true) {
                             if ($tmp->server_name !== null) {
-                                $tmp->data_server = metaconsole_get_servers(
+                                $data_server = metaconsole_get_servers(
                                     $tmp->server_id
                                 );
                                 $tmp->server_url_hash = metaconsole_get_servers_url_hash(
-                                    $tmp->data_server
+                                    $data_server
                                 );
                             }
                         }
@@ -892,11 +892,11 @@ if (is_ajax() === true) {
                         $server_url = '';
                         $hashdata = '';
                         if ($tmp->meta === true) {
-                            if (isset($tmp->data_server) === true
-                                && $tmp->data_server !== false
+                            if (isset($data_server) === true
+                                && $data_server !== false
                                 && isset($tmp->server_url_hash) === true
                             ) {
-                                $server_url = $tmp->data_server['server_url'];
+                                $server_url = $data_server['server_url'];
                                 $hashdata = $tmp->server_url_hash;
                             }
                         }
@@ -1455,15 +1455,19 @@ if ($pure) {
 
     if (is_metaconsole() === false) {
         unset($onheader['history']);
-        ui_print_page_header(
-            __('Events'),
+        ui_print_standard_header(
+            __('Events list'),
             'images/lightning_go.png',
             false,
             'eventview',
             false,
-            $onheader,
-            true,
-            'eventsmodal'
+            (array) $onheader,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Events'),
+                ],
+            ]
         );
     } else {
         unset($onheader['rss']);

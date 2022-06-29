@@ -401,8 +401,15 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
 
         case '1':
             // Group by events.
+            $event = events_get_event($id_evento, ['estado', 'event_type', 'id_agente', 'id_agentmodule']);
+            $filter['group_rep'] = 0;
+            $filter['status'] = $event['estado'];
+            $filter['event_type'] = $event['event_type'];
+            $filter['id_agent'] = $event['id_agente'];
+            $filter['id_agentmodule'] = $event['id_agentmodule'];
+
             $sql = events_get_all(
-                ['te.*'],
+                ['te.id_evento'],
                 $filter,
                 // Offset.
                 null,
@@ -418,18 +425,7 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
                 true
             );
 
-            $target_ids = db_get_all_rows_sql(
-                sprintf(
-                    'SELECT tu.id_evento FROM tevento tu INNER JOIN ( %s ) tf
-                    ON tu.estado = tf.estado
-                    AND tu.evento = tf.evento
-                    AND tu.id_agente = tf.id_agente
-                    AND tu.id_agentmodule = tf.id_agentmodule
-                    AND tf.max_id_evento = %d',
-                    $sql,
-                    $id_evento
-                )
-            );
+            $target_ids = db_get_all_rows_sql($sql);
 
             // Try to avoid deadlock while updating full set.
             if ($target_ids !== false && count($target_ids) > 0) {
@@ -494,8 +490,15 @@ function events_update_status($id_evento, $status, $filter=null)
 
         case '1':
             // Group by events.
+            $event = events_get_event($id_evento, ['estado', 'event_type', 'id_agente', 'id_agentmodule']);
+            $filter['group_rep'] = 0;
+            $filter['status'] = $event['estado'];
+            $filter['event_type'] = $event['event_type'];
+            $filter['id_agent'] = $event['id_agente'];
+            $filter['id_agentmodule'] = $event['id_agentmodule'];
+
             $sql = events_get_all(
-                ['te.*'],
+                ['te.id_evento'],
                 $filter,
                 // Offset.
                 null,
@@ -511,18 +514,7 @@ function events_update_status($id_evento, $status, $filter=null)
                 true
             );
 
-            $target_ids = db_get_all_rows_sql(
-                sprintf(
-                    'SELECT tu.id_evento FROM tevento tu INNER JOIN ( %s ) tf
-                    ON tu.estado = tf.estado
-                    AND tu.evento = tf.evento
-                    AND tu.id_agente = tf.id_agente
-                    AND tu.id_agentmodule = tf.id_agentmodule
-                    AND tf.max_id_evento = %d',
-                    $sql,
-                    $id_evento
-                )
-            );
+            $target_ids = db_get_all_rows_sql($sql);
 
             // Try to avoid deadlock while updating full set.
             if ($target_ids !== false && count($target_ids) > 0) {
@@ -729,6 +721,13 @@ function events_get_all(
         $sql_filters[] = sprintf(
             ' AND te.id_agente = %d ',
             $filter['id_agent']
+        );
+    }
+
+    if (isset($filter['id_agentmodule']) === true && $filter['id_agentmodule'] > 0) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_agentmodule = %d ',
+            $filter['id_agentmodule']
         );
     }
 

@@ -1509,12 +1509,10 @@ require 'include/php_to_js_values.php';
     <?php if (empty($errorFileOutput) === false) : ?>
         // There are one issue with the file that you trying to catch. Show a dialog with message.
         $(document).ready(function() {
-            $('body').append('<div id="modalAlert"><?php echo io_safe_output($errorFileOutput); ?></div>');
-            $("#modalAlert").dialog ({
-                title: '<?php echo __('Error'); ?>',
-                resizable: false,
-                draggable: false,
-                width: 450
+            confirmDialog({
+                title: "<?php echo __('Error'); ?>",
+                message: "<?php echo io_safe_output($errorFileOutput); ?>",
+                hideCancelButton: true,
             });
         });
     <?php endif; ?>

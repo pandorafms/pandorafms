@@ -352,13 +352,14 @@ if ($search_string) {
     $filter[] = "(name LIKE '%".$search_string."%' OR description LIKE '%".$search_string."%' OR value LIKE '%".$search_string."%')";
 }
 
-$total_templates = alerts_get_alert_templates($filter, ['COUNT(*) AS total']);
-$total_templates = $total_templates[0]['total'];
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 if (!is_user_admin($config['id_user'])) {
     $filter['id_group'] = array_keys(users_get_groups(false, 'LM'));
 }
+
+$total_templates = alerts_get_alert_templates($filter, ['COUNT(*) AS total']);
+$total_templates = $total_templates[0]['total'];
 
 $templates = alerts_get_alert_templates(
     $filter,

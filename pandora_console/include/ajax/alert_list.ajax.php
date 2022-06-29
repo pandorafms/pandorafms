@@ -1,18 +1,29 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Ajax script for List view for Alerts.
+ *
+ * @category   Alerts
+ * @package    Community
+ * @subpackage Software agents repository
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ==========================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnológicas S.L
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 require_once 'include/functions_agents.php';
@@ -60,7 +71,7 @@ if ($get_agent_alerts_simple) {
 
 
     $alerts = agents_get_alerts_simple($id_agent);
-    if (empty($alerts)) {
+    if (empty($alerts) === true) {
         echo json_encode(false);
         return;
     }
@@ -424,7 +435,7 @@ if ($show_update_action_menu) {
     );
 
     $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
-    $data .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
+    $data .= '<table class="w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
             1,
@@ -442,7 +453,7 @@ if ($show_update_action_menu) {
         );
     if (! $id_agente) {
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2 bolder_6px">';
+            $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
             $data .= __('Agent').'&nbsp;'.ui_print_help_icon(
                 'alert_scalate',
                 true,
@@ -463,7 +474,7 @@ if ($show_update_action_menu) {
     }
 
         $data .= '<tr class="datos">';
-            $data .= '<td class="datos bolder_6px">';
+            $data .= '<td class="datos bolder pdd_6px font_10pt">';
             $data .= __('Module');
             $data .= '</td>';
             $data .= '<td class="datos">';
@@ -478,7 +489,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2 bolder_6px">';
+            $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
                 $data .= __('Action');
             $data .= '</td>';
             $data .= '<td class="datos2">';
@@ -494,12 +505,12 @@ if ($show_update_action_menu) {
                     true,
                     '',
                     false,
-                    'width:150px'
+                    'width:95%'
                 );
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos">';
-            $data .= '<td class="datos bolder_6px">';
+            $data .= '<td class="datos bolder pdd_6px font_10pt">';
                 $data .= __('Number of alerts match from');
             $data .= '</td>';
             $data .= '<td class="datos">';
@@ -523,7 +534,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2 bolder_6px">';
+            $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
                 $data .= __('Threshold');
             $data .= '</td>';
             $data .= '<td class="datos2">';

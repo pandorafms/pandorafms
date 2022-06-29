@@ -118,6 +118,9 @@ function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby
         $sql .= ' AND t3.id_agente = '.$id_agent;
     }
 
+    // Only enabled agent.
+    $sql .= ' AND t3.disabled = 0';
+
     $row_alerts = db_get_all_rows_sql($sql);
 
     if ($total) {
@@ -2873,9 +2876,6 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
     global $config;
 
     $table = 'tevento';
-    if (is_metaconsole() === true) {
-        $table = 'tmetaconsole_event';
-    }
 
     $filter_date = '';
     if (isset($filters['period']) === true

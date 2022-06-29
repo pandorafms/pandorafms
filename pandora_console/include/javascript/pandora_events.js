@@ -1,7 +1,7 @@
-/*global jQuery,$,forced_title_callback,Base64, dt_events*/
+/*global jQuery, $, forced_title_callback, confirmDialog*/
 
 // Show the modal window of an event
-function show_event_dialog(event, dialog_page, result) {
+function show_event_dialog(event, dialog_page) {
   var ajax_file = $("#hidden-ajax_file").val();
 
   if (dialog_page == undefined) {
@@ -81,24 +81,11 @@ function show_event_dialog(event, dialog_page, result) {
           }
         })
         .show();
-      $.post({
-        url: "ajax.php",
-        data: {
-          page: "include/ajax/events",
-          get_comments: 1,
-          event: event,
-          filter: values
-        },
-        dataType: "html",
-        success: function(data) {
-          $("#extended_event_comments_page").empty();
-          $("#extended_event_comments_page").html(data);
-        }
-      });
 
       $("#refrcounter").countdown("pause");
       $("div.vc-countdown").countdown("pause");
 
+      /*
       switch (result) {
         case "comment_ok":
           $("#notification_comment_success").show();
@@ -119,6 +106,7 @@ function show_event_dialog(event, dialog_page, result) {
           $("#notification_owner_error").show();
           break;
       }
+      */
 
       forced_title_callback();
     },
@@ -131,7 +119,7 @@ function show_event_dialog(event, dialog_page, result) {
 function execute_response(event_id, server_id) {
   var response_id = $("#select_custom_response option:selected").val();
 
-  var response = get_response(response_id);
+  var response = get_response(response_id, server_id);
 
   // If cannot get response abort it
   if (response == null) {
@@ -246,13 +234,14 @@ function show_massive_response_dialog(
 }
 
 // Get an event response from db
-function get_response(response_id) {
+function get_response(response_id, server_id) {
   var response = "";
 
   var params = [];
   params.push("page=include/ajax/events");
   params.push("get_response=1");
   params.push("response_id=" + response_id);
+  params.push("server_id=" + server_id);
 
   jQuery.ajax({
     data: params.join("&"),
@@ -312,31 +301,6 @@ function get_response_description(response_id) {
   });
 
   return response_description;
-}
-
-// Get an event response description from db
-function get_event_name(event_id, meta, history) {
-  var name = "";
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_event_name=1");
-  params.push("event_id=" + event_id);
-  params.push("meta=" + meta);
-  params.push("history=" + history);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "html",
-    success: function(data) {
-      name = data;
-    }
-  });
-
-  return name;
 }
 
 function add_row_param(id_table, param) {
@@ -472,11 +436,8 @@ function perform_response_massive(response, response_id, out_iterator) {
 }
 
 // Change the status of an event to new, in process or validated.
-function event_change_status(event_ids) {
+function event_change_status(event_ids, server_id) {
   var new_status = $("#estado").val();
-  var meta = $("#hidden-meta").val();
-  var history = $("#hidden-history").val();
-  var node_id = $("#hidden-node_id").val();
 
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -487,13 +448,10 @@ function event_change_status(event_ids) {
       change_status: 1,
       event_ids: event_ids,
       new_status: new_status,
-      meta: meta,
-      node_id: node_id,
-      history: history
+      server_id: server_id
     },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
-    async: true,
     dataType: "json",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
@@ -537,12 +495,8 @@ function event_change_status(event_ids) {
 }
 
 // Change te owner of an event to one user of empty
-function event_change_owner() {
-  var event_id = $("#hidden-id_event").val();
+function event_change_owner(event_id, server_id) {
   var new_owner = $("#id_owner").val();
-  var meta = $("#hidden-meta").val();
-  var history = $("#hidden-history").val();
-  var node_id = $("#hidden-node_id").val();
 
   $("#button-owner_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -552,10 +506,8 @@ function event_change_owner() {
       page: "include/ajax/events",
       change_owner: 1,
       event_id: event_id,
-      new_owner: new_owner,
-      meta: meta,
-      node_id: node_id,
-      history: history
+      server_id: server_id,
+      new_owner: new_owner
     },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
@@ -607,15 +559,6 @@ function event_comment(current_event) {
   }
 
   var comment = $("#textarea_comment").val();
-  var meta = 0;
-  if ($("#hidden-meta").val() != undefined) {
-    meta = $("#hidden-meta").val();
-  }
-
-  var history = 0;
-  if ($("#hidden-history").val() != undefined) {
-    history = $("#hidden-history").val();
-  }
 
   if (comment == "") {
     show_event_dialog(current_event, "comments", "comment_error");
@@ -631,8 +574,7 @@ function event_comment(current_event) {
     params.push("event_id=" + event.id_evento);
   }
   params.push("comment=" + comment);
-  params.push("meta=" + meta);
-  params.push("history=" + history);
+  params.push("server_id=" + event.server_id);
 
   $("#button-comment_button").attr("disabled", "disabled");
   $("#response_loading").show();
@@ -641,9 +583,8 @@ function event_comment(current_event) {
     data: params.join("&"),
     type: "POST",
     url: $("#hidden-ajax_file").val(),
-    async: true,
     dataType: "html",
-    success: function(data) {
+    success: function() {
       $("#button-comment_button").removeAttr("disabled");
       $("#response_loading").hide();
       $("#link_comments").click();
@@ -651,60 +592,6 @@ function event_comment(current_event) {
   });
 
   return false;
-}
-
-//Show event list when fielter repetead is Group agents
-function show_events_group_agent(id_insert, id_agent, server_id) {
-  var parameter = [];
-  parameter.push({ name: "id_agent", value: id_agent });
-  parameter.push({ name: "server_id", value: server_id });
-  parameter.push({ name: "event_type", value: $("#event_type").val() });
-  parameter.push({ name: "severity", value: $("#severity").val() });
-  parameter.push({ name: "status", value: $("#status").val() });
-  parameter.push({ name: "search", value: $("#text-search").val() });
-  parameter.push({
-    name: "id_agent_module",
-    value: $("input:hidden[name=module_search_hidden]").val()
-  });
-  parameter.push({
-    name: "event_view_hr",
-    value: $("#text-event_view_hr").val()
-  });
-  parameter.push({ name: "id_user_ack", value: $("#id_user_ack").val() });
-  parameter.push({
-    name: "tag_with",
-    value: Base64.decode($("#hidden-tag_with").val())
-  });
-  parameter.push({
-    name: "tag_without",
-    value: Base64.decode($("#hidden-tag_without").val())
-  });
-  parameter.push({
-    name: "filter_only_alert",
-    value: $("#filter_only_alert").val()
-  });
-  parameter.push({ name: "date_from", value: $("#text-date_from").val() });
-  parameter.push({ name: "date_to", value: $("#text-date_to").val() });
-  parameter.push({ name: "server_id_search", value: $("#server_id").val() });
-  parameter.push({
-    name: "page",
-    value: "include/ajax/events"
-  });
-  parameter.push({
-    name: "get_list_events_agents",
-    value: 1
-  });
-
-  jQuery.ajax({
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    data: parameter,
-    dataType: "html",
-    success: function(data) {
-      $("#" + id_insert).html(data);
-      $("#" + id_insert).toggle();
-    }
-  });
 }
 
 function show_event_response_command_dialog(id, response, total_checked) {
@@ -756,7 +643,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
 }
 
 var processed = 0;
-function update_event(table, id_evento, type, event_rep, row) {
+function update_event(table, id_evento, type, event_rep, row, server_id) {
   var inputs = $("#events_form :input");
   var values = {};
   var redraw = false;
@@ -775,6 +662,7 @@ function update_event(table, id_evento, type, event_rep, row) {
       in_process_event: type.in_process_event,
       delete_event: type.delete_event,
       id_evento: id_evento,
+      server_id: server_id,
       event_rep: event_rep,
       filter: values
     },
@@ -789,7 +677,9 @@ function update_event(table, id_evento, type, event_rep, row) {
           redraw = true;
         }
         if (redraw) {
-          table.draw(false);
+          $("#" + table)
+            .DataTable()
+            .draw(false);
         } else {
           $(row)
             .closest("tr")
@@ -804,8 +694,13 @@ function update_event(table, id_evento, type, event_rep, row) {
 }
 // Update events matching current filters and id_evento selected.
 
-function validate_event(table, id_evento, event_rep, row) {
+function validate_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("val-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta != 0) {
+    button = document.getElementById("val-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -814,11 +709,23 @@ function validate_event(table, id_evento, event_rep, row) {
 
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { validate_event: 1 }, event_rep, row);
+  return update_event(
+    table,
+    id_evento,
+    { validate_event: 1 },
+    event_rep,
+    row,
+    server_id
+  );
 }
 
-function in_process_event(table, id_evento, event_rep, row) {
+function in_process_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("proc-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta != 0) {
+    button = document.getElementById("proc-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -832,18 +739,24 @@ function in_process_event(table, id_evento, event_rep, row) {
     id_evento,
     { in_process_event: 1 },
     event_rep,
-    row
+    row,
+    server_id
   );
 }
 
-function delete_event(table, id_evento, event_rep, row) {
+function delete_event(table, id_evento, event_rep, row, server_id) {
   var button = document.getElementById("del-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta != 0) {
+    button = document.getElementById("del-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
     return;
   }
-  var message = "<h4 style = 'text-align: center;' > Are you sure?</h4> ";
+  var message = "<h3 style = 'text-align: center;' > Are you sure?</h3> ";
   confirmDialog({
     title: "ATTENTION",
     message: message,
@@ -857,7 +770,8 @@ function delete_event(table, id_evento, event_rep, row) {
         id_evento,
         { delete_event: 1 },
         event_rep,
-        row
+        row,
+        server_id
       );
     },
     onDeny: function() {
@@ -868,8 +782,19 @@ function delete_event(table, id_evento, event_rep, row) {
   });
 }
 
-function execute_delete_event_reponse(table, id_evento, event_rep, row) {
+function execute_delete_event_reponse(
+  table,
+  id_evento,
+  event_rep,
+  row,
+  server_id
+) {
   var button = document.getElementById("del-" + id_evento);
+  var meta = $("#hidden-meta").val();
+  if (meta != 0) {
+    button = document.getElementById("del-" + id_evento + "-" + server_id);
+  }
+
   if (!button) {
     // Button does not exist. Ignore.
     processed += 1;
@@ -877,7 +802,14 @@ function execute_delete_event_reponse(table, id_evento, event_rep, row) {
   }
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { delete_event: 1 }, event_rep, row);
+  return update_event(
+    table,
+    id_evento,
+    { delete_event: 1 },
+    event_rep,
+    row,
+    server_id
+  );
 }
 
 // Imported from old files.
@@ -964,32 +896,61 @@ function execute_event_response(event_list_btn) {
         switch (response_id) {
           case "in_progress_selected":
             $(".chk_val:checked").each(function() {
-              // Parent: TD. GrandParent: TR.
+              var event_id = $(this).val();
+              var meta = $("#hidden-meta").val();
+              var server_id = 0;
+              if (meta != 0) {
+                var split_id = event_id.split("|");
+                event_id = split_id[0];
+                server_id = split_id[1];
+              }
+
               in_process_event(
-                dt_events,
-                $(this).val(),
+                "events",
+                event_id,
                 $(this).attr("event_rep"),
-                this.parentElement.parentElement
+                this.parentElement.parentElement,
+                server_id
               );
             });
             break;
           case "validate_selected":
             $(".chk_val:checked").each(function() {
+              var event_id = $(this).val();
+              var meta = $("#hidden-meta").val();
+              var server_id = 0;
+              if (meta != 0) {
+                var split_id = event_id.split("|");
+                event_id = split_id[0];
+                server_id = split_id[1];
+              }
+
               validate_event(
-                dt_events,
-                $(this).val(),
+                "events",
+                event_id,
                 $(this).attr("event_rep"),
-                this.parentElement.parentElement
+                this.parentElement.parentElement,
+                server_id
               );
             });
             break;
           case "delete_selected":
             $(".chk_val:checked").each(function() {
+              var event_id = $(this).val();
+              var meta = $("#hidden-meta").val();
+              var server_id = 0;
+              if (meta != 0) {
+                var split_id = event_id.split("|");
+                event_id = split_id[0];
+                server_id = split_id[1];
+              }
+
               execute_delete_event_reponse(
-                dt_events,
-                $(this).val(),
+                "events",
+                event_id,
                 $(this).attr("event_rep"),
-                this.parentElement.parentElement
+                this.parentElement.parentElement,
+                server_id
               );
             });
             break;
@@ -1016,8 +977,10 @@ function check_massive_response_event(
     var event_id = $(this).val();
     var meta = $("#hidden-meta").val();
     var server_id = 0;
-    if (meta) {
-      server_id = $("#hidden-server_id_" + event_id).val();
+    if (meta != 0) {
+      var split_id = event_id.split("|");
+      event_id = split_id[0];
+      server_id = split_id[1];
     }
 
     response["target"] = get_response_target(
@@ -1042,5 +1005,26 @@ function event_widget_options() {
     $(".event-widget-input").disable();
   } else {
     $(".event-widget-input").enable();
+  }
+}
+
+function process_buffers(buffers) {
+  $("#events_buffers_display").empty();
+  if (buffers != null && buffers.settings != undefined && buffers.data) {
+    var params = [];
+    params.push("page=include/ajax/events");
+    params.push("process_buffers=1");
+    params.push("buffers=" + JSON.stringify(buffers));
+
+    jQuery.ajax({
+      data: params.join("&"),
+      type: "POST",
+      url: $("#hidden-ajax_file").val(),
+      async: true,
+      dataType: "html",
+      success: function(data) {
+        $("#events_buffers_display").html(data);
+      }
+    });
   }
 }

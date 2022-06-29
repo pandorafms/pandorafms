@@ -420,7 +420,6 @@ if (check_acl($config['id_user'], 0, 'ER')
 
     // Sound Events.
     $javascript = "javascript: window.open('operation/events/sound_events.php');";
-    $javascript = 'javascript: alert(111);';
     $javascript = 'javascript: openSoundEventWindow();';
     $sub[$javascript]['text'] = __('Sound Events');
     $sub[$javascript]['id'] = 'Sound Events';
@@ -432,12 +431,12 @@ if (check_acl($config['id_user'], 0, 'ER')
         url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
         // devicePixelRatio knows how much zoom browser applied.
         var windowScale = parseFloat(window.devicePixelRatio);
-        var defaultWidth = 600;
-        var defaultHeight = 450;
+        var defaultWidth = 630;
+        var defaultHeight = 630;
         // If the scale is 1, no zoom has been applied.
         var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
         var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
-        
+
         window.open(
             url,
             '<?php __('Sound Alerts'); ?>',

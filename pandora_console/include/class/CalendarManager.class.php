@@ -260,6 +260,8 @@ class CalendarManager
      */
     public function deleteCalendar()
     {
+        global $config;
+
         $id = (int) get_parameter('id');
         try {
             $calendar = new Calendar($id);
@@ -276,6 +278,22 @@ class CalendarManager
             }
 
             return;
+        }
+
+        if (is_numeric($id) === true) {
+            if ((bool) check_acl(
+                $config['id_user'],
+                $calendar->id_group(),
+                'LM'
+            ) === false
+            ) {
+                db_pandora_audit(
+                    AUDIT_LOG_ACL_VIOLATION,
+                    'Trying to access calendar delete'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
         }
 
         // Remove.
@@ -480,6 +498,35 @@ class CalendarManager
             $new = true;
         }
 
+        $group_id = null;
+
+        if ($new === true) {
+            if (is_numeric(get_parameter('id_group')) === true) {
+                $group_id = get_parameter('id_group');
+            }
+        } else {
+            if (is_numeric($calendar->id_group()) === true) {
+                $group_id = $calendar->id_group();
+            }
+        }
+
+        if (is_numeric($group_id) === true) {
+            // Check for permissions before rendering edit view or performing save action.
+            if ((bool) check_acl(
+                $config['id_user'],
+                $group_id,
+                'LM'
+            ) === false
+            ) {
+                db_pandora_audit(
+                    AUDIT_LOG_ACL_VIOLATION,
+                    'Trying to access calendar editor'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+        }
+
         $action = get_parameter('action');
         if ($action === 'save') {
             $success = false;
@@ -604,19 +651,23 @@ class CalendarManager
             $is_management_allowed = \is_management_allowed();
 
             if ((bool) $data === true) {
-                $manage = check_acl(
-                    $config['id_user'],
-                    0,
-                    'LM',
-                    true
-                );
+                $user_id = $config['id_user'];
 
                 $data = array_reduce(
                     $data,
-                    function ($carry, $item) use ($manage, $is_management_allowed) {
+                    function ($carry, $item) use ($user_id, $is_management_allowed) {
                         // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
                         // Transforms array of arrays $data into an array
                         // of objects, making a post-process of certain fields.
+                        // Users must only be able to manage items that belong to their groups.
+                        // IMPORTANT: if user does not have permission over 'All' group, items belonging to such
+                        // group must be listed but they must not allow for edition.
+                        $manage = check_acl_restricted_all(
+                            $user_id,
+                            $item['id_group'],
+                            'LM'
+                        );
+
                         $tmp = (object) $item;
 
                         if ((bool) $manage === true) {

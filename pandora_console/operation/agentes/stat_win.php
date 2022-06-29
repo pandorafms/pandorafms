@@ -277,13 +277,6 @@ ui_print_message_dialog(
 
             $table->data[0][2] = __('Show events');
             $disabled = false;
-            if (isset($config['event_replication']) === true) {
-                if ($config['event_replication']
-                    && !$config['show_events_in_local']
-                ) {
-                    $disabled = true;
-                }
-            }
 
             $table->data[0][3] = html_print_checkbox_switch(
                 'draw_events',
@@ -292,12 +285,6 @@ ui_print_message_dialog(
                 true,
                 $disabled
             );
-            if ($disabled) {
-                $table->data[1] .= ui_print_help_tip(
-                    __("'Show events' is disabled because this %s node is set to event replication.", get_product_name()),
-                    true
-                );
-            }
 
             $table->data[1][0] = __('Begin date');
             $table->data[1][1] = html_print_input_text(

@@ -114,11 +114,11 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     echo "'>";
     echo '<tr>
 	<td class="datos">'.__('Link name').'</td>
-	<td class="datos"><input type="text" name="name" size="35" value="'.$nombre.'"></td>';
+	<td class="datos"><input type="text" class="text_input" name="name" size="50" value="'.$nombre.'"></td>';
     echo '</tr><tr>
 	<td class="datos2">'.__('Link').'</td>
 	<td class="datos2">
-	<input type="text" name="link" size="50" value="'.$link.'"></td>';
+	<input type="text" class="text_input" name="link" size="50" value="'.$link.'"></td>';
     echo '</tr>';
     echo '</table>';
     echo "<table width='100%'>";

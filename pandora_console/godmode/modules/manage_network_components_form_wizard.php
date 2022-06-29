@@ -178,6 +178,7 @@ switch ($type) {
     break;
 }
 
+$query_filter = [];
 if (empty($query_filter) === false) {
     $query_filter = json_decode($query_filter, true);
 }

@@ -409,32 +409,6 @@ function config_update_config()
                             $error_update[] = __('Size of collection');
                         }
 
-                        if (config_update_value('event_replication', (int) get_parameter('event_replication'), true) === false) {
-                            $error_update[] = __('Events replication');
-                        }
-
-                        if ((int) get_parameter('event_replication') === 1) {
-                            if (config_update_value('replication_interval', (int) get_parameter('replication_interval'), true) === false) {
-                                $error_update[] = __('Replication interval');
-                            }
-
-                            if (config_update_value('replication_limit', (int) get_parameter('replication_limit'), true) === false) {
-                                $error_update[] = __('Replication limit');
-                            }
-
-                            if (config_update_value('replication_mode', (string) get_parameter('replication_mode'), true) === false) {
-                                $error_update[] = __('Replication mode');
-                            }
-
-                            if (config_update_value('show_events_in_local', (string) get_parameter('show_events_in_local'), true) === false) {
-                                $error_update[] = __('Show events list in local console (read only)');
-                            }
-                        }
-
-                        if (config_update_value('replication_dbengine', (string) get_parameter('replication_dbengine'), true) === false) {
-                            $error_update[] = __('Replication DB engine');
-                        }
-
                         if (config_update_value('replication_dbhost', (string) get_parameter('replication_dbhost'), true) === false) {
                             $error_update[] = __('Replication DB host');
                         }
@@ -928,6 +902,10 @@ function config_update_config()
                         $error_update[] = __('SNMP walk binary path (fallback for v1)');
                     }
 
+                    if (config_update_value('wmiBinary', get_parameter('wmiBinary'), true) === false) {
+                        $error_update[] = __('Default WMI Binary');
+                    }
+
                     $pjs = get_parameter('phantomjs_cache_interval');
                     switch ($pjs) {
                         case $config['phantomjs_cache_interval']:
@@ -1181,6 +1159,10 @@ function config_update_config()
 
                     if (config_update_value('vc_line_thickness', (int) get_parameter('vc_line_thickness'), true) === false) {
                         $error_update[] = __('Default line thickness for the Visual Console');
+                    }
+
+                    if (config_update_value('mobile_view_orientation_vc', (int) get_parameter('mobile_view_orientation_vc'), true) === false) {
+                        $error_update[] = __('Mobile view not allow visual console orientation');
                     }
 
                     if (config_update_value('ser_menu_items', (int) get_parameter('ser_menu_items', 10), true) === false) {
@@ -1607,7 +1589,7 @@ function config_update_config()
                                 'port' => $config['history_db_port'],
                                 'name' => $config['history_db_name'],
                                 'user' => $config['history_db_user'],
-                                'pass' => $config['history_db_pass'],
+                                'pass' => io_output_password($config['history_db_pass']),
                             ]
                         );
 
@@ -1619,48 +1601,47 @@ function config_update_config()
                             $dbm->process();
                         } else if ($dbm->check() !== true) {
                             $errors[] = $dbm->getLastError();
+                            config_update_value('history_db_enabled', false);
+                        }
+
+                        if ($dbm->check() === true) {
+                            // Historical configuration tokens (stored in historical db).
+                            if ($dbm->setConfigToken(
+                                'days_purge',
+                                get_parameter('history_dbh_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'history_partitions_auto',
+                                get_parameter_switch('history_partitions_auto', 0)
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database partitions');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'event_purge',
+                                get_parameter('history_dbh_events_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database events purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'string_purge',
+                                get_parameter('history_dbh_string_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database string purge');
+                            }
+
+                            // Disable history db in history db.
+                            $dbm->setConfigToken('history_db_enabled', 0);
                         }
                     }
-
-                    // Historical configuration tokens (stored in historical db).
-                    if (Config::set(
-                        'days_purge',
-                        get_parameter('history_dbh_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database purge');
-                    }
-
-                    if (Config::set(
-                        'history_partitions_auto',
-                        get_parameter_switch('history_partitions_auto', 0),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database partitions');
-                    }
-
-                    if (Config::set(
-                        'event_purge',
-                        get_parameter('history_dbh_events_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database events purge');
-                    }
-
-                    if (Config::set(
-                        'string_purge',
-                        get_parameter('history_dbh_string_purge'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database string purge');
-                    }
-
-                    // Disable history db in history db.
-                    Config::set('history_db_enabled', 0, true);
                 break;
 
                 case 'ehorus':
@@ -2054,6 +2035,10 @@ function config_process_config()
         config_update_value('max_execution_event_response', 10);
     }
 
+    if (!isset($config['max_number_of_events_per_node'])) {
+        config_update_value('max_number_of_events_per_node', 100000);
+    }
+
     if (!isset($config['max_macro_fields'])) {
         config_update_value('max_macro_fields', 10);
     }
@@ -2086,6 +2071,10 @@ function config_process_config()
 
     if (!isset($config['snmpwalk_fallback'])) {
         config_update_value('snmpwalk_fallback', 'snmpwalk');
+    }
+
+    if (isset($config['wmiBinary']) === false) {
+        config_update_value('wmiBinary', 'pandorawmic');
     }
 
     if (!isset($config['event_purge'])) {
@@ -2132,22 +2121,6 @@ function config_process_config()
         config_update_value('policy_add_max_agents', 200);
     }
 
-    if (!isset($config['event_replication'])) {
-        config_update_value('event_replication', 0);
-    }
-
-    if (!isset($config['replication_interval'])) {
-        config_update_value('replication_interval', 10);
-    }
-
-    if (!isset($config['replication_limit'])) {
-        config_update_value('replication_limit', 50);
-    }
-
-    if (!isset($config['replication_dbengine'])) {
-        config_update_value('replication_dbengine', 'mysql');
-    }
-
     if (!isset($config['replication_dbhost'])) {
         config_update_value('replication_dbhost', '');
     }
@@ -2168,16 +2141,8 @@ function config_process_config()
         config_update_value('replication_dbport', '');
     }
 
-    if (!isset($config['replication_mode'])) {
-        config_update_value('replication_mode', 'only_validated');
-    }
-
     if (!isset($config['metaconsole_agent_cache'])) {
         config_update_value('metaconsole_agent_cache', 0);
-    }
-
-    if (!isset($config['show_events_in_local'])) {
-        config_update_value('show_events_in_local', 0);
     }
 
     if (!isset($config['log_collector'])) {
@@ -2357,12 +2322,12 @@ function config_process_config()
         config_update_value('custom_favicon', '');
     }
 
-    if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_4.png');
+    if (isset($config['custom_logo']) === false) {
+        config_update_value('custom_logo', HEADER_LOGO_DEFAULT_CLASSIC);
     }
 
-    if (!isset($config['custom_logo_collapsed'])) {
-        config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
+    if (isset($config['custom_logo_collapsed']) === false) {
+        config_update_value('custom_logo_collapsed', HEADER_LOGO_DEFAULT_COLLAPSED);
     }
 
     if (is_metaconsole()) {
@@ -3064,6 +3029,10 @@ function config_process_config()
 
     if (!isset($config['vc_line_thickness'])) {
         config_update_value('vc_line_thickness', 2);
+    }
+
+    if (isset($config['mobile_view_orientation_vc']) === false) {
+        config_update_value('mobile_view_orientation_vc', 0);
     }
 
     if (!isset($config['agent_size_text_small'])) {

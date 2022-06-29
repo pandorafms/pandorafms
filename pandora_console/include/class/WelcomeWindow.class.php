@@ -309,7 +309,7 @@ class WelcomeWindow extends Wizard
     {
         global $config;
 
-        return $config['welcome_id_agent'];
+        return (isset($config['welcome_id_agent']) === true) ? $config['welcome_id_agent'] : '';
     }
 
 

@@ -554,7 +554,7 @@ class TacticalWidget extends Widget
     {
         $size = [
             'width'  => 450,
-            'height' => 370,
+            'height' => 515,
         ];
 
         return $size;

@@ -186,6 +186,9 @@ class Calendar extends Entity
         $order_by = '';
         $pagination = '';
 
+        $user_groups = users_get_groups();
+        $user_groups_ids = implode(',', array_keys($user_groups));
+
         if (isset($filter['free_search']) === true
             && empty($filter['free_search']) === false
         ) {
@@ -195,6 +198,8 @@ class Calendar extends Entity
                 array_fill(0, 2, $filter['free_search'])
             );
         }
+
+        $sql_filters[] = ' AND id_group IN ('.$user_groups_ids.')';
 
         if (isset($order) === true) {
             $dir = 'asc';

@@ -1444,7 +1444,7 @@ function graphic_combined_module(
 
             array_push($modules, $modulepush);
             array_push($weights, $source['weight']);
-            if ($source['label'] != '' || $params_combined['labels']) {
+            if (empty($source['label']) === false || $params_combined['labels']) {
                 $agent_description = agents_get_description($id_agent);
                 $agent_group = agents_get_agent_group($id_agent);
                 $agent_address = agents_get_address($id_agent);

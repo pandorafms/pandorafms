@@ -743,8 +743,9 @@ switch ($action) {
         $search = trim(get_parameter('search', ''));
 
         $search_sql = '';
-        if ($search != '') {
-            $search_name = '%'.$search."%' OR description LIKE '%".$search.'%';
+
+        if ($search !== '') {
+            $search_name = "(name LIKE '%".$search."%' OR description LIKE '%".$search."%')";
         }
 
         $table_aux = new stdClass();
@@ -830,13 +831,10 @@ switch ($action) {
             $return_all_group = false;
         }
 
-        if ($search != '') {
-            $filter = [
-                'name'  => $search_name,
-                'order' => 'name',
-            ];
-        } else {
-            $filter = ['order' => 'name'];
+        $filter = ['order' => 'name'];
+
+        if ($search !== '') {
+            $filter[] = $search_name;
         }
 
         // Fix : group filter was not working

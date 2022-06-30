@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,14 +28,14 @@
  */
 
 // Begin.
-if (!defined('__PAN_XHPROF__')) {
+if (defined('__PAN_XHPROF__') === false) {
     define('__PAN_XHPROF__', 0);
 }
 
 require 'vendor/autoload.php';
 
 if (__PAN_XHPROF__ === 1) {
-    if (function_exists('tideways_xhprof_enable')) {
+    if (function_exists('tideways_xhprof_enable') === true) {
         tideways_xhprof_enable();
     } else {
         error_log('Cannot find tideways_xhprof_enable function');
@@ -44,7 +44,7 @@ if (__PAN_XHPROF__ === 1) {
 
 // Set character encoding to UTF-8
 // fixes a lot of multibyte character issues.
-if (function_exists('mb_internal_encoding')) {
+if (function_exists('mb_internal_encoding') === true) {
     mb_internal_encoding('UTF-8');
 }
 
@@ -52,10 +52,10 @@ if (function_exists('mb_internal_encoding')) {
 // Activate gives more error information, not useful for production sites.
 $develop_bypass = 0;
 
-if ($develop_bypass != 1) {
+if ($develop_bypass !== 1) {
     // If no config file, automatically try to install.
-    if (!file_exists('include/config.php')) {
-        if (!file_exists('install.php')) {
+    if (file_exists('include/config.php') === false) {
+        if (file_exists('install.php') === false) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
             $flag_url = 0;
             foreach ($url as $key => $value) {
@@ -86,25 +86,25 @@ if ($develop_bypass != 1) {
         exit;
     }
 
-    if (isset($_POST['rename_file'])) {
+    if (isset($_POST['rename_file']) === true) {
         $rename_file_install = (bool) $_POST['rename_file'];
-        if ($rename_file_install) {
+        if ($rename_file_install === true) {
             $salida_rename = rename('install.php', 'install_old.php');
         }
     }
 
     // Check installer presence.
-    if (file_exists('install.php')) {
+    if (file_exists('install.php') === true) {
         $login_screen = 'error_install';
         include 'general/error_screen.php';
         exit;
     }
 
     // Check perms for config.php.
-    if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
-        if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != '0600')
-            && (substr(sprintf('%o', fileperms('include/config.php')), -4) != '0660')
-            && (substr(sprintf('%o', fileperms('include/config.php')), -4) != '0640')
+    if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        if ((substr(sprintf('%o', fileperms('include/config.php')), -4) !== '0600')
+            && (substr(sprintf('%o', fileperms('include/config.php')), -4) !== '0660')
+            && (substr(sprintf('%o', fileperms('include/config.php')), -4) !== '0640')
         ) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
             $flag_url = 0;
@@ -129,8 +129,8 @@ if ($develop_bypass != 1) {
     }
 }
 
-if ((!file_exists('include/config.php'))
-    || (!is_readable('include/config.php'))
+if ((file_exists('include/config.php') === false)
+    || (is_readable('include/config.php') === false)
 ) {
     $login_screen = 'error_noconfig';
     include 'general/error_screen.php';
@@ -144,7 +144,7 @@ if ((!file_exists('include/config.php'))
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
 
-if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+if (isset($config['console_log_enabled']) === true && (int) $config['console_log_enabled'] === 1) {
     ini_set('log_errors', 1);
     ini_set('error_log', $config['homedir'].'/log/console.log');
 } else {
@@ -152,26 +152,26 @@ if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1
     ini_set('error_log', '');
 }
 
-if (isset($config['error'])) {
+if (isset($config['error']) === true) {
     $login_screen = $config['error'];
     include 'general/error_screen.php';
     exit;
 }
 
 // If metaconsole activated, redirect to it.
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     header('Location: '.ui_get_full_url('index.php'));
     // Always exit after sending location headers.
     exit;
 }
 
-if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
+if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php') === true) {
     include_once ENTERPRISE_DIR.'/include/functions_login.php';
 }
 
-if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
+if (empty($config['https']) === false && empty($_SERVER['HTTPS']) === true) {
     $query = '';
-    if (count($_REQUEST)) {
+    if (count($_REQUEST) > 0) {
         // Some (old) browsers don't like the ?&key=var.
         $query .= '?1=1';
     }
@@ -208,8 +208,11 @@ if (get_parameter('refr') != null) {
     $config['refr'] = (int) get_parameter('refr');
 }
 
+// Get possible errors with files.
+$errorFileOutput = (string) get_parameter('errorFileOutput');
+
 $delete_file = get_parameter('del_file');
-if ($delete_file == 'yes_delete') {
+if ($delete_file === 'yes_delete') {
     $salida_delete = shell_exec('rm /var/www/html/pandora_console/install.php');
 }
 
@@ -251,9 +254,9 @@ $validatedCSRF = validate_csrf_code();
 $process_login = false;
 
 // Update user password.
-$change_pass = get_parameter_post('renew_password', 0);
+$change_pass = (int) get_parameter_post('renew_password');
 
-if ($change_pass == 1) {
+if ($change_pass === 1) {
     $password_old = (string) get_parameter_post('old_password', '');
     $password_new = (string) get_parameter_post('new_password', '');
     $password_confirm = (string) get_parameter_post('confirm_new_password', '');
@@ -269,19 +272,19 @@ if (strlen($search) > 0) {
     $config['search_keywords'] = io_safe_input(trim(io_safe_output(get_parameter('keywords'))));
     // If not search category providad, we'll use an agent search.
     $config['search_category'] = get_parameter('search_category', 'all');
-    if (($config['search_keywords'] != 'Enter keywords to search') && (strlen($config['search_keywords']) > 0)) {
+    if (($config['search_keywords'] !== 'Enter keywords to search') && (strlen($config['search_keywords']) > 0)) {
         $searchPage = true;
     }
 }
 
 // Login process.
 enterprise_include_once('include/auth/saml.php');
-if (!isset($config['id_user'])) {
+if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
     setcookie('errormsg', null, -1);
 
-    if (isset($_GET['login'])) {
+    if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
         // Include it to use escape_string_sql function.
         $config['auth_error'] = '';
@@ -298,15 +301,15 @@ if (!isset($config['id_user'])) {
 
         // If the auth_code exists, we assume the user has come from
         // double authorization page.
-        if (isset($_POST['auth_code'])) {
+        if (isset($_POST['auth_code']) === true) {
             $double_auth_success = false;
 
             // The double authentication is activated and the user has
             // surpassed the first step (the login).
             // Now the authentication code provided will be checked.
-            if (isset($_SESSION['prepared_login_da'])) {
-                if (isset($_SESSION['prepared_login_da']['id_user'])
-                    && isset($_SESSION['prepared_login_da']['timestamp'])
+            if (isset($_SESSION['prepared_login_da']) === true) {
+                if (isset($_SESSION['prepared_login_da']['id_user']) === true
+                    && isset($_SESSION['prepared_login_da']['timestamp']) === true
                 ) {
                     // The user has a maximum of 5 minutes to introduce
                     // the double auth code.
@@ -344,7 +347,7 @@ if (!isset($config['id_user'])) {
                             // Error message.
                             $config['auth_error'] = __("The code shouldn't be empty");
 
-                            if (!isset($_SESSION['prepared_login_da']['attempts'])) {
+                            if (isset($_SESSION['prepared_login_da']['attempts']) !== false) {
                                 $_SESSION['prepared_login_da']['attempts'] = 0;
                             }
 
@@ -397,7 +400,7 @@ if (!isset($config['id_user'])) {
             // the 2nd auth step.
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
-        } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
+        } else if (($config['auth'] === 'saml') && ($login_button_saml)) {
             $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
                 $login_failed = true;
@@ -431,7 +434,7 @@ if (!isset($config['id_user'])) {
             // process_user_login is a virtual function which should be defined in each auth file.
             // It accepts username and password. The rest should be internal to the auth file.
             // The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
-            // process_user_login should return false in case of errors or invalid login, the nickname if correct
+            // process_user_login should return false in case of errors or invalid login, the nickname if correct.
             $nick_in_db = process_user_login($nick, $pass);
 
             $expired_pass = false;
@@ -1479,7 +1482,7 @@ require 'include/php_to_js_values.php';
         var oShow = jQuery.fn.show;
         var oHide = jQuery.fn.hide;
 
-        jQuery.fn.show = function() {
+        jQuery.fn.show = function () {
             var rv = oShow.apply(this, arguments);
             adjustFooter();
             return rv;
@@ -1505,6 +1508,17 @@ require 'include/php_to_js_values.php';
         );
 
     }
+
+    <?php if (empty($errorFileOutput) === false) : ?>
+        // There are one issue with the file that you trying to catch. Show a dialog with message.
+        $(document).ready(function() {
+            confirmDialog({
+                title: "<?php echo __('Error'); ?>",
+                message: "<?php echo io_safe_output($errorFileOutput); ?>",
+                hideCancelButton: true,
+            });
+        });
+    <?php endif; ?>
 
     function show_modal(id) {
         var match = /notification-(.*)-id-([0-9]+)/.exec(id);

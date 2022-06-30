@@ -18,7 +18,7 @@ require_once 'include/functions_agents.php';
 require_once 'include/functions_custom_graphs.php';
 ui_require_javascript_file('calendar');
 
-if (! check_acl($config['id_user'], $id_grupo, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
+if (!check_acl($config['id_user'], $id_grupo, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access (read) to agent '.agents_get_name($id_agente)
@@ -53,20 +53,20 @@ $modules_networkmap_no_proc = agents_get_modules(
     false,
     [
         'id_modulo'      => 2,
-    // networkmap type
+        // Networkmap type.
         'id_tipo_modulo' => [
             '<>2',
-    // != generic_proc
+            // != generic_proc
             '<>6',
-    // != remote_icmp_proc
+            // != remote_icmp_proc
             '<>9',
-    // != remote_tcp_proc
+            // != remote_tcp_proc
             '<>6',
-    // != remote_tcp_proc
+            // != remote_tcp_proc
             '<>18',
-    // != remote_snmp_proc
+            // != remote_snmp_proc
             '<>21',
-    // != async_proc
+            // != async_proc
             '<>31',
         ],
         // != web_proc
@@ -82,17 +82,17 @@ $modules_others = agents_get_modules(
     [
         'id_tipo_modulo' => [
             '<>2',
-    // != generic_proc
+            // != generic_proc
             '<>6',
-    // != remote_icmp_proc
+            // != remote_icmp_proc
             '<>9',
-    // != remote_tcp_proc
+            // != remote_tcp_proc
             '<>6',
-    // != remote_tcp_proc
+            // != remote_tcp_proc
             '<>18',
-    // != remote_snmp_proc
+            // != remote_snmp_proc
             '<>21',
-    // != async_proc
+            // != async_proc
             '<>31',
         ],
         // != web_proc
@@ -133,7 +133,7 @@ if (empty($modules_boolean)) {
     $modules_boolean = [];
 }
 
-// Cleaned the duplicate $modules and other things
+// Cleaned the duplicate $modules and other things.
 $modules_others = array_diff_key(
     $modules_others,
     $modules_networkmap_no_proc
@@ -278,7 +278,7 @@ if ($start_date != $current) {
 }
 
 if ($combined) {
-    // Pass the $modules before the ajax call
+    // Pass the $modules before the ajax call.
     echo '<div class="combined-graph-container center w100p"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
 } else {
     foreach ($modules as $id_module) {
@@ -296,7 +296,7 @@ echo '<div id="graph-error-message" class="invisible">';
 ui_print_error_message(__('There was an error loading the graph'));
 echo '</div>';
 
-// Dialog to save the custom graph
+// Dialog to save the custom graph.
 echo "<div id='dialog_save_custom_graph' class='invisible'>";
 $table = new stdClass();
 $table->width = '100%';
@@ -314,40 +314,40 @@ $table->data[0][1] = html_print_input_text(
 html_print_table($table);
 
 echo "<div style='width: ".$table->width."; text-align: right;'>";
-    html_print_image(
-        'images/spinner.gif',
-        false,
-        [
-            'style' => 'display: none',
-            'class' => 'loading_save',
-        ]
-    );
-    html_print_image(
-        'images/ok.png',
-        false,
-        [
-            'style' => 'display: none',
-            'class' => 'ok_save',
-        ]
-    );
-    html_print_image(
-        'images/error_red.png',
-        false,
-        [
-            'style' => 'display: none',
-            'class' => 'error_save',
-        ]
-    );
-    html_print_button(
-        __('Save'),
-        'save_custom_graph',
-        false,
-        'save_custom_graph_second_step();',
-        'class="button_save sub save"'
-    );
-    echo '</div>';
-    echo '</div>';
-    ?>
+html_print_image(
+    'images/spinner.gif',
+    false,
+    [
+        'style' => 'display: none',
+        'class' => 'loading_save',
+    ]
+);
+html_print_image(
+    'images/ok.png',
+    false,
+    [
+        'style' => 'display: none',
+        'class' => 'ok_save',
+    ]
+);
+html_print_image(
+    'images/error_red.png',
+    false,
+    [
+        'style' => 'display: none',
+        'class' => 'error_save',
+    ]
+);
+html_print_button(
+    __('Save'),
+    'save_custom_graph',
+    false,
+    'save_custom_graph_second_step();',
+    'class="button_save sub save"'
+);
+echo '</div>';
+echo '</div>';
+?>
 <script type="text/javascript">
     $(document).ready(function() {
         $("#dialog_save_custom_graph").dialog({
@@ -358,50 +358,49 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
             autoOpen: false
         });
     });
-    
-    $('#button-save_custom_graph').click(function (event) {
+
+    $('#button-save_custom_graph').click(function(event) {
         $("#dialog_save_custom_graph").dialog("open");
     });
-    
+
     function save_custom_graph_second_step() {
         $(".button_save").disable();
         $(".ok_save").hide();
         $(".error_save").hide();
         $(".loading_save").show();
-        
+
         var params = {};
         params["id_modules"] = <?php echo json_encode($modules); ?>;
         params["name"] = $("input[name='name_custom_graph']").val();
         params["description"] = "<?php echo __('Custom graph create from the tab graphs in the agent.'); ?>";
-        params["stacked"] = <?php echo CUSTOM_GRAPH_LINE; ?>;
+        params["stacked"] = parseInt($("#option_type").val());
         params["width"] = <?php echo $width; ?>;
         params["height"] = <?php echo $height; ?>;
         params["events"] = <?php echo $draw_events; ?>;
         params["period"] = <?php echo $period; ?>;
-        
+
         params["save_custom_graph"] = 1;
         params["page"] = "include/ajax/graph.ajax";
-        jQuery.ajax ({
+        jQuery.ajax({
             data: params,
             dataType: "json",
             type: "POST",
             url: "ajax.php",
-            success: function (data) {
+            success: function(data) {
                 $(".loading_save").hide();
                 if (data.correct) {
                     $(".ok_save").show();
-                }
-                else {
+                } else {
                     $(".error_save").show();
                     $(".button_save").enable();
                 }
             }
         });
     }
-    
+
     // Load graphs
     $(document).ready(function() {
-        $('#combined').change(function () {
+        $('#combined').change(function() {
             if ($('#combined').val() == 1) {
                 $('#option_type').empty();
                 $('#option_type').append($('<option>', {
@@ -420,8 +419,7 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                     value: 3,
                     text: "<?php echo __('Line stack'); ?>"
                 }));
-            }
-            else {
+            } else {
                 $('#option_type').empty();
                 $('#option_type').append($('<option>', {
                     value: 0,
@@ -434,16 +432,16 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
             }
         });
 
-        var getModulesPHP = function () {
+        var getModulesPHP = function() {
             return <?php echo json_encode($modules); ?>;
         }
-        
-        var requestGraph = function (type, data) {
+
+        var requestGraph = function(type, data) {
             data = data || {};
             type = type || 'custom';
             data.page = 'include/ajax/graph.ajax';
             data['print_' + type + '_graph'] = 1;
-            
+
             return $.ajax({
                 url: 'ajax.php',
                 type: 'POST',
@@ -451,8 +449,8 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                 data: data
             })
         }
-        
-        var requestCustomGraph = function (graphId, width, height, period, stacked, date, modules) {
+
+        var requestCustomGraph = function(graphId, width, height, period, stacked, date, modules) {
             return requestGraph('custom', {
                 page: 'include/ajax/graph.ajax',
                 print_custom_graph: 1,
@@ -465,8 +463,8 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                 modules_param: modules
             });
         }
-        
-        var requestSparseGraph = function (moduleId, period, showEvents, width, height, title, showAlerts, date, unit, type_g) {
+
+        var requestSparseGraph = function(moduleId, period, showEvents, width, height, title, showAlerts, date, unit, type_g) {
             return requestGraph('sparse', {
                 page: 'include/ajax/graph.ajax',
                 print_sparse_graph: 1,
@@ -482,19 +480,19 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                 type_g: type_g
             });
         }
-        
-        var loadCustomGraphs = function () {
-            $('div.combined-graph-container').each(function (index, el) {
+
+        var loadCustomGraphs = function() {
+            $('div.combined-graph-container').each(function(index, el) {
                 loadCustomGraph(el);
             });
         }
-        
-        var loadCustomGraph = function (element) {
+
+        var loadCustomGraph = function(element) {
             var $container = $(element);
             var $errorMessage = $('div#graph-error-message');
             var period = $container.data('period');
             var conf_stacked = parseInt($("#option_type").val());
-            
+
             switch (conf_stacked) {
                 case 0:
                     var stacked = 0;
@@ -512,29 +510,29 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
 
             var date = $container.data('date');
             var height = $container.data('height');
-            
+
             var modules = getModulesPHP();
             var width = $container.width() - 20;
-            
-            var handleSuccess = function (data) {
+
+            var handleSuccess = function(data) {
                 $container.html(data);
             }
-            var handleError = function (xhr, textStatus, errorThrown) {
+            var handleError = function(xhr, textStatus, errorThrown) {
                 $container.html($errorMessage.html());
             }
-            
+
             requestCustomGraph(0, -1, height, period, stacked, date, modules)
                 .done(handleSuccess)
                 .fail(handleError);
         }
-        
-        var loadSparseGraphs = function () {
-            $('div.sparse-graph-container').each(function (index, el) {
+
+        var loadSparseGraphs = function() {
+            $('div.sparse-graph-container').each(function(index, el) {
                 loadSparseGraph(el);
             });
         }
-        
-        var loadSparseGraph = function (element) {
+
+        var loadSparseGraph = function(element) {
             var $container = $(element);
             var $errorMessage = $('div#graph-error-message');
             var moduleId = $container.data('id_module');
@@ -547,7 +545,7 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
             var date = $container.data('date');
             var height = $container.data('height');
             var conf_stacked = parseInt($("#option_type").val());
-            
+
             switch (conf_stacked) {
                 case 0:
                     var type_g = 'area';
@@ -556,13 +554,13 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                     var type_g = 'line';
                     break;
             }
-            
+
             var width = $container.width() - 20;
-            
-            var handleSuccess = function (data) {
+
+            var handleSuccess = function(data) {
                 $container.html(data);
             }
-            var handleError = function (xhr, textStatus, errorThrown) {
+            var handleError = function(xhr, textStatus, errorThrown) {
                 $container.html($errorMessage.html());
             }
 
@@ -570,7 +568,7 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                 .done(handleSuccess)
                 .fail(handleError);
         }
-        
+
         // Run
         loadCustomGraphs();
         loadSparseGraphs();

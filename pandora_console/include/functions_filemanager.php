@@ -950,10 +950,11 @@ function filemanager_get_file_info(string $filepath)
 
     $realpath = realpath($filepath);
     $filepath = str_replace('\\', '/', $filepath);
+    $mimeExtend = mime_content_type($filepath);
     // Windows compatibility.
     $info = [
         'mime'          => MIME_UNKNOWN,
-        'mime_extend'   => mime_content_type($filepath),
+        'mime_extend'   => ($mimeExtend === false) ? '' : $mimeExtend,
         'link'          => 0,
         'is_dir'        => false,
         'name'          => basename($realpath),
@@ -969,13 +970,13 @@ function filemanager_get_file_info(string $filepath)
         'application/x-gzip',
         'application/x-bzip2',
     ];
-    if (is_dir($filepath)) {
+    if (is_dir($filepath) === true) {
         $info['mime'] = MIME_DIR;
         $info['is_dir'] = true;
         $info['size'] = 0;
     } else if (strpos($info['mime_extend'], 'image') !== false) {
         $info['mime'] = MIME_IMAGE;
-    } else if (in_array($info['mime_extend'], $zip_mimes)) {
+    } else if (in_array($info['mime_extend'], $zip_mimes) === true) {
         $info['mime'] = MIME_ZIP;
     } else if (strpos($info['mime_extend'], 'text') !== false) {
         $info['mime'] = MIME_TEXT;

@@ -478,7 +478,14 @@ function tactical_get_data(
         $list['_monitors_alerts_fired_'] = tactical_monitor_fired_alerts(explode(',', $user_groups_ids), $user_strict, explode(',', $user_groups_ids));
         $list['_monitors_alerts_'] = tactical_monitor_alerts($user_strict);
 
-        $total_agentes = agents_get_agents(false, ['count(DISTINCT id_agente) as total_agents'], 'AR', false, false, 1);
+        $total_agentes = agents_get_agents(
+            ['id_grupo' => explode(',', $user_groups_ids)],
+            ['count(DISTINCT id_agente) as total_agents'],
+            'AR',
+            false,
+            false,
+            1
+        );
         $list['_total_agents_'] = $total_agentes[0]['total_agents'];
 
         $list['_monitor_checks_'] = ($list['_monitors_not_init_'] + $list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
@@ -493,15 +500,31 @@ function tactical_get_data(
 }
 
 
-function tactical_status_modules_agents($id_user=false, $user_strict=false, $access='AR', $force_group_and_tag=true)
+function tactical_status_modules_agents($id_user=false, $user_strict=false, $access='AR', $groups=[])
 {
     global $config;
 
-    if ($id_user == false) {
+    if ($id_user === false) {
         $id_user = $config['id_user'];
     }
 
+    if (empty($groups) === false) {
+        if (is_array($groups) === false) {
+            $groups = explode(',', (string) $groups);
+            // Group id as key.
+            $groups = array_flip($groups);
+        }
+
+        if (isset($groups[0]) === true) {
+            $groups = [];
+        }
+    }
+
     $acltags = tags_get_user_groups_and_tags($id_user, $access, $user_strict);
+
+    if (empty($groups) === false) {
+        $acltags = array_intersect_key($acltags, $groups);
+    }
 
     $result_list = tactical_get_data($id_user, $user_strict, $acltags);
 

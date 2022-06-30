@@ -42,17 +42,10 @@ if (tags_has_user_acl_tags()) {
     ui_print_tags_warning();
 }
 
-$user_strict = (bool) db_get_value(
-    'strict_acl',
-    'tusuario',
-    'id_user',
-    $config['id_user']
-);
 $all_data = tactical_status_modules_agents(
     $config['id_user'],
-    $user_strict,
-    'AR',
-    $user_strict
+    false,
+    'AR'
 );
 $data = [];
 

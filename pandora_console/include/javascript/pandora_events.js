@@ -1028,3 +1028,51 @@ function process_buffers(buffers) {
     });
   }
 }
+
+function openSoundEventModal(settings) {
+  settings = JSON.parse(atob(settings));
+
+  // Check modal exists and is open.
+  if (
+    $("#modal-sound").hasClass("ui-dialog-content") &&
+    $("#modal-sound").dialog("isOpen")
+  ) {
+    return;
+  }
+
+  // Initialize modal.
+  $("#modal-sound")
+    .dialog({
+      title: settings.title,
+      resizable: false,
+      modal: true,
+      position: { my: "right top", at: "right bottom", of: window },
+      overlay: {
+        opacity: 0.5,
+        background: "black"
+      },
+      width: 600,
+      height: 600,
+      open: function() {
+        $.ajax({
+          method: "post",
+          url: settings.url,
+          data: {
+            page: settings.page,
+            drawConsoleSound: 1
+          },
+          dataType: "html",
+          success: function(data) {
+            console.log(data);
+          },
+          error: function(error) {
+            console.error(error);
+          }
+        });
+      },
+      close: function() {
+        $(this).dialog("destroy");
+      }
+    })
+    .show();
+}

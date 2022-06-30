@@ -55,6 +55,7 @@ if (! check_acl($config['id_user'], 0, 'ER')
     return;
 }
 
+$drawConsoleSound = (bool) get_parameter('drawConsoleSound', false);
 $process_buffers = (bool) get_parameter('process_buffers', false);
 $get_extended_event = (bool) get_parameter('get_extended_event');
 $change_status = (bool) get_parameter('change_status');
@@ -2221,6 +2222,12 @@ if ($process_buffers === true) {
         'no-border flex-row'
     );
 
+    echo $output;
+    return;
+}
+
+if ($drawConsoleSound === true) {
+    $output = 'WIP';
     echo $output;
     return;
 }

@@ -419,11 +419,28 @@ if (check_acl($config['id_user'], 0, 'ER')
     }
 
     // Sound Events.
-    $javascript = "javascript: window.open('operation/events/sound_events.php');";
     $javascript = 'javascript: openSoundEventWindow();';
     $sub[$javascript]['text'] = __('Sound Events');
     $sub[$javascript]['id'] = 'Sound Events';
     $sub[$javascript]['type'] = 'direct';
+
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title' => __('Sound Console'),
+                'url'   => ui_get_full_url('ajax.php'),
+                'page'  => 'include/ajax/events',
+            ]
+        )
+    );
+
+
+    $javascript = 'javascript: openSoundEventModal(\''.$data_sound.'\');';
+    $sub[$javascript]['text'] = __('Sound Events Modal');
+    $sub[$javascript]['id'] = 'Sound Events Modal';
+    $sub[$javascript]['type'] = 'direct';
+
+    echo '<div id="modal-sound" style="display:none;"></div>';
 
     ?>
     <script type="text/javascript">

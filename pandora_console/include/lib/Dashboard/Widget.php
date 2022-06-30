@@ -416,6 +416,11 @@ class Widget
                     $className .= '\OsQuickReportWidget';
                 break;
 
+                case 'ColorModuleTabs':
+                case 'BlockHistogram':
+                    $className .= '\\'.$name;
+                break;
+
                 default:
                     $className = false;
                 break;

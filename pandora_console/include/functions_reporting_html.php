@@ -5967,7 +5967,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
             true,
             1,
             false,
-            false
+            true
         );
 
         $table->data[0][0] = $slicebar;
@@ -6126,7 +6126,7 @@ function reporting_get_event_histogram_meta($width, $events)
             true,
             1,
             false,
-            false
+            true
         );
 
         $table->data[0][0] = $slicebar;

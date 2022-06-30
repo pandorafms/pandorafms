@@ -2821,6 +2821,40 @@ function modules_get_color_status($status, $force_module=false)
 
 
 /**
+ * Text color status.
+ *
+ * @param string $status Type status.
+ *
+ * @return string Color.
+ */
+function modules_get_textcolor_status($status)
+{
+    $result = '#ffffff';
+    switch ($status) {
+        case AGENT_MODULE_STATUS_WARNING:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            $result = '#000000';
+        break;
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        case AGENT_MODULE_STATUS_NOT_NORMAL:
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        case AGENT_MODULE_STATUS_ALL:
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        default:
+            $result = '#ffffff';
+        break;
+    }
+
+    return $result;
+}
+
+
+/**
  * Gets a module status an modify the status and title reference variables
  *
  * @param mixed The module data (Necessary $module['datos'] and $module['estado']
@@ -3630,7 +3664,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             }
         }
 
-        if (!$selection) {
+        if (!$selection && $useName === true) {
             // Common modules.
             $final_modules = [];
             $nodes_consulted = count($modules);
@@ -3729,6 +3763,10 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
 function get_same_modules($agents, array $modules=[])
 {
     if (is_array($agents) === false || empty($agents) === true) {
+        return [];
+    }
+
+    if (is_array($modules) === false || empty($modules) === true) {
         return [];
     }
 

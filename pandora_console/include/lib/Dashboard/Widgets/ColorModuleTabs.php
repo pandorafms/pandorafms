@@ -226,6 +226,11 @@ class ColorModuleTabs extends Widget
             $values['formatData'] = $decoder['formatData'];
         }
 
+        $values['label'] = 'module';
+        if (isset($decoder['label']) === true) {
+            $values['label'] = $decoder['label'];
+        }
+
         return $values;
     }
 
@@ -243,6 +248,24 @@ class ColorModuleTabs extends Widget
 
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
+
+        // Type Label.
+        $fields = [
+            'module'       => __('Module'),
+            'agent'        => __('Agent'),
+            'agent_module' => __('Agent / module'),
+        ];
+
+        $inputs[] = [
+            'label'     => __('Label'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'label',
+                'selected' => $values['label'],
+                'return'   => true,
+            ],
+        ];
 
         $inputs[] = [
             'arguments' => [
@@ -295,12 +318,28 @@ class ColorModuleTabs extends Widget
             'moduleColorModuleTabs'
         );
 
+        $agColor = [];
+        if (isset($values['agentsColorModuleTabs'][0]) === true
+            && empty($values['agentsColorModuleTabs'][0]) === false
+        ) {
+            $agColor = explode(',', $values['agentsColorModuleTabs'][0]);
+        }
+
+        $agModule = [];
+        if (isset($values['moduleColorModuleTabs'][0]) === true
+            && empty($values['moduleColorModuleTabs'][0]) === false
+        ) {
+            $agModule = explode(',', $values['moduleColorModuleTabs'][0]);
+        }
+
         $values['moduleColorModuleTabs'] = get_same_modules_all(
-            explode(',', $values['agentsColorModuleTabs'][0]),
-            explode(',', $values['moduleColorModuleTabs'][0])
+            $agColor,
+            $agModule
         );
 
         $values['formatData'] = \get_parameter_switch('formatData', 0);
+
+        $values['label'] = \get_parameter('label', 'module');
 
         return $values;
     }
@@ -397,10 +436,13 @@ class ColorModuleTabs extends Widget
                 tagente_modulo.unit AS `unit`,
                 tagente_estado.datos AS `data`,
                 tagente_estado.timestamp AS `timestamp`,
-                tagente_estado.estado AS `status`
+                tagente_estado.estado AS `status`,
+                tagente.alias
             FROM tagente_modulo
             LEFT JOIN tagente_estado
                 ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+            LEFT JOIN tagente
+                ON tagente_modulo.id_agente = tagente.id_agente
             WHERE %s',
             $where
         );
@@ -437,7 +479,23 @@ class ColorModuleTabs extends Widget
             $output .= '<br>';
         }
 
-        $output .= $data['name'];
+        $name = '';
+        switch ($this->values['label']) {
+            case 'agent':
+                $name = $data['alias'];
+            break;
+
+            case 'agent_module':
+                $name = $data['alias'].' / '.$data['name'];
+            break;
+
+            default:
+            case 'module':
+                $name = $data['name'];
+            break;
+        }
+
+        $output .= $name;
         $output .= '</span>';
         $output .= '<span class="widget-module-tabs-data">';
         if ($data['data'] !== null && $data['data'] !== '') {
@@ -499,7 +557,7 @@ class ColorModuleTabs extends Widget
     {
         $size = [
             'width'  => (is_metaconsole() === true) ? 700 : 600,
-            'height' => 560,
+            'height' => 610,
         ];
 
         return $size;

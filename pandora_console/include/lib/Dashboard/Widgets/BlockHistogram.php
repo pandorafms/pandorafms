@@ -230,6 +230,7 @@ class BlockHistogram extends Widget
             $values['fontColor'] = $decoder['fontColor'];
         }
 
+        $values['label'] = 'module';
         if (isset($decoder['label']) === true) {
             $values['label'] = $decoder['label'];
         }
@@ -272,10 +273,10 @@ class BlockHistogram extends Widget
             ],
         ];
 
-        // Type clock.
+        // Type Label.
         $fields = [
-            'agent'        => __('Agent'),
             'module'       => __('Module'),
+            'agent'        => __('Agent'),
             'agent_module' => __('Agent / module'),
         ];
 
@@ -344,9 +345,23 @@ class BlockHistogram extends Widget
             'moduleBlockHistogram'
         );
 
+        $agColor = [];
+        if (isset($values['agentsBlockHistogram'][0]) === true
+            && empty($values['agentsBlockHistogram'][0]) === false
+        ) {
+            $agColor = explode(',', $values['agentsBlockHistogram'][0]);
+        }
+
+        $agModule = [];
+        if (isset($values['moduleBlockHistogram'][0]) === true
+            && empty($values['moduleBlockHistogram'][0]) === false
+        ) {
+            $agModule = explode(',', $values['moduleBlockHistogram'][0]);
+        }
+
         $values['moduleBlockHistogram'] = get_same_modules_all(
-            explode(',', $values['agentsBlockHistogram'][0]),
-            explode(',', $values['moduleBlockHistogram'][0])
+            $agColor,
+            $agModule
         );
 
         $values['period'] = \get_parameter('period', 0);

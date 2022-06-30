@@ -3766,6 +3766,10 @@ function get_same_modules($agents, array $modules=[])
         return [];
     }
 
+    if (is_array($modules) === false || empty($modules) === true) {
+        return [];
+    }
+
     $name_modules = modules_get_agentmodule_name_array_data(
         array_values($modules)
     );

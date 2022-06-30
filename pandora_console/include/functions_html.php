@@ -983,6 +983,14 @@ function html_print_select(
         if ($select2_multiple_enable === true
             && $select2_multiple_enable_all === true
         ) {
+            $output .= 'if($("#'.$id.' > option").length !== $("#'.$id.' > option:selected").length) {
+                checked = false;
+            } else {
+                checked = true;
+            }
+
+            $("#checkbox-'.$id.'-check-all").prop("checked", checked);';
+
             $output .= '$("#'.$id.'").on("change", function(e) {
                 var checked = false;
                 if(e.target.length !== $("#'.$id.' > option:selected").length) {
@@ -993,8 +1001,6 @@ function html_print_select(
 
                 $("#checkbox-'.$id.'-check-all").prop("checked", checked);
             });';
-
-            $output .= '$("#'.$id.'").trigger("change");';
 
             $output .= 'var count_shift_'.$id.' = 0;';
             $output .= 'var shift_array_'.$id.' = [];';

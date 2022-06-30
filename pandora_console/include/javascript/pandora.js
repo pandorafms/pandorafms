@@ -2043,17 +2043,15 @@ function agent_multiple_change(e, info) {
     },
     function(data) {
       var name = info.modules_name.replace("[]", "");
-      if (JSON.stringify($(e).val()) !== JSON.stringify(info.agent_ids)) {
-        $("#" + name).html("");
-        $("#checkbox-" + name + "-check-all").prop("checked", false);
-        if (data) {
-          jQuery.each(data, function(id, value) {
-            var option = $("<option></option>")
-              .attr("value", id)
-              .html(value);
-            $("#" + name).append(option);
-          });
-        }
+      $("#" + name).html("");
+      $("#checkbox-" + name + "-check-all").prop("checked", false);
+      if (data) {
+        jQuery.each(data, function(id, value) {
+          var option = $("<option></option>")
+            .attr("value", id)
+            .html(value);
+          $("#" + name).append(option);
+        });
       }
     },
     "json"

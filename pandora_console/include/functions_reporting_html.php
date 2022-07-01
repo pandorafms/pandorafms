@@ -961,8 +961,8 @@ function reporting_html_top_n($table, $item, $pdf=0)
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['pie'];
             } else {
-                $table->colspan['char_pie']['cell'] = 3;
-                $table->data['char_pie']['cell'] = $item['charts']['pie'];
+                $table->colspan['char_pie'][0] = 2;
+                $table->data['char_pie'][0] = $item['charts']['pie'];
             }
         }
 
@@ -970,8 +970,8 @@ function reporting_html_top_n($table, $item, $pdf=0)
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['bars'];
             } else {
-                $table->colspan['char_bars']['cell'] = 3;
-                $table->data['char_bars']['cell'] = $item['charts']['bars'];
+                // $table->colspan['char_bars']['cell'] = 3;
+                $table->data['char_pie'][1] = $item['charts']['bars'];
             }
         }
 
@@ -4815,6 +4815,7 @@ function reporting_html_general($table, $item, $pdf=0)
                 }
 
                 $list_modules = array_keys($list_modules);
+                $table1 = new stdClass();
                 $table1->width = '99%';
                 $table1->data = [];
                 $table1->head = array_merge([__('Agent')], $list_modules);

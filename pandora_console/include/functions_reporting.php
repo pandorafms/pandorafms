@@ -1596,7 +1596,7 @@ function reporting_event_top_n(
                     $modules_regex = array_merge($modules_regex, $modules_regex_node);
                 }
             } else {
-                $modules_regex_node = modules_get_regex(
+                $modules_regex = modules_get_regex(
                     $text_agent,
                     $text_agent_module
                 );
@@ -3315,7 +3315,7 @@ function reporting_exception(
                     $modules_regex = array_merge($modules_regex, $modules_regex_node);
                 }
             } else {
-                $modules_regex_node = modules_get_regex(
+                $modules_regex = modules_get_regex(
                     $text_agent,
                     $text_agent_module
                 );
@@ -9652,7 +9652,7 @@ function reporting_general($report, $content)
                     $modules_regex = array_merge($modules_regex, $modules_regex_node);
                 }
             } else {
-                $modules_regex_node = modules_get_regex(
+                $modules_regex = modules_get_regex(
                     $text_agent,
                     $text_agent_module
                 );
@@ -9959,20 +9959,19 @@ function reporting_general($report, $content)
                 break;
             }
 
-            $i = 0;
-            foreach ($data_res as $d) {
+            foreach ($data_res as $d_key => $d) {
                 $data = [];
-                $data['agent'] = $agent_name[$i];
-                $data['module'] = $module_name[$i];
-                $data['id_agent_module'] = $id_agent_module[$i];
-                $data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$i]);
-                $data['id_module_type'] = $id_module_types[$i];
+                $data['agent'] = $agent_name[$d_key];
+                $data['module'] = $module_name[$d_key];
+                $data['id_agent_module'] = $id_agent_module[$d_key];
+                $data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$d_key]);
+                $data['id_module_type'] = $id_module_types[$d_key];
                 $data['operator'] = '';
                 if ($content['period'] != 0) {
                     if ($content['style']['show_in_same_row']) {
                         $data['operator'] = 'all';
                     } else {
-                        switch ($operations[$i]) {
+                        switch ($operations[$d_key]) {
                             case 'sum':
                                 $data['operator'] = __('Summatory');
                             break;
@@ -9998,28 +9997,16 @@ function reporting_general($report, $content)
                         if ($val === false) {
                             $data['value'][] = null;
                         } else {
-                            switch ($config['dbtype']) {
-                                case 'mysql':
-                                case 'postgresql':
-                                break;
+                            $divisor = get_data_multiplier($units[$d_key]);
 
-                                case 'oracle':
-                                    if (preg_match('/[0-9]+,[0-9]E+[+-][0-9]+/', $val)) {
-                                        $val = oracle_format_float_to_php($val);
-                                    }
-                                break;
-                            }
-
-                            $divisor = get_data_multiplier($units[$i]);
-
-                            if (!is_numeric($val) || $is_string[$i]) {
+                            if (!is_numeric($val) || $is_string[$d_key]) {
                                 $data['value'][] = $val;
 
                                 // to see the chains on the table
                                 $data['formated_value'][] = $val;
                             } else {
                                 $data['value'][] = $val;
-                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$units[$i]);
+                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$units[$d_key]);
                             }
                         }
                     }
@@ -10027,35 +10014,21 @@ function reporting_general($report, $content)
                     if ($d === false) {
                         $data['value'] = null;
                     } else {
-                        switch ($config['dbtype']) {
-                            case 'mysql':
-                            case 'postgresql':
-                            break;
+                        $divisor = get_data_multiplier($units[$d_key]);
 
-                            case 'oracle':
-                                if (preg_match('/[0-9]+,[0-9]E+[+-][0-9]+/', $d)) {
-                                    $d = oracle_format_float_to_php($d);
-                                }
-                            break;
-                        }
-
-                        $divisor = get_data_multiplier($units[$i]);
-
-                        if (!is_numeric($d) || $is_string[$i]) {
+                        if (!is_numeric($d) || $is_string[$d_key]) {
                             $data['value'] = $d;
 
                             // to see the chains on the table
                             $data['formated_value'] = $d;
                         } else {
                             $data['value'] = $d;
-                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, ' '.$units[$i]);
+                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, ' '.$units[$d_key]);
                         }
                     }
                 }
 
                 $return['data'][] = $data;
-
-                $i++;
             }
         break;
     }

@@ -388,14 +388,23 @@ if (is_ajax() === true) {
                         $tmp->meta = is_metaconsole();
 
                         // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+                        $server_url = '';
+                        $hashdata = '';
                         if ($tmp->meta === true) {
                             if ($tmp->server_name !== null) {
                                 $data_server = metaconsole_get_servers(
                                     $tmp->server_id
                                 );
-                                $tmp->server_url_hash = metaconsole_get_servers_url_hash(
-                                    $data_server
-                                );
+
+                                // Url to go to node from meta.
+                                if (isset($data_server) === true
+                                    && $data_server !== false
+                                ) {
+                                    $server_url = $data_server['server_url'];
+                                    $hashdata = metaconsole_get_servers_url_hash(
+                                        $data_server
+                                    );
+                                }
                             }
                         }
 
@@ -887,19 +896,6 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->m .= 'class="candeleted chk_val">';
-
-                        // Url to go to node from meta.
-                        $server_url = '';
-                        $hashdata = '';
-                        if ($tmp->meta === true) {
-                            if (isset($data_server) === true
-                                && $data_server !== false
-                                && isset($tmp->server_url_hash) === true
-                            ) {
-                                $server_url = $data_server['server_url'];
-                                $hashdata = $tmp->server_url_hash;
-                            }
-                        }
 
                         // Url to agent view.
                         $url_link = ui_get_full_url(

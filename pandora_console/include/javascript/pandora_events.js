@@ -1063,7 +1063,8 @@ function openSoundEventModal(settings) {
           },
           dataType: "html",
           success: function(data) {
-            console.log(data);
+            $("#modal-sound").append(data);
+            $("#tabs-sound-modal").tabs();
           },
           error: function(error) {
             console.error(error);

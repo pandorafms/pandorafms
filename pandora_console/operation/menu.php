@@ -442,6 +442,8 @@ if (check_acl($config['id_user'], 0, 'ER')
 
     echo '<div id="modal-sound" style="display:none;"></div>';
 
+    ui_require_javascript_file('pandora_events');
+
     ?>
     <script type="text/javascript">
     function openSoundEventWindow() {

@@ -2227,7 +2227,188 @@ if ($process_buffers === true) {
 }
 
 if ($drawConsoleSound === true) {
-    $output = 'WIP';
+    echo ui_require_css_file('wizard', 'include/styles/', true);
+    echo ui_require_css_file('discovery', 'include/styles/', true);
+    echo ui_require_css_file('sound_events', 'include/styles/', true);
+    $output = '<div id="tabs-sound-modal">';
+        // Header tabs.
+        $output .= '<ul class="tabs-sound-modal-options">';
+            $output .= '<li>';
+            $output .= '<a href="#tabs-sound-modal-1">';
+            $output .= html_print_image(
+                'images/gear.png',
+                true,
+                [
+                    'title' => __('Options'),
+                    'class' => 'invert_filter',
+                ]
+            );
+            $output .= '</a>';
+            $output .= '</li>';
+            $output .= '<li>';
+            $output .= '<a href="#tabs-sound-modal-2">';
+            $output .= html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('Events list'),
+                    'class' => 'invert_filter',
+                ]
+            );
+            $output .= '</a>';
+            $output .= '</li>';
+        $output .= '</ul>';
+
+        // Content tabs.
+        $output .= '<div id="tabs-sound-modal-1">';
+        $output .= '<h3 class="console-configuration">';
+        $output .= __('Console configuration');
+        $output .= '</h3>';
+            $inputs = [];
+
+            // Load filter.
+            $fields = \events_get_event_filter_select();
+            $inputs[] = [
+                'label'     => \__('Set condition'),
+                'arguments' => [
+                    'type'          => 'select',
+                    'fields'        => $fields,
+                    'name'          => 'filter_id',
+                    'selected'      => 0,
+                    'return'        => true,
+                    'nothing'       => \__('All new events'),
+                    'nothing_value' => 0,
+                    'class'         => 'fullwidth',
+                ],
+            ];
+
+            $times_interval = [
+                10 => '10 '.__('seconds'),
+                15 => '15 '.__('seconds'),
+                30 => '30 '.__('seconds'),
+                60 => '60 '.__('seconds'),
+            ];
+
+            $times_sound = [
+                2  => '2 '.__('seconds'),
+                5  => '5 '.__('seconds'),
+                10 => '10 '.__('seconds'),
+                15 => '15 '.__('seconds'),
+                30 => '30 '.__('seconds'),
+                60 => '60 '.__('seconds'),
+            ];
+
+            $inputs[] = [
+                'class'         => 'interval-sounds',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label'     => __('Interval'),
+                        'arguments' => [
+                            'type'     => 'select',
+                            'fields'   => $times_interval,
+                            'name'     => 'interval',
+                            'selected' => 10,
+                            'return'   => true,
+                        ],
+                    ],
+                    [
+                        'label'     => __('Time Sound'),
+                        'arguments' => [
+                            'type'     => 'select',
+                            'fields'   => $times_sound,
+                            'name'     => 'time_sound',
+                            'selected' => 10,
+                            'return'   => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            $sounds = [
+                'aircraftalarm.wav'                  => 'Air craft alarm',
+                'air_shock_alarm.wav'                => 'Air shock alarm',
+                'alien_alarm.wav'                    => 'Alien alarm',
+                'alien_beacon.wav'                   => 'Alien beacon',
+                'bell_school_ringing.wav'            => 'Bell school ringing',
+                'Door_Alarm.wav'                     => 'Door alarm',
+                'EAS_beep.wav'                       => 'EAS beep',
+                'Firewarner.wav'                     => 'Fire warner',
+                'HardPCMAlarm.wav'                   => 'Hard PCM Alarm',
+                'negativebeep.wav'                   => 'Negative beep',
+                'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
+            ];
+
+            $inputs[] = [
+                'class'         => 'test-sounds',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label'     => \__('Sound melody'),
+                        'arguments' => [
+                            'type'     => 'select',
+                            'fields'   => $sounds,
+                            'name'     => 'sound_id',
+                            'selected' => 'Star_Trek_emergency_simulation.wav',
+                            'return'   => true,
+                            'class'    => 'fullwidth',
+                        ],
+                    ],
+                    [
+                        'arguments' => [
+                            'type'       => 'button',
+                            'name'       => 'melody_sound',
+                            'label'      => __('Test sound'),
+                            'attributes' => 'class="sub upd"',
+                            'return'     => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Print form.
+            $output .= HTML::printForm(
+                [
+                    'form'   => [
+                        'action' => '',
+                        'method' => 'POST',
+                    ],
+                    'inputs' => $inputs,
+                ],
+                true,
+                false
+            );
+        $output .= '</div>';
+
+        $output .= '<div id="tabs-sound-modal-2">';
+            $output .= '<p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>';
+        $output .= '</div>';
+    $output .= '</div>';
+
+    $output .= '<div class="actions-sound-modal">';
+        $output .= '<div id="progressbar_time"></div>';
+        $output .= '<div class="buttons-sound-modal">';
+            $output .= html_print_input(
+                [
+                    'type'       => 'button',
+                    'name'       => 'start-search',
+                    'value'      => __('Start'),
+                    'attributes' => 'class="sub play"',
+                    'return'     => true,
+                ]
+            );
+            $output .= html_print_input(
+                [
+                    'type'       => 'button',
+                    'name'       => 'no-alerts',
+                    'value'      => __('No alerts'),
+                    'attributes' => 'class="sub alerts"',
+                    'return'     => true,
+                ]
+            );
+        $output .= '</div>';
+    $output .= '</div>';
+
     echo $output;
     return;
 }

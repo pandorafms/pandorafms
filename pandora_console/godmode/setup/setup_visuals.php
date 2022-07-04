@@ -1298,6 +1298,15 @@ $table_other->data[$row][1] = html_print_checkbox_switch(
 );
 $row++;
 
+$table_other->data[$row][0] = __('Show empty groups in group view');
+$table_other->data[$row][1] = html_print_checkbox_switch(
+    'show_empty_groups',
+    1,
+    $config['show_empty_groups'],
+    true
+);
+$row++;
+
 $table_other->data[$row][0] = __('Date format string');
 $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_format']);
 $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);

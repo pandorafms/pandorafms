@@ -3462,7 +3462,8 @@ function ui_print_datatable(array $parameters)
     $(document).ready(function(){
         $.fn.dataTable.ext.errMode = "none";
         $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
-        dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
+
+        var settings_datatable = {
             drawCallback: function(settings) {';
     if (isset($parameters['drawCallback'])) {
         $js .= $parameters['drawCallback'];
@@ -3608,7 +3609,9 @@ function ui_print_datatable(array $parameters)
             $js .= '
             ],
             order: [[ '.$order.' ]]
-        });
+        };
+
+        var dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)

@@ -1,15 +1,19 @@
 /*
  * Css Modal Sound events.
  */
-
 #modal-sound {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 0px 20px !important;
 }
 
 #tabs-sound-modal {
-  background-color: transparent;
+  margin-top: 20px;
+}
+
+.actions-sound-modal {
+  margin-bottom: 20px;
 }
 
 #tabs-sound-modal h3.console-configuration {
@@ -117,6 +121,86 @@ input.upd {
   text-align: left;
 }
 
+#tabs-sound-modal div h3.title-discovered-alerts {
+  margin: 0px;
+  color: #000000;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: left;
+  text-transform: none;
+  margin-bottom: 10px;
+}
+
+#tabs-sound-modal div span.text-discovered-alerts {
+  color: #95a3bf;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: center;
+}
+
+#tabs-sound-modal div .empty-discovered-alerts {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 250px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts {
+  overflow: auto;
+  max-height: 300px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul {
+  width: 99%;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li {
+  border: 1px solid #eaeaea;
+  height: 46px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  color: #555555;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: left;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-priority {
+  flex: 0;
+  padding: 10px;
+}
+
+#tabs-sound-modal
+  div
+  .elements-discovered-alerts
+  ul
+  li
+  div.li-priority
+  .mini-criticity {
+  border-radius: 5px;
+  width: 6px;
+  height: 30px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-type {
+  flex: 0;
+  padding-right: 10px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-time {
+  flex: 0 1 100px;
+  text-align: end;
+  padding-right: 10px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-title {
+  width: 100%;
+}
+
 .actions-sound-modal .buttons-sound-modal {
   display: flex;
   flex-direction: row;
@@ -125,33 +209,72 @@ input.upd {
 }
 
 .actions-sound-modal .buttons-sound-modal input[type="button"] {
-  border-radius: 5px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
   width: 107px;
   height: 50px;
-  color: #ffffff;
   font-size: 18px;
   line-height: 24px;
-  background-position: 0;
+  text-align: left;
 }
 
-#tabs-sound-modal button.play,
-input.play {
-  background: url(../../images/sound_wave.png),
-    radial-gradient(118.26% 33.15%, #82b92e 0%, #1d4e4a 100%);
+.actions-sound-modal .buttons-sound-modal button.play,
+.actions-sound-modal .buttons-sound-modal input[type="button"].play {
+  background: url(../../images/play-white.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 70px 17px;
+  color: #ffffff;
+  padding-left: 20px;
 }
 
-#tabs-sound-modal button.alerts,
-input.alerts {
-  background-image: url(../../images/sound_wave.png);
+.actions-sound-modal .buttons-sound-modal button.stop,
+.actions-sound-modal .buttons-sound-modal input[type="button"].stop {
+  background: url(../../images/stop.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 70px 17px;
+  color: #ffffff;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .buttons-sound-modal button.alerts,
+.actions-sound-modal .buttons-sound-modal input[type="button"].alerts {
+  width: 154px;
+  color: #95a3bf;
+  background: url(../../images/alarm-off.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 108px 9px;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .buttons-sound-modal button.silence-alerts,
+.actions-sound-modal .buttons-sound-modal input[type="button"].silence-alerts {
+  width: 184px;
+  color: #ffffff;
+  background: url(../../images/silence-alerts.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 138px 9px;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .container-button-play {
+  background: radial-gradient(118.26% 33.15%, #82b92e 0%, #1d4e4a 100%);
+  border-radius: 4px;
+}
+
+.actions-sound-modal .container-button-alert.fired {
+  background: #ee2132;
+  border-radius: 4px;
 }
 
 .actions-sound-modal .progressbar {
   width: 100%;
-  margin: 5px 0px;
+  margin: 4px 2px;
+  border-radius: 4px;
 }
 
 .actions-sound-modal .progressbar .inner {
   height: 10px;
+  border-radius: 4px;
   animation: progressbar-countdown;
   /* Placeholder, this will be updated using javascript */
   animation-duration: 40s;

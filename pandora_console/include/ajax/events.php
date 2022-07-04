@@ -2381,30 +2381,65 @@ if ($drawConsoleSound === true) {
         $output .= '</div>';
 
         $output .= '<div id="tabs-sound-modal-2">';
-            $output .= '<p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>';
+            $output .= '<h3 class="title-discovered-alerts">';
+            $output .= __('Discovered alerts');
+            $output .= '</h3>';
+            $output .= '<div class="empty-discovered-alerts">';
+            $output .= html_print_image(
+                'images/no-alerts-discovered.png',
+                true,
+                [
+                    'title' => __('No alerts discovered'),
+                    'class' => 'invert_filter',
+                ]
+            );
+            $output .= '<span class="text-discovered-alerts">';
+            $output .= __('Congrats! there’s nothing to show');
+            $output .= '</span>';
+            $output .= '</div>';
+            $output .= '<div class="elements-discovered-alerts"><ul></ul></div>';
         $output .= '</div>';
     $output .= '</div>';
 
     $output .= '<div class="actions-sound-modal">';
         $output .= '<div id="progressbar_time"></div>';
         $output .= '<div class="buttons-sound-modal">';
+            $output .= '<div class="container-button-play">';
             $output .= html_print_input(
                 [
+                    'label'      => __('Start'),
                     'type'       => 'button',
                     'name'       => 'start-search',
-                    'value'      => __('Start'),
                     'attributes' => 'class="sub play"',
                     'return'     => true,
-                ]
+                ],
+                'div',
+                true
             );
+            $output .= '</div>';
+            $output .= '<div class="container-button-alert">';
             $output .= html_print_input(
                 [
                     'type'       => 'button',
                     'name'       => 'no-alerts',
-                    'value'      => __('No alerts'),
+                    'label'      => __('No alerts'),
                     'attributes' => 'class="sub alerts"',
                     'return'     => true,
-                ]
+                ],
+                'div',
+                true
+            );
+            $output .= '</div>';
+
+            $output .= html_print_input(
+                [
+                    'type'   => 'hidden',
+                    'name'   => 'mode_alert',
+                    'value'  => 0,
+                    'return' => true,
+                ],
+                'div',
+                true
             );
         $output .= '</div>';
     $output .= '</div>';

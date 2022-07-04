@@ -1,4 +1,4 @@
-/*global jQuery, $, forced_title_callback, confirmDialog*/
+/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar*/
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page) {
@@ -1042,6 +1042,7 @@ function openSoundEventModal(settings) {
 
   // Initialize modal.
   $("#modal-sound")
+    .empty()
     .dialog({
       title: settings.title,
       resizable: false,
@@ -1064,7 +1065,60 @@ function openSoundEventModal(settings) {
           dataType: "html",
           success: function(data) {
             $("#modal-sound").append(data);
-            $("#tabs-sound-modal").tabs();
+            $("#tabs-sound-modal").tabs({
+              disabled: [1]
+            });
+
+            // Test sound.
+            $("#button-melody_sound").click(function() {
+              var sound = false;
+              if ($("#id_sound_event").length == 0) {
+                sound = true;
+              }
+
+              test_sound_button(sound);
+            });
+
+            // Play Stop.
+            $("#button-start-search").click(function() {
+              var mode = $("#hidden-mode_alert").val();
+              var action = false;
+              if (mode == 0) {
+                action = true;
+              }
+
+              action_events_sound(action, settings);
+            });
+
+            // Silence Alert.
+            $("#button-no-alerts").click(function() {
+              if ($("#button-no-alerts").hasClass("silence-alerts") === true) {
+                // Remove audio.
+                remove_audio();
+
+                // Clean events.
+                $("#tabs-sound-modal .elements-discovered-alerts ul").empty();
+                $("#tabs-sound-modal .empty-discovered-alerts").removeClass(
+                  "invisible_important"
+                );
+
+                // Clean progress.
+                $("#progressbar_time").empty();
+
+                // Change img button.
+                $("#button-no-alerts")
+                  .removeClass("silence-alerts")
+                  .addClass("alerts");
+                // Change value button.
+                $("#button-no-alerts").val(settings.noAlert);
+
+                // Background button.
+                $(".container-button-alert").removeClass("fired");
+
+                // New progress.
+                listen_event_sound(settings);
+              }
+            });
           },
           error: function(error) {
             console.error(error);
@@ -1072,8 +1126,158 @@ function openSoundEventModal(settings) {
         });
       },
       close: function() {
+        remove_audio();
         $(this).dialog("destroy");
       }
     })
     .show();
+}
+
+function test_sound_button(test_sound) {
+  if (test_sound === true) {
+    add_audio();
+  } else {
+    remove_audio();
+  }
+}
+
+function action_events_sound(mode, settings) {
+  if (mode === true) {
+    // Enable tabs.
+    $("#tabs-sound-modal").tabs("option", "disabled", [0]);
+    // Active tabs.
+    $("#tabs-sound-modal").tabs("option", "active", 1);
+    // Change mode.
+    $("#hidden-mode_alert").val(1);
+    // Change img button.
+    $("#button-start-search")
+      .removeClass("play")
+      .addClass("stop");
+    // Change value button.
+    $("#button-start-search").val(settings.stop);
+    // Add Progress bar.
+    listen_event_sound(settings);
+  } else {
+    // Enable tabs.
+    $("#tabs-sound-modal").tabs("option", "disabled", [1]);
+    // Active tabs.
+    $("#tabs-sound-modal").tabs("option", "active", 0);
+    // Change mode.
+    $("#hidden-mode_alert").val(0);
+    // Change img button.
+    $("#button-start-search")
+      .removeClass("stop")
+      .addClass("play");
+    // Change value button.
+    $("#button-start-search").val(settings.start);
+    // Remove progress bar.
+    $("#progressbar_time").empty();
+    // Remove audio.
+    remove_audio();
+    // Clean events.
+    $("#tabs-sound-modal .elements-discovered-alerts ul").empty();
+    $("#tabs-sound-modal .empty-discovered-alerts").removeClass(
+      "invisible_important"
+    );
+    // Change img button.
+    $("#button-no-alerts")
+      .removeClass("silence-alerts")
+      .addClass("alerts");
+    // Change value button.
+    $("#button-no-alerts").val(settings.noAlert);
+
+    // Background button.
+    $(".container-button-alert").removeClass("fired");
+  }
+}
+
+function add_audio() {
+  var sound = "./include/sounds/" + $("#tabs-sound-modal #sound_id").val();
+  $(".actions-sound-modal").append(
+    "<audio id='id_sound_event' src='" +
+      sound +
+      "' autoplay='true' hidden='true' loop='false'>"
+  );
+}
+
+function remove_audio() {
+  $(".actions-sound-modal audio").remove();
+}
+
+function listen_event_sound(settings) {
+  progressTimeBar(
+    "progressbar_time",
+    $("#interval").val(),
+    "infinite",
+    function() {
+      // Search events.
+      check_event_sound(settings);
+    }
+  );
+}
+
+function check_event_sound(settings) {
+  jQuery.post(
+    "./ajax.php",
+    {
+      page: "include/ajax/events",
+      get_events_fired: 1,
+      filter_id: $("#tabs-sound-modal #filter_id").val(),
+      interval: $("#tabs-sound-modal #interval").val(),
+      time_sound: $("#tabs-sound-modal #time_sound").val()
+    },
+    function(data) {
+      if (data != false) {
+        // Hide empty.
+        $("#tabs-sound-modal .empty-discovered-alerts").addClass(
+          "invisible_important"
+        );
+
+        // Change img button.
+        $("#button-no-alerts")
+          .removeClass("alerts")
+          .addClass("silence-alerts");
+        // Change value button.
+        $("#button-no-alerts").val(settings.silenceAlarm);
+
+        // Background button.
+        $(".container-button-alert").addClass("fired");
+
+        // Remove audio.
+        remove_audio();
+
+        // Apend audio.
+        add_audio();
+
+        // Add elements.
+        data.forEach(function(element) {
+          var li = document.createElement("li");
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<div class="li-priority">' + element.priority + "</div>"
+          );
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<div class="li-type">' + element.type + "</div>"
+          );
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<div class="li-title">' + element.message + "</div>"
+          );
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<div class="li-time">' + element.timestamp + "</div>"
+          );
+          $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
+        });
+
+        // -100 delay sound.
+        setTimeout(
+          remove_audio,
+          parseInt($("#tabs-sound-modal #time_sound").val()) * 1000 - 100
+        );
+      }
+    },
+    "json"
+  );
 }

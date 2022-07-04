@@ -321,7 +321,7 @@ if ($create_user) {
         return;
     }
 
-    $user_is_admin = (int) get_parameter('is_admin', 0);
+    $user_is_admin = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
 
     if (users_is_admin() === false && $user_is_admin !== 0) {
         db_pandora_audit(
@@ -540,7 +540,7 @@ if ($update_user) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
-    $values['is_admin'] = get_parameter('is_admin', 0);
+    $values['is_admin'] = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
@@ -857,7 +857,7 @@ if (!$new_user) {
         '',
         '',
         20,
-        100,
+        255,
         !$new_user || $view_mode,
         '',
         [
@@ -970,39 +970,23 @@ if ($config['user_can_update_password']) {
     }
 }
 
-$own_info = get_user_info($config['id_user']);
-$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" class"mrgn_0px">'.__('Global Profile').'</span>';
-$global_profile .= '<div class="switch_radio_button">';
-if (users_is_admin()) {
-    $global_profile .= html_print_radio_button_extended(
+if (users_is_admin() === true) {
+    $global_profile = '<div class="label_select_simple" style="display: flex;align-items: center;">';
+    $global_profile .= '<p class="edit_user_labels" style="margin-top: 0;">'.__('Administrator user').'</p>';
+    $global_profile .= html_print_checkbox_switch(
         'is_admin',
-        1,
-        [
-            'label'    => __('Administrator'),
-            'help_tip' => __('This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL.'),
-        ],
+        0,
         $user_info['is_admin'],
-        false,
-        '',
-        '',
+        true
+    );
+    $global_profile .= '</div>';
+} else {
+    $global_profile = html_print_input_hidden(
+        'is_admin_sent',
+        0,
         true
     );
 }
-
-$global_profile .= html_print_radio_button_extended(
-    'is_admin',
-    0,
-    [
-        'label'    => __('Standard User'),
-        'help_tip' => __('This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles'),
-    ],
-    $user_info['is_admin'],
-    false,
-    '',
-    '',
-    true
-);
-$global_profile .= '</div></div>';
 
 $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     'email',
@@ -1538,19 +1522,29 @@ $(document).ready (function () {
             }
     });
 
-    $('input:radio[name="is_admin"]').change(function() {
-        if($('#radiobtn0002').prop('checked')) {
+    $('#checkbox-is_admin').change(function() {
+        if($('#checkbox-is_admin').is(':checked') == true) {
             $('#metaconsole_agents_manager_div').show();
             $('#metaconsole_access_node_div').show();
-        }
-        else {
+            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
+                $('#metaconsole_assigned_server_div').show();
+            }
+        } else {
             $('#metaconsole_agents_manager_div').hide();
             $('#metaconsole_access_node_div').hide();
+            $('#metaconsole_assigned_server_div').hide();
         }
     });
 
+    $('#checkbox-metaconsole_agents_manager').change(function() {
+        if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
+            $('#metaconsole_assigned_server_div').show();
+        } else {
+            $('#metaconsole_assigned_server_div').hide();
+        }
+    });
 
-    $('input:radio[name="is_admin"]').trigger('change');
+    $('#checkbox-is_admin').trigger('change');
     $('#checkbox-metaconsole_agents_manager').trigger('change');
 
     show_data_section();
@@ -1641,7 +1635,7 @@ $(document).ready (function () {
 
     function checkProfiles(e) {
         e.preventDefault();
-        if ($('input[name="is_admin"]:checked').val() == 1) {
+        if ($('#checkbox-is_admin').is(':checked') == true) {
             // Admin does not require profiles.
             $('#user_profile_form').submit();
         } else {

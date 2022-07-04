@@ -248,7 +248,7 @@ class Agent extends Entity
 
 
     /**
-     * Calculates cascade protection service value for this service.
+     * Calculates cascade protection _nameice value for this service.
      *
      * @param integer|null $id_node Meta searching node will use this field.
      *
@@ -618,6 +618,27 @@ class Agent extends Entity
         unset($this->modules);
 
         return $res;
+    }
+
+
+    /**
+     * Update agent in metaconsole
+     *
+     * @return void
+     */
+    public function updateFromCache()
+    {
+        $res = (bool) \enterprise_hook(
+            'agent_update_from_cache',
+            [
+                $this->id_agente(),
+                $this->toArray(),
+                $this->server_name(),
+            ]
+        );
+
+        return $res;
+
     }
 
 

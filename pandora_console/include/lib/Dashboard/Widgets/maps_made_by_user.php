@@ -182,6 +182,17 @@ class MapsMadeByUser extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['vcId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = db_get_value(
+                'id',
+                'tlayout',
+                'id',
+                $this->values['vcId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -368,7 +379,7 @@ class MapsMadeByUser extends Widget
             $visualConsole = VisualConsole::fromDB(
                 ['id' => $this->values['vcId']]
             );
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access visual console without Id'
@@ -438,16 +449,22 @@ class MapsMadeByUser extends Widget
 
         $settings = \json_encode(
             [
-                'props'   => $visualConsoleData,
-                'items'   => $visualConsoleItems,
-                'baseUrl' => ui_get_full_url('/', false, false, false),
-                'ratio'   => $ratio,
-                'size'    => $size,
-                'cellId'  => $this->cellId,
-                'hash'    => User::generatePublicHash(),
-                'id_user' => $config['id_user'],
-                'page'    => 'include/ajax/visual_console.ajax',
-                'uniq'    => $uniq,
+                'props'                      => $visualConsoleData,
+                'items'                      => $visualConsoleItems,
+                'baseUrl'                    => ui_get_full_url(
+                    '/',
+                    false,
+                    false,
+                    false
+                ),
+                'ratio'                      => $ratio,
+                'size'                       => $size,
+                'cellId'                     => $this->cellId,
+                'hash'                       => User::generatePublicHash(),
+                'id_user'                    => $config['id_user'],
+                'page'                       => 'include/ajax/visual_console.ajax',
+                'uniq'                       => $uniq,
+                'mobile_view_orientation_vc' => false,
             ]
         );
 
@@ -507,7 +524,6 @@ class MapsMadeByUser extends Widget
                     },
                     dataType: 'JSON',
                     success: function(data) {
-                        console.log(data);
                         $('#vcId').empty();
                         Object.entries(data).forEach(e => {
                             key = e[0];
@@ -527,6 +543,22 @@ class MapsMadeByUser extends Widget
         <?php
         $js = ob_get_clean();
         return $js;
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => (is_metaconsole() === true) ? 330 : 270,
+        ];
+
+        return $size;
     }
 
 

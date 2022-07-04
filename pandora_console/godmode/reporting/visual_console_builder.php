@@ -40,6 +40,21 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 enterprise_include_once('include/functions_visual_map.php');
 
+// Bypass the size limitation of posted inputs given by PHP config token 'max_input_vars'.
+if (isset($_POST['serialized_form_inputs']) === true) {
+    $posted_data_serialized = json_decode($_POST['serialized_form_inputs'], true);
+
+    unset($_POST['serialized_form_inputs']);
+
+    $posted_data_array = array_combine(
+        array_column($posted_data_serialized, 'name'),
+        array_column($posted_data_serialized, 'value')
+    );
+
+    // Merge data to $_POST superglobal.
+    $_POST += $posted_data_array;
+}
+
 // Retrieve the visual console id.
 set_unless_defined($idVisualConsole, 0);
 // Set default.

@@ -109,7 +109,7 @@ class Tactical
         $ui->beginContent();
             $ui->contentBeginGrid('responsive');
                 // ~ $data = reporting_get_group_stats();
-                $all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
+                $all_data = tactical_status_modules_agents($config['id_user'], false, 'AR');
 
                 $data = [];
 

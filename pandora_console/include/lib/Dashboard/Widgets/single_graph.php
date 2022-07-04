@@ -1,10 +1,10 @@
 <?php
 /**
- * Widget URL Pandora FMS Console
+ * Widget Simple graph Pandora FMS Console
  *
  * @category   Console Class
  * @package    Pandora FMS
- * @subpackage Widget URL
+ * @subpackage Widget
  * @version    1.0.0
  * @license    See below
  *
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -279,7 +279,6 @@ class SingleGraphWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -353,8 +352,8 @@ class SingleGraphWidget extends Widget
         include_once $config['homedir'].'/include/functions_agents.php';
         include_once $config['homedir'].'/include/functions_modules.php';
 
-        $module_name = \modules_get_agentmodule_name($id_module);
-        $units_name = \modules_get_unit($id_module);
+        $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
+        $units_name = \modules_get_unit($this->values['moduleId']);
 
         $trickHight = 10;
         if ($this->values['showLegend'] === 1) {
@@ -403,6 +402,22 @@ class SingleGraphWidget extends Widget
     public static function getName()
     {
         return 'single_graph';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 430,
+        ];
+
+        return $size;
     }
 
 

@@ -1993,7 +1993,8 @@ function get_snmpwalk(
     $snmp_port='',
     $server_to_exec=0,
     $extra_arguments='',
-    $format='-Oa'
+    $format='-Oa',
+    $load_mibs='-m ALL'
 ) {
     global $config;
 
@@ -2057,15 +2058,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -2074,7 +2075,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 
@@ -2398,9 +2399,9 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
  * LM - Alert Management
  * PM - Pandora Management
  *
- * @param integer $id_user      User id
- * @param integer $id_group     Agents group id to check from
- * @param string  $access       Access privilege
+ * @param integer $id_user      User id.
+ * @param integer $id_group     Agents group id to check from.
+ * @param string  $access       Access privilege.
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
  *
  * @return boolean 1 if the user has privileges, 0 if not.
@@ -2408,7 +2409,7 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 function check_acl_restricted_all($id_user, $id_group, $access, $onlyOneGroup=false)
 {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {
@@ -4260,7 +4261,9 @@ function get_product_name()
 
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        if ($config['rb_product_name_alt']) {
+        if (isset($config['rb_product_name_alt']) === true
+            && empty($config['rb_product_name_alt']) === false
+        ) {
             return $config['rb_product_name_alt'];
         }
 

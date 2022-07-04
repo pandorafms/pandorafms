@@ -743,8 +743,9 @@ switch ($action) {
         $search = trim(get_parameter('search', ''));
 
         $search_sql = '';
-        if ($search != '') {
-            $search_name = '%'.$search."%' OR description LIKE '%".$search.'%';
+
+        if ($search !== '') {
+            $search_name = "(name LIKE '%".$search."%' OR description LIKE '%".$search."%')";
         }
 
         $table_aux = new stdClass();
@@ -830,13 +831,10 @@ switch ($action) {
             $return_all_group = false;
         }
 
-        if ($search != '') {
-            $filter = [
-                'name'  => $search_name,
-                'order' => 'name',
-            ];
-        } else {
-            $filter = ['order' => 'name'];
+        $filter = ['order' => 'name'];
+
+        if ($search !== '') {
+            $filter[] = $search_name;
         }
 
         // Fix : group filter was not working
@@ -2255,6 +2253,9 @@ switch ($action) {
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
                                 );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
+                                );
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2318,6 +2319,20 @@ switch ($action) {
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
 
                                 // $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'top_n':
+                            case 'general':
+                            case 'exception':
+                                $text_agent = get_parameter('text_agent', '');
+                                $text_agent_module = get_parameter('text_agent_module', '');
+                                if (empty($text_agent) === false) {
+                                    $style['text_agent'] = base64_encode($text_agent);
+                                }
+
+                                if (empty($text_agent_module) === false) {
+                                    $style['text_agent_module'] = base64_encode($text_agent_module);
+                                }
                             break;
 
                             default:
@@ -3006,6 +3021,9 @@ switch ($action) {
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
                                 );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
+                                );
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -3067,6 +3085,20 @@ switch ($action) {
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+                            break;
+
+                            case 'top_n':
+                            case 'general':
+                            case 'exception':
+                                $text_agent = get_parameter('text_agent', '');
+                                $text_agent_module = get_parameter('text_agent_module', '');
+                                if (empty($text_agent) === false) {
+                                    $style['text_agent'] = base64_encode($text_agent);
+                                }
+
+                                if (empty($text_agent_module) === false) {
+                                    $style['text_agent_module'] = base64_encode($text_agent_module);
+                                }
                             break;
 
                             default:

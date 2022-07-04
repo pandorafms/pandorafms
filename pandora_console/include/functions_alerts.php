@@ -2876,9 +2876,6 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
     global $config;
 
     $table = 'tevento';
-    if (is_metaconsole() === true) {
-        $table = 'tmetaconsole_event';
-    }
 
     $filter_date = '';
     if (isset($filters['period']) === true

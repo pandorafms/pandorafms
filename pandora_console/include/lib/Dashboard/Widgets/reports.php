@@ -172,6 +172,17 @@ class ReportsWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['reportId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = db_get_value(
+                'id_report',
+                'treport',
+                'id_report',
+                $this->values['reportId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -496,6 +507,22 @@ class ReportsWidget extends Widget
         <?php
         $js = ob_get_clean();
         return $js;
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => (is_metaconsole() === true) ? 330 : 260,
+        ];
+
+        return $size;
     }
 
 

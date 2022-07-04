@@ -50,6 +50,7 @@ $form = [
 HTML::printForm(
     [
         'form'   => $form,
+        'blocks' => $blocks,
         'inputs' => $htmlInputs,
         'js'     => $js,
     ]

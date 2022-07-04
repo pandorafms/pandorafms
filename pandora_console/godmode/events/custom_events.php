@@ -45,7 +45,7 @@ if ($default != 0) {
         'token' => 'event_fields',
         'value' => $event_fields,
     ];
-    // update 'event_fields' in tconfig table to keep the value at update.
+    // Update 'event_fields' in tconfig table to keep the value at update.
     $result = db_process_sql_update(
         'tconfig',
         $values,
@@ -147,7 +147,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
 
 $table->data[0][1] = '';
 $table->data[0][2] = '<b>'.__('Fields selected').'</b>';
-$table->data[1][2] = html_print_select(
+$table->data[1][2] = '<div class="flex_justify">'.html_print_select(
     $result_selected,
     'fields_selected[]',
     true,
@@ -162,6 +162,25 @@ $table->data[1][2] = html_print_select(
     'width: 300px'
 );
 
+$table->data[1][2] .= '<div id="sort_arrows" class="flex-column">';
+$table->data[1][2] .= '<a href="javascript:">'.html_print_image(
+    'images/darrowup.png',
+    true,
+    [
+        'onclick' => 'sortUpDown(\'up\');',
+        'title'   => __('Move up selected fields'),
+    ]
+).'</a>';
+$table->data[1][2] .= '<a href="javascript:">'.html_print_image(
+    'images/darrowdown.png',
+    true,
+    [
+        'onclick' => 'sortUpDown(\'down\');',
+        'title'   => __('Move down selected fields'),
+    ]
+).'</a>';
+$table->data[1][2] .= '</div></div>';
+
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
 
@@ -174,7 +193,7 @@ echo '</div>';
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-    
+
     $("#right").click (function () {
         jQuery.each($("select[name='fields_available[]'] option:selected"), function (key, value) {
             field_name = $(value).html();
@@ -186,9 +205,9 @@ $(document).ready (function () {
             }
         });
     });
-    
+
     $("#left").click (function () {
-        var current_fields_size = ($('#fields_selected option').length);    
+        var current_fields_size = ($('#fields_selected option').length);
         var selected_fields = [];
         var selected_fields_total = '';
 
@@ -214,7 +233,7 @@ $(document).ready (function () {
             move_left();
         }
     });
-    
+
     $("#submit-upd_button").click(function () {
         $("#fields_selected").find("option[value='0']").remove();
         $('#fields_selected option').map(function() {
@@ -223,7 +242,7 @@ $(document).ready (function () {
     });
 });
 
-function move_left(){
+function move_left() {
     jQuery.each($("select[name='fields_selected[]'] option:selected"), function (key, value) {
         field_name = $(value).html();
         if (field_name != <?php echo "'".__('None')."'"; ?>) {
@@ -234,4 +253,16 @@ function move_left(){
         }
     });
 }
+
+// Change the order (to up or down).
+function sortUpDown(mode) {
+    $("#fields_selected option:selected").each(function() {
+        const field = $(this);
+
+        if (field.length) {
+            (mode === 'up') ? field.first().prev().before(field): field.last().next().after(field);
+        }
+    });
+}
+
 </script>

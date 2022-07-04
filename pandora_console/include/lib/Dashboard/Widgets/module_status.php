@@ -478,7 +478,7 @@ class ModuleStatusWidget extends Widget
 
             case 4:
                 // Critical (ALERT).
-                $icon = '4'.$icon.'_bad.png';
+                $icon = $icon.'_bad.png';
             break;
 
             case 0:
@@ -493,7 +493,7 @@ class ModuleStatusWidget extends Widget
 
             case 10:
                 // Warning (ALERT).
-                $icon = '4'.$icon.'_warning.png';
+                $icon = $icon.'_warning.png';
             break;
 
             case 3:
@@ -547,6 +547,22 @@ class ModuleStatusWidget extends Widget
     public static function getName()
     {
         return 'module_status';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 650,
+        ];
+
+        return $size;
     }
 
 

@@ -206,7 +206,7 @@ class SpecialDay extends Entity
             && empty($filter['id_group']) === false
         ) {
             $sql_filters[] = sprintf(
-                ' AND `talert_special_days`.`id_group` IN ("%s")',
+                ' AND `talert_special_days`.`id_group` IN (%s)',
                 implode(',', $filter['id_group'])
             );
         }

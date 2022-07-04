@@ -1245,6 +1245,10 @@ function config_update_config()
                         $error_update[] = __('Show the group name instead the group icon.');
                     }
 
+                    if (config_update_value('show_empty_groups', get_parameter('show_empty_groups'), true) === false) {
+                        $error_update[] = __('Show empty groups in group view.');
+                    }
+
                     if (config_update_value('custom_graph_width', (int) get_parameter('custom_graph_width', 1), true) === false) {
                         $error_update[] = __('Default line thickness for the Custom Graph.');
                     }
@@ -3113,6 +3117,10 @@ function config_process_config()
 
     if (!isset($config['show_group_name'])) {
         config_update_value('show_group_name', 0);
+    }
+
+    if (!isset($config['show_empty_groups'])) {
+        config_update_value('show_empty_groups', 1);
     }
 
     if (!isset($config['custom_graph_width'])) {

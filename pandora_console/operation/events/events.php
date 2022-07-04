@@ -2213,10 +2213,8 @@ try {
     $active_filters_div .= '</div>';
     $active_filters_div .= '<div id="events_buffers_display"></div>';
 
-    $table_id = 'events';
+    $table_id = 'table_events';
     $form_id = 'events_form';
-
-
 
     // Print datatable.
     ui_print_datatable(

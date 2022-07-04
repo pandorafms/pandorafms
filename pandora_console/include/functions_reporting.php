@@ -5106,7 +5106,7 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                 $data_macro['server_id']
                             );
                             if (metaconsole_connect($server) != NOERR) {
-                                continue;
+                                continue 2;
                             }
                         }
 

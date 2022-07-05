@@ -1013,13 +1013,17 @@ function html_print_select(
                 if(count_shift_'.$id.' == 2 ){
                     if(shift_array_'.$id.'[0] <= shift_array_'.$id.'[1]) {
                         for (var i = shift_array_'.$id.'[0]; i <= shift_array_'.$id.'[1]; i++) {
-                            var option_value = $("#'.$id.' option").eq(i).val();
-                            options_selecteds_'.$id.'.push(option_value);
+                            if ($("#'.$id.' option").eq(i).text().includes($(".select2-search__field").val()) == true) {
+                                var option_value = $("#'.$id.' option").eq(i).val();
+                                options_selecteds_'.$id.'.push(option_value);
+                            }
                         }
                     } else {
                         for (var i = shift_array_'.$id.'[0]; i >= shift_array_'.$id.'[1]; i--) {
-                            var option_value = $("#'.$id.' option").eq(i).val();
-                            options_selecteds_'.$id.'.push(option_value);
+                            if ($("#'.$id.' option").eq(i).text().includes($(".select2-search__field").val()) == true) {
+                                var option_value = $("#'.$id.' option").eq(i).val();
+                                options_selecteds_'.$id.'.push(option_value);
+                            }
                         }
                     }
 

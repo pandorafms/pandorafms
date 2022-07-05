@@ -2869,7 +2869,7 @@ function donutNarrowGraph(
       arc = d3.svg
         .arc()
         .outerRadius(radius)
-        .innerRadius(radius - radius / 6);
+        .innerRadius(radius - radius / 4);
 
       svg = donutbody
         .append("svg")

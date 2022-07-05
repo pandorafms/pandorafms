@@ -74,9 +74,7 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     return;
 }
 
-$alive_animation = agents_get_status_animation(
-    agents_get_interval_status($agent, false)
-);
+$alive_animation = agents_get_starmap($id_agente, 200, 50);
 
 /*
  * START: TABLE AGENT BUILD.
@@ -170,10 +168,10 @@ $status_img = agents_detail_view_status_img(
 $table_agent_header .= '<div class="icono_right">'.$status_img.'</div>';
 
 // Fixed width non interactive charts.
-$status_chart_width = 180;
-$graph_width = 180;
+$status_chart_width = 150;
+$graph_width = 150;
 
-$table_agent_graph = '<div id="status_pie" style="width: '.$status_chart_width.'px;">';
+$table_agent_graph = '<div id="status_pie" style="width: '.$graph_width.'px;">';
 $table_agent_graph .= graph_agent_status(
     $id_agente,
     $graph_width,

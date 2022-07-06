@@ -1523,16 +1523,16 @@ $(document).ready (function () {
     });
 
     $('#checkbox-is_admin').change(function() {
-        if($('#checkbox-is_admin').is(':checked') == true) {
-            $('#metaconsole_agents_manager_div').show();
-            $('#metaconsole_access_node_div').show();
-            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
-                $('#metaconsole_assigned_server_div').show();
-            }
-        } else {
+        if ($('#checkbox-is_admin').is(':checked') == true) {
             $('#metaconsole_agents_manager_div').hide();
             $('#metaconsole_access_node_div').hide();
             $('#metaconsole_assigned_server_div').hide();
+        } else {
+            $('#metaconsole_agents_manager_div').show();
+            $('#metaconsole_access_node_div').show();
+            if ($('#checkbox-metaconsole_agents_manager').prop('checked')) {
+                $('#metaconsole_assigned_server_div').show();
+            }
         }
     });
 

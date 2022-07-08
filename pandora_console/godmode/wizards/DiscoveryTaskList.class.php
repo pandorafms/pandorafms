@@ -162,7 +162,9 @@ class DiscoveryTaskList extends HTML
             $ret = false;
         }
 
-        $ret2 = $this->showList();
+        if (is_reporting_console_node() === false) {
+            $ret2 = $this->showList();
+        }
 
         if ($ret === false && $ret2 === false) {
             include_once $config['homedir'].'/general/first_task/recon_view.php';

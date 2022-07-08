@@ -6065,3 +6065,50 @@ if (function_exists('str_contains') === false) {
 
 
 }
+
+
+/**
+ * Is reporting console node.
+ *
+ * @return boolean
+ */
+function is_reporting_console_node()
+{
+    global $config;
+    if (isset($config['reporting_console_enable']) === true
+        && (bool) $config['reporting_console_enable'] === true
+        && isset($config['reporting_console_node']) === true
+        && (bool) $config['reporting_console_node'] === true
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Acl reporting console node.
+ *
+ * @param string $path Path.
+ *
+ * @return boolean
+ */
+function acl_reporting_console_node($path)
+{
+    if (is_reporting_console_node() === false) {
+        return true;
+    }
+
+    if ($path === 'godmode/servers/discovery'
+        || $path === 'operation/users/user_edit'
+        || $path === 'operation/users/user_edit_notifications'
+        || $path === 'godmode/setup/file_manager'
+        || $path === 'godmode/update_manager/update_manager'
+    ) {
+        return true;
+    }
+
+    return false;
+
+}

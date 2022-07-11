@@ -605,7 +605,7 @@ if (isset($config['id_user']) === false) {
                 }
             }
 
-            if (is_reporting_console_node() === false) {
+            if (is_reporting_console_node() === true) {
                 $_GET['sec'] = 'discovery';
                 $_GET['sec2'] = 'godmode/servers/discovery';
                 $_GET['wiz'] = 'tasklist';
@@ -1047,7 +1047,7 @@ if ((bool) ($config['maintenance_mode'] ?? false) === true
     exit('</html>');
 }
 
-if (is_reporting_console_node() === false
+if (is_reporting_console_node() === true
     && (bool) users_is_admin() === false
 ) {
     include 'general/reporting_console_node.php';

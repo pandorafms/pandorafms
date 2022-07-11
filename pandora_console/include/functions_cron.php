@@ -422,10 +422,36 @@ function cron_list_table()
         array_keys(users_get_groups())
     );
 
-    $defined_tasks = db_get_all_rows_filter(
-        'tuser_task_scheduled',
-        'id_grupo IN ('.$user_groups.')'
+    $filter = '';
+    if (is_reporting_console_node() === true) {
+        $write_perms = false;
+        $manage_perms = false;
+        $manage_pandora = false;
+
+        $filter .= sprintf(
+            ' AND (
+                tuser_task.function_name = "cron_task_generate_report"
+                OR tuser_task.function_name = "cron_task_generate_report_by_template"
+                OR tuser_task.function_name = "cron_task_save_report_to_disk"
+            )'
+        );
+    }
+
+    // Admin.
+    $sql = sprintf(
+        'SELECT tuser_task_scheduled.*
+        FROM tuser_task_scheduled
+        INNER JOIN tuser_task
+            ON tuser_task_scheduled.id_user_task = tuser_task.id
+        WHERE
+        id_grupo IN (%s)
+        %s
+        ',
+        $user_groups,
+        $filter
     );
+
+    $defined_tasks = db_get_all_rows_sql($sql);
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         $read_tasks = [];

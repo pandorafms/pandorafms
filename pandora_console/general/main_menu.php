@@ -59,7 +59,7 @@ if (isset($config['autohidden_menu']) === true && (bool) $config['autohidden_men
 // Start of full lateral menu.
 echo sprintf('<div id="menu_full" class="menu_full_%s">', $menuTypeClass);
 $url_logo = ui_get_full_url('index.php');
-if (is_reporting_console_node() === false) {
+if (is_reporting_console_node() === true) {
     $url_logo = 'index.php?logged=1&sec=discovery&sec2=godmode/servers/discovery&wiz=tasklist';
 }
 

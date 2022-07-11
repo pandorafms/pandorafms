@@ -6096,17 +6096,29 @@ function is_reporting_console_node()
  */
 function acl_reporting_console_node($path)
 {
+    global $config;
     if (is_reporting_console_node() === false) {
         return true;
     }
 
-    if ($path === 'godmode/servers/discovery'
-        || $path === 'operation/users/user_edit'
-        || $path === 'operation/users/user_edit_notifications'
-        || $path === 'godmode/setup/file_manager'
-        || $path === 'godmode/update_manager/update_manager'
-    ) {
-        return true;
+    if (is_metaconsole() === true) {
+        if ($path === $config['homedir'].'/godmode/users/configure_user'
+            || $path === 'advanced/users_setup'
+            || $path === 'advanced/metasetup'
+            || $path === 'advanced/links'
+            || $path === $config['homedir'].'/enterprise/extensions/cron'
+        ) {
+            return true;
+        }
+    } else {
+        if ($path === 'godmode/servers/discovery'
+            || $path === 'operation/users/user_edit'
+            || $path === 'operation/users/user_edit_notifications'
+            || $path === 'godmode/setup/file_manager'
+            || $path === 'godmode/update_manager/update_manager'
+        ) {
+            return true;
+        }
     }
 
     return false;

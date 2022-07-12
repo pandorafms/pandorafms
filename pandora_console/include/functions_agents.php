@@ -4300,18 +4300,12 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 {
     ui_require_css_file('heatmap');
 
-    // $all_modules = agents_get_modules($id_agent);
-    // if (empty($all_modules)) {
-    // return null;
-    // }
-    // $total_modules = count($all_modules);
-    $all_modules = [];
-    $total_modules = 200;
-    $contador = 0;
-    while ($contador < $total_modules) {
-        $contador++;
-        $all_modules[$contador] = '';
+    $all_modules = agents_get_modules($id_agent);
+    if (empty($all_modules)) {
+        return null;
     }
+
+    $total_modules = count($all_modules);
 
     // Best square.
     $high = (float) max($width, $height);
@@ -4345,8 +4339,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
     $cont = 1;
     foreach ($all_modules as $key => $value) {
         // Colour by status.
-        // $status = modules_get_agentmodule_status($key);
-        $status = random_int(0, 5);
+        $status = modules_get_agentmodule_status($key);
         switch ($status) {
             case 0:
             case 4:

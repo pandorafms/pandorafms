@@ -1211,6 +1211,10 @@ if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
 
+if (is_reporting_console_node() === true) {
+    echo notify_reporting_console_node();
+}
+
 // Page loader / selector.
 if ($searchPage) {
     include 'operation/search_results.php';

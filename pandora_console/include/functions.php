@@ -6124,3 +6124,32 @@ function acl_reporting_console_node($path)
     return false;
 
 }
+
+
+/**
+ * Necessary checks for the reporting console.
+ *
+ * @return string
+ */
+function notify_reporting_console_node()
+{
+    $return = '';
+
+    // Check php memory limit.
+    $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+    if ($PHPmemory_limit !== -1) {
+        $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
+        if ($config['language'] == 'es') {
+            $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
+        }
+
+        $msg = __("Not recommended '%s' value in PHP configuration", $PHPmemory_limit);
+        $msg .= '<br>'.__('Recommended value is: -1');
+        $msg .= '<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator');
+        $msg .= '<br><a href="'.$url.'" target="_blank">'.__('Documentation').'</a>';
+
+        $return = ui_print_error_message($msg, '', true);
+    }
+
+    return $return;
+}

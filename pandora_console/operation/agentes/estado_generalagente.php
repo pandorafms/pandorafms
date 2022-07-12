@@ -602,6 +602,7 @@ if ($config['agentaccess'] && $access_agent > 0) {
     $table_access_rate .= graphic_agentaccess(
         $id_agente,
         SECONDS_1DAY,
+        true,
         true
     );
     $table_access_rate .= '</div>';

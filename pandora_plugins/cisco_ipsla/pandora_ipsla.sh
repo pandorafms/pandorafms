@@ -21,7 +21,7 @@ function help {
         echo -e "\t\t-A <authenticacion-password> "
         echo -e "\t\t-x <encryption> "
         echo -e "\t\t-X <encryption-pass> "
-	echo -e "\t\t-g <tag> "
+	echo -e "\t\t-g <id> "
 	echo -e "\t\t-m <module>\n"
 	echo -e "Available Modules list: \n"
 	echo -e "\tICPIF - Calculated Planning Impairment Factor for specified tag"
@@ -82,7 +82,7 @@ function show_tags {
                 fi
         fi
 	
-	cat $TAG_TABLE_CACHE | awk '{ print $2 }' | tr -d "\"" | grep -ve '^$'
+	cat $TAG_TABLE_CACHE 
 	exit
 }
 
@@ -118,9 +118,8 @@ function get_index {
 # This function requires two arguments. MODULE_TYPE TAG
 function get_module {
 	MODULE_TYPE=$1
-        TAG=$2
         update_tags
-	INDICE=`get_index $TAG`
+	INDICE=$2
 
         if [ $version != "3" ]
 
@@ -725,11 +724,11 @@ while getopts ":hc:t:v:l:u:a:A:x:X:sm:g:" optname
 done
 
 # Execution
-[ "$SHOWTAGS" ] && echo "Showing avaliables  ipsla tags for the device $TARGET" && show_tags
+[ "$SHOWTAGS" ] && echo "Showing avaliables  ipsla tags for the device $TARGET and OID 1.3.6.1.4.1.9.9.42.1.2.1.1.3" && show_tags
 
 [ -z "$TARGET" ] && echo "Error missing target ip definition please use -t to difine it or -h to see help" && exit 1
 [ -z "$MODULE" ] && echo "Error missing module definition please use -m to difine it or -h to see help" && exit 1
-[ -z "$TAG" ] && echo "Error missing tag definition please use -g to difine it or -h to see help" && exit 1
+[ -z "$TAG" ] && echo "Error missing id definition please use -g to difine it or -h to see help" && exit 1
 [ -z "$version" ] && echo "Error missing snmp version definition please use -v to difine it or -h to see help" && exit 1
 
 

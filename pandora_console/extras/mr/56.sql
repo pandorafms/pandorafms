@@ -1,5 +1,28 @@
 START TRANSACTION;
 
+CREATE TABLE IF NOT EXISTS `tuser_task` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `function_name` VARCHAR(80) NOT NULL DEFAULT '',
+  `parameters` TEXT ,
+  `name` VARCHAR(60) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+
+CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
+  `id_user_task` INT UNSIGNED NOT NULL DEFAULT 0,
+  `args` TEXT,
+  `scheduled` ENUM('no','hourly','daily','weekly','monthly','yearly','custom') DEFAULT 'no',
+  `last_run` INT UNSIGNED DEFAULT 0,
+  `custom_data` INT NULL DEFAULT 0,
+  `flag_delete` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `id_grupo` INT UNSIGNED NOT NULL DEFAULT 0,
+  `enabled` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 ALTER TABLE `tautoconfig` ADD COLUMN `type_execution` VARCHAR(100) NOT NULL DEFAULT 'start';
 ALTER TABLE `tautoconfig` ADD COLUMN `type_periodicity` VARCHAR(100) NOT NULL DEFAULT 'weekly';
 ALTER TABLE `tautoconfig` ADD COLUMN `monday` TINYINT DEFAULT 0;

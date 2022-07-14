@@ -334,7 +334,8 @@ sub pandora_agent_autoconfiguration_scheduled($) {
 			my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 
 			foreach my $conf (@autoconfig) {
-				if (($conf->{'type_periodicity'} eq 'monthly' && $conf->{'periodically_day_from'} eq $mday) ||
+				if (($conf->{'type_periodicity'} eq 'daily') || 
+					($conf->{'type_periodicity'} eq 'monthly' && $conf->{'periodically_day_from'} eq $mday) ||
 					($conf->{'type_periodicity'} eq 'weekly' && (($conf->{'sunday'} eq 1 && $wday eq 0) ||
 					($conf->{'monday'} eq 1 && $wday eq 1) || ($conf->{'tuesday'} eq 1 && $wday eq 2) ||
 					($conf->{'wednesday'} eq 1 && $wday eq 3) || ($conf->{'thursday'} eq 1 && $wday eq 4) ||

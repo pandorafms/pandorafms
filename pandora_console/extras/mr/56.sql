@@ -36,4 +36,6 @@ ALTER TABLE `tautoconfig` ADD COLUMN `periodically_day_from` INT UNSIGNED DEFAUL
 ALTER TABLE `tautoconfig` ADD COLUMN `periodically_time_from` time NULL DEFAULT NULL;
 ALTER TABLE `tautoconfig` ADD COLUMN `executed` TINYINT UNSIGNED NOT NULL DEFAULT 0;
 
+ALTER TABLE `tusuario` DROP COLUMN `metaconsole_assigned_server`;
+
 COMMIT;

@@ -5614,12 +5614,12 @@ div#bullets_modules div {
 }
 
 .agent_details_col_left {
-  width: 40%;
-  min-width: 300px;
+  width: 49%;
+  min-width: 450px;
 }
 .agent_details_col_right {
-  width: 59%;
-  min-width: 480px;
+  width: 49%;
+  min-width: 450px;
 }
 
 .agent_access_rate_events {
@@ -5630,14 +5630,15 @@ div#bullets_modules div {
 }
 
 .white_table_graph#table_access_rate {
-  flex: 1 1 auto;
-  min-width: 450px;
-  margin-right: 1%;
+  margin-left: 1px;
+  margin-right: 1px;
+  width: 49%;
 }
 
 .white_table_graph#table_events {
-  flex: 1 1 auto;
-  min-width: 450px;
+  margin-left: 1px;
+  margin-right: 1px;
+  width: 49%;
 }
 
 @media screen and (max-width: 1150px) {
@@ -5676,7 +5677,7 @@ div#status_pie {
   justify-content: flex-end;
   align-items: center;
   border-bottom: 1px solid #e2e2e2;
-  padding: 6px 20px;
+  padding: 8px 20px;
 }
 
 .agent_details_content {

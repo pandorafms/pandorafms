@@ -5788,30 +5788,18 @@ sub pandora_self_monitoring ($$) {
 	}
 	
 	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE BINARY name = '".$pa_config->{"servername"}."'");
-	
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;
 	}
 	
-	my $dbmaintance;
-	if ($RDBMS eq 'postgresql') {
-		$dbmaintance = get_db_value ($dbh,
-			"SELECT COUNT(*)
-			FROM tconfig
-			WHERE token = 'db_maintance'
-				AND NULLIF(value, '')::int > UNIX_TIMESTAMP() - 86400");
-	}
-	elsif ($RDBMS eq 'oracle') {
-		$dbmaintance = get_db_value ($dbh,
-			"SELECT COUNT(*)
-			FROM tconfig
-			WHERE token = 'db_maintance' AND DBMS_LOB.substr(value, 100, 1) > UNIX_TIMESTAMP() - 86400");
-	}
-	else {
-		$dbmaintance = get_db_value ($dbh,
-			"SELECT COUNT(*)
-			FROM tconfig
-			WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
+	my $pandoradb = 0;
+	my $pandoradb_tstamp = get_db_value ($dbh, "SELECT `value` FROM tconfig WHERE token = 'db_maintance'");
+	if (!defined($pandoradb_tstamp) || $pandoradb_tstamp == 0) {
+		pandora_event ($pa_config, "Pandora DB maintenance tool has never been run.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+	} elsif ($pandoradb_tstamp < time() - 86400) {
+		pandora_event ($pa_config, "Pandora DB maintenance tool has not been run since " . strftime("%Y-%m-%d %H:%M:%S", localtime($pandoradb_tstamp)) . ".", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+	} else {
+		$pandoradb = 1;
 	}
 
 	my $start_performance = time;
@@ -5825,7 +5813,7 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
 	$xml_output .=" <type>generic_proc</type>";
-	$xml_output .=" <data>$dbmaintance</data>";
+	$xml_output .=" <data>$pandoradb</data>";
 	$xml_output .=" </module>";
 	
 	$xml_output .=" <module>";

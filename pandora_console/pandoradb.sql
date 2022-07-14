@@ -3574,6 +3574,18 @@ CREATE TABLE IF NOT EXISTS `tautoconfig` (
   `order` INT NOT NULL DEFAULT 0,
   `description` TEXT,
   `disabled` TINYINT DEFAULT 0,
+  `type_execution` VARCHAR(100) NOT NULL DEFAULT 'start',
+  `type_periodicity` VARCHAR(100) NOT NULL DEFAULT 'weekly',
+  `monday` TINYINT DEFAULT 0,
+  `tuesday` TINYINT DEFAULT 0,
+  `wednesday` TINYINT DEFAULT 0,
+  `thursday` TINYINT DEFAULT 0,
+  `friday` TINYINT DEFAULT 0,
+  `saturday` TINYINT DEFAULT 0,
+  `sunday` TINYINT DEFAULT 0,
+  `periodically_day_from` INT UNSIGNED DEFAULT NULL,
+  `periodically_time_from` time NULL DEFAULT NULL,
+  `executed` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

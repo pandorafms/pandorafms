@@ -193,15 +193,23 @@ switch ($action) {
 
             if ($user->isWaitingDoubleAuth()) {
                 if ($user->validateDoubleAuthCode()) {
-                    // Logged. Refresh the page
-                    header('Location: .');
+                    $url = ui_get_full_url('');
+                    $url = str_replace("\n", '', $url);
+                    $url = str_replace('?action=logout', '', $url);
+
+                    // Logged. Refresh the page.
+                    header('Location: '.$url);
                     return;
                 } else {
                     $user->showDoubleAuthPage();
                 }
             } else {
-                // Logged. Refresh the page
-                header('Location: .');
+                $url = ui_get_full_url('');
+                $url = str_replace("\n", '', $url);
+                $url = str_replace('?action=logout', '', $url);
+
+                // Logged. Refresh the page.
+                header('Location: '.$url);
                 return;
             }
         } else {

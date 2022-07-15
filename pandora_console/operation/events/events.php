@@ -171,7 +171,7 @@ $filter_only_alert = get_parameter(
 );
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
-    ($filter['id_group_filter'] ?? '')
+    ($filter['id_group'] ?? '')
 );
 $date_from = get_parameter(
     'filter[date_from]',
@@ -1551,8 +1551,8 @@ if (enterprise_hook(
  */
 
 // Group.
-if ($id_group_filter === null) {
-    $id_group_filter = 0;
+if ($id_group === null) {
+    $id_group = 0;
 }
 
 $data = html_print_input(
@@ -1561,7 +1561,7 @@ $data = html_print_input(
         'returnAllGroup' => true,
         'privilege'      => 'AR',
         'type'           => 'select_groups',
-        'selected'       => $id_group_filter,
+        'selected'       => $id_group,
         'nothing'        => false,
         'return'         => true,
         'size'           => '80%',

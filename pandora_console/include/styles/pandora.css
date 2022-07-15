@@ -1705,6 +1705,17 @@ div#agent_wizard_subtabs {
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
+
+.databox.no-border {
+  margin-bottom: 5px;
+  margin-top: 0px;
+  margin-left: 0px;
+  border: none;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
 .databox_color {
   padding-top: 5px;
   background-color: #fafafa;

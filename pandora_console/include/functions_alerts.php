@@ -2109,7 +2109,7 @@ function get_group_alerts(
 
     if (is_array($filter)) {
         $disabled = $filter['disabled'];
-        if (isset($filter['standby'])) {
+        if ((isset($filter['standby']) === true) && ($filter['standby'] !== '')) {
             $filter = $group_query.' AND talert_template_modules.standby = "'.$filter['standby'].'"';
         } else {
             $filter = $group_query;

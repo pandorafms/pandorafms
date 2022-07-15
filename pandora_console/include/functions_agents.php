@@ -369,7 +369,11 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         }
 
         // Filter by agents id.
-        $id_agents_list = implode(',', $id_agent);
+        if (is_array($id_agent) === true && empty($id_agent) === false) {
+            $id_agents_list = implode(',', $id_agent);
+        } else {
+            $id_agents_list = $id_agent;
+        }
 
         if ($id_agents_list === '') {
             $id_agents_list = '0';

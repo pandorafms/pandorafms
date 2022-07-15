@@ -1179,7 +1179,18 @@ function ui_format_alert_row(
         }
 
         if (is_metaconsole() === true || !can_user_access_node()) {
-            $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', '');
+            $pwd = $server['auth_token'];
+            // Create HASH login info.
+            $user = $config['id_user'];
+
+            // Extract auth token from serialized field.
+            $pwd_deserialiced = json_decode($pwd, true);
+            $hashdata = $user.$pwd_deserialiced['auth_token'];
+
+            $hashdata = md5($hashdata);
+            $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
+
+            $data[$index['agent_name']] .= '<a href="'.$url.'">'.'<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b></a>';
         } else {
             if ($agent_style !== false) {
                 $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
@@ -3392,16 +3403,18 @@ function ui_print_datatable(array $parameters)
         $filter .= '</li>';
 
         $filter .= '</ul><div id="both"></div></form>';
-        $filter = ui_toggle(
-            $filter,
-            __('Filter'),
-            '',
-            '',
-            true,
-            false,
-            'white_box white_box_opened',
-            'no-border'
-        );
+        if (isset($parameters['form']['no_toggle']) === false && ($parameters['form']['no_toggle'] !== true)) {
+            $filter = ui_toggle(
+                $filter,
+                __('Filter'),
+                '',
+                '',
+                true,
+                false,
+                'white_box white_box_opened',
+                'no-border'
+            );
+        }
     } else if (isset($parameters['form_html'])) {
         $filter = ui_toggle(
             $parameters['form_html'],
@@ -3417,6 +3430,8 @@ function ui_print_datatable(array $parameters)
 
     // Languages.
     $processing = __('Processing');
+    $zeroRecords = isset($parameters['zeroRecords']) === true ? $parameters['zeroRecords'] : __('No matching records found');
+    $emptyTable = isset($parameters['emptyTable']) === true ? $parameters['emptyTable'] : __('No data available in table');
 
     // Extra html.
     $extra = '';
@@ -3441,6 +3456,7 @@ function ui_print_datatable(array $parameters)
     foreach ($names as $column) {
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
+            $table .= 'title="'.__($column['title']).'" ';
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
             $table .= $column['extra'];
             $table .= '</th>';
@@ -3499,7 +3515,9 @@ function ui_print_datatable(array $parameters)
             responsive: true,
             dom: "plfrtiBp",
             language: {
-                processing:"'.$processing.'"
+                processing:"'.$processing.'",
+                zeroRecords:"'.$zeroRecords.'",
+                emptyYable:"'.$emptyTable.'",
             },
             buttons: '.$parameters['csv'].'== 1 ? [
                 {

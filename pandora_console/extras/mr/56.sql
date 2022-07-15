@@ -1,3 +1,4 @@
+-- Active: 1653046769261@@127.0.0.1@3306@pandora
 START TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS `tuser_task` (
@@ -37,5 +38,7 @@ ALTER TABLE `tautoconfig` ADD COLUMN `periodically_time_from` time NULL DEFAULT 
 ALTER TABLE `tautoconfig` ADD COLUMN `executed` TINYINT UNSIGNED NOT NULL DEFAULT 0;
 
 ALTER TABLE `tusuario` DROP COLUMN `metaconsole_assigned_server`;
+
+ALTER TABLE `tagente` ADD COLUMN `fixed_ip` TINYINT UNSIGNED NOT NULL DEFAULT 0;
 
 COMMIT;

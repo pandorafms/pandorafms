@@ -485,7 +485,7 @@ sub process_xml_data ($$$$$) {
 	
 		# Update the main address
 		if ($address ne '' && $address ne $agent->{'direccion'}) {
-			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh);
+			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh) unless $agent->{'fixed_ip'} == 1;
 			pandora_add_agent_address($pa_config, $agent_id, $agent_name, $address, $dbh);
 		}
 		

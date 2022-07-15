@@ -302,6 +302,15 @@ $table_ip = '<div class="label_select"><p class="input_label">'.__('IP Address')
 $table_ip .= '<div class="label_select_parent">';
 $table_ip .= '<div class="label_select_child_left">'.html_print_input_text('direccion', $direccion_agente, '', 16, 100, true).'</div>';
 $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true).__('Unique IP').'</div>';
+$table_ip .= '<div class="label_select_child_right">'.html_print_input(
+    [
+        'type'  => 'switch',
+        'id'    => 'fixed_ip',
+        'name'  => 'fixed_ip',
+        'value' => $fixed_ip,
+    ],
+).__('Fix IP').ui_print_help_tip(__('Avoid automatic IP update when agent IP changes'), true).'</div>';
+
 $table_ip .= '</div></div>';
 
 if ($id_agente) {

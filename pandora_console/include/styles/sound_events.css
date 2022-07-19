@@ -1,0 +1,300 @@
+/*
+ * Css Modal Sound events.
+ */
+#modal-sound {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0px 20px !important;
+}
+
+#tabs-sound-modal {
+  margin-top: 20px;
+}
+
+.actions-sound-modal {
+  margin-bottom: 20px;
+}
+
+#tabs-sound-modal h3.console-configuration {
+  color: #000000;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: left;
+  text-transform: none;
+  margin: 0px;
+}
+
+#tabs-sound-modal ul.tabs-sound-modal-options {
+  display: flex;
+  justify-content: flex-end;
+  background-color: transparent;
+  border: 0px;
+  border-bottom: 1px solid #eaeaea;
+  height: 45px;
+}
+
+#tabs-sound-modal ul.tabs-sound-modal-options li {
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  background: transparent;
+}
+
+#tabs-sound-modal ul.tabs-sound-modal-options li.ui-tabs-active {
+  border-bottom: 2px solid #82b92e;
+}
+
+#tabs-sound-modal ul.wizard li label {
+  color: #95a3bf;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: left;
+}
+
+#tabs-sound-modal ul.wizard li.interval-sounds,
+#tabs-sound-modal ul.wizard li.test-sounds {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+}
+
+#tabs-sound-modal ul.wizard li.interval-sounds label,
+#tabs-sound-modal ul.wizard li.test-sounds label {
+  flex: 0;
+  width: inherit;
+  position: absolute;
+  top: -12px;
+  left: 50%;
+}
+
+#tabs-sound-modal ul.wizard li.interval-sounds label:first-of-type,
+#tabs-sound-modal ul.wizard li.test-sounds label:first-of-type {
+  left: 0;
+}
+
+#tabs-sound-modal ul.wizard li.interval-sounds .select2 {
+  width: 48% !important;
+  max-width: 100% !important;
+}
+
+#tabs-sound-modal ul.wizard li.test-sounds .select2 {
+  width: 70% !important;
+  max-width: 100% !important;
+}
+
+#tabs-sound-modal ul.wizard li.test-sounds input[type="button"] {
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  width: 131px;
+  height: 38px;
+  color: #95a3bf;
+  font-size: 14px;
+  padding: 0px;
+  padding-right: 40px;
+}
+
+#tabs-sound-modal button.upd,
+input.upd {
+  background-image: url(../../images/sound_wave.png);
+  background-position: 90px 8px;
+}
+
+#tabs-sound-modal ul.wizard .select2 {
+  max-width: 100% !important;
+}
+
+#tabs-sound-modal .select2-selection {
+  border: 0px;
+  border-radius: 0px;
+  border-bottom: 1px solid #aaa;
+}
+
+#tabs-sound-modal .select2-container,
+#tabs-sound-modal .select2-selection__rendered {
+  padding-left: 0px;
+  color: #555555;
+  font-size: 15px;
+  line-height: 25px;
+  text-align: left;
+}
+
+#tabs-sound-modal div h3.title-discovered-alerts {
+  margin: 0px;
+  color: #000000;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: left;
+  text-transform: none;
+  margin-bottom: 10px;
+}
+
+#tabs-sound-modal div span.text-discovered-alerts {
+  color: #95a3bf;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: center;
+}
+
+#tabs-sound-modal div .empty-discovered-alerts {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 250px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts {
+  overflow: auto;
+  max-height: 300px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul {
+  width: 99%;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li {
+  border: 1px solid #eaeaea;
+  height: 46px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  color: #555555;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: left;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-priority {
+  flex: 0;
+  padding: 10px;
+}
+
+#tabs-sound-modal
+  div
+  .elements-discovered-alerts
+  ul
+  li
+  div.li-priority
+  .mini-criticity {
+  border-radius: 5px;
+  width: 6px;
+  height: 30px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-type {
+  flex: 0;
+  padding-right: 10px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-time {
+  flex: 0 1 100px;
+  text-align: end;
+  padding-right: 10px;
+}
+
+#tabs-sound-modal div .elements-discovered-alerts ul li div.li-title {
+  width: 100%;
+}
+
+.actions-sound-modal .buttons-sound-modal {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions-sound-modal .buttons-sound-modal input[type="button"] {
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  width: 107px;
+  height: 50px;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: left;
+}
+
+.actions-sound-modal .buttons-sound-modal button.play,
+.actions-sound-modal .buttons-sound-modal input[type="button"].play {
+  background: url(../../images/play-white.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 70px 17px;
+  color: #ffffff;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .buttons-sound-modal button.stop,
+.actions-sound-modal .buttons-sound-modal input[type="button"].stop {
+  background: url(../../images/stop.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 70px 17px;
+  color: #ffffff;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .buttons-sound-modal button.alerts,
+.actions-sound-modal .buttons-sound-modal input[type="button"].alerts {
+  width: 154px;
+  color: #95a3bf;
+  background: url(../../images/alarm-off.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 108px 9px;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .buttons-sound-modal button.silence-alerts,
+.actions-sound-modal .buttons-sound-modal input[type="button"].silence-alerts {
+  width: 184px;
+  color: #ffffff;
+  background: url(../../images/silence-alerts.png), transparent;
+  background-repeat: no-repeat;
+  background-position: 138px 9px;
+  padding-left: 20px;
+}
+
+.actions-sound-modal .container-button-play {
+  background: radial-gradient(118.26% 33.15%, #82b92e 0%, #1d4e4a 100%);
+  border-radius: 4px;
+}
+
+.actions-sound-modal .container-button-alert.fired {
+  background: #ee2132;
+  border-radius: 4px;
+}
+
+.actions-sound-modal .progressbar {
+  width: 100%;
+  margin: 4px 2px;
+  border-radius: 4px;
+}
+
+.actions-sound-modal .progressbar .inner {
+  height: 10px;
+  border-radius: 4px;
+  animation: progressbar-countdown;
+  /* Placeholder, this will be updated using javascript */
+  animation-duration: 40s;
+  /* We stop in the end */
+  animation-iteration-count: 1;
+  /* Stay on pause when the animation is finished finished */
+  animation-fill-mode: forwards;
+  /* We start paused, we start the animation using javascript */
+  animation-play-state: paused;
+  /* We want a linear animation, ease-out is standard */
+  animation-timing-function: linear;
+}
+
+@keyframes progressbar-countdown {
+  0% {
+    width: 100%;
+    background: #82b92e;
+  }
+  100% {
+    width: 0%;
+    background: #e63c52;
+  }
+}

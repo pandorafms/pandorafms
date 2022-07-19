@@ -494,7 +494,7 @@ function vbar_graph(
                 'weight'     => $options['x']['font']['weight'],
                 'family'     => $options['x']['font']['family'],
                 'variant'    => $options['x']['font']['variant'],
-                'color'      => $options['x']['font']['color'],
+                'color'      => ($options['agent_view'] === true) ? 'black' : $options['x']['font']['color'],
             ],
             'show'        => $options['x']['show'],
             'position'    => $options['x']['position'],
@@ -516,7 +516,7 @@ function vbar_graph(
                 'weight'     => $options['y']['font']['weight'],
                 'family'     => $options['y']['font']['family'],
                 'variant'    => $options['y']['font']['variant'],
-                'color'      => $options['y']['font']['color'],
+                'color'      => ($options['agent_view'] === true) ? 'black' : $options['y']['font']['color'],
             ],
             'show'        => $options['y']['show'],
             'position'    => $options['y']['position'],
@@ -534,8 +534,8 @@ function vbar_graph(
             'aboveData'         => $options['grid']['aboveData'],
             'color'             => $options['grid']['color'],
             'backgroundColor'   => $options['grid']['backgroundColor'],
-            'margin'            => $options['grid']['margin'],
-            'labelMargin'       => $options['grid']['labelMargin'],
+            'margin'            => ($options['agent_view'] === true) ? 6 : $options['grid']['margin'],
+            'labelMargin'       => ($options['agent_view'] === true) ? 12 : $options['grid']['labelMargin'],
             'axisMargin'        => $options['grid']['axisMargin'],
             'markings'          => $options['grid']['markings'],
             'borderWidth'       => $options['grid']['borderWidth'],
@@ -560,6 +560,10 @@ function vbar_graph(
             'rotate'      => $options['generals']['rotate'],
         ],
     ];
+
+    if ($options['agent_view'] === true) {
+        $params['agent_view'] = true;
+    }
 
     if (empty($params['data']) === true) {
         return graph_nodata_image(

@@ -526,7 +526,8 @@ $menu_godmode['links']['sub'] = $sub;
 
 // Warp Manager.
 if ((bool) check_acl($config['id_user'], 0, 'PM') === true && (bool) $config['enable_update_manager'] === true) {
-    $menu_godmode['messages']['text'] = __('Warp Update');;
+    $menu_godmode['messages']['text'] = __('Warp Update');
+    ;
     $menu_godmode['messages']['id'] = 'god-um_messages';
     $menu_godmode['messages']['sec2'] = '';
 

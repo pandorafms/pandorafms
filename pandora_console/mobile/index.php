@@ -193,15 +193,23 @@ switch ($action) {
 
             if ($user->isWaitingDoubleAuth()) {
                 if ($user->validateDoubleAuthCode()) {
-                    // Logged. Refresh the page
-                    header('Location: .');
+                    $url = ui_get_full_url('');
+                    $url = str_replace("\n", '', $url);
+                    $url = str_replace('?action=logout', '', $url);
+
+                    // Logged. Refresh the page.
+                    header('Location: '.$url);
                     return;
                 } else {
                     $user->showDoubleAuthPage();
                 }
             } else {
-                // Logged. Refresh the page
-                header('Location: .');
+                $url = ui_get_full_url('');
+                $url = str_replace("\n", '', $url);
+                $url = str_replace('?action=logout', '', $url);
+
+                // Logged. Refresh the page.
+                header('Location: '.$url);
                 return;
             }
         } else {
@@ -292,6 +300,42 @@ switch ($action) {
                     $page = 'visualmap';
                     $id_map = (int) db_get_value('id', 'tlayout', 'name', $section_data);
                     $_GET['id'] = $id_map;
+                break;
+
+                case 'External link':
+                    $full_url = ui_get_full_url();
+                    $section_data = io_safe_output($section_data);
+
+                    $host_full = parse_url($full_url, PHP_URL_HOST);
+                    $host_section = parse_url($section_data, PHP_URL_HOST);
+
+                    if ($host_full !== $host_section) {
+                        $has_mobile = strpos($section_data, 'mobile');
+                        if ($has_mobile === false) {
+                            $pos = strpos($section_data, '/index');
+                            if ($pos !== false) {
+                                $section_data = substr_replace($section_data, '/mobile', $pos, 0);
+                            }
+                        }
+
+                        echo '<script type="text/javascript">document.location="'.$section_data.'"</script>';
+                    } else {
+                        if (strpos($full_url, 'event') !== false) {
+                            $page = 'events';
+                        }
+
+                        if (strpos($full_url, 'alert') !== false) {
+                            $page = 'alerts';
+                        }
+
+                        if (strpos($full_url, 'tactical') !== false) {
+                            $page = 'tactical';
+                        }
+
+                        if (strpos($full_url, 'visual_console') !== false) {
+                            $page = 'visualmap';
+                        }
+                    }
                 break;
 
                 case 'Group view':

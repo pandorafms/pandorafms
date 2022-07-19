@@ -159,8 +159,24 @@
   fill: #cccccc;
 }
 
+.notinit_10,
+.notinit_9,
+.notinit_8,
 .notinit {
   fill: #4a83f3;
+}
+
+.notinit_7,
+.notinit_6,
+.notinit_5,
+.notinit_4 {
+  fill: #6695f5;
+}
+
+.notinit_3,
+.notinit_2,
+.notinit_1 {
+  fill: #79a3f6;
 }
 
 .hover {

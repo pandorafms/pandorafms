@@ -182,24 +182,47 @@ class User
             $password = $system->getRequest('password', null);
         }
 
-        if (!empty($user) && !empty($password)) {
-            $user_in_db = process_user_login($user, $password);
-            if ($user_in_db !== false) {
-                $this->logged = true;
-                $this->user = $user_in_db;
-                $this->loginTime = time();
-                $this->errorLogin = false;
+        if (empty($user) === false
+            && empty($password) === false
+        ) {
+            $user_in_db = db_get_row_filter(
+                'tusuario',
+                ['id_user' => $user],
+                '*'
+            );
 
-                // The user login was successful, but the second step is not completed
-                if ($this->isDobleAuthRequired()) {
-                    $this->needDoubleAuth = true;
-                }
-            } else {
-                $this->logged = false;
+            $this->logged = false;
                 $this->loginTime = false;
                 $this->errorLogin = true;
                 $this->needDoubleAuth = false;
                 $this->errorDoubleAuth = false;
+
+            if ($user_in_db !== false) {
+                if (((bool) $user_in_db['is_admin'] === false)
+                    && ((bool) $user_in_db['not_login'] === true
+                    || (is_metaconsole() === false
+                    && has_metaconsole() === true
+                    && is_management_allowed() === false
+                    && (bool) $user_in_db['metaconsole_access_node'] === false))
+                ) {
+                    $this->logged = false;
+                    $this->loginTime = false;
+                    $this->errorLogin = true;
+                    $this->needDoubleAuth = false;
+                    $this->errorDoubleAuth = false;
+                } else {
+                    $user_proccess_login = process_user_login($user, $password);
+                    if ($user_proccess_login !== false) {
+                        $this->logged = true;
+                        $this->user = $user_proccess_login;
+                        $this->loginTime = time();
+                        $this->errorLogin = false;
+                        // The user login was successful, but the second step is not completed.
+                        if ($this->isDobleAuthRequired()) {
+                            $this->needDoubleAuth = true;
+                        }
+                    }
+                }
             }
         }
 

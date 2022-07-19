@@ -3416,7 +3416,17 @@ function ui_print_datatable(array $parameters)
     }
 
     // Languages.
-    $processing = __('Processing');
+    $processing = '<div class=\'processing-datatables-inside\'>';
+    $processing .= '<i>'.__('Processing').'</i> ';
+    $processing .= str_replace(
+        '"',
+        "'",
+        html_print_image(
+            'images/spinner.gif',
+            true
+        )
+    );
+    $processing .= '</div>';
 
     // Extra html.
     $extra = '';
@@ -3524,6 +3534,10 @@ function ui_print_datatable(array $parameters)
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        $("#'.$form_id.'_loading").remove();
+                    }
+
                     if (json.error) {
                         console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
@@ -3570,6 +3584,18 @@ function ui_print_datatable(array $parameters)
                     }
                 },
                 data: function (data) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        var loading = \''.html_print_image(
+                        'images/spinner.gif',
+                        true,
+                        [
+                            'id'    => $form_id.'_loading',
+                            'class' => 'loading-search-datatables-button',
+                        ]
+                    ).'\';
+                        $("#'.$form_id.'_search_bt").parent().append(loading);
+                    }
+
                     inputs = $("#'.$form_id.' :input");
 
                     values = {};

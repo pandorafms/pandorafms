@@ -670,6 +670,10 @@ function flot_vcolumn_chart(array $options)
         $style .= 'height:'.$options['generals']['pdf']['height'].'px;';
     }
 
+    if ($options['agent_view'] === true) {
+        $style = 'width: 95%; height: 85px';
+    }
+
     $class = '';
     if ($options['generals']['rotate'] === true) {
         $class = 'bars-graph-rotate';

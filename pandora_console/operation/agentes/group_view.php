@@ -167,7 +167,7 @@ if ($total > 0) {
 }
 
 if ($total_agentes > 0) {
-    // Agents
+    // Agents.
     $total_agent_unknown = format_numeric((($agents_unknown * 100) / $total_agentes), 2);
     $total_agent_critical = format_numeric((($agents_critical * 100) / $total_agentes), 2);
     $total_agent_warning = format_numeric((($agents_warning * 100) / $total_agentes), 2);
@@ -209,7 +209,7 @@ if ($count == 1) {
 
 ui_pagination($count);
 
-if (!empty($result_groups)) {
+if (empty($result_groups) === false) {
     echo '<table cellpadding="0" cellspacing="0" class="databox data mrgn_top_10px" border="0" width="100%">';
         echo '<tr>';
             echo '<th colspan=2 ></th>';
@@ -235,10 +235,17 @@ if (!empty($result_groups)) {
         echo '</tr>';
 
     foreach ($result_groups as $data) {
+        if ((bool) $config['show_empty_groups'] === false
+            && $data['_total_agents_'] === 0
+            && $data['_monitor_checks_'] === 0
+        ) {
+            continue;
+        }
+
         $groups_id = $data['_id_'];
 
-        // Calculate entire row color
-        if ($groups_id != 0) {
+        // Calculate entire row color.
+        if ($groups_id !== '0') {
             if ($data['_monitors_alerts_fired_'] > 0) {
                 $color_class = 'group_view_alrm';
                 $status_image = ui_print_status_image('agent_alertsfired_ball.png', '', true);
@@ -265,7 +272,7 @@ if (!empty($result_groups)) {
 
         echo "<tr class='height_35px'>";
 
-        // Force
+        // Force.
         echo "<td class='group_view_data center vertical_middle'>";
         if (!isset($data['_is_tag_']) && check_acl($config['id_user'], $data['_id_'], 'AW')) {
             echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image(

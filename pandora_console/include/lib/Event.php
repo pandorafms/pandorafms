@@ -146,7 +146,7 @@ class Event extends Entity
      * @param boolean $return_sql Return sql or execute it.
      * @param string  $having     Having.
      *
-     * @return array|string|false Found events or SQL query or error.
+     * @return array Found events or SQL query or error.
      * @throws \Exception On error.
      */
     public static function search(
@@ -160,7 +160,7 @@ class Event extends Entity
         bool $return_sql=false,
         string $having=''
     ):array {
-        return \events_get_all(
+        $result = \events_get_all(
             $fields,
             $filter,
             $offset,
@@ -171,6 +171,13 @@ class Event extends Entity
             $return_sql,
             $having
         );
+
+        // Always return an array.
+        if (empty($result) === true) {
+            $result = [];
+        }
+
+        return $result;
     }
 
 

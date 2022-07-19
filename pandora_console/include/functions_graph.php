@@ -2558,7 +2558,8 @@ function combined_graph_summatory_average(
 function graphic_agentaccess(
     int $id_agent,
     int $period=0,
-    ?bool $return=false
+    ?bool $return=false,
+    ?bool $agent_view=false
 ) {
     global $config;
 
@@ -2598,6 +2599,10 @@ function graphic_agentaccess(
 
     $options = [];
     $options['grid']['hoverable'] = true;
+
+    if ($agent_view === true) {
+        $options['agent_view'] = true;
+    }
 
     if ($return === true) {
         return vbar_graph($data_array, $options, 1);
@@ -3015,7 +3020,7 @@ function graph_sla_slicebar(
         true,
         $ttl,
         false,
-        false,
+        true,
         $date
     );
 }
@@ -3959,7 +3964,7 @@ function graph_graphic_agentevents(
         EVENT_CRIT_CRITICAL => COL_CRITICAL,
     ];
 
-    // Draw slicebar graph
+    // Draw slicebar graph.
     $out = flot_slicesbar_graph(
         $data,
         $period,
@@ -3978,6 +3983,7 @@ function graph_graphic_agentevents(
         $not_interactive,
         1,
         $widgets,
+        true,
         $server_id
     );
 

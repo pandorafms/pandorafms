@@ -3184,6 +3184,7 @@ function ui_progress_extend(
  *        'class' => th class.
  *        'style' => th style.
  *        'text' => 'column1'.
+ *        'title'  => 'column title'.
  *      ]
  *   ],
  *   'columns' => [
@@ -3219,12 +3220,15 @@ function ui_progress_extend(
  *             'option2'
  *             ...
  *          ]
+ *       'no_toggle' => Pint form withouth UI toggle.
  *      ]
  *   ],
  *   'extra_html' => HTML content to be placed after 'filter' section.
  *   'drawCallback' => function to be called after draw. Sample in:
  *            https://datatables.net/examples/advanced_init/row_grouping.html
  * ]
+ *   'zeroRecords' => Message when zero records obtained from filter.(Leave blank for default).
+ *   'emptyTable' => Message when table data empty.(Leave blank for default).
  * End.
  *
  * @return string HTML code with datatable.
@@ -3429,7 +3433,18 @@ function ui_print_datatable(array $parameters)
     }
 
     // Languages.
-    $processing = __('Processing');
+    $processing = '<div class=\'processing-datatables-inside\'>';
+    $processing .= '<i>'.__('Processing').'</i> ';
+    $processing .= str_replace(
+        '"',
+        "'",
+        html_print_image(
+            'images/spinner.gif',
+            true
+        )
+    );
+    $processing .= '</div>';
+
     $zeroRecords = isset($parameters['zeroRecords']) === true ? $parameters['zeroRecords'] : __('No matching records found');
     $emptyTable = isset($parameters['emptyTable']) === true ? $parameters['emptyTable'] : __('No data available in table');
 
@@ -3478,7 +3493,8 @@ function ui_print_datatable(array $parameters)
     $(document).ready(function(){
         $.fn.dataTable.ext.errMode = "none";
         $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
-        dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
+
+        var settings_datatable = {
             drawCallback: function(settings) {';
     if (isset($parameters['drawCallback'])) {
         $js .= $parameters['drawCallback'];
@@ -3541,6 +3557,10 @@ function ui_print_datatable(array $parameters)
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        $("#'.$form_id.'_loading").remove();
+                    }
+
                     if (json.error) {
                         console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
@@ -3587,6 +3607,18 @@ function ui_print_datatable(array $parameters)
                     }
                 },
                 data: function (data) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        var loading = \''.html_print_image(
+                        'images/spinner.gif',
+                        true,
+                        [
+                            'id'    => $form_id.'_loading',
+                            'class' => 'loading-search-datatables-button',
+                        ]
+                    ).'\';
+                        $("#'.$form_id.'_search_bt").parent().append(loading);
+                    }
+
                     inputs = $("#'.$form_id.' :input");
 
                     values = {};
@@ -3626,7 +3658,9 @@ function ui_print_datatable(array $parameters)
             $js .= '
             ],
             order: [[ '.$order.' ]]
-        });
+        };
+
+        var dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)

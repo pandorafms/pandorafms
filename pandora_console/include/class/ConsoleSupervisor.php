@@ -2483,14 +2483,12 @@ class ConsoleSupervisor
                 SERVER_TYPE_ENTERPRISE_SATELLITE
             )
         );
-
         $missed = 0;
-
         if (is_array($server_version_list) === true) {
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    (string) floor($config['current_package'])
+                    (string) floor((int) $config['current_package'])
                 ) === false
                 ) {
                     $missed++;

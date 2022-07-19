@@ -2263,7 +2263,14 @@ function check_login($output=true)
             || (isset($_SESSION['merge-request-user-trick']) === true
             && $_SESSION['merge-request-user-trick'] === $_SESSION['id_usuario'])
         ) {
-            $config['id_user'] = $_SESSION['id_usuario'];
+            if (isset($config['auth']) === true && $config['auth'] === 'ad' && is_user($_SESSION['id_usuario'])) {
+                // User name in active directory is case insensitive.
+                // Get the user name from database.
+                $user_info = get_user_info($_SESSION['id_usuario']);
+                $config['id_user'] = $user_info['id_user'];
+            } else {
+                $config['id_user'] = $_SESSION['id_usuario'];
+            }
 
             return true;
         }

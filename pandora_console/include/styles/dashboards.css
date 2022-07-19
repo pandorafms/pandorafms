@@ -573,6 +573,91 @@ div#main_pure {
   margin: 0;
 }
 
+form.modal-dashboard ul.wizard li label {
+  max-width: 30%;
+}
+
+form.modal-dashboard ul.wizard li.agents_select2,
+form.modal-dashboard ul.wizard li.modules_select2 {
+  align-items: center;
+  justify-content: center;
+}
+
+form.modal-dashboard
+  ul.wizard
+  li.agents_select2
+  div.flex-row-center
+  div.flex-column,
+form.modal-dashboard
+  ul.wizard
+  li.modules_select2
+  div.flex-row-center
+  div.flex-column {
+  flex: 0;
+  height: 45px;
+}
+
+.ui-dialog .ui-dialog-title {
+  top: -3px !important;
+}
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice {
+  margin: 0px;
+}
+
+.container-tabs {
+  width: 100%;
+  height: calc(100% + 80px);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.widget-module-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px;
+  min-height: 95px;
+  margin: 2px;
+  padding: 5px;
+}
+
+.widget-module-tabs-title {
+  word-break: break-word;
+}
+
+.widget-module-tabs-data {
+  font-size: 1.5em;
+  font-weight: bolder;
+}
+
+.widget-module-tabs-unit {
+  font-size: smaller;
+  font-style: italic;
+}
+
+.container-histograms {
+  min-width: 400px;
+}
+.table-container-histograms {
+  width: 100%;
+}
+
+.container-histograms .widget-histogram-chart {
+  height: 28px;
+}
+
+.container-histograms .widget-histogram-label {
+  padding-top: 10px;
+  text-align: initial;
+}
+
 .content-widget .dataTables_wrapper {
   width: 98%;
   margin-top: 5px;
@@ -590,4 +675,8 @@ div#main_pure {
 .ui-dialog .ui-dialog-buttonpane {
   margin-top: 0px !important;
   padding: 0.5em 1em 0em 0em !important;
+}
+
+.select2-selection__rendered {
+  max-height: 75px !important;
 }

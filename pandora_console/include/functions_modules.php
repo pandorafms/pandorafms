@@ -2821,6 +2821,40 @@ function modules_get_color_status($status, $force_module=false)
 
 
 /**
+ * Text color status.
+ *
+ * @param string $status Type status.
+ *
+ * @return string Color.
+ */
+function modules_get_textcolor_status($status)
+{
+    $result = '#ffffff';
+    switch ($status) {
+        case AGENT_MODULE_STATUS_WARNING:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            $result = '#000000';
+        break;
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        case AGENT_MODULE_STATUS_NOT_NORMAL:
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        case AGENT_MODULE_STATUS_ALL:
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        default:
+            $result = '#ffffff';
+        break;
+    }
+
+    return $result;
+}
+
+
+/**
  * Gets a module status an modify the status and title reference variables
  *
  * @param mixed The module data (Necessary $module['datos'] and $module['estado']
@@ -3630,7 +3664,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             }
         }
 
-        if (!$selection) {
+        if (!$selection && $useName === true) {
             // Common modules.
             $final_modules = [];
             $nodes_consulted = count($modules);
@@ -3729,6 +3763,10 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
 function get_same_modules($agents, array $modules=[])
 {
     if (is_array($agents) === false || empty($agents) === true) {
+        return [];
+    }
+
+    if (is_array($modules) === false || empty($modules) === true) {
         return [];
     }
 
@@ -4223,4 +4261,51 @@ function modules_get_min_max_data($id_agent_module, $time_init=0)
     }
 
     return $data;
+}
+
+
+/**
+ * Get modules match regex.
+ *
+ * @param string $regex_alias       Regex alias.
+ * @param string $regex_name_module Regex module name.
+ * @param string $server_name       Name server.
+ *
+ * @return array
+ */
+function modules_get_regex(
+    $regex_alias,
+    $regex_name_module='',
+    $server_name=''
+) {
+    $agent_regexp = sprintf('AND tagente.alias REGEXP "%s"', $regex_alias);
+    $module_regexp = '';
+    if (empty($regex_name_module) === false) {
+        $module_regexp = sprintf(
+            'AND tagente_modulo.nombre REGEXP "%s"',
+            $regex_name_module
+        );
+    }
+
+    $sql = sprintf(
+        'SELECT tagente_modulo.id_agente_modulo as id_agent_module,
+            "%s" as server_name
+        FROM tagente_modulo
+        INNER JOIN tagente
+            ON tagente.id_agente = tagente_modulo.id_agente
+        WHERE 1=1
+        %s
+        %s',
+        $server_name,
+        $agent_regexp,
+        $module_regexp
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    return $result;
 }

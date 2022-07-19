@@ -1,4 +1,4 @@
-/* global $ */
+/* global $ jQuery */
 /* exported load_modal */
 
 var ENTERPRISE_DIR = "enterprise";
@@ -2020,12 +2020,72 @@ function progressBarSvg(option) {
   return svg;
 }
 
+// eslint-disable-next-line no-unused-vars
 function inArray(needle, haystack) {
   var length = haystack.length;
   for (var i = 0; i < length; i++) {
     if (haystack[i] == needle) return true;
   }
   return false;
+}
+
+// eslint-disable-next-line no-unused-vars
+function agent_multiple_change(e, info) {
+  info = JSON.parse(atob(info));
+  jQuery.post(
+    "ajax.php",
+    {
+      page: "operation/agentes/ver_agente",
+      get_modules_group_json: 1,
+      selection: $("#" + info.selectionModulesNameId).val(),
+      id_agents: $("#" + info.agent_name.replace("[]", "")).val(),
+      select_mode: 1
+    },
+    function(data) {
+      var name = info.modules_name.replace("[]", "");
+      $("#" + name).html("");
+      $("#checkbox-" + name + "-check-all").prop("checked", false);
+      if (data) {
+        jQuery.each(data, function(id, value) {
+          var option = $("<option></option>")
+            .attr("value", id)
+            .html(value);
+          $("#" + name).append(option);
+        });
+      }
+    },
+    "json"
+  );
+}
+
+// eslint-disable-next-line no-unused-vars
+function selection_multiple_change(info) {
+  info = JSON.parse(atob(info));
+  jQuery.post(
+    "ajax.php",
+    {
+      page: "operation/agentes/ver_agente",
+      get_modules_group_json: 1,
+      id_agents: $("#" + info.agent_name.replace("[]", "")).val(),
+      selection: $("#" + info.selectionModulesNameId).val(),
+      select_mode: 1
+    },
+    function(data) {
+      var name = info.modules_name.replace("[]", "");
+      $("#" + name).html("");
+      // Check module all.
+      $("#checkbox-" + name + "-check-all").prop("checked", false);
+      if (data) {
+        jQuery.each(data, function(id, value) {
+          var option = $("<option></option>")
+            .attr("value", id)
+            .html(value);
+          $("#" + name).append(option);
+        });
+      }
+    },
+    "json"
+  );
 }
 
 /*

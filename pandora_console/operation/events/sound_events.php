@@ -342,7 +342,8 @@ var test_sound = false;
 function test_sound_button() {
     if (!test_sound) {
         $("#button_try").attr('src', '../../images/icono_test.png');
-        $('body').append("<audio src='../../include/sounds/Star_Trek_emergency_simulation.wav' autoplay='true' hidden='true' loop='false'>");
+        var sound = '../../include/sounds/' + $('#sound_id').val();
+        $('body').append("<audio src='"+sound+"' autoplay='true' hidden='true' loop='false'>");
         test_sound = true;
     } else {
         $("#button_try").attr('src', '../../images/icono_test.png');

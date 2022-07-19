@@ -2652,8 +2652,8 @@ function visual_map_process_wizard_add_modules(
     $image,
     $id_layout,
     $range,
-    $width=0,
-    $height=0,
+    $width,
+    $height,
     $period,
     $process_value,
     $percentileitem_width,
@@ -2669,6 +2669,14 @@ function visual_map_process_wizard_add_modules(
     $fontf='lato',
     $fonts='12pt'
 ) {
+    if (empty($width) === true) {
+        $width = 0;
+    }
+
+    if (empty($height) === true) {
+        $height = 0;
+    }
+
     if (empty($id_modules)) {
         $return = ui_print_error_message(
             __('No modules selected'),
@@ -2923,8 +2931,8 @@ function visual_map_process_wizard_add_agents(
     $image,
     $id_layout,
     $range,
-    $width=0,
-    $height=0,
+    $width,
+    $height,
     $period,
     $process_value,
     $percentileitem_width,
@@ -2941,6 +2949,14 @@ function visual_map_process_wizard_add_agents(
     $fonts='12pt'
 ) {
     global $config;
+
+    if (empty($width) === true) {
+        $width = 0;
+    }
+
+    if (empty($height) === true) {
+        $height = 0;
+    }
 
     if (empty($id_agents)) {
         $return = ui_print_error_message(
@@ -4171,8 +4187,14 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
  *
  * @return string The text for the parent.
  */
-function visual_map_create_internal_name_item($label=null, $type, $image, $agent=null, $id_module, $idData)
-{
+function visual_map_create_internal_name_item(
+    $label=null,
+    $type='',
+    $image='',
+    $agent=null,
+    $id_module=0,
+    $idData=''
+) {
     $text = '';
 
     if (empty($label)) {

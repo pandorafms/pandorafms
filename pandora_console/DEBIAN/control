@@ -5,6 +5,6 @@ Priority: optional
 Section: admin
 Installed-Size: 42112
 Maintainer: Artica ST <deptec@artica.es>
-Homepage: http://pandorafms.org/
-Depends: php | php7.2, php7.2-snmp | php-snmp, php7.2-gd | php-gd, php7.2-mysqlnd | php-mysqlnd, php-db, php7.2-xmlrpc | php-xmlrpc, php-gettext, php7.2-curl | php-curl, graphviz, dbconfig-common, php7.2-ldap | php-ldap, mysql-client | virtual-mysql-client, php-xmlrpc, php7.2-zip | php-zip
+Homepage: https://pandorafms.com/
+Depends: php, php-snmp, php-gd, php-mysqlnd, php-db, php-xmlrpc, php-curl, graphviz, dbconfig-common, php-ldap, mysql-client | virtual-mysql-client, php-xmlrpc, php-zip, php-mbstring
 Description: Pandora FMS is an Open Source monitoring tool. It monitor your systems and applications, and allows you to control the status of any element of them. The web console is the graphical user interface (GUI) to manage the pool and to generate reports and graphs from the Pandora FMS monitoring process.

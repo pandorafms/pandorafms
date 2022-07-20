@@ -61,7 +61,7 @@ chmod 755 -R temp_package/DEBIAN
 #cp -aRf * temp_package/usr/share/pandora_agent/
 #but don't copy recursive the temp_package into temp_package
 
-for item in `ls | grep -v NT4 | grep -v AIX | grep -v FreeBSD | grep -v HP-UX | grep -v SunOS | grep -v temp_package`
+for item in `ls | grep -v NT4 | grep -v AIX | grep -v FreeBSD | grep -v NetBSD | grep -v HP-UX | grep -v SunOS | grep -v Darwin | grep -v OpenWRT | grep -v pandorafms.agent_unix | grep -v temp_package`
 do
 	#if  [ \( $item != 'temp_package' \) -a \( $item != 'NT4' \) ]
 	#then
@@ -133,9 +133,9 @@ echo "END"
 
 echo "Make the package \"Pandorafms agent\"."
 if [ "$USE_DOCKER_APP" == "1" ]; then 
-	eval $DPKG_DEB --build temp_package
+	eval $DPKG_DEB --root-owner-group --build temp_package
 else
-	dpkg-deb --build temp_package
+	dpkg-deb --root-owner-group --build temp_package
 fi
 mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb
 

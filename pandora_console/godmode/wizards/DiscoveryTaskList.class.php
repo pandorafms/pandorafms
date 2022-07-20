@@ -662,7 +662,7 @@ class DiscoveryTaskList extends HTML
                         $data[0] .= '\'';
                         if ($task['type'] == DISCOVERY_HOSTDEVICES) {
                             $title = __('Are you sure?');
-                            $message = 'This action will rescan the target networks.';
+                            $message = __('This action will rescan the target networks.');
                             $data[0] .= ', {title: \''.$title.'\', message: \''.$message.'\'}';
                         }
 

@@ -482,21 +482,23 @@ if (is_ajax() === true) {
                         $tmp->b64 = base64_encode(json_encode($tmp));
 
                         // Show comments events.
-                        $tmp->user_comment = $tmp->comments;
-                        if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
-                            $tmp->user_comment .= '&nbsp;&nbsp;';
-                            $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-                            $tmp->user_comment .= $tmp->b64;
-                            $tmp->user_comment .= '\',\'comments\')>;';
-                            $tmp->user_comment .= html_print_image(
-                                'images/operation.png',
-                                true,
-                                [
-                                    'title' => __('Show more'),
-                                    'class' => 'invert_filter',
-                                ]
-                            );
-                            $tmp->user_comment .= '</a>';
+                        if (empty($tmp->comments) === false) {
+                            $tmp->user_comment = $tmp->comments;
+                            if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
+                                $tmp->user_comment .= '&nbsp;&nbsp;';
+                                $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+                                $tmp->user_comment .= $tmp->b64;
+                                $tmp->user_comment .= '\',\'comments\')>;';
+                                $tmp->user_comment .= html_print_image(
+                                    'images/operation.png',
+                                    true,
+                                    [
+                                        'title' => __('Show more'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->user_comment .= '</a>';
+                            }
                         }
 
                         // Grouped events.

@@ -925,7 +925,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                         layout: '%M%nn%M:%S%nn%S',
                         labels: ['', '', '', '', '', '', ''],
                         onExpiry: function () {
-                            dt_events.draw(false);
+                            $("#table_events")
+                                .DataTable()
+                                .draw(false);
                         }
                     });
                 }

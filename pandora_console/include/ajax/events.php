@@ -97,29 +97,27 @@ if ($get_comments === true) {
     $eventsGrouped = [];
     // Consider if the event is grouped.
     $whereGrouped = '1=1';
-    if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
-        // Default grouped message filtering (evento and estado).
-        $whereGrouped = sprintf(
-            '`evento` = "%s" AND `estado` = "%s" AND `event_type` = "%s" ',
-            $event['evento'],
-            $event['estado'],
-            $event['event_type']
+    // Default grouped message filtering (evento and estado).
+    $whereGrouped = sprintf(
+        '`evento` = "%s" AND `estado` = "%s" AND `event_type` = "%s" ',
+        $event['evento'],
+        $event['estado'],
+        $event['event_type']
+    );
+
+    // If id_agente is reported, filter the messages by them as well.
+    if ((int) $event['id_agente'] > 0) {
+        $whereGrouped .= sprintf(
+            ' AND `id_agente` = %d',
+            (int) $event['id_agente']
         );
+    }
 
-        // If id_agente is reported, filter the messages by them as well.
-        if ((int) $event['id_agente'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agente` = %d',
-                (int) $event['id_agente']
-            );
-        }
-
-        if ((int) $event['id_agentmodule'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agentmodule` = %d',
-                (int) $event['id_agentmodule']
-            );
-        }
+    if ((int) $event['id_agentmodule'] > 0) {
+        $whereGrouped .= sprintf(
+            ' AND `id_agentmodule` = %d',
+            (int) $event['id_agentmodule']
+        );
     }
 
     try {

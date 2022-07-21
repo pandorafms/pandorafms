@@ -9078,3 +9078,33 @@ div#err_msg_centralised {
   margin-bottom: 4px !important;
   padding: 2px 5px !important;
 }
+
+.dataTables_wrapper {
+  overflow: auto;
+}
+
+.dataTables_wrapper .dataTables_processing {
+  margin-top: -37px !important;
+  top: 50px !important;
+  padding-top: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+.dataTables_wrapper .dataTables_processing .processing-datatables-inside {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.dataTables_wrapper .dataTables_processing .processing-datatables-inside img {
+  margin-left: 20px;
+}
+
+.loading-search-datatables-button {
+  float: right;
+  margin-right: -110px;
+  margin-top: 13px;
+}

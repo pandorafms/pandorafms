@@ -1013,13 +1013,17 @@ function html_print_select(
                 if(count_shift_'.$id.' == 2 ){
                     if(shift_array_'.$id.'[0] <= shift_array_'.$id.'[1]) {
                         for (var i = shift_array_'.$id.'[0]; i <= shift_array_'.$id.'[1]; i++) {
-                            var option_value = $("#'.$id.' option").eq(i).val();
-                            options_selecteds_'.$id.'.push(option_value);
+                            if ($("#'.$id.' option").eq(i).text().includes($(".select2-search__field").val()) == true) {
+                                var option_value = $("#'.$id.' option").eq(i).val();
+                                options_selecteds_'.$id.'.push(option_value);
+                            }
                         }
                     } else {
                         for (var i = shift_array_'.$id.'[0]; i >= shift_array_'.$id.'[1]; i--) {
-                            var option_value = $("#'.$id.' option").eq(i).val();
-                            options_selecteds_'.$id.'.push(option_value);
+                            if ($("#'.$id.' option").eq(i).text().includes($(".select2-search__field").val()) == true) {
+                                var option_value = $("#'.$id.' option").eq(i).val();
+                                options_selecteds_'.$id.'.push(option_value);
+                            }
                         }
                     }
 
@@ -6131,6 +6135,39 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
     } else {
         $output .= $adv_secondary_groups_left;
     }
+
+    return $output;
+}
+
+
+/**
+ * Prints a simple 'Go Back' button.
+ *
+ * @param string  $url     Destination Url.
+ * @param array   $options Options.
+ *       `button_class`: Class for button. 'w100p' by default.
+ *       `title`: Title of the button. 'Go Back' by default.
+ *       `action_class`: Class of icon of button. 'cancel' by default.
+ * @param boolean $return  If true, return a formed HTML element.
+ *
+ * @return mixed
+ */
+function html_print_go_back_button(string $url, array $options=[], bool $return=false)
+{
+    $output = html_print_div(
+        [
+            'class'   => ($options['button_class'] ?? 'w100p'),
+            'content' => html_print_button(
+                ($options['title'] ?? __('Go back')),
+                'go_back',
+                false,
+                'window.location.href = \''.$url.'\'',
+                'class="sub '.($options['action_class'] ?? ' cancel').' right"',
+                true
+            ),
+        ],
+        $return
+    );
 
     return $output;
 }

@@ -1178,19 +1178,14 @@ function ui_format_alert_row(
             $id_agent = modules_get_agentmodule_agent($alert['id_agent_module']);
         }
 
-        if (is_metaconsole() === true || !can_user_access_node()) {
-            $pwd = $server['auth_token'];
-            // Create HASH login info.
-            $user = $config['id_user'];
-
-            // Extract auth token from serialized field.
-            $pwd_deserialiced = json_decode($pwd, true);
-            $hashdata = $user.$pwd_deserialiced['auth_token'];
-
-            $hashdata = md5($hashdata);
-            $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
-
-            $data[$index['agent_name']] .= '<a href="'.$url.'">'.'<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b></a>';
+        if (is_metaconsole() === true) {
+            // Do not show link if user cannot access node
+            if ((bool) can_user_access_node() === true) {
+                $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'];
+                $data[$index['agent_name']] .= '<a href="'.$url.'">'.'<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b></a>';
+            } else {
+                $data[$index['agent_name']] .= '<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b>';
+            }
         } else {
             if ($agent_style !== false) {
                 $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';

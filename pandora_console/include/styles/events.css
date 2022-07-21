@@ -39,7 +39,7 @@ form.flex-row ul {
   margin: 0.5em 3em 0.5em 0;
 }
 
-div.filter_input_little {
+form div.filter_input_little {
   flex: 1;
   display: flex;
   flex-direction: row;
@@ -130,6 +130,14 @@ table.dataTable tbody td {
 .filter_input > select,
 .filter_input > input {
   flex: 1;
+}
+
+form.flex-row div.filter_input.filter_input_switch {
+  justify-content: flex-start;
+}
+
+form.flex-row div.filter_input.filter_input_switch .p-slider {
+  width: 30px;
 }
 
 fieldset {

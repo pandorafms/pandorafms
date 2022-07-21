@@ -38,4 +38,6 @@ ALTER TABLE `tautoconfig` ADD COLUMN `executed` TINYINT UNSIGNED NOT NULL DEFAUL
 
 ALTER TABLE `tusuario` DROP COLUMN `metaconsole_assigned_server`;
 
+ALTER TABLE `tevent_filter` ADD COLUMN `search_secondary_groups` INT NOT NULL DEFAULT 0;
+
 COMMIT;

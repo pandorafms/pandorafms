@@ -89,6 +89,7 @@ if ($id) {
     $tag_without_base64 = base64_encode($tag_without_json_clean);
 
     $filter_only_alert = $filter['filter_only_alert'];
+    $search_secondary_groups = $filter['search_secondary_groups'];
     $custom_data = $filter['custom_data'];
     $custom_data_filter_type = $filter['custom_data_filter_type'];
 
@@ -126,6 +127,7 @@ if ($id) {
     $tag_without_json = $tag_without_json_clean = json_encode([]);
     $tag_without_base64 = base64_encode($tag_without_json);
     $filter_only_alert = '';
+    $search_secondary_groups = 0;
 }
 
 if ($update || $create) {
@@ -167,6 +169,8 @@ if ($update || $create) {
     $tag_without_json = io_safe_input(base64_decode($tag_without_base64));
 
     $filter_only_alert = get_parameter('filter_only_alert', '');
+    $search_secondary_groups = get_parameter('search_secondary_groups', 0);
+
     $custom_data = get_parameter('custom_data', '');
     $custom_data_filter_type = get_parameter('custom_data_filter_type', '');
 
@@ -193,6 +197,7 @@ if ($update || $create) {
         'id_extra'                => $id_extra,
         'user_comment'            => $user_comment,
         'filter_only_alert'       => $filter_only_alert,
+        'search_secondary_groups' => $search_secondary_groups,
         'custom_data'             => $custom_data,
         'custom_data_filter_type' => $custom_data_filter_type,
     ];

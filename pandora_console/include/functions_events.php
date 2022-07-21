@@ -626,6 +626,7 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'tag_with'
  *     'tag_without'
  *     'filter_only_alert'
+ *     'search_secondary_groups'
  *     'module_search'
  *     'group_rep'
  *     'server_id'
@@ -904,11 +905,18 @@ function events_get_all(
             $groups = [ $groups ];
         }
 
-        $sql_filters[] = sprintf(
-            ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-            join(',', $groups),
-            join(',', $groups)
-        );
+        if ((bool) $filter['search_secondary_groups'] === true) {
+            $sql_filters[] = sprintf(
+                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                join(',', $groups),
+                join(',', $groups)
+            );
+        } else {
+            $sql_filters[] = sprintf(
+                ' AND te.id_grupo IN (%s)',
+                join(',', $groups)
+            );
+        }
     }
 
     // Skip system messages if user is not PM.
@@ -982,11 +990,18 @@ function events_get_all(
         $EW_groups = users_get_groups($config['id_user'], 'EW', true, true);
 
         // Get groups where user have ER grants.
-        $sql_filters[] = sprintf(
-            ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
-            join(', ', array_keys($ER_groups)),
-            join(', ', array_keys($ER_groups))
-        );
+        if ((bool) $filter['search_secondary_groups'] === true) {
+            $sql_filters[] = sprintf(
+                ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
+                join(', ', array_keys($ER_groups)),
+                join(', ', array_keys($ER_groups))
+            );
+        } else {
+            $sql_filters[] = sprintf(
+                ' AND te.id_grupo IN ( %s )',
+                join(', ', array_keys($ER_groups))
+            );
+        }
     }
 
     // Prepare agent join sql filters.
@@ -1396,19 +1411,33 @@ function events_get_all(
     ) {
         $tgrupo_join = 'INNER';
         if (is_array($groups) === true) {
-            $tgrupo_join_filters[] = sprintf(
-                ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                 OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
-                join(', ', $groups),
-                join(', ', $groups)
-            );
+            if ((bool) $filter['search_secondary_groups'] === true) {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+                    OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
+                    join(', ', $groups),
+                    join(', ', $groups)
+                );
+            } else {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))',
+                    join(', ', $groups)
+                );
+            }
         } else {
-            $tgrupo_join_filters[] = sprintf(
-                ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
-                 OR (tg.id_grupo = tasg.id_group AND tasg.id_group = %s)',
-                $groups,
-                $groups
-            );
+            if ((bool) $filter['search_secondary_groups'] === true) {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
+                    OR (tg.id_grupo = tasg.id_group AND tasg.id_group = %s)',
+                    $groups,
+                    $groups
+                );
+            } else {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)',
+                    $groups
+                );
+            }
         }
     } else {
         $tgrupo_join_filters[] = ' te.id_grupo = tg.id_grupo';
@@ -1418,7 +1447,9 @@ function events_get_all(
     $event_lj = '';
     if (!$user_is_admin || ($user_is_admin && isset($groups) === true && $groups > 0)) {
         db_process_sql('SET group_concat_max_len = 9999999');
-        $event_lj = events_get_secondary_groups_left_join($table);
+        if ((bool) $filter['search_secondary_groups'] === true) {
+            $event_lj = events_get_secondary_groups_left_join($table);
+        }
     }
 
     $group_selects = '';

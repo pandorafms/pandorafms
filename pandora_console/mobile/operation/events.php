@@ -1101,7 +1101,7 @@ class Events
         if (is_metaconsole() === false) {
             $count = events_get_all(
                 'count',
-                $filters,
+                $filters
             );
 
             if ($count !== false) {

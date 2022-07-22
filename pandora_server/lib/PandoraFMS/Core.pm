@@ -573,7 +573,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
 				# All day.
 				$inSlot = 1;
-			} elsif ($timeBlock->{'start'} le $time && $timeBlock->{'end'} ge $time) {
+			} elsif ($timeBlock->{'start'} le $time && (($timeBlock->{'end'} eq '00:00:00') || ($timeBlock->{'end'} ge $time))) {
 				# In range.
 				$inSlot = 1;
 			}

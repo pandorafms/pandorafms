@@ -90,6 +90,7 @@ $node_id = (int) get_parameter('node_id', 0);
 
 if ($get_comments === true) {
     $event = get_parameter('event', false);
+    $event_rep = get_parameter('event_rep', false);
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
@@ -97,27 +98,30 @@ if ($get_comments === true) {
     $eventsGrouped = [];
     // Consider if the event is grouped.
     $whereGrouped = '1=1';
-    // Default grouped message filtering (evento and estado).
-    $whereGrouped = sprintf(
-        '`evento` = "%s" AND `estado` = "%s" AND `event_type` = "%s" ',
-        $event['evento'],
-        $event['estado'],
-        $event['event_type']
-    );
-
-    // If id_agente is reported, filter the messages by them as well.
-    if ((int) $event['id_agente'] > 0) {
-        $whereGrouped .= sprintf(
-            ' AND `id_agente` = %d',
-            (int) $event['id_agente']
+    if (isset($event_rep) === true && $event_rep > 0) {
+        // Default grouped message filtering (evento and estado).
+        $whereGrouped = sprintf(
+            '`evento` = "%s" AND `estado` = "%s"',
+            $event['evento'],
+            $event['estado']
         );
-    }
 
-    if ((int) $event['id_agentmodule'] > 0) {
-        $whereGrouped .= sprintf(
-            ' AND `id_agentmodule` = %d',
-            (int) $event['id_agentmodule']
-        );
+        // If id_agente is reported, filter the messages by them as well.
+        if ((int) $event['id_agente'] > 0) {
+            $whereGrouped .= sprintf(
+                ' AND `id_agente` = %d',
+                (int) $event['id_agente']
+            );
+        }
+
+        if ((int) $event['id_agentmodule'] > 0) {
+            $whereGrouped .= sprintf(
+                ' AND `id_agentmodule` = %d',
+                (int) $event['id_agentmodule']
+            );
+        }
+    } else {
+        $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
     }
 
     try {
@@ -1629,7 +1633,7 @@ if ($get_extended_event) {
     $filter = get_parameter('filter', []);
     $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
-    $event_rep = $event['event_rep'];
+    $event_rep = $group_rep;
     $timestamp_first = $event['timestamp_first'];
     $timestamp_last = $event['timestamp_last'];
     $server_id = $event['server_id'];
@@ -1964,7 +1968,8 @@ if ($get_extended_event) {
                 data : {
                     page: "include/ajax/events",
                     get_comments: 1,
-                    event: '.json_encode($event).'
+                    event: '.json_encode($event).',
+                    event_rep: '.$event_rep.'
                 },
                 dataType : "html",
                 success: function (data) {

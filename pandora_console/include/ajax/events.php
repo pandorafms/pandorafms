@@ -99,9 +99,8 @@ if ($get_comments === true) {
     $whereGrouped = '1=1';
     // Default grouped message filtering (evento and estado).
     $whereGrouped = sprintf(
-        '`evento` = "%s" AND `estado` = "%s" AND `event_type` = "%s" ',
+        '`evento` = "%s" AND `event_type` = "%s" ',
         $event['evento'],
-        $event['estado'],
         $event['event_type']
     );
 

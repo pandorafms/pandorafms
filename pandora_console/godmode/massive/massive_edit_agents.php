@@ -239,9 +239,8 @@ if ($update_agents) {
         }
     }
 
-    // TODO:XXX
     // CONF FILE DELETION.
-    if (isset($values['delete_conf'])) {
+    if (isset($values['delete_conf']) === true) {
         unset($values['delete_conf']);
         $n_deleted = 0;
         foreach ($id_agents as $id_agent) {
@@ -282,8 +281,6 @@ if ($update_agents) {
     ) {
         $id_agents = [];
     }
-
-    hd($values);
 
     $result = [];
     foreach ($id_agents as $id_agent) {
@@ -928,7 +925,7 @@ $table->data[1][1] .= html_print_radio_button_extended(
 // Status (Disabled / Enabled).
 $table->data[2][0] = __('Status');
 $table->data[2][1] = __('No change').' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$table->data[2][1] .= html_print_radio_button_extended(
     'disabled',
     -1,
     '',
@@ -939,11 +936,11 @@ $table->data[1][1] .= html_print_radio_button_extended(
     true
 );
 $table->data[2][1] .= __('Disabled').' ';
-$table->data[1][1] .= ui_print_help_tip(
+$table->data[2][1] .= ui_print_help_tip(
     __('If the remote configuration is enabled, it will also go into standby mode when disabling it.'),
     true
 ).' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$table->data[2][1] .= html_print_radio_button_extended(
     'disabled',
     1,
     '',
@@ -954,7 +951,7 @@ $table->data[1][1] .= html_print_radio_button_extended(
     true
 );
 $table->data[2][1] .= __('Active').' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$table->data[2][1] .= html_print_radio_button_extended(
     'disabled',
     0,
     '',
@@ -967,7 +964,6 @@ $table->data[1][1] .= html_print_radio_button_extended(
 
 // Remote configuration.
 $table->data[3][0] = __('Remote configuration');
-
 // Delete remote configuration.
 $table->data[3][1] = '<div id="delete_configurations" class="invisible">';
 $table->data[3][1] .= __('Delete available remote configurations');
@@ -997,7 +993,7 @@ foreach ($listIcons as $index => $value) {
 }
 
 $path = 'images/gis_map/icons/';
-// TODO set better method the path
+// TODO set better method the path.
 if ($icon_path == '') {
     $display_icons = 'none';
     // Hack to show no icon. Use any given image to fix not found image errors.

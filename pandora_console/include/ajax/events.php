@@ -356,6 +356,7 @@ if ($save_event_filter) {
         io_json_mb_encode([])
     );
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
+    $values['search_secondary_groups'] = get_parameter('search_secondary_groups');
     $values['id_group_filter'] = get_parameter('id_group_filter');
     $values['date_from'] = get_parameter('date_from');
     $values['time_from'] = get_parameter('time_from');
@@ -412,6 +413,7 @@ if ($update_event_filter) {
         io_json_mb_encode([])
     );
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
+    $values['search_secondary_groups'] = get_parameter('search_secondary_groups');
     $values['id_group_filter'] = get_parameter('id_group_filter');
     $values['date_from'] = get_parameter('date_from');
     $values['time_from'] = get_parameter('time_from');
@@ -457,31 +459,32 @@ if ($get_filter_values) {
 
     if ($event_filter === false) {
         $event_filter = [
-            'status'            => EVENT_NO_VALIDATED,
-            'event_view_hr'     => $config['event_view_hr'],
-            'group_rep'         => 1,
-            'tag_with'          => [],
-            'tag_without'       => [],
-            'history'           => false,
-            'module_search'     => '',
-            'filter_only_alert' => '-1',
-            'user_comment'      => '',
-            'id_extra'          => '',
-            'id_user_ack'       => '',
-            'date_from'         => '',
-            'time_from'         => '',
-            'date_to'           => '',
-            'time_to'           => '',
-            'severity'          => '',
-            'event_type'        => '',
-            'group_rep'         => 0,
-            'id_group'          => 0,
-            'id_group_filter'   => 0,
-            'group_name'        => 'All',
-            'text_agent'        => '',
-            'id_agent'          => 0,
-            'id_name'           => 'None',
-            'filter_id'         => 0,
+            'status'                  => EVENT_NO_VALIDATED,
+            'event_view_hr'           => $config['event_view_hr'],
+            'group_rep'               => 1,
+            'tag_with'                => [],
+            'tag_without'             => [],
+            'history'                 => false,
+            'module_search'           => '',
+            'filter_only_alert'       => '-1',
+            'search_secondary_groups' => 0,
+            'user_comment'            => '',
+            'id_extra'                => '',
+            'id_user_ack'             => '',
+            'date_from'               => '',
+            'time_from'               => '',
+            'date_to'                 => '',
+            'time_to'                 => '',
+            'severity'                => '',
+            'event_type'              => '',
+            'group_rep'               => 0,
+            'id_group'                => 0,
+            'id_group_filter'         => 0,
+            'group_name'              => 'All',
+            'text_agent'              => '',
+            'id_agent'                => 0,
+            'id_name'                 => 'None',
+            'filter_id'               => 0,
         ];
     } else {
         $event_filter['module_search'] = io_safe_output(
@@ -649,6 +652,8 @@ function load_form_filter() {
                     $("#hidden-tag_without").val(val);
                 if (i == 'filter_only_alert')
                     $("#filter_only_alert").val(val);
+                if (i == 'search_secondary_groups')
+                    $("#checkbox-search_secondary_groups").val(val);
                 if (i == 'id_group_filter')
                     $("#id_group_filter").val(val);
                 if (i == 'source')
@@ -891,6 +896,7 @@ function save_new_filter() {
             "tag_with": Base64.decode($("#hidden-tag_with").val()),
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
             "filter_only_alert" : $("#filter_only_alert").val(),
+            "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
             "id_group_filter": $("#id_group_filter").val(),
             "date_from": $("#text-date_from").val(),
             "time_from": $("#text-time_from").val(),
@@ -966,6 +972,7 @@ function save_update_filter() {
         "tag_with" : Base64.decode($("#hidden-tag_with").val()),
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),
         "filter_only_alert" : $("#filter_only_alert").val(),
+        "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
         "id_group_filter": $("#id_group_filter").val(),
         "date_from": $("#text-date_from").val(),
         "time_from": $("#text-time_from").val(),
@@ -2467,6 +2474,7 @@ if ($get_events_fired) {
             'tag_with'                => [],
             'tag_without'             => [],
             'filter_only_alert'       => -1,
+            'search_secondary_groups' => 0,
             'source'                  => '',
             'id_extra'                => '',
             'user_comment'            => '',

@@ -46,6 +46,12 @@ $hash = get_parameter('hash');
 $file_raw = get_parameter('file');
 
 $file = base64_decode(urldecode($file_raw));
+// Avoid possible inifite loop with referer.
+if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) === true && $_SERVER['HTTP_REFERER'] === $_SERVER['HTTP_ORIGIN'].$_SERVER['REQUEST_URI'])) {
+    $refererPath = ui_get_full_url('index.php');
+} else {
+    $refererPath = $_SERVER['HTTP_REFERER'];
+}
 
 if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier']) || isset($_SERVER['HTTP_REFERER']) === false) {
     $errorMessage = __('Security error. Please contact the administrator.');
@@ -84,12 +90,6 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
 
     if (empty($downloadable_file) === true || file_exists($downloadable_file) === false) {
         $errorMessage = __('File is missing in disk storage. Please contact the administrator.');
-        // Avoid possible inifite loop with referer.
-        if (isset($_SERVER['HTTP_ORIGIN']) === true && $_SERVER['HTTP_REFERER'] === $_SERVER['HTTP_ORIGIN'].$_SERVER['REQUEST_URI']) {
-            $refererPath = ui_get_full_url('index.php');
-        } else {
-            $refererPath = $_SERVER['HTTP_REFERER'];
-        }
     } else {
         // Everything went well.
         header('Content-type: aplication/octet-stream;');
@@ -106,11 +106,12 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
     document.addEventListener('DOMContentLoaded', function () {
         var refererPath = '<?php echo $refererPath; ?>';
         var errorFileOutput = '<?php echo $errorMessage; ?>';
-
+        if(refererPath != ''){
         document.body.innerHTML = `<form action="` + refererPath + `" name="failedReturn" method="post" style="display:none;">
                     <input type="hidden" name="errorFileOutput" value="` + errorFileOutput + `" />
                     </form>`;
 
         document.forms['failedReturn'].submit();
+        }
     }, false);
 </script>

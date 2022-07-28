@@ -166,6 +166,17 @@ class SystemGroupStatusWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['groupId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = \db_get_value(
+                'id_grupo',
+                'tgrupo',
+                'id_grupo',
+                $this->values['groupId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -436,15 +447,16 @@ class SystemGroupStatusWidget extends Widget
         }
 
         $module_counters = groupview_get_modules_counters($selected_groups);
+        $result_groups = [];
+        if (empty($module_counters) === false) {
+            foreach ($module_counters as $key => $item) {
+                $module_counters[$key]['name'] = groups_get_name($item['g']);
+            }
 
-        foreach ($module_counters as $key => $item) {
-            $module_counters[$key]['name'] = groups_get_name($item['g']);
+            $keys = array_column($module_counters, 'g');
+            $values = array_values($module_counters);
+            $result_groups = array_combine($keys, $values);
         }
-
-        $keys = array_column($module_counters, 'g');
-        $values = array_values($module_counters);
-
-        $result_groups = array_combine($keys, $values);
 
         if (empty($all_counters) === false) {
             $result_groups[0] = $all_counters;

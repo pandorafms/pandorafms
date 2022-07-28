@@ -236,7 +236,7 @@ class MonitorHealthWidget extends Widget
 
         $all_data = tactical_status_modules_agents(
             $config['id_user'],
-            $user_strict,
+            false,
             'AR'
         );
 

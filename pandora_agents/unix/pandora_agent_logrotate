@@ -7,4 +7,7 @@
 	compress
 	notifempty
 	copytruncate
+	postrotate
+		/bin/systemctl restart pandora_agent_daemon
+	endscript
 }

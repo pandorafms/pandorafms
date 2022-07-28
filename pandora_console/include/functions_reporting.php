@@ -7079,6 +7079,10 @@ function reporting_sql($report, $content)
             $historical_db = db_get_value_sql(
                 'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
             );
+
+            if (is_metaconsole() === true) {
+                $historical_db = $content['historical_db'];
+            }
         } else {
             $historical_db = $content['historical_db'];
         }

@@ -945,7 +945,7 @@ if (is_ajax() === true) {
                             $custom_data_str = '';
                             if (isset($custom_data) === true && empty($custom_data) === false) {
                                 foreach ($custom_data as $key => $value) {
-                                    $custom_data_str .= $value['attr_name'].' = '.$value['val'].'<br>';
+                                    $custom_data_str .= $key.' = '.$value.'<br>';
                                 }
                             }
 

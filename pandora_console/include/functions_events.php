@@ -1092,7 +1092,7 @@ function events_get_all(
     // Custom data.
     if (empty($filter['custom_data']) === false) {
         if (isset($config['dbconnection']->server_version) === true
-            && $config['dbconnection']->server_version > 50600
+            && $config['dbconnection']->server_version > 80000
         ) {
             if ($filter['custom_data_filter_type'] === '1') {
                 $sql_filters[] = sprintf(

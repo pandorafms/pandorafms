@@ -363,12 +363,6 @@ class Agent
             $events = new Events();
             $events->addJavascriptDialog();
 
-            $options = $events->get_event_dialog_options();
-            $ui->addDialog($options);
-
-            $options = $events->get_event_dialog_error_options($options);
-            $ui->addDialog($options);
-
             $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
             $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 

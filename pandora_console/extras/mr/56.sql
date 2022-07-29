@@ -41,4 +41,6 @@ ALTER TABLE `tusuario` DROP COLUMN `metaconsole_assigned_server`;
 
 ALTER TABLE `tagente` ADD COLUMN `fixed_ip` TINYINT UNSIGNED NOT NULL DEFAULT 0;
 
+ALTER TABLE `tevent_filter` ADD COLUMN `search_secondary_groups` INT NOT NULL DEFAULT 0;
+
 COMMIT;

@@ -3755,7 +3755,7 @@ function events_get_response_target(
 
     // Parse the event custom data.
     if (empty($event['custom_data']) === false) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
         }
@@ -4297,7 +4297,7 @@ function events_page_custom_data($event)
     $table->head = [];
     $table->class = 'table_modal_alternate';
 
-    $json_custom_data = base64_decode($event['custom_data']);
+    $json_custom_data = $event['custom_data'];
     $custom_data = json_decode($json_custom_data);
 
     if ($custom_data === null) {
@@ -5308,7 +5308,7 @@ function events_get_field_value_by_event_id(
 
     // Parse the event custom data.
     if (!empty($event['custom_data'])) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $val) {
             $value = str_replace('_customdata_'.$key.'_', $val, $value);
         }

@@ -1401,7 +1401,7 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule, te.estado';
+            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule';
         break;
 
         case '2':

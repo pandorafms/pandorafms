@@ -101,9 +101,8 @@ if ($get_comments === true) {
     if (isset($event_rep) === true && $event_rep > 0) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
-            '`evento` = "%s" AND `estado` = "%s"',
-            $event['evento'],
-            $event['estado']
+            '`evento` = "%s"',
+            $event['evento']
         );
 
         // If id_agente is reported, filter the messages by them as well.

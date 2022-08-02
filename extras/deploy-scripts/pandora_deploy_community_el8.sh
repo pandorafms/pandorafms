@@ -76,7 +76,7 @@ check_pre_pandora () {
     export MYSQL_PWD=$DBPASS
 
     echo -en "${cyan}Checking environment ... ${reset}"
-    rpm -qa | grep pandora &>> /dev/null && local fail=true
+    rpm -qa | grep 'pandorafms_' &>> /dev/null && local fail=true
     [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
     echo "use $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true
@@ -350,8 +350,8 @@ vmware_dependencies=" \
     perl-Crypt-Random-Seed \
     perl-Math-Random-ISAAC \
     perl-JSON \
+    perl-Crypt-SSLeay \
     http://firefly.artica.es/centos8/perl-Crypt-OpenSSL-AES-0.02-1.el8.x86_64.rpm \
-    http://mirror.ghettoforge.org/distributions/gf/el/8/gf/x86_64/perl-Crypt-SSLeay-0.73_07-1.gf.el8.x86_64.rpm \
     http://firefly.artica.es/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm"
 execute_cmd "dnf install -y $vmware_dependencies" "Installing SDK VMware perl dependencies"
 

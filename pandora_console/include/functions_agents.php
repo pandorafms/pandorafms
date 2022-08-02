@@ -369,7 +369,11 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         }
 
         // Filter by agents id.
-        $id_agents_list = implode(',', $id_agent);
+        if (is_array($id_agent) === true && empty($id_agent) === false) {
+            $id_agents_list = implode(',', $id_agent);
+        } else {
+            $id_agents_list = $id_agent;
+        }
 
         if ($id_agents_list === '') {
             $id_agents_list = '0';
@@ -4293,4 +4297,141 @@ function agents_get_offspring(int $id_agent)
     $return += [$id_agent => 0];
 
     return $return;
+}
+
+
+function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
+{
+    ui_require_css_file('heatmap');
+
+    $all_modules = agents_get_modules($id_agent);
+    if (empty($all_modules)) {
+        return null;
+    }
+
+    $total_modules = count($all_modules);
+
+    // Best square.
+    $high = (float) max($width, $height);
+    $low = 0.0;
+
+    while (abs($high - $low) > 0.000001) {
+        $mid = (($high + $low) / 2.0);
+        $midval = (floor($width / $mid) * floor($height / $mid));
+        if ($midval >= $total_modules) {
+            $low = $mid;
+        } else {
+            $high = $mid;
+        }
+    }
+
+    $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
+
+    // Print starmap.
+    $html = sprintf(
+        '<svg id="svg_%s" style="width: %spx; height: %spx;">',
+        $id_agent,
+        $width,
+        $height
+    );
+
+    $html .= '<g>';
+    $row = 0;
+    $column = 0;
+    $x = 0;
+    $y = 0;
+    $cont = 1;
+    foreach ($all_modules as $key => $value) {
+        // Colour by status.
+        $status = modules_get_agentmodule_status($key);
+        switch ($status) {
+            case 0:
+            case 4:
+            case 300:
+                $status = 'normal';
+            break;
+
+            case 1:
+            case 100:
+                $status = 'critical';
+            break;
+
+            case 2:
+            case 200:
+                $status = 'warning';
+            break;
+
+            case 3:
+                $status = 'unknown';
+            break;
+
+            case 5:
+                $status = 'notinit';
+            break;
+        }
+
+        $html .= sprintf(
+            '<rect id="%s" x="%s" y="%s" row="%s" col="%s" width="%s" height="%s" class="%s_%s"></rect>',
+            'rect_'.$cont,
+            $x,
+            $y,
+            $row,
+            $column,
+            $square_length,
+            $square_length,
+            $status,
+            random_int(1, 10)
+        );
+
+        $y += $square_length;
+        $row++;
+        if ((int) ($y + $square_length) > (int) $height) {
+            $y = 0;
+            $x += $square_length;
+            $row = 0;
+            $column++;
+        }
+
+        if ((int) ($x + $square_length) > (int) $width) {
+            $x = 0;
+            $y += $square_length;
+            $column = 0;
+            $row++;
+        }
+
+        $cont++;
+    }
+    ?>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            const total_modules = '<?php echo $total_modules; ?>';
+
+            function getRandomInteger(min, max) {
+                return Math.floor(Math.random() * max) + min;
+            }
+
+            function oneSquare(solid, time) {
+                var randomPoint = getRandomInteger(1, total_modules);
+                let target = $(`#rect_${randomPoint}`);
+                let class_name = target.attr('class');
+                class_name = class_name.split('_')[0];
+                setTimeout(function() {
+                    target.removeClass();
+                    target.addClass(`${class_name}_${solid}`);
+                    oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                }, time);
+            }
+
+            let cont = 0;
+            while (cont < Math.ceil(total_modules / 3)) {
+                oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                cont ++;
+            }
+        });
+    </script>
+    <?php
+    $html .= '</g>';
+    $html .= '</svg>';
+
+    return $html;
 }

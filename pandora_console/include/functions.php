@@ -5997,6 +5997,18 @@ function send_test_email(
 
 
 /**
+ * Microtime float number.
+ *
+ * @return float
+ */
+function microtime_float()
+{
+    list($usec, $sec) = explode(' ', microtime());
+    return ((float) $usec + (float) $sec);
+}
+
+
+/**
  * Return array of ancestors of item, given array.
  *
  * @param integer     $item    From index.

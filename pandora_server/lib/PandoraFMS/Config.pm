@@ -550,6 +550,7 @@ sub pandora_load_config {
 	$pa_config->{"alertserver"} = 0; # 7.0 756
 	$pa_config->{"alertserver_threads"} = 1; # 7.0 756
 	$pa_config->{"alertserver_warn"} = 180; # 7.0 756
+	$pa_config->{"alertserver_queue"} = 0; # 7.0 764
 
 	$pa_config->{'ncmserver'} = 0; # 7.0 758
 	$pa_config->{'ncmserver_threads'} = 1; # 7.0 758
@@ -1283,6 +1284,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^alertserver_warn\s+([0-9]*)/i) {
 			$pa_config->{'alertserver_warn'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^alertserver_queue\s+([0-1]*)/i) {
+			$pa_config->{'alertserver_queue'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^ncmserver\s+([0-9]*)/i){
 			$pa_config->{'ncmserver'}= clean_blank($1);

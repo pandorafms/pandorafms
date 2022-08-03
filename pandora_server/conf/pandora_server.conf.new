@@ -723,6 +723,9 @@ alertserver_threads 4
 # Generate an hourly warning event if alert execution is being delayed more than alertserver_warn seconds.
 alertserver_warn 180
 
+# If set to 1, alerts are queued for the Pandora FMS Alert Server.If alertserver is set to 1, alerts are always queued.
+alertserver_queue 0
+
 # Pandora FMS HA MySQL cluster splitbrain auto-recovery (PANDORA FMS ENTERPRISE ONLY)
 # IMPORTANT! Please understand and configure all settings from pandora_console/index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster&tab=setup
 # before enable this feature.

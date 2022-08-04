@@ -1193,6 +1193,20 @@ if ($conf{'_force'} == 1) {
 	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
 }
 
+# Get a lock merging.
+my $lock_merge = db_get_lock ($dbh, 'merge-working', $LOCK_TIMEOUT, 1);
+if ($lock_merge == 0) { 
+	log_message ('', " [*] Merge is running.\n\n");
+	exit 1;
+}
+
+# Get a lock on merging events.
+my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
+if ($lock_merge_events == 0) { 
+	log_message ('', " [*] Merge events is running.\n\n");
+	exit 1;
+}
+
 # Get a lock on dbname.
 my $lock = db_get_pandora_lock ($dbh, $lock_name, $LOCK_TIMEOUT);
 if ($lock == 0) { 

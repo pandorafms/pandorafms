@@ -122,25 +122,23 @@ if (isset($_GET['server'])) {
 
     $buttons = '';
 
-    if ($server_type !== 13) {
-        // Buttons.
-        $buttons = [
-            'standard_editor' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=standard_editor&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('Standard editor')]).'</a>',
-            ],
-            'advanced_editor' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=advanced_editor&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Advanced editor')]).'</a>',
-            ],
-        ];
+    // Buttons.
+    $buttons = [
+        'standard_editor' => [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=standard_editor&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('Standard editor')]).'</a>',
+        ],
+        'advanced_editor' => [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=advanced_editor&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Advanced editor')]).'</a>',
+        ],
+    ];
 
-        $buttons[$tab]['active'] = true;
-    }
+    $buttons[$tab]['active'] = true;
 
     ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true, $buttons);
 
-    if ($server_type !== 13 && $tab == 'standard_editor') {
+    if ($tab == 'standard_editor') {
         $advanced_editor = false;
     }
 

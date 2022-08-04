@@ -138,8 +138,18 @@ if (isset($_GET['server'])) {
 
     ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true, $buttons);
 
-    if ($tab == 'standard_editor') {
+    if ($tab === 'standard_editor') {
         $advanced_editor = false;
+
+        if ($server_type === 13) {
+            echo "<table cellpadding='4' cellspacing='4' class='databox filters font_bold margin-bottom-10' width='100%'>
+            <tr>";
+            echo '<td class="w100p">';
+            echo __('Dynamic search').'&nbsp;&nbsp;';
+            html_print_input_text('search_config_token', $search, '', 12);
+            echo '</td>';
+            echo '</tr></table>';
+        }
     }
 
     enterprise_include('godmode/servers/server_disk_conf_editor.php');

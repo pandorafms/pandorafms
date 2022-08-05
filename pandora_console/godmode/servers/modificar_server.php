@@ -134,6 +134,14 @@ if (isset($_GET['server'])) {
         ],
     ];
 
+    if ($server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+        $buttons['agent_editor'] = [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=agent_editor&pure='.$pure.'">'.html_print_image('images/agent.png', true, ['title' => __('Advanced editor')]).'</a>',
+
+        ];
+    }
+
     $buttons[$tab]['active'] = true;
 
     ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true, $buttons);
@@ -150,6 +158,8 @@ if (isset($_GET['server'])) {
             echo '</td>';
             echo '</tr></table>';
         }
+    } else if ($tab === 'agent_editor' && $server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+        $advanced_editor = 'agent_editor';
     }
 
     enterprise_include('godmode/servers/server_disk_conf_editor.php');

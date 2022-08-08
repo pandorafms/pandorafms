@@ -1240,7 +1240,12 @@ if ($searchPage) {
             $sec2 = '';
         }
 
-        $acl_reporting_console_node = acl_reporting_console_node($page);
+        $tab = get_parameter('tab', '');
+        if (empty($tab) === true) {
+            $tab = get_parameter('wiz', '');
+        }
+
+        $acl_reporting_console_node = acl_reporting_console_node($page, $tab);
         if ($acl_reporting_console_node === false) {
             include 'general/reporting_console_node.php';
             exit;

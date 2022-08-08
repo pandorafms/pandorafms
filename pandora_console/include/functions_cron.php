@@ -492,7 +492,10 @@ function cron_list_table()
         $table->head[4] = __('Next execution');
         $table->head[5] = __('Last run');
         $table->head[6] = __('Group');
-        $table->head[7] = __('Actions');
+        if ($manage_perms || $manage_pandora) {
+            $table->head[7] = __('Actions');
+        }
+
         $table->align[7] = 'left';
 
         foreach ($defined_tasks as $task) {
@@ -602,7 +605,7 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_generate_report_by_template':
-                    if ((bool) $task['enabled'] === true && ($write_perms === true || $manage_pandora === true)) {
+                    if ((bool) $task['enabled'] === true) {
                         $data[0] = html_print_anchor(
                             [
                                 'href'    => sprintf(
@@ -954,25 +957,27 @@ function cron_list_table()
                 }
             }
 
-            $data[7] .= html_print_anchor(
-                [
-                    'href'    => sprintf(
-                        '%stoggle_console_task=%s&id_user_task=%s',
-                        $url,
-                        ((bool) $task['enabled'] === true) ? '0' : '1',
-                        $task['id']
-                    ),
-                    'content' => html_print_image(
-                        ((bool) $task['enabled'] === true) ? 'images/lightbulb.png' : 'images/lightbulb_off.png',
-                        true,
-                        [
-                            'title' => ((bool) $task['enabled'] === true) ? __('Disable task') : __('Enable task'),
-                            'class' => 'invert_filter',
-                        ]
-                    ),
-                ],
-                true
-            );
+            if ($manage_perms || $manage_pandora) {
+                $data[7] .= html_print_anchor(
+                    [
+                        'href'    => sprintf(
+                            '%stoggle_console_task=%s&id_user_task=%s',
+                            $url,
+                            ((bool) $task['enabled'] === true) ? '0' : '1',
+                            $task['id']
+                        ),
+                        'content' => html_print_image(
+                            ((bool) $task['enabled'] === true) ? 'images/lightbulb.png' : 'images/lightbulb_off.png',
+                            true,
+                            [
+                                'title' => ((bool) $task['enabled'] === true) ? __('Disable task') : __('Enable task'),
+                                'class' => 'invert_filter',
+                            ]
+                        ),
+                    ],
+                    true
+                );
+            }
 
             array_push($table->data, $data);
         }

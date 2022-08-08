@@ -6106,7 +6106,7 @@ function is_reporting_console_node()
  *
  * @return boolean
  */
-function acl_reporting_console_node($path)
+function acl_reporting_console_node($path, $tab='')
 {
     global $config;
     if (is_reporting_console_node() === false) {
@@ -6114,17 +6114,49 @@ function acl_reporting_console_node($path)
     }
 
     if (is_metaconsole() === true) {
+        if ($path === 'advanced/metasetup') {
+            switch ($tab) {
+                case 'update_manager_online':
+                case 'update_manager_offline':
+                case 'update_manager_history':
+                case 'update_manager_setup':
+                case 'file_manager':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === 'advanced/users_setup') {
+            switch ($tab) {
+                case 'user_edit':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
         if ($path === $config['homedir'].'/godmode/users/configure_user'
-            || $path === 'advanced/users_setup'
-            || $path === 'advanced/metasetup'
             || $path === 'advanced/links'
             || $path === $config['homedir'].'/enterprise/extensions/cron'
         ) {
             return true;
         }
     } else {
-        if ($path === 'godmode/servers/discovery'
-            || $path === 'operation/users/user_edit'
+        if ($path === 'godmode/servers/discovery') {
+            switch ($tab) {
+                case 'main':
+                case 'tasklist':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === 'operation/users/user_edit'
             || $path === 'operation/users/user_edit_notifications'
             || $path === 'godmode/setup/file_manager'
             || $path === 'godmode/update_manager/update_manager'

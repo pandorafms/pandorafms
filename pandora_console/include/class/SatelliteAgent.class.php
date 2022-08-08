@@ -150,10 +150,10 @@ class SatelliteAgent extends HTML
                         'server_remote' => $this->satellite_server,
                     ],
                     'ajax_postprocces'    => 'process_datatables_item(item)',
-                    'no_sortable_columns' => [-1],
-                    'order'               => [
-                        'field'     => 'date',
-                        'direction' => 'asc',
+                    'no_sortable_columns' => [
+                        0,
+                        1,
+                        2,
                     ],
                     'search_button_class' => 'sub filter float-right',
                     'form'                => [
@@ -239,6 +239,12 @@ class SatelliteAgent extends HTML
                         $agent['name'] = $matches[2][0];
                     }
 
+                    if (empty($filters['filter_search']) === false) {
+                        if (empty(preg_grep('/'.$filters['filter_search'].'?/mi', array_values($agent))) === true) {
+                            continue;
+                        }
+                    }
+
                     array_push($data, $agent);
                 }
             }
@@ -268,11 +274,14 @@ class SatelliteAgent extends HTML
                 );
             }
 
+            $data = array_slice($data, $start, $length, true);
+            $total = count($data);
+
             echo json_encode(
                 [
                     'data'            => $data,
-                    'recordsTotal'    => $count,
-                    'recordsFiltered' => $count,
+                    'recordsTotal'    => $total,
+                    'recordsFiltered' => $total,
                 ]
             );
             // Capture output.

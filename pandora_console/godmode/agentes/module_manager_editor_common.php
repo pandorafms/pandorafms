@@ -1518,7 +1518,7 @@ $(document).ready (function () {
                      }
                      else{
                         window.open(
-                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitorins#monitoring_through_network_modules_with_snmp',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
                          '_blank',
                          'width=800,height=600'
                          );

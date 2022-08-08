@@ -309,7 +309,7 @@ $table_ip .= '<div class="label_select_child_right">'.html_print_input(
         'name'  => 'fixed_ip',
         'value' => $fixed_ip,
     ],
-).__('Fix IP').ui_print_help_tip(__('Avoid automatic IP update when agent IP changes'), true).'</div>';
+).__('Fix IP address').ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</div>';
 
 $table_ip .= '</div></div>';
 
@@ -1122,6 +1122,20 @@ ui_require_jquery_file('bgiframe');
             );
         }
         $("#text-agente").prop('readonly', true);
+
+
+        // Disable fixed ip button if empty.
+        if($("#text-direccion").val() == '') {
+                $("#fixed_ip").prop('disabled',true);
+        }
+
+        $("#text-direccion").on('input',function(e){
+            if($("#text-direccion").val() == '') {
+                $("#fixed_ip").prop('disabled',true);
+            } else {
+                $("#fixed_ip").prop('disabled',false);
+            }
+        });
 
     });
 </script>

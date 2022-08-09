@@ -605,6 +605,13 @@ if (isset($config['id_user']) === false) {
                 }
             }
 
+            if (is_reporting_console_node() === true) {
+                $_GET['sec'] = 'discovery';
+                $_GET['sec2'] = 'godmode/servers/discovery';
+                $_GET['wiz'] = 'tasklist';
+                $home_page = '';
+            }
+
             db_logon($nick_in_db, $_SERVER['REMOTE_ADDR']);
             $_SESSION['id_usuario'] = $nick_in_db;
             $config['id_user'] = $nick_in_db;
@@ -623,8 +630,6 @@ if (isset($config['id_user']) === false) {
             if ($prepare_session) {
                 config_prepare_session();
             }
-
-
 
             // ==========================================================
             // -------- SET THE CUSTOM CONFIGS OF USER ------------------
@@ -1042,6 +1047,13 @@ if ((bool) ($config['maintenance_mode'] ?? false) === true
     exit('</html>');
 }
 
+if (is_reporting_console_node() === true
+    && (bool) users_is_admin() === false
+) {
+    include 'general/reporting_console_node.php';
+    exit;
+}
+
 /*
  * ----------------------------------------------------------------------
     *  EXTENSIONS
@@ -1199,6 +1211,10 @@ if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
 
+if (is_reporting_console_node() === true) {
+    echo notify_reporting_console_node();
+}
+
 // Page loader / selector.
 if ($searchPage) {
     include 'operation/search_results.php';
@@ -1222,6 +1238,17 @@ if ($searchPage) {
 
             $sec = $sec2;
             $sec2 = '';
+        }
+
+        $tab = get_parameter('tab', '');
+        if (empty($tab) === true) {
+            $tab = get_parameter('wiz', '');
+        }
+
+        $acl_reporting_console_node = acl_reporting_console_node($page, $tab);
+        if ($acl_reporting_console_node === false) {
+            include 'general/reporting_console_node.php';
+            exit;
         }
 
         $page .= '.php';

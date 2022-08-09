@@ -550,7 +550,7 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_generate_report':
-                    if ((bool) $task['enabled'] === true && ($write_perms === true || $manage_pandora === true)) {
+                    if ((bool) $task['enabled'] === true) {
                         $data[0] = html_print_anchor(
                             [
                                 'href'    => sprintf(

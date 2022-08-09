@@ -5997,6 +5997,26 @@ function send_test_email(
 
 
 /**
+ * Check ip is valid into network
+ *
+ * @param string $ip   Ip XXX.XXX.XXX.XXX.
+ * @param string $cidr Network XXX.XXX.XXX.XXX/XX.
+ *
+ * @return boolean
+ */
+function cidr_match($ip, $cidr)
+{
+    list($subnet, $mask) = explode('/', $cidr);
+
+    if ((ip2long($ip) & ~((1 << (32 - $mask)) - 1) ) == ip2long($subnet)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * Microtime float number.
  *
  * @return float

@@ -38,6 +38,10 @@ ALTER TABLE `tautoconfig` ADD COLUMN `executed` TINYINT UNSIGNED NOT NULL DEFAUL
 
 ALTER TABLE `tusuario` DROP COLUMN `metaconsole_assigned_server`;
 
+ALTER TABLE `tipam_network` DROP FOREIGN KEY `tipam_network_ibfk_1`;
+ALTER TABLE `tipam_network` MODIFY COLUMN `id_recon_task` INT UNSIGNED DEFAULT 0;
+ALTER TABLE `tipam_network` ADD CONSTRAINT `tipam_network_ibfk_1` FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE SET NULL ON UPDATE CASCADE;
+
 ALTER TABLE `tevent_filter` ADD COLUMN `search_secondary_groups` INT NOT NULL DEFAULT 0;
 
 COMMIT;

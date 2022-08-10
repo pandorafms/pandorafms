@@ -257,6 +257,8 @@ sub data_consumer ($$) {
 			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
 		} elsif (defined($xml_data->{'connection_source'})) {
 			enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
+		} elsif (defined($xml_data->{'ipam_source'})) {
+			enterprise_hook('process_xml_ipam', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
 		} elsif (defined($xml_data->{'network_matrix'})){
 			process_xml_matrix_network(
 				$self->getConfig(), $xml_data, $self->getDBH()

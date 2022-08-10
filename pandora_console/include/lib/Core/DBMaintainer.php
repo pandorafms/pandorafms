@@ -137,7 +137,7 @@ final class DBMaintainer
         $this->host = $params['host'];
         $this->port = $params['port'];
         $this->name = $params['name'];
-        $this->charset = $params['charset'];
+        $this->charset = (isset($params['charset']) === true) ? $params['charset'] : '';
 
         // Try to connect.
         $this->connect();

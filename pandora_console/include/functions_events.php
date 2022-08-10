@@ -1091,18 +1091,36 @@ function events_get_all(
 
     // Custom data.
     if (empty($filter['custom_data']) === false) {
-        if ($filter['custom_data_filter_type'] === '1') {
-            $sql_filters[] = sprintf(
-                ' AND JSON_VALID(custom_data) = 1
-                AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
-                io_safe_output($filter['custom_data'])
-            );
+        if (isset($config['dbconnection']->server_version) === true
+            && $config['dbconnection']->server_version > 80000
+        ) {
+            if ($filter['custom_data_filter_type'] === '1') {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
+                    io_safe_output($filter['custom_data'])
+                );
+            } else {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
+                    io_safe_output($filter['custom_data'])
+                );
+            }
         } else {
-            $sql_filters[] = sprintf(
-                ' AND JSON_VALID(custom_data) = 1
-                AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
-                io_safe_output($filter['custom_data'])
-            );
+            if ($filter['custom_data_filter_type'] === '1') {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1 AND JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") ',
+                    $filter['custom_data'],
+                    $filter['custom_data']
+                );
+            } else {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1 AND JSON_KEYS(custom_data) REGEXP "%s" ',
+                    $filter['custom_data'],
+                    $filter['custom_data']
+                );
+            }
         }
     }
 
@@ -1383,7 +1401,7 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule, te.estado';
+            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule';
         break;
 
         case '2':
@@ -3737,7 +3755,7 @@ function events_get_response_target(
 
     // Parse the event custom data.
     if (empty($event['custom_data']) === false) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
         }
@@ -4279,7 +4297,7 @@ function events_page_custom_data($event)
     $table->head = [];
     $table->class = 'table_modal_alternate';
 
-    $json_custom_data = base64_decode($event['custom_data']);
+    $json_custom_data = $event['custom_data'];
     $custom_data = json_decode($json_custom_data);
 
     if ($custom_data === null) {
@@ -5290,7 +5308,7 @@ function events_get_field_value_by_event_id(
 
     // Parse the event custom data.
     if (!empty($event['custom_data'])) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $val) {
             $value = str_replace('_customdata_'.$key.'_', $val, $value);
         }

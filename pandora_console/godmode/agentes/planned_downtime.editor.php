@@ -797,13 +797,29 @@ $table = new StdClass();
 $table->class = 'databox filters';
 $table->width = '100%';
 $table->data = [];
+$table->size[0] = '25%';
 
 $table->data[0][0] = __('Group filter');
-$table->data[0][1] = html_print_select_groups(false, $access, $return_all_group, 'filter_group', $filter_group, '', '', '', true, false, true, '', false, 'min-width:180px;margin-right:15px;');
+$table->data[0][1] = html_print_select_groups(
+    false,
+    $access,
+    $return_all_group,
+    'filter_group',
+    $filter_group,
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false,
+    'min-width:180px;margin-right:15px;'
+);
 $table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
 
 $table->data[1][0] = __('Available agents');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'width: 180px;');
+$table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'min-width: 250px;width: 70%;');
 
 
 if ($type_downtime != 'quiet') {
@@ -855,7 +871,7 @@ $table->data[3][1] = html_print_select(
     true,
     '',
     false,
-    'width: 180px;'
+    'min-width: 250px;width: 70%;'
 );
 echo '</div>';
 

@@ -497,6 +497,17 @@ $table->data[$i++][1] = html_print_checkbox_switch(
     true
 );
 
+$table->data[$i][0] = __('Enable console report').ui_print_help_tip(
+    __('Enable console report'),
+    true
+);
+$table->data[$i++][1] = html_print_checkbox_switch(
+    'reporting_console_enable',
+    1,
+    $config['reporting_console_enable'],
+    true
+);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset>';

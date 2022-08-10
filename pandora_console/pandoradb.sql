@@ -3889,7 +3889,7 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
   `name_network` VARCHAR(255) DEFAULT '',
   `description` TEXT,
   `location` INT UNSIGNED NULL,
-  `id_recon_task` INT UNSIGNED NOT NULL,
+  `id_recon_task` INT UNSIGNED DEFAULT 0,
   `scan_interval` TINYINT DEFAULT 1,
   `monitoring` TINYINT DEFAULT 0,
   `id_group` MEDIUMINT UNSIGNED NULL DEFAULT 0,
@@ -3898,7 +3898,7 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
   `id_site` BIGINT UNSIGNED,
   `vrf` INT UNSIGNED,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+  FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE

@@ -13027,7 +13027,7 @@ msgstr "Contraseña incorrecta"
 #: ../../operation/users/user_edit_notifications.php:36
 #: ../../operation/users/user_edit_header.php:102
 msgid "User notifications"
-msgstr "Notificaciones de usuario"
+msgstr "Notifivaciones de usuario"
 
 #: ../../operation/users/user_edit_notifications.php:64
 #: ../../enterprise/include/lib/Metaconsole/Node.php:1165

@@ -2217,7 +2217,7 @@ class ConsoleSupervisor
                     'message' => __('Your defined font doesn\'t exist or is not defined. Please, check font parameters in your config'),
                     'url'     => is_metaconsole() === false
                                     ? '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis'
-                                    : '__url__/index.php?sec=gsetup&sec2=advanced/metasetup&tab=visual',
+                                    : '__url__/index.php?sec=advanced&sec2=advanced/metasetup&tab=visual',
                 ]
             );
         } else {

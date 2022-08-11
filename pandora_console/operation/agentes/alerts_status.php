@@ -381,7 +381,7 @@ if ($free_search != '') {
                         ],
                         'no_toggle' => true,
                     ],
-                ],
+                ]
             );
         } else {
             ui_print_datatable(
@@ -419,7 +419,7 @@ if ($free_search != '') {
                             $strict_user
                         ),
                     ],
-                ],
+                ]
             );
         }
 

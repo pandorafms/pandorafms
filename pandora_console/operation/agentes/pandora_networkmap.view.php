@@ -2292,6 +2292,17 @@ if ($networkmap === false) {
                     ]
                 ).'</a>',
             ];
+            $buttons['option'] = [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=edit&edit_networkmap=1&id_networkmap='.$id.'">'.html_print_image(
+                    'images/setup.png',
+                    true,
+                    [
+                        'title' => __('Options'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+            ];
         }
     }
 

@@ -200,6 +200,21 @@ if ($edit_networkmap) {
     }
 }
 
+$button = [];
+if ($edit_networkmap) {
+    $button['map'] = [
+        'active' => false,
+        'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$id.'">'.html_print_image(
+            'images/op_network.png',
+            true,
+            [
+                'title' => __('View map'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
+    ];
+}
+
 // Header.
 ui_print_standard_header(
     __('Network maps editor'),
@@ -207,7 +222,7 @@ ui_print_standard_header(
     false,
     'network_map_enterprise_edit',
     false,
-    [],
+    $button,
     [
         [
             'link'  => '',

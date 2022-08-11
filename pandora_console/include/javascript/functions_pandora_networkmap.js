@@ -192,7 +192,8 @@ function delete_link(
   source_module_id,
   target_id,
   target_module_id,
-  id_link
+  id_link,
+  table_row = null
 ) {
   var params = [];
   params.push("delete_link=1");
@@ -241,8 +242,21 @@ function delete_link(
         draw_elements_graph();
         init_drag_and_drop();
         set_positions_graph();
+
+        if (typeof table_row !== "undefined" && table_row !== null) {
+          $(`#relations_table-template_row_${table_row}`).animate(
+            { backgroundColor: "#e6e6e6" },
+            500,
+            function() {
+              $(`#relations_table-template_row_${table_row}`).remove();
+              const rowCount = $(".relation_link_row").length;
+              if (rowCount === 0) {
+                $("#relations_table-no_relations").show();
+              }
+            }
+          );
+        }
       }
-      $("#dialog_node_edit").dialog("close");
     }
   });
 }
@@ -976,6 +990,7 @@ function load_interfaces(selected_links) {
 
     $(template_relation_row).css("display", "");
     $(template_relation_row).attr("class", "relation_link_row");
+    $(template_relation_row).attr("id", `relations_table-template_row_${i}`);
 
     $("select[name='interface_source']", template_relation_row)
       .attr("name", "interface_source_" + i)
@@ -1116,6 +1131,8 @@ function load_interfaces(selected_links) {
         link_each.id_module_end +
         "," +
         link_each.id_db +
+        "," +
+        i +
         ");"
     );
     $("#relations_table tbody").append(template_relation_row);

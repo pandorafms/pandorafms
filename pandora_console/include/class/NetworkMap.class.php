@@ -3278,7 +3278,7 @@ class NetworkMap
         $table->data[1][1] = html_print_select(
             $list_networkmaps,
             'networkmap_to_link',
-            '',
+            0,
             '',
             '',
             0,

@@ -1997,17 +1997,14 @@ function show_menu(item, data) {
         };
       }
 
-      // Avoid deletion if Pandora FMS node.
-      if (data.type != 2) {
-        items_list["delete"] = {
-          name: delete_menu,
-          icon: "delete",
-          disabled: false,
-          callback: function(key, options) {
-            delete_nodes();
-          }
-        };
-      }
+      items_list["delete"] = {
+        name: delete_menu,
+        icon: "delete",
+        disabled: false,
+        callback: function(key, options) {
+          delete_nodes();
+        }
+      };
 
       $.contextMenu("destroy");
       $.contextMenu({

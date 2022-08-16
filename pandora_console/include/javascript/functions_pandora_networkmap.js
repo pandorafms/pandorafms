@@ -597,6 +597,8 @@ function update_link(row_index, id_link) {
   $(".edit_icon_progress_" + row_index).css("display", "");
   $(".edit_icon_" + row_index).css("display", "none");
 
+  $(".edit_icon_" + row_index).css("display", "none");
+
   var params = [];
   params.push("update_link=1");
   params.push("networkmap_id=" + networkmap_id);
@@ -978,6 +980,7 @@ function get_interface_data_to_table(node_selected, selected_links) {
 function load_interfaces(selected_links) {
   //Clean
   $("#relations_table .relation_link_row").remove();
+  $("#update_relations_button").remove();
   //Show the no relations
   $("#relations_table-loading").css("display", "none");
   $("#relations_table-no_relations").css("display", "");
@@ -1011,11 +1014,6 @@ function load_interfaces(selected_links) {
       "class",
       "edit_icon_fail_" + i
     );
-    $(".edit_icon_link", template_relation_row)
-      .attr("class", "edit_icon_link_" + i)
-      .click(function() {
-        update_link(i, link_each.id_db);
-      });
 
     var params3 = [];
     params3.push("get_intefaces=1");
@@ -1115,6 +1113,11 @@ function load_interfaces(selected_links) {
       "align",
       "center"
     );
+    $("#relations_table-template_row-edit", template_relation_row).css({
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "center"
+    });
     $(
       "#relations_table-template_row-edit .delete_icon",
       template_relation_row
@@ -1142,6 +1145,20 @@ function load_interfaces(selected_links) {
     $("#interface_target_" + i).select2();
 
     template_relation_row = null;
+  });
+
+  $("#relations_table")
+    .parent()
+    .append(
+      `<div class='action-buttons w100p'>
+        <input id='update_relations_button' class='sub upd' type='button' value='update relations'>
+      </div>`
+    );
+
+  $("#update_relations_button").click(function() {
+    jQuery.each(selected_links, function(i, link_each) {
+      update_link(i, link_each.id_db);
+    });
   });
 }
 
@@ -1327,11 +1344,6 @@ function function_close_minimap() {
 function delete_nodes() {
   var selection = d3.selectAll(".node_selected");
   selection.each(function(d) {
-    //Avoid to delete pandora node center
-    if (d.id_agent == 0) {
-      return;
-    }
-
     var params = [];
     params.push("id=" + d.id_db);
     params.push("delete_node=1");

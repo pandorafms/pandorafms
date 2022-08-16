@@ -3066,8 +3066,8 @@ class NetworkMap
         $table->data['template_row']['node_target'] = '';
         $table->data['template_row']['edit'] = '';
 
-        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span><span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a></span>';
-
+        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>';
+        // <span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a></span>';
         $table->data['template_row']['edit'] .= '<a class="delete_icon" href="#">'.html_print_image('images/delete.png', true, ['class' => 'invert_filter']).'</a>';
 
         $table->colspan['no_relations']['0'] = 5;

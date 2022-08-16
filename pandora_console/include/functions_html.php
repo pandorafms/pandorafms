@@ -2237,7 +2237,7 @@ function html_print_extended_select_for_time(
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', $month='*', $wday='*', $return=false, $disabled=false, $to=false)
+function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', $month='*', $wday='*', $return=false, $disabled=false, $to=false, $advanced=false, $adv_mode_name='')
 {
     // Hours
     for ($i = 0; $i < 24; $i++) {
@@ -2286,18 +2286,104 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
     $table->head[3] = __('Month');
     $table->head[4] = __('Week day');
 
-    if ($to) {
-        $table->data[0][0] = html_print_select($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
-        $table->data[0][2] = html_print_select($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][3] = html_print_select($months, 'month_to', $month, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][4] = html_print_select($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
+    if ($advanced === false) {
+        if ($to) {
+            $table->data[0][0] = html_print_select($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
+            $table->data[0][2] = html_print_select($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[0][3] = html_print_select($months, 'month_to', $month, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[0][4] = html_print_select($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
+        } else {
+            $table->data[0][0] = html_print_select($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
+            $table->data[0][2] = html_print_select($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[0][3] = html_print_select($months, 'month_from', $month, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[0][4] = html_print_select($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
+        }
     } else {
-        $table->data[0][0] = html_print_select($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
-        $table->data[0][2] = html_print_select($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][3] = html_print_select($months, 'month_from', $month, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][4] = html_print_select($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
+        if ($adv_mode_name !== '') {
+            $adv_mode_name = '_'.$adv_mode_name;
+        }
+
+        $table->data[0][0] = html_print_extended_select_for_downtime_cron(
+            'cron_hour'.$adv_mode_name,
+            $hours,
+            $hour,
+            '',
+            __('Any'),
+            '*',
+            false,
+            true,
+            false,
+            false,
+            false,
+            0,
+            'Valid values: [0-23], [0-23]-[0-23], *, or step value (example: */3, 10/5)',
+        );
+
+        $table->data[0][1] = html_print_extended_select_for_downtime_cron(
+            'cron_minute'.$adv_mode_name,
+            $minutes,
+            $minute,
+            '',
+            __('Any'),
+            '*',
+            false,
+            true,
+            false,
+            false,
+            false,
+            0,
+            'Valid values: [0-59], [0-59]-[0-59], *, or step value (example: */5, 10/1)',
+        );
+
+        $table->data[0][2] = html_print_extended_select_for_downtime_cron(
+            'cron_mday'.$adv_mode_name,
+            $mdays,
+            $mday,
+            '',
+            __('Any'),
+            '*',
+            false,
+            true,
+            false,
+            false,
+            false,
+            0,
+            'Valid values: [1-31], [1-31]-[1-31], *, or step value (example: */5, 7/2)',
+        );
+
+        $table->data[0][3] = html_print_extended_select_for_downtime_cron(
+            'cron_month'.$adv_mode_name,
+            $months,
+            $month,
+            '',
+            __('Any'),
+            '*',
+            false,
+            true,
+            false,
+            false,
+            false,
+            0,
+            'Valid values: [1-12], [1-12]-[1-12], *, or step value (example: */3, 9/1)',
+        );
+
+        $table->data[0][4] = html_print_extended_select_for_downtime_cron(
+            'cron_wday'.$adv_mode_name,
+            $wdays,
+            $wday,
+            '',
+            __('Any'),
+            '*',
+            false,
+            true,
+            false,
+            false,
+            false,
+            0,
+            'Valid values: [0-6], [0-6]-[0-6], *, or step value (example: */2, 3/1)',
+        );
     }
 
     return html_print_table($table, $return);
@@ -6170,4 +6256,113 @@ function html_print_go_back_button(string $url, array $options=[], bool $return=
     );
 
     return $output;
+}
+
+
+/**
+ * Render select box for numeric values and text box for complex values.
+ *
+ * @param string  $name          Select form name.
+ * @param string  $fields        Fields to populate select box.
+ * @param mixed   $selected      Current selected value. It can be a single value or an array of selected values (in combination with multiple).
+ * @param string  $script        Javascript onChange (select) code.
+ * @param string  $nothing       Label when nothing is selected.
+ * @param mixed   $nothing_value Value when nothing is selected.
+ * @param integer $size          Size of the input.
+ * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean $select_style  Wherter to assign to combo a unique name (to have more than one on same page, like dashboard).
+ * @param boolean $unique_name   Uunique name value.
+ * @param boolean $disabled      Input renders as disabled.
+ * @param boolean $no_change     No change value.
+ * @param boolean $text_help     Tooltip.
+
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_extended_select_for_downtime_cron(
+    $name,
+    $fields,
+    $selected='',
+    $script='',
+    $nothing='',
+    $nothing_value='0',
+    $size=false,
+    $return=false,
+    $select_style=false,
+    $unique_name=true,
+    $disabled=false,
+    $no_change=0,
+    $text_help=''
+) {
+    global $config;
+
+    if ($unique_name === true) {
+        $uniq_name = uniqid($name);
+    } else {
+        $uniq_name = $name;
+    }
+
+    ob_start();
+
+    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
+        html_print_select(
+            $fields,
+            $uniq_name.'_select',
+            $selected,
+            ''.$script,
+            $nothing,
+            $nothing_value,
+            false,
+            false,
+            false,
+            '',
+            $disabled,
+            'font-size: xx-small;'.$select_style
+        );
+        echo ' <a href="javascript:">'.html_print_image(
+            'images/pencil.png',
+            true,
+            [
+                'class' => $uniq_name.'_toggler',
+                'alt'   => __('Custom'),
+                'title' => __('Custom'),
+                'style' => 'width: 18px;',
+            ]
+        ).'</a>';
+    echo '</div>';
+
+    $help_tooltip = ($text_help !== '') ? ui_print_help_tip(__($text_help), true) : '';
+
+    echo '<div id="'.$uniq_name.'_manual" class="w100p inline_line">';
+        html_print_input_text($uniq_name.'_text', $selected, '', 20);
+
+        html_print_input_hidden($name, $selected, false, $uniq_name);
+        echo ' <a href="javascript:">'.$help_tooltip.'&nbsp'.html_print_image(
+            'images/default_list.png',
+            true,
+            [
+                'class' => $uniq_name.'_toggler',
+                'alt'   => __('List'),
+                'title' => __('List'),
+                'style' => 'width: 18px;',
+            ]
+        ).'</a>';
+    echo '</div>';
+
+    $select_init_func = (is_numeric($selected) === true || $selected === '*') ? 'post_process_select_init' : 'post_process_select_init_inv';
+
+    echo "<script type='text/javascript'>
+		$(document).ready (function () {
+			".$select_init_func."('$uniq_name','$selected');
+			post_process_select_events_unit('$uniq_name','$selected');
+		});
+		
+	</script>";
+
+    $returnString = ob_get_clean();
+
+    if ($return) {
+        return $returnString;
+    } else {
+        echo $returnString;
+    }
 }

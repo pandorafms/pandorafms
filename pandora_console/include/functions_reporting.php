@@ -14211,6 +14211,10 @@ function reporting_format_planned_downtime_dates($planned_downtime)
             $dates = date('Y-m-d H:i', $planned_downtime['date_from']).'&nbsp;'.__('to').'&nbsp;'.date('Y-m-d H:i', $planned_downtime['date_to']);
         break;
 
+        case 'cron':
+            $dates = __('Start condition').': <span class="italic">'.$planned_downtime['cron_interval_from'].'</span> - '.__('Stop condition').': <span class="italic">'.$planned_downtime['cron_interval_to'].'</span>';
+        break;
+
         case 'periodically':
             if (!isset($planned_downtime['type_periodicity'])) {
                 return '';

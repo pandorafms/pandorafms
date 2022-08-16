@@ -49,6 +49,7 @@ if (!$agent_d && !$agent_w) {
 set_unless_defined($config['past_planned_downtimes'], 1);
 
 require_once 'include/functions_users.php';
+require_once $config['homedir'].'/include/functions_cron.php';
 
 // Buttons.
 $buttons = [
@@ -122,6 +123,18 @@ $periodically_time_to = (string) get_parameter(
     'periodically_time_to',
     date(TIME_FORMAT, ($system_time + SECONDS_1HOUR))
 );
+
+$hour_from = get_parameter('cron_hour_from', '*');
+$minute_from = get_parameter('cron_minute_from', '*');
+$mday_from = get_parameter('cron_mday_from', '*');
+$month_from = get_parameter('cron_month_from', '*');
+$wday_from = get_parameter('cron_wday_from', '*');
+
+$hour_to = get_parameter('cron_hour_to', '*');
+$minute_to = get_parameter('cron_minute_to', '*');
+$mday_to = get_parameter('cron_mday_to', '*');
+$month_to = get_parameter('cron_month_to', '*');
+$wday_to = get_parameter('cron_wday_to', '*');
 
 $monday = (bool) get_parameter('monday');
 $tuesday = (bool) get_parameter('tuesday');
@@ -262,6 +275,210 @@ if ($create_downtime || $update_downtime) {
         );
     } else {
         $sql = '';
+
+        if ($type_execution === 'cron') {
+            $error_cron_from = false;
+            $error_cron_to = false;
+            $error_field = '';
+
+            // Validate 'from' cron values.
+            $hour_from = io_safe_output(trim($hour_from));
+            if (preg_match('/^((?:([0-1]?[0-9]|2[0-3])|\*)\s*(?:(?:[\/-]([0-1]?[0-9]|2[0-3])))?\s*)$/', $hour_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('hour (from)');
+            } else {
+                $interval_values = explode('-', $hour_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $minute_from = io_safe_output(trim($minute_from));
+            if (preg_match('/^((?:(5[0-9]|[0-5]?[0-9])|\*)\s*(?:(?:[\/-](5[0-9]|[0-5]?[0-9])))?\s*)$/', $minute_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('minute (from)');
+            } else {
+                $interval_values = explode('-', $minute_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $mday_from = io_safe_output(trim($mday_from));
+            if (preg_match('/^((?:(0?[1-9]|[12][0-9]|3[01])|\*)\s*(?:(?:[\/-](0?[1-9]|[12][0-9]|3[01])))?\s*)$/', $mday_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('month day (from)');
+            } else {
+                $interval_values = explode('-', $mday_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $month_from = io_safe_output(trim($month_from));
+            if (preg_match('/^((?:([1-9]|1[012])|\*)\s*(?:(?:[\/-]([1-9]|1[012])))?\s*)$/', $month_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('month (from)');
+            } else {
+                $interval_values = explode('-', $month_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $wday_from = io_safe_output(trim($wday_from));
+            if (preg_match('/^((?:[0-6]|\*)\s*(?:(?:[\/-][0-6]))?\s*)$/', $wday_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('week day (from)');
+            } else {
+                $interval_values = explode('-', $wday_from);
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            // Validate 'to' cron values.
+            $hour_to = io_safe_output(trim($hour_to));
+            if (preg_match('/^((?:([0-1]?[0-9]|2[0-3])|\*)\s*(?:(?:[\/-]([0-1]?[0-9]|2[0-3])))?\s*)$/', $hour_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('hour (to)');
+            } else {
+                $interval_values = explode('-', $hour_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $minute_to = io_safe_output(trim($minute_to));
+            if (preg_match('/^((?:(5[0-9]|[0-5]?[0-9])|\*)\s*(?:(?:[\/-](5[0-9]|[0-5]?[0-9])))?\s*)$/', $minute_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('minute (to)');
+            } else {
+                $interval_values = explode('-', $minute_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $mday_to = io_safe_output(trim($mday_to));
+            if (preg_match('/^((?:(0?[1-9]|[12][0-9]|3[01])|\*)\s*(?:(?:[\/-](0?[1-9]|[12][0-9]|3[01])))?\s*)$/', $mday_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('month day (to)');
+            } else {
+                $interval_values = explode('-', $mday_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $month_to = io_safe_output(trim($month_to));
+            if (preg_match('/^((?:([1-9]|1[012])|\*)\s*(?:(?:[\/-]([1-9]|1[012])))?\s*)$/', $month_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('month (to)');
+            } else {
+                $interval_values = explode('-', $month_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $wday_to = io_safe_output(trim($wday_to));
+            if (preg_match('/^((?:[0-6]|\*)\s*(?:(?:[\/-][0-6]))?\s*)$/', $wday_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('week day (to)');
+            } else {
+                $interval_values = explode('-', $wday_to);
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            if ($error_cron_from === true) {
+                ui_print_error_message(
+                    __('Downtime start cron expression is not correct').': '.$error_field
+                );
+            }
+
+            if ($error_cron_to === true) {
+                ui_print_error_message(
+                    __('Downtime stop cron expression is not correct').': '.$error_field
+                );
+            }
+
+            if ($error_cron_to === true || $error_cron_from) {
+                return;
+            }
+
+            $cron_interval_from = io_safe_output($minute_from.' '.$hour_from.' '.$mday_from.' '.$month_from.' '.$wday_from);
+            $cron_interval_to = io_safe_output($minute_to.' '.$hour_to.' '.$mday_to.' '.$month_to.' '.$wday_to);
+        }
+
+        if (cron_check_syntax($cron_interval_from) !== 1) {
+            $cron_interval_from = '';
+        }
+
+        if (cron_check_syntax($cron_interval_to) !== 1) {
+            $cron_interval_to = '';
+        }
+
         if ($create_downtime) {
             // Check AD permission on new downtime.
             if (!in_array($id_group, $user_groups_ad)) {
@@ -298,6 +515,8 @@ if ($create_downtime || $update_downtime) {
                         'type_execution'         => $type_execution,
                         'type_periodicity'       => $type_periodicity,
                         'id_user'                => $config['id_user'],
+                        'cron_interval_from'     => $cron_interval_from,
+                        'cron_interval_to'       => $cron_interval_to,
                     ];
                     if ($config['dbtype'] == 'oracle') {
                         $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
@@ -381,6 +600,8 @@ if ($create_downtime || $update_downtime) {
                     'type_execution'         => $type_execution,
                     'type_periodicity'       => $type_periodicity,
                     'id_user'                => $config['id_user'],
+                    'cron_interval_from'     => $cron_interval_from,
+                    'cron_interval_to'       => $cron_interval_to,
                 ];
                 if ($config['dbtype'] == 'oracle') {
                     $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
@@ -458,6 +679,8 @@ if ($id_downtime > 0) {
         'type_execution',
         'type_periodicity',
         'id_user',
+        'cron_interval_from',
+        'cron_interval_to',
     ];
 
     switch ($config['dbtype']) {
@@ -531,6 +754,36 @@ if ($id_downtime > 0) {
     $friday                 = (bool) $result['friday'];
     $saturday                 = (bool) $result['saturday'];
     $sunday                 = (bool) $result['sunday'];
+
+    $cron_interval_from = explode(' ', $result['cron_interval_from']);
+    if (isset($cron_interval_from[4]) === true) {
+        $minute_from = $cron_interval_from[0];
+        $hour_from = $cron_interval_from[1];
+        $mday_from = $cron_interval_from[2];
+        $month_from = $cron_interval_from[3];
+        $wday_from = $cron_interval_from[4];
+    } else {
+        $minute_from = '*';
+        $hour_from = '*';
+        $mday_from = '*';
+        $month_from = '*';
+        $wday_from = '*';
+    }
+
+    $cron_interval_to = explode(' ', $result['cron_interval_to']);
+    if (isset($cron_interval_to[4]) === true) {
+        $minute_to = $cron_interval_to[0];
+        $hour_to = $cron_interval_to[1];
+        $mday_to = $cron_interval_to[2];
+        $month_to = $cron_interval_to[3];
+        $wday_to = $cron_interval_to[4];
+    } else {
+        $minute_to = '*';
+        $hour_to = '*';
+        $mday_to = '*';
+        $month_to = '*';
+        $wday_to = '*';
+    }
 
     $running = (bool) $result['executed'];
 }
@@ -611,6 +864,7 @@ $table->data[4][1] = html_print_select(
     [
         'once'         => __('Once'),
         'periodically' => __('Periodically'),
+        'cron' => __('Cron from/to'),
     ],
     'type_execution',
     $type_execution,
@@ -738,6 +992,18 @@ $table->data[5][1] = "
                         </tr>
                     </table>
                 </td>
+            </tr>
+        </table>
+    </div>
+    <div id="cron_time" style="display: none;">
+        <table class="w100p">
+            <tr>
+                <td>'.__('Cron from:').'</td>
+                <td>'.html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, false, false, true, 'from').'</td>
+            </tr>
+            <tr>
+                <td>'.__('Cron to:').'</td>
+                <td>'.html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, false, true, true, 'to').'</td>
             </tr>
         </table>
     </div>';
@@ -1254,11 +1520,18 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         switch ($("#type_execution").val()) {
             case 'once':
                 $("#periodically_time").hide();
+                $("#cron_time").hide();
                 $("#once_time").show();
                 break;
             case 'periodically':
                 $("#once_time").hide();
+                $("#cron_time").hide();
                 $("#periodically_time").show();
+                break;
+            case 'cron':
+                $("#once_time").hide();
+                $("#periodically_time").hide();
+                $("#cron_time").show();
                 break;
         }
     }

@@ -252,6 +252,7 @@ function delete_link(
               const rowCount = $(".relation_link_row").length;
               if (rowCount === 0) {
                 $("#relations_table-no_relations").show();
+                $(`#update_relations_button`).remove();
               }
             }
           );
@@ -599,6 +600,8 @@ function update_link(row_index, id_link) {
 
   $(".edit_icon_" + row_index).css("display", "none");
 
+  let result = false;
+
   var params = [];
   params.push("update_link=1");
   params.push("networkmap_id=" + networkmap_id);
@@ -613,6 +616,7 @@ function update_link(row_index, id_link) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
+    async: false,
     url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $(".edit_icon_progress_" + row_index).css("display", "none");
@@ -718,11 +722,14 @@ function update_link(row_index, id_link) {
         draw_elements_graph();
         init_drag_and_drop();
         set_positions_graph();
+        result = data["id_db_link"];
       } else {
         $(".edit_icon_fail_" + row_index).css("display", "");
       }
     }
   });
+
+  return result;
 }
 
 function delete_link_from_id(index) {
@@ -1118,6 +1125,12 @@ function load_interfaces(selected_links) {
       "align-items": "center",
       "justify-content": "center"
     });
+
+    $(
+      "#relations_table-template_row-edit .delete_icon",
+      template_relation_row
+    ).attr("id", `delete_icon_${i}`);
+
     $(
       "#relations_table-template_row-edit .delete_icon",
       template_relation_row
@@ -1147,19 +1160,41 @@ function load_interfaces(selected_links) {
     template_relation_row = null;
   });
 
-  $("#relations_table")
-    .parent()
-    .append(
-      `<div class='action-buttons w100p'>
-        <input id='update_relations_button' class='sub upd' type='button' value='update relations'>
-      </div>`
-    );
+  if (selected_links.length > 0) {
+    $("#relations_table")
+      .parent()
+      .append(
+        `<div class='action-buttons w100p'>
+          <input id='update_relations_button' class='sub upd' type='button' value='update relations'>
+        </div>`
+      );
 
-  $("#update_relations_button").click(function() {
-    jQuery.each(selected_links, function(i, link_each) {
-      update_link(i, link_each.id_db);
+    $("#update_relations_button").click(function() {
+      jQuery.each(selected_links, function(i, link_each) {
+        const new_id_db = update_link(i, link_each.id_db);
+        if (new_id_db !== false) {
+          selected_links[i]["id_db"] = new_id_db;
+          $(`#delete_icon_${i}`).attr(
+            "href",
+            "javascript: " +
+              "delete_link(" +
+              link_each.source.id_db +
+              "," +
+              link_each.id_module_start +
+              "," +
+              link_each.target.id_db +
+              "," +
+              link_each.id_module_end +
+              "," +
+              new_id_db +
+              "," +
+              i +
+              ");"
+          );
+        }
+      });
     });
-  });
+  }
 }
 
 function add_node() {

@@ -751,7 +751,11 @@ switch ($tab) {
                 }
 
                 if ($network_map['id_group'] > 0) {
-                    $nodes = db_get_all_rows_sql('SELECT style FROM titem WHERE id_map = '.$network_map['id'].' AND deleted = 0');
+                    $nodes = db_get_all_rows_sql(
+                        'SELECT style 
+                        FROM titem 
+                        WHERE id_map = '.$network_map['id'].' AND deleted = 0 AND type <> 2'
+                    );
                     $count = 0;
                     foreach ($nodes as $node) {
                         $node_style = json_decode($node['style'], true);
@@ -763,7 +767,7 @@ switch ($tab) {
                     $count = db_get_value_sql(
                         'SELECT COUNT(*)
 						FROM titem
-						WHERE id_map = '.$network_map['id'].' AND deleted = 0 AND type = 0'
+						WHERE id_map = '.$network_map['id'].' AND deleted = 0 AND type <> 2'
                     );
                 }
 
@@ -780,8 +784,7 @@ switch ($tab) {
                         $data['nodes'] = __('Pending to generate');
                     }
                 } else {
-                    $data['nodes'] = ($network_map['id_group'] == 0) ? ($count - 1) : $count;
-                    // PandoraFMS node is not an agent
+                    $data['nodes'] = $count;
                 }
 
                 $data['groups'] = ui_print_group_icon($network_map['id_group_map'], true);

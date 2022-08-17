@@ -236,7 +236,7 @@ sub g_http_task {
 					$task_get_content[$thread_id] = $1;
 				}
 			} else {
-				$task_get_content[$thread_id] = $resp;
+				$task_get_content[$thread_id] = $resp->decoded_content;
 			}
 						 
 			# Resource bashing

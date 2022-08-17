@@ -275,12 +275,11 @@ if ($create_downtime || $update_downtime) {
         );
     } else {
         $sql = '';
+        $error_cron_from = false;
+        $error_cron_to = false;
+        $error_field = '';
 
         if ($type_execution === 'cron') {
-            $error_cron_from = false;
-            $error_cron_to = false;
-            $error_field = '';
-
             // Validate 'from' cron values.
             $hour_from = io_safe_output(trim($hour_from));
             if (preg_match('/^((?:([0-1]?[0-9]|2[0-3])|\*)\s*(?:(?:[\/-]([0-1]?[0-9]|2[0-3])))?\s*)$/', $hour_from, $matches) !== 1) {
@@ -451,22 +450,6 @@ if ($create_downtime || $update_downtime) {
                 }
             }
 
-            if ($error_cron_from === true) {
-                ui_print_error_message(
-                    __('Downtime start cron expression is not correct').': '.$error_field
-                );
-            }
-
-            if ($error_cron_to === true) {
-                ui_print_error_message(
-                    __('Downtime stop cron expression is not correct').': '.$error_field
-                );
-            }
-
-            if ($error_cron_to === true || $error_cron_from) {
-                return;
-            }
-
             $cron_interval_from = io_safe_output($minute_from.' '.$hour_from.' '.$mday_from.' '.$month_from.' '.$wday_from);
             $cron_interval_to = io_safe_output($minute_to.' '.$hour_to.' '.$mday_to.' '.$month_to.' '.$wday_to);
         }
@@ -490,52 +473,68 @@ if ($create_downtime || $update_downtime) {
                 return;
             }
 
-            if (trim(io_safe_output($name)) != '') {
-                if (!$check) {
-                    $values = [
-                        'name'                   => $name,
-                        'description'            => $description,
-                        'date_from'              => $datetime_from,
-                        'date_to'                => $datetime_to,
-                        'executed'               => 0,
-                        'id_group'               => $id_group,
-                        'only_alerts'            => 0,
-                        'monday'                 => $monday,
-                        'tuesday'                => $tuesday,
-                        'wednesday'              => $wednesday,
-                        'thursday'               => $thursday,
-                        'friday'                 => $friday,
-                        'saturday'               => $saturday,
-                        'sunday'                 => $sunday,
-                        'periodically_time_from' => $periodically_time_from,
-                        'periodically_time_to'   => $periodically_time_to,
-                        'periodically_day_from'  => $periodically_day_from,
-                        'periodically_day_to'    => $periodically_day_to,
-                        'type_downtime'          => $type_downtime,
-                        'type_execution'         => $type_execution,
-                        'type_periodicity'       => $type_periodicity,
-                        'id_user'                => $config['id_user'],
-                        'cron_interval_from'     => $cron_interval_from,
-                        'cron_interval_to'       => $cron_interval_to,
-                    ];
-                    if ($config['dbtype'] == 'oracle') {
-                        $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
-                        $values['periodically_time_to'] = '1970/01/01 '.$values['periodically_time_to'];
-                    }
-
-                    $result = db_process_sql_insert(
-                        'tplanned_downtime',
-                        $values
-                    );
-                } else {
+            if ($error_cron_to === true || $error_cron_from === true) {
+                if ($error_cron_from === true) {
                     ui_print_error_message(
-                        __('Each scheduled downtime must have a different name')
+                        __('Downtime start cron expression is not correct').': '.$error_field
                     );
                 }
+
+                if ($error_cron_to === true) {
+                    ui_print_error_message(
+                        __('Downtime stop cron expression is not correct').': '.$error_field
+                    );
+                }
+
+                $result = false;
             } else {
-                ui_print_error_message(
-                    __('Scheduled downtime must have a name')
-                );
+                if (trim(io_safe_output($name)) != '') {
+                    if (!$check) {
+                        $values = [
+                            'name'                   => $name,
+                            'description'            => $description,
+                            'date_from'              => $datetime_from,
+                            'date_to'                => $datetime_to,
+                            'executed'               => 0,
+                            'id_group'               => $id_group,
+                            'only_alerts'            => 0,
+                            'monday'                 => $monday,
+                            'tuesday'                => $tuesday,
+                            'wednesday'              => $wednesday,
+                            'thursday'               => $thursday,
+                            'friday'                 => $friday,
+                            'saturday'               => $saturday,
+                            'sunday'                 => $sunday,
+                            'periodically_time_from' => $periodically_time_from,
+                            'periodically_time_to'   => $periodically_time_to,
+                            'periodically_day_from'  => $periodically_day_from,
+                            'periodically_day_to'    => $periodically_day_to,
+                            'type_downtime'          => $type_downtime,
+                            'type_execution'         => $type_execution,
+                            'type_periodicity'       => $type_periodicity,
+                            'id_user'                => $config['id_user'],
+                            'cron_interval_from'     => $cron_interval_from,
+                            'cron_interval_to'       => $cron_interval_to,
+                        ];
+                        if ($config['dbtype'] == 'oracle') {
+                            $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
+                            $values['periodically_time_to'] = '1970/01/01 '.$values['periodically_time_to'];
+                        }
+
+                        $result = db_process_sql_insert(
+                            'tplanned_downtime',
+                            $values
+                        );
+                    } else {
+                        ui_print_error_message(
+                            __('Each scheduled downtime must have a different name')
+                        );
+                    }
+                } else {
+                    ui_print_error_message(
+                        __('Scheduled downtime must have a name')
+                    );
+                }
             }
         } else if ($update_downtime) {
             $old_downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
@@ -609,15 +608,31 @@ if ($create_downtime || $update_downtime) {
                 }
             }
 
-            if ($is_running) {
+            if ($error_cron_to === true || $error_cron_from === true) {
+                if ($error_cron_from === true) {
+                    ui_print_error_message(
+                        __('Downtime start cron expression is not correct').': '.$error_field
+                    );
+                }
+
+                if ($error_cron_to === true) {
+                    ui_print_error_message(
+                        __('Downtime stop cron expression is not correct').': '.$error_field
+                    );
+                }
+
                 $result = false;
             } else {
-                if (!empty($values)) {
-                    $result = db_process_sql_update(
-                        'tplanned_downtime',
-                        $values,
-                        ['id' => $id_downtime]
-                    );
+                if ($is_running) {
+                    $result = false;
+                } else {
+                    if (!empty($values)) {
+                        $result = db_process_sql_update(
+                            'tplanned_downtime',
+                            $values,
+                            ['id' => $id_downtime]
+                        );
+                    }
                 }
             }
         }

@@ -3020,53 +3020,74 @@ function networkmap_delete_link(
 function erase_node($id)
 {
     $node = db_get_row('titem', 'id', $id['id']);
+    if ($node['type'] !== '2') {
+        $return = db_process_sql_update(
+            'titem',
+            ['deleted' => 1],
+            ['id' => $node['id']]
+        );
 
-    $return = db_process_sql_update(
-        'titem',
-        ['deleted' => 1],
-        ['id' => $node['id']]
-    );
+        db_process_sql_update(
+            'trel_item',
+            ['deleted' => 1],
+            ['id_parent' => (int) $node['id']]
+        );
 
-    db_process_sql_update(
-        'trel_item',
-        ['deleted' => 1],
-        ['id_parent' => (int) $node['id']]
-    );
+        db_process_sql_update(
+            'trel_item',
+            ['deleted' => 1],
+            ['id_child' => (int) $node['id']]
+        );
 
-    db_process_sql_update(
-        'trel_item',
-        ['deleted' => 1],
-        ['id_child' => (int) $node['id']]
-    );
+        $node_modules = db_get_all_rows_filter(
+            'titem',
+            [
+                'id_map' => $node['id_map'],
+                'type'   => 1,
+            ]
+        );
 
-    $node_modules = db_get_all_rows_filter(
-        'titem',
-        [
-            'id_map' => $node['id_map'],
-            'type'   => 1,
-        ]
-    );
+        foreach ($node_modules as $node_module) {
+            $style = json_decode($node_module['style'], true);
 
-    foreach ($node_modules as $node_module) {
-        $style = json_decode($node_module['style'], true);
-
-        if ($style['id_agent'] == $node['source_data']) {
-            db_process_sql_update(
-                'titem',
-                ['deleted' => 1],
-                ['id' => $node_module['id']]
-            );
-            db_process_sql_update(
-                'trel_item',
-                ['deleted' => 1],
-                ['id_parent_source_data' => (int) $node_module['source_data']]
-            );
-            db_process_sql_update(
-                'trel_item',
-                ['deleted' => 1],
-                ['id_child_source_data' => (int) $node_module['source_data']]
-            );
+            if ($style['id_agent'] == $node['source_data']) {
+                db_process_sql_update(
+                    'titem',
+                    ['deleted' => 1],
+                    ['id' => $node_module['id']]
+                );
+                db_process_sql_update(
+                    'trel_item',
+                    ['deleted' => 1],
+                    ['id_parent_source_data' => (int) $node_module['source_data']]
+                );
+                db_process_sql_update(
+                    'trel_item',
+                    ['deleted' => 1],
+                    ['id_child_source_data' => (int) $node_module['source_data']]
+                );
+            }
         }
+    } else {
+        $return = db_process_sql_delete(
+            'titem',
+            ['id' => $node['id']]
+        );
+
+        db_process_sql_delete(
+            'trel_item',
+            ['id_parent' => 0]
+        );
+
+        db_process_sql_delete(
+            'trel_item',
+            ['id_parent' => (int) $node['id']]
+        );
+
+        db_process_sql_delete(
+            'trel_item',
+            ['id_child' => (int) $node['id']]
+        );
     }
 
     if ($return === false) {

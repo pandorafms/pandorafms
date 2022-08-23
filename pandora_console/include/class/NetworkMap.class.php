@@ -2799,7 +2799,6 @@ class NetworkMap
         $output .= "var add_node_menu = '".__('Add node')."';\n";
         $output .= "var set_center_menu = '".__('Set center')."';\n";
         $output .= "var refresh_menu = '".__('Refresh')."';\n";
-        $output .= "var refresh_holding_area_menu = '".__('Refresh Holding area')."';\n";
         $output .= "var ok_button = '".__('Proceed')."';\n";
         $output .= "var message_to_confirm = '".__('Resetting the map will delete all customizations you have done, including manual relationships between elements, new items, etc.')."';\n";
         $output .= "var warning_message = '".__('WARNING')."';\n";
@@ -3503,6 +3502,10 @@ class NetworkMap
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
             }
+
+            $output .= '<div id="spinner_networkmap" style="position: absolute; width: 100%;height: 100%; z-index:1; justify-content: center; align-items: center; display:none; background-color:rgba(0, 0, 0, 0.2);">';
+            $output .= html_print_image('/images/spinner.gif', true, ['style' => 'width: 22px; height: 22px']);
+            $output .= '</div>';
 
             $output .= '<div style="display: '.$minimap_display.';">';
             $output .= '<canvas id="minimap_'.$networkmap['id'].'"';

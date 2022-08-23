@@ -3525,6 +3525,7 @@ function update_node($node, $holding_area_x, $holding_area_y)
     $values = [];
     $values['x'] = $node['x'];
     $values['y'] = $node['y'];
+    $values['refresh'] = 0;
 
     if ($node['state'] === 'holding_area') {
         $networkmap_node = db_get_row_filter(
@@ -3547,14 +3548,9 @@ function update_node($node, $holding_area_x, $holding_area_y)
         ) {
             // Inside holding area.
             $return['state'] = 'holding_area';
+            $values['refresh'] = 1;
         } else {
             // The user move the node out the holding area.
-            db_process_sql_update(
-                'titem',
-                ['refresh' => 0],
-                ['id' => $node['id_db']]
-            );
-
             $return['state'] = '';
         }
     }

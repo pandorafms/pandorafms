@@ -2098,15 +2098,9 @@ function show_menu(item, data) {
         icon: "refresh",
         disabled: false,
         callback: function(key, options) {
-          update_networkmap();
-        }
-      };
-      items_list["refresh_holding_area"] = {
-        name: refresh_holding_area_menu,
-        icon: "refresh_holding_area",
-        disabled: false,
-        callback: function(key, options) {
-          refresh_holding_area();
+          refresh();
+          // refresh_holding_area();
+          // update_networkmap();
         }
       };
       items_list["restart_map"] = {
@@ -2462,6 +2456,58 @@ function refresh_holding_area() {
     },
     error: function() {
       $("#holding_spinner_" + networkmap_id).css("display", "none");
+    }
+  });
+}
+
+function refresh() {
+  $("#spinner_networkmap").css("display", "flex");
+  var holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
+  var holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
+
+  var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
+  var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
+
+  var params = [];
+  params.push("refresh_holding_area=1");
+  params.push("id=" + networkmap_id);
+  params.push("x=" + pos_x);
+  params.push("y=" + pos_y);
+  params.push("page=operation/agentes/pandora_networkmap.view");
+  $.ajax({
+    data: {
+      page: "operation/agentes/pandora_networkmap.view",
+      refresh_holding_area: 1,
+      id: networkmap_id,
+      x: pos_x,
+      y: pos_y
+    },
+    dataType: "json",
+    type: "POST",
+    url: window.base_url_homedir + "/ajax.php",
+    success: function(data) {
+      if (data["correct"]) {
+        const array_nodes = data["holding_area"]["nodes"];
+        let array_links = data["holding_area"]["links"];
+        jQuery.each(graph.links, function(j, g_link) {
+          for (var i = 0; i < array_links.length; i++) {
+            if (g_link["id_db"] == array_links[i]["id_db"]) {
+              array_links.splice(i, 1);
+            }
+          }
+        });
+
+        if (array_nodes.length === 0 && array_links.length === 0) {
+          update_networkmap();
+          $("#spinner_networkmap").css("display", "none");
+        } else {
+          console.log("hay algun nodo o link nuevo, toca repintar mapa");
+          // crear una funcion donde se llame a graphviz y se reciban las nuevas posiciones, pero sin borrar links.
+        }
+      }
+    },
+    error: function(e) {
+      $("#spinner_networkmap").css("display", "none");
     }
   });
 }

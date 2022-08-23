@@ -61,6 +61,7 @@ if ($new_networkmap) {
     $rank_sep = 1.0;
     $mindist = 1.0;
     $kval = 5;
+    $refresh_time = 300;
 }
 
 $disabled_generation_method_select = false;
@@ -136,6 +137,8 @@ if ($edit_networkmap) {
         } else {
             $kval = 0.3;
         }
+
+        $refresh_time = $values['refresh_time'];
 
         $node_radius = $filter['node_radius'];
 
@@ -449,6 +452,19 @@ if ($not_found) {
     $table->data['kval'][0] = __('Default ideal node separation');
     $table->data['kval'][1] = html_print_input_text('kval', $kval, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_help_tip(__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
 
+    $table->data['refresh'][0] = __('Refresh');
+    $table->data['refresh'][1] = html_print_extended_select_for_time(
+        'refresh_time',
+        $refresh_time,
+        '',
+        '',
+        '0',
+        false,
+        true,
+        false,
+        false
+    );
+
     echo '<form id="networkmap_options_form" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 
     html_print_table($table);
@@ -628,9 +644,9 @@ $(document).ready(function() {
             event.preventDefault();
         }
  
-});
+    });
 
-
+    $("#refresh_units").trigger("change");
 });
 
 

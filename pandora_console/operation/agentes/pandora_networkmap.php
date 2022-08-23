@@ -288,6 +288,8 @@ if ($new_networkmap || $save_networkmap) {
         $mindist = get_parameter('mindist', '1.0');
         $kval = get_parameter('kval', '0.3');
 
+        $refresh_time = get_parameter('refresh_time', '300');
+
         $values = [];
         $values['name'] = $name;
         $values['id_group'] = $id_group;
@@ -297,6 +299,7 @@ if ($new_networkmap || $save_networkmap) {
         $values['id_user'] = $config['id_user'];
         $values['description'] = $description;
         $values['id_group_map'] = $id_group_map;
+        $values['refresh_time'] = $refresh_time;
 
         switch ($method) {
             case 'twopi':
@@ -473,6 +476,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         $offset_y = get_parameter('pos_y', 0);
         $scale_z = get_parameter('scale_z', 0.5);
 
+        $refresh_time = get_parameter('refresh_time', '300');
+
         $values = [];
         $values['name'] = $name;
         $values['id_group'] = $id_group;
@@ -480,6 +485,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         $description = get_parameter('description', '');
         $values['description'] = $description;
+
+        $values['refresh_time'] = $refresh_time;
 
         $dont_show_subgroups = (int) get_parameter('dont_show_subgroups', 0);
         $node_radius = (int) get_parameter('node_radius', 40);

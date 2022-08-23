@@ -76,6 +76,7 @@ if (is_ajax() === true) {
     $get_networkmap_from_fictional = (bool) get_parameter('get_networkmap_from_fictional', false);
     $get_reset_map_form            = (bool) get_parameter('get_reset_map_form', false);
     $reset_map                     = (bool) get_parameter('reset_map', false);
+    $refresh_map                   = (bool) get_parameter('refresh_map', false);
 
     if ($get_reset_map_form) {
         $map_id = get_parameter('map_id');
@@ -937,6 +938,7 @@ if (is_ajax() === true) {
     }
 
     if ($refresh_holding_area) {
+        ob_start();
         $networkmap_id = (int) get_parameter('id', 0);
         $x = (int) get_parameter('x', 666);
         $y = (int) get_parameter('y', 666);
@@ -944,12 +946,11 @@ if (is_ajax() === true) {
         $return['correct'] = false;
         $return['holding_area'] = [];
 
-        // ACL for the network map
+        // ACL for the network map.
         $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
         $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
         $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
-
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
@@ -965,6 +966,8 @@ if (is_ajax() === true) {
             $return['correct'] = true;
             $return['holding_area'] = $data;
         }
+
+        ob_end_clean();
 
         echo json_encode($return);
 

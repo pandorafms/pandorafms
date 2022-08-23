@@ -1279,7 +1279,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1305,7 +1306,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1331,7 +1333,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }

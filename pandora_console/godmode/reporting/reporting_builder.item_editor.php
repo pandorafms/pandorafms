@@ -78,6 +78,14 @@ $agents_inventory_display_options['estado'] = __('Status');
 $agents_inventory_display_options['agent_version'] = __('Version');
 $agents_inventory_display_options['remote'] = __('Remote configuration');
 
+// Modules inventory display options.
+$modules_inventory_display_options = [];
+$modules_inventory_display_options['alias'] = __('Name');
+$modules_inventory_display_options['direccion'] = __('Description');
+$modules_inventory_display_options['id_os'] = __('Tags');
+$modules_inventory_display_options['id_grupo'] = __('Module groups');
+$modules_inventory_display_options['secondary_groups'] = __('Group');
+
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 if (enterprise_include_once('include/functions_metaconsole.php')) {
@@ -899,6 +907,14 @@ switch ($action) {
 
                     $idAgent = $es['id_agents'];
                     $idAgentModule = $inventory_modules;
+                break;
+
+                case 'modules_inventory':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+
+                    $selected_agent_group_filter = $es['agent_group_filter'];
+                    $selected_module_group = $es['module_group'];
                 break;
 
                 case 'inventory':
@@ -3820,6 +3836,47 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_module_group_filter" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Module group filter');
+                ?>
+            </td>
+            <td>
+            <?php
+            $rows_select = [];
+            $rows_select[0] = __('Not assigned');
+            if ($is_metaconsole === false) {
+                $rows = db_get_all_rows_sql(
+                    'SELECT * FROM tmodule_group ORDER BY name'
+                );
+                $rows = io_safe_output($rows);
+                if (empty($rows) === false) {
+                    foreach ($rows as $module_group) {
+                        $rows_select[$module_group['id_mg']] = $module_group['name'];
+                    }
+                }
+            } else {
+                $rows_select = modules_get_modulegroups();
+            }
+            html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
+            html_print_select(
+                $rows_select,
+                'module_group',
+                $selected_module_group,
+                '',
+                __('All'),
+                -1,
+                false,
+                false,
+                true,
+                '',
+                false,
+                'width: 120px;'
+            );
+            ?>
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -6139,6 +6196,8 @@ function chooseType() {
     $("#row_agents_inventory_display_options").hide();
     $("#row_agent_server_filter").hide();
     $("#row_agent_group_filter").hide();
+    $("#row_module_group_filter").hide();
+    $("#row_module_group_filter").hide();
     $("#row_os").hide();
     $("#row_custom_field_filter").hide();
     $("#row_custom_field").hide();
@@ -6765,6 +6824,14 @@ function chooseType() {
                     $('#text-agent_custom_field_filter').prop('disabled', true);
                 }
             });
+
+            break;
+
+        case 'modules_inventory':
+            $("#row_group").show();
+            $("#row_agent_server_filter").show();
+            $("#row_agent_group_filter").show();
+            $("#row_module_group_filter").show();
 
             break;
 

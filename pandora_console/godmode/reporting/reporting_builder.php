@@ -2313,6 +2313,14 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'modules_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['module_group'] = get_parameter('module_group');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             case 'IPAM_network':
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
@@ -3077,6 +3085,14 @@ switch ($action) {
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
                                 $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'modules_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['module_group'] = get_parameter('module_group');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
 
                                 $values['external_source'] = json_encode($es);
                             break;

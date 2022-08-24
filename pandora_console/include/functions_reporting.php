@@ -2714,7 +2714,7 @@ function reporting_modules_inventory($report, $content)
     }
 
     $return_data = [];
-hd($es_agent_server_filter);
+
     foreach ($servers_ids as $server_id) {
         if (is_metaconsole()) {
             $server = metaconsole_get_connection_by_id($server_id);

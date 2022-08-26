@@ -1164,7 +1164,12 @@ sub cli_disable_group() {
 	}
 	
 	my $result = pandora_disable_group ($conf, $dbh, $id_group);
+
+	if ($result != 0){
 	print_log "[INFO] Disabled ".$result." agents from group ".$group_name."\n\n";
+	} else {
+	print_log "[INFO] Disabled 0 agents from group ".$group_name."\n\n";
+	}
 }
 
 ##############################################################################

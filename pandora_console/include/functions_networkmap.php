@@ -2702,7 +2702,7 @@ function networkmap_clean_duplicate_links($id)
 {
     global $config;
 
-    $sql_duplicate_links = 'SELECT id, id_parent, id_child
+    $sql_duplicate_links = 'SELECT *
 		FROM trel_item t1
 		WHERE t1.deleted = 0 AND t1.id_child IN (
 				SELECT t2.id_child
@@ -2712,7 +2712,7 @@ function networkmap_clean_duplicate_links($id)
 					AND t1.id_parent = t2.id_parent
 					AND t2.id_map = '.$id.')
 			AND t1.id_map = '.$id.'
-		ORDER BY id_parent, id_child';
+		ORDER BY id_parent, id_child, id_parent_source_data desc, id_child_source_data desc';
 
     $rows = db_get_all_rows_sql($sql_duplicate_links);
     if (empty($rows) === true) {
@@ -2721,28 +2721,49 @@ function networkmap_clean_duplicate_links($id)
 
     $pre_parent = -1;
     $pre_child = -1;
+    $pre_parent_source = -1;
+    $pre_child_source = -1;
     foreach ($rows as $row) {
         if (($pre_parent === (int) $row['id_parent'])
             && ($pre_child === (int) $row['id_child'])
         ) {
-            // Delete the duplicate row.
-            db_process_sql_delete(
-                'trel_item',
-                ['id' => $row['id']]
-            );
+            // Agent <-> Agent.
+            if ((int) $row['parent_type'] === 0 && (int) $row['child_type'] === 0) {
+                // Delete the duplicate row.
+                db_process_sql_delete(
+                    'trel_item',
+                    ['id' => $row['id']]
+                );
+            } else {
+                // Agent <-> Module or Module <-> Agent or Module <-> Module.
+                if ($pre_parent_source === (int) $row['id_parent_source_data']
+                    && $pre_child_source === (int) $row['id_child_source_data']
+                ) {
+                    // Delete the duplicate row.
+                    db_process_sql_delete(
+                        'trel_item',
+                        ['id' => $row['id']]
+                    );
+                } else {
+                    $pre_parent_source = (int) $row['id_parent_source_data'];
+                    $pre_child_source = (int) $row['id_child_source_data'];
+                }
+            }
         } else {
-            $pre_parent = $row['id_parent'];
-            $pre_child = $row['id_child'];
+            $pre_parent = (int) $row['id_parent'];
+            $pre_child = (int) $row['id_child'];
+            if ((int) $row['parent_type'] === 1 || (int) $row['child_type'] === 1) {
+                $pre_parent_source = (int) $row['id_parent_source_data'];
+                $pre_child_source = (int) $row['id_child_source_data'];
+            }
         }
     }
-
-    db_process_sql($sql_duplicate_links);
 
     do {
         db_clean_cache();
 
         $sql_duplicate_links_parent_as_children = '
-			SELECT id, id_parent, id_child
+			SELECT *
 			FROM trel_item t1
 			WHERE t1.deleted = 0 AND t1.id_child IN (
 				SELECT t2.id_parent
@@ -2765,14 +2786,51 @@ function networkmap_clean_duplicate_links($id)
                 if (($row['id'] != $row2['id'])
                     && ($row['id_child'] == $row2['id_parent'])
                     && ($row['id_parent'] == $row2['id_child'])
+                    && ($row['parent_type'] == $row2['child_type'])
+                    && ($row['child_type'] == $row2['parent_type'])
                 ) {
-                    db_process_sql_delete(
-                        'trel_item',
-                        ['id' => $row2['id']]
-                    );
+                    // Agent <-> Agent.
+                    if ((int) $row2['parent_type'] === 0 && (int) $row2['child_type'] === 0) {
+                        db_process_sql_delete(
+                            'trel_item',
+                            ['id' => $row2['id']]
+                        );
 
-                    $found = true;
-                    break;
+                        $found = true;
+                        break;
+                    } else {
+                        // Agent <-> Module or Module <-> Agent or Module <-> Module.
+                        if ((int) $row['id_child_source_data'] === (int) $row2['id_parent_source_data']
+                            && (int) $row['id_parent_source_data'] === (int) $row2['id_child_source_data']
+                        ) {
+                            db_process_sql_delete(
+                                'trel_item',
+                                ['id' => $row2['id']]
+                            );
+
+                            $found = true;
+                            break;
+                        }
+                    }
+                } else {
+                    // Si no son del mismo tipo pero hay un parent_type = 0 y child_type = 0 borrar.
+                    if ((int) $row['parent_type'] === 0 && (int) $row['child_type'] === 0) {
+                        db_process_sql_delete(
+                            'trel_item',
+                            ['id' => $row['id']]
+                        );
+
+                        $found = true;
+                        break;
+                    } else if ((int) $row2['parent_type'] === 0 && (int) $row2['child_type'] === 0) {
+                        db_process_sql_delete(
+                            'trel_item',
+                            ['id' => $row2['id']]
+                        );
+
+                        $found = true;
+                        break;
+                    }
                 }
             }
 
@@ -3024,19 +3082,28 @@ function erase_node($id)
         $return = db_process_sql_update(
             'titem',
             ['deleted' => 1],
-            ['id' => $node['id']]
+            [
+                'id'     => (int) $node['id'],
+                'id_map' => (int) $node['id_map'],
+            ]
         );
 
         db_process_sql_update(
             'trel_item',
             ['deleted' => 1],
-            ['id_parent' => (int) $node['id']]
+            [
+                'id_parent' => (int) $node['id'],
+                'id_map'    => (int) $node['id_map'],
+            ]
         );
 
         db_process_sql_update(
             'trel_item',
             ['deleted' => 1],
-            ['id_child' => (int) $node['id']]
+            [
+                'id_child' => (int) $node['id'],
+                'id_map'   => (int) $node['id_map'],
+            ]
         );
 
         $node_modules = db_get_all_rows_filter(
@@ -3054,39 +3121,52 @@ function erase_node($id)
                 db_process_sql_update(
                     'titem',
                     ['deleted' => 1],
-                    ['id' => $node_module['id']]
+                    [
+                        'id'     => (int) $node_module['id'],
+                        'id_map' => (int) $node_module['id_map'],
+                    ]
                 );
                 db_process_sql_update(
                     'trel_item',
                     ['deleted' => 1],
-                    ['id_parent_source_data' => (int) $node_module['source_data']]
+                    [
+                        'id_parent_source_data' => (int) $node_module['source_data'],
+                        'id_map'                => (int) $node_module['id_map'],
+                    ]
                 );
                 db_process_sql_update(
                     'trel_item',
                     ['deleted' => 1],
-                    ['id_child_source_data' => (int) $node_module['source_data']]
+                    [
+                        'id_child_source_data' => (int) $node_module['source_data'],
+                        'id_map'               => (int) $node_module['id_map'],
+                    ]
                 );
             }
         }
     } else {
         $return = db_process_sql_delete(
             'titem',
-            ['id' => $node['id']]
+            [
+                'id'     => (int) $node['id'],
+                'id_map' => (int) $node['id_map'],
+            ]
         );
 
         db_process_sql_delete(
             'trel_item',
-            ['id_parent' => 0]
+            [
+                'parent_type' => 2,
+                'id_map'      => (int) $node['id_map'],
+            ]
         );
 
         db_process_sql_delete(
             'trel_item',
-            ['id_parent' => (int) $node['id']]
-        );
-
-        db_process_sql_delete(
-            'trel_item',
-            ['id_child' => (int) $node['id']]
+            [
+                'child_type' => 2,
+                'id_map'     => (int) $node['id_map'],
+            ]
         );
     }
 
@@ -4070,6 +4150,7 @@ function add_agent_node_in_option($id_networkmap, $id_agent, $x, $y)
 function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
 {
     $id_networkmap = $networkmap['id'];
+    $id_recon = $networkmap['source_data'];
 
     $map_filter = $networkmap['filter'];
     if (is_array($map_filter) === false) {
@@ -4077,11 +4158,11 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
     }
 
     if ((int) $networkmap['source'] === SOURCE_TASK) {
-        $agents = get_discovery_agents($id_networkmap, true);
+        $agents = get_discovery_agents($id_recon, true);
     } else if ((int) $networkmap['source'] === SOURCE_NETWORK) {
         // Network map, based on direct network.
         $agents = networkmap_get_nodes_from_ip_mask(
-            $networkmap['source_data'],
+            $id_recon,
             true
         );
     } else {

@@ -2099,8 +2099,6 @@ function show_menu(item, data) {
         disabled: false,
         callback: function(key, options) {
           refresh();
-          // refresh_holding_area();
-          // update_networkmap();
         }
       };
       items_list["restart_map"] = {
@@ -2497,12 +2495,37 @@ function refresh() {
           }
         });
 
+        let location = "";
+        if ($("#main").height()) {
+          location = `index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=${networkmap_id}`;
+        } else {
+          location = `index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&pure=1&id_networkmap=${networkmap_id}`;
+        }
+
         if (array_nodes.length === 0 && array_links.length === 0) {
           update_networkmap();
           $("#spinner_networkmap").css("display", "none");
+          // window.location = location;
         } else {
-          console.log("hay algun nodo o link nuevo, toca repintar mapa");
-          // crear una funcion donde se llame a graphviz y se reciban las nuevas posiciones, pero sin borrar links.
+          if (array_nodes.length > 0) {
+            $.ajax({
+              data: {
+                page: "operation/agentes/pandora_networkmap.view",
+                refresh_map: 1,
+                id: networkmap_id
+              },
+              dataType: "json",
+              type: "POST",
+              url: window.base_url_homedir + "/ajax.php",
+              success: function(data) {
+                $("#spinner_networkmap").css("display", "none");
+                window.location = location;
+              }
+            });
+          } else if (array_links.length > 0) {
+            $("#spinner_networkmap").css("display", "none");
+            window.location = location;
+          }
         }
       }
     },

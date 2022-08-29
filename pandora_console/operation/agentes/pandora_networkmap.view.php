@@ -78,6 +78,42 @@ if (is_ajax() === true) {
     $reset_map                     = (bool) get_parameter('reset_map', false);
     $refresh_map                   = (bool) get_parameter('refresh_map', false);
 
+    if ($refresh_map) {
+        $id_map = get_parameter('id');
+
+        include_once $config['homedir'].'/include/class/NetworkMap.class.php';
+
+        $map_manager = new NetworkMap(
+            ['id_map' => $id_map]
+        );
+
+        $filter = json_decode($map_manager->map['filter'], true);
+        $z_dash = $filter['z_dash'];
+
+        $nodes = $map_manager->recalculateCoords();
+
+        foreach ($nodes as $key => $value) {
+            if ($value['type'] == 0 || $value['type'] == 2) {
+                $node['x'] = ($value['x'] + ($map_manager->map['center_x'] / 2) / $z_dash);
+                $node['y'] = ($value['y'] + ($map_manager->map['center_y'] / 2) / $z_dash);
+                $node['refresh'] = 0;
+
+                db_process_sql_update(
+                    'titem',
+                    $node,
+                    [
+                        'source_data' => $value['source_data'],
+                        'id_map'      => $id_map,
+                    ]
+                );
+            }
+        }
+
+        echo $id_map;
+
+        return;
+    }
+
     if ($get_reset_map_form) {
         $map_id = get_parameter('map_id');
 
@@ -2271,6 +2307,10 @@ if ($networkmap === false) {
                 ]
             ).'</a>',
         ];
+        $buttons['test'] = [
+            'active' => false,
+            'text'   => '<div style="width:100%;height:54px;display:flex;align-items:center"><div class="vc-countdown"></div></div>',
+        ];
     } else {
         if (!$dash_mode) {
             $buttons['screen'] = [
@@ -2306,6 +2346,10 @@ if ($networkmap === false) {
                     ]
                 ).'</a>',
             ];
+            $buttons['test'] = [
+                'active' => false,
+                'text'   => '<div style="width:100%;height:54px;display:flex;align-items:center"><div class="vc-countdown"></div></div>',
+            ];
         }
     }
 
@@ -2325,8 +2369,15 @@ if ($networkmap === false) {
 
     include_once $config['homedir'].'/include/class/NetworkMap.class.php';
 
+    $filter = json_decode($networkmap['filter'], true);
+    $zoom = $filter['z_dash'];
+
     $map_manager = new NetworkMap(
-        [ 'id_map' => $networkmap['id']]
+        [
+            'id_map'   => $networkmap['id'],
+            'center_x' => $networkmap['center_x'],
+            'center_y' => $networkmap['center_y'],
+        ]
     );
 
     $map_manager->printMap();

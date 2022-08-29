@@ -646,7 +646,7 @@ $(document).ready(function() {
  
     });
 
-    $("#refresh_units").trigger("change");
+    $("#refresh_time_units").trigger("change");
 });
 
 

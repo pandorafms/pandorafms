@@ -573,7 +573,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
 				# All day.
 				$inSlot = 1;
-			} elsif ($timeBlock->{'start'} le $time && $timeBlock->{'end'} ge $time) {
+			} elsif ($timeBlock->{'start'} le $time && (($timeBlock->{'end'} eq '00:00:00') || ($timeBlock->{'end'} ge $time))) {
 				# In range.
 				$inSlot = 1;
 			}
@@ -795,7 +795,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		if ($pa_config->{'alertserver'} == 1) {
+		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
 				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {

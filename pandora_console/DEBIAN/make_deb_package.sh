@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Pandora FMS- http:#pandorafms.com
+#Pandora FMS - https://pandorafms.com
 # ==================================================
 # Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 # Please see http:#pandorafms.org for full contribution list
@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.763-220715"
+pandora_version="7.0NG.764-220829"
 
 package_pear=0
 package_pandora=1
@@ -94,17 +94,19 @@ echo "Make a \"temp_package\" temporary dir for job."
 mkdir -p temp_package
 if [ $package_pandora -eq 1 ]
 then
-	mkdir -p temp_package/var/www/pandora_console
+	mkdir -p temp_package/var/www/html/pandora_console
+	mkdir -p temp_package/var/log/pandora
 	mkdir -p temp_package/etc/logrotate.d
+	mkdir -p temp_package/etc/init.d
 
 	echo "Make directory system tree for package."
-	cp -R $(ls | grep -v temp_package | grep -v DEBIAN ) temp_package/var/www/pandora_console
+	cp -R $(ls | grep -v temp_package | grep -v DEBIAN | grep -v pandorafms.console_$pandora_version.deb) temp_package/var/www/html/pandora_console
 	cp -R DEBIAN temp_package
 	cp -aRf pandora_console_logrotate_ubuntu temp_package/etc/logrotate.d/pandora_console
-	find temp_package/var/www/pandora_console -name ".svn" | xargs rm -Rf 
-	rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
+	cp -aRf pandora_websocket_engine temp_package/etc/init.d/
+	find temp_package/var/www/html/pandora_console -name ".svn" | xargs rm -Rf 
+	rm -Rf temp_package/var/www/html/pandora_console/pandora_console.spec
 	chmod 755 -R temp_package/DEBIAN
-	touch temp_package/var/www/pandora_console/include/config.php
 	
 	
 	echo "Remove the SVN files and other temp files."
@@ -128,30 +130,31 @@ then
 	echo "END"
 
 	echo "Calculate md5sum for md5sums package control file."
-	for item in `find temp_package`
+	FILES=`find temp_package`
+	while read item
 	do
 		echo -n "."
-		if [ ! -d $item ]
+		if [ ! -d "$item" ]
 		then
-			echo $item | grep "DEBIAN" > /dev/null
+			echo "$item" | grep "DEBIAN" > /dev/null
 			#last command success
 			if [ $? -eq 1 ]
 			then
-				md5=`md5sum $item | cut -d" " -f1`
+				md5=`md5sum "$item" | cut -d" " -f1`
 				
 				#delete "temp_package" in the path
 				final_path=${item#temp_package}
 				echo  $md5" "$final_path >> temp_package/DEBIAN/md5sums
 			fi
 		fi
-	done
+	done < <(echo "$FILES")
 	echo "END"
 
 	echo "Make the package \"Pandorafms console\"."
 	if [ "$USE_DOCKER_APP" == "1" ]; then 
-		eval $DPKG_DEB --build temp_package
+		eval $DPKG_DEB --root-owner-group --build temp_package
 	else
-		dpkg-deb --build temp_package
+		dpkg-deb --root-owner-group --build temp_package
 	fi
 	mv temp_package.deb pandorafms.console_$pandora_version.deb
 fi

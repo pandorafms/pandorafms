@@ -53,9 +53,8 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$filter = get_parameter('filter', 'all_enabled');
-$filter_standby = get_parameter('filter_standby', 'all');
-$offset_simple = (int) get_parameter_get('offset_simple', 0);
+$filter = get_parameter('disabled', 'all_enabled');
+$filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)
 $free_search = get_parameter('free_search', '');
@@ -99,7 +98,7 @@ if ($tag_filter) {
     }
 }
 
-$action_filter = get_parameter('action_filter', 0);
+$action_filter = get_parameter('action', 0);
 
 $sec2 = get_parameter_get('sec2');
 $sec2 = safe_url_extraclean($sec2);
@@ -210,249 +209,11 @@ if ($idAgent != 0) {
     }
 }
 
-if ($alert_validate) {
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
-        validateAlert();
-    } else {
-        ui_print_error_message(__('Insufficient permissions to validate alerts'));
-    }
-}
 
 enterprise_hook('open_meta_frame');
 
-if ($free_search != '') {
-    $whereAlertSimple = 'AND ('.'id_alert_template IN (
-			SELECT id
-			FROM talert_templates
-			WHERE name LIKE "%'.$free_search.'%") OR '.'id_alert_template IN (
-			SELECT id
-			FROM talert_templates
-			WHERE id_alert_action IN (
-				SELECT id
-				FROM talert_actions
-				WHERE name LIKE "%'.$free_search.'%")) OR '.'talert_template_modules.id IN (
-			SELECT id_alert_template_module
-			FROM talert_template_module_actions
-			WHERE id_alert_action IN (
-				SELECT id
-				FROM talert_actions
-				WHERE name LIKE "%'.$free_search.'%")) OR '.'id_agent_module IN (
-			SELECT id_agente_modulo
-			FROM tagente_modulo
-			WHERE nombre LIKE "%'.$free_search.'%") OR '.'id_agent_module IN (
-			SELECT id_agente_modulo
-			FROM tagente_modulo
-			WHERE id_agente IN (
-				SELECT id_agente
-				FROM tagente
-				WHERE nombre LIKE "%'.$free_search.'%") 
-                OR alias LIKE "%'.$free_search.'%")'.')';
-} else {
-    $whereAlertSimple = '';
-}
-
-$sortField = get_parameter('sort_field');
-$sort = get_parameter('sort', 'none');
-$selected = true;
-$selectAgentUp = false;
-$selectAgentDown = false;
-$selectModuleUp = false;
-$selectModuleDown = false;
-$selectTemplateUp = false;
-$selectTemplateDown = false;
-$selectLastFiredUp = false;
-$selectLastFiredDown = false;
-
-switch ($sortField) {
-    case 'agent':
-        switch ($sort) {
-            case 'up':
-                $selectAgentUp = $selected;
-                $order = [
-                    'field' => 'agent_name',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectAgentDown = $selected;
-                $order = [
-                    'field' => 'agent_name',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'module':
-        switch ($sort) {
-            case 'up':
-                $selectModuleUp = $selected;
-                $order = [
-                    'field' => 'agent_module_name',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectModuleDown = $selected;
-                $order = [
-                    'field' => 'agent_module_name',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'template':
-        switch ($sort) {
-            case 'up':
-                $selectTemplateUp = $selected;
-                $order = [
-                    'field' => 'template_name',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectTemplateDown = $selected;
-                $order = [
-                    'field' => 'template_name',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'last_fired':
-        switch ($sort) {
-            case 'up':
-                $selectLastFiredUp = $selected;
-                $order = [
-                    'field' => 'last_fired',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectLastFiredDown = $selected;
-                $order = [
-                    'field' => 'last_fired',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    default:
-        if ($print_agent) {
-            $selectDisabledUp = '';
-            $selectDisabledDown = '';
-            $selectAgentUp = false;
-            $selectAgentDown = false;
-            $selectModuleUp = $selected;
-            $selectModuleDown = false;
-            $selectTemplateUp = false;
-            $selectTemplateDown = false;
-            $selectLastFiredUp = false;
-            $selectLastFiredDown = false;
-            $order = [
-                'field' => 'agent_module_name',
-                'order' => 'ASC',
-            ];
-        } else {
-            $selectDisabledUp = '';
-            $selectDisabledDown = '';
-            $selectAgentUp = false;
-            $selectAgentDown = false;
-            $selectModuleUp = $selected;
-            $selectModuleDown = false;
-            $selectTemplateUp = false;
-            $selectTemplateDown = false;
-            $selectLastFiredUp = false;
-            $selectLastFiredDown = false;
-            $order = [
-                'field' => 'agent_module_name',
-                'order' => 'ASC',
-            ];
-        }
-    break;
-}
-
-
-// Add checks for user ACL
-$groups = users_get_groups($config['id_user'], $access);
-$id_groups = array_keys($groups);
-
-if (empty($id_groups)) {
-    $whereAlertSimple .= ' AND (1 = 0) ';
-} else {
-    $whereAlertSimple .= sprintf(
-        ' AND id_agent_module IN (
-		SELECT tam.id_agente_modulo
-		FROM tagente_modulo tam
-		WHERE tam.id_agente IN (SELECT ta.id_agente
-			FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
-				ta.id_agente = tasg.id_agent
-				WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
-        implode(',', $id_groups),
-        implode(',', $id_groups)
-    );
-}
-
 
 $alerts = [];
-if ($agent_view_page === true) {
-    $options_simple = ['order' => $order];
-} else {
-    $options_simple = [
-        'offset' => $offset_simple,
-        'limit'  => $config['block_size'],
-        'order'  => $order,
-    ];
-}
-
-$filter_alert = [];
-if ($filter_standby == 'standby_on') {
-    $filter_alert['disabled'] = $filter;
-    $filter_alert['standby'] = '1';
-} else if ($filter_standby == 'standby_off') {
-    $filter_alert['disabled'] = $filter;
-    $filter_alert['standby'] = '0';
-} else {
-    $filter_alert['disabled'] = $filter;
-}
-
-if (is_metaconsole() === true) {
-    include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
-    if ($idAgent != 0) {
-        $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
-
-        $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
-    } else {
-        $id_groups = array_keys(
-            users_get_groups($config['id_user'], 'AR', false)
-        );
-
-        $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
-
-        $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
-    }
-} else {
-    if ($idAgent != 0) {
-        $alerts['alerts_simple'] = agents_get_alerts_simple($idAgent, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
-
-        $countAlertsSimple = agents_get_alerts_simple($idAgent, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
-    } else {
-        $id_groups = array_keys(
-            users_get_groups($config['id_user'], $access, false)
-        );
-
-        $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
-
-        $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
-    }
-}
 
 if ($tab != null) {
     $url = $url.'&tab='.$tab;
@@ -466,313 +227,248 @@ if ($free_search != '') {
     $url .= '&free_search='.$free_search;
 }
 
-// Filter form
-if ($print_agent) {
-    if (is_metaconsole()) {
-        ui_toggle(
-            printFormFilterAlert(
-                $id_group,
-                $filter,
-                $free_search,
-                $url,
-                $filter_standby,
-                $tag_filter,
+
+
+        $columns = ['standby'];
+
+        $column_names = [
+            [
+                'title' => 'Standby',
+                'text'  => 'S.',
+            ],
+        ];
+
+        if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+            array_unshift(
+                $column_names,
+                [
+                    'title' => 'Policy',
+                    'text'  => 'P.',
+                ]
+            );
+
+            $columns = array_merge(
+                ['policy'],
+                $columns
+            );
+        }
+
+        if (is_metaconsole() === false) {
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                array_unshift(
+                    $column_names,
+                    [
+                        'title' => 'Validate',
+                        'text'  => html_print_checkbox('all_validate', 0, false, true, false),
+                        'class' => 'dt-left',
+                    ]
+                );
+
+                $columns = array_merge(
+                    ['validate'],
+                    $columns
+                );
+            }
+
+            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                array_push(
+                    $column_names,
+                    [
+                        'title' => 'Force execution',
+                        'text'  => 'F.',
+                    ]
+                );
+
+                $columns = array_merge(
+                    $columns,
+                    ['force']
+                );
+            }
+        }
+
+        if ($print_agent === true) {
+            array_push(
+                $column_names,
+                ['text' => 'Agent']
+            );
+
+            $columns = array_merge(
+                $columns,
+                ['agent']
+            );
+        }
+
+        array_push(
+            $column_names,
+            ['text' => 'Module'],
+            ['text' => 'Template'],
+            ['text' => 'Action'],
+            ['text' => 'Last fired'],
+            ['text' => 'Status']
+        );
+
+        $columns = array_merge(
+            $columns,
+            ['module'],
+            ['template'],
+            ['action'],
+            ['lastFired'],
+            ['status']
+        );
+
+
+
+        if (is_metaconsole() === true) {
+            $no_sortable_columns = [
+                0,
+                1,
+                5,
+            ];
+        } else {
+            $no_sortable_columns = [
+                0,
+                1,
+                2,
+                3,
+                7,
+            ];
+        }
+
+
+        $alert_action = empty(alerts_get_alert_actions_filter()) === false ? alerts_get_alert_actions_filter() : ['' => __('No actions')];
+
+
+        ob_start();
+
+        if ($agent_view_page === true) {
+            ui_print_datatable(
+                [
+                    'id'                  => 'alerts_status_datatable',
+                    'class'               => 'info_table',
+                    'style'               => 'width: 100%',
+                    'columns'             => $columns,
+                    'column_names'        => $column_names,
+                    'no_sortable_columns' => $no_sortable_columns,
+                    'ajax_url'            => 'include/ajax/alert_list.ajax',
+                    'ajax_data'           => [
+                        'get_agent_alerts_datatable' => 1,
+                        'id_agent'                   => $id_agent,
+                        'url'                        => $url,
+                        'agent_view_page'            => true,
+                        'all_groups'                 => $all_groups,
+                    ],
+                    'drawCallback'        => 'alerts_table_controls()',
+                    'order'               => [
+                        'field'     => 'module',
+                        'direction' => 'asc',
+                    ],
+                    'zeroRecords'         => __('No alerts found'),
+                    'emptyTable'          => __('No alerts found'),
+                    'search_button_class' => 'sub filter float-right',
+                    'form'                => [
+                        'inputs'    => [
+                            [
+                                'label'     => __('Free text for search (*):').ui_print_help_tip(
+                                    __('Filter by module name, template name or action name'),
+                                    true
+                                ),
+                                'type'      => 'text',
+                                'name'      => 'free_search_alert',
+                                'value'     => $free_search,
+                                'size'      => 20,
+                                'maxlength' => 100,
+                            ],
+                        ],
+                        'no_toggle' => true,
+                    ],
+                ]
+            );
+        } else {
+            ui_print_datatable(
+                [
+                    'id'                  => 'alerts_status_datatable',
+                    'class'               => 'info_table',
+                    'style'               => 'width: 100%',
+                    'columns'             => $columns,
+                    'column_names'        => $column_names,
+                    'no_sortable_columns' => $no_sortable_columns,
+                    'ajax_url'            => 'include/ajax/alert_list.ajax',
+                    'ajax_data'           => [
+                        'get_agent_alerts_datatable' => 1,
+                        'id_agent'                   => $id_agent,
+                        'url'                        => $url,
+                    ],
+                    'drawCallback'        => 'alerts_table_controls()',
+                    'order'               => [
+                        'field'     => 'module',
+                        'direction' => 'asc',
+                    ],
+                    'zeroRecords'         => __('No alerts found'),
+                    'emptyTable'          => __('No alerts found'),
+                    'search_button_class' => 'sub filter float-right',
+                    'form'                => [
+                        'html' => printFormFilterAlert(
+                            $id_group,
+                            $filter,
+                            $free_search,
+                            $url,
+                            $filter_standby,
+                            $tag_filter,
+                            true,
+                            true,
+                            $strict_user
+                        ),
+                    ],
+                ]
+            );
+        }
+
+        if (!is_metaconsole()) {
+            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                    echo '<div class="action-buttons" style="width: '.$table->width.';">';
+                    html_print_submit_button(__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
+                    echo '</div>';
+            }
+        }
+
+
+            $html_content = ob_get_clean();
+
+        if ($agent_view_page === true) {
+            // Create controlled toggle content.
+            ui_toggle(
+                $html_content,
+                __('Full list of alerts'),
+                'status_monitor_agent',
+                !$alerts_defined,
                 false,
-                true,
-                $strict_user
-            ),
-            __('Show Options')
-        );
-        ;
-    } else {
-        ui_toggle(
-            printFormFilterAlert(
-                $id_group,
-                $filter,
-                $free_search,
-                $url,
-                $filter_standby,
-                $tag_filter,
-                $action_filter,
-                true,
-                $strict_user
-            ),
-            __('Alert control filter'),
-            __('Toggle filter(s)'),
-            $access
-        );
-    }
-}
-
-// Urls to sort the table.
-$url_up_agente = $url.'&sort_field=agent&sort=up';
-$url_down_agente = $url.'&sort_field=agent&sort=down';
-$url_up_module = $url.'&sort_field=module&sort=up';
-$url_down_module = $url.'&sort_field=module&sort=down';
-$url_up_template = $url.'&sort_field=template&sort=up';
-$url_down_template = $url.'&sort_field=template&sort=down';
-$url_up_lastfired = $url.'&sort_field=last_fired&sort=up';
-$url_down_lastfired = $url.'&sort_field=last_fired&sort=down';
-
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'info_table';
-$table->cellpadding = '0';
-$table->cellspacing = '0';
-$table->size = [];
-$table->head = [];
-$table->align = [];
-
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-    if ($print_agent) {
-        if (!is_metaconsole()) {
-            $table->size[8] = '4%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[9] = html_print_checkbox('all_validate', 0, false, true, false);
-                $table->align[9] = 'left';
-                $table->size[9] = '5%';
-            }
+                '',
+                'white_table_graph_content no-padding-imp',
+                'white_table_graph_content'
+            );
+        } else {
+            // Dump entire content.
+            echo $html_content;
         }
 
-        $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
+            // strict user hidden
+            echo '<div id="strict_hidden" class="invisible">';
+            html_print_input_text('strict_user_hidden', $strict_user);
 
-        $table->head[1] = "<span title='".__('Standby')."'>".__('S.').'</span>';
+            html_print_input_text('is_meta_hidden', (int) is_metaconsole());
+            echo '</div>';
 
-        if (!is_metaconsole()) {
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[2] = "<span title='".__('Force execution')."'>".__('F.').'</span>';
-            }
-        }
-
-        $table->head[3] = __('Agent');
-        $table->head[4] = __('Module');
-        $table->head[5] = __('Template');
-        $table->head[6] = __('Action');
-        $table->head[7] = __('Last fired');
-        $table->head[8] = __('Status');
-
-        $table->align[8] = 'center';
-
-        // Sort buttons are only for normal console
-        if (!is_metaconsole()) {
-            $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
-            $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
-            $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
-            $table->head[7] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
-        }
-    } else {
-        if (!is_metaconsole()) {
-            $table->size[7] = '5%';
-            if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
-                $table->head[8] = __('Validate');
-                $table->align[8] = 'left';
-                $table->size[8] = '5%';
-            }
-        }
-
-        $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
-
-        $table->head[1] = "<span title='".__('Standby')."'>".__('S.').'</span>';
-
-        if (!is_metaconsole()) {
-            if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
-                $table->head[2] = "<span title='".__('Force execution')."'>".__('F.').'</span>';
-            }
-        }
-
-        $table->head[3] = __('Module');
-        $table->head[4] = __('Template');
-        $table->head[5] = __('Action');
-        $table->head[6] = __('Last fired');
-        $table->head[7] = __('Status');
+            enterprise_hook('close_meta_frame');
 
 
-        $table->align[7] = 'center';
-
-        // Sort buttons are only for normal console
-        if (!is_metaconsole()) {
-            $table->head[3] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
-            $table->head[4] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
-            $table->head[6] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
-        }
-    }
-} else {
-    if ($print_agent) {
-        if (!is_metaconsole()) {
-            $table->size[7] = '5%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[8] = __('Validate');
-                $table->align[8] = 'left';
-                $table->size[8] = '5%';
-            }
-        }
-
-        $table->head[0] = "<span title='".__('Standby')."'>".__('S.').'</span>';
-        if (!is_metaconsole()) {
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[1] = "<span title='".__('Force execution')."'>".__('F.').'</span>';
-            }
-        }
-
-        $table->head[2] = __('Agent');
-        $table->head[3] = __('Module');
-        $table->head[4] = __('Template');
-        $table->head[5] = __('Action');
-        $table->head[6] = __('Last fired');
-        $table->head[7] = __('Status');
-
-        $table->align[7] = 'center';
-
-        // Sort buttons are only for normal console
-        if (!is_metaconsole()) {
-            $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
-            $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
-            $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
-            $table->head[6] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
-        }
-    } else {
-        if (!is_metaconsole()) {
-            $table->size[6] = '5%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[7] = __('Validate');
-                $table->align[7] = 'left';
-                $table->size[7] = '5%';
-            }
-        }
-
-        $table->head[0] = "<span title='".__('Standby')."'>".__('S.').'</span>';
-        if (!is_metaconsole()) {
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[1] = "<span title='".__('Force execution')."'>".__('F.').'</span>';
-            }
-        }
-
-        $table->head[2] = __('Module');
-        $table->head[3] = __('Template');
-        $table->head[4] = __('Action');
-        $table->head[5] = __('Last fired');
-        $table->head[6] = __('Status');
-
-        $table->align[6] = 'center';
-
-        // Sort buttons are only for normal console
-        if (!is_metaconsole()) {
-            $table->head[2] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
-            $table->head[3] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
-            $table->head[5] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
-        }
-    }
-}
-
-
-if ($sortField) {
-    $url .= '&sort_field='.$sortField;
-    $url .= '&sort='.$sort;
-}
-
-$table->data = [];
-
-$rowPair = true;
-$iterator = 0;
-foreach ($alerts['alerts_simple'] as $alert) {
-    $row = ui_format_alert_row($alert, $print_agent, $url, 'font-size: 7pt;');
-    $table->data[] = $row;
-}
-
-if (!empty($table->data)) {
-    $class = '';
-    if ($agent_view_page === true) {
-        $class = 'w100p no-padding-imp';
-        printFormFilterAlertAgent($agent_view_page, $free_search, $idAgent);
-    }
-
-    echo '<form class="'.$class.'" method="post" action="'.$url.'">';
-
-    if ($agent_view_page !== true) {
-        ui_pagination(
-            $countAlertsSimple,
-            $url,
-            $offset_simple,
-            0,
-            false,
-            'offset_simple'
-        );
-    }
-
-    echo '<div id="alerts_list" class="w100p">';
-    html_print_table($table);
-    echo '</div>';
-
-    if ($agent_view_page !== true) {
-        ui_pagination(
-            $countAlertsSimple,
-            $url,
-            $offset_simple,
-            0,
-            false,
-            'offset_simple',
-            true,
-            'pagination-bottom'
-        );
-    }
-
-    if (!is_metaconsole()) {
-        if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-            if (count($alerts['alerts_simple']) > 0) {
-                echo '<div class="action-buttons" style="width: '.$table->width.';">';
-                html_print_submit_button(__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
-                echo '</div>';
-            }
-        }
-    }
-
-    echo '</form>';
-    $alerts_defined = true;
-} else {
-    ui_print_info_message(['no_close' => true, 'message' => __('No alerts found') ]);
-    $alerts_defined = false;
-}
-
-$html_content = ob_get_clean();
-
-if ($agent_view_page === true) {
-    // Create controlled toggle content.
-    ui_toggle(
-        $html_content,
-        __('Full list of alerts'),
-        'status_monitor_agent',
-        !$alerts_defined,
-        false,
-        '',
-        'white_table_graph_content no-padding-imp'
-    );
-} else {
-    if (!$print_agent) {
-        printFormFilterAlertAgent($agent_view_page, $free_search, $idAgent);
-    }
-
-    // Dump entire content.
-    echo $html_content;
-}
-
-
-// strict user hidden
-echo '<div id="strict_hidden" class="invisible">';
-html_print_input_text('strict_user_hidden', $strict_user);
-
-html_print_input_text('is_meta_hidden', (int) is_metaconsole());
-echo '</div>';
-
-enterprise_hook('close_meta_frame');
-
-
-ui_require_css_file('cluetip', 'include/styles/js/');
-ui_require_jquery_file('cluetip');
-?>
+            ui_require_css_file('cluetip', 'include/styles/js/');
+            ui_require_jquery_file('cluetip');
+        ?>
 
 <script type="text/javascript">
+
+function alerts_table_controls() {
     
-    $(document).ready (function () {
         $("a.template_details").cluetip ({
             arrows: true,
             attribute: 'href',
@@ -782,19 +478,9 @@ ui_require_jquery_file('cluetip');
         });
 
 
-        $('[id^=checkbox-validate]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');                            
-            }
-        });
-
         $('[id^=checkbox-all_validate]').change(function(){    
             if ($("#checkbox-all_validate").prop("checked")) {
-                $('[id^=checkbox-validate]').parent().parent().addClass('checkselected');                
-                $('[name^=validate]').prop("checked", true);
+                $("input[id^=checkbox-validate]").prop('checked', true);
             }
             else{
                 $('[id^=checkbox-validate]').parent().parent().removeClass('checkselected');
@@ -802,6 +488,13 @@ ui_require_jquery_file('cluetip');
             }    
         });
 
+    }
+    
+    $(document).ready ( function () {
+        alerts_table_controls();
+        $('#submit-alert_validate').on('click', function () {
+            validateAlerts();
+        });
     });
 
     $('table.alert-status-filter #ag_group').change (function () {
@@ -825,27 +518,42 @@ ui_require_jquery_file('cluetip');
         }
     }).change();
     
-    function filter_agent_alerts(){
-        var free_search_alert = $("input[name='free_search_alert']").val();
-        $("#alerts_list").empty();    
-        
-        jQuery.ajax ({
-            data: {
-                get_agent_alerts_agent_view: 1,
-                id_agent: '<?php echo $idAgent; ?>',
-                free_search_alert: free_search_alert,
-                all_groups: '<?php echo json_encode($all_groups); ?>',
-                sort_field: '<?php echo $sortField; ?>',
-                sort: '<?php echo $sort; ?>',
-                page: 'include/ajax/alert_list.ajax'
-            },
-            type: 'POST',
-            url: "ajax.php",
-            dataType: 'html',
-            success: function (data) {
-                $("#alerts_list").empty();
-                $("#alerts_list").html(data);
-            }
+
+    function validateAlerts() {
+        var alert_ids = [];
+
+        $('[id^=checkbox-validate]:checked').each(function() {
+            alert_ids.push($(this).val());
         });
+
+        if (alert_ids.length === 0) { 
+            confirmDialog({
+                title: "<?php echo __('No alert selected'); ?>",
+                message: "<?php echo __('You must select at least one alert.'); ?>",
+                hideCancelButton: true
+            });
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: {
+                alert_ids: alert_ids,
+                page: "include/ajax/alert_list.ajax",
+                alert_validate: 1,
+                all_groups: <?php echo json_encode($all_groups); ?>,
+            },
+            dataType: "json",
+            success: function (data) {
+                $("#menu_tab_frame_view").after(data);
+                var table = $('#alerts_status_datatable').DataTable({
+                    ajax: "data.json"
+                });
+
+                table.ajax.reload();
+            }, 
+        });
+
+        
     }
 </script>

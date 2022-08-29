@@ -156,7 +156,10 @@ final class DBMaintainer
             return true;
         }
 
-        $dbc = new \mysqli(
+        $link = mysqli_init();
+        $link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
+        $rc = mysqli_real_connect(
+            $link,
             $this->host,
             $this->user,
             $this->pass,
@@ -164,25 +167,39 @@ final class DBMaintainer
             $this->port
         );
 
-        if ((bool) $dbc->connect_error === true) {
+        if ($rc === false) {
             $this->dbh = null;
             $this->connected = false;
-            $this->lastError = $dbc->connect_errno.': '.$dbc->connect_error;
+            $this->lastError = __('Connection problems');
         } else {
-            $this->dbh = $dbc;
-            if (empty($this->charset) === false) {
-                $dbc->set_charset($this->charset);
-            }
+            $dbc = new \mysqli(
+                $this->host,
+                $this->user,
+                $this->pass,
+                null,
+                $this->port
+            );
 
-            if ($this->dbh->select_db($this->name) === false) {
-                $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
-                $this->ready = false;
+            if ((bool) $dbc->connect_error === true) {
+                $this->dbh = null;
+                $this->connected = false;
+                $this->lastError = $dbc->connect_errno.': '.$dbc->connect_error;
             } else {
-                $this->lastError = null;
-                $this->ready = true;
-            }
+                $this->dbh = $dbc;
+                if (empty($this->charset) === false) {
+                    $dbc->set_charset($this->charset);
+                }
 
-            $this->connected = true;
+                if ($this->dbh->select_db($this->name) === false) {
+                    $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+                    $this->ready = false;
+                } else {
+                    $this->lastError = null;
+                    $this->ready = true;
+                }
+
+                $this->connected = true;
+            }
         }
     }
 

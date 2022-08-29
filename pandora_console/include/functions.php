@@ -5997,6 +5997,38 @@ function send_test_email(
 
 
 /**
+ * Check ip is valid into network
+ *
+ * @param string $ip   Ip XXX.XXX.XXX.XXX.
+ * @param string $cidr Network XXX.XXX.XXX.XXX/XX.
+ *
+ * @return boolean
+ */
+function cidr_match($ip, $cidr)
+{
+    list($subnet, $mask) = explode('/', $cidr);
+
+    if ((ip2long($ip) & ~((1 << (32 - $mask)) - 1) ) == ip2long($subnet)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Microtime float number.
+ *
+ * @return float
+ */
+function microtime_float()
+{
+    list($usec, $sec) = explode(' ', microtime());
+    return ((float) $usec + (float) $sec);
+}
+
+
+/**
  * Return array of ancestors of item, given array.
  *
  * @param integer     $item    From index.
@@ -6064,4 +6096,124 @@ if (function_exists('str_contains') === false) {
     }
 
 
+}
+
+
+/**
+ * Is reporting console node.
+ *
+ * @return boolean
+ */
+function is_reporting_console_node()
+{
+    global $config;
+    if (isset($config['reporting_console_enable']) === true
+        && (bool) $config['reporting_console_enable'] === true
+        && isset($config['reporting_console_node']) === true
+        && (bool) $config['reporting_console_node'] === true
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Acl reporting console node.
+ *
+ * @param string $path Path.
+ *
+ * @return boolean
+ */
+function acl_reporting_console_node($path, $tab='')
+{
+    global $config;
+    if (is_reporting_console_node() === false) {
+        return true;
+    }
+
+    if (is_metaconsole() === true) {
+        if ($path === 'advanced/metasetup') {
+            switch ($tab) {
+                case 'update_manager_online':
+                case 'update_manager_offline':
+                case 'update_manager_history':
+                case 'update_manager_setup':
+                case 'file_manager':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === 'advanced/users_setup') {
+            switch ($tab) {
+                case 'user_edit':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === $config['homedir'].'/godmode/users/configure_user'
+            || $path === 'advanced/links'
+            || $path === $config['homedir'].'/enterprise/extensions/cron'
+        ) {
+            return true;
+        }
+    } else {
+        if ($path === 'godmode/servers/discovery') {
+            switch ($tab) {
+                case 'main':
+                case 'tasklist':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === 'operation/users/user_edit'
+            || $path === 'operation/users/user_edit_notifications'
+            || $path === 'godmode/setup/file_manager'
+            || $path === 'godmode/update_manager/update_manager'
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+
+/**
+ * Necessary checks for the reporting console.
+ *
+ * @return string
+ */
+function notify_reporting_console_node()
+{
+    $return = '';
+
+    // Check php memory limit.
+    $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+    if ($PHPmemory_limit !== -1) {
+        $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
+        if ($config['language'] == 'es') {
+            $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
+        }
+
+        $msg = __("Not recommended '%s' value in PHP configuration", $PHPmemory_limit);
+        $msg .= '<br>'.__('Recommended value is: -1');
+        $msg .= '<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator');
+        $msg .= '<br><a href="'.$url.'" target="_blank">'.__('Documentation').'</a>';
+
+        $return = ui_print_error_message($msg, '', true);
+    }
+
+    return $return;
 }

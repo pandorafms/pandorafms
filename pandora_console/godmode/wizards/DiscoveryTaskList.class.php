@@ -162,7 +162,9 @@ class DiscoveryTaskList extends HTML
             $ret = false;
         }
 
-        $ret2 = $this->showList();
+        if (is_reporting_console_node() === false) {
+            $ret2 = $this->showList();
+        }
 
         if ($ret === false && $ret2 === false) {
             include_once $config['homedir'].'/general/first_task/recon_view.php';
@@ -662,7 +664,7 @@ class DiscoveryTaskList extends HTML
                         $data[0] .= '\'';
                         if ($task['type'] == DISCOVERY_HOSTDEVICES) {
                             $title = __('Are you sure?');
-                            $message = 'This action will rescan the target networks.';
+                            $message = __('This action will rescan the target networks.');
                             $data[0] .= ', {title: \''.$title.'\', message: \''.$message.'\'}';
                         }
 

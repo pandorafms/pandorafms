@@ -751,7 +751,8 @@ function tags_get_acl_tags(
     $childrens_ids=[],
     $force_group_and_tag=false,
     $id_grupo_table_pretag='',
-    $alt_id_grupo_table_pretag=''
+    $alt_id_grupo_table_pretag='',
+    $search_secondary_group=true
 ) {
     global $config;
 
@@ -831,7 +832,8 @@ function tags_get_acl_tags(
                 $force_group_and_tag,
                 false,
                 $id_grupo_table_pretag,
-                $alt_id_grupo_table_pretag
+                $alt_id_grupo_table_pretag,
+                $search_secondary_group
             );
 
             if (!empty($condition)) {
@@ -933,7 +935,8 @@ function tags_get_acl_tags_event_condition(
     $force_group_and_tag=false,
     $force_equal=false,
     $id_grupo_table_pretag='',
-    $alt_id_grupo_table_pretag=''
+    $alt_id_grupo_table_pretag='',
+    $search_secondary_group=true
 ) {
     global $config;
     $condition = [];
@@ -951,7 +954,13 @@ function tags_get_acl_tags_event_condition(
 
         // Group condition (The module belongs to an agent of the group X)
         // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_children_ids($group_id, true))));.
-        $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id.' OR '.$alt_id_grupo_table_pretag.'id_group = '.$group_id.')';
+        $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id;
+
+        if ($search_secondary_group === true) {
+                $group_condition .= ' OR '.$alt_id_grupo_table_pretag.'id_group = '.$group_id;
+        }
+
+        $group_condition .= ')';
 
         // Tags condition (The module has at least one of the restricted tags).
         $tags_condition = '';
@@ -987,7 +996,13 @@ function tags_get_acl_tags_event_condition(
         }
 
         $in_group = implode(',', $without_tags);
-        $condition .= sprintf('('.$id_grupo_table_pretag.'id_grupo IN (%s) OR '.$alt_id_grupo_table_pretag.'id_group IN (%s))', $in_group, $in_group);
+        $condition .= sprintf('('.$id_grupo_table_pretag.'id_grupo IN (%s)', $in_group);
+
+        if ($search_secondary_group === true) {
+                $condition .= sprintf(' OR '.$alt_id_grupo_table_pretag.'id_group IN (%s)', $in_group);
+        }
+
+        $condition .= ')';
     }
 
     $condition = !empty($condition) ? "($condition)" : '';

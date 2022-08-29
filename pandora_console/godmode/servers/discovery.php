@@ -158,6 +158,12 @@ if ($classname_selected === null) {
     // Load classes and print selector.
     $wiz_data = [];
     foreach ($classes as $classpath) {
+        if (is_reporting_console_node() === true) {
+            if ($classpath !== '/var/www/html/pandora_console/godmode/wizards/DiscoveryTaskList.class.php') {
+                continue;
+            }
+        }
+
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
 

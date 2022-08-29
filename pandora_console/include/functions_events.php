@@ -626,6 +626,7 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'tag_with'
  *     'tag_without'
  *     'filter_only_alert'
+ *     'search_secondary_groups'
  *     'module_search'
  *     'group_rep'
  *     'server_id'
@@ -904,11 +905,18 @@ function events_get_all(
             $groups = [ $groups ];
         }
 
-        $sql_filters[] = sprintf(
-            ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-            join(',', $groups),
-            join(',', $groups)
-        );
+        if ((bool) $filter['search_secondary_groups'] === true) {
+            $sql_filters[] = sprintf(
+                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                join(',', $groups),
+                join(',', $groups)
+            );
+        } else {
+            $sql_filters[] = sprintf(
+                ' AND te.id_grupo IN (%s)',
+                join(',', $groups)
+            );
+        }
     }
 
     // Skip system messages if user is not PM.
@@ -982,11 +990,18 @@ function events_get_all(
         $EW_groups = users_get_groups($config['id_user'], 'EW', true, true);
 
         // Get groups where user have ER grants.
-        $sql_filters[] = sprintf(
-            ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
-            join(', ', array_keys($ER_groups)),
-            join(', ', array_keys($ER_groups))
-        );
+        if ((bool) $filter['search_secondary_groups'] === true) {
+            $sql_filters[] = sprintf(
+                ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
+                join(', ', array_keys($ER_groups)),
+                join(', ', array_keys($ER_groups))
+            );
+        } else {
+            $sql_filters[] = sprintf(
+                ' AND te.id_grupo IN ( %s )',
+                join(', ', array_keys($ER_groups))
+            );
+        }
     }
 
     // Prepare agent join sql filters.
@@ -1076,18 +1091,36 @@ function events_get_all(
 
     // Custom data.
     if (empty($filter['custom_data']) === false) {
-        if ($filter['custom_data_filter_type'] === '1') {
-            $sql_filters[] = sprintf(
-                ' AND JSON_VALID(custom_data) = 1
-                AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
-                io_safe_output($filter['custom_data'])
-            );
+        if (isset($config['dbconnection']->server_version) === true
+            && $config['dbconnection']->server_version > 80000
+        ) {
+            if ($filter['custom_data_filter_type'] === '1') {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
+                    io_safe_output($filter['custom_data'])
+                );
+            } else {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
+                    io_safe_output($filter['custom_data'])
+                );
+            }
         } else {
-            $sql_filters[] = sprintf(
-                ' AND JSON_VALID(custom_data) = 1
-                AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
-                io_safe_output($filter['custom_data'])
-            );
+            if ($filter['custom_data_filter_type'] === '1') {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1 AND JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") ',
+                    $filter['custom_data'],
+                    $filter['custom_data']
+                );
+            } else {
+                $sql_filters[] = sprintf(
+                    ' AND JSON_VALID(custom_data) = 1 AND JSON_KEYS(custom_data) REGEXP "%s" ',
+                    $filter['custom_data'],
+                    $filter['custom_data']
+                );
+            }
         }
     }
 
@@ -1246,7 +1279,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1272,7 +1306,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1298,7 +1333,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1368,7 +1404,7 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule, te.estado';
+            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule';
         break;
 
         case '2':
@@ -1396,19 +1432,33 @@ function events_get_all(
     ) {
         $tgrupo_join = 'INNER';
         if (is_array($groups) === true) {
-            $tgrupo_join_filters[] = sprintf(
-                ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                 OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
-                join(', ', $groups),
-                join(', ', $groups)
-            );
+            if ((bool) $filter['search_secondary_groups'] === true) {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+                    OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
+                    join(', ', $groups),
+                    join(', ', $groups)
+                );
+            } else {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))',
+                    join(', ', $groups)
+                );
+            }
         } else {
-            $tgrupo_join_filters[] = sprintf(
-                ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
-                 OR (tg.id_grupo = tasg.id_group AND tasg.id_group = %s)',
-                $groups,
-                $groups
-            );
+            if ((bool) $filter['search_secondary_groups'] === true) {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
+                    OR (tg.id_grupo = tasg.id_group AND tasg.id_group = %s)',
+                    $groups,
+                    $groups
+                );
+            } else {
+                $tgrupo_join_filters[] = sprintf(
+                    ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)',
+                    $groups
+                );
+            }
         }
     } else {
         $tgrupo_join_filters[] = ' te.id_grupo = tg.id_grupo';
@@ -1418,7 +1468,9 @@ function events_get_all(
     $event_lj = '';
     if (!$user_is_admin || ($user_is_admin && isset($groups) === true && $groups > 0)) {
         db_process_sql('SET group_concat_max_len = 9999999');
-        $event_lj = events_get_secondary_groups_left_join($table);
+        if ((bool) $filter['search_secondary_groups'] === true) {
+            $event_lj = events_get_secondary_groups_left_join($table);
+        }
     }
 
     $group_selects = '';
@@ -2199,9 +2251,9 @@ function events_create_event(
         'id_usuario'            => $id_user,
         'id_grupo'              => $id_group,
         'estado'                => $status,
-        'timestamp'             => 'NOW()',
+        'timestamp'             => date('Y-m-d H:i:s'),
         'evento'                => $event,
-        'utimestamp'            => 'UNIX_TIMESTAMP(NOW())',
+        'utimestamp'            => time(),
         'event_type'            => $event_type,
         'id_agentmodule'        => $id_agent_module,
         'id_alert_am'           => $id_aam,
@@ -3706,7 +3758,7 @@ function events_get_response_target(
 
     // Parse the event custom data.
     if (empty($event['custom_data']) === false) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
         }
@@ -4248,7 +4300,7 @@ function events_page_custom_data($event)
     $table->head = [];
     $table->class = 'table_modal_alternate';
 
-    $json_custom_data = base64_decode($event['custom_data']);
+    $json_custom_data = $event['custom_data'];
     $custom_data = json_decode($json_custom_data);
 
     if ($custom_data === null) {
@@ -5259,7 +5311,7 @@ function events_get_field_value_by_event_id(
 
     // Parse the event custom data.
     if (!empty($event['custom_data'])) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $val) {
             $value = str_replace('_customdata_'.$key.'_', $val, $value);
         }

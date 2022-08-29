@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.763 Build 220715";
+my $version = "7.0NG.764 Build 220829";
 
 # Pandora server configuration
 my %conf;
@@ -1191,6 +1191,20 @@ my $lock_name = $conf{'dbname'};
 if ($conf{'_force'} == 1) {
 	log_message ('', " [*] Releasing database lock.\n\n");
 	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+}
+
+# Get a lock merging.
+my $lock_merge = db_get_lock ($dbh, 'merge-working', $LOCK_TIMEOUT, 1);
+if ($lock_merge == 0) { 
+	log_message ('', " [*] Merge is running.\n\n");
+	exit 1;
+}
+
+# Get a lock on merging events.
+my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
+if ($lock_merge_events == 0) { 
+	log_message ('', " [*] Merge events is running.\n\n");
+	exit 1;
 }
 
 # Get a lock on dbname.

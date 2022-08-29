@@ -169,6 +169,10 @@ $filter_only_alert = get_parameter(
     'filter[filter_only_alert]',
     ($filter['filter_only_alert'] ?? '')
 );
+$search_secondary_groups = get_parameter(
+    'filter[search_secondary_groups]',
+    0
+);
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group'] ?? '')
@@ -482,21 +486,23 @@ if (is_ajax() === true) {
                         $tmp->b64 = base64_encode(json_encode($tmp));
 
                         // Show comments events.
-                        $tmp->user_comment = $tmp->comments;
-                        if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
-                            $tmp->user_comment .= '&nbsp;&nbsp;';
-                            $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-                            $tmp->user_comment .= $tmp->b64;
-                            $tmp->user_comment .= '\',\'comments\')>;';
-                            $tmp->user_comment .= html_print_image(
-                                'images/operation.png',
-                                true,
-                                [
-                                    'title' => __('Show more'),
-                                    'class' => 'invert_filter',
-                                ]
-                            );
-                            $tmp->user_comment .= '</a>';
+                        if (empty($tmp->comments) === false) {
+                            $tmp->user_comment = $tmp->comments;
+                            if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
+                                $tmp->user_comment .= '&nbsp;&nbsp;';
+                                $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+                                $tmp->user_comment .= $tmp->b64;
+                                $tmp->user_comment .= '\',\'comments\')>;';
+                                $tmp->user_comment .= html_print_image(
+                                    'images/operation.png',
+                                    true,
+                                    [
+                                        'title' => __('Show more'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->user_comment .= '</a>';
+                            }
                         }
 
                         // Grouped events.
@@ -939,7 +945,7 @@ if (is_ajax() === true) {
                             $custom_data_str = '';
                             if (isset($custom_data) === true && empty($custom_data) === false) {
                                 foreach ($custom_data as $key => $value) {
-                                    $custom_data_str .= $value['attr_name'].' = '.$value['val'].'<br>';
+                                    $custom_data_str .= $key.' = '.$value.'<br>';
                                 }
                             }
 
@@ -1049,6 +1055,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $tag_without_base64 = base64_encode(json_encode($tag_without));
 
         $filter_only_alert = $filter['filter_only_alert'];
+        $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
         $time_from = $filter['time_from'];
@@ -1666,6 +1673,24 @@ $data = html_print_select(
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
+
+// Search secondary groups.
+$data = html_print_checkbox_switch(
+    'search_secondary_groups',
+    $search_secondary_groups,
+    $search_secondary_groups,
+    true,
+    false,
+    'search_in_secondary_groups(this);',
+    true
+);
+
+$in = '<div class="filter_input filter_input_switch"><label>'.__('Search in secondary groups').'</label>';
+$in .= $data.'</div>';
+$inputs[] = $in;
+
+// Trick view in table.
+$inputs[] = '<div style="min-width:32%;"></div>';
 
 $buttons = [];
 
@@ -2931,7 +2956,14 @@ $(document).ready( function() {
 
 });
 
-
+function search_in_secondary_groups(element) {
+    var value = $("#checkbox-"+element.name).val();
+    if (value == 0) {
+        $("#checkbox-"+element.name).val(1);
+    } else {
+        $("#checkbox-"+element.name).val(0);
+    }
+}
 
 function datetime_picker_callback() {
     $("#text-time_from, #text-time_to").timepicker({

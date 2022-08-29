@@ -43,20 +43,11 @@ function dbmanager_query($sql, &$error, $dbconnection)
             $error = mysqli_error($dbconnection);
             return false;
         }
-    } else {
-        $result = mysql_query($sql, $dbconnection);
-        if ($result === false) {
-            $backtrace = debug_backtrace();
-            $error = mysql_error();
-            return false;
-        }
     }
 
     if ($result === true) {
         if ($config['mysqli']) {
             return mysqli_affected_rows($dbconnection);
-        } else {
-            return mysql_affected_rows();
         }
     }
 
@@ -64,23 +55,17 @@ function dbmanager_query($sql, &$error, $dbconnection)
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
             array_push($retval, $row);
         }
-    } else {
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-            array_push($retval, $row);
-        }
     }
 
     if ($config['mysqli']) {
         mysqli_free_result($result);
-    } else {
-        mysql_free_result($result);
     }
 
     if (! empty($retval)) {
         return $retval;
     }
 
-    // Return false, check with === or !==
+    // Return false, check with === or !== .
     return 'Empty';
 }
 
@@ -171,20 +156,6 @@ function dbmgr_extension_main()
 
     $data[1][0] = "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
 
-    \enterprise_include_once('include/functions_metaconsole.php');
-    $servers = \metaconsole_get_servers();
-    if (is_array($servers) === true) {
-        $servers = array_reduce(
-            $servers,
-            function ($carry, $item) {
-                $carry[$item['id']] = $item['server_name'];
-                return $carry;
-            }
-        );
-    } else {
-        $servers = [];
-    }
-
     $data[2][0] = html_print_textarea(
         'sql',
         5,
@@ -195,6 +166,21 @@ function dbmgr_extension_main()
     );
 
     if (is_metaconsole() === true) {
+        // Get the servers.
+        \enterprise_include_once('include/functions_metaconsole.php');
+        $servers = \metaconsole_get_servers();
+        if (is_array($servers) === true) {
+            $servers = array_reduce(
+                $servers,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['server_name'];
+                    return $carry;
+                }
+            );
+        } else {
+            $servers = [];
+        }
+
         $data[3][2] = html_print_input(
             [
                 'name'          => 'node_id',
@@ -223,7 +209,7 @@ function dbmgr_extension_main()
     html_print_table($table);
     echo '</form>';
 
-    // Processing SQL Code
+    // Processing SQL Code.
     if ($sql == '') {
         return;
     }
@@ -271,7 +257,7 @@ function dbmgr_extension_main()
         return;
     }
 
-    if (! is_array($result)) {
+    if (is_array($result) === false) {
         echo '<strong>Output: <strong>'.$result;
 
         db_pandora_audit(
@@ -315,11 +301,10 @@ if (is_metaconsole() === true) {
     );
 
     extensions_add_meta_function('dbmgr_extension_main');
-} else {
 }
 
-// This adds a option in the operation menu
+// This adds a option in the operation menu.
 extensions_add_godmode_menu_option(__('DB interface'), 'PM', 'gextensions', 'dbmanager/icon.png', 'v1r1', 'gdbman');
 
-// This sets the function to be called when the extension is selected in the operation menu
+// This sets the function to be called when the extension is selected in the operation menu.
 extensions_add_godmode_function('dbmgr_extension_main');

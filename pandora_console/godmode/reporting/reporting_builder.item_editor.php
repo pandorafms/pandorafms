@@ -3660,7 +3660,22 @@ $class = 'databox filters';
                 true,
                 'agent_group_filter',
                 $selected_agent_group_filter,
-                ''
+                '',
+                '',
+                0,
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                'id_grupo',
+                false,
+                false,
+                false,
+                120
             );
             ?>
             </td>

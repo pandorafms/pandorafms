@@ -307,7 +307,7 @@ $table_ip .= '<div class="label_select_child_right">'.html_print_input(
         'type'  => 'switch',
         'id'    => 'fixed_ip',
         'name'  => 'fixed_ip',
-        'value' => $fixed_ip
+        'value' => $fixed_ip,
     ]
 ).__('Fix IP address').ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</div>';
 
@@ -319,7 +319,7 @@ if ($id_agente) {
     $table_ip .= '<div class="label_select">';
     $table_ip .= '<div class="label_select_parent">';
     $table_ip .= '<div class="label_select_child_left">'.html_print_select($ip_all, 'address_list', $direccion_agente, '', '', 0, true).'</div>';
-    $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('delete_ip', 1, false, true).__('Delete selected').'</div>';
+    $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('delete_ip', 1, false, true).__('Delete selected IPs').'</div>';
     $table_ip .= '</div></div>';
 }
 

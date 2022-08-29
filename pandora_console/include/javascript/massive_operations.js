@@ -94,3 +94,55 @@ function showMassiveOperationMessage(message) {
   });
 }
 */
+
+// eslint-disable-next-line no-unused-vars
+function form_controls_massive_operations_agents(metaconsole) {
+  // Listeners.
+  var recursion;
+  $("#checkbox-recursion").click(function() {
+    recursion = this.checked ? 1 : 0;
+    $("#id_group").trigger("change");
+  });
+
+  var disabled;
+  $("#disabled").change(function() {
+    disabled = this.value;
+    $("#id_group").trigger("change");
+  });
+
+  var nodes;
+  $("#nodes").change(function() {
+    nodes = $("#nodes").val();
+    $("#id_group").trigger("change");
+  });
+
+  $("#status_agents").change(function() {
+    $("#id_group").trigger("change");
+  });
+
+  // Build data.
+  var data = {
+    status_agents: function() {
+      return $("#status_agents").val();
+    },
+    agentSelect: "select#id_agents",
+    privilege: "AW",
+    recursion: function() {
+      return recursion;
+    },
+    disabled: function() {
+      return disabled;
+    }
+  };
+
+  if (metaconsole == 1) {
+    data.serialized = true;
+    data.serialized_separator = "|";
+    data.nodes = function() {
+      return nodes;
+    };
+  }
+
+  // Change agents.
+  $("#id_group").pandoraSelectGroupAgent(data);
+}

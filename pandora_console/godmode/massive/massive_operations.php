@@ -68,11 +68,6 @@ $options_agents = [
     'edit_agents'   => __('Bulk agent edit'),
     'delete_agents' => __('Bulk agent delete'),
 ];
-if (is_metaconsole() === true) {
-    $options_agents = [
-        'delete_agents' => __('Bulk agent delete'),
-    ];
-}
 
 if (check_acl($config['id_user'], 0, 'UM')) {
     $options_users = [

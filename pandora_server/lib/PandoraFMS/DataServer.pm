@@ -257,6 +257,8 @@ sub data_consumer ($$) {
 			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
 		} elsif (defined($xml_data->{'connection_source'})) {
 			enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
+		} elsif (defined($xml_data->{'ipam_source'})) {
+			enterprise_hook('process_xml_ipam', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
 		} elsif (defined($xml_data->{'network_matrix'})){
 			process_xml_matrix_network(
 				$self->getConfig(), $xml_data, $self->getDBH()
@@ -485,7 +487,7 @@ sub process_xml_data ($$$$$) {
 	
 		# Update the main address
 		if ($address ne '' && $address ne $agent->{'direccion'}) {
-			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh);
+			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh) unless $agent->{'fixed_ip'} == 1;
 			pandora_add_agent_address($pa_config, $agent_id, $agent_name, $address, $dbh);
 		}
 		

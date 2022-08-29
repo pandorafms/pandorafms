@@ -649,6 +649,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	$conf->{'_days_delete_not_initialized'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_not_initialized'");
+	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
@@ -839,7 +840,7 @@ sub pandora_checkdb_consistency {
 	}
 
 	# Perform a clean of not initialized modules.
-	if (defined($conf{'_days_delete_not_initialized'}) && $conf{'_days_delete_not_initialized'} > 0) {
+	if (defined($conf{'_days_delete_not_initialized'}) && $conf{'_days_delete_not_initialized'} > 0 && $conf->{'_delete_notinit'} eq "1") {
 	    log_message ('CHECKDB',
 		    "Deleting not initialized modules (More than " . $conf{'_days_delete_not_initialized'} . " days).");
 

@@ -394,6 +394,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_agents_inventory($table, $item);
             break;
 
+            case 'modules_inventory':
+                reporting_html_modules_inventory($table, $item);
+            break;
+
             case 'inventory':
                 reporting_html_inventory($table, $item);
             break;
@@ -1649,6 +1653,116 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
                 }
 
                 $column_value = implode(' / ', $custom_fields_value);
+            }
+
+            $row[] = $column_value;
+        }
+
+        $table1->data[] = $row;
+
+        if ($pdf !== 0) {
+            $table1->data[] = '<br />';
+        }
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['permissions']['cell'] = 3;
+        $table->cellstyle['permissions']['cell'] = 'text-align: center;';
+        $table->data['permissions']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        return html_print_table(
+            $table1,
+            true
+        );
+    }
+}
+
+
+/**
+ * Print html modules inventory
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   Print pdf true or false.
+ *
+ * @return string HTML code.
+ */
+function reporting_html_modules_inventory($table, $item, $pdf=0)
+{
+    global $config;
+
+    $table1 = new stdClass();
+    $table1->width = '100%';
+
+    $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->class = 'databox data';
+    $table1->cellpadding = 1;
+    $table1->cellspacing = 1;
+    $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
+
+    $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[2] = 'text-align: left;vertical-align: top; min-width: 100px';
+    $table1->style[3] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[4] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[5] = 'text-align: left;vertical-align: top; min-width: 100px';
+
+    $table1->head = [];
+
+    $table1->head[] = __('Name');
+    $table1->head[] = __('Description');
+    $table1->head[] = __('Module group');
+    $table1->head[] = __('Tags');
+    $table1->head[] = __('Agent group');
+    $table1->head[] = __('Agent secondary groups');
+
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->headstyle[3] = 'text-align: left';
+    $table1->headstyle[4] = 'text-align: left';
+    $table1->headstyle[5] = 'text-align: left';
+
+    $table1->data = [];
+
+    foreach ($item['data'] as $module_id => $module_data) {
+        $row = [];
+        $first_item = array_pop(array_reverse($module_data));
+
+        foreach ($module_data as $data_field_key => $data_field_value) {
+            if ($data_field_key === 'nombre') {
+                $column_value = $data_field_value;
+            } else if ($data_field_key === 'descripcion') {
+                $column_value = $data_field_value;
+            } else if ($data_field_key === 'id_module_group') {
+                $module_group_name = modules_get_modulegroup_name($data_field_value);
+
+                if ($module_group_name === '') {
+                    $module_group_name = '-';
+                }
+
+                $column_value = $module_group_name;
+            } else if ($data_field_key === 'id_tag') {
+                $tags_names = array_map(
+                    function ($tag_id) {
+                        return db_get_value('name', 'ttag', 'id_tag', $tag_id);
+                    },
+                    $data_field_value
+                );
+                $column_value = implode('<br>', $tags_names);
+            } else if ($data_field_key === 'group_id') {
+                $column_value = groups_get_name($data_field_value[0]);
+            } else if ($data_field_key === 'sec_group_id') {
+                $sec_groups_names = array_map(function ($group_id) {
+                        return groups_get_name($group_id);
+                    },
+                    $data_field_value
+                );
+
+                $column_value = implode('<br>', $sec_groups_names);
             }
 
             $row[] = $column_value;

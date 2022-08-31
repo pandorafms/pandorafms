@@ -2322,15 +2322,22 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 	}
 		
 	if ($only_alerts == 0) {
-		db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
-			SET tp.manually_disabled = ta.disabled
-			WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
+		if ($downtime->{'type_downtime'} eq 'disable_agent_modules') {
+			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+				SET tam.disabled = 1, ta.update_module_count = 1
+				WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
+				ta.id_agente = tam.id_agente AND
+				tpdm.id_downtime = ?', $downtime->{'id'});
+		} else {
+			db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
+				SET tp.manually_disabled = ta.disabled
+				WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
 		
-		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
-			SET ta.disabled = 1, ta.update_module_count = 1
-			WHERE tpa.id_agent = ta.id_agente AND
-			tpa.id_downtime = ?',$downtime->{'id'});
-			
+			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+				SET ta.disabled = 1, ta.update_module_count = 1
+				WHERE tpa.id_agent = ta.id_agente AND
+				tpa.id_downtime = ?',$downtime->{'id'});
+		}
 	} else {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT *
 			FROM tplanned_downtime_agents
@@ -2362,12 +2369,20 @@ sub pandora_planned_downtime_unset_disabled_elements($$$) {
 			$only_alerts = 1;
 		}
 	}
-		
+
 	if ($only_alerts == 0) {
-		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
-			set ta.disabled = 0, ta.update_module_count = 1
-			WHERE tpa.id_agent = ta.id_agente AND
-			tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
+		if ($downtime->{'type_downtime'} eq 'disable_agent_modules') {
+			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+				SET tam.disabled = 0, ta.update_module_count = 1
+				WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
+				ta.id_agente = tam.id_agente AND
+				tpdm.id_downtime = ?', $downtime->{'id'});
+		} else {
+			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+				set ta.disabled = 0, ta.update_module_count = 1
+				WHERE tpa.id_agent = ta.id_agente AND
+				tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
+		}
 	} else {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT *
 			FROM tplanned_downtime_agents

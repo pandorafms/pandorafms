@@ -754,7 +754,8 @@ if ($agents !== false) {
         $in_planned_downtime = db_get_sql(
             'SELECT executed FROM tplanned_downtime 
 			INNER JOIN tplanned_downtime_agents ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
-			WHERE tplanned_downtime_agents.id_agent = '.$agent['id_agente'].' AND tplanned_downtime.executed = 1'
+			WHERE tplanned_downtime_agents.id_agent = '.$agent['id_agente'].' AND tplanned_downtime.executed = 1 
+            AND tplanned_downtime.type_downtime <> "disable_agent_modules"'
         );
 
         if ($agent['disabled']) {

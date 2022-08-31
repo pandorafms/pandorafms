@@ -2131,6 +2131,62 @@ class NetworkMap
             }
 
             if (is_array($edges)) {
+                $array_aux = $edges;
+                $target_aux = $edges;
+                foreach ($edges as $key => $rel) {
+                    foreach ($array_aux as $key2 => $rel2) {
+                        if ($key2 <= $key) {
+                            continue;
+                        }
+
+                        if ($rel['child_type'] == 1 && $rel['parent_type'] == 1
+                            && $rel2['child_type'] == 1 && $rel2['parent_type'] == 1
+                        ) {
+                            if ($rel['id_parent'] == $rel2['id_parent'] && $rel['id_child'] == $rel2['id_child']) {
+                                if ($rel['id_parent_source_data'] == $rel2['id_parent_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                } else if ($rel['id_child_source_data'] == $rel2['id_child_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                }
+                            } else if ($rel['id_parent'] == $rel2['id_child'] && $rel['id_child'] == $rel2['id_parent']) {
+                                if ($rel['id_parent_source_data'] == $rel2['id_child_source_data']
+                                    && $rel['id_child_source_data'] == $rel2['id_parent_source_data']
+                                ) {
+                                    unset($target_aux[$key2]);
+                                    continue;
+                                }
+
+                                if ($rel['id_parent_source_data'] == $rel2['id_child_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                } else if ($rel['id_child_source_data'] == $rel2['id_parent_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $edges = [];
+                foreach ($target_aux as $key => $value) {
+                    $edges[] = $value;
+                }
+
                 foreach ($edges as $rel) {
                     $graph .= $this->createDotEdge(
                         [
@@ -3431,6 +3487,7 @@ class NetworkMap
             node_radius: node_radius,
             holding_area_dimensions: networkmap_holding_area_dimensions,
             url_background_grid: url_background_grid,
+            refresh_time: '.$this->mapOptions['refresh_time'].',
             font_size: '.$this->mapOptions['font_size'].',
             base_url_homedir: "'.ui_get_full_url(false).'"
         });

@@ -2505,7 +2505,7 @@ function refresh() {
         if (array_nodes.length === 0 && array_links.length === 0) {
           update_networkmap();
           $("#spinner_networkmap").css("display", "none");
-          window.location = location;
+          startCountDown(refresh_time);
         } else {
           if (array_nodes.length > 0) {
             $.ajax({
@@ -2531,6 +2531,22 @@ function refresh() {
     },
     error: function(e) {
       $("#spinner_networkmap").css("display", "none");
+    }
+  });
+}
+
+function startCountDown(duration) {
+  $("div.vc-countdown").countdown("destroy");
+  if (!duration) return;
+  var t = new Date();
+  t.setTime(t.getTime() + duration * 1000);
+  $("div.vc-countdown").countdown({
+    until: t,
+    format: "MS",
+    layout: "(%M%nn%M:%S%nn%S Until refreshed) ",
+    alwaysExpire: true,
+    onExpiry: function() {
+      refresh();
     }
   });
 }
@@ -3070,6 +3086,10 @@ function init_graph(parameter_object) {
   if (typeof parameter_object.url_background_grid != "undefined") {
     // GRID
     window.url_background_grid = "";
+  }
+
+  if (typeof parameter_object.refresh_time != "undefined") {
+    window.refresh_time = parameter_object.refresh_time;
   }
 
   var rect_center_x = graph.nodes[0].x;

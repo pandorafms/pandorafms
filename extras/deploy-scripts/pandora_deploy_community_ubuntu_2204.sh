@@ -106,7 +106,7 @@ check_root_permissions () {
 ## Main
 echo "Starting PandoraFMS Community deployment Ubuntu 22.04 ver. $S_VERSION"
 
-# Centos Version
+# Ubuntu Version
 if [ ! "$(grep -Ei 'Ubuntu' /etc/lsb-release)" ]; then
          printf "\n ${red}Error this is not a Ubuntu system, this installer is compatible with Ubuntu systems only${reset}\n"
          exit 1
@@ -701,7 +701,7 @@ execute_cmd "/etc/init.d/pandora_agent_daemon start" "Starting PandoraFSM Agent"
 systemctl enable pandora_agent_daemon &>> "$LOGFILE"
 
 #fix path phantomjs
-echo "update tconfig set value = 'envOPENSSL_CONF=/etc/ssl&#x20;/usr/bin' where token = 'phantomjs_bin';" | mysql -u$DBUSER -P$DBPORT -h$DBHOST $DBNAME  &>> "$LOGFILE"
+sed --follow-symlinks -i -e "s/^openssl_conf = openssl_init/#openssl_conf = openssl_init/g" /etc/ssl/openssl.cnf &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

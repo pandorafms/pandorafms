@@ -2318,7 +2318,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             false,
             false,
             0,
-            'Valid values: [0-23], [0-23]-[0-23], *, or step value (example: */3, 10/5)',
+            'Valid values: [0-23], [0-23]-[0-23], *, or step value (example: */3, 10/5)'
         );
 
         $table->data[0][1] = html_print_extended_select_for_downtime_cron(
@@ -2334,7 +2334,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             false,
             false,
             0,
-            'Valid values: [0-59], [0-59]-[0-59], *, or step value (example: */5, 10/1)',
+            'Valid values: [0-59], [0-59]-[0-59], *, or step value (example: */5, 10/1)'
         );
 
         $table->data[0][2] = html_print_extended_select_for_downtime_cron(
@@ -2350,7 +2350,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             false,
             false,
             0,
-            'Valid values: [1-31], [1-31]-[1-31], *, or step value (example: */5, 7/2)',
+            'Valid values: [1-31], [1-31]-[1-31], *, or step value (example: */5, 7/2)'
         );
 
         $table->data[0][3] = html_print_extended_select_for_downtime_cron(
@@ -2366,7 +2366,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             false,
             false,
             0,
-            'Valid values: [1-12], [1-12]-[1-12], *, or step value (example: */3, 9/1)',
+            'Valid values: [1-12], [1-12]-[1-12], *, or step value (example: */3, 9/1)'
         );
 
         $table->data[0][4] = html_print_extended_select_for_downtime_cron(
@@ -2382,7 +2382,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             false,
             false,
             0,
-            'Valid values: [0-6], [0-6]-[0-6], *, or step value (example: */2, 3/1)',
+            'Valid values: [0-6], [0-6]-[0-6], *, or step value (example: */2, 3/1)'
         );
     }
 

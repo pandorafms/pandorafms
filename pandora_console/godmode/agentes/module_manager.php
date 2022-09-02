@@ -466,7 +466,14 @@ if ($module_action === 'delete') {
             $id_agent_module_disable
         );
 
-        if (db_process_sql($sql)) {
+        $id_agent_changed[] = modules_get_agentmodule_agent($id_agent_module_disable);
+        $agent_update_result = db_process_sql_update(
+            'tagente',
+            ['update_module_count' => 1],
+            ['id_agente' => $id_agent_changed]
+        );
+
+        if (db_process_sql($sql) !== false && $agent_update_result !== false) {
             $updated_count++;
         }
     }

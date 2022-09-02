@@ -195,56 +195,55 @@ $simple_alerts = [];
 
 $total = 0;
 $where = '';
-if ($searchFlag) {
-    if ($status_alert === 'fired') {
-        $where .= ' AND talert_template_modules.times_fired > 0';
-    }
 
-    if ($status_alert === 'notfired') {
-        $where .= ' AND talert_template_modules.times_fired = 0';
-    }
+if ($status_alert === 'fired') {
+    $where .= ' AND talert_template_modules.times_fired > 0';
+}
 
-    if ($priority != -1 && $priority != '') {
-        $where .= ' AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = '.$priority.')';
-    }
+if ($status_alert === 'notfired') {
+    $where .= ' AND talert_template_modules.times_fired = 0';
+}
 
-    if (strlen(trim($templateName)) > 0) {
-        $where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%".trim($templateName)."%')";
-    }
+if ($priority != -1 && $priority != '') {
+    $where .= ' AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = '.$priority.')';
+}
 
-    if (strlen(trim($fieldContent)) > 0) {
-        $where .= " AND id_alert_template IN (SELECT id FROM talert_templates
+if (strlen(trim($templateName)) > 0) {
+    $where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%".trim($templateName)."%')";
+}
+
+if (strlen(trim($fieldContent)) > 0) {
+    $where .= " AND id_alert_template IN (SELECT id FROM talert_templates
 			WHERE field1 LIKE '%".trim($fieldContent)."%' OR field2 LIKE '%".trim($fieldContent)."%' OR
 				field3 LIKE '%".trim($fieldContent)."%' OR
 				field2_recovery LIKE '%".trim($fieldContent)."%' OR
 				field3_recovery LIKE '%".trim($fieldContent)."%')";
-    }
+}
 
-    if (strlen(trim($moduleName)) > 0) {
-        $where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%".trim($moduleName)."%')";
-    }
+if (strlen(trim($moduleName)) > 0) {
+    $where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%".trim($moduleName)."%')";
+}
 
-    if (strlen(trim($agentName)) > 0) {
-        $where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
+if (strlen(trim($agentName)) > 0) {
+    $where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
 			FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
 			WHERE t1.alias LIKE '".trim($agentName)."')";
-    }
+}
 
-    if ($actionID != -1 && $actionID != '') {
-        $where .= ' AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.'))';
-    }
+if ($actionID != -1 && $actionID != '') {
+    $where .= ' AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.'))';
+}
 
-    if ($status_alert === 'disabled') {
-        $where .= ' AND talert_template_modules.disabled = 1';
-    }
+if ($status_alert === 'disabled') {
+    $where .= ' AND talert_template_modules.disabled = 1';
+}
 
-    if ($status_alert === 'all_enabled') {
-        $where .= ' AND talert_template_modules.disabled = 0';
-    }
+if ($status_alert === 'all_enabled') {
+    $where .= ' AND talert_template_modules.disabled = 0';
+}
 
-    if ($standby != -1 && $standby != '') {
-        $where .= ' AND talert_template_modules.standby = '.$standby;
-    }
+if ($standby != -1 && $standby != '') {
+    $where .= ' AND talert_template_modules.standby = '.$standby;
 }
 
 $id_agents = array_keys($agents);

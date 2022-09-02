@@ -1000,6 +1000,24 @@ foreach ($modules as $module) {
     }
 
     if ($module['disabled']) {
+        $dt_disabled_icon = '';
+
+        $in_planned_downtime = db_get_sql(
+            'SELECT executed FROM tplanned_downtime 
+			INNER JOIN tplanned_downtime_modules ON tplanned_downtime.id = tplanned_downtime_modules.id_downtime
+			WHERE tplanned_downtime.executed = 1 
+            AND tplanned_downtime.type_downtime = "disable_agent_modules"
+            AND tplanned_downtime_modules.id_agent_module = '.$module['id_agente_modulo']
+        );
+
+        if ($in_planned_downtime !== false) {
+            $dt_disabled_icon = ui_print_help_tip(
+                __('Module in scheduled downtime'),
+                true,
+                'images/minireloj-16.png'
+            );
+        }
+
         $data[0] .= '<em class="disabled_module">'.ui_print_truncate_text(
             $module['nombre'],
             'module_medium',
@@ -1008,7 +1026,7 @@ foreach ($modules as $module) {
             true,
             '[&hellip;]',
             'font-size: 7.2pt'
-        ).'</em>';
+        ).$dt_disabled_icon.'</em>';
     } else {
         $data[0] .= ui_print_truncate_text(
             $module['nombre'],

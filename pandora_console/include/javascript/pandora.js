@@ -737,6 +737,11 @@ function post_process_select_init(name) {
   $("#" + name + "_default").show();
 }
 
+function post_process_select_init_inv(name) {
+  $("#" + name + "_manual").show();
+  $("#" + name + "_default").hide();
+}
+
 function post_process_select_init_unit(name, selected) {
   // Manual mode is hidden by default
 

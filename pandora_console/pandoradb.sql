@@ -1816,6 +1816,8 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
   `type_execution` VARCHAR(100) NOT NULL DEFAULT 'once',
   `type_periodicity` VARCHAR(100) NOT NULL DEFAULT 'weekly',
   `id_user` VARCHAR(255) NOT NULL DEFAULT '0',
+  `cron_interval_from` VARCHAR(100) DEFAULT '',
+  `cron_interval_to` VARCHAR(100) DEFAULT '',
   PRIMARY KEY (  `id` ) 
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

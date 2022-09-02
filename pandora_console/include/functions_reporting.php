@@ -2448,8 +2448,8 @@ function reporting_event_report_module(
 /**
  * Generate agents inventory report.
  *
- * @param array   $report             Report info.
- * @param array   $content            Content info.
+ * @param array $report  Report info.
+ * @param array $content Content info.
  *
  * @return array
  */
@@ -2647,8 +2647,8 @@ function reporting_agents_inventory($report, $content)
 /**
  * Generate modules inventory report.
  *
- * @param array   $report             Report info.
- * @param array   $content            Content info.
+ * @param array $report  Report info.
+ * @param array $content Content info.
  *
  * @return array
  */
@@ -11621,7 +11621,7 @@ function reporting_get_stats_alerts($data, $links=false)
 {
     global $config;
 
-    // Link URLS
+    // Link URLS.
     $mobile = false;
     if (isset($data['mobile'])) {
         if ($data['mobile']) {
@@ -11637,14 +11637,14 @@ function reporting_get_stats_alerts($data, $links=false)
         $urls = [];
         if ($links) {
             $urls['monitor_alerts'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&pure='.$config['pure'];
-            $urls['monitor_alerts_fired'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure='.$config['pure'];
+            $urls['monitor_alerts_fired'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&disabled=fired&pure='.$config['pure'];
         } else {
             $urls['monitor_alerts'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60';
-            $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired';
+            $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&disabled=fired';
         }
     }
 
-    // Alerts table
+    // Alerts table.
     $table_al = html_get_predefined_table();
 
     $tdata = [];
@@ -11683,7 +11683,7 @@ function reporting_get_stats_alerts($data, $links=false)
         $output = '<fieldset class="databox tactical_set">
                     <legend>'.__('Defined and fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
     } else {
-        // Remove the defined alerts cause with the new cache table is difficult to retrieve them
+        // Remove the defined alerts cause with the new cache table is difficult to retrieve them.
         unset($table_al->data[0][0], $table_al->data[0][1]);
 
         $table_al->class = 'tactical_view';
@@ -14364,6 +14364,10 @@ function reporting_format_planned_downtime_dates($planned_downtime)
     switch ($planned_downtime['type_execution']) {
         case 'once':
             $dates = date('Y-m-d H:i', $planned_downtime['date_from']).'&nbsp;'.__('to').'&nbsp;'.date('Y-m-d H:i', $planned_downtime['date_to']);
+        break;
+
+        case 'cron':
+            $dates = __('Start condition').': <span class="italic">'.$planned_downtime['cron_interval_from'].'</span> - '.__('Stop condition').': <span class="italic">'.$planned_downtime['cron_interval_to'].'</span>';
         break;
 
         case 'periodically':

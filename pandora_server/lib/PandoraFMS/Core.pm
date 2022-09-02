@@ -228,6 +228,8 @@ our @EXPORT = qw(
 	pandora_planned_downtime_monthly_stop
 	pandora_planned_downtime_weekly_start
 	pandora_planned_downtime_weekly_stop
+	pandora_planned_downtime_cron_start
+	pandora_planned_downtime_cron_stop
 	pandora_process_alert
 	pandora_process_module
 	pandora_reset_server
@@ -2225,6 +2227,108 @@ sub pandora_process_module ($$$$$$$$$;$) {
 }
 
 ########################################################################
+=head2 C<< pandora_planned_downtime_cron_start (I<$pa_config>, I<$dbh>) >> 
+
+Start the planned downtime, the cron type. 
+
+=cut
+########################################################################
+sub pandora_planned_downtime_cron_start($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $utimestamp = time();
+
+	# Start pending downtimes
+	my @downtimes = get_db_rows($dbh, 'SELECT *
+		FROM tplanned_downtime
+		WHERE type_execution = ? 
+			AND executed = 0', 'cron');
+
+	foreach my $downtime (@downtimes) {
+		my $start_downtime = PandoraFMS::Tools::cron_check($downtime->{'cron_interval_from'}, $utimestamp);
+
+		if ($start_downtime) {
+			if (!defined($downtime->{'description'})) {
+				$downtime->{'description'} = "N/A";
+			}
+
+			if (!defined($downtime->{'name'})) {
+				$downtime->{'name'} = "N/A";
+			}
+				
+			logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
+
+			db_do($dbh, 'UPDATE tplanned_downtime
+				SET executed = 1
+				WHERE id = ?', $downtime->{'id'});
+			pandora_event ($pa_config,
+				"Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				
+			if ($downtime->{'type_downtime'} eq "quiet") {
+				pandora_planned_downtime_set_quiet_elements($pa_config,
+				$dbh, $downtime->{'id'});
+			}
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				pandora_planned_downtime_set_disabled_elements($pa_config,
+				$dbh, $downtime);
+			}
+		}
+	}
+}
+
+########################################################################
+=head2 C<< pandora_planned_downtime_cron_stop (I<$pa_config>, I<$dbh>) >> 
+
+Stop the planned downtime, the cron type. 
+
+=cut
+########################################################################
+sub pandora_planned_downtime_cron_stop($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $utimestamp = time();
+	
+	# Stop executed downtimes
+	my @downtimes = get_db_rows($dbh, 'SELECT *
+		FROM tplanned_downtime
+		WHERE type_execution = ? 
+			AND executed = 1', 'cron');
+
+	foreach my $downtime (@downtimes) {
+		my $stop_downtime = PandoraFMS::Tools::cron_check($downtime->{'cron_interval_to'}, $utimestamp);
+
+		if ($stop_downtime) {
+			if (!defined($downtime->{'description'})) {
+				$downtime->{'description'} = "N/A";
+			}
+			
+			if (!defined($downtime->{'name'})) {
+				$downtime->{'name'} = "N/A";
+			}
+			
+			logger($pa_config, "Stopping planned cron downtime '" . $downtime->{'name'} . "'.", 10);
+
+			db_do($dbh, 'UPDATE tplanned_downtime
+				SET executed = 0
+				WHERE id = ?', $downtime->{'id'});
+			pandora_event ($pa_config,
+				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			
+			if ($downtime->{'type_downtime'} eq "quiet") {
+				pandora_planned_downtime_unset_quiet_elements($pa_config,
+					$dbh, $downtime->{'id'});
+			}
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+					pandora_planned_downtime_unset_disabled_elements($pa_config,
+						$dbh, $downtime);
+			}
+		}
+	}
+}
+
+########################################################################
 =head2 C<< pandora_planned_downtime_disabled_once_stop (I<$pa_config>, I<$dbh>) >> 
 
 Stop the planned downtime, the once type. 
@@ -2242,11 +2346,11 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 			AND type_execution = ?
 			AND executed = 1
 			AND date_to <= ?', 'quiet', 'once', $utimestamp);
-	
+
 	foreach my $downtime (@downtimes) {
 		
 		logger($pa_config, "Ending planned downtime '" . $downtime->{'name'} . "'.", 10);
-		
+
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
@@ -2471,7 +2575,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 		WHERE type_downtime = ?
 			AND type_execution = ?
 			AND executed = 1 AND date_to <= ?', 'quiet', 'once', $utimestamp);
-	
+
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
 			$downtime->{'description'} = "N/A";
@@ -2483,7 +2587,6 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 		
 		logger($pa_config, "[PLANNED_DOWNTIME] " .
 			"Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
-		
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
@@ -2564,6 +2667,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 		WHERE type_periodicity = ?
 			AND executed = 0
 			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'cron' . $RDBMS_QUOTE_STRING . '
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
 			'monthly',
@@ -2641,12 +2745,13 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		WHERE type_periodicity = ?
 			AND executed = 1
 			AND type_execution <> ?
+			AND type_execution <> ?
 			AND (((periodically_day_from = ? AND periodically_time_from > ?) OR (periodically_day_from > ?))
 				OR ((periodically_day_to = ? AND periodically_time_to < ?) OR (periodically_day_to < ?)))',
-			'monthly', 'once',
+			'monthly', 'once', 'cron',
 			$number_day_month, $time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
-	
+
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
 			$downtime->{'description'} = "N/A";
@@ -2701,7 +2806,8 @@ sub pandora_planned_downtime_weekly_start($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ? 
 			AND type_execution <> ?
-			AND executed = 0', 'weekly', 'once');
+			AND type_execution <> ?
+			AND executed = 0', 'weekly', 'once', 'cron');
 	
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0 ;
@@ -2811,8 +2917,9 @@ sub pandora_planned_downtime_weekly_stop($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?
 			AND type_execution <> ?
-			AND executed = 1', 'weekly', 'once');
-	
+			AND type_execution <> ?
+			AND executed = 1', 'weekly', 'once', 'cron');
+
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0;
 
@@ -2922,6 +3029,9 @@ sub pandora_planned_downtime ($$) {
 	
 	pandora_planned_downtime_weekly_stop($pa_config, $dbh);
 	pandora_planned_downtime_weekly_start($pa_config, $dbh);
+
+	pandora_planned_downtime_cron_start($pa_config, $dbh);
+	pandora_planned_downtime_cron_stop($pa_config, $dbh);
 }
 
 ########################################################################

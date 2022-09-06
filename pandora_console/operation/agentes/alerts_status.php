@@ -244,7 +244,7 @@ if ($free_search != '') {
                 [
                     'title' => 'Policy',
                     'text'  => 'P.',
-                ],
+                ]
             );
 
             $columns = array_merge(
@@ -261,12 +261,12 @@ if ($free_search != '') {
                         'title' => 'Validate',
                         'text'  => html_print_checkbox('all_validate', 0, false, true, false),
                         'class' => 'dt-left',
-                    ],
+                    ]
                 );
 
                 $columns = array_merge(
                     ['validate'],
-                    $columns,
+                    $columns
                 );
             }
 
@@ -276,7 +276,7 @@ if ($free_search != '') {
                     [
                         'title' => 'Force execution',
                         'text'  => 'F.',
-                    ],
+                    ]
                 );
 
                 $columns = array_merge(
@@ -289,12 +289,12 @@ if ($free_search != '') {
         if ($print_agent === true) {
             array_push(
                 $column_names,
-                ['text' => 'Agent'],
+                ['text' => 'Agent']
             );
 
             $columns = array_merge(
                 $columns,
-                ['agent'],
+                ['agent']
             );
         }
 
@@ -304,7 +304,7 @@ if ($free_search != '') {
             ['text' => 'Template'],
             ['text' => 'Action'],
             ['text' => 'Last fired'],
-            ['text' => 'Status'],
+            ['text' => 'Status']
         );
 
         $columns = array_merge(
@@ -313,7 +313,7 @@ if ($free_search != '') {
             ['template'],
             ['action'],
             ['lastFired'],
-            ['status'],
+            ['status']
         );
 
 
@@ -381,7 +381,7 @@ if ($free_search != '') {
                         ],
                         'no_toggle' => true,
                     ],
-                ],
+                ]
             );
         } else {
             ui_print_datatable(
@@ -419,7 +419,7 @@ if ($free_search != '') {
                             $strict_user
                         ),
                     ],
-                ],
+                ]
             );
         }
 

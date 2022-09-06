@@ -175,7 +175,7 @@ $search_secondary_groups = get_parameter(
 );
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
-    ($filter['id_group_filter'] ?? '')
+    ($filter['id_group'] ?? '')
 );
 $date_from = get_parameter(
     'filter[date_from]',
@@ -945,7 +945,7 @@ if (is_ajax() === true) {
                             $custom_data_str = '';
                             if (isset($custom_data) === true && empty($custom_data) === false) {
                                 foreach ($custom_data as $key => $value) {
-                                    $custom_data_str .= $value['attr_name'].' = '.$value['val'].'<br>';
+                                    $custom_data_str .= $key.' = '.$value.'<br>';
                                 }
                             }
 
@@ -1558,8 +1558,8 @@ if (enterprise_hook(
  */
 
 // Group.
-if ($id_group_filter === null) {
-    $id_group_filter = 0;
+if ($id_group === null) {
+    $id_group = 0;
 }
 
 $data = html_print_input(
@@ -1568,7 +1568,7 @@ $data = html_print_input(
         'returnAllGroup' => true,
         'privilege'      => 'AR',
         'type'           => 'select_groups',
-        'selected'       => $id_group_filter,
+        'selected'       => $id_group,
         'nothing'        => false,
         'return'         => true,
         'size'           => '80%',

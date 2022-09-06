@@ -774,6 +774,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'modules_inventory':
+                $report['contents'][] = reporting_modules_inventory(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'inventory':
                 $report['contents'][] = reporting_inventory(
                     $report,
@@ -2438,6 +2445,14 @@ function reporting_event_report_module(
 }
 
 
+/**
+ * Generate agents inventory report.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array
+ */
 function reporting_agents_inventory($report, $content)
 {
     global $config;
@@ -2470,7 +2485,7 @@ function reporting_agents_inventory($report, $content)
     $custom_field_sql = '';
     $search_sql = '';
 
-    if (!empty($es_agent_custom_fields)) {
+    if (empty(array_filter($es_agent_custom_fields)) === false) {
         $custom_field_sql = 'INNER JOIN tagent_custom_data tacd ON tacd.id_agent = tagente.id_agente';
         if ($es_agent_custom_fields[0] != 0) {
             $custom_field_sql .= ' AND tacd.id_field IN ('.implode(',', $es_agent_custom_fields).')';
@@ -2624,6 +2639,146 @@ function reporting_agents_inventory($report, $content)
     }
 
     $return['data'] = $all_data;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Generate modules inventory report.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array
+ */
+function reporting_modules_inventory($report, $content)
+{
+    global $config;
+
+    $return['name'] = $content['name'];
+    $return['type'] = 'modules_inventory';
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $external_source = io_safe_input(json_decode($content['external_source'], true));
+    $es_agent_group_filter = $external_source['agent_group_filter'];
+    $module_group = $external_source['module_group'];
+    $es_agent_server_filter = $external_source['agent_server_filter'];
+
+    $search_sql = '';
+
+    if (empty($es_agent_group_filter) === false) {
+        $search_sql .= ' AND (ta.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
+    }
+
+    if (empty($module_group) === false && $module_group > -1) {
+        $search_sql .= ' AND tam.id_module_group = '.$module_group;
+    }
+
+    $user_groups_to_sql = '';
+
+    $user_groupsAR = users_get_groups($config['id_user'], 'AR');
+
+    $user_groups = $user_groupsAR;
+    $user_groups_to_sql = implode(',', array_keys($user_groups));
+
+    $sql = sprintf(
+        'SELECT tam.id_agente_modulo,
+        tam.nombre,
+        tam.descripcion,
+        tam.id_module_group,
+        ttm.id_tag,
+        ta.id_grupo AS group_id,
+        tasg.id_group AS sec_group_id
+        FROM tagente_modulo tam
+        INNER JOIN tagente ta
+            ON tam.id_agente = ta.id_agente
+        LEFT JOIN tagent_secondary_group tasg
+            ON ta.id_agente = tasg.id_agent
+        LEFT JOIN ttag_module ttm
+            ON ttm.id_agente_modulo = tam.id_agente_modulo
+        WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)) %s',
+        $user_groups_to_sql,
+        $user_groups_to_sql,
+        $search_sql
+    );
+
+    if (is_metaconsole()) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    } else {
+        $servers_ids = [0];
+    }
+
+    $return_data = [];
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_by_id($server_id);
+
+            if ((int) $es_agent_server_filter !== 0
+                && (int) $es_agent_server_filter !== (int) $server_id
+            ) {
+                continue;
+            }
+
+            metaconsole_connect($server);
+        }
+
+        $agents = db_get_all_rows_sql($sql);
+
+        $return_data[$server_id] = $agents;
+
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+    }
+
+    $all_data = [];
+
+    foreach ($return_data as $server_agents) {
+        foreach ($server_agents as $agent) {
+            $all_data[] = $agent;
+        }
+    }
+
+    $return['data'] = $all_data;
+
+    $module_row_data = [];
+
+    foreach ($return['data'] as $row) {
+        if (is_array($module_row_data[$row['id_agente_modulo']]) === false) {
+            $module_row_data[$row['id_agente_modulo']]['nombre'] = $row['nombre'];
+            $module_row_data[$row['id_agente_modulo']]['descripcion'] = $row['descripcion'];
+            $module_row_data[$row['id_agente_modulo']]['id_module_group'] = $row['id_module_group'];
+            $module_row_data[$row['id_agente_modulo']]['id_tag'] = [];
+            $module_row_data[$row['id_agente_modulo']]['group_id'] = [];
+            $module_row_data[$row['id_agente_modulo']]['sec_group_id'] = [];
+        }
+
+        if (in_array($row['id_tag'], $module_row_data[$row['id_agente_modulo']]['id_tag']) === false
+            && $row['id_tag'] !== null
+        ) {
+            $module_row_data[$row['id_agente_modulo']]['id_tag'][] = $row['id_tag'];
+        }
+
+        if (in_array($row['group_id'], $module_row_data[$row['id_agente_modulo']]['group_id']) === false
+            && $row['group_id'] !== null
+        ) {
+            $module_row_data[$row['id_agente_modulo']]['group_id'][] = $row['group_id'];
+        }
+
+        if (in_array($row['sec_group_id'], $module_row_data[$row['id_agente_modulo']]['sec_group_id']) === false
+            && $row['sec_group_id'] !== null
+        ) {
+            $module_row_data[$row['id_agente_modulo']]['sec_group_id'][] = $row['sec_group_id'];
+        }
+    }
+
+    $return['data'] = $module_row_data;
 
     return reporting_check_structure_content($return);
 }
@@ -7079,6 +7234,10 @@ function reporting_sql($report, $content)
             $historical_db = db_get_value_sql(
                 'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
             );
+
+            if (is_metaconsole() === true) {
+                $historical_db = $content['historical_db'];
+            }
         } else {
             $historical_db = $content['historical_db'];
         }
@@ -11462,7 +11621,7 @@ function reporting_get_stats_alerts($data, $links=false)
 {
     global $config;
 
-    // Link URLS
+    // Link URLS.
     $mobile = false;
     if (isset($data['mobile'])) {
         if ($data['mobile']) {
@@ -11478,14 +11637,14 @@ function reporting_get_stats_alerts($data, $links=false)
         $urls = [];
         if ($links) {
             $urls['monitor_alerts'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&pure='.$config['pure'];
-            $urls['monitor_alerts_fired'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure='.$config['pure'];
+            $urls['monitor_alerts_fired'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&disabled=fired&pure='.$config['pure'];
         } else {
             $urls['monitor_alerts'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60';
-            $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired';
+            $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&disabled=fired';
         }
     }
 
-    // Alerts table
+    // Alerts table.
     $table_al = html_get_predefined_table();
 
     $tdata = [];
@@ -11524,7 +11683,7 @@ function reporting_get_stats_alerts($data, $links=false)
         $output = '<fieldset class="databox tactical_set">
                     <legend>'.__('Defined and fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
     } else {
-        // Remove the defined alerts cause with the new cache table is difficult to retrieve them
+        // Remove the defined alerts cause with the new cache table is difficult to retrieve them.
         unset($table_al->data[0][0], $table_al->data[0][1]);
 
         $table_al->class = 'tactical_view';
@@ -14205,6 +14364,10 @@ function reporting_format_planned_downtime_dates($planned_downtime)
     switch ($planned_downtime['type_execution']) {
         case 'once':
             $dates = date('Y-m-d H:i', $planned_downtime['date_from']).'&nbsp;'.__('to').'&nbsp;'.date('Y-m-d H:i', $planned_downtime['date_to']);
+        break;
+
+        case 'cron':
+            $dates = __('Start condition').': <span class="italic">'.$planned_downtime['cron_interval_from'].'</span> - '.__('Stop condition').': <span class="italic">'.$planned_downtime['cron_interval_to'].'</span>';
         break;
 
         case 'periodically':

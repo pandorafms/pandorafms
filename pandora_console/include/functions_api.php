@@ -45,6 +45,7 @@ require_once $config['homedir'].'/include/functions_servers.php';
 require_once $config['homedir'].'/include/functions_planned_downtimes.php';
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_event_responses.php';
+require_once $config['homedir'].'/include/functions_tactical.php';
 enterprise_include_once('include/functions_local_components.php');
 enterprise_include_once('include/functions_events.php');
 enterprise_include_once('include/functions_agents.php');
@@ -12706,7 +12707,7 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         return;
     }
 
@@ -12715,20 +12716,9 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
         return;
     }
 
-    $groups_clause = '1 = 1';
-    if (!users_is_admin($config['id_user'])) {
-        $user_groups = implode(',', array_keys(users_get_groups()));
-        $groups_clause = "(ta.id_grupo IN ($user_groups) OR tasg.id_group IN ($user_groups))";
-    }
+    $partial = tactical_status_modules_agents($config['id_user'], false, 'AR');
 
-    $sql = "SELECT COUNT(DISTINCT(id_agente_modulo))
-        FROM tagente_modulo tam, tagente ta
-        LEFT JOIN tagent_secondary_group tasg
-            ON ta.id_agente = tasg.id_agent
-        WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
-            AND delete_pending = 0 AND $groups_clause";
-
-    $total = db_get_value_sql($sql);
+    $total = (int) $partial['_monitor_total_'];
 
     $data = [
         'type' => 'string',

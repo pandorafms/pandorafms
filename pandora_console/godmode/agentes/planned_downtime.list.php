@@ -317,6 +317,7 @@ $row = [];
 $execution_type_fields = [
     'once'         => __('Once'),
     'periodically' => __('Periodically'),
+    'cron'         => __('Cron'),
 ];
 $row[] = __('Execution type').'&nbsp;'.html_print_select(
     $execution_type_fields,
@@ -460,10 +461,15 @@ if (empty($groups) === false) {
             strtotime($date_to.' 23:59:59')
         );
 
+        $cron = sprintf(
+            'type_execution = "cron"'
+        );
+
         $where_values .= sprintf(
-            ' AND ((%s) OR (%s))',
+            ' AND ((%s) OR (%s) OR (%s))',
             $periodically_w,
-            $once_w
+            $once_w,
+            $cron
         );
     }
 
@@ -471,6 +477,7 @@ if (empty($groups) === false) {
         $filter_performed = true;
         $where_values .= sprintf(
             ' AND (type_execution = "periodically"
+                OR type_execution = "cron"
                 OR (type_execution = "once"
                 AND date_to >= "%s"))',
             time()
@@ -530,6 +537,8 @@ if (empty($groups) === false) {
         'type_execution',
         'type_periodicity',
         'id_user',
+        'cron_interval_from',
+        'cron_interval_to',
     ];
 
     $columns_str = implode(',', $columns);
@@ -660,8 +669,9 @@ if ($downtimes === false && $filter_performed === false) {
         $data['type'] = $type_text[$downtime['type_downtime']];
 
         $execution_text = [
-            'once'         => __('once'),
+            'once'         => __('Once'),
             'periodically' => __('Periodically'),
+            'cron'         => __('Cron'),
         ];
 
         $data['execution'] = $execution_text[$downtime['type_execution']];

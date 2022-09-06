@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.763 Build 220727";
+my $version = "7.0NG.764 Build 220906";
 
 # Pandora server configuration
 my %conf;
@@ -648,6 +648,8 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
+	$conf->{'_days_delete_not_initialized'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_not_initialized'");
+	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
@@ -836,6 +838,58 @@ sub pandora_checkdb_consistency {
 			usleep (100000);
 		}
 	}
+
+	# Perform a clean of not initialized modules.
+	if (defined($conf{'_days_delete_not_initialized'}) && $conf{'_days_delete_not_initialized'} > 0 && $conf->{'_delete_notinit'} eq "1") {
+	    log_message ('CHECKDB',
+		    "Deleting not initialized modules (More than " . $conf{'_days_delete_not_initialized'} . " days).");
+
+		my @modules = get_db_rows($dbh,
+			'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente
+			FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+				AND (estado = 4 OR estado = 5)
+				AND utimestamp < UNIX_TIMESTAMP() - ?',
+			86400 * $conf{'_days_delete_not_initialized'});
+
+		foreach my $module (@modules) {
+			my $id_agente = $module->{'id_agente'};
+			my $id_agente_modulo = $module->{'id_agente_modulo'};
+
+			# Skip policy modules
+			my $is_policy_module = enterprise_hook('is_policy_module',
+				[$dbh, $id_agente_modulo]);
+			next if (defined($is_policy_module) && $is_policy_module);
+
+			# Mark the agent for module and alert counters update
+			db_do ($dbh,
+				'UPDATE tagente
+				SET update_module_count = 1, update_alert_count = 1
+				WHERE id_agente = ?', $id_agente);
+
+			# Delete the module
+			db_do ($dbh,
+				'DELETE FROM tagente_modulo
+				WHERE disabled = 0
+					AND id_agente_modulo = ?', $id_agente_modulo);
+
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
+
+			# Delete any alerts associated to the module
+			db_do ($dbh, 'DELETE FROM talert_template_modules
+				WHERE id_agent_module = ?
+					AND NOT EXISTS (SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ?)',
+				$id_agente_modulo, $id_agente_modulo);
+
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
+		}
+	}
+
+
 	log_message ('CHECKDB',
 		"Checking database consistency (Missing status).");
 	
@@ -1191,6 +1245,20 @@ my $lock_name = $conf{'dbname'};
 if ($conf{'_force'} == 1) {
 	log_message ('', " [*] Releasing database lock.\n\n");
 	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+}
+
+# Get a lock merging.
+my $lock_merge = db_get_lock ($dbh, 'merge-working', $LOCK_TIMEOUT, 1);
+if ($lock_merge == 0) { 
+	log_message ('', " [*] Merge is running.\n\n");
+	exit 1;
+}
+
+# Get a lock on merging events.
+my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
+if ($lock_merge_events == 0) { 
+	log_message ('', " [*] Merge events is running.\n\n");
+	exit 1;
 }
 
 # Get a lock on dbname.

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.763 Build 220727";
+my $version = "7.0NG.764 Build 220906";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1164,7 +1164,12 @@ sub cli_disable_group() {
 	}
 	
 	my $result = pandora_disable_group ($conf, $dbh, $id_group);
+
+	if ($result != 0){
 	print_log "[INFO] Disabled ".$result." agents from group ".$group_name."\n\n";
+	} else {
+	print_log "[INFO] Disabled 0 agents from group ".$group_name."\n\n";
+	}
 }
 
 ##############################################################################

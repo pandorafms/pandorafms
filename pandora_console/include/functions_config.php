@@ -358,6 +358,10 @@ function config_update_config()
                         $error_update[] = __('Module Custom ID read only');
                     }
 
+                    if (config_update_value('reporting_console_enable', get_parameter('reporting_console_enable'), true) === false) {
+                        $error_update[] = __('Enable console report');
+                    }
+
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
                         $error_update[] = __('Unique IP');
                     }
@@ -810,6 +814,10 @@ function config_update_config()
 
                     if (config_update_value('days_delete_unknown', (int) get_parameter('days_delete_unknown'), true) === false) {
                         $error_update[] = __('Max. days before delete unknown modules');
+                    }
+
+                    if (config_update_value('days_delete_not_initialized', (int) get_parameter('days_delete_not_initialized'), true) === false) {
+                        $error_update[] = __('Max. days before delete not initialized modules');
                     }
 
                     if (config_update_value('days_compact', (int) get_parameter('days_compact'), true) === false) {
@@ -2191,6 +2199,10 @@ function config_process_config()
 
     if (!isset($config['module_custom_id_ro'])) {
         config_update_value('module_custom_id_ro', 0);
+    }
+
+    if (!isset($config['reporting_console_enable'])) {
+        config_update_value('reporting_console_enable', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {

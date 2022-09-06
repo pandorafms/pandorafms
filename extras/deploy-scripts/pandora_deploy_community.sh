@@ -282,6 +282,8 @@ server_dependencies=" \
     expect \
 	openssh-clients \
     java \
+    bind-utils \
+    whois \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.artica.es/centos7/pandorawmic-1.0.0-1.x86_64.rpm"

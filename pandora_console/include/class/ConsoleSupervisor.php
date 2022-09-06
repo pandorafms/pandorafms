@@ -1466,7 +1466,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.PHP.INPUT_TIME',
                     'title'   => sprintf(
-                        __("'%s' value in PHP configuration is not recommended"),
+                        __('%s value in PHP configuration is not recommended'),
                         'max_input_time'
                     ),
                     'message' => sprintf(

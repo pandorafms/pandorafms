@@ -789,7 +789,7 @@ function agents_get_agents_selected($group)
         );
 
         $all = array_reduce(
-            $all,
+            (empty($all) === true) ? [] : $all,
             function ($carry, $item) {
                 $carry[$item['id_agente']] = $item['alias'];
                 return $carry;

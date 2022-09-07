@@ -427,6 +427,11 @@ function install_package(url, auth, packageId, version, serverUpdate) {
           $("#input-progress")
             .val(100)
             .change();
+
+          $("#result li").removeClass("error");
+          $("#result li")
+            .find("p")
+            .text(response.result);
         },
         error: function(e, request) {
           clearInterval(progressInterval);

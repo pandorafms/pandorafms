@@ -1740,6 +1740,7 @@ CREATE TABLE IF NOT EXISTS `tplugin` (
   `plugin_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `macros` TEXT,
   `parameters` TEXT,
+  `no_delete` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4; 
 

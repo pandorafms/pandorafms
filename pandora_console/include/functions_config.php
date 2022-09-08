@@ -1570,6 +1570,18 @@ function config_update_config()
                         $error_update[] = __('Days');
                     }
 
+                    if (config_update_value('history_db_adv', get_parameter_switch('history_db_adv', 0), true) === false) {
+                        $error_update[] = __('Enable history database advanced');
+                    }
+
+                    $history_db_string_days = get_parameter('history_db_string_days');
+                    if (is_numeric($history_db_string_days) === false
+                        || $history_db_string_days <= 0
+                        || config_update_value('history_db_string_days', $history_db_string_days) === false
+                    ) {
+                        $error_update[] = __('String Days');
+                    }
+
                     $history_event_days = get_parameter('history_event_days');
                     if (is_numeric($history_event_days) === false
                         || $history_event_days <= 0
@@ -2498,6 +2510,14 @@ function config_process_config()
 
     if (!isset($config['history_db_days'])) {
         config_update_value('history_db_days', 0);
+    }
+
+    if (!isset($config['history_db_adv'])) {
+        config_update_value('history_db_adv', false);
+    }
+
+    if (!isset($config['history_db_string_days'])) {
+        config_update_value('history_db_string_days', 0);
     }
 
     if (!isset($config['history_event_days'])) {

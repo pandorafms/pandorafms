@@ -3874,6 +3874,7 @@ $class = 'databox filters';
             } else {
                 $rows_select = modules_get_modulegroups();
             }
+
             html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
             html_print_select(
                 $rows_select,

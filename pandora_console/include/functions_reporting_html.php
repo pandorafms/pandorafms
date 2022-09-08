@@ -1756,7 +1756,8 @@ function reporting_html_modules_inventory($table, $item, $pdf=0)
             } else if ($data_field_key === 'group_id') {
                 $column_value = groups_get_name($data_field_value[0]);
             } else if ($data_field_key === 'sec_group_id') {
-                $sec_groups_names = array_map(function ($group_id) {
+                $sec_groups_names = array_map(
+                    function ($group_id) {
                         return groups_get_name($group_id);
                     },
                     $data_field_value

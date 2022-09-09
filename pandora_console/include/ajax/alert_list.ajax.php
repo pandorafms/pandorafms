@@ -857,7 +857,7 @@ if ($get_agent_alerts_datatable === true) {
         if (is_metaconsole() === true) {
             include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
             if ($idAgent != 0) {
-                $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+                $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
                 $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
             } else {
@@ -865,7 +865,7 @@ if ($get_agent_alerts_datatable === true) {
                     users_get_groups($config['id_user'], 'AR', false)
                 );
 
-                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
                 $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
             }
@@ -914,6 +914,39 @@ if ($get_agent_alerts_datatable === true) {
                     return $carry;
                 }
             );
+        }
+
+        if (is_metaconsole() === true) {
+
+
+             /**
+              * Auxiliar Ordenation function
+              *
+              * @param string $sort      Direction of sort.
+              * @param string $sortField Field for perform the sorting.
+              */
+            function arrayOutputSorting($sort, $sortField)
+            {
+                return function ($a, $b) use ($sort, $sortField) {
+                    if ($sort === 'asc') {
+                        if (is_string($a->$sortField) === true) {
+                            return strnatcmp($a->$sortField, $b->$sortField);
+                        } else {
+                            return ($a->$sortField - $b->$sortField);
+                        }
+                    } else {
+                        if (is_string($a->$sortField) === true) {
+                            return strnatcmp($b->$sortField, $a->$sortField);
+                        } else {
+                            return ($a->$sortField + $b->$sortField);
+                        }
+                    }
+                };
+            }
+
+
+            usort($data, arrayOutputSorting($sort, $sortField));
+            $data = array_slice($data, $start, $length);
         }
 
          // Datatables format: RecordsTotal && recordsfiltered.

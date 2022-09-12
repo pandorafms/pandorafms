@@ -211,7 +211,8 @@ systemctl restart php$PHPVER-fpm &>> "$LOGFILE"
 	php$PHPVER-xmlrpc \
 	php$PHPVER-xml \
 	php$PHPVER-yaml \
-	libnet-telnet-perl"
+	libnet-telnet-perl \
+    whois"
 execute_cmd "apt install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -438,7 +439,7 @@ echo -en "${cyan}Installing PandoraFMS Server...${reset}"
 check_cmd_status "Error installing PandoraFMS  Server"
 
 #Install agent:
-execute_cmd "apt install -y perl coreutils wget curl unzip procps python3 python3-pip" "Installing PandoraFMS Agent Dependencies"
+execute_cmd "apt install -y libyaml-tiny-perl perl coreutils wget curl unzip procps python3 python3-pip" "Installing PandoraFMS Agent Dependencies"
 echo -en "${cyan}Installing PandoraFMS Agent...${reset}"
     tar xvzf $WORKDIR/pandorafms_agent_unix-7.0NG.tar.gz &>> "$LOGFILE" && cd unix && ./pandora_agent_installer --install &>> $LOGFILE && cp -a tentacle_client /usr/local/bin/ &>> $LOGFILE && cd $WORKDIR
 check_cmd_status "Error installing PandoraFMS Agent"
@@ -575,6 +576,14 @@ sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
+
+# Adding group www-data to pandora server conf.
+grep -q "group www-data" $PANDORA_SERVER_CONF || \
+cat >> $PANDORA_SERVER_CONF << EOF_G
+
+#Adding group www-data to assing remote-config permission correctly for ubuntu 22.04
+group www-data
+EOF_G
 
 # Enable agent remote config
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 

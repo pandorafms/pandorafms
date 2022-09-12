@@ -303,7 +303,16 @@ if (isset($config['id_user']) === false) {
         $user_info = users_get_user_by_id($nick);
         if ((bool) $user_info['allowed_ip_active'] === true) {
             $userIP = $_SERVER['REMOTE_ADDR'];
-            if ((strpos($user_info['allowed_ip_list'], '*') !== false || strpos($user_info['allowed_ip_list'], $userIP) !== false) === false) {
+            $allowedIP = false;
+            $arrayIP = explode(',', $user_info['allowed_ip_list']);
+            // By default, if the IP definition is no correct, allows all.
+            if (empty($arrayIP) === true) {
+                $allowedIP = true;
+            } else {
+                $allowedIP = checkIPInRange($arrayIP, $userIP);
+            }
+
+            if ($allowedIP === false) {
                 $config['auth_error'] = 'IP not allowed';
                 $login_failed = true;
                 include_once 'general/login_page.php';

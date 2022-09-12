@@ -437,7 +437,7 @@ div#dashboard-controls {
   z-index: 1;
   top: 10px;
   right: 10px;
-  width: 600px;
+  width: 800px;
   height: 70px;
   display: flex;
   flex-direction: row;
@@ -446,7 +446,7 @@ div#dashboard-controls {
   align-items: center;
   background-color: #f2f6f7;
   border-radius: 15px;
-  padding: 10px;
+  padding: 0px 10px;
 }
 
 div#dashboard-controls div {
@@ -455,11 +455,22 @@ div#dashboard-controls div {
 }
 
 div#dashboard-controls div#dashboard-slides-form-countdown {
-  flex: 4;
+  flex: 7;
 }
 
 div#dashboard-controls div#dashboard-slides-name {
   flex: 3;
+}
+
+div#dashboard-controls div.dashboard-mode {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+div#dashboard-controls div.dashboard-mode a {
+  margin: 0px;
 }
 
 div#view-slides-cell-mode {
@@ -489,6 +500,13 @@ div#main_pure {
   width: 50%;
   margin: 0 auto;
   margin-top: 30px;
+}
+.dashboard-refr {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
 }
 
 #form-config-widget .info_box,

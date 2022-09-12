@@ -299,6 +299,31 @@ if (isset($config['id_user']) === false) {
         // Since now, only the $pass variable are needed.
         unset($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
 
+        // IP allowed check.
+        $user_info = users_get_user_by_id($nick);
+        if ((bool) $user_info['allowed_ip_active'] === true) {
+            $userIP = $_SERVER['REMOTE_ADDR'];
+            if ((strpos($user_info['allowed_ip_list'], '*') !== false || strpos($user_info['allowed_ip_list'], $userIP) !== false) === false) {
+                $config['auth_error'] = 'IP not allowed';
+                $login_failed = true;
+                include_once 'general/login_page.php';
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    sprintf(
+                        'IP %s not allowed for user %s',
+                        $userIP,
+                        $nick
+                    ),
+                    $userIP
+                );
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
+                }
+
+                exit('</html>');
+            }
+        }
+
         // If the auth_code exists, we assume the user has come from
         // double authorization page.
         if (isset($_POST['auth_code']) === true) {

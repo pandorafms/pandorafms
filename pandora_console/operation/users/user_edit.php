@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -75,6 +75,9 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['email'] = get_parameter_post('email', '');
     $upd_info['phone'] = get_parameter_post('phone', '');
     $upd_info['comments'] = get_parameter_post('comments', '');
+    $upd_info['allowed_ip_active'] = ((int) get_parameter_switch('allowed_ip_active', -1) === 0);
+    $upd_info['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
+    $upd_info['comments'] = get_parameter_post('comments', '');
     $upd_info['language'] = get_parameter_post('language', $user_info['language']);
     $upd_info['timezone'] = get_parameter_post('timezone', '');
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
@@ -111,14 +114,14 @@ if (isset($_GET['modified']) && !$view_mode) {
 
     $section = io_safe_output($upd_info['section']);
 
-    if (($section == 'Event list') || ($section == 'Group view')
-        || ($section == 'Alert detail') || ($section == 'Tactical view')
-        || ($section == 'Default')
+    if (($section === 'Event list') || ($section === 'Group view')
+        || ($section === 'Alert detail') || ($section === 'Tactical view')
+        || ($section === 'Default')
     ) {
         $upd_info['data_section'] = '';
-    } else if ($section == 'Dashboard') {
+    } else if ($section === 'Dashboard') {
         $upd_info['data_section'] = $dashboard;
-    } else if ($section == 'Visual console') {
+    } else if ($section === 'Visual console') {
         $upd_info['data_section'] = $visual_console;
     }
 
@@ -168,13 +171,13 @@ if (isset($_GET['modified']) && !$view_mode) {
     // (no changes in data) SQL function returns 0 (FALSE), but is not an error,
     // just no change. Previous error message could be confussing to the user.
     if ($return) {
-        if (!empty($password_new) && !empty($password_confirm)) {
+        if (empty($password_new) === false && empty($password_confirm) === false) {
             $success_msg = __('Password successfully updated');
         }
 
         // If info is valid then proceed with update.
-        if ((filter_var($upd_info['email'], FILTER_VALIDATE_EMAIL) || $upd_info['email'] == '')
-            && (preg_match('/^[0-9- ]+$/D', $upd_info['phone']) || $upd_info['phone'] == '')
+        if ((filter_var($upd_info['email'], FILTER_VALIDATE_EMAIL) || empty($upd_info['email']) === true)
+            && (preg_match('/^[0-9- ]+$/D', $upd_info['phone']) || empty($upd_info['phone']) === true)
         ) {
             $return_update_user = update_user($id, $upd_info);
 
@@ -183,7 +186,7 @@ if (isset($_GET['modified']) && !$view_mode) {
             } else if ($return_update_user == true) {
                 $success_msg = __('User info successfully updated');
             } else {
-                if (!empty($password_new) && !empty($password_confirm)) {
+                if (empty($password_new) === false && empty($password_confirm) === false) {
                     $success_msg = __('Password successfully updated');
                 } else if ($upd_info['id_skin'] !== $user_info['id_skin']) {
                     $success_msg = __('Skin successfully updated');
@@ -614,6 +617,26 @@ $comments .= html_print_textarea(
 );
 $comments .= html_print_input_hidden('quick_language_change', 1, true);
 
+$allowedIP = '<p class="edit_user_labels">';
+$allowedIP .= __('Login allowed IP list').'&nbsp;';
+$allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'), true).'&nbsp;';
+$allowedIP .= html_print_checkbox_switch(
+    'allowed_ip_active',
+    0,
+    $user_info['allowed_ip_active'],
+    true
+);
+$allowedIP .= '</p>';
+$allowedIP .= html_print_textarea(
+    'allowed_ip_list',
+    2,
+    65,
+    $user_info['allowed_ip_list'],
+    ($view_mode ? 'readonly="readonly"' : ''),
+    true
+);
+
+
 
 foreach ($timezones as $timezone_name => $tz) {
     if ($timezone_name == 'America/Montreal') {
@@ -655,7 +678,7 @@ if (is_metaconsole()) {
 
 
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
                         <img class="timezone-pin pdd_t_4px" src="include/javascript/timezonepicker/images/pin.png" />
@@ -664,10 +687,14 @@ if (!is_metaconsole()) {
 }
 
                 echo '</div>
-            </div> 
+            </div>
             <div class="user_edit_third_row white_box">
                 <div class="edit_user_comments">'.$comments.'</div>
-            </div>    
+            </div>
+
+            <div class="user_edit_third_row white_box">
+                <div class="edit_user_allowed_ip">'.$allowedIP.'</div>
+            </div>
         </div>';
 
 if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {

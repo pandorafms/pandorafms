@@ -17731,7 +17731,7 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
                 $name = explode(' - ', $report['name']);
                 $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.csv';
 
-                // ------- Removed the unused fields -----------------------------.
+                // Remove unused fields.
                 unset($report['header']);
                 unset($report['first_page']);
                 unset($report['footer']);
@@ -17765,7 +17765,7 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
                     'data'
                 );
 
-                // ------- Removed the unused fields -----------------------------
+                // Remove unused fields.
                 unset($report['header']);
                 unset($report['first_page']);
                 unset($report['footer']);
@@ -17800,7 +17800,7 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
                 $name = explode(' - ', $report['name']);
                 $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.xml';
 
-                // ------- Removed the unused fields -----------------------------
+                // Remove unused fields.
                 unset($report['header']);
                 unset($report['first_page']);
                 unset($report['footer']);

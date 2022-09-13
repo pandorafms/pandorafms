@@ -7213,7 +7213,7 @@ function reporting_sql($report, $content)
         $sql = $content['external_source'];
     }
 
-    // Check if exist sql macro
+    // Check if exist sql macro.
     $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.
@@ -14718,6 +14718,25 @@ function reporting_sql_macro(array $report, string $sql): string
     if (preg_match('/_timefrom_/', $sql)) {
         $sql = str_replace(
             '_timefrom_',
+            $report['datetime'],
+            $sql
+        );
+    }
+
+    if (preg_match('/_start_date_/', $sql)) {
+        $date_init = get_parameter('date_init', date(DATE_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $time_init = get_parameter('time_init', date(TIME_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $datetime_init = strtotime($date_init.' '.$time_init);
+        $sql = str_replace(
+            '_start_date_',
+            $datetime_init,
+            $sql
+        );
+    }
+
+    if (preg_match('/_end_date_/', $sql)) {
+        $sql = str_replace(
+            '_end_date_',
             $report['datetime'],
             $sql
         );

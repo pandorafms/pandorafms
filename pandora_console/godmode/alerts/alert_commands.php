@@ -15,6 +15,7 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
+require_once $config['homedir'].'/include/functions_reports.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
@@ -284,13 +285,13 @@ if (is_ajax()) {
                         $ffield .= '<div name="field'.$i.'_value_container">'.html_print_switch(
                             [
                                 'name'  => 'field'.$i.'_value[]',
-                                'value' => '',
+                                'value' => ''
                             ]
                         ).'</div>';
                         $rfield .= '<div name="field'.$i.'_recovery_value_container">'.html_print_switch(
                             [
                                 'name'  => 'field'.$i.'_recovery_value[]',
-                                'value' => '',
+                                'value' => ''
                             ]
                         ).'</div>';
 
@@ -349,9 +350,94 @@ if (is_ajax()) {
                         );
                 } else {
                     $fields_value_select = [];
-                    $fv = explode(';', $field_value);
+                    $force_print_select = false;
 
-                    if (count($fv) > 1) {
+                    // Exception for dynamically filled select boxes.
+                    if (preg_match('/^_reports_$/i', $field_value)) {
+                        // Filter normal and metaconsole reports.
+                        if (is_metaconsole() === true) {
+                            $filter['metaconsole'] = 1;
+                        } else {
+                            $filter['metaconsole'] = 0;
+                        }
+
+                        $own_info = get_user_info($config['id_user']);
+                        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
+                            $return_all_group = true;
+                        } else {
+                            $return_all_group = false;
+                        }
+
+                        if (is_user_admin($config['id_user']) === false) {
+                            $filter[] = sprintf(
+                                'private = 0 OR (private = 1 AND id_user = "%s")',
+                                $config['id_user']
+                            );
+                        }
+
+                        $reports = reports_get_reports(
+                            $filter,
+                            [
+                                'name',
+                                'id_report'
+                            ],
+                            $return_all_group,
+                            'RR'
+                        );
+
+                        $fv = array_map(
+                            function ($report) {
+                                return $report['id_report'].','.$report['name'];
+                            },
+                            $reports
+                        );
+
+                        $force_print_select = true;
+                    } else if (preg_match('/^_report_templates_$/i', $field_value)) {
+                        // Filter normal and metaconsole reports.
+                        if (is_metaconsole() === true) {
+                            $filter['metaconsole'] = 1;
+                        } else {
+                            $filter['metaconsole'] = 0;
+                        }
+
+                        $own_info = get_user_info($config['id_user']);
+                        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
+                            $return_all_group = true;
+                        } else {
+                            $return_all_group = false;
+                        }
+
+                        if (is_user_admin($config['id_user']) === false) {
+                            $filter[] = sprintf(
+                                'private = 0 OR (private = 1 AND id_user = "%s")',
+                                $config['id_user']
+                            );
+                        }
+
+                        $templates = reports_get_report_templates(
+                            $filter,
+                            [
+                                'name',
+                                'id_report'
+                            ],
+                            $return_all_group,
+                            'RR'
+                        );
+
+                        $fv = array_map(
+                            function ($template) {
+                                return $template['id_report'].','.$template['name'];
+                            },
+                            $templates
+                        );
+
+                        $force_print_select = true;
+                    } else {
+                        $fv = explode(';', $field_value);
+                    }
+
+                    if (count($fv) > 1 || $force_print_select === true) {
                         if (!empty($fv)) {
                             foreach ($fv as $fv_option) {
                                 $fv_option = explode(',', $fv_option);

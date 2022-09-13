@@ -1647,6 +1647,70 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			pandora_sendmail ($pa_config, $field1, $field2, $field3, $content_type);
 		}
 	
+	# Email report
+	} elsif ($clean_name eq "Send report by e-mail") {
+		# Text
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# API connection
+		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "set";
+		$params->{"op2"} = "send_report";
+		$params->{"other_mode"} = "url_encode_separator_|;|";
+		
+		$field4 = safe_input($field4);
+		$field4 =~ s/&amp;/&/g;
+
+		$params->{"other"} = $field1.'|;|'.$field5.'|;|'.$field2.'|;|'.$field3.'|;|'.$field4.'|;|0';
+
+		$ua->post($url, $params);
+
+	# Email report (from template)
+	} elsif ($clean_name eq "Send report by e-mail (from template)") {
+		# Text
+		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# API connection
+		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "set";
+		$params->{"op2"} = "send_report";
+		$params->{"other_mode"} = "url_encode_separator_|;|";
+
+		$field5 = safe_input($field5);
+		$field5 =~ s/&amp;/&/g;
+
+		$params->{"other"} = $field1.'|;|'.$field6.'|;|'.$field3.'|;|'.$field4.'|;|'.$field5.'|;|1|;|'.$field2;
+
+		$ua->post($url, $params);
+
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Monitoring Event") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
@@ -6831,7 +6895,7 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
 		'params=' . $data_ticket .'&' .
 		'token=|;|';
 
-	my $content = get($call_api);
+	 my $content = get($call_api);
 
 	if (is_numeric($content) && $content ne "-1") {
 		return $content;

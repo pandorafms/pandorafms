@@ -4225,7 +4225,7 @@ function reporting_html_availability($table, $item, $pdf=0)
             } else {
                 $table_row[] = $row['agent'];
                 $item_name = $row['availability_item'];
-                if ((bool) $row['compare'] === true) {
+                if ((bool) $row['compare'] === false) {
                     $item_name .= ' ('.__('24 x 7').')';
                 }
 

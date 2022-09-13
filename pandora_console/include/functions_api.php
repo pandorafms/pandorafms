@@ -17557,8 +17557,7 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
  * @param [string] $trash2           don't use
  * @param [string] $returnType
  *
- * Example
- * api.php?op=get&op2=event_mcid&return_type=json&id=0&id2=0&apipass=1234&user=admin&pass=pandora
+ * --Internal use--
  *
  * @return void
  */

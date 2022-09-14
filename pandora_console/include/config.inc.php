@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configuraton sample file.
  *
@@ -38,6 +39,11 @@
  *   $config["homedir"]="/var/www/pandora_console/";
  *   $config["homeurl"]="/pandora_console/";
  *   $config["auth"]["scheme"] = "mysql";
+ *
+ * This is used to configure MySQL SSL console connection
+ *   $config["dbssl"]=0;
+ *   $config["dbsslcafile"]="/path/ca-cert.pem";
+ *   $config["sslverifyservercert"]=0;
  */
 
 // By default report any error but notices.

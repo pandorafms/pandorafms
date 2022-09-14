@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Main configuration of Pandora FMS
  *
@@ -30,6 +31,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/functions.php';
 enterprise_include_once('include/functions_config.php');
+
 use PandoraFMS\Core\DBMaintainer;
 use PandoraFMS\Core\Config;
 
@@ -146,7 +148,7 @@ function config_update_config()
         return false;
     }
 
-    if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+    if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = false;
         $config['error_config_update_config']['message'] = __('Failed updated: User is not admin.');
@@ -2241,9 +2243,9 @@ function config_process_config()
         config_update_value('2Fa_auth', '');
     }
 
-     /*
-      * Parse the ACL IP list for access API
-      */
+    /*
+     * Parse the ACL IP list for access API
+     */
 
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
@@ -2799,7 +2801,7 @@ function config_process_config()
             $temp_ad_adv_perms = $config['ad_adv_perms'];
         }
 
-          config_update_value('ad_adv_perms', $temp_ad_adv_perms);
+        config_update_value('ad_adv_perms', $temp_ad_adv_perms);
     }
 
     if (!isset($config['ldap_adv_perms'])) {
@@ -3399,7 +3401,6 @@ function config_check()
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }
-
 }
 
 
@@ -3424,7 +3425,6 @@ function get_um_url()
     }
 
     return $url;
-
 }
 
 
@@ -3440,7 +3440,7 @@ function config_return_in_bytes($val)
     $last = strtolower($val[(strlen($val) - 1)]);
     $val = (int) trim($val);
     switch ($last) {
-        // The 'G' modifier is available since PHP 5.1.0.
+            // The 'G' modifier is available since PHP 5.1.0.
         case 'g':
             $val *= 1024;
         case 'm':

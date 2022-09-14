@@ -1,4 +1,5 @@
 <?php
+
 /**
  * General setup.
  *
@@ -513,8 +514,8 @@ echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godm
 echo '<fieldset>';
 echo '<legend>'.__('General options').'</legend>';
 
-    html_print_input_hidden('update_config', 1);
-    html_print_table($table);
+html_print_input_hidden('update_config', 1);
+html_print_table($table);
 
 $encryption = [
     'ssl'   => 'SSL',
@@ -528,292 +529,301 @@ echo '</fieldset>';
 echo '<fieldset>';
 echo '<legend>'.__('Mail configuration').'</legend>';
 
-    $table_mail_conf->data[0][0] = ui_print_warning_message(
-        __(
-            'Please notice that some providers like Gmail or Office365 need to setup/enable manually external connections using SMTP and you need to use STARTTLS on port 587.
+$table_mail_conf->data[0][0] = ui_print_warning_message(
+    __(
+        'Please notice that some providers like Gmail or Office365 need to setup/enable manually external connections using SMTP and you need to use STARTTLS on port 587.
 
     If you have manual settings in your pandora_server.conf, please note these settings will ignore this console setup.'
-        )
-    );
+    )
+);
 
-    $table_mail_conf->data[1][0] = __('From address');
-    $table_mail_conf->data[1][1] = html_print_input_text(
-        'email_from_dir',
-        $config['email_from_dir'],
+$table_mail_conf->data[1][0] = __('From address');
+$table_mail_conf->data[1][1] = html_print_input_text(
+    'email_from_dir',
+    $config['email_from_dir'],
+    '',
+    30,
+    100,
+    true
+);
+
+$table_mail_conf->data[2][0] = __('From name');
+$table_mail_conf->data[2][1] = html_print_input_text(
+    'email_from_name',
+    $config['email_from_name'],
+    '',
+    30,
+    100,
+    true
+);
+
+$table_mail_conf->data[3][0] = __('SMTP Server');
+$table_mail_conf->data[3][1] = html_print_input_text(
+    'email_smtpServer',
+    $config['email_smtpServer'],
+    '',
+    30,
+    100,
+    true
+);
+
+$table_mail_conf->data[4][0] = __('SMTP Port');
+$table_mail_conf->data[4][1] = html_print_input_text(
+    'email_smtpPort',
+    $config['email_smtpPort'],
+    '',
+    30,
+    100,
+    true
+);
+
+$table_mail_conf->data[5][0] = __('Encryption');
+$table_mail_conf->data[5][1] = html_print_select(
+    $encryption,
+    'email_encryption',
+    $config['email_encryption'],
+    '',
+    __('none'),
+    0,
+    true
+);
+
+$table_mail_conf->data[6][0] = __('Email user');
+$table_mail_conf->data[6][1] = html_print_input_text(
+    'email_username',
+    $config['email_username'],
+    '',
+    30,
+    100,
+    true
+);
+
+$table_mail_conf->data[7][0] = __('Email password');
+$table_mail_conf->data[7][1] = html_print_input_password(
+    'email_password',
+    io_output_password(
+        $config['email_password']
+    ),
+    '',
+    30,
+    100,
+    true
+);
+$table_mail_conf->data[7][1] .= ui_print_reveal_password(
+    'email_password',
+    true
+);
+
+$uniqid = uniqid();
+
+$table_mail_conf->data[8][0] = html_print_button(
+    __('Email test'),
+    'email_test_dialog',
+    false,
+    "show_email_test('".$uniqid."');",
+    'class="sub next"',
+    true
+);
+
+print_email_test_modal_window($uniqid);
+
+html_print_input_hidden('update_config', 1);
+html_print_table($table_mail_conf);
+
+
+echo '</fieldset>';
+
+echo '<fieldset>';
+
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
+echo '</div>';
+echo '</form>';
+
+
+/**
+ * Print the modal window for the summary of each alerts group
+ *
+ * @param string $id Id.
+ *
+ * @return void
+ */
+function print_email_test_modal_window($id)
+{
+    // Email config table.
+    $table_mail_test = new stdClass();
+    $table_mail_test->width = '100%';
+    $table_mail_test->class = 'databox filters';
+    $table_mail_test->data = [];
+    $table_mail_test->style[0] = 'font-weight: bold;';
+    $table_mail_test->style[1] = 'font-weight: bold;display: flex;height: 54px;align-items: center;padding-left: 15px;';
+
+    $table_mail_test->data[0][0] = __('Address');
+    $table_mail_test->data[0][1] = html_print_input_text(
+        'email_test_address',
         '',
-        30,
+        '',
+        35,
         100,
         true
     );
 
-    $table_mail_conf->data[2][0] = __('From name');
-    $table_mail_conf->data[2][1] = html_print_input_text(
-        'email_from_name',
-        $config['email_from_name'],
-        '',
-        30,
-        100,
-        true
-    );
-
-    $table_mail_conf->data[3][0] = __('SMTP Server');
-    $table_mail_conf->data[3][1] = html_print_input_text(
-        'email_smtpServer',
-        $config['email_smtpServer'],
-        '',
-        30,
-        100,
-        true
-    );
-
-    $table_mail_conf->data[4][0] = __('SMTP Port');
-    $table_mail_conf->data[4][1] = html_print_input_text(
-        'email_smtpPort',
-        $config['email_smtpPort'],
-        '',
-        30,
-        100,
-        true
-    );
-
-    $table_mail_conf->data[5][0] = __('Encryption');
-    $table_mail_conf->data[5][1] = html_print_select(
-        $encryption,
-        'email_encryption',
-        $config['email_encryption'],
-        '',
-        __('none'),
-        0,
-        true
-    );
-
-    $table_mail_conf->data[6][0] = __('Email user');
-    $table_mail_conf->data[6][1] = html_print_input_text(
-        'email_username',
-        $config['email_username'],
-        '',
-        30,
-        100,
-        true
-    );
-
-    $table_mail_conf->data[7][0] = __('Email password');
-    $table_mail_conf->data[7][1] = html_print_input_password(
-        'email_password',
-        io_output_password(
-            $config['email_password']
-        ),
-        '',
-        30,
-        100,
-        true
-    );
-    $table_mail_conf->data[7][1] .= ui_print_reveal_password(
-        'email_password',
-        true
-    );
-
-    $uniqid = uniqid();
-
-    $table_mail_conf->data[8][0] = html_print_button(
-        __('Email test'),
-        'email_test_dialog',
+    $table_mail_test->data[1][0] = html_print_button(
+        __('Send'),
+        'email_test',
         false,
-        "show_email_test('".$uniqid."');",
+        '',
         'class="sub next"',
         true
     );
 
-    print_email_test_modal_window($uniqid);
+    $table_mail_test->data[1][1] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
 
-    html_print_input_hidden('update_config', 1);
-    html_print_table($table_mail_conf);
-
-
-    echo '</fieldset>';
-
-    echo '<fieldset>';
-
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-    echo '</div>';
-    echo '</form>';
+    echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).'</div>';
+}
 
 
-    /**
-     * Print the modal window for the summary of each alerts group
-     *
-     * @param string $id Id.
-     *
-     * @return void
-     */
-    function print_email_test_modal_window($id)
-    {
-        // Email config table.
-        $table_mail_test = new stdClass();
-        $table_mail_test->width = '100%';
-        $table_mail_test->class = 'databox filters';
-        $table_mail_test->data = [];
-        $table_mail_test->style[0] = 'font-weight: bold;';
-        $table_mail_test->style[1] = 'font-weight: bold;display: flex;height: 54px;align-items: center;padding-left: 15px;';
-
-        $table_mail_test->data[0][0] = __('Address');
-        $table_mail_test->data[0][1] = html_print_input_text(
-            'email_test_address',
-            '',
-            '',
-            35,
-            100,
-            true
-        );
-
-        $table_mail_test->data[1][0] = html_print_button(
-            __('Send'),
-            'email_test',
-            false,
-            '',
-            'class="sub next"',
-            true
-        );
-
-        $table_mail_test->data[1][1] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
-
-        echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).'</div>';
+?>
+<script type="text/javascript">
+    function show_timezone() {
+        zone = $("#zone").val();
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: "page=<?php echo $_GET['sec2']; ?>&select_timezone=1&zone=" + zone,
+            dataType: "json",
+            success: function(data) {
+                $("#timezone").empty();
+                jQuery.each(data, function(id, value) {
+                    timezone = value;
+                    $("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
+                });
+            }
+        });
     }
 
+    function show_email_test(id) {
+        $('#email_test_sent_message').hide();
+        $('#email_test_failure_message').hide();
 
-    ?>
-<script type="text/javascript">
-function show_timezone () {
-    zone = $("#zone").val();
-    $.ajax({
-        type: "POST",
-        url: "ajax.php",
-        data: "page=<?php echo $_GET['sec2']; ?>&select_timezone=1&zone=" + zone,
-        dataType: "json",
-        success: function(data) {
-            $("#timezone").empty();
-            jQuery.each (data, function (id, value) {
-                timezone = value;
-                $("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
-            });
-        }
-    });
-}
+        $("#email_test_" + id).dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            width: 450,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        });
+    }
 
-function show_email_test(id) {
-    $('#email_test_sent_message').hide();
-    $('#email_test_failure_message').hide();
+    function perform_email_test() {
+        $('#email_test_sent_message').hide();
+        $('#email_test_failure_message').hide();
 
-    $("#email_test_"+id).dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        width: 450,
-        overlay: {
-            opacity: 0.5,
-            background: "black"
-        }
-    });
-}
+        var test_address = $('#text-email_test_address').val();
+        params = {
+            email_smtpServer: $('#text-email_smtpServer').val(),
+            email_smtpPort: $('#text-email_smtpPort').val(),
+            email_username: $('#text-email_username').val(),
+            email_password: $('#password-email_password').val(),
+            email_encryption: $("#email_encryption option:selected").val(),
+            email_from_dir: $('#text-email_from_dir').val(),
+            email_from_name: $('#text-email_from_name').val()
+        };
 
-function perform_email_test () {
-    $('#email_test_sent_message').hide();
-    $('#email_test_failure_message').hide();
-
-    var test_address = $('#text-email_test_address').val();
-    params = {
-        email_smtpServer : $('#text-email_smtpServer').val(),
-        email_smtpPort : $('#text-email_smtpPort').val(),
-        email_username : $('#text-email_username').val(),
-        email_password : $('#password-email_password').val(),
-        email_encryption : $( "#email_encryption option:selected" ).val(),
-        email_from_dir : $('#text-email_from_dir').val(),
-        email_from_name : $('#text-email_from_name').val()
-    };
-
-    $.ajax({
-        type: "POST",
-        url: "ajax.php",
-        data : {
-                    page: "godmode/setup/setup_general",
-                    test_address: test_address,
-                    params: params
-                },
-        dataType: "json",
-        success: function(data) {
-            if (parseInt(data) === 1) {
-                $('#email_test_sent_message').show();
-                $('#email_test_failure_message').hide();
-            } else {
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: {
+                page: "godmode/setup/setup_general",
+                test_address: test_address,
+                params: params
+            },
+            dataType: "json",
+            success: function(data) {
+                if (parseInt(data) === 1) {
+                    $('#email_test_sent_message').show();
+                    $('#email_test_failure_message').hide();
+                } else {
+                    $('#email_test_failure_message').show();
+                    $('#email_test_sent_message').hide();
+                }
+            },
+            error: function() {
                 $('#email_test_failure_message').show();
                 $('#email_test_sent_message').hide();
-            }
-        },
-        error: function() {
-            $('#email_test_failure_message').show();
-            $('#email_test_sent_message').hide();
-        },
-    });
-}
-
-$(document).ready (function () {
-
-    $("#zone").attr("hidden", true);
-    $("#timezone").attr("hidden", true);
-
-    $("#change_timezone").click(function () {
-        $("#zone").attr("hidden", false);
-        $("#timezone").attr("hidden", false);
-    });
-
-    if ($("input[name=use_cert]").is(':checked')) {
-        $('#ssl-path-tr').show();
+            },
+        });
     }
 
-    $("input[name=use_cert]").change(function () {
-        if( $(this).is(":checked") )
+    $(document).ready(function() {
+
+        $("#zone").attr("hidden", true);
+        $("#timezone").attr("hidden", true);
+
+        $("#change_timezone").click(function() {
+            $("#zone").attr("hidden", false);
+            $("#timezone").attr("hidden", false);
+        });
+
+        if ($("input[name=use_cert]").is(':checked')) {
+            $('#ssl-path-tr').show();
+        }
+
+        if ($("input[name=mysql_use_cert]").is(':checked')) {
+            $('#mysql-ssl-path-tr').show();
+        }
+
+        $("input[name=use_cert]").change(function() {
+            if ($(this).is(":checked"))
                 $('#ssl-path-tr').show();
             else
                 $('#ssl-path-tr').hide();
-        
+
+        });
+
+        $("input[name=mysql_use_cert]").change(function() {
+            if ($(this).is(":checked"))
+                $('#mysql-ssl-path-tr').show();
+            else
+                $('#mysql-ssl-path-tr').hide();
+
+        });
+
+        $("input[name=https]").change(function() {
+            if ($("input[name=https]").prop('checked')) {
+                $("#dialog").dialog({
+                    modal: true,
+                    width: 500,
+                    buttons: [{
+                        class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next',
+                        text: "<?php echo __('OK'); ?>",
+                        click: function() {
+                            $(this).dialog("close");
+                        }
+                    }]
+                });
+            }
+        })
+
+        $("input[name=force_public_url]").change(function() {
+            if ($("input[name=force_public_url]").prop('checked')) {
+                $("#force_public_url_dialog").dialog({
+                    modal: true,
+                    width: 500,
+                    buttons: [{
+                        class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next',
+                        text: "<?php echo __('OK'); ?>",
+                        click: function() {
+                            $(this).dialog("close");
+                        }
+                    }]
+                });
+            }
+        })
+
+        $('input#button-email_test').click(perform_email_test);
     });
-    $("input[name=https]").change(function (){
-        if($("input[name=https]").prop('checked')) {
-            $("#dialog").dialog({
-            modal: true,
-            width: 500,
-            buttons:[
-                {
-                    class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next',
-                    text: "<?php echo __('OK'); ?>",
-                    click: function(){
-                        $(this).dialog("close");
-                    }
-                }
-            ]
-        });
-        }
-    })
-
-    $("input[name=force_public_url]").change(function (){
-        if($("input[name=force_public_url]").prop('checked')) {
-            $("#force_public_url_dialog").dialog({
-            modal: true,
-            width: 500,
-            buttons: [
-                {
-                    class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next',
-                    text: "<?php echo __('OK'); ?>",
-                    click: function(){
-                        $(this).dialog("close");
-                    }
-                }
-            ]
-        });
-        }
-    })
-
-    $('input#button-email_test').click(perform_email_test);
-});
 </script>

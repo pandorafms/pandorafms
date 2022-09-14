@@ -1437,8 +1437,20 @@ if ($tab === 'alert') {
 
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
-$inventorytab = enterprise_hook('inventory_tab');
-if ($inventorytab == -1 || $inventoryCount === 0) {
+$inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
+    'images/page_white_text.png',
+    true,
+    [
+        'class' => 'invert_filter',
+        'title' => __('Inventory'),
+    ]
+).'</a>';
+
+if ($tab == 'inventory') {
+    $inventorytab['active'] = true;
+} else {
+    $inventorytab['active'] = false;
+}if ($inventorytab == -1 || $inventoryCount === 0) {
     $inventorytab = '';
 }
 
@@ -1968,7 +1980,7 @@ switch ($tab) {
     break;
 
     case 'inventory':
-        enterprise_include('operation/agentes/agent_inventory.php');
+        include 'operation/agentes/agent_inventory.php';
     break;
 
     case 'collection':

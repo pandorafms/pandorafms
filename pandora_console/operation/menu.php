@@ -73,7 +73,11 @@ if ($access_console_node === true) {
 
         $sub['view']['sub2'] = $sub2;
 
-        enterprise_hook('inventory_menu');
+        if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AW')) {
+            $sub['operation/inventory/inventory']['text'] = __('Inventory');
+            $sub['operation/inventory/inventory']['id'] = 'Inventory';
+            $sub['operation/inventory/inventory']['refr'] = 0;
+        }
 
         if ($config['activate_netflow']) {
             $sub['network_traffic'] = [

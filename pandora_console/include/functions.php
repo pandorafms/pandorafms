@@ -6217,3 +6217,31 @@ function notify_reporting_console_node()
 
     return $return;
 }
+
+
+/**
+ * Auxiliar Ordenation function
+ *
+ * @param string $sort      Direction of sort.
+ * @param string $sortField Field for perform the sorting.
+ *
+ * @return mixed
+ */
+function arrayOutputSorting($sort, $sortField)
+{
+    return function ($a, $b) use ($sort, $sortField) {
+        if ($sort === 'up') {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcmp($a[$sortField], $b[$sortField]);
+            } else {
+                return ($a[$sortField] - $b[$sortField]);
+            }
+        } else {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcmp($b[$sortField], $a[$sortField]);
+            } else {
+                return ($a[$sortField] + $b[$sortField]);
+            }
+        }
+    };
+}

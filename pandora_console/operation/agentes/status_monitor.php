@@ -1216,33 +1216,6 @@ if ($autosearch) {
                 $result = array_merge($result, $result_server);
             }
 
-
-            /**
-             * Auxiliar Ordenation function
-             *
-             * @param string $sort      Direction of sort.
-             * @param string $sortField Field for perform the sorting.
-             */
-            function arrayOutputSorting($sort, $sortField)
-            {
-                return function ($a, $b) use ($sort, $sortField) {
-                    if ($sort === 'up') {
-                        if (is_string($a[$sortField]) === true) {
-                            return strnatcmp($a[$sortField], $b[$sortField]);
-                        } else {
-                            return ($a[$sortField] - $b[$sortField]);
-                        }
-                    } else {
-                        if (is_string($a[$sortField]) === true) {
-                            return strnatcmp($b[$sortField], $a[$sortField]);
-                        } else {
-                            return ($a[$sortField] + $b[$sortField]);
-                        }
-                    }
-                };
-            }
-
-
             usort($result, arrayOutputSorting($sort, $sortField));
 
             metaconsole_restore_db();

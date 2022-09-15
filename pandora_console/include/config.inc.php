@@ -43,7 +43,7 @@
  * This is used to configure MySQL SSL console connection
  *   $config["dbssl"]=0;
  *   $config["dbsslcafile"]="/path/ca-cert.pem";
- *   $config["sslverifyservercert"]=0;
+ *   $config["sslverifyservercert"]=1;
  */
 
 // By default report any error but notices.

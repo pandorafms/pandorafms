@@ -62,7 +62,7 @@ function mysql_connect_db(
     }
 
     if ($verify === null && (bool) $config['sslverifyservercert'] === true) {
-        $verify = 'ignore verify';
+        $verify = 'verified';
     }
 
     // Check if mysqli is available
@@ -92,7 +92,7 @@ function mysql_connect_db(
 
             mysqli_ssl_set($connect_id, null, null, $ssl, null, null);
 
-            if ($verify === null) {
+            if ($verify === 'verified') {
                 mysqli_real_connect($connect_id, $host, $user, $pass, $db, $port, null, MYSQLI_CLIENT_SSL);
             } else {
                 mysqli_real_connect($connect_id, $host, $user, $pass, $db, $port, null, MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT);

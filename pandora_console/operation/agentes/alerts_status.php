@@ -294,7 +294,7 @@ if ($free_search != '') {
 
             $columns = array_merge(
                 $columns,
-                ['agent']
+                ['agent_name']
             );
         }
 
@@ -309,8 +309,8 @@ if ($free_search != '') {
 
         $columns = array_merge(
             $columns,
-            ['module'],
-            ['template'],
+            ['agent_module_name'],
+            ['template_name'],
             ['action'],
             ['lastFired'],
             ['status']
@@ -359,7 +359,7 @@ if ($free_search != '') {
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module',
+                        'field'     => 'module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),

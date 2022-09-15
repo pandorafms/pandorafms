@@ -885,11 +885,46 @@ if ($get_agent_alerts_datatable === true) {
             }
         }
 
+        // Order and pagination metacosole.
+        if (is_metaconsole() === true) {
+
+
+            /**
+             * Auxiliar Ordenation function
+             *
+             * @param string $sort      Direction of sort.
+             * @param string $sortField Field for perform the sorting.
+             */
+            function arrayOutputSorting($sort, $sortField)
+            {
+                return function ($a, $b) use ($sort, $sortField) {
+                    if ($sort === 'asc') {
+                        if (is_string($a[$sortField]) === true) {
+                            return strnatcmp($a[$sortField], $b[$sortField]);
+                        } else {
+                            return ($a[$sortField] - $b[$sortField]);
+                        }
+                    } else {
+                        if (is_string($a[$sortField]) === true) {
+                            return strnatcmp($b[$sortField], $a[$sortField]);
+                        } else {
+                            return ($a[$sortField] + $b[$sortField]);
+                        }
+                    }
+                };
+            }
+
+
+            usort($alerts['alerts_simple'], arrayOutputSorting($sort, $sortField));
+            $data = array_slice($alerts['alerts_simple'], $start, $length);
+        }
+
         $data = [];
         if ($alerts['alerts_simple']) {
             foreach ($alerts['alerts_simple'] as $alert) {
                 $data[] = ui_format_alert_row($alert, true, $url, 'font-size: 7pt;');
             }
+
 
             $data = array_reduce(
                 $data,
@@ -902,9 +937,9 @@ if ($get_agent_alerts_datatable === true) {
                     $tmp->policy = $row[0];
                     $tmp->standby = $row[1];
                     $tmp->force = $row[2];
-                    $tmp->agent = $row[3];
-                    $tmp->module = $row[4];
-                    $tmp->template = $row[5];
+                    $tmp->agent_name = $row[3];
+                    $tmp->agent_module_name = $row[4];
+                    $tmp->template_name = $row[5];
                     $tmp->action = $row[6];
                     $tmp->lastFired = $row[7];
                     $tmp->status = $row[8];
@@ -916,38 +951,6 @@ if ($get_agent_alerts_datatable === true) {
             );
         }
 
-        if (is_metaconsole() === true) {
-
-
-             /**
-              * Auxiliar Ordenation function
-              *
-              * @param string $sort      Direction of sort.
-              * @param string $sortField Field for perform the sorting.
-              */
-            function arrayOutputSorting($sort, $sortField)
-            {
-                return function ($a, $b) use ($sort, $sortField) {
-                    if ($sort === 'asc') {
-                        if (is_string($a->$sortField) === true) {
-                            return strnatcmp($a->$sortField, $b->$sortField);
-                        } else {
-                            return ($a->$sortField - $b->$sortField);
-                        }
-                    } else {
-                        if (is_string($a->$sortField) === true) {
-                            return strnatcmp($b->$sortField, $a->$sortField);
-                        } else {
-                            return ($a->$sortField + $b->$sortField);
-                        }
-                    }
-                };
-            }
-
-
-            usort($data, arrayOutputSorting($sort, $sortField));
-            $data = array_slice($data, $start, $length);
-        }
 
          // Datatables format: RecordsTotal && recordsfiltered.
         echo json_encode(

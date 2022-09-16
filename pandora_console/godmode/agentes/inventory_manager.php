@@ -27,7 +27,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 global $direccion_agente, $id_agente, $id_os;
 
 // include_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_policies.php');
-enterprise_include_once('include/functions_ui.php');
+require_once $config['homedir'].'/include/functions_ui.php';
 
 // Initialize data
 $add_inventory_module = (boolean) get_parameter('add_inventory_module');

@@ -900,13 +900,13 @@ if ($get_agent_alerts_datatable === true) {
                 return function ($a, $b) use ($sort, $sortField) {
                     if ($sort === 'asc') {
                         if (is_string($a[$sortField]) === true) {
-                            return strnatcmp($a[$sortField], $b[$sortField]);
+                            return strcmp($a[$sortField], $b[$sortField]);
                         } else {
                             return ($a[$sortField] - $b[$sortField]);
                         }
                     } else {
                         if (is_string($a[$sortField]) === true) {
-                            return strnatcmp($b[$sortField], $a[$sortField]);
+                            return strcmp($b[$sortField], $a[$sortField]);
                         } else {
                             return ($a[$sortField] + $b[$sortField]);
                         }

@@ -914,7 +914,7 @@ class HostDevices extends Wizard
                             'hidden'    => (($this->task['subnet_csv'] == '1') ? 1 : 0),
                             'id'        => 'std_subnet',
                             'label'     => '<b>'.__('Network').':</b>'.ui_print_help_tip(
-                                __('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'),
+                                __('You can specify networks or fully qualified domain names of a specific host, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24, hostname.artica.es'),
                                 true
                             ),
                             'arguments' => [

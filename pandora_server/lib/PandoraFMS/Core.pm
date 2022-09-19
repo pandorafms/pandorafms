@@ -2072,12 +2072,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	if ($last_known_status == $new_status) {
 		# Avoid overflows
 		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
-		
+
 		$status_changes++;
 		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
 			# Only type ff with counters.
 			$status_changes = 0 if ($module->{'ff_type'} == 0);
-			
+
 			$ff_start_utimestamp = $utimestamp;
 
 			# Reset counters because expired timeout.
@@ -2089,16 +2089,16 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	else {
 		# Only type ff with counters. 
 		$status_changes = 0 if ($module->{'ff_type'} == 0);
-		
+
 		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
 	}
-	
+
 	if ($module->{'ff_type'} == 0) {
 		# Active ff interval.
 		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
 			$current_interval = $module->{'module_ff_interval'};
 		}
-		
+
 		# Change status.
 		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
@@ -2110,6 +2110,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			# Update module status count.
 			$mark_for_update = 1;
 
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+		} elsif ($status_changes >= $min_ff_event && $known_status == $new_status && $new_status == 1) {
 			# Safe mode execution.
 			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
 				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);

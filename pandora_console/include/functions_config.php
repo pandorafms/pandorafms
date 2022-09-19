@@ -1554,6 +1554,10 @@ function config_update_config()
                         $error_update[] = __('Enable history event');
                     }
 
+                    if (config_update_value('history_trap_enabled', get_parameter('history_trap_enabled'), true) === false) {
+                        $error_update[] = __('Enable history trap');
+                    }
+
                     if (config_update_value('history_db_user', get_parameter('history_db_user'), true) === false) {
                         $error_update[] = __('Database user');
                     }
@@ -1576,6 +1580,14 @@ function config_update_config()
                         || config_update_value('history_event_days', $history_event_days) === false
                     ) {
                         $error_update[] = __('Event Days');
+                    }
+
+                    $history_trap_days = get_parameter('history_trap_days');
+                    if (is_numeric($history_trap_days) === false
+                        || $history_trap_days <= 0
+                        || config_update_value('history_trap_days', $history_trap_days) === false
+                    ) {
+                        $error_update[] = __('Trap Days');
                     }
 
                     $history_db_step = get_parameter('history_db_step');
@@ -1640,6 +1652,14 @@ function config_update_config()
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database events purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'trap_purge',
+                                get_parameter('history_dbh_traps_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database traps purge');
                             }
 
                             if ($dbm->setConfigToken(
@@ -2476,6 +2496,10 @@ function config_process_config()
         config_update_value('history_event_enabled', false);
     }
 
+    if (!isset($config['history_trap_enabled'])) {
+        config_update_value('history_trap_enabled', false);
+    }
+
     if (!isset($config['history_db_host'])) {
         config_update_value('history_db_host', '');
     }
@@ -2502,6 +2526,10 @@ function config_process_config()
 
     if (!isset($config['history_event_days'])) {
         config_update_value('history_event_days', 90);
+    }
+
+    if (!isset($config['history_trap_days'])) {
+        config_update_value('history_trap_days', 90);
     }
 
     if (!isset($config['history_db_step'])) {

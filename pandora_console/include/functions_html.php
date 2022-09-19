@@ -1664,36 +1664,23 @@ function html_print_select_multiple_modules_filtered(array $data):string
         ]
     );
 
-    // Show common modules.
-    $selection = [
-        0 => __('Show common modules'),
-        1 => __('Show all modules'),
-    ];
-
-    if (true) {
-        $output .= html_print_input(
-            [
-
-                'label'    => __('Only common modules'),
-                'type'     => 'switch',
-                'value'    => 'checked',
-                'id'       => 'filtered-module-show-common-modules-'.$uniqId,
-                'return'   => true,
-                'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-            ]
-        );
-    } else {
-        $output .= html_print_input(
-            [
-                'label'  => __('Show common modules'),
-                'type'   => 'select',
-                'fields' => $selection,
-                'name'   => 'filtered-module-show-common-modules-'.$uniqId,
-                'return' => true,
-                'script' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-            ]
-        );
+    $commonModules = 0;
+    if (empty($data['mShowCommonModules']) === false) {
+        $commonModules = 1;
     }
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Only common modules'),
+            'type'     => 'switch',
+            'checked'  => $commonModules,
+            'value'    => $commonModules,
+            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
+            'id'       => 'filtered-module-show-common-modules-'.$uniqId,
+            'return'   => true,
+            'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+        ]
+    );
 
     if (empty($data['mAgents']) === false
         && empty($data['mModuleGroup'] === false)
@@ -1701,7 +1688,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),
-            $data['mShowCommonModules'],
+            !$commonModules,
             false,
             true
         );
@@ -1709,10 +1696,18 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = [];
     }
 
+    $mModules = $data['mModules'];
     if (is_array($data['mModules']) === false) {
-        $result = explode(((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ','), $data['mModules']);
-    } else {
-        $result = $data['mModules'];
+        $mModules = explode(
+            ',',
+            $data['mModules']
+        );
+    }
+
+    $result = [];
+    // Clean double safe input.
+    foreach ($mModules as $name) {
+        $result[] = io_safe_output($name);
     }
 
     $output .= html_print_input(
@@ -4956,7 +4951,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     $output = '';
 
     if (($data['label'] ?? false) && $input_only === false) {
-        $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
+        $output = '<'.$wrapper.' id="'.$wrapper.'-'.($data['name'] ?? '').'" ';
         $output .= ' class="'.($data['input_class'] ?? '').'">';
         $output .= '<label '.$style.' class="'.($data['label_class'] ?? '').'">';
         $output .= ($data['label'] ?? '');
@@ -4977,7 +4972,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     if (isset($data['wrapper']) === true) {
         $output = '<'.$data['wrapper'].' '.$wrapper_attributes.' id="wr_'.$data['name'].'" ';
-        $output .= ' class="'.$data['input_class'].'">';
+        $output .= ' class="'.($data['input_class'] ?? '').'">';
     }
 
     switch (($data['type'] ?? null)) {
@@ -5097,7 +5092,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_color(
                 $data['name'],
                 $data['value'],
-                $data['id'],
+                ($data['id'] ?? ''),
                 ((isset($data['class']) === true) ? $data['class'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false)
             );

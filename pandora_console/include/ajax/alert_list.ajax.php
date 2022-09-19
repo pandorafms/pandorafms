@@ -900,13 +900,13 @@ if ($get_agent_alerts_datatable === true) {
                 return function ($a, $b) use ($sort, $sortField) {
                     if ($sort === 'asc') {
                         if (is_string($a[$sortField]) === true) {
-                            return strcmp($a[$sortField], $b[$sortField]);
+                            return strnatcasecmp($a[$sortField], $b[$sortField]);
                         } else {
                             return ($a[$sortField] - $b[$sortField]);
                         }
                     } else {
                         if (is_string($a[$sortField]) === true) {
-                            return strcmp($b[$sortField], $a[$sortField]);
+                            return strnatcasecmp($b[$sortField], $a[$sortField]);
                         } else {
                             return ($a[$sortField] + $b[$sortField]);
                         }
@@ -916,7 +916,7 @@ if ($get_agent_alerts_datatable === true) {
 
 
             usort($alerts['alerts_simple'], arrayOutputSorting($sort, $sortField));
-            $data = array_slice($alerts['alerts_simple'], $start, $length);
+            $alerts['alerts_simple'] = array_slice($alerts['alerts_simple'], $start, $length);
         }
 
         $data = [];

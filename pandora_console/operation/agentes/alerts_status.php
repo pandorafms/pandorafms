@@ -359,7 +359,7 @@ if ($free_search != '') {
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module_name',
+                        'field'     => 'agent_module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),
@@ -400,7 +400,7 @@ if ($free_search != '') {
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module',
+                        'field'     => 'agent_module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),

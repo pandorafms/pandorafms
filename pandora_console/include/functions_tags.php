@@ -1334,7 +1334,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $children
 				WHERE ".get_acl_column($access).' = 1)';
 
     if (isset($id_group)) {
-        $sql .= 'AND id_grupo = '.$id_group;
+        $sql .= ' AND id_grupo = '.$id_group;
     }
 
     $user_has_perm_without_tags = db_get_all_rows_sql($sql);
@@ -1343,6 +1343,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $children
         return true;
     }
 
+    $tags_aux = [];
     $tags_str = '';
     if (!empty($tags)) {
         foreach ($tags as $tag) {

@@ -676,7 +676,7 @@ if ($get_agent_alerts_datatable === true) {
         $selectLastFiredDown = false;
 
         switch ($sortField) {
-            case 'module':
+            case 'agent_module_name':
                 switch ($sort) {
                     case 'asc':
                         $selectModuleasc = $selected;
@@ -696,7 +696,7 @@ if ($get_agent_alerts_datatable === true) {
                 }
             break;
 
-            case 'template':
+            case 'template_name':
                 switch ($sort) {
                     case 'asc':
                         $selectTemplateasc = $selected;
@@ -736,7 +736,7 @@ if ($get_agent_alerts_datatable === true) {
                 }
             break;
 
-            case 'agent':
+            case 'agent_name':
                 switch ($sort) {
                     case 'asc':
                         $selectLastFiredasc = $selected;

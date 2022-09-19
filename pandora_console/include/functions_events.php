@@ -4953,6 +4953,8 @@ function events_clean_tags($tags)
     }
 
     $event_tags = tags_get_tags_formatted($tags, false);
+    $event_tags = io_safe_input($event_tags);
+
     return explode(',', str_replace(' ', '', $event_tags));
 }
 

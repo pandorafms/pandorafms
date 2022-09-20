@@ -838,13 +838,14 @@ function users_has_profile_without_UM($id_user, $id_groups)
 }
 
 
-function users_get_user_profile($id_user)
+function users_get_user_profile($id_user, $limit='')
 {
     $sql = sprintf(
         "SELECT * FROM tusuario_perfil
         INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
-        WHERE tusuario_perfil.id_usuario like '%s'",
-        $id_user
+        WHERE tusuario_perfil.id_usuario like '%s' %s",
+        $id_user,
+        $limit
     );
 
     $aux = db_get_all_rows_sql($sql);

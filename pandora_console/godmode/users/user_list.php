@@ -99,10 +99,16 @@ if (is_ajax()) {
     if ($get_user_profile_group === true) {
         $id_user = get_parameter('id_user');
 
+        $user_is_admin = users_is_admin();
+
         $user_profiles = [];
 
+        if ($user_is_admin === false) {
+            $group_um = users_get_groups_UM($config['id_user']);
+        }
+
         // User profiles.
-        if (users_is_admin()) {
+        if ($user_is_admin || $id_user == $config['id_user'] || isset($group_um[0])) {
             $user_profiles = db_get_all_rows_field_filter(
                 'tusuario_perfil',
                 'id_usuario',
@@ -625,7 +631,7 @@ foreach ($info as $user_id => $user_info) {
             'SELECT * FROM tusuario_perfil where id_usuario LIKE "'.$user_id.'" LIMIT 5'
         );
     } else {
-        $user_profiles_aux = users_get_user_profile($user_id);
+        $user_profiles_aux = users_get_user_profile($user_id, 'LIMIT 5');
         $user_profiles = [];
         foreach ($group_um as $key => $value) {
             if (isset($user_profiles_aux[$key]) === true) {
@@ -911,7 +917,7 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
-?>;
+?>
 <script type="text/javascript">
     function showGroups(id_user) {
         if ($(`#hidden-show_groups_${id_user}`).val() === '-1') {
@@ -951,4 +957,4 @@ enterprise_hook('close_meta_frame');
         }
     }
 
-</script>;
+</script>

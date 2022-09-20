@@ -628,6 +628,7 @@ sub pandora_load_config_pdb ($) {
 
 	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
 	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
+	$conf->{'_trap_history_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
 	$conf->{'_audit_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
 	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'string_purge'");
 	$conf->{'_gis_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'gis_purge'");
@@ -1095,6 +1096,26 @@ sub pandoradb_history ($$) {
 			db_delete_limit($dbh, 'tevento', "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
 			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 				
+			# Mark the progress.
+			log_message ('', ".");
+				
+			# Do not overload the MySQL server.
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+
+	# Delete old traps.
+	if ($conf->{'_trap_history_purge'} > 0) {
+		log_message ('PURGE', "Deleting traps older than " . $conf->{'_trap_history_purge'} . " days from ttrap (history).", '');
+
+		my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_history_purge'}));
+
+		my $traps_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM ttrap WHERE timestamp < ?", $trap_limit);
+		while($traps_to_delete > 0) {
+			db_delete_limit($dbh, 'ttrap', "timestamp < ?", $BIG_OPERATION_STEP, $trap_limit);
+			$traps_to_delete = $traps_to_delete - $BIG_OPERATION_STEP;
+
 			# Mark the progress.
 			log_message ('', ".");
 				

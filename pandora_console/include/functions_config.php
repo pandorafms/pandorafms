@@ -1590,6 +1590,14 @@ function config_update_config()
                         $error_update[] = __('Trap Days');
                     }
 
+                    $trap_history_purge = get_parameter('history_traps_days_purge');
+                    if (is_numeric($trap_history_purge) === false
+                        || $trap_history_purge <= 0
+                        || config_update_value('trap_history_purge', $trap_history_purge) === false
+                    ) {
+                        $error_update[] = __('Trap history purge');
+                    }
+
                     $history_db_step = get_parameter('history_db_step');
                     if (!is_numeric($history_db_step)
                         || $history_db_step <= 0
@@ -1655,8 +1663,8 @@ function config_update_config()
                             }
 
                             if ($dbm->setConfigToken(
-                                'trap_purge',
-                                get_parameter('history_dbh_traps_purge')
+                                'trap_history_purge',
+                                get_parameter('history_traps_days_purge')
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database traps purge');
@@ -2530,6 +2538,10 @@ function config_process_config()
 
     if (!isset($config['history_trap_days'])) {
         config_update_value('history_trap_days', 90);
+    }
+
+    if (!isset($config['trap_history_purge'])) {
+        config_update_value('trap_history_purge', 180);
     }
 
     if (!isset($config['history_db_step'])) {

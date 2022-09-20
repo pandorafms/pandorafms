@@ -9535,11 +9535,13 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
 {
     global $config;
 
-    // if (defined ('METACONSOLE')) {
-    // return;
-    // }
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    if (empty($id) === true) {
+        returnError('Id cannot be empty.');
         return;
     }
 
@@ -9565,6 +9567,11 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+
+    if (empty($password) === true) {
+        returnError('Password cannot be empty.');
+        return;
+    }
 
     if (!create_user($id, $password, $values)) {
         returnError('The user could not created');
@@ -11784,11 +11791,13 @@ function api_set_delete_user($id, $thrash1, $thrash2, $thrash3)
 {
     global $config;
 
-    // if (defined ('METACONSOLE')) {
-    // return;
-    // }
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    if (empty($id) === true) {
+        returnError('Id cannot be empty.');
         return;
     }
 

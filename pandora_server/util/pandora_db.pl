@@ -1130,10 +1130,10 @@ sub pandoradb_main ($$$;$) {
 
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
-		#undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
-		#if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
-		#	undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
-		#}
+		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
+			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		}
 		if (defined($conf{'_history_trap_enabled'}) && $conf->{'_history_trap_enabled'} ne "" && $conf->{'_history_trap_enabled'} == 1) {
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_trap', [$dbh, $history_dbh, $conf->{'_history_trap_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}

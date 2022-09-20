@@ -201,7 +201,7 @@ ol.steps li.visited a {
 }
 
 /* White text */
-a,
+a:not(.visual-console-item),
 label,
 #menu_tab_left li a,
 #menu_tab_left li span,

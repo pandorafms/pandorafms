@@ -540,7 +540,7 @@ class BlockHistogram extends Widget
                     25,
                     false,
                     true,
-                    true,
+                    true
                 );
             break;
 

@@ -101,9 +101,8 @@ if ($get_comments === true) {
     if (isset($event_rep) === true && $event_rep > 0) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
-            '`evento` = "%s" AND `estado` = "%s"',
-            $event['evento'],
-            $event['estado']
+            '`evento` = "%s"',
+            $event['evento']
         );
 
         // If id_agente is reported, filter the messages by them as well.
@@ -778,7 +777,7 @@ if ($save_filter_modal) {
 
         $data[1] .= html_print_select(
             $user_groups_array,
-            'id_group_filter',
+            'id_group_filter_dialog',
             $id_group_filter,
             '',
             '',
@@ -885,7 +884,7 @@ function save_new_filter() {
             "page" : "include/ajax/events",
             "save_event_filter" : 1,
             "id_name" : $("#text-id_name").val(),
-            "id_group" : $("select#id_group").val(),
+            "id_group" : $("#id_group_filter").val(),
             "event_type" : $("#event_type").val(),
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
@@ -901,7 +900,7 @@ function save_new_filter() {
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
             "filter_only_alert" : $("#filter_only_alert").val(),
             "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
-            "id_group_filter": $("#id_group_filter").val(),
+            "id_group_filter": $("#id_group_filter_dialog").val(),
             "date_from": $("#text-date_from").val(),
             "time_from": $("#text-time_from").val(),
             "date_to": $("#text-date_to").val(),
@@ -961,7 +960,7 @@ function save_update_filter() {
         {"page" : "include/ajax/events",
         "update_event_filter" : 1,
         "id" : $("#overwrite_filter").val(),
-        "id_group" : $("select#id_group").val(),
+        "id_group" : $("#id_group_filter").val(),
         "event_type" : $("#event_type").val(),
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
@@ -977,7 +976,7 @@ function save_update_filter() {
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),
         "filter_only_alert" : $("#filter_only_alert").val(),
         "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
-        "id_group_filter": $("#id_group_filter").val(),
+        "id_group_filter": $("#id_group_filter_dialog").val(),
         "date_from": $("#text-date_from").val(),
         "time_from": $("#text-time_from").val(),
         "date_to": $("#text-date_to").val(),

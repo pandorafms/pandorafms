@@ -37,6 +37,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('block_size','20'),
 ('days_purge','45'),
 ('days_delete_unknown','0'),
+('days_delete_not_initialized','0'),
 ('days_compact','0'),
 ('days_autodisable_deletion','30'),
 ('graph_res','5'),

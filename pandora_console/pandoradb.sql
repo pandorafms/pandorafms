@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
+  `fixed_ip` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -1815,6 +1816,8 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
   `type_execution` VARCHAR(100) NOT NULL DEFAULT 'once',
   `type_periodicity` VARCHAR(100) NOT NULL DEFAULT 'weekly',
   `id_user` VARCHAR(255) NOT NULL DEFAULT '0',
+  `cron_interval_from` VARCHAR(100) DEFAULT '',
+  `cron_interval_to` VARCHAR(100) DEFAULT '',
   PRIMARY KEY (  `id` ) 
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3378,6 +3381,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
+  `fixed_ip` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -3889,7 +3893,7 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
   `name_network` VARCHAR(255) DEFAULT '',
   `description` TEXT,
   `location` INT UNSIGNED NULL,
-  `id_recon_task` INT UNSIGNED NOT NULL,
+  `id_recon_task` INT UNSIGNED DEFAULT 0,
   `scan_interval` TINYINT DEFAULT 1,
   `monitoring` TINYINT DEFAULT 0,
   `id_group` MEDIUMINT UNSIGNED NULL DEFAULT 0,
@@ -3898,7 +3902,7 @@ CREATE TABLE IF NOT EXISTS `tipam_network` (
   `id_site` BIGINT UNSIGNED,
   `vrf` INT UNSIGNED,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE,
+  FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (`location`) REFERENCES `tipam_network_location`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`id_site`) REFERENCES `tipam_sites`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (`vrf`) REFERENCES `tagente`(`id_agente`) ON DELETE SET NULL ON UPDATE CASCADE

@@ -208,7 +208,7 @@ if ($is_management_allowed === true) {
 
 $buttons[$tab]['active'] = true;
 
-$headerTitle = ($tab === 'builder') ? __('Edit OS') : __('List of OS');
+$headerTitle = ($tab === 'builder') ? __('Edit OS') : __('List of Operating Systems');
 
 if (is_metaconsole() === false) {
     // Header.

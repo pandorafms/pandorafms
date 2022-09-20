@@ -235,6 +235,8 @@ sub g_http_task {
 				if ($content =~ m/($temp)/) {
 					$task_get_content[$thread_id] = $1;
 				}
+			} else {
+				$task_get_content[$thread_id] = $resp;
 			}
 						 
 			# Resource bashing

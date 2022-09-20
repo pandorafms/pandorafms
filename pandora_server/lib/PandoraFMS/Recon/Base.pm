@@ -78,7 +78,7 @@ our $IPROUTEIFINDEX = ".1.3.6.1.2.1.4.21.1.2";
 our $IPROUTENEXTHOP = ".1.3.6.1.2.1.4.21.1.7";
 our $IPROUTETYPE = ".1.3.6.1.2.1.4.21.1.8";
 our $PRTMARKERINDEX = ".1.3.6.1.2.1.43.10.2.1.1";
-our $SYSDESCR = ".1.3.6.1.2.1.1.1";
+our $SYSDESCR = ".1.3.6.1.2.1.1.1.0";
 our $SYSSERVICES = ".1.3.6.1.2.1.1.7";
 our $SYSUPTIME = ".1.3.6.1.2.1.1.3";
 our $VTPVLANIFINDEX = ".1.3.6.1.4.1.9.9.46.1.3.1.1.18.1";
@@ -552,6 +552,27 @@ sub gateway_connectivity($$) {
 
   $self->call('message', "Host $host is reached via gateway $gw.", 5);
   $self->mark_connected($gw, '', $host, '');
+}
+
+################################################################################
+# Retrieve OS version via SNMP.
+################################################################################
+sub get_os_version($$) {
+  my ($self, $device) = @_;
+
+  # OS detection disabled.
+  return '' if ($self->{'os_detection'} == 0);
+
+  # Does the device respond to SNMP?
+  return '' unless ($self->is_snmp_discovered($device));
+
+  # Retrieve the system description, which should contain the OS version.
+  my $os_version = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::SYSDESCR");
+  
+  # Remove leading and trailing quotes.
+  $os_version = $1 if ($os_version =~ /^"(.*)"$/);
+
+  return defined($os_version) ? $os_version : '';
 }
 
 ################################################################################

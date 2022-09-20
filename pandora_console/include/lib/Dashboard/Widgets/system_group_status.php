@@ -250,6 +250,10 @@ class SystemGroupStatusWidget extends Widget
             $values['groupId'] = $decoder['groupId'];
         }
 
+        if (isset($decoder['groupRecursion']) === true) {
+            $values['groupRecursion'] = $decoder['groupRecursion'];
+        }
+
         return $values;
     }
 
@@ -337,6 +341,16 @@ class SystemGroupStatusWidget extends Widget
             ],
         ];
 
+        $inputs[] = [
+            'label'     => __('Group recursion'),
+            'arguments' => [
+                'name'  => 'groupRecursion',
+                'id'    => 'groupRecursion',
+                'type'  => 'switch',
+                'value' => $values['groupRecursion'],
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -353,6 +367,7 @@ class SystemGroupStatusWidget extends Widget
 
         $values['groupId'] = \get_parameter('groupId', []);
         $values['status'] = \get_parameter('status', []);
+        $values['groupRecursion'] = (bool) \get_parameter_switch('groupRecursion', 0);
 
         return $values;
     }
@@ -392,7 +407,7 @@ class SystemGroupStatusWidget extends Widget
 
         $selected_groups = explode(',', $this->values['groupId'][0]);
 
-        // Recursion.
+         // Recursion.
         if ($this->values['groupRecursion'] === true) {
             foreach ($selected_groups as $father) {
                 $children = \groups_get_children_ids($father);
@@ -470,7 +485,7 @@ class SystemGroupStatusWidget extends Widget
             }
         }
 
-        $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
+        $this->values['groupId'] = $selected_groups;
         $this->values['status'] = explode(',', $this->values['status'][0]);
 
         $style = 'font-size: 12px; text-align: center;';

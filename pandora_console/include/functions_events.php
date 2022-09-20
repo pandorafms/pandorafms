@@ -1205,7 +1205,12 @@ function events_get_all(
         $tags = json_decode($tag_without, true);
         if (is_array($tags) === true && in_array('0', $tags) === false) {
             if (!$user_is_admin) {
-                $user_tags = array_flip(tags_get_tags_for_module_search());
+                $tags_module_search = tags_get_tags_for_module_search();
+                if ($tags_module_search === false) {
+                    $tags_module_search = [];
+                }
+
+                $user_tags = array_flip($tags_module_search);
                 if ($user_tags != null) {
                     foreach ($tags as $key_tag => $id_tag) {
                         // User cannot filter with those tags.
@@ -1279,7 +1284,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1305,7 +1311,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1331,7 +1338,8 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            $user_admin_group_all
+            $user_admin_group_all,
+            (bool) $filter['search_secondary_groups']
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1401,7 +1409,7 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule, te.estado';
+            $group_by .= 'te.evento, te.id_agente, te.id_agentmodule';
         break;
 
         case '2':
@@ -3755,7 +3763,7 @@ function events_get_response_target(
 
     // Parse the event custom data.
     if (empty($event['custom_data']) === false) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
         }
@@ -4297,7 +4305,7 @@ function events_page_custom_data($event)
     $table->head = [];
     $table->class = 'table_modal_alternate';
 
-    $json_custom_data = base64_decode($event['custom_data']);
+    $json_custom_data = $event['custom_data'];
     $custom_data = json_decode($json_custom_data);
 
     if ($custom_data === null) {
@@ -4945,6 +4953,8 @@ function events_clean_tags($tags)
     }
 
     $event_tags = tags_get_tags_formatted($tags, false);
+    $event_tags = io_safe_input($event_tags);
+
     return explode(',', str_replace(' ', '', $event_tags));
 }
 
@@ -5308,7 +5318,7 @@ function events_get_field_value_by_event_id(
 
     // Parse the event custom data.
     if (!empty($event['custom_data'])) {
-        $custom_data = json_decode(base64_decode($event['custom_data']));
+        $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $val) {
             $value = str_replace('_customdata_'.$key.'_', $val, $value);
         }

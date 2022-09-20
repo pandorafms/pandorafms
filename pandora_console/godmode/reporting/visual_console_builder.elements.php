@@ -833,23 +833,21 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
         var added_config = {
             "selector": "#tinyMCE_editor",
-            "elements": "text-label",
+            "elements": "tinyMCE_editor",
             "plugins": "noneditable",
-            "theme_advanced_buttons1": 
-                "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
+            "theme_advanced_buttons1": "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
             "valid_children": "+body[style]",
             "theme_advanced_font_sizes": "true",
-            "content_css": 
-                <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
+            "content_css": <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
             "editor_deselector": "noselected",
             "inline_styles": true,
             "nowrap": true,
             "width": "400",
             "height": "200",
-    }
-    
-    defineTinyMCE(added_config);
-        
+            "body_class": "tinyMCEBody",
+        }
+
+        defineTinyMCE(added_config);
         $("#dialog_label_editor").hide ()
             .dialog ({
                 title: "<?php echo __('Edit label'); ?>",
@@ -860,38 +858,33 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
                     opacity: 0.5,
                     background: "black"
                 },
-                width: 450,
+                width: 530,
                 height: 300,
                 autoOpen: false,
                 beforeClose: function() {
                     var id_layout_data = $("#active_id_layout_data").val();
                     var label = tinyMCE.activeEditor.getContent();
-                    
                     $("#hidden-label_" + id_layout_data).val(label);
                 }
-        });
+            });
+
+        var idText = $("#ip_text").html();
     });
-    
-    var idText = $("#ip_text").html();
-    
+
     function show_dialog_label_editor(id_layout_data) {
         var label = $("#hidden-label_" + id_layout_data).val();
-        
         $("#active_id_layout_data").val(id_layout_data);
-        
-        $("#tinyMCE_editor").val(label);
         tinyMCE.activeEditor.setContent(label);
         $("#dialog_label_editor").dialog("open");
     }
-    
+
     function toggle_checkbox_multiple_delete() {
         checked_head_multiple = $("input[name='head_multiple_delete']")
             .is(":checked");
-        
         $("input[name='multiple_delete_items']")
             .prop("checked", checked_head_multiple);
     }
-    
+
     function submit_delete_multiple_items() {
         delete_items = [];
         jQuery.each($("input[name='multiple_delete_items']:checked"),
@@ -899,8 +892,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
                 delete_items.push($(item).val());
             }
         );
-        
-        
+
         $("input[name='id_item_json']").val(JSON.stringify(delete_items));
         $("#form_multiple_delete").submit();
     }

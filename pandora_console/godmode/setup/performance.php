@@ -340,8 +340,19 @@ $table->data[8][1] = html_print_input_text(
     true
 );
 
-$table->data[9][0] = __('Max. days before delete autodisabled agents');
+
+$table->data[9][0] = __('Max. days before delete not initialized modules');
 $table->data[9][1] = html_print_input_text(
+    'days_delete_not_initialized',
+    $config['days_delete_not_initialized'],
+    '',
+    5,
+    5,
+    true
+);
+
+$table->data[10][0] = __('Max. days before delete autodisabled agents');
+$table->data[10][1] = html_print_input_text(
     'days_autodisable_deletion',
     $config['days_autodisable_deletion'],
     '',
@@ -350,8 +361,8 @@ $table->data[9][1] = html_print_input_text(
     true
 );
 
-$table->data[10][0] = __('Retention period of past special days');
-$table->data[10][1] = html_print_input_text(
+$table->data[11][0] = __('Retention period of past special days');
+$table->data[11][1] = html_print_input_text(
     'num_past_special_days',
     $config['num_past_special_days'],
     '',
@@ -360,8 +371,8 @@ $table->data[10][1] = html_print_input_text(
     true
 );
 
-$table->data[11][0] = __('Max. macro data fields');
-$table->data[11][1] = html_print_input_text(
+$table->data[12][0] = __('Max. macro data fields');
+$table->data[12][1] = html_print_input_text(
     'max_macro_fields',
     $config['max_macro_fields'],
     '',
@@ -374,8 +385,8 @@ $table->data[11][1] = html_print_input_text(
 );
 
 if (enterprise_installed()) {
-    $table->data[12][0] = __('Max. days before delete inventory data');
-    $table->data[12][1] = html_print_input_text(
+    $table->data[13][0] = __('Max. days before delete inventory data');
+    $table->data[13][1] = html_print_input_text(
         'inventory_purge',
         $config['inventory_purge'],
         '',

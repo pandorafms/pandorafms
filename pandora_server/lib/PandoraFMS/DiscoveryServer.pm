@@ -1546,6 +1546,25 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       );
     }
 
+    # Update OS information.
+    foreach my $agent (@agents) {
+
+      # Avoid processing if does not exist.
+      next unless (defined($agent->{'agent_id'}));
+
+      # Make sure OS version information is available.
+      next unless (defined($agent->{'os_version'}));
+
+      # Is the agent in learning mode?
+      next unless ($agent->{'modo'} == 1);
+
+      # Set the OS version.
+      db_do($self->{'dbh'},
+        'UPDATE tagente SET os_version=? WHERE id_agente=?',
+        $agent->{'os_version'}, $agent->{'agent_id'}
+      );
+    }
+
     # Connect agents.
     my @connections = get_db_rows(
       $self->{'dbh'},
@@ -1595,8 +1614,11 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
 
       next if is_empty($label);
 
-      # Retrieve target agent OS version.
+      # Retrieve target agent OS.
       $self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
+
+      # Retrieve target agent OS version.
+      $self->{'agents_found'}->{$addr}{'agent'}{'os_version'} = $self->get_os_version($addr);
 
       $self->call('update_progress', $progress);
       $progress += $step;
@@ -1857,7 +1879,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
       $force_processing = 1;
 
     } else {
-      $agent_id = $current_agent->{'id_agente'};
+      if ($current_agent->{'disabled'} eq '0') {
+        $agent_id = $current_agent->{'id_agente'};
+      }
     }
 
     if (!defined($agent_id)) {

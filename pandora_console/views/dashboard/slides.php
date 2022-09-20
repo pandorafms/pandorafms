@@ -243,23 +243,30 @@ $output .= '</a>';
 $output .= '</div>';
 
 // Cell slides button view.
-$output .= '<div>';
+$output .= '<div class="dashboard-mode">';
 $output .= '<a id="cell-slides-btn" href="'.$cell_slides_url.'">';
 if ($cellModeSlides === 0) {
     $output .= html_print_image(
-        'images/tag_red.png',
+        'images/visual_console.png',
         true,
-        ['title' => __('Mode Cell')]
+        ['title' => __('Boxed mode')]
     );
+    $msg_tooltip = __('This mode will show the dashboard with all the widgets in the screen. Click to change to single screen mode.');
 } else {
     $output .= html_print_image(
-        'images/rosette.png',
+        'images/dashboard.png',
         true,
-        ['title' => __('Mode Layout')]
+        ['title' => __('Single screen')]
     );
+    $msg_tooltip = __('This mode will show each widget in a screen, rotating between elements in each dashboard. Click to change to boxed mode.');
 }
 
 $output .= '</a>';
+$output .= ui_print_help_tip(
+    $msg_tooltip,
+    true
+);
+
 $output .= '</div>';
 
 // Dashboard name.

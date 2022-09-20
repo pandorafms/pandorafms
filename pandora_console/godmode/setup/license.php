@@ -59,6 +59,8 @@ if (is_metaconsole()) {
     enterprise_include_once('include/functions_license.php');
 }
 
+enterprise_include_once('include/functions_crypto.php');
+
 if ($renew_license_result !== null) {
     echo $renew_license_result;
 }
@@ -74,8 +76,32 @@ if ($update_settings) {
             );
         }
 
+        $customer_key = $_POST['keys']['customer_key'];
+
+        $license_encryption_key = get_parameter('license_encryption_key', false);
+        if ($license_encryption_key !== false) {
+            $check = db_get_value_sql('SELECT `key` FROM tupdate_settings WHERE `key` LIKE "license_encryption_key"');
+            if ($check === false) {
+                db_process_sql_insert(
+                    'tupdate_settings',
+                    [
+                        db_escape_key_identifier('value') => $license_encryption_key,
+                        db_escape_key_identifier('key')   => 'license_encryption_key',
+                    ]
+                );
+            } else {
+                db_process_sql_update(
+                    'tupdate_settings',
+                    [db_escape_key_identifier('value') => $license_encryption_key],
+                    [db_escape_key_identifier('key') => 'license_encryption_key']
+                );
+            }
+
+            $customer_key = openssl_blowfish_encrypt_hex($customer_key, io_safe_output($license_encryption_key));
+        }
+
         // Update the license file.
-        $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $_POST['keys']['customer_key']);
+        $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $customer_key);
         if ($result === false) {
             ui_print_error_message(__('Failed to Update license file'));
         }
@@ -153,8 +179,21 @@ $table->data[7][1] = html_print_input_text('expires', ($license['nms'] == 1 ? __
 $table->data[8][0] = '<strong>'.__('Satellite').'</strong>';
 $table->data[8][1] = html_print_input_text('expires', ($license['dhpm'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
 
-$table->data[9][0] = '<strong>'.__('Licensed to').'</strong>';
-$table->data[9][1] = html_print_input_text('licensed_to', $license['licensed_to'], '', 64, 255, true, true);
+if ($license['dhpm'] == 1) {
+    $table->data[9][0] = '<strong>'.__('License encryption key').'</strong>';
+    $table->data[9][1] = html_print_input_password(
+        'license_encryption_key',
+        io_safe_output($settings->license_encryption_key),
+        '',
+        10,
+        255,
+        true,
+        false
+    );
+}
+
+$table->data[10][0] = '<strong>'.__('Licensed to').'</strong>';
+$table->data[10][1] = html_print_input_text('licensed_to', $license['licensed_to'], '', 64, 255, true, true);
 
 html_print_table($table);
 

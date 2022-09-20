@@ -10206,7 +10206,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
                 $xmlTemplate,
                 io_safe_output(get_os_name($agent['id_os'])),
                 io_safe_output($agent['os_version']),
-                $agent['intervalo'],
+                $agentModule['module_interval'],
                 io_safe_output($agent['agent_version']),
                 date('Y/m/d H:i:s', $time),
                 io_safe_output($agent['nombre']),

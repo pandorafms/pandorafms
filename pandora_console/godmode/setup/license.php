@@ -180,7 +180,10 @@ $table->data[8][0] = '<strong>'.__('Satellite').'</strong>';
 $table->data[8][1] = html_print_input_text('expires', ($license['dhpm'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
 
 if ($license['dhpm'] == 1) {
-    $table->data[9][0] = '<strong>'.__('License encryption key').'</strong>';
+    $table->data[9][0] = '<strong>'.__('License encryption key').'</strong>'.ui_print_help_tip(
+        __('This key is used to encrypt your Pandora FMS license when it is shared with other Pandora FMS components'),
+        true
+    );
     $table->data[9][1] = html_print_input_password(
         'license_encryption_key',
         io_safe_output($settings->license_encryption_key),

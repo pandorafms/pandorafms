@@ -392,6 +392,14 @@ class SystemGroupStatusWidget extends Widget
 
         $selected_groups = explode(',', $this->values['groupId'][0]);
 
+        // Recursion.
+        if ($this->values['groupRecursion'] === true) {
+            foreach ($selected_groups as $father) {
+                $children = \groups_get_children_ids($father);
+                $selected_groups = ($selected_groups + $children);
+            }
+        }
+
         if ($selected_groups[0] === '') {
             return false;
         }
@@ -456,10 +464,10 @@ class SystemGroupStatusWidget extends Widget
             $keys = array_column($module_counters, 'g');
             $values = array_values($module_counters);
             $result_groups = array_combine($keys, $values);
-        }
 
-        if (empty($all_counters) === false) {
-            $result_groups[0] = $all_counters;
+            if (empty($all_counters) === false) {
+                $result_groups[0] = $all_counters;
+            }
         }
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);

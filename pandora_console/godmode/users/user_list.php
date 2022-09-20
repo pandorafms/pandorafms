@@ -52,6 +52,8 @@ if (is_ajax()) {
     $method = get_parameter('method');
     $group_id = get_parameter('group_id');
     $group_recursion = (bool) get_parameter('group_recursion', 0);
+    $get_user_profile_group = (bool) get_parameter('get_user_profile_group', false);
+
     $return_all = false;
 
     if ($group_id == -1) {
@@ -91,6 +93,37 @@ if (is_ajax()) {
         }
 
         echo json_encode($ret_id);
+        return;
+    }
+
+    if ($get_user_profile_group === true) {
+        $id_user = get_parameter('id_user');
+
+        $user_profiles = [];
+
+        // User profiles.
+        if (users_is_admin()) {
+            $user_profiles = db_get_all_rows_field_filter(
+                'tusuario_perfil',
+                'id_usuario',
+                $id_user
+            );
+        } else {
+            $user_profiles_aux = users_get_user_profile($id_user);
+            foreach ($group_um as $key => $value) {
+                if (isset($user_profiles_aux[$key]) === true) {
+                    $user_profiles[$key] = $user_profiles_aux[$key];
+                    unset($user_profiles_aux[$key]);
+                }
+            }
+        }
+
+        foreach ($user_profiles as $key => $value) {
+            $user_profiles[$key]['id_perfil'] = profile_get_name($value['id_perfil']);
+            $user_profiles[$key]['id_grupo'] = groups_get_name($value['id_grupo'], true);
+        }
+
+        echo json_encode($user_profiles);
         return;
     }
 }
@@ -588,10 +621,8 @@ $cont = 0;
 foreach ($info as $user_id => $user_info) {
     // User profiles.
     if ($user_is_admin || $user_id == $config['id_user'] || isset($group_um[0])) {
-        $user_profiles = db_get_all_rows_field_filter(
-            'tusuario_perfil',
-            'id_usuario',
-            $user_id
+        $user_profiles = db_get_all_rows_sql(
+            'SELECT * FROM tusuario_perfil where id_usuario LIKE "'.$user_id.'" LIMIT 5'
         );
     } else {
         $user_profiles_aux = users_get_user_profile($user_id);
@@ -674,9 +705,9 @@ foreach ($info as $user_id => $user_info) {
     if ($user_profiles !== false) {
         $total_profile = 0;
 
-            $data[4] .= '<div class="text_end">';
+        $data[4] .= '<div class="text_end" id="profiles_'.$user_profiles[0]['id_usuario'].'">';
         foreach ($user_profiles as $row) {
-            if ($total_profile <= 5) {
+            if ($total_profile < 5) {
                 $data[4] .= "<div class='float-left'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / </div>';
@@ -685,8 +716,7 @@ foreach ($info as $user_id => $user_info) {
                 $data[4] .= '</div>';
 
                 if ($total_profile == 0 && count($user_profiles) >= 5) {
-                    $data[4] .= '<span onclick="showGroups()" class="pdd_l_15px">
-            '.html_print_image(
+                    $data[4] .= '<span onclick="showGroups(`'.$row['id_usuario'].'`)" class="pdd_l_15px">'.html_print_image(
                         'images/zoom.png',
                         true,
                         [
@@ -694,16 +724,15 @@ foreach ($info as $user_id => $user_info) {
                             'class' => 'invert_filter',
                         ]
                     ).'</span>';
+
+                    $data[4] .= html_print_input_hidden(
+                        'show_groups_'.$row['id_usuario'],
+                        -1,
+                        true
+                    );
                 }
 
-                $data[4] .= '<br />';
-                $data[4] .= '<br />';
-                $data[4] .= '</div>';
-            } else {
-                $data[4] .= "<div id='groups_list' class='invisible'>";
-                $data[4] .= '<div >';
-                $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= ' / '.groups_get_name($row['id_grupo'], true).'</div>';
+                $data[4] .= '<br/>';
                 $data[4] .= '<br/>';
             }
 
@@ -882,16 +911,44 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
-echo '<script type="text/javascript">
-function showGroups(){
-var groups_list = document.getElementById("groups_list");
+?>;
+<script type="text/javascript">
+    function showGroups(id_user) {
+        if ($(`#hidden-show_groups_${id_user}`).val() === '-1') {
+            var request = $.ajax({
+                url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                type: 'GET',
+                dataType: 'JSON',
+                data: {
+                    page: 'godmode/users/user_list',
+                    get_user_profile_group: 1,
+                    id_user: id_user
+                },
+                success: function (data, textStatus, xhr) {
+                    let count = 1;
+                    data.forEach( function(valor, indice, array) {
+                        if (count >= 6) {
+                            let main_div = $(`#profiles_${id_user}`);
+                            main_div.append(
+                                `<div id="left_${id_user}_${count}" class='float-left'>${valor.id_perfil} / </div>`,
+                                `<div id="right_${id_user}_${count}" class='float-left pdd_l_5px'>${valor.id_grupo}</div>`,
+                                `<br/><br/>`
+                            );
+                        }
+                        count ++;
+                    });
+                }
+            });
+            $(`#hidden-show_groups_${id_user}`).val('1');
+        } else if ($(`#hidden-show_groups_${id_user}`).val() === '1') {
+            $(`#hidden-show_groups_${id_user}`).val('0');
+            $(`div[id^=left_${id_user}_]`).hide();
+            $(`div[id^=right_${id_user}_]`).hide();
+        } else {
+            $(`#hidden-show_groups_${id_user}`).val('1');
+            $(`div[id^=left_${id_user}_]`).show();
+            $(`div[id^=right_${id_user}_]`).show();
+        }
+    }
 
-if(groups_list.style.display == "none"){
-    document.querySelectorAll("[id=groups_list]").forEach(element=> 
-    element.style.display = "block");
-}else{
-    document.querySelectorAll("[id=groups_list]").forEach(element=> 
-    element.style.display = "none");
-};
-}
-</script>';
+</script>;

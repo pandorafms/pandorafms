@@ -1052,9 +1052,10 @@ if ($update_agent) {
         $exists_ip  = db_get_row_sql($sql);
     }
 
+    $old_group = agents_get_agent_group($id_agente);
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
-    } else if (group_allow_more_agents($grupo, true, 'update') === false) {
+    } else if ($old_group !== $grupo && group_allow_more_agents($grupo, true, 'update') === false) {
         ui_print_error_message(__('Agent cannot be updated due to the maximum agent limit for this group'));
     } else if ($exists_ip) {
         ui_print_error_message(__('Duplicate main IP address'));

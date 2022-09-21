@@ -711,36 +711,34 @@ foreach ($info as $user_id => $user_info) {
     if ($user_profiles !== false) {
         $total_profile = 0;
 
-        $data[4] .= '<div class="text_end" id="profiles_'.$user_profiles[0]['id_usuario'].'">';
+        $data[4] .= '<div class="text_end">';
         foreach ($user_profiles as $row) {
-            if ($total_profile < 5) {
-                $data[4] .= "<div class='float-left'>";
-                $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= ' / </div>';
-                $data[4] .= "<div class='float-left pdd_l_5px'>";
-                $data[4] .= groups_get_name($row['id_grupo'], true);
-                $data[4] .= '</div>';
+            $data[4] .= "<div class='float-left'>";
+            $data[4] .= profile_get_name($row['id_perfil']);
+            $data[4] .= ' / </div>';
+            $data[4] .= "<div class='float-left pdd_l_5px'>";
+            $data[4] .= groups_get_name($row['id_grupo'], true);
+            $data[4] .= '</div>';
 
-                if ($total_profile == 0 && count($user_profiles) >= 5) {
-                    $data[4] .= '<span onclick="showGroups(`'.$row['id_usuario'].'`)" class="pdd_l_15px">'.html_print_image(
-                        'images/zoom.png',
-                        true,
-                        [
-                            'title' => __('Show'),
-                            'class' => 'invert_filter',
-                        ]
-                    ).'</span>';
+            if ($total_profile == 0 && count($user_profiles) >= 5) {
+                $data[4] .= '<span onclick="showGroups(`'.$row['id_usuario'].'`)">'.html_print_image(
+                    'images/zoom.png',
+                    true,
+                    [
+                        'title' => __('Show profiles'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</span>';
 
-                    $data[4] .= html_print_input_hidden(
-                        'show_groups_'.$row['id_usuario'],
-                        -1,
-                        true
-                    );
-                }
-
-                $data[4] .= '<br/>';
-                $data[4] .= '<br/>';
+                $data[4] .= html_print_input_hidden(
+                    'show_groups_'.$row['id_usuario'],
+                    -1,
+                    true
+                );
             }
+
+            $data[4] .= '<br/>';
+            $data[4] .= '<br/>';
 
             $total_profile++;
         }
@@ -753,6 +751,8 @@ foreach ($info as $user_id => $user_info) {
             );
         }
 
+        $data[4] .= '</div>';
+        $data[4] .= '<div class="invisible" id="profiles_'.$user_profiles[0]['id_usuario'].'">';
         $data[4] .= '</div>';
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');
@@ -946,14 +946,13 @@ enterprise_hook('close_meta_frame');
                 }
             });
             $(`#hidden-show_groups_${id_user}`).val('1');
+            $(`#profiles_${id_user}`).show();
         } else if ($(`#hidden-show_groups_${id_user}`).val() === '1') {
             $(`#hidden-show_groups_${id_user}`).val('0');
-            $(`div[id^=left_${id_user}_]`).hide();
-            $(`div[id^=right_${id_user}_]`).hide();
+            $(`#profiles_${id_user}`).hide();
         } else {
             $(`#hidden-show_groups_${id_user}`).val('1');
-            $(`div[id^=left_${id_user}_]`).show();
-            $(`div[id^=right_${id_user}_]`).show();
+            $(`#profiles_${id_user}`).show();
         }
     }
 

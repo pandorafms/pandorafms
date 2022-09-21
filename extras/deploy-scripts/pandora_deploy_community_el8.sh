@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022052501'
+S_VERSION='202209231'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -26,6 +26,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$DBUSER" ] || DBUSER=pandora
 [ "$DBPASS" ] || DBPASS=pandora
 [ "$DBPORT" ] || DBPORT=3306
+[ "$DBROOTUSER" ] || DBROOTUSER=root
 [ "$DBROOTPASS" ] || DBROOTPASS=pandora
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
@@ -73,13 +74,16 @@ check_cmd_status () {
 }
 
 check_pre_pandora () {
-    export MYSQL_PWD=$DBPASS
 
     echo -en "${cyan}Checking environment ... ${reset}"
     rpm -qa | grep 'pandorafms_' &>> /dev/null && local fail=true
     [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
-    echo "use $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true
+
+    if [ "$SKIP_DATABASE_INSTALL" -eq '0' ]; then
+        export MYSQL_PWD=$DBPASS
+        echo "use $DBNAME" | mysql -u$DBUSER -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true
+    fi
 
     [ ! $fail ]
     check_cmd_status 'Error there is a current Pandora FMS installation on this node, please remove it to execute a clean install'
@@ -214,7 +218,7 @@ if [ "$PHPVER" -eq '8' ] ; then
     execute_cmd "dnf module install -y php:remi-8.0" "Configuring PHP 8"
 fi
 
-# Install percona Database
+    # Install percona Database
 execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
 
 if [ "$MYVER" -eq '80' ] ; then
@@ -225,7 +229,6 @@ fi
 if [ "$MYVER" -ne '80' ] ; then
     execute_cmd "dnf install -y Percona-Server-server-57 percona-xtrabackup-24" "Installing Percona Server 57"
 fi
-
 
 # Console dependencies
 console_dependencies=" \
@@ -401,30 +404,28 @@ if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
     if [ "$MYVER" -eq '80' ] ; then
         echo """
-        SET PASSWORD FOR 'root'@'localhost' = 'Pandor4!';
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = 'Pandor4!';
         UNINSTALL COMPONENT 'file://component_validate_password';
-        SET PASSWORD FOR 'root'@'localhost' = '$DBROOTPASS';
-        """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = '$DBROOTPASS';
+        """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"
     fi
 
     if [ "$MYVER" -ne '80' ] ; then
         echo """
-        SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('Pandor4!');
         UNINSTALL PLUGIN validate_password;
-        SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
-        """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"fi
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('$DBROOTPASS');
+        """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"fi
     fi
-fi
-export MYSQL_PWD=$DBROOTPASS
-echo -en "${cyan}Creating Pandora FMS database...${reset}"
-echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
-check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
-echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -uroot -P$DBPORT -h$DBHOST
-echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST        
-echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -uroot -P$DBPORT -h$DBHOST
+    export MYSQL_PWD=$DBROOTPASS
+    echo -en "${cyan}Creating Pandora FMS database...${reset}"
+    echo "create database $DBNAME" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
+    check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
 
-export MYSQL_PWD=$DBPASS
+    echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
+    echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST        
+    echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
 
 #Generating my.cnf
 cat > /etc/my.cnf << EO_CONFIG_F
@@ -471,12 +472,14 @@ pid-file=/var/run/mysqld/mysqld.pid
 
 EO_CONFIG_F
 
-if [ "$MYVER" -eq '80' ] ; then
-    sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+    if [ "$MYVER" -eq '80' ] ; then
+        sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+    fi
+
+    execute_cmd "systemctl restart mysqld" "Configuring database engine"
+    execute_cmd "systemctl enable mysqld --now" "Enabling Database service"
 fi
-
-execute_cmd "systemctl restart mysqld" "Configuring database engine"
-
+export MYSQL_PWD=$DBPASS
 
 #Define packages
 if [ "$PANDORA_BETA" -eq '0' ] ; then
@@ -503,7 +506,6 @@ tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 
 # Enable Services
-execute_cmd "systemctl enable mysqld --now" "Enabling Database service"
 execute_cmd "systemctl enable httpd --now" "Enabling HTTPD service"
 execute_cmd "systemctl enable php-fpm --now" "Enabling PHP-FPM service"
 

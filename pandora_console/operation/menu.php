@@ -438,8 +438,7 @@ if ($access_console_node === true) {
             )
         );
 
-
-        $javascript = 'javascript: openSoundEventModal(\''.$data_sound.'\');';
+        $javascript = 'javascript: openSoundEventModal(`'.$data_sound.'`);';
         $sub[$javascript]['text'] = __('Sound Events');
         $sub[$javascript]['id'] = 'Sound Events Modal';
         $sub[$javascript]['type'] = 'direct';

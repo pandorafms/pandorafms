@@ -173,6 +173,7 @@ $url_description = '';
 $quiet = 0;
 $macros = '';
 $cps = 0;
+$fixed_ip = 0;
 
 $create_agent = (bool) get_parameter('create_agent');
 $module_macros = [];
@@ -225,6 +226,7 @@ if ($create_agent) {
     $url_description = (string) get_parameter('url_description');
     $quiet = (int) get_parameter('quiet', 0);
     $cps = (int) get_parameter_switch('cps', -1);
+    $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -282,6 +284,7 @@ if ($create_agent) {
                     'url_address'               => $url_description,
                     'quiet'                     => $quiet,
                     'cps'                       => $cps,
+                    'fixed_ip'                  => $fixed_ip,
                 ]
             );
             enterprise_hook('update_agent', [$id_agente]);
@@ -326,7 +329,7 @@ if ($create_agent) {
 				"Update GIS data":"'.$update_gis_data.'",
 				"Url description":"'.$url_description.'",
 				"Quiet":"'.(int) $quiet.'",
-				"Cps":"'.(int) $cps.'"}';
+				"Cps":"'.(int) $cps.'",}';
 
             // Create the secondary groups.
             enterprise_hook(
@@ -987,6 +990,7 @@ if ($update_agent) {
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
     $satellite_server = (int) get_parameter('satellite_server', 0);
+    $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
     if ($fields === false) {
         $fields = [];
@@ -1048,9 +1052,10 @@ if ($update_agent) {
         $exists_ip  = db_get_row_sql($sql);
     }
 
+    $old_group = agents_get_agent_group($id_agente);
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
-    } else if (group_allow_more_agents($grupo, true, 'update') === false) {
+    } else if ($old_group !== $grupo && group_allow_more_agents($grupo, true, 'update') === false) {
         ui_print_error_message(__('Agent cannot be updated due to the maximum agent limit for this group'));
     } else if ($exists_ip) {
         ui_print_error_message(__('Duplicate main IP address'));
@@ -1095,6 +1100,7 @@ if ($update_agent) {
             'cps'                       => $cps,
             'safe_mode_module'          => $safe_mode_module,
             'satellite_server'          => $satellite_server,
+            'fixed_ip'                  => $fixed_ip,
         ];
 
         if ($config['metaconsole_agent_cache'] == 1) {
@@ -1234,6 +1240,7 @@ if ($id_agente) {
     $safe_mode_module = $agent['safe_mode_module'];
     $safe_mode = ($safe_mode_module) ? 1 : 0;
     $satellite_server = (int) $agent['satellite_server'];
+    $fixed_ip = (int) $agent['fixed_ip'];
 }
 
 $update_module = (bool) get_parameter('update_module');

@@ -111,6 +111,9 @@ if ($access_console_node === true) {
 
         $sub['godmode/groups/modu_group_list']['text'] = __('Module groups');
         $sub['godmode/groups/modu_group_list']['id'] = 'Module groups';
+
+        $sub['godmode/setup/os']['text'] = __('Operating systems');
+        $sub['godmode/setup/os']['id'] = 'Edit OS';
     }
 
     if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
@@ -208,7 +211,6 @@ if ($access_console_node === true) {
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');
-        enterprise_hook('massiveservices_submenu');
 
         $sub['gmassive']['sub2'] = $sub2;
         $sub2 = [];
@@ -380,8 +382,6 @@ if ($access_console_node === true) {
         }
 
         $sub['general']['sub2'] = $sub2;
-        $sub['godmode/setup/os']['text'] = __('Edit OS');
-        $sub['godmode/setup/os']['id'] = 'Edit OS';
         $sub['godmode/setup/license']['text'] = __('License');
         $sub['godmode/setup/license']['id'] = 'License';
 

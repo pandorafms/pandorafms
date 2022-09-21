@@ -137,7 +137,16 @@ $table->data[] = $tdata;
 
 // Modules by status.
 $tdata = [];
-$tdata[0] = reporting_get_stats_modules_status($data, 180, 100);
+
+$data_agents = [
+    __('Critical') => $data['monitor_critical'],
+    __('Warning')  => $data['monitor_warning'],
+    __('Normal')   => $data['monitor_ok'],
+    __('Unknown')  => $data['monitor_unknown'],
+    __('Not init') => $data['monitor_not_init'],
+];
+
+$tdata[0] = reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
 $table->rowclass[] = '';
 $table->data[] = $tdata;
 

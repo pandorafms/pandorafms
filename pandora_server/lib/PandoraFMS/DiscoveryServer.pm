@@ -1879,7 +1879,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
       $force_processing = 1;
 
     } else {
-      $agent_id = $current_agent->{'id_agente'};
+      if ($current_agent->{'disabled'} eq '0') {
+        $agent_id = $current_agent->{'id_agente'};
+      }
     }
 
     if (!defined($agent_id)) {

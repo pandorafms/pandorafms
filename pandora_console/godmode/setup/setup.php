@@ -324,7 +324,7 @@ switch ($section) {
 }
 
 // Put header inside div for special sizing.(No right margin).
-echo '<div id="header_configuration" style="width: calc(100% + 3em);">';
+echo '<div id="header_configuration" style="width: calc(100%);">';
 // Header.
 ui_print_page_header(
     __('Configuration').$subpage,

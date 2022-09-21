@@ -1543,18 +1543,44 @@ sub db_insert_get_values ($) {
 ########################################################################
 ## Try to obtain the given lock.
 ########################################################################
-sub db_get_lock($$;$) {
-	my ($dbh, $lock_name, $lock_timeout) = @_;
+sub db_get_lock($$;$$) {
+	my ($dbh, $lock_name, $lock_timeout, $do_not_wait_lock) = @_;
 
 	# Only supported in MySQL.
 	return 1 unless ($RDBMS eq 'mysql');
 
 	# Set a default lock timeout of 1 second
 	$lock_timeout = 1 if (! defined ($lock_timeout));
+
+	if ($do_not_wait_lock) {
+		if (!db_is_free_lock($dbh, $lock_name)) {
+			return 0;
+		}
+	}
 	
 	# Attempt to get the lock!
 	my $sth = $dbh->prepare('SELECT GET_LOCK(?, ?)');
 	$sth->execute($lock_name, $lock_timeout);
+	my ($lock) = $sth->fetchrow;
+	
+	# Something went wrong
+	return 0 if (! defined ($lock));
+	
+	return $lock;
+}
+
+########################################################################
+## Check is lock is free.
+########################################################################
+sub db_is_free_lock($$) {
+	my ($dbh, $lock_name) = @_;
+
+	# Only supported in MySQL.
+	return 1 unless ($RDBMS eq 'mysql');
+	
+	# Attempt to get the lock!
+	my $sth = $dbh->prepare('SELECT IS_FREE_LOCK(?)');
+	$sth->execute($lock_name);
 	my ($lock) = $sth->fetchrow;
 	
 	# Something went wrong

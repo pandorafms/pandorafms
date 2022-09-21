@@ -73,7 +73,7 @@ final class Config
                 $config['history_db_user'],
                 io_output_password($config['history_db_pass']),
                 $config['history_db_name'],
-                $config['history_db_port']
+                (int) $config['history_db_port']
             );
 
             if ($rc === false) {
@@ -84,7 +84,7 @@ final class Config
                     $config['history_db_name'],
                     $config['history_db_user'],
                     io_output_password($config['history_db_pass']),
-                    $config['history_db_port'],
+                    (int) $config['history_db_port'],
                     false
                 );
             }

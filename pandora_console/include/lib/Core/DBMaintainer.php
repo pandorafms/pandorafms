@@ -135,7 +135,7 @@ final class DBMaintainer
         $this->user = $params['user'];
         $this->pass = io_output_password($params['pass']);
         $this->host = $params['host'];
-        $this->port = $params['port'];
+        $this->port = (int) $params['port'];
         $this->name = $params['name'];
         $this->charset = (isset($params['charset']) === true) ? $params['charset'] : '';
 
@@ -170,7 +170,10 @@ final class DBMaintainer
         if ($rc === false) {
             $this->dbh = null;
             $this->connected = false;
-            $this->lastError = __('Connection problems');
+            $this->lastError = __(
+                'Connection problems: %s',
+                mysqli_connect_error()
+            );
         } else {
             $dbc = new \mysqli(
                 $this->host,

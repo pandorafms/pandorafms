@@ -4101,17 +4101,20 @@ function ui_toggle(
     // JQuery Toggle.
     $output .= '<script type="text/javascript">'."\n";
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
+    $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
     $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-    $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
-    $output .= "			else {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
+    $output .= '            if (is_metaconsole == 0) {';
+    $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    }\n";
+    $output .= "			    else {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    }\n";
+    $output .= "		    }\n";
     $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";

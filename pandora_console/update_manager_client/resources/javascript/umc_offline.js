@@ -395,6 +395,7 @@ function formatFileSize(bytes) {
  * @param {boolean} serverUpdate
  */
 function install_package(url, auth, packageId, version, serverUpdate) {
+  var processed = 0;
   umConfirm({
     message:
       (serverUpdate ? texts.ensureServerUpdate : texts.ensureUpdate) +
@@ -442,7 +443,10 @@ function install_package(url, auth, packageId, version, serverUpdate) {
       });
     },
     onDeny: function() {
-      cancelUpdate();
+      if (processed >= 1) {
+        cancelUpdate();
+      }
+      processed += 1;
     }
   });
 }

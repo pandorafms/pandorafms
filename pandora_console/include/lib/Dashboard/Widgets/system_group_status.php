@@ -166,17 +166,6 @@ class SystemGroupStatusWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['groupId']) === true) {
             $this->configurationRequired = true;
-        } else {
-            $check_exist = \db_get_value(
-                'id_grupo',
-                'tgrupo',
-                'id_grupo',
-                $this->values['groupId']
-            );
-
-            if ($check_exist === false) {
-                $this->loadError = true;
-            }
         }
 
         $this->overflow_scrollbars = false;

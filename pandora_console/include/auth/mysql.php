@@ -799,8 +799,16 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
         return false;
     }
 
-    // Set the LDAP version
+    // Set the LDAP version.
     ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, $ldap['ldap_version']);
+    ldap_set_option($ds, LDAP_OPT_NETWORK_TIMEOUT, 1);
+
+    // Set ldap search timeout.
+    ldap_set_option(
+        $ds,
+        LDAP_OPT_TIMELIMIT,
+        (empty($config['ldap_search_timmeout']) === true) ? 5 : ((int) $config['ldap_search_timeout'])
+    );
 
     if ($ldap['ldap_start_tls']) {
         if (!@ldap_start_tls($ds)) {
@@ -821,7 +829,8 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
             io_safe_output($ldap['ldap_admin_login']),
             io_output_password($ldap['ldap_admin_pass']),
             io_safe_output($login),
-            $ldap['ldap_start_tls']
+            $ldap['ldap_start_tls'],
+            $config['ldap_search_timeout']
         );
 
         if ($sr) {
@@ -1430,7 +1439,8 @@ function local_ldap_search(
     $ldap_admin_user=null,
     $ldap_admin_pass=null,
     $user=null,
-    $ldap_start_tls=null
+    $ldap_start_tls=null,
+    $ldap_search_time=5
 ) {
     global $config;
 
@@ -1463,8 +1473,8 @@ function local_ldap_search(
     }
 
     $dn = " -b '".$dn."'";
-
-    $shell_ldap_search = explode("\n", shell_exec('ldapsearch -LLL -o ldif-wrap=no -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"'));
+    $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
+    $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {
         $values = explode('=>', $line);
         if (!empty($values[0]) && !empty($values[1])) {

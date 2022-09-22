@@ -1874,7 +1874,7 @@ function show_double_auth_activation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -1952,7 +1952,7 @@ function show_double_auth_deactivation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"

@@ -167,7 +167,7 @@ if (!$double_auth_enabled
     resizable: true,
     draggable: true,
     modal: true,
-    title: "<?php echo __('Double autentication activation'); ?>",
+    title: "<?php echo __('Double authentication activation'); ?>",
     overlay: {
       opacity: 0.5,
       background: "black"
@@ -185,9 +185,7 @@ if (!$double_auth_enabled
       //document.location.reload();
     }
   })
-    .show();    
-    // Don't allow close the dialog with X button
-    $('.ui-dialog-titlebar-close').css('display', 'none');
+    .show();
 
     </script>
     <?php

@@ -512,6 +512,7 @@ if (isset($config['id_user']) === false) {
             if ((!isset($double_auth_success)
                 || !$double_auth_success)
                 && is_double_auth_enabled($nick_in_db)
+                && (bool) $config['double_auth_enabled'] === true
             ) {
                 // Store this values in the session to know if the user login
                 // was correct.

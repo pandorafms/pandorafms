@@ -289,7 +289,7 @@ function process_user_login_remote($login, $pass, $api=false)
 
     // Authentication ok, check if the user exists in the local database
     if (is_user($login)) {
-        if (!user_can_login($login)) {
+        if (!user_can_login($login) && $api === false) {
             return false;
         }
 

@@ -512,6 +512,14 @@ if ($create_user) {
 
                         $result_profile = profile_create_user_profile($id, $profile2, $group2, false, $tags, $no_hierarchy);
 
+                        if ($result_profile === false) {
+                            $is_err = true;
+                            $user_info = $values;
+                            $password_new = '';
+                            $password_confirm = '';
+                            $new_user = true;
+                        }
+
                         ui_print_result_message(
                             $result_profile,
                             __('Profile added successfully'),

@@ -651,6 +651,12 @@ class ExternalTools extends HTML
                     }
                 break;
 
+                case 'whois':
+                    if (empty($snmpget_path) === false) {
+                        return $snmpget_path;
+                    }
+                break;
+
                 default:
                 return null;
             }
@@ -829,6 +835,7 @@ class ExternalTools extends HTML
                 if (empty($dig) === true) {
                     ui_print_error_message(__('Dig executable does not exist.'));
                 } else {
+                    $dig .= ' '.$ip;
                     $this->performExecution($dig);
                 }
 
@@ -837,6 +844,7 @@ class ExternalTools extends HTML
                 if (empty($whois) === true) {
                     ui_print_error_message(__('Whois executable does not exist.'));
                 } else {
+                    $whois .= ' '.$ip;
                     $this->performExecution($whois);
                 }
 

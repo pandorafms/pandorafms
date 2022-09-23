@@ -5,6 +5,8 @@ ALTER TABLE `tplanned_downtime` ADD COLUMN `cron_interval_to` VARCHAR(100) DEFAU
 
 ALTER TABLE `tplugin` ADD COLUMN `no_delete` TINYINT NOT NULL DEFAULT 0;
 
+ALTER TABLE `tmodule_group` MODIFY COLUMN `id_mg` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT;
+
 SET @id_config := (SELECT id_config FROM tconfig WHERE `token` = 'metaconsole_node_id' AND `value` IS NOT NULL ORDER BY id_config DESC LIMIT 1);
 DELETE FROM tconfig WHERE `token` = 'metaconsole_node_id' AND (id_config < @id_config OR `value` IS NULL);
 

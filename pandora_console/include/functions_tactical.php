@@ -416,7 +416,7 @@ function tactical_get_data(
         } else {
             $result_list = db_get_all_rows_sql(
                 sprintf(
-                    'SELECT COUNT(*) as contado, estado 
+                    'SELECT COUNT(DISTINCT(tam.id_agente_modulo)) as contado, estado 
                 FROM tagente_estado tae 
                     INNER JOIN tagente ta
                         ON tae.id_agente = ta.id_agente

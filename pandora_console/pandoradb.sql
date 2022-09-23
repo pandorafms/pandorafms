@@ -820,7 +820,7 @@ CREATE TABLE IF NOT EXISTS `tlink` (
 -- Table `tmodule_group`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_group` (
-  `id_mg` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_mg` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(150) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

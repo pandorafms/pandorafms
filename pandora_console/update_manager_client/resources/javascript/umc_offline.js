@@ -395,6 +395,7 @@ function formatFileSize(bytes) {
  * @param {boolean} serverUpdate
  */
 function install_package(url, auth, packageId, version, serverUpdate) {
+  var processed = 0;
   umConfirm({
     message:
       (serverUpdate ? texts.ensureServerUpdate : texts.ensureUpdate) +
@@ -427,6 +428,11 @@ function install_package(url, auth, packageId, version, serverUpdate) {
           $("#input-progress")
             .val(100)
             .change();
+
+          $("#result li").removeClass("error");
+          $("#result li")
+            .find("p")
+            .text(response.result);
         },
         error: function(e, request) {
           clearInterval(progressInterval);
@@ -437,7 +443,10 @@ function install_package(url, auth, packageId, version, serverUpdate) {
       });
     },
     onDeny: function() {
-      cancelUpdate();
+      if (processed >= 1) {
+        cancelUpdate();
+      }
+      processed += 1;
     }
   });
 }

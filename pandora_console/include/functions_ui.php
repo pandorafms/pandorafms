@@ -3402,7 +3402,7 @@ function ui_print_datatable(array $parameters)
         $filter .= '</li>';
 
         $filter .= '</ul><div id="both"></div></form>';
-        if (isset($parameters['form']['no_toggle']) === false && ($parameters['form']['no_toggle'] !== true)) {
+        if (isset($parameters['form']['no_toggle']) === false) {
             $filter = ui_toggle(
                 $filter,
                 __('Filter'),
@@ -3466,7 +3466,10 @@ function ui_print_datatable(array $parameters)
     foreach ($names as $column) {
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
-            $table .= 'title="'.__($column['title']).'" ';
+            if (isset($column['title']) === true) {
+                $table .= 'title="'.__($column['title']).'" ';
+            }
+
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
             $table .= $column['extra'];
             $table .= '</th>';

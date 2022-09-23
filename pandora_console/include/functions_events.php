@@ -3430,7 +3430,7 @@ function events_page_responses($event)
             __('Execute'),
             'custom_response_button',
             false,
-            'execute_response('.$event['id_evento'].','.$server_id.')',
+            'execute_response('.$event['id_evento'].','.$server_id.',0)',
             "class='sub next w70p'",
             true
         );
@@ -3438,6 +3438,7 @@ function events_page_responses($event)
 
     $table_responses->data[] = $data;
 
+    // TODO quitar el async: false. get_response_params and get_response_description.
     $responses_js = "<script>
 			$('#select_custom_response').change(function() {
 				var id_response = $('#select_custom_response').val();
@@ -3477,7 +3478,7 @@ function events_page_responses($event)
  */
 function events_get_response_target(
     int $event_id,
-    int $response_id
+    array $event_response
 ) {
     global $config;
 
@@ -3490,9 +3491,7 @@ function events_get_response_target(
     }
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    $event_response = db_get_row('tevent_response', 'id', $response_id);
     $target = io_safe_output($event_response['target']);
-
     if (strpos($target, '_agent_alias_') !== false) {
         $agente_table_name = 'tagente';
         $filter = ['id_agente' => $event['id_agente']];
@@ -5462,5 +5461,103 @@ function events_get_criticity_class($criticity)
 
         default:
         return 'datos_blue';
+    }
+}
+
+
+// TODO
+function get_row_response_action(
+    array $event_response,
+    ?int $response_id,
+    $end=false,
+    $index=null
+) {
+    $output = '<div class="container-massive-events-response-cell">';
+    $display_command = (bool) $event_response['display_command'];
+    $command_str = ($display_command === true) ? $event_response['target'] : '';
+
+    // String command.
+    $output .= '<div class="container-massive-events-response-command">';
+    $output .= '<b>';
+    $output .= __('Event # %d', $event_response['event_id']);
+    if (empty($command_str) === false) {
+        $output .= ' ';
+        $output .= __('Executing command: ');
+    }
+
+    $output .= '</b>';
+    $output .= '<span>'.$command_str.'</span>';
+    $output .= '</div>';
+
+    // Spinner.
+    $output .= '<div id="response_loading_command'.$index.'" style="display:none">';
+    $output .= html_print_image(
+        'images/spinner.gif',
+        true
+    );
+    $output .= '</div>';
+
+    // Output.
+    $output .= '<div id="response_out'.$index.'" class="container-massive-events-response-output"></div>';
+
+    // Butom.
+    $output .= '<div id="re_exec_command'.$index.'" style="display:none" class="container-massive-events-response-execute">';
+    $output .= html_print_button(
+        __('Execute again'),
+        'btn_str',
+        false,
+        'perform_response(\''.base64_encode(json_encode($event_response)).'\','.$response_id.',\''.trim($index).'\')',
+        "class='sub next'",
+        true
+    );
+    $output .= '</div>';
+
+    $output .= '</div>';
+
+    return $output;
+}
+
+
+/**
+ * Get evet get response target.
+ *
+ * @param integer $event_id       Id event.
+ * @param array   $event_response Response.
+ * @param integer $server_id      Server id.
+ *
+ * @return string
+ */
+function get_events_get_response_target(
+    $event_id,
+    $event_response,
+    $server_id=0
+) {
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
+
+        return events_get_response_target(
+            $event_id,
+            $event_response
+        );
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        return '';
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
 }

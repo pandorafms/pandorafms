@@ -211,7 +211,6 @@ if ($access_console_node === true) {
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');
-        enterprise_hook('massiveservices_submenu');
 
         $sub['gmassive']['sub2'] = $sub2;
         $sub2 = [];

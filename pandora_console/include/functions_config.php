@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Main configuration of Pandora FMS
  *
@@ -30,6 +31,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/functions.php';
 enterprise_include_once('include/functions_config.php');
+
 use PandoraFMS\Core\DBMaintainer;
 use PandoraFMS\Core\Config;
 
@@ -146,7 +148,7 @@ function config_update_config()
         return false;
     }
 
-    if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+    if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = false;
         $config['error_config_update_config']['message'] = __('Failed updated: User is not admin.');
@@ -1570,6 +1572,18 @@ function config_update_config()
                         $error_update[] = __('Days');
                     }
 
+                    if (config_update_value('history_db_adv', get_parameter_switch('history_db_adv', 0), true) === false) {
+                        $error_update[] = __('Enable history database advanced');
+                    }
+
+                    $history_db_string_days = get_parameter('history_db_string_days');
+                    if (is_numeric($history_db_string_days) === false
+                        || $history_db_string_days <= 0
+                        || config_update_value('history_db_string_days', $history_db_string_days) === false
+                    ) {
+                        $error_update[] = __('String Days');
+                    }
+
                     $history_event_days = get_parameter('history_event_days');
                     if (is_numeric($history_event_days) === false
                         || $history_event_days <= 0
@@ -2241,9 +2255,9 @@ function config_process_config()
         config_update_value('2Fa_auth', '');
     }
 
-     /*
-      * Parse the ACL IP list for access API
-      */
+    /*
+     * Parse the ACL IP list for access API
+     */
 
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
@@ -2498,6 +2512,14 @@ function config_process_config()
 
     if (!isset($config['history_db_days'])) {
         config_update_value('history_db_days', 0);
+    }
+
+    if (!isset($config['history_db_adv'])) {
+        config_update_value('history_db_adv', false);
+    }
+
+    if (!isset($config['history_db_string_days'])) {
+        config_update_value('history_db_string_days', 0);
     }
 
     if (!isset($config['history_event_days'])) {
@@ -2799,7 +2821,7 @@ function config_process_config()
             $temp_ad_adv_perms = $config['ad_adv_perms'];
         }
 
-          config_update_value('ad_adv_perms', $temp_ad_adv_perms);
+        config_update_value('ad_adv_perms', $temp_ad_adv_perms);
     }
 
     if (!isset($config['ldap_adv_perms'])) {
@@ -3399,7 +3421,6 @@ function config_check()
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }
-
 }
 
 
@@ -3424,7 +3445,6 @@ function get_um_url()
     }
 
     return $url;
-
 }
 
 
@@ -3440,7 +3460,7 @@ function config_return_in_bytes($val)
     $last = strtolower($val[(strlen($val) - 1)]);
     $val = (int) trim($val);
     switch ($last) {
-        // The 'G' modifier is available since PHP 5.1.0.
+            // The 'G' modifier is available since PHP 5.1.0.
         case 'g':
             $val *= 1024;
         case 'm':

@@ -2176,3 +2176,19 @@ $.fn.filterByText = function(textbox) {
       });
   });
 };
+
+function loadPasswordConfig(id, value) {
+  $.ajax({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/config.ajax",
+      token_name: `${value}`,
+      no_boolean: 1
+    },
+    type: "GET",
+    dataType: "json",
+    success: function(data) {
+      $(`#${id}`).val(data);
+    }
+  });
+}

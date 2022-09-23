@@ -2511,7 +2511,7 @@ CREATE TABLE IF NOT EXISTS `tpolicies` (
   `id_group` INT UNSIGNED DEFAULT 0,
   `status` INT UNSIGNED NOT NULL DEFAULT 0,
   `force_apply` TINYINT DEFAULT 0,
-  `apply_to_secondary_groups` TINYINT DEFAULT 0,
+  `apply_to_secondary_groups` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 

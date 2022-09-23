@@ -7746,15 +7746,7 @@ function reporting_advanced_sla(
             }
 
             if (isset($max_value) === false || (int) $max_value === 0) {
-                if ($max_value === '0'
-                    && $max_value < $min_value
-                    && isset($min_value_warning) === true
-                    && $min_value_warning > $max_value
-                ) {
-                    $max_value = $min_value_warning;
-                } else {
-                    $max_value = null;
-                }
+                $max_value = null;
             }
 
             if (isset($max_value) === false && isset($min_value) === false) {
@@ -8309,18 +8301,21 @@ function reporting_advanced_sla(
                                             $inverse_interval
                                         );
 
-                                        // Warning SLA check.
-                                        $sla_check_value_warning = sla_check_value(
-                                            $current_data['datos'],
-                                            $min_value_warning,
-                                            $max_value_warning,
-                                            $inverse_interval_warning,
-                                            1
-                                        );
+                                        $sla_check_value_warning = false;
+                                        if ($sla_check_value === true) {
+                                            // Warning SLA check.
+                                            $sla_check_value_warning = sla_check_value(
+                                                $current_data['datos'],
+                                                $min_value_warning,
+                                                $max_value_warning,
+                                                $inverse_interval_warning,
+                                                1
+                                            );
+                                        }
                                     }
 
                                     // Not unknown nor not init values.
-                                    if ($sla_check_value_warning && $sla_check_warning === true) {
+                                    if ($sla_check_value_warning === true && $sla_check_warning === true) {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0
                                             && $i !== 0)

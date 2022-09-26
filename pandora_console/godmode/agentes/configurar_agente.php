@@ -1047,7 +1047,7 @@ if ($update_agent) {
         // If there is an agent with the same name, but a different ID.
     }
 
-    if ($unique_ip && $direccion_agente != '') {
+    if ($direccion_agente !== $address_list && (bool) $unique_ip === true && $direccion_agente != '') {
         $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
         $exists_ip  = db_get_row_sql($sql);
     }

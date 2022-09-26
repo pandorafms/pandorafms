@@ -2651,6 +2651,8 @@ CREATE TABLE IF NOT EXISTS `tmodule_inventory` (
   `data_format` TEXT ,
   `code` BLOB NOT NULL,
   `block_mode` INT NOT NULL DEFAULT 0,
+  `script_mode` INT NOT NULL DEFAULT 1,
+  `script_path` VARCHAR(1000) DEFAULT '',
   PRIMARY KEY  (`id_module_inventory`),
   FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
     ON UPDATE CASCADE ON DELETE CASCADE

@@ -647,7 +647,12 @@ if ($get_agent_alerts_datatable === true) {
     $order = get_datatable_order(true);
     $url = get_parameter('url', '#');
 
-    $free_search_alert = $filter_alert['free_search_alert'];
+    if (empty($filter_alert['free_search']) === false) {
+        $free_search_alert = $filter_alert['free_search'];
+    } else {
+        $free_search_alert = $filter_alert['free_search_alert'];
+    }
+
     $idGroup = $filter_alert['ag_group'];
     $tag_filter = $filter_alert['tag_filter'];
     $action_filter = $filter_alert['action'];
@@ -915,6 +920,19 @@ if ($get_agent_alerts_datatable === true) {
             }
 
 
+            // Status order.
+            if ($sortField === 'status') {
+                foreach ($alerts['alerts_simple'] as $i => $alert) {
+                    if ($alert['times_fired'] > 0) {
+                        $alerts['alerts_simple'][$i]['status'] = '3';
+                    } else if ($alert['disabled'] > 0) {
+                        $alerts['alerts_simple'][$i]['status']  = '1';
+                    } else {
+                        $alerts['alerts_simple'][$i]['status']  = '2';
+                    }
+                }
+            }
+
             usort($alerts['alerts_simple'], arrayOutputSorting($sort, $sortField));
             $alerts['alerts_simple'] = array_slice($alerts['alerts_simple'], $start, $length);
         }
@@ -941,7 +959,7 @@ if ($get_agent_alerts_datatable === true) {
                     $tmp->agent_module_name = $row[4];
                     $tmp->template_name = $row[5];
                     $tmp->action = $row[6];
-                    $tmp->lastFired = $row[7];
+                    $tmp->last_fired = $row[7];
                     $tmp->status = $row[8];
                     $tmp->validate = $row[9];
 

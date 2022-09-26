@@ -312,7 +312,7 @@ if ($free_search != '') {
             ['agent_module_name'],
             ['template_name'],
             ['action'],
-            ['lastFired'],
+            ['last_fired'],
             ['status']
         );
 

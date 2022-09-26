@@ -861,6 +861,7 @@ $table->data[3][1] = html_print_select(
     [
         'quiet'                 => __('Quiet'),
         'disable_agents'        => __('Disabled Agents'),
+        'disable_agent_modules' => __('Disable Modules'),
         'disable_agents_alerts' => __('Disabled only Alerts'),
     ],
     'type_downtime',
@@ -879,7 +880,7 @@ $table->data[4][1] = html_print_select(
     [
         'once'         => __('Once'),
         'periodically' => __('Periodically'),
-        'cron' => __('Cron from/to'),
+        'cron'         => __('Cron from/to'),
     ],
     'type_execution',
     $type_execution,

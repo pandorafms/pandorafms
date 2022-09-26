@@ -2335,7 +2335,7 @@ $class = 'databox filters';
             <td class="bolder">
             <?php
             echo __('SQL query').ui_print_help_tip(
-                __('The entities of the fields that contain them must be included.'),
+                __('The entities of the fields that contain them must be included. Also is possible use macros like `_start_date_` or `_end_date_`.'),
                 true
             );
             ?>
@@ -3874,6 +3874,7 @@ $class = 'databox filters';
             } else {
                 $rows_select = modules_get_modulegroups();
             }
+
             html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
             html_print_select(
                 $rows_select,

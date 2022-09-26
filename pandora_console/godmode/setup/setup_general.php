@@ -34,7 +34,7 @@ check_login();
 
 if (is_ajax()) {
     $test_address = get_parameter('test_address', '');
-    $params = get_parameter('params', '');
+    $params = io_safe_output(get_parameter('params', ''));
 
     $res = send_test_email(
         $test_address,

@@ -114,11 +114,6 @@ if ($satellite_options != ENTERPRISE_NOT_HOOK) {
     $options_satellite = array_merge($options_satellite, $satellite_options);
 }
 
-$options_services = enterprise_hook('massive_services_options');
-if ($options_services === ENTERPRISE_NOT_HOOK) {
-    $options_services = [];
-}
-
 
 if (in_array($option, array_keys($options_alerts)) === true) {
     $tab = 'massive_alerts';
@@ -136,8 +131,6 @@ if (in_array($option, array_keys($options_alerts)) === true) {
     $tab = 'massive_satellite';
 } else if (in_array($option, array_keys($options_plugins)) === true) {
     $tab = 'massive_plugins';
-} else if (in_array($option, array_keys($options_services)) === true) {
-    $tab = 'massive_services';
 }
 
 if ($tab === 'massive_agents' && empty($option) === true) {
@@ -204,10 +197,6 @@ switch ($tab) {
 
     case 'massive_plugins':
         $options = $options_plugins;
-    break;
-
-    case 'massive_services':
-        $options = $options_services;
     break;
 
     default:
@@ -296,12 +285,6 @@ $satellitetab = enterprise_hook('massive_satellite_tab');
 
 if ($satellitetab == ENTERPRISE_NOT_HOOK) {
     $satellitetab = '';
-}
-
-$servicestab = enterprise_hook('massive_services_tab');
-
-if ($servicestab == ENTERPRISE_NOT_HOOK) {
-    $servicestab = '';
 }
 
 $onheader = [];

@@ -1696,7 +1696,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 
 int
 Pandora_Windows_Service::sendXml (Pandora_Module_List *modules, string extra /* = ""*/) {
-    int rc = 0, rc_sec = 0, xml_buffer;
+    int               rc = 0, rc_sec = 0, xml_buffer;
     string            data_xml;
 	string            xml_filename, random_integer;
 	string            tmp_filename, tmp_filepath;
@@ -1705,12 +1705,10 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules, string extra /* 
 	string            ehorus_conf, eh_key;
 	static HANDLE     mutex = 0; 
     ULARGE_INTEGER    free_bytes;
-    double            min_free_bytes = 0;
 	Pandora_Agent_Conf *conf = NULL;
 	FILE              *conf_fh = NULL;
 
 	conf = this->getConf ();
-	min_free_bytes = 1024 * atoi (conf->getValue ("temporal_min_size").c_str ());
 	xml_buffer = atoi (conf->getValue ("xml_buffer").c_str ());
 	
 	if (mutex == 0) {
@@ -1814,14 +1812,14 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules, string extra /* 
 		rc_sec = this->copyToSecondary (tmp_filename, false);
 
 		/* Secondary buffer. */
-		if (rc_sec != 0 && xml_buffer == 1 && (GetDiskFreeSpaceEx (conf->getValue ("secondary_temporal").c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart >= min_free_bytes)) {
+		if (rc_sec != 0 && this->writeToBuffer(conf->getValue ("secondary_temporal").c_str ())) {
 			secondary_filepath = conf->getValue ("secondary_temporal") + "\\" + tmp_filename;
 			CopyFile (tmp_filepath.c_str(), secondary_filepath.c_str(), false);
 		}
 	}
         
 	/* Primary buffer. Delete the file if successfully copied, buffer disabled or not enough space available. */
-	if (rc == 0 || xml_buffer == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart < min_free_bytes)) {
+	if (rc == 0 || !writeToBuffer(conf->getValue ("temporal").c_str ())) {
 		/* Rename the file if debug mode is enabled*/
 		if (getPandoraDebug ()) {
 			string tmp_filepath_sent = tmp_filepath;
@@ -2217,4 +2215,61 @@ Pandora_Windows_Service::generateAgentName () {
 
 	sha256(data.str().c_str(), digest);
 	return std::string(digest);
+}
+
+bool
+Pandora_Windows_Service::writeToBuffer (string temporal) {
+    int xml_buffer;
+	long int temporal_max_files;
+    double temporal_min_size, temporal_max_size;
+	string dir, file_name;
+    ULARGE_INTEGER free_bytes;
+	Pandora_Agent_Conf *conf = NULL;
+
+	conf = this->getConf ();
+
+	dir = temporal;
+	if (dir[dir.length () - 1] != '\\') {
+		dir += "\\";
+	}
+	file_name = dir + "*.data";
+
+	// Is the XML buffer disabled?
+	xml_buffer = atoi (conf->getValue ("xml_buffer").c_str ());
+	if (xml_buffer == 0) {
+		return false;
+	}
+
+	// Check available disk space.
+	temporal_min_size = atoi (conf->getValue ("temporal_min_size").c_str ());
+	if (GetDiskFreeSpaceEx (dir.c_str (), &free_bytes, NULL, NULL) && (free_bytes.QuadPart / 1048576) < temporal_min_size) { // Convert free_bytes.QuadPart from B to MB.
+		pandoraLog ("[writeToBuffer] Disk full.");
+		return false;
+	}
+
+	// Check buffer file count and size limits.
+	temporal_max_size = atoi (conf->getValue ("temporal_max_size").c_str ());
+	temporal_max_files = atol (conf->getValue ("temporal_max_files").c_str ());
+	if (temporal_max_size != 0 || temporal_max_files != 0) {
+		long int file_count = 0;
+		ULONGLONG file_size = 0;
+		HANDLE hFind;
+		WIN32_FIND_DATA FindFileData;
+		if ((hFind = FindFirstFile(file_name.c_str(), &FindFileData)) != INVALID_HANDLE_VALUE) {
+	    	do {
+	    		file_count += 1;
+				file_size += (FindFileData.nFileSizeHigh * (MAXDWORD + 1)) + FindFileData.nFileSizeLow;
+	    	} while (FindNextFile(hFind, &FindFileData));
+	    	FindClose(hFind);
+		}
+
+		file_size /= 1048576; // Convert from B to MB.
+		if ((temporal_max_size != 0 && file_size > temporal_max_size) ||
+		    (temporal_max_files != 0 && file_count > temporal_max_files)) {
+			pandoraLog ("[writeToBuffer] Too many files or buffer full.");
+			return false;
+		}
+	}
+
+	return true;
 }

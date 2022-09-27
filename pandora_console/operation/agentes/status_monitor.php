@@ -899,7 +899,7 @@ $order = null;
 
 switch ($sortField) {
     case 'agent_alias':
-        $fieldForSorting = 'alias';
+        $fieldForSorting = 'agent_alias';
         switch ($sort) {
             case 'up':
                 $selectAgentNameUp = $selected;
@@ -1088,7 +1088,7 @@ switch ($sortField) {
     break;
 
     default:
-        $fieldForSorting = 'alias';
+        $fieldForSorting = 'agent_alias';
         $selectAgentNameUp = $selected;
         $selectAgentNameDown = false;
         $selectDataTypeUp = false;

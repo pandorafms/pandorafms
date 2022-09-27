@@ -1075,7 +1075,7 @@ function ui_format_alert_row(
         }
     }
 
-    if (is_metaconsole() === true) {
+    if (is_metaconsole() === true && (int) $server_id !== 0) {
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {

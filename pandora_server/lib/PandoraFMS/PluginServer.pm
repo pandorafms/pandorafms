@@ -160,28 +160,35 @@ sub data_consumer ($$) {
 	if($timeout <= 0) {
 		$timeout = 15;
 	}
-	
+
 	# Build command to execute
 	my $command = $plugin->{'execute'};
-	
+
 	if (!defined($plugin->{'parameters'})){
 		$plugin->{'parameters'} = "";
 	}
-		
+
 	my $parameters = $plugin->{'parameters'};
 	my %plugin_macros_for_alert_processing;
-	
+
 	if (!defined($module->{'macros'})){
 		$module->{'macros'} = "";
 	}
-	
+
 	# Plugin macros
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
 			my $macros = p_decode_json($pa_config, encode_utf8($module->{'macros'}));
-			my %macros = %{$macros};
-			if(ref($macros) eq "HASH") {
+			my %macros;
+			if(ref($macros) eq "ARRAY") {
+				my $count = 1;
+				%macros = map { $count++ => $_ } @$macros;
+			} else {
+				%macros = %{$macros};
+			}
+
+			if(ref(\%macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
 				{
 					my $macro_field = safe_output($macros{$macro_id}{'macro'});

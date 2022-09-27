@@ -820,7 +820,7 @@ CREATE TABLE IF NOT EXISTS `tlink` (
 -- Table `tmodule_group`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_group` (
-  `id_mg` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_mg` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(150) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1306,6 +1306,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `ehorus_user_level_enabled` TINYINT,
   `integria_user_level_user` VARCHAR(60),
   `integria_user_level_pass` VARCHAR(45),
+  `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
+  `allowed_ip_list` TEXT,
   CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

@@ -1494,6 +1494,15 @@ function events_get_all(
                 MAX(id_evento) as max_id_evento',
                 ($idx !== false) ? 'GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,' : ''
             );
+
+            $group_selects_trans = sprintf(
+                ',tmax_event.event_rep,
+                %s
+                tmax_event.timestamp_last,
+                tmax_event.timestamp_first,
+                tmax_event.max_id_evento',
+                ($idx !== false) ? 'tmax_event.comments,' : ''
+            );
         }
     } else {
         $idx = array_search('te.user_comment', $fields);
@@ -1502,43 +1511,107 @@ function events_get_all(
         }
     }
 
-    $sql = sprintf(
-        'SELECT %s
+    if ((int) $filter['group_rep'] === 1 && $count === false) {
+        $sql = sprintf(
+            'SELECT %s
+                %s
+            FROM %s
+            INNER JOIN (
+                SELECT te.id_evento %s
+                FROM %s
+                %s
+                %s
+                %s JOIN %s ta
+                ON ta.%s = te.id_agente
+                %s
+                %s
+                %s JOIN tgrupo tg
+                ON %s
+                WHERE 1=1
+                %s
+                %s
+                %s
+                %s
+                %s
+            ) tmax_event
+            ON te.id_evento = tmax_event.max_id_evento
             %s
-         FROM %s
-         %s
-         %s
-         %s JOIN %s ta
-           ON ta.%s = te.id_agente
-           %s
-           %s
-         %s JOIN tgrupo tg
-           ON %s
-         WHERE 1=1
-         %s
-         %s
-         %s
-         %s
-         %s
-         ',
-        join(',', $fields),
-        $group_selects,
-        $tevento,
-        $event_lj,
-        $agentmodule_join,
-        $tagente_join,
-        $tagente_table,
-        $tagente_field,
-        $conditionMetaconsole,
-        join(' ', $agent_join_filters),
-        $tgrupo_join,
-        join(' ', $tgrupo_join_filters),
-        join(' ', $sql_filters),
-        $group_by,
-        $order_by,
-        $pagination,
-        $having
-    );
+            %s
+            %s JOIN %s ta
+                ON ta.%s = te.id_agente
+            %s
+            %s
+            %s JOIN tgrupo tg
+                ON %s',
+            join(',', $fields),
+            $group_selects_trans,
+            $tevento,
+            $group_selects,
+            $tevento,
+            $event_lj,
+            $agentmodule_join,
+            $tagente_join,
+            $tagente_table,
+            $tagente_field,
+            $conditionMetaconsole,
+            join(' ', $agent_join_filters),
+            $tgrupo_join,
+            join(' ', $tgrupo_join_filters),
+            join(' ', $sql_filters),
+            $group_by,
+            $order_by,
+            $pagination,
+            $having,
+            $event_lj,
+            $agentmodule_join,
+            $tagente_join,
+            $tagente_table,
+            $tagente_field,
+            $conditionMetaconsole,
+            join(' ', $agent_join_filters),
+            $tgrupo_join,
+            join(' ', $tgrupo_join_filters),
+            join(' ', $sql_filters)
+        );
+    } else {
+        $sql = sprintf(
+            'SELECT %s
+                %s
+            FROM %s
+            %s
+            %s
+            %s JOIN %s ta
+            ON ta.%s = te.id_agente
+            %s
+            %s
+            %s JOIN tgrupo tg
+            ON %s
+            WHERE 1=1
+            %s
+            %s
+            %s
+            %s
+            %s
+            ',
+            join(',', $fields),
+            $group_selects,
+            $tevento,
+            $event_lj,
+            $agentmodule_join,
+            $tagente_join,
+            $tagente_table,
+            $tagente_field,
+            $conditionMetaconsole,
+            join(' ', $agent_join_filters),
+            $tgrupo_join,
+            join(' ', $tgrupo_join_filters),
+            join(' ', $sql_filters),
+            $group_by,
+            $order_by,
+            $pagination,
+            $having
+        );
+    }
 
     if ($return_sql === true) {
         return $sql;
@@ -2005,7 +2078,7 @@ function events_change_owner(
         events_comment(
             $id_event,
             '',
-            'Change owner to '.$new_owner
+            'Change owner to '.get_user_fullname($new_owner).' ('.$new_owner.')'
         );
     }
 
@@ -3211,18 +3284,9 @@ function events_page_responses($event)
 
         foreach ($users as $u) {
             $owners[$u['id_user']] = $u['id_user'];
-        }
-
-        if (empty($event['owner_user']) === true) {
-            $owner_name = __('None');
-        } else {
-            $owner_name = db_get_value(
-                'id_user',
-                'tusuario',
-                'id_user',
-                $event['owner_user']
-            );
-            $owners[$event['owner_user']] = $owner_name;
+            if (empty($u['fullname']) === false) {
+                $owners[$u['id_user']] = $u['fullname'].' ('.$u['id_user'].')';
+            }
         }
 
         $data[1] = html_print_select(
@@ -4831,7 +4895,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
                             '<b>%s %s %s%s</b>',
                             $c['action'],
                             __('by'),
-                            $c['id_user'],
+                            get_user_fullname($c['id_user']).' ('.$c['id_user'].')',
                             $eventIdExplanation
                         );
 

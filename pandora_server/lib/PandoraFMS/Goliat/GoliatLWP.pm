@@ -110,6 +110,9 @@ sub g_http_task {
 	my $get_content_advanced = "";
 
 	my $ua = new LWP::UserAgent;
+	if (!defined($ua)) {
+		die("LWP::UserAgent->new() failed. Not enough memory?");
+	}
 	$task_requests [$thread_id] = 0 ;
 	$task_sessions [$thread_id] = 0 ;
 	$task_reqsec[$thread_id] = 0;
@@ -388,6 +391,9 @@ sub g_get_page  {
 	my $debug = $_[3];
 
 	my $req = HTTP::Request->new(GET => $url);
+	if (!defined($req)) {
+		die("HTTP::Request->new() failed. Not enough memory?");
+	}
   	$req->header('Accept' => 'text/html');
 	while (my ($header, $value) = each %{$headers}) {
   		$req->header($header => $value);
@@ -418,6 +424,9 @@ sub g_head_page  {
 	my $debug = $_[3];
 
 	my $req = HTTP::Request->new(HEAD => $url);
+	if (!defined($req)) {
+		die("HTTP::Request->new() failed. Not enough memory?");
+	}
   	$req->header('Accept' => 'text/html');
 	while (my ($header, $value) = each %{$headers}) {
   		$req->header($header => $value);

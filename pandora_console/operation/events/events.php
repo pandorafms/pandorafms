@@ -84,7 +84,7 @@ ui_require_javascript_file('pandora_events');
 $default_filter = [
     'status'        => EVENT_NO_VALIDATED,
     'event_view_hr' => $config['event_view_hr'],
-    'group_rep'     => 1,
+    'group_rep'     => EVENT_GROUP_REP_EVENTS,
     'tag_with'      => [],
     'tag_without'   => [],
     'history'       => false,
@@ -1626,9 +1626,10 @@ $inputs[] = $in;
 // Duplicates group { events | agents }.
 $data = html_print_select(
     [
-        0 => __('All events'),
-        1 => __('Group events'),
-        2 => __('Group agents'),
+        EVENT_GROUP_REP_ALL      => __('All events'),
+        EVENT_GROUP_REP_EVENTS   => __('Group events'),
+        EVENT_GROUP_REP_AGENTS   => __('Group agents'),
+        EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
     ],
     'group_rep',
     $group_rep,
@@ -2227,12 +2228,14 @@ try {
     $active_filters_div .= '<div>';
     $active_filters_div .= '<div class="label box-shadow">'.__('Duplicated').'</div>';
     $active_filters_div .= '<div id="summary_duplicates" class="content">';
-    if ($group_rep == 0) {
+    if ($group_rep == EVENT_GROUP_REP_ALL) {
         $active_filters_div .= __('All events.');
-    } else if ($group_rep == 1) {
+    } else if ($group_rep == EVENT_GROUP_REP_EVENTS) {
         $active_filters_div .= __('Group events');
-    } else if ($group_rep == 2) {
+    } else if ($group_rep == EVENT_GROUP_REP_AGENTS) {
         $active_filters_div .= __('Group agents.');
+    } else if ($group_rep == EVENT_GROUP_REP_EXTRAIDS) {
+        $active_filters_div .= __('Group extra id.');
     }
 
     $active_filters_div .= '</div>';

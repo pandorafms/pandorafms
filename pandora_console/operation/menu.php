@@ -404,7 +404,7 @@ if ($access_console_node === true) {
                 $user_event_filter = [
                     'status'        => EVENT_NO_VALIDATED,
                     'event_view_hr' => $config['event_view_hr'],
-                    'group_rep'     => 1,
+                    'group_rep'     => EVENT_GROUP_REP_EVENTS,
                     'tag_with'      => [],
                     'tag_without'   => [],
                     'history'       => false,

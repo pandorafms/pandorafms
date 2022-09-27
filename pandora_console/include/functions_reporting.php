@@ -4011,7 +4011,7 @@ function reporting_groups_nodes($content)
         }
 
         // Grouped.
-        $filters['group_rep'] = 1;
+        $filters['group_rep'] = EVENT_GROUP_REP_EVENTS;
 
         $events = Event::search(
             [

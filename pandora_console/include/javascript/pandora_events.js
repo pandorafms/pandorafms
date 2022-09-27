@@ -96,12 +96,28 @@ function show_event_dialog(event, dialog_page) {
 function execute_response(event_id, server_id) {
   var response_id = $("#select_custom_response option:selected").val();
 
+  var response_parameters_list = $('input[name^="values_params_"]');
+  var response_parameters = [];
+  if (response_parameters_list.length > 0) {
+    response_parameters_list.each(function() {
+      var acum = {
+        name: $(this).attr("name"),
+        value: $(this).val()
+      };
+      response_parameters.push(acum);
+    });
+  }
+
   var params = [];
   params.push({ name: "page", value: "include/ajax/events" });
   params.push({ name: "get_response", value: 1 });
   params.push({ name: "response_id", value: response_id });
   params.push({ name: "server_id", value: server_id });
   params.push({ name: "event_id", value: event_id });
+  params.push({
+    name: "response_parameters",
+    value: JSON.stringify(response_parameters)
+  });
 
   jQuery.ajax({
     data: params,
@@ -126,12 +142,13 @@ function execute_response(event_id, server_id) {
 }
 
 // Check the response type and open it in a modal dialog or new window
-function execute_response_massive(events, response_id) {
+function execute_response_massive(events, response_id, response_parameters) {
   var params = [];
   params.push({ name: "page", value: "include/ajax/events" });
   params.push({ name: "get_response_massive", value: 1 });
   params.push({ name: "response_id", value: response_id });
   params.push({ name: "events", value: JSON.stringify(events) });
+  params.push({ name: "response_parameters", value: response_parameters });
 
   jQuery.ajax({
     data: params,
@@ -193,10 +210,16 @@ function execute_response_massive(events, response_id) {
               response["event_id"] = event_id;
               response["server_id"] = server_id;
               response["target"] = target;
+
+              var indexstr = event_id;
+              if (meta != 0) {
+                indexstr += "-" + server_id;
+              }
+
               perform_response(
                 btoa(JSON.stringify(response)),
                 response_id,
-                event_id + "-" + server_id
+                indexstr
               );
             }
           });
@@ -236,69 +259,12 @@ function show_response_dialog(response_id, response) {
             perform_response(btoa(JSON.stringify(response)), response_id, "");
           },
           width: response["modal_width"],
-          height: response["modal_height"]
+          height: response["modal_height"],
+          buttons: []
         })
         .show();
     }
   });
-}
-
-// Get an event response params from db
-function get_response_params(response_id) {
-  var response_params;
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_response_params=1");
-  params.push("response_id=" + response_id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "json",
-    success: function(data) {
-      response_params = data;
-    }
-  });
-
-  return response_params;
-}
-
-// Get an event response description from db
-function get_response_description(response_id) {
-  var response_description = "";
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_response_description=1");
-  params.push("response_id=" + response_id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "html",
-    success: function(data) {
-      response_description = data;
-    }
-  });
-
-  return response_description;
-}
-
-function add_row_param(id_table, param) {
-  $("#" + id_table).append(
-    '<tr class="params_rows"><td style="text-align:left; padding-left:40px; font-weight: normal; font-style: italic;">' +
-      param +
-      '</td><td style="text-align:left" colspan="2"><input type="text" name="' +
-      param +
-      '" id="' +
-      param +
-      '"></td></tr>'
-  );
 }
 
 // Perform a response and put the output into a div
@@ -670,8 +636,13 @@ function execute_delete_event_reponse(
 
 // Imported from old files.
 function execute_event_response(event_list_btn) {
+  var response_id = $("select[name=response_id]").val();
+  if (!isNaN(response_id)) {
+    table_info_response_event(response_id, 0, 0, true);
+  }
+
   var message =
-    "<h4 style = 'text-align: center; color:black' > Are you sure?</h4> ";
+    "<h4 style = 'text-align: center; color:black' > Are you sure?</h4> <div id='massive-parameters-response'></div> ";
   confirmDialog({
     title: "ATTENTION",
     message: message,
@@ -683,8 +654,6 @@ function execute_event_response(event_list_btn) {
       $("#max_custom_event_resp_msg").hide();
       $("#max_custom_selected").hide();
 
-      var response_id = $("select[name=response_id]").val();
-
       var total_checked = $(".chk_val:checked").length;
 
       // Check select an event.
@@ -694,14 +663,28 @@ function execute_event_response(event_list_btn) {
       }
 
       if (!isNaN(response_id)) {
+        var response_parameters_list = $('input[name^="values_params_"]');
+        var response_parameters = [];
+        if (response_parameters_list.length > 0) {
+          response_parameters_list.each(function() {
+            var acum = {
+              name: $(this).attr("name"),
+              value: $(this).val()
+            };
+            response_parameters.push(acum);
+          });
+        }
+
+        response_parameters = JSON.stringify(response_parameters);
+
         if (event_list_btn) {
           $("#button-submit_event_response").hide(function() {
             $("#response_loading_dialog").show(function() {
-              show_response_dialog_massive(response_id);
+              show_response_dialog_massive(response_id, response_parameters);
             });
           });
         } else {
-          check_execute_response_massive(response_id);
+          check_execute_response_massive(response_id, response_parameters);
         }
       } else {
         // It is not a custom response
@@ -776,7 +759,7 @@ function execute_event_response(event_list_btn) {
   });
 }
 
-function show_response_dialog_massive(response_id) {
+function show_response_dialog_massive(response_id, response_parameters) {
   var params = [];
   params.push({ name: "page", value: "include/ajax/events" });
   params.push({ name: "get_response", value: 1 });
@@ -803,7 +786,7 @@ function show_response_dialog_massive(response_id) {
           draggable: true,
           modal: false,
           open: function() {
-            check_execute_response_massive(response_id);
+            check_execute_response_massive(response_id, response_parameters);
           },
           close: function() {
             $("#checkbox-all_validate_box").prop("checked", false);
@@ -830,7 +813,7 @@ function show_response_dialog_massive(response_id) {
   });
 }
 
-function check_execute_response_massive(response_id) {
+function check_execute_response_massive(response_id, response_parameters) {
   var events = [];
   $(".container-massive-events-response").empty();
   $(".chk_val:checked").each(function() {
@@ -852,7 +835,7 @@ function check_execute_response_massive(response_id) {
     }
   });
 
-  execute_response_massive(events, response_id);
+  execute_response_massive(events, response_id, response_parameters);
 }
 
 function event_widget_options() {
@@ -1135,4 +1118,44 @@ function check_event_sound(settings) {
     },
     "json"
   );
+}
+
+function table_info_response_event(response_id, event_id, server_id, massive) {
+  var params = [];
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "get_response", value: 1 });
+  params.push({ name: "response_id", value: response_id });
+  params.push({ name: "server_id", value: server_id });
+  params.push({ name: "event_id", value: event_id });
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: $("#hidden-ajax_file").val(),
+    dataType: "json",
+    success: function(response) {
+      if (response) {
+        var params = [];
+        params.push({ name: "page", value: "include/ajax/events" });
+        params.push({ name: "draw_row_response_info", value: 1 });
+        params.push({ name: "massive", value: massive === true ? 1 : 0 });
+        params.push({ name: "response", value: JSON.stringify(response) });
+
+        jQuery.ajax({
+          data: params,
+          type: "POST",
+          url: $("#hidden-ajax_file").val(),
+          dataType: "html",
+          success: function(output) {
+            if (massive === true) {
+              $("#massive-parameters-response").append(output);
+            } else {
+              $(".params_rows").remove();
+              $("#responses_table").append(output);
+            }
+          }
+        });
+      }
+    }
+  });
 }

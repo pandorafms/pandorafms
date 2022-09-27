@@ -3438,31 +3438,18 @@ function events_page_responses($event)
 
     $table_responses->data[] = $data;
 
-    // TODO quitar el async: false. get_response_params and get_response_description.
     $responses_js = "<script>
 			$('#select_custom_response').change(function() {
 				var id_response = $('#select_custom_response').val();
-				var params = get_response_params(id_response);
-				var description = get_response_description(id_response);
-				$('.params_rows').remove();
-				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"height_30px\" colspan=\"2\">'+description+'</td></tr>');
-
-				if (params.length == 1 && params[0] == '') {
-					return;
-				}
-
-				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td class=\"left pdd_l_20px height_30px\" colspan=\"3\">".__('Parameters')."</td></tr>');
-
-				for (i = 0; i < params.length; i++) {
-					add_row_param('responses_table',params[i]);
-				}
+                table_info_response_event(id_response,".$event['id_evento'].','.$event['server_id'].");
 			});
 			$('#select_custom_response').trigger('change');
 			</script>";
 
-    $responses = '<div id="extended_event_responses_page" class="extended_event_pages">'.html_print_table($table_responses, true).$responses_js.'</div>';
+    $responses = '<div id="extended_event_responses_page" class="extended_event_pages">';
+    $responses .= html_print_table($table_responses, true);
+    $responses .= $responses_js;
+    $responses .= '</div>';
 
     return $responses;
 }
@@ -3471,14 +3458,16 @@ function events_page_responses($event)
 /**
  * Replace macros in the target of a response and return it.
  *
- * @param integer $event_id    Event identifier.
- * @param integer $response_id Event response identifier.
+ * @param integer    $event_id            Event identifier.
+ * @param array      $event_response      Event Response.
+ * @param array|null $response_parameters If parameters response values.
  *
  * @return string The response text with the macros applied.
  */
 function events_get_response_target(
     int $event_id,
-    array $event_response
+    array $event_response,
+    ?array $response_parameters=null
 ) {
     global $config;
 
@@ -3492,6 +3481,35 @@ function events_get_response_target(
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
     $target = io_safe_output($event_response['target']);
+
+    // Replace parameters response.
+    if (isset($response_parameters) === true
+        && empty($response_parameters) === false
+    ) {
+        $response_parameters = array_reduce(
+            $response_parameters,
+            function ($carry, $item) {
+                $carry[$item['name']] = $item['value'];
+                return $carry;
+            }
+        );
+    }
+
+    if (empty($event_response['params']) === false) {
+        $response_params = explode(',', $event_response['params']);
+        if (is_array($response_params) === true) {
+            foreach ($response_params as $param) {
+                $param = trim(io_safe_output($param));
+                $target = str_replace(
+                    '_'.$param.'_',
+                    $response_parameters['values_params_'.$param],
+                    $target
+                );
+            }
+        }
+    }
+
+    // Replace macros.
     if (strpos($target, '_agent_alias_') !== false) {
         $agente_table_name = 'tagente';
         $filter = ['id_agente' => $event['id_agente']];
@@ -5465,7 +5483,16 @@ function events_get_criticity_class($criticity)
 }
 
 
-// TODO
+/**
+ * Draw row response events.
+ *
+ * @param array        $event_response Response.
+ * @param integer|null $response_id    Id .
+ * @param boolean      $end            End block.
+ * @param integer|null $index          Index block.
+ *
+ * @return string Html output.
+ */
 function get_row_response_action(
     array $event_response,
     ?int $response_id,
@@ -5530,7 +5557,8 @@ function get_row_response_action(
 function get_events_get_response_target(
     $event_id,
     $event_response,
-    $server_id=0
+    $server_id=0,
+    $response_parameters=[]
 ) {
     try {
         if (is_metaconsole() === true
@@ -5542,7 +5570,8 @@ function get_events_get_response_target(
 
         return events_get_response_target(
             $event_id,
-            $event_response
+            $event_response,
+            $response_parameters
         );
     } catch (\Exception $e) {
         // Unexistent agent.

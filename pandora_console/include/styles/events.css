@@ -429,3 +429,26 @@ div.multi-response-buttons {
   justify-content: flex-end;
   align-items: center;
 }
+
+#massive-parameters-response {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#massive-parameters-response > div {
+  width: 80%;
+}
+
+#massive-parameters-response > div h5 {
+  text-align: center;
+}
+
+#massive-parameters-response > div div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}

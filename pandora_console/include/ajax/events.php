@@ -66,8 +66,7 @@ $perform_event_response = (bool) get_parameter('perform_event_response');
 $get_response = (bool) get_parameter('get_response');
 $get_response_massive = (bool) get_parameter('get_response_massive');
 $get_row_response_action = (bool) get_parameter('get_row_response_action');
-$get_response_params = (bool) get_parameter('get_response_params');
-$get_response_description = (bool) get_parameter('get_response_description');
+$draw_row_response_info = (bool) get_parameter('draw_row_response_info', false);
 $meta = get_parameter('meta', 0);
 $history = get_parameter('history', 0);
 $table_events = get_parameter('table_events', 0);
@@ -1055,43 +1054,6 @@ $(document).ready(function (){
 }
 
 
-if ($get_response_description) {
-    $response_id = get_parameter('response_id');
-
-    $description = db_get_value('description', 'tevent_response', 'id', $response_id);
-
-    if ($description === false) {
-        return;
-    }
-
-    $description = io_safe_output($description);
-    $description = str_replace("\r\n", '<br>', $description);
-
-    echo $description;
-
-    return;
-}
-
-if ($get_response_params) {
-    if (! check_acl($config['id_user'], 0, 'EW')) {
-        echo 'unauthorized';
-        return;
-    }
-
-    $response_id = get_parameter('response_id');
-
-    $params = db_get_value('params', 'tevent_response', 'id', $response_id);
-
-    if ($params === false) {
-        return;
-    }
-
-    echo json_encode(explode(',', $params));
-
-    return;
-}
-
-
 if ($get_response === true) {
     if (! check_acl($config['id_user'], 0, 'EW')) {
         echo 'unauthorized';
@@ -1101,6 +1063,12 @@ if ($get_response === true) {
     $response_id = get_parameter('response_id');
     $server_id = (int) get_parameter('server_id', 0);
     $event_id = (int) get_parameter('event_id', 0);
+    $response_parameters = json_decode(
+        io_safe_output(
+            get_parameter('response_parameters', '')
+        ),
+        true
+    );
 
     $event_response = db_get_row(
         'tevent_response',
@@ -1124,7 +1092,8 @@ if ($get_response === true) {
 
             $event_response['target'] = events_get_response_target(
                 $event_id,
-                $event_response
+                $event_response,
+                $response_parameters
             );
         } catch (\Exception $e) {
             // Unexistent agent.
@@ -1168,10 +1137,16 @@ if ($get_response_massive === true) {
         return [];
     }
 
-
     $events = json_decode(
         io_safe_output(
             get_parameter('events', '')
+        ),
+        true
+    );
+
+    $response_parameters = json_decode(
+        io_safe_output(
+            get_parameter('response_parameters', '')
         ),
         true
     );
@@ -1183,15 +1158,18 @@ if ($get_response_massive === true) {
                 $event_response_targets[$idEvent.'|'.$server_id]['target'] = get_events_get_response_target(
                     $idEvent,
                     $event_response,
-                    $server_id
+                    $server_id,
+                    $response_parameters
                 );
             }
         }
     } else {
-        foreach ($idEvents as $idEvent) {
+        foreach ($events as $idEvent) {
             $event_response_targets[$idEvent]['target'] = get_events_get_response_target(
                 $idEvent,
-                $event_response
+                $event_response,
+                0,
+                $response_parameters
             );
         }
     }
@@ -2489,5 +2467,77 @@ if ($get_events_fired) {
     }
 
     echo io_json_mb_encode($return);
+    return;
+}
+
+if ($draw_row_response_info === true) {
+    $event_response = json_decode(
+        io_safe_output(
+            get_parameter('response', '')
+        ),
+        true
+    );
+
+    $massive = (bool) get_parameter('massive', false);
+
+    $output .= '';
+    if ($massive === true) {
+        $output .= '<div>';
+        $output .= '<h5>';
+        $output .= $event_response['description'];
+        $output .= '</h5>';
+        $output .= '</div>';
+    } else {
+        $output .= '<tr class="params_rows">';
+        $output .= '<td>';
+        $output .= __('Description');
+        $output .= '</td>';
+        $output .= '<td class="height_30px" colspan="2">';
+        $output .= $event_response['description'];
+        $output .= '</td>';
+        $output .= '</tr>';
+    }
+
+    if (empty($event_response['params']) === false) {
+        $response_params = explode(',', $event_response['params']);
+        if (is_array($response_params) === true) {
+            if ($massive === true) {
+                $output .= '<div>';
+            } else {
+                $output .= '<tr class="params_rows">';
+                $output .= '<td class="left pdd_l_20px height_30px" colspan="3">';
+                $output .= __('Parameters');
+                $output .= '</td>';
+                $output .= '</tr>';
+            }
+
+            foreach ($response_params as $param) {
+                $param = trim(io_safe_output($param));
+                if ($massive === true) {
+                    $output .= '<div>';
+                    $output .= '<label>';
+                    $output .= $param;
+                    $output .= '</label>';
+                    $output .= '<input type="text" name="values_params_'.$param.'" />';
+                    $output .= '</div>';
+                } else {
+                    $output .= '<tr class="params_rows">';
+                    $output .= '<td style="text-align:left; padding-left:40px; font-weight: normal; font-style: italic;">';
+                    $output .= $param;
+                    $output .= '</td>';
+                    $output .= '<td style="text-align:left" colspan="2">';
+                    $output .= '<input type="text" name="values_params_'.$param.'" />';
+                    $output .= '</td>';
+                    $output .= '</tr>';
+                }
+            }
+
+            if ($massive === true) {
+                $output .= '</div>';
+            }
+        }
+    }
+
+    echo $output;
     return;
 }

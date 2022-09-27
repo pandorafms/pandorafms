@@ -1,5 +1,5 @@
 START TRANSACTION;
 
-ALTER TABLE `tpolicies` ADD COLUMN `apply_to_secondary_groups` TINYINT NOT NULL DEFAULT 0;
+
 
 COMMIT;

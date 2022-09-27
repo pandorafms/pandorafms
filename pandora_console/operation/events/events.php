@@ -741,6 +741,8 @@ if (is_ajax() === true) {
                         // Owner.
                         if (empty($tmp->owner_user) === true) {
                             $tmp->owner_user = __('System');
+                        } else {
+                            $tmp->owner_user = get_user_fullname($tmp->owner_user).' ('.$tmp->owner_user.')';
                         }
 
                         // Group name.

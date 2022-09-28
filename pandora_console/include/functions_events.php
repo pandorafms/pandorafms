@@ -3522,16 +3522,20 @@ function events_page_responses($event)
 /**
  * Replace macros in the target of a response and return it.
  *
- * @param integer    $event_id            Event identifier.
- * @param array      $event_response      Event Response.
- * @param array|null $response_parameters If parameters response values.
+ * @param integer      $event_id            Event identifier.
+ * @param array        $event_response      Event Response.
+ * @param array|null   $response_parameters If parameters response values.
+ * @param integer|null $server_id           Server Id.
+ * @param string|null  $server_name         Name server.
  *
  * @return string The response text with the macros applied.
  */
 function events_get_response_target(
     int $event_id,
     array $event_response,
-    ?array $response_parameters=null
+    ?array $response_parameters=null,
+    ?int $server_id=0,
+    ?string $server_name=''
 ) {
     global $config;
 
@@ -3895,6 +3899,26 @@ function events_get_response_target(
         $target = str_replace(
             '_current_username_',
             io_safe_output($fullname['fullname']),
+            $target
+        );
+    }
+
+    if (is_metaconsole() === true
+        && strpos($target, '_node_id_') !== false
+    ) {
+        $target = str_replace(
+            '_node_id_',
+            $server_id,
+            $target
+        );
+    }
+
+    if (is_metaconsole() === true
+        && strpos($target, '_node_name_') !== false
+    ) {
+        $target = str_replace(
+            '_node_name_',
+            $server_name,
             $target
         );
     }
@@ -5635,7 +5659,9 @@ function get_events_get_response_target(
         return events_get_response_target(
             $event_id,
             $event_response,
-            $response_parameters
+            $response_parameters,
+            $server_id,
+            ($server_id !== 0) ? $node->server_name() : 'Metaconsole'
         );
     } catch (\Exception $e) {
         // Unexistent agent.

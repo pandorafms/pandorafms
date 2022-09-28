@@ -1093,7 +1093,9 @@ if ($get_response === true) {
             $event_response['target'] = events_get_response_target(
                 $event_id,
                 $event_response,
-                $response_parameters
+                $response_parameters,
+                $server_id,
+                ($server_id !== 0) ? $node->server_name() : 'Metaconsole'
             );
         } catch (\Exception $e) {
             // Unexistent agent.

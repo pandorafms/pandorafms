@@ -1150,7 +1150,7 @@ class Item extends CachedModel
                         'sec2'         => 'screens/screens',
                         'action'       => 'visualmap',
                         'id_visualmap' => $vcId,
-                        'pure'         => (int) $config['pure'],
+                        'pure'         => (int) (isset($config['pure']) === true) ? $config['pure'] : 0,
                     ]
                 );
             } else if (empty($linkedLayoutNodeId) === true
@@ -1175,7 +1175,7 @@ class Item extends CachedModel
                         'sec'  => 'network',
                         'sec2' => 'operation/visual_console/view',
                         'id'   => $vcId,
-                        'pure' => (int) $config['pure'],
+                        'pure' => (int) (isset($config['pure']) === true) ? $config['pure'] : 0,
                     ]
                 );
             } else if (\is_metaconsole() === true
@@ -1313,7 +1313,7 @@ class Item extends CachedModel
                                 'operation/agentes/status_monitor',
                                 ['id_module' => $moduleId],
                                 // No autologin from the public view.
-                                !$config['public_view'],
+                                !((isset($config['public_view']) === true) ? $config['public_view'] : false),
                                 $mobile_navigation,
                                 [
                                     'id'   => $moduleId,

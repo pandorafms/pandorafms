@@ -86,7 +86,8 @@ function groupview_get_modules_counters($groups_ids=false)
 		WHERE tasg.id_group IN ($groups_ids)
 		GROUP BY tasg.id_group
 	) x GROUP BY g";
-    return db_get_all_rows_sql($sql);
+    $data = db_get_all_rows_sql($sql);
+    return $data;
 }
 
 

@@ -426,7 +426,8 @@ class ColorModuleTabs extends Widget
     private function getInfoModules(array $modules): array
     {
         $where = sprintf(
-            'tagente_modulo.id_agente_modulo IN (%s)',
+            'tagente_modulo.id_agente_modulo IN (%s)
+            AND tagente_modulo.delete_pending = 0',
             implode(',', $modules)
         );
 

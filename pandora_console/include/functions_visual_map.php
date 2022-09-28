@@ -3788,6 +3788,7 @@ function visual_map_get_user_layouts(
         unset($filter['can_manage_group_all']);
     }
 
+    $where = '';
     if ($check_user_groups === true && !empty($groups)) {
         if (empty($where)) {
             $where = '';
@@ -4080,7 +4081,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         // When the status calculation type is 'default', only one critical
         // element is required to set the layout status as critical, so we can
         // return the critical status right now.
-        if ($status_data['linked_layout_status_type'] === 'default'
+        if ((isset($status_data['linked_layout_status_type']) === true && $status_data['linked_layout_status_type'] === 'default')
             && ($status == VISUAL_MAP_STATUS_CRITICAL_BAD
             || $status == VISUAL_MAP_STATUS_CRITICAL_ALERT)
         ) {
@@ -4104,71 +4105,73 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         metaconsole_restore_db();
     }
 
-    // Status calculation.
-    switch ($status_data['linked_layout_status_type']) {
-        default:
-        case 'default':
-            $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
-            $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
-            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
-            $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
-            $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
+    if (isset($status_data['linked_layout_status_type']) === true) {
+        // Status calculation.
+        switch ($status_data['linked_layout_status_type']) {
+            default:
+            case 'default':
+                $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+                $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+                $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
+                $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
+                $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if ($num_items_critical_alert > 0) {
-                return VISUAL_MAP_STATUS_CRITICAL_ALERT;
-            } else if ($num_items_critical > 0) {
-                return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($num_items_warning_alert > 0) {
-                return VISUAL_MAP_STATUS_WARNING_ALERT;
-            } else if ($num_items_warning > 0) {
-                return VISUAL_MAP_STATUS_WARNING;
-            } else if ($num_items_unknown > 0) {
-                return VISUAL_MAP_STATUS_UNKNOWN;
-            } else {
-                return VISUAL_MAP_STATUS_NORMAL;
-            }
-        break;
-        case 'weight':
-            $weight = $status_data['id_layout_linked_weight'];
-            $num_items = count($valid_layout_items);
-            $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
-            $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
-            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
-            $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
-            $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
+                if ($num_items_critical_alert > 0) {
+                    return VISUAL_MAP_STATUS_CRITICAL_ALERT;
+                } else if ($num_items_critical > 0) {
+                    return VISUAL_MAP_STATUS_CRITICAL_BAD;
+                } else if ($num_items_warning_alert > 0) {
+                    return VISUAL_MAP_STATUS_WARNING_ALERT;
+                } else if ($num_items_warning > 0) {
+                    return VISUAL_MAP_STATUS_WARNING;
+                } else if ($num_items_unknown > 0) {
+                    return VISUAL_MAP_STATUS_UNKNOWN;
+                } else {
+                    return VISUAL_MAP_STATUS_NORMAL;
+                }
+            break;
+            case 'weight':
+                $weight = $status_data['id_layout_linked_weight'];
+                $num_items = count($valid_layout_items);
+                $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+                $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+                $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
+                $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
+                $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if (($num_items_critical > 0 || $num_items_critical_alert > 0)
-                && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
-            ) {
-                return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
-                && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
-            ) {
-                return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
-            } else if ($num_items_unknown > 0
-                && (($num_items_unknown * 100) / $num_items) >= $weight
-            ) {
-                return VISUAL_MAP_STATUS_UNKNOWN;
-            } else {
-                return VISUAL_MAP_STATUS_NORMAL;
-            }
-        break;
+                if (($num_items_critical > 0 || $num_items_critical_alert > 0)
+                    && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
+                ) {
+                    return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
+                } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
+                    && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
+                ) {
+                    return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
+                } else if ($num_items_unknown > 0
+                    && (($num_items_unknown * 100) / $num_items) >= $weight
+                ) {
+                    return VISUAL_MAP_STATUS_UNKNOWN;
+                } else {
+                    return VISUAL_MAP_STATUS_NORMAL;
+                }
+            break;
 
-        case 'service':
-            $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
-            $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
+            case 'service':
+                $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
+                $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
 
-            $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
-            $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
+                $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
+                $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
 
-            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
-                return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($warning_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
-                return VISUAL_MAP_STATUS_WARNING;
-            } else {
-                return VISUAL_MAP_STATUS_NORMAL;
-            }
-        break;
+                if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
+                    return VISUAL_MAP_STATUS_CRITICAL_BAD;
+                } else if ($warning_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
+                    return VISUAL_MAP_STATUS_WARNING;
+                } else {
+                    return VISUAL_MAP_STATUS_NORMAL;
+                }
+            break;
+        }
     }
 }
 

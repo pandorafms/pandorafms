@@ -962,7 +962,7 @@ switch ($sortField) {
     break;
 
     case 'module_name':
-        $fieldForSorting = 'nombre';
+        $fieldForSorting = 'module_name';
         switch ($sort) {
             case 'up':
                 $selectModuleNameUp = $selected;

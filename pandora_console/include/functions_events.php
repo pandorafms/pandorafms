@@ -2078,7 +2078,7 @@ function events_change_owner(
         events_comment(
             $id_event,
             '',
-            'Change owner to '.$new_owner
+            'Change owner to '.get_user_fullname($new_owner).' ('.$new_owner.')'
         );
     }
 
@@ -3284,18 +3284,9 @@ function events_page_responses($event)
 
         foreach ($users as $u) {
             $owners[$u['id_user']] = $u['id_user'];
-        }
-
-        if (empty($event['owner_user']) === true) {
-            $owner_name = __('None');
-        } else {
-            $owner_name = db_get_value(
-                'id_user',
-                'tusuario',
-                'id_user',
-                $event['owner_user']
-            );
-            $owners[$event['owner_user']] = $owner_name;
+            if (empty($u['fullname']) === false) {
+                $owners[$u['id_user']] = $u['fullname'].' ('.$u['id_user'].')';
+            }
         }
 
         $data[1] = html_print_select(
@@ -4921,7 +4912,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
                             '<b>%s %s %s%s</b>',
                             $c['action'],
                             __('by'),
-                            $c['id_user'],
+                            get_user_fullname($c['id_user']).' ('.$c['id_user'].')',
                             $eventIdExplanation
                         );
 

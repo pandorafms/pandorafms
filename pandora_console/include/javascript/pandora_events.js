@@ -336,9 +336,12 @@ function event_change_status(event_ids, server_id) {
       }
 
       if (data.status == "status_ok") {
-        if (typeof dt_events !== "undefined") {
-          dt_events.draw(false);
-        }
+        // if (typeof dt_events !== "undefined") {
+        //   dt_events.draw(false);
+        // }
+        $("#table_events")
+          .DataTable()
+          .draw(false);
         $("#notification_status_success").show();
         if (new_status == 1) {
           $("#extended_event_general_page table td.general_acknowleded").text(
@@ -396,9 +399,12 @@ function event_change_owner(event_id, server_id) {
       }
 
       if (data == "owner_ok") {
-        if (typeof dt_events !== "undefined") {
-          dt_events.draw(false);
-        }
+        // if (typeof dt_events !== "undefined") {
+        //   dt_events.draw(false);
+        // }
+        $("#table_events")
+          .DataTable()
+          .draw(false);
         $("#notification_owner_success").show();
         if (new_owner == -1) {
           $("#extended_event_general_page table td.general_owner").html(

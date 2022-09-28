@@ -2075,7 +2075,7 @@ function html_print_extended_select_for_time(
     $custom_fields=false,
     $style_icon='',
     $no_change=false,
-    $allow_zero=false
+    $allow_zero=0
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2089,30 +2089,19 @@ function html_print_extended_select_for_time(
         $fields['-2'] = __('No change');
     }
 
-    if (! $selected) {
-        foreach ($fields as $t_key => $t_value) {
-            if ($t_key != -1) {
-                if ($nothing == '') {
-                    // -1 means 'custom'
-                    $selected = $t_key;
-                    break;
-                } else {
-                    $selected = $nothing;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Allow the use of the value zero.
-    if ($allow_zero === true) {
-        $selected_zero = true;
-    } else {
-        $selected_zero = ($selected != 0) ? true : false;
-    }
-
-    if (($selected !== false) && (!isset($fields[$selected]) && $selected_zero)) {
+    if (empty($selected) === false
+        && $selected !== '0'
+        && isset($fields[$selected]) === false
+    ) {
+        $allow_zero = false;
         $fields[$selected] = human_time_description_raw($selected, true);
+    }
+
+    if (empty($nothing) === true
+        && (empty($selected) === true
+        || $selected === '0')
+    ) {
+            $selected = 300;
     }
 
     $units = [
@@ -2180,14 +2169,23 @@ function html_print_extended_select_for_time(
             $uniq_name.'_units',
             '1',
             ''.$script,
-            $nothing,
-            $nothing_value,
+            '',
+            0,
             false,
             false,
             false,
             $class,
             $readonly,
-            'font-size: xx-small;'.$select_style
+            'padding: 7px 3px;'.$select_style,
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
         );
         echo ' <a href="javascript:">'.html_print_image(
             'images/list.png',
@@ -2202,7 +2200,7 @@ function html_print_extended_select_for_time(
     echo '</div>';
     echo "<script type='text/javascript'>
 		$(document).ready (function () {
-			period_select_init('".$uniq_name."', ".(($allow_zero) ? 'true' : 'null').");
+			period_select_init('".$uniq_name."', ".(($allow_zero) ? 1 : 0).");
 			period_select_events('".$uniq_name."');
 		});
 		function period_select_".$name."_update(seconds) {

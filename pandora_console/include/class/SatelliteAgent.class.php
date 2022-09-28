@@ -119,13 +119,30 @@ class SatelliteAgent extends HTML
 
         // Datatables list.
         try {
+            $checkbox_all = html_print_checkbox(
+                'all_validate_box',
+                1,
+                false,
+                true
+            );
+
             $columns = [
+                [
+                    'text'  => 'm',
+                    'extra' => $checkbox_all,
+                    'class' => 'mw60px',
+                ],
                 'name',
                 'address',
                 'actions',
             ];
 
             $column_names = [
+                [
+                    'text'  => 'm',
+                    'extra' => $checkbox_all,
+                    'class' => 'w20px no-text-imp',
+                ],
                 __('Agent Name'),
                 __('IP Adrress'),
                 __('Actions'),
@@ -163,6 +180,7 @@ class SatelliteAgent extends HTML
                         0,
                         1,
                         2,
+                        3,
                     ],
                     'search_button_class' => 'sub filter float-right',
                     'form'                => [
@@ -203,7 +221,34 @@ class SatelliteAgent extends HTML
         $msg = '<div id="msg"     class="invisible"></div>';
         $aux = '<div id="aux"     class="invisible"></div>';
 
-          echo $modal.$msg.$aux;
+        echo $modal.$msg.$aux;
+
+        echo '<div id="satellite_actions" class="action-buttons" style="width: 100%">';
+
+        html_print_select(
+            [
+                '0' => 'Disable / Enable selected agents',
+                '1' => 'Delete / Create selected agents',
+            ],
+            'satellite_action',
+            '',
+            '',
+            '',
+            0,
+            false,
+            false,
+            false
+        );
+
+        html_print_submit_button(
+            __('Execute action'),
+            'submit_satellite_action',
+            false,
+            'class="sub next"'
+        );
+        echo '</div>';
+
+        echo '</br></br>';
 
         // Create button.
         echo '<div class="w100p flex-content-right">';
@@ -349,7 +394,7 @@ class SatelliteAgent extends HTML
                         $delete = ($tmp->type === 'delete_host');
 
                         if ($disable === true) {
-                            $tmp->name = '<i>'.$tmp->name.'</i>';
+                            $tmp->name = '<i class="italic_a">'.$tmp->name.'</i>';
                         }
 
                         if ($delete === true) {
@@ -383,6 +428,13 @@ class SatelliteAgent extends HTML
                                 ]
                             );
                         }
+
+                        $tmp->m = html_print_checkbox(
+                            'check_'.strip_tags($tmp->name),
+                            $tmp->address.','.strip_tags($tmp->name).','.(int) $delete.','.(int) $disable.','.$id_agente,
+                            false,
+                            true
+                        );
 
                         $carry[] = $tmp;
                         return $carry;
@@ -452,12 +504,6 @@ class SatelliteAgent extends HTML
     {
         if (!is_array($values)) {
             $values = [];
-        }
-
-        $return_all_group = false;
-
-        if (users_can_manage_group_all('AR') === true) {
-            $return_all_group = true;
         }
 
         $form = [
@@ -546,6 +592,8 @@ class SatelliteAgent extends HTML
         $values['delete'] = get_parameter('delete', '');
         $values['id'] = get_parameter('id', 0);
 
+        $no_msg = (bool) get_parameter('no_msg', 0);
+
         if ((bool) $values['id'] === true) {
             db_process_sql_update(
                 'tagente',
@@ -558,15 +606,19 @@ class SatelliteAgent extends HTML
         }
 
         if ($this->parseSatelliteConf('delete', $values) === false) {
-            $this->ajaxMsg('error', ($values['delete'] === '0') ? __('Error delete agent') : __('Error add agent'));
+            if ($no_msg === false) {
+                $this->ajaxMsg('error', ($values['delete'] === '0') ? __('Error delete agent') : __('Error add agent'));
+            }
         } else {
-            $this->ajaxMsg(
-                'result',
-                ($values['delete'] === '0')
-                    ? _('Host '.$values['address'].' deleted.')
-                    : _('Host '.$values['address'].' added.'),
-                true
-            );
+            if ($no_msg === false) {
+                $this->ajaxMsg(
+                    'result',
+                    ($values['delete'] === '0')
+                        ? _('Host '.$values['address'].' deleted.')
+                        : _('Host '.$values['address'].' added.'),
+                    true
+                );
+            }
         }
 
         exit;
@@ -585,6 +637,8 @@ class SatelliteAgent extends HTML
         $values['disable'] = get_parameter('disable', '');
         $values['id'] = get_parameter('id', 0);
 
+        $no_msg = (bool) get_parameter('no_msg', 0);
+
         if ((bool) $values['id'] === true) {
             db_process_sql_update(
                 'tagente',
@@ -594,19 +648,23 @@ class SatelliteAgent extends HTML
         }
 
         if ($this->parseSatelliteConf('disable', $values) === false) {
-            $this->ajaxMsg(
-                'error',
-                ($values['disable'] === '0') ? __('Error disable agent') : __('Error enable agent')
-            );
+            if ($no_msg === false) {
+                $this->ajaxMsg(
+                    'error',
+                    ($values['disable'] === '0') ? __('Error disable agent') : __('Error enable agent')
+                );
+            }
         } else {
-            $this->ajaxMsg(
-                'result',
-                ($values['disable'] === '0')
-                    ? _('Host '.$values['address'].' disabled.')
-                    : _('Host '.$values['address'].' enabled.'),
-                false,
-                true
-            );
+            if ($no_msg === false) {
+                $this->ajaxMsg(
+                    'result',
+                    ($values['disable'] === '0')
+                        ? _('Host '.$values['address'].' disabled.')
+                        : _('Host '.$values['address'].' enabled.'),
+                    false,
+                    true
+                );
+            }
         }
 
         exit;
@@ -616,9 +674,10 @@ class SatelliteAgent extends HTML
     /**
      * Parse satellite configuration .
      *
-     * @param  string $action  Action to perform (save, delete).
-     * @param  array  $values.
-     * @return void
+     * @param string $action Action to perform (save, delete).
+     * @param array  $values Values.
+     *
+     * @return boolean
      */
     private function parseSatelliteConf(string $action, array $values)
     {
@@ -629,8 +688,14 @@ class SatelliteAgent extends HTML
                     if (empty($pos) === false) {
                         $string_hosts = 'add_host '.$values['address'].' '.$values['name']."\n";
 
-                        $array1 = array_slice($this->satellite_config, 0, array_key_first($pos));
-                        $array2 = array_slice($this->satellite_config, array_key_first($pos));
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
+                        $array1 = array_slice($this->satellite_config, 0, $key_pos);
+                        $array2 = array_slice($this->satellite_config, $key_pos);
                         // Add host to conf.
                         $array_merge = array_merge($array1, [$string_hosts], $array2);
                         $this->satellite_config = $array_merge;
@@ -653,8 +718,14 @@ class SatelliteAgent extends HTML
                     if (empty($pos) === false) {
                         $string_hosts = 'add_host '.$values['address'].' '.$values['name']."\n";
 
-                        $array1 = array_slice($this->satellite_config, 0, array_key_first($pos));
-                        $array2 = array_slice($this->satellite_config, array_key_first($pos));
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
+                        $array1 = array_slice($this->satellite_config, 0, $key_pos);
+                        $array2 = array_slice($this->satellite_config, $key_pos);
                         // Add host to conf.
                         $array_merge = array_merge($array1, [$string_hosts], $array2);
                         $this->satellite_config = $array_merge;
@@ -662,8 +733,15 @@ class SatelliteAgent extends HTML
                         // Remove ignore_host.
                         $pattern = io_safe_expreg('ignore_host '.$values['address'].' '.$values['name']);
                         $pos = preg_grep('/'.$pattern.'/', $this->satellite_config);
+
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
                         if (empty($pos) === false) {
-                            unset($this->satellite_config[array_key_first($pos)]);
+                            unset($this->satellite_config[$key_pos]);
                         }
 
                         $conf = implode('', $this->satellite_config);
@@ -673,8 +751,14 @@ class SatelliteAgent extends HTML
                     if (empty($pos) === false) {
                         $string_hosts = 'ignore_host '.$values['address'].' '.$values['name']."\n";
 
-                        $array1 = array_slice($this->satellite_config, 0, array_key_first($pos));
-                        $array2 = array_slice($this->satellite_config, array_key_first($pos));
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
+                        $array1 = array_slice($this->satellite_config, 0, $key_pos);
+                        $array2 = array_slice($this->satellite_config, $key_pos);
                         // Add host to conf.
                         $array_merge = array_merge($array1, [$string_hosts], $array2);
                         $this->satellite_config = $array_merge;
@@ -682,8 +766,15 @@ class SatelliteAgent extends HTML
                         // Remove add_host.
                         $pattern = io_safe_expreg('add_host '.$values['address'].' '.$values['name']);
                         $pos = preg_grep('/'.$pattern.'/', $this->satellite_config);
+
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
                         if (empty($pos) === false) {
-                            unset($this->satellite_config[array_key_first($pos)]);
+                            unset($this->satellite_config[$key_pos]);
                         }
 
                         $conf = implode('', $this->satellite_config);
@@ -697,8 +788,14 @@ class SatelliteAgent extends HTML
                     if (empty($pos) === false) {
                         $string_hosts = 'add_host '.$values['address'].' '.$values['name']."\n";
 
-                        $array1 = array_slice($this->satellite_config, 0, array_key_first($pos));
-                        $array2 = array_slice($this->satellite_config, array_key_first($pos));
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
+                        $array1 = array_slice($this->satellite_config, 0, $key_pos);
+                        $array2 = array_slice($this->satellite_config, $key_pos);
                         // Add host to conf.
                         $array_merge = array_merge($array1, [$string_hosts], $array2);
                         $this->satellite_config = $array_merge;
@@ -706,7 +803,14 @@ class SatelliteAgent extends HTML
                         // Remove delete_host.
                         $pattern = io_safe_expreg('delete_host '.$values['address'].' '.$values['name']);
                         $pos = preg_grep('/'.$pattern.'/', $this->satellite_config);
-                        unset($this->satellite_config[array_key_first($pos)]);
+
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
+                        unset($this->satellite_config[$key_pos]);
 
                         $conf = implode('', $this->satellite_config);
                     }
@@ -714,14 +818,26 @@ class SatelliteAgent extends HTML
                     // Find agent to mark for deletion.
                     $pattern = io_safe_expreg('add_host '.$values['address'].' '.$values['name']);
                     $pos = preg_grep('/'.$pattern.'/', $this->satellite_config);
-                    unset($this->satellite_config[array_key_first($pos)]);
+
+                    if (empty($pos) === false) {
+                        $key_pos = 0;
+                        foreach ($pos as $key => $value) {
+                            $key_pos = $key;
+                            break;
+                        }
+
+                        unset($this->satellite_config[$key_pos]);
+                    }
 
                     $string_hosts = 'delete_host '.$values['address'].' '.$values['name']."\n";
                     $pos = preg_grep('/delete_host/', $this->satellite_config);
-                    $array1 = array_slice($this->satellite_config, 0, array_key_last($pos));
-                    $array2 = array_slice($this->satellite_config, (array_key_last($pos) + 1));
-                    $array_merge = array_merge($array1, [$string_hosts], $array2);
-                    $this->satellite_config = $array_merge;
+                    if (empty($pos) === false) {
+                        $key_pos = array_keys($pos)[(count($pos) - 1)];
+                        $array1 = array_slice($this->satellite_config, 0, ($key_pos + 1));
+                        $array2 = array_slice($this->satellite_config, ($key_pos + 1));
+                        $array_merge = array_merge($array1, [$string_hosts], $array2);
+                        $this->satellite_config = $array_merge;
+                    }
 
                     $conf = implode('', $this->satellite_config);
                 }
@@ -849,15 +965,16 @@ class SatelliteAgent extends HTML
     }
 
 
-     /**
-      * Minor function to dump json message as ajax response.
-      *
-      * @param string  $type   Type: result || error.
-      * @param string  $msg    Message.
-      * @param boolean $delete Deletion messages.
-      *
-      * @return void
-      */
+    /**
+     * Minor function to dump json message as ajax response.
+     *
+     * @param string  $type    Type: result || error.
+     * @param string  $msg     Message.
+     * @param boolean $delete  Deletion messages.
+     * @param boolean $disable Disable messages.
+     *
+     * @return void
+     */
     private function ajaxMsg($type, $msg, $delete=false, $disable=false)
     {
         $msg_err = 'Failed while saving: %s';
@@ -1147,8 +1264,69 @@ class SatelliteAgent extends HTML
 
         $(document).ready(function() {
 
-            $("#submit-create").on('click', function(){
+            $("#submit-create").on('click', function() {
                 show_form();
+            });
+
+            $("#checkbox-all_validate_box").click(function() {
+                const check = $("#checkbox-all_validate_box").is(":checked");
+                $('input[name*=check_]').prop('checked', check);
+            });
+
+            $('#submit-submit_satellite_action').click(function() {
+                const checks = $('input[name*=check_]:checked');
+                const action = $('#satellite_action').val();
+                $.each(checks, function(i, val) {
+                    const params = val.value.split(",");
+                    if (action === '0') {
+                        $.ajax({
+                            method: 'post',
+                            async: false,
+                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                            data: {
+                                page: 'enterprise/godmode/servers/agents_satellite',
+                                method: 'disableAgent',
+                                address: params[0],
+                                disable: params[3],
+                                id: params[4],
+                                name: params[1],
+                                no_msg: 1,
+                                server_remote:  <?php echo $this->satellite_server; ?>,
+                            },
+                            datatype: "json",
+                            success: function (data) {
+                            },
+                            error: function(e) {
+                                console.error(e);
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            method: 'post',
+                            async: false,
+                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                            data: {
+                                page: 'enterprise/godmode/servers/agents_satellite',
+                                method: 'deleteAgent',
+                                address: params[0],
+                                name: params[1],
+                                id: params[4],
+                                delete: params[2],
+                                no_msg: 1,
+                                server_remote:  <?php echo $this->satellite_server; ?>,
+                            },
+                            datatype: "json",
+                            success: function (data) {
+                            },
+                            error: function(e) {
+                                console.error(e);
+                            }
+                        });
+                    }
+                });
+
+                var dt_satellite_agents = $("#satellite_agents").DataTable();
+                dt_satellite_agents.draw();
             });
         });
 

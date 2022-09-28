@@ -874,6 +874,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `summary` TEXT,
   `type` INT NOT NULL DEFAULT 0,
   `subnet_csv` TINYINT UNSIGNED DEFAULT 0,
+  `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1,
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;

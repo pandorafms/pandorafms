@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1;
+
+COMMIT;

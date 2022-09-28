@@ -273,6 +273,7 @@ sub data_consumer ($$) {
       snmp_security_level => $task->{'snmp_security_level'},
       snmp_timeout => $task->{'snmp_timeout'},
       snmp_version => $task->{'snmp_version'},
+      snmp_skip_non_enabled_ifs => $task->{'snmp_skip_non_enabled_ifs'},
       subnets => \@subnets,
       task_id => $task->{'id_rt'},
       vlan_cache_enabled => $task->{'vlan_enabled'},
@@ -723,9 +724,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
   foreach my $if_index (@output) {
     next unless ($if_index =~ /^[0-9]+$/);
 
-    # Check the status of the interface.
-    my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
-    next unless $if_status == 1;
+    if ($self->{'task_data'}{'snmp_skip_non_enabled_ifs'} == 1) {
+      # Check the status of the interface.
+      my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
+
+      next unless $if_status == 1;
+    }
 
     # Fill the module description with the IP and MAC addresses.
     my $mac = $self->get_if_mac($device, $if_index);

@@ -920,7 +920,7 @@ switch ($sortField) {
     break;
 
     case 'type':
-        $fieldForSorting = 'id_tipo_modulo';
+        $fieldForSorting = 'module_type';
         switch ($sort) {
             case 'up':
                 $selectDataTypeUp = $selected;
@@ -941,7 +941,7 @@ switch ($sortField) {
     break;
 
     case 'moduletype':
-        $fieldForSorting = 'id_modulo';
+        $fieldForSorting = 'module_type';
         switch ($sort) {
             case 'up':
                 $selectTypeUp = $selected;
@@ -1111,6 +1111,7 @@ switch ($sortField) {
         ];
     break;
 }
+
 
         $sql = 'SELECT
     (SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')

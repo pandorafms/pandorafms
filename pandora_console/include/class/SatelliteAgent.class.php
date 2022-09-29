@@ -290,9 +290,10 @@ class SatelliteAgent extends HTML
 
             $agents_db = db_get_all_rows_sql(
                 sprintf(
-                    'SELECT id_agente, alias AS name, direccion AS address, 
-                    IF(disabled = 0, INSERT("add_host", 0 , 0, ""), INSERT("ignore_host", 0 , 0, ""))  AS type
-                    FROM tagente WHERE `satellite_server` = %d AND modo = 1',
+                    'SELECT id_agente, alias AS name, direccion AS address,
+                    IF(disabled = 0, INSERT("add_host", 0 , 0, ""),
+                    IF(modo = 1, INSERT("ignore_host", 0 , 0, ""), INSERT("delete_host", 0, 0, "")))  AS type
+                    FROM tagente WHERE `satellite_server` = %d',
                     $this->satellite_server
                 )
             );
@@ -1279,49 +1280,53 @@ class SatelliteAgent extends HTML
                 $.each(checks, function(i, val) {
                     const params = val.value.split(",");
                     if (action === '0') {
-                        $.ajax({
-                            method: 'post',
-                            async: false,
-                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                            data: {
-                                page: 'enterprise/godmode/servers/agents_satellite',
-                                method: 'disableAgent',
-                                address: params[0],
-                                disable: params[3],
-                                id: params[4],
-                                name: params[1],
-                                no_msg: 1,
-                                server_remote:  <?php echo $this->satellite_server; ?>,
-                            },
-                            datatype: "json",
-                            success: function (data) {
-                            },
-                            error: function(e) {
-                                console.error(e);
-                            }
-                        });
+                        if (params[2] === '0') {
+                            $.ajax({
+                                method: 'post',
+                                async: false,
+                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                                data: {
+                                    page: 'enterprise/godmode/servers/agents_satellite',
+                                    method: 'disableAgent',
+                                    address: params[0],
+                                    disable: params[3],
+                                    id: params[4],
+                                    name: params[1],
+                                    no_msg: 1,
+                                    server_remote:  <?php echo $this->satellite_server; ?>,
+                                },
+                                datatype: "json",
+                                success: function (data) {
+                                },
+                                error: function(e) {
+                                    console.error(e);
+                                }
+                            });
+                        }
                     } else {
-                        $.ajax({
-                            method: 'post',
-                            async: false,
-                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                            data: {
-                                page: 'enterprise/godmode/servers/agents_satellite',
-                                method: 'deleteAgent',
-                                address: params[0],
-                                name: params[1],
-                                id: params[4],
-                                delete: params[2],
-                                no_msg: 1,
-                                server_remote:  <?php echo $this->satellite_server; ?>,
-                            },
-                            datatype: "json",
-                            success: function (data) {
-                            },
-                            error: function(e) {
-                                console.error(e);
-                            }
-                        });
+                        if (params[3] === '0') {
+                            $.ajax({
+                                method: 'post',
+                                async: false,
+                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                                data: {
+                                    page: 'enterprise/godmode/servers/agents_satellite',
+                                    method: 'deleteAgent',
+                                    address: params[0],
+                                    name: params[1],
+                                    id: params[4],
+                                    delete: params[2],
+                                    no_msg: 1,
+                                    server_remote:  <?php echo $this->satellite_server; ?>,
+                                },
+                                datatype: "json",
+                                success: function (data) {
+                                },
+                                error: function(e) {
+                                    console.error(e);
+                                }
+                            });
+                        }
                     }
                 });
 

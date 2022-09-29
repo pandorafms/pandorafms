@@ -78,25 +78,25 @@ if ($update_settings) {
 
         $customer_key = $_POST['keys']['customer_key'];
 
-        $license_encryption_key = get_parameter('license_encryption_key', false);
-        if ($license_encryption_key !== false) {
-            $check = db_get_value_sql('SELECT `key` FROM tupdate_settings WHERE `key` LIKE "license_encryption_key"');
-            if ($check === false) {
-                db_process_sql_insert(
-                    'tupdate_settings',
-                    [
-                        db_escape_key_identifier('value') => $license_encryption_key,
-                        db_escape_key_identifier('key')   => 'license_encryption_key',
-                    ]
-                );
-            } else {
-                db_process_sql_update(
-                    'tupdate_settings',
-                    [db_escape_key_identifier('value') => $license_encryption_key],
-                    [db_escape_key_identifier('key') => 'license_encryption_key']
-                );
-            }
+        $license_encryption_key = get_parameter('license_encryption_key', '');
+        $check = db_get_value_sql('SELECT `key` FROM tupdate_settings WHERE `key` LIKE "license_encryption_key"');
+        if ($check === false) {
+            db_process_sql_insert(
+                'tupdate_settings',
+                [
+                    db_escape_key_identifier('value') => $license_encryption_key,
+                    db_escape_key_identifier('key')   => 'license_encryption_key',
+                ]
+            );
+        } else {
+            db_process_sql_update(
+                'tupdate_settings',
+                [db_escape_key_identifier('value') => $license_encryption_key],
+                [db_escape_key_identifier('key') => 'license_encryption_key']
+            );
+        }
 
+        if (empty($license_encryption_key) === false) {
             $customer_key = openssl_blowfish_encrypt_hex($customer_key, io_safe_output($license_encryption_key));
         }
 

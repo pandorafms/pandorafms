@@ -14752,7 +14752,7 @@ function api_set_metaconsole_license_file($key)
     }
 
     $license_encryption_key = db_get_value('value', 'tupdate_settings', '`key`', 'license_encryption_key');
-    if ($license_encryption_key !== false) {
+    if (empty($license_encryption_key) === false) {
         $key = openssl_blowfish_encrypt_hex($key, io_safe_output($license_encryption_key));
     }
 

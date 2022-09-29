@@ -627,6 +627,7 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'tag_without'
  *     'filter_only_alert'
  *     'search_secondary_groups'
+ *     'search_recursive_groups'
  *     'module_search'
  *     'group_rep'
  *     'server_id'
@@ -864,7 +865,10 @@ function events_get_all(
     if (isset($groups) === true
         && (is_array($groups) === true || ($groups > 0))
     ) {
-        if ($recursiveGroups === true) {
+        if ($recursiveGroups === true
+            || (isset($filter['search_recursive_groups']) === true
+            && (bool) $filter['search_recursive_groups'] === true)
+        ) {
             // Add children groups.
             $children = [];
             if (is_array($groups) === true) {

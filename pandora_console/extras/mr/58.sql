@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tevent_filter` ADD COLUMN `search_recursive_groups` INT NOT NULL DEFAULT 0;
+
+COMMIT;

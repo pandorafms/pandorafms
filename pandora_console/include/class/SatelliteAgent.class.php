@@ -855,7 +855,7 @@ class SatelliteAgent extends HTML
 
     public function checkAddressExists($address)
     {
-        $pos_address = preg_grep('/.*_host\s('.$address.').*/', $this->satellite_config);
+        $pos_address = preg_grep('/.*_host\s('.$address.')\s.*/', $this->satellite_config);
 
         if (empty($pos_address) === false) {
             return true;

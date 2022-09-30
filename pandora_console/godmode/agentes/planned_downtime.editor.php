@@ -1104,11 +1104,7 @@ $table->data[1][0] = __('Available agents');
 $table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'min-width: 250px;width: 70%;');
 
 
-if ($type_downtime != 'quiet') {
-    echo '<div id="available_modules_selection_mode" style="padding-top:20px;display: none;">';
-} else {
-    echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
-}
+$table->rowid[2] = 'available_modules_selection_mode';
 
 $table->data[2][1] = html_print_select(
     [
@@ -1128,18 +1124,12 @@ $table->data[2][1] = html_print_select(
     'min-width:180px;'
 );
 
-echo '</div>';
 
+$table->rowid[3] = 'available_modules';
 $table->data[3][0] = __('Available modules:').ui_print_help_tip(
     __('Only for type Quiet for downtimes.'),
     true
 );
-
-if ($type_downtime != 'quiet') {
-    echo '<div id="available_modules" style="display: none;">';
-} else {
-    echo '<div id="available_modules" style="">';
-}
 
 $table->data[3][1] = html_print_select(
     [],
@@ -1155,7 +1145,6 @@ $table->data[3][1] = html_print_select(
     false,
     'min-width: 250px;width: 70%;'
 );
-echo '</div>';
 
 // Print agent table.
 html_print_table($table);
@@ -1184,7 +1173,6 @@ if ($id_downtime > 0) {
 }
 
 echo '</div>';
-html_print_input_hidden('all_agents', implode(',', array_keys($agents)));
 html_print_input_hidden('all_common_modules', '');
 echo '</form>';
 
@@ -1405,11 +1393,17 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     }
 
     $agents = (array) get_parameter('id_agents');
+    $filter_group = (int) get_parameter('filter_group', 0);
     $module_names = (array) get_parameter('module');
     $modules_selection_mode = (string) get_parameter('modules_selection_mode');
+    $type_downtime = (string) get_parameter('type_downtime', 'quiet');
 
     $all_modules = ($modules_selection_mode === 'all' && (empty($module_names) || (string) $module_names[0] === '0'));
     $all_common_modules = ($modules_selection_mode === 'common' && (empty($module_names) || (string) $module_names[0] === '0'));
+
+    if ($type_downtime === 'disable_agents') {
+        $all_modules = true;
+    }
 
     if ($all_common_modules === true) {
         $module_names = explode(',', get_parameter('all_common_modules'));
@@ -1429,11 +1423,14 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     } else {
         // If is selected 'Any', get all the agents.
         if (count($agents) === 1 && (int) $agents[0] === -2) {
-            $all_agents = get_parameter('all_agents');
-            $agents = explode(',', $all_agents);
+            $agents = agents_get_agents(
+                ['id_grupo' => $filter_group],
+                'id_agent'
+            );
         }
 
         foreach ($agents as $agent_id) {
+            $agent_id = (int) $agent_id;
             // Check module belongs to the agent.
             if ($modules_selection_mode == 'all' && $all_modules === false) {
                 $check = false;
@@ -1466,17 +1463,40 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                 continue;
             }
 
-            $values = [
-                'id_downtime' => $id_downtime,
-                'id_agent'    => $agent_id,
-                'all_modules' => $all_modules,
-            ];
-            $result = db_process_sql_insert(
+            // Check if agent is already in downtime.
+            $agent_in_downtime = db_get_value_filter(
+                'id_downtime',
                 'tplanned_downtime_agents',
-                $values
+                [
+                    'id_agent'    => $agent_id,
+                    'id_downtime' => $id_downtime,
+                ]
             );
 
-            if ($result && !$all_modules) {
+            if ($agent_in_downtime !== false) {
+                $values = ['all_modules' => $all_modules];
+
+                $result = db_process_sql_update(
+                    'tplanned_downtime_agents',
+                    $values,
+                    [
+                        'id_downtime' => $id_downtime,
+                        'id_agent'    => $agent_id,
+                    ]
+                );
+            } else {
+                $values = [
+                    'id_downtime' => $id_downtime,
+                    'id_agent'    => $agent_id,
+                    'all_modules' => $all_modules,
+                ];
+                $result = db_process_sql_insert(
+                    'tplanned_downtime_agents',
+                    $values
+                );
+            }
+
+            if ($result !== false && (bool) $all_modules === false) {
                 foreach ($module_names as $module_name) {
                     $module = modules_get_agentmodule_id(
                         $module_name,
@@ -1487,17 +1507,32 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                         continue;
                     }
 
-                    $values = [
-                        'id_downtime'     => $id_downtime,
-                        'id_agent'        => $agent_id,
-                        'id_agent_module' => $module['id_agente_modulo'],
-                    ];
-                    $result = db_process_sql_insert(
+                     // Check if modules are already in downtime.
+                    $module_in_downtime = db_get_value_filter(
+                        'id_downtime',
                         'tplanned_downtime_modules',
-                        $values
+                        [
+                            'id_downtime'     => $id_downtime,
+                            'id_agent'        => $agent_id,
+                            'id_agent_module' => $module['id_agente_modulo'],
+                        ]
                     );
 
-                    if ($result) {
+                    if ($module_in_downtime !== false) {
+                        continue;
+                    } else {
+                        $values = [
+                            'id_downtime'     => $id_downtime,
+                            'id_agent'        => $agent_id,
+                            'id_agent_module' => $module['id_agente_modulo'],
+                        ];
+                        $result = db_process_sql_insert(
+                            'tplanned_downtime_modules',
+                            $values
+                        );
+                    }
+
+                    if ($result !== false) {
                         $values = ['id_user' => $config['id_user']];
                         $result = db_process_sql_update(
                             'tplanned_downtime',
@@ -1526,6 +1561,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                 $("#available_modules_selection_mode").hide();
                 break;
             case 'quiet':
+            case 'disable_agent_modules':
                 $("#available_modules_selection_mode").show();
                 $("#available_modules").show();
                 break;

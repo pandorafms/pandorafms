@@ -336,6 +336,9 @@ sub curl  {
 	
 	my $cmd = "curl $curl_opts " . safe_param($url);
 	my $response = `"$exec" $timeout $cmd 2>/dev/null`;
+	if ($? == -1) {
+		die("Error calling curl. Not enough memory?\n");
+	}
 
 	# Curl command stored for live debugging feature.
 	set_update_agentmodule ($dbh, $moduleId, { 'debug_content' =>  $cmd }) if defined($dbh);

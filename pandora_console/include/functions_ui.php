@@ -1075,7 +1075,7 @@ function ui_format_alert_row(
         }
     }
 
-    if (is_metaconsole() === true) {
+    if (is_metaconsole() === true && (int) $server_id !== 0) {
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -3655,7 +3655,7 @@ function ui_print_datatable(array $parameters)
             order: [[ '.$order.' ]]
         };
 
-        var dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)

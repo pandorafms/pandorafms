@@ -526,8 +526,7 @@ function print_clock_analogic_1(
     $color,
     $title=true
 ) {
-    global $config;
-    $output .= '<style type="text/css">
+    $output = '<style type="text/css">
 		#rim {
 			fill: none;
 			stroke: #999;

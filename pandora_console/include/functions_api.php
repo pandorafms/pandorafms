@@ -46,12 +46,18 @@ require_once $config['homedir'].'/include/functions_planned_downtimes.php';
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_event_responses.php';
 require_once $config['homedir'].'/include/functions_tactical.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
+require_once $config['homedir'].'/include/functions_reporting_xml.php';
+require_once $config['homedir'].'/include/functions_reports.php';
 enterprise_include_once('include/functions_local_components.php');
 enterprise_include_once('include/functions_events.php');
 enterprise_include_once('include/functions_agents.php');
 enterprise_include_once('include/functions_modules.php');
 enterprise_include_once('include/functions_clusters.php');
 enterprise_include_once('include/functions_alerts.php');
+enterprise_include_once('include/functions_reporting_pdf.php');
+enterprise_include_once('include/functions_reporting_csv.php');
+enterprise_include_once('include/functions_cron.php');
 
 // Clases.
 use PandoraFMS\Agent;
@@ -14751,6 +14757,11 @@ function api_set_metaconsole_license_file($key)
         return;
     }
 
+    $license_encryption_key = db_get_value('value', 'tupdate_settings', '`key`', 'license_encryption_key');
+    if (empty($license_encryption_key) === false) {
+        $key = openssl_blowfish_encrypt_hex($key, io_safe_output($license_encryption_key));
+    }
+
     // Update the license file.
     $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $key);
     if ($result === false) {
@@ -17540,5 +17551,304 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
                 ]
             );
         }
+    }
+}
+
+
+/**
+ * Make report (PDF, CSV or XML) and send it via e-mail (this method is intended to be used by server's execution
+ * of alert actions that involve sending reports by e-mail).
+ *
+ * @param [string] $server_id        id server (Node)
+ * @param [string] $console_event_id console Id node event in tevent
+ * @param [string] $trash2           don't use
+ * @param [string] $returnType
+ *
+ * --Internal use--
+ *
+ * @return void
+ */
+function api_set_send_report($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    $id_item = (int) $other['data'][0];
+    $report_type = $other['data'][1];
+    $email = $other['data'][2];
+    $subject_email = $other['data'][3];
+    $body_email = $other['data'][4];
+    $make_report_from_template = (bool) $other['data'][5];
+    $template_regex_agents = $other['data'][6];
+
+    // Filter normal and metaconsole reports.
+    if (is_metaconsole() === true) {
+        $filter['metaconsole'] = 1;
+    } else {
+        $filter['metaconsole'] = 0;
+    }
+
+    $own_info = get_user_info($config['id_user']);
+    if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
+        $return_all_group = true;
+    } else {
+        $return_all_group = false;
+    }
+
+    if (is_user_admin($config['id_user']) === false) {
+        $filter[] = sprintf(
+            'private = 0 OR (private = 1 AND id_user = "%s")',
+            $config['id_user']
+        );
+    }
+
+    $date_today = date($config['date_format']);
+    $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
+    $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
+
+    if ($make_report_from_template === true) {
+        $filter['id_report'] = $id_item;
+
+        $template = reports_get_report_templates(
+            $filter,
+            ['description'],
+            $return_all_group,
+            'RR'
+        )[0];
+
+        $description = $template['description'];
+
+        // Report macros post-process.
+        $body_email = str_replace(
+            [
+                '_report_description_',
+                '_report_generated_date_',
+                '_report_date_',
+            ],
+            [
+                $description,
+                $date_today,
+                $date_today,
+            ],
+            $body_email
+        );
+
+        $report_type = strtoupper($report_type);
+        $body_email = io_safe_output(io_safe_output($body_email));
+
+        cron_task_generate_report_by_template(
+            $id_item,
+            '',
+            $template_regex_agents,
+            false,
+            '',
+            $email,
+            $subject_email,
+            $body_email,
+            $report_type,
+            ''
+        );
+    } else {
+        $report = reports_get_report($id_item);
+
+        if ($report === false) {
+            // User has no grant to access this report.
+            return;
+        }
+
+        // Report macros post-process.
+        $body_email = str_replace(
+            [
+                '_report_description_',
+                '_report_generated_date_',
+                '_report_date_',
+            ],
+            [
+                $report['description'],
+                $date_today,
+                $date_today,
+            ],
+            $body_email
+        );
+
+        $body_email = io_safe_output(io_safe_output($body_email));
+
+        // Set the languaje of user.
+        global $l10n;
+
+        if (isset($l10n) === false) {
+            $l10n = null;
+            $user_language = get_user_language($config['id_user']);
+            if (file_exists(
+                $config['homedir'].'/include/languages/'.$user_language.'.mo'
+            ) === true
+            ) {
+                $obj = new CachedFileReader(
+                    $config['homedir'].'/include/languages/'.$user_language.'.mo'
+                );
+                $l10n = new gettext_reader($obj);
+                $l10n->load_tables();
+            }
+        }
+
+        // Attachments.
+        $attachments = [];
+        // Set the datetime for the report.
+        $report['datetime'] = time();
+
+        $date = date('Y-m-j');
+        $time = date('h:iA');
+
+        $tmpfile = false;
+
+        switch ($report_type) {
+            case 'pdf':
+                $tmpfile = $config['homedir'].'/attachment/'.date('Ymd-His').'.pdf';
+
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'static',
+                    null,
+                    null,
+                    true
+                );
+                pdf_get_report($report, $tmpfile);
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'application/pdf',
+                ];
+            break;
+
+            case 'csv':
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'data'
+                );
+
+                $name = explode(' - ', $report['name']);
+                $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.csv';
+
+                // Remove unused fields.
+                unset($report['header']);
+                unset($report['first_page']);
+                unset($report['footer']);
+                unset($report['custom_font']);
+                unset($report['id_template']);
+                unset($report['id_group_edit']);
+                unset($report['metaconsole']);
+                unset($report['private']);
+                unset($report['custom_logo']);
+
+                ob_start();
+                csv_get_report($report, true);
+                $output = ob_get_clean();
+
+                file_put_contents($tmpfile, $output);
+                ob_end_clean();
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'text/csv',
+                ];
+            break;
+
+            case 'json':
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'data'
+                );
+
+                // Remove unused fields.
+                unset($report['header']);
+                unset($report['first_page']);
+                unset($report['footer']);
+                unset($report['custom_font']);
+                unset($report['id_template']);
+                unset($report['id_group_edit']);
+                unset($report['metaconsole']);
+                unset($report['private']);
+                unset($report['custom_logo']);
+
+                $name = explode(' - ', $report['name']);
+                $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.json';
+
+                file_put_contents($tmpfile, json_encode($report, JSON_PRETTY_PRINT));
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'text/json',
+                ];
+            break;
+
+            case 'xml':
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'data'
+                );
+
+                $name = explode(' - ', $report['name']);
+                $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.xml';
+
+                // Remove unused fields.
+                unset($report['header']);
+                unset($report['first_page']);
+                unset($report['footer']);
+                unset($report['custom_font']);
+                unset($report['id_template']);
+                unset($report['id_group_edit']);
+                unset($report['metaconsole']);
+                unset($report['private']);
+                unset($report['custom_logo']);
+
+                ob_start();
+                reporting_xml_get_report($report, true);
+                $output = ob_get_clean();
+
+                file_put_contents($tmpfile, $output);
+                ob_end_clean();
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'text/xml',
+                ];
+            break;
+
+            default:
+            break;
+        }
+
+        reporting_email_template(
+            $subject_email,
+            $body_email,
+            '',
+            $report['name'],
+            $email,
+            $attachments
+        );
+
+        unlink($other['data'][0]);
+
+        $data = [
+            'type' => 'string',
+            'data' => '1',
+        ];
+
+        returnData($returnType, $data, ';');
     }
 }

@@ -1408,3 +1408,77 @@ function custom_fields_macros_report($macro, $key_macro)
 
     return $result;
 }
+
+
+/**
+ * Get a list of the reports the user can view.
+ *
+ * A user can view a report by two ways:
+ *  - The user created the report (id_user field in treport)
+ *  - The report is not private and the user has reading privileges on
+ *    the group associated to the report
+ *
+ * @param array Extra filter to retrieve reports. All reports are returned by
+ * default
+ * @param array Fields to be fetched on every report.
+ *
+ * @return array An array with all the reports the user can view.
+ */
+function reports_get_report_templates(
+    $filter=false,
+    $fields=false,
+    $returnAllGroup=true,
+    $privileges='RR',
+    $group=false,
+    $strict_user=false
+) {
+    global $config;
+
+    if (is_array($filter) === false) {
+        $filter = [];
+    }
+
+    if (is_array($fields) === false) {
+        $fields[] = 'id_group';
+        $fields[] = 'id_user';
+    }
+
+    $templates = [];
+    $all_templates = @db_get_all_rows_filter('treport_template', $filter, $fields);
+
+    if (empty($all_templates) === true) {
+        $all_templates = [];
+    }
+
+    if ($group) {
+        $groups = $group;
+    } else {
+        $groups = users_get_groups($config['id_user'], $privileges, $returnAllGroup);
+        if ($strict_user) {
+            $groups = users_get_strict_mode_groups($config['id_user'], $returnAllGroup);
+        }
+    }
+
+    foreach ($all_templates as $template) {
+        // If the template is not in all group.
+        if ($template['id_group'] != 0) {
+            if (!in_array($template['id_group'], array_keys($groups))) {
+                continue;
+            }
+
+            if ($config['id_user'] != $template['id_user']
+                && !check_acl($config['id_user'], $template['id_group'], $privileges)
+            ) {
+                continue;
+            }
+        } else {
+            if ($returnAllGroup === false) {
+                continue;
+            }
+        }
+
+        array_push($templates, $template);
+    }
+
+    return $templates;
+}

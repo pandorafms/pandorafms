@@ -28,7 +28,7 @@
 
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 if (is_ajax()) {
@@ -37,7 +37,7 @@ if (is_ajax()) {
     $get_alert_fired = get_parameter('get_alert_fired', 0);
 
     if ($get_alert_fired) {
-        // Calculate alerts fired
+        // Calculate alerts fired.
         $data_reporting = reporting_get_group_stats();
         echo $data_reporting['monitor_alerts_fired'];
     }

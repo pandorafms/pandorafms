@@ -243,13 +243,8 @@ $language .= html_print_select(
     __('No change'),
     -1,
     true,
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    10
+    false,
+    false
 ).'</div>';
 
 // Pagination.
@@ -339,13 +334,8 @@ $event_filter .= html_print_select(
     __('No change'),
     -1,
     true,
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    10
+    false,
+    false
 ).'</div>';
 
 // Autorefresh.

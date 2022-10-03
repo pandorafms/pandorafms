@@ -892,34 +892,6 @@ if ($get_agent_alerts_datatable === true) {
 
         // Order and pagination metacosole.
         if (is_metaconsole() === true) {
-
-
-            /**
-             * Auxiliar Ordenation function
-             *
-             * @param string $sort      Direction of sort.
-             * @param string $sortField Field for perform the sorting.
-             */
-            function arrayOutputSorting($sort, $sortField)
-            {
-                return function ($a, $b) use ($sort, $sortField) {
-                    if ($sort === 'asc') {
-                        if (is_string($a[$sortField]) === true) {
-                            return strnatcasecmp($a[$sortField], $b[$sortField]);
-                        } else {
-                            return ($a[$sortField] - $b[$sortField]);
-                        }
-                    } else {
-                        if (is_string($a[$sortField]) === true) {
-                            return strnatcasecmp($b[$sortField], $a[$sortField]);
-                        } else {
-                            return ($a[$sortField] + $b[$sortField]);
-                        }
-                    }
-                };
-            }
-
-
             // Status order.
             if ($sortField === 'status') {
                 foreach ($alerts['alerts_simple'] as $i => $alert) {

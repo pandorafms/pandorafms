@@ -6230,15 +6230,15 @@ function notify_reporting_console_node()
 function arrayOutputSorting($sort, $sortField)
 {
     return function ($a, $b) use ($sort, $sortField) {
-        if ($sort === 'up') {
+        if ($sort === 'up' || $sort === 'asc') {
             if (is_string($a[$sortField]) === true) {
-                return strcasecmp($a[$sortField], $b[$sortField]);
+                return strnatcasecmp($a[$sortField], $b[$sortField]);
             } else {
                 return ($a[$sortField] - $b[$sortField]);
             }
         } else {
             if (is_string($a[$sortField]) === true) {
-                return strcasecmp($b[$sortField], $a[$sortField]);
+                return strnatcasecmp($b[$sortField], $a[$sortField]);
             } else {
                 return ($a[$sortField] + $b[$sortField]);
             }

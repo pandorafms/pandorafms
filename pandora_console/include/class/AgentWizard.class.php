@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -285,6 +285,13 @@ class AgentWizard extends HTML
      */
     private $wmiBinary = '';
 
+    /**
+     * Default values for SNMP Interfaces.
+     *
+     * @var string
+     */
+    private $defaultSNMPValues = [];
+
 
     /**
      * Constructor
@@ -319,6 +326,7 @@ class AgentWizard extends HTML
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
         $this->wmiBinary = $config['wmiBinary'];
+        $this->defaultSNMPValues = (array) json_decode(io_safe_output($config['agent_wizard_defaults']));
 
         if (empty($this->idAgent) === false) {
             $array_aux = db_get_all_rows_sql(
@@ -330,7 +338,7 @@ class AgentWizard extends HTML
                 )
             );
 
-            if (!empty($array_aux)) {
+            if (empty($array_aux) === false) {
                 $this->datalist = [];
                 foreach ($array_aux as $key => $value) {
                     $this->datalist[] = $value['ip'];
@@ -547,7 +555,7 @@ class AgentWizard extends HTML
         // Fill with servers to perform the discover.
         $fieldsServers = [];
         $fieldsServers[0] = __('Local console');
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             enterprise_include_once('include/functions_satellite.php');
             // Get the servers.
             $rows = get_proxy_servers();
@@ -607,7 +615,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        if (!empty($this->datalist)) {
+        if (empty($this->datalist) === false) {
             $inputs[] = [
                 'id'        => 'li_address_list',
                 'arguments' => [
@@ -4701,7 +4709,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.8.'.$value,
             'module_unit'        => '',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOperStatus'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => $min_warning,
@@ -4758,7 +4766,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.4.1.9.2.2.1.1.12.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['locIfInCRC'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -4812,7 +4820,7 @@ class AgentWizard extends HTML
                 'module_info'        => 'Indicates whether the port is operating in half-duplex, full-duplex, disagree or auto negotiation mode. If the port could not agree with the far end on port duplex, the port will be in disagree(3) mode.',
                 'execution_type'     => 'network',
                 'value'              => $duplexMismatchOID,
-                'default_enabled'    => true,
+                'default_enabled'    => (bool) $this->defaultSNMPValues['DuplexMismatch'],
                 'module_enabled'     => false,
                 'module_thresholds'  => [
                     'min_warning'   => '0',
@@ -4901,7 +4909,7 @@ class AgentWizard extends HTML
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
                     'macros'             => json_encode($macros),
-                    'default_enabled'    => true,
+                    'default_enabled'    => (bool) $this->defaultSNMPValues['Bandwidth'],
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
@@ -4940,7 +4948,7 @@ class AgentWizard extends HTML
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
                     'macros'             => json_encode($macros),
-                    'default_enabled'    => true,
+                    'default_enabled'    => (bool) $this->defaultSNMPValues['inUsage'],
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
@@ -4979,7 +4987,7 @@ class AgentWizard extends HTML
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
                     'macros'             => json_encode($macros),
-                    'default_enabled'    => true,
+                    'default_enabled'    => (bool) $this->defaultSNMPValues['outUsage'],
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
@@ -5011,7 +5019,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.7.'.$value,
             'module_unit'        => '',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifAdminStatus'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5038,7 +5046,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.13.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInDiscards'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5065,7 +5073,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.19.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutDiscards'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5092,7 +5100,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.14.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInErrors'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5119,7 +5127,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.20.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutErrors'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5189,7 +5197,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.10.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5217,7 +5225,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.16.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5245,7 +5253,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.11.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5272,7 +5280,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.17.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5299,7 +5307,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.12.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5326,7 +5334,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.18.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5396,7 +5404,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.6.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCInOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5424,7 +5432,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.10.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCOutOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5452,7 +5460,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.7.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCInUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5480,7 +5488,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.11.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCOutUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5507,7 +5515,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.7.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCInNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5534,7 +5542,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.11.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCOutNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',

@@ -125,8 +125,36 @@ if ($edit_users === 1) {
             $update['timezone'] = $timezone;
         }
 
+        $error = [];
+        $success = [];
         foreach ($users as $key => $user) {
             $result = update_user($user, $update);
+            if ($result === false) {
+                $error[] = $user;
+            } else {
+                $success[] = $user;
+            }
+        }
+
+        if (empty($success) === false) {
+            ui_print_success_message(
+                __(
+                    'Users updated successfully (%s)',
+                    implode(
+                        ',',
+                        $success
+                    )
+                )
+            );
+        }
+
+        if (empty($error) === false) {
+            ui_print_error_message(
+                __(
+                    'Users cannot be updated (%s)',
+                    implode(',', $error)
+                )
+            );
         }
     }
 }

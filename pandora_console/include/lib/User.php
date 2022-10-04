@@ -188,6 +188,14 @@ class User implements PublicLogin
             $config['public_access'] = false;
         }
 
+        if (empty($other_secret) === true) {
+            $auth_token_secret = db_get_value('auth_token_secret', 'tusuario', 'id_user', $config['id_user']);
+
+            if (empty($auth_token_secret) === false) {
+                $other_secret = $auth_token_secret;
+            }
+        }
+
         // Build a hash to check.
         $hashCheck = self::generatePublicHash($other_secret);
         if ($hashCheck === $hash) {

@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tusuario` ADD COLUMN `auth_token_secret` VARCHAR(45) DEFAULT NULL;
+
+COMMIT;

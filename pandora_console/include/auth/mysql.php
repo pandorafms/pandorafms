@@ -701,7 +701,13 @@ function delete_user($id_user)
 function update_user_password($user, $password_new)
 {
     global $config;
-    if (isset($config['auth']) && $config['auth'] == 'pandora') {
+
+    if (excludedPassword($password_new) === true) {
+        $config['auth_error'] = __('The password provided is not valid. Please, set another one.');
+        return false;
+    }
+
+    if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
             "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
         );
@@ -714,7 +720,7 @@ function update_user_password($user, $password_new)
         );
         $remote_pass_update = db_process_sql($sql, 'affected_rows', $connection);
 
-        if (!$remote_pass_update) {
+        if ((bool) $remote_pass_update === false) {
             $config['auth_error'] = __('Could not changes password on remote pandora');
             return false;
         }

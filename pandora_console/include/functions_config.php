@@ -467,7 +467,7 @@ function config_update_config()
                 break;
 
                 case 'pass':
-                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === 1) {
+                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === true) {
                         if (config_update_value('enable_pass_policy', get_parameter('enable_pass_policy'), true) === false) {
                             $error_update[] = __('Enable password policy');
                         }
@@ -514,6 +514,10 @@ function config_update_config()
 
                         if (config_update_value('reset_pass_option', (bool) get_parameter('reset_pass_option'), true) === false) {
                             $error_update[] = __('Activate reset password');
+                        }
+
+                        if (config_update_value('exclusion_word_list', (string) get_parameter('exclusion_word_list'), true) === false) {
+                            $error_update[] = __('Exclusion word list for passwords');
                         }
                     }
                 break;
@@ -2193,6 +2197,10 @@ function config_process_config()
 
     if (!isset($config['reset_pass_option'])) {
         config_update_value('reset_pass_option', 0);
+    }
+
+    if (isset($config['exclusion_word_list']) === false) {
+        config_update_value('exclusion_word_list', '');
     }
 
     if (!isset($config['include_agents'])) {

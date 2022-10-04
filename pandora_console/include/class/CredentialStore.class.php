@@ -947,6 +947,8 @@ class CredentialStore extends Wizard
                     'AZURE'  => __('Azure'),
                     'SAP'    => __('SAP'),
                     'GOOGLE' => __('Google'),
+                    'WMI'    => __('WMI'),
+                    'SNMP'   => __('SNMP'),
                 ],
                 'selected'    => (isset($values['product']) ? $values['product'] : 'CUSTOM'),
                 'disabled'    => (bool) $values['product'],
@@ -987,6 +989,20 @@ class CredentialStore extends Wizard
                 $extra1 = true;
                 $extra2 = false;
                 $extra1_type = 'textarea';
+            break;
+
+            case 'WMI':
+                $extra_1_label = __('Namespace');
+                $extra1 = true;
+                $extra2 = false;
+            break;
+
+            case 'SNMP':
+                $user_label = __('User authentication');
+                $pass_label = __('Password authentication');
+                $extra1_type = 'select';
+                $extra1 = true;
+                $extra2 = true;
             break;
 
             case 'CUSTOM':
@@ -1175,6 +1191,26 @@ class CredentialStore extends Wizard
                     $('<textarea name="extra_1" id="text-extra_1">'+val+'</textarea>')
                 );
                 $('#div-extra_1').show();
+            } else if ($('#product :selected').val() == "WMI") {
+                $('#div-username label').text('<?php echo __('Username'); ?>');
+                $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-extra_1 label').text('<?php echo __('Namespace'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
+                $('#div-extra_1').show();
+                $('#div-extra_2').hide();
+            } else if ($('#product :selected').val() == "SNMP") {
+                // $('#div-username label').text('<?php echo __('User authentication'); ?>');
+                // $('#div-password label').text('<?php echo __('Password authentication'); ?>');
+                // $('#div-extra_1 label').text('<?php echo __('jajajaja'); ?>');
+                $('#div-username').hide();
+                $('#div-password').hide();
+                $('#div-extra_1').hide();
+                $('#div-extra_2').hide();
+                // $('#text-extra_1').remove();
+                // $('#div-extra_1').append(
+                //     $('<textarea name="test_1" id="test">'+val+'</textarea>')
+                // );
             }
         }
 

@@ -321,12 +321,7 @@ class SatelliteAgent extends HTML
                 }
 
                 if (preg_match($re_disable, $line, $matches, PREG_OFFSET_CAPTURE, 0) > 0) {
-                    $agent['address'] = $matches[1][0];
-                    if (isset($matches[2][0]) === false || empty($matches[2][0]) === true) {
-                        $agent['name'] = '';
-                    } else {
-                        $agent['name'] = $matches[2][0];
-                    }
+                    $agent['name'] = $matches[1][0];
 
                     $agent['type'] = 'ignore_host';
 
@@ -334,12 +329,7 @@ class SatelliteAgent extends HTML
                 }
 
                 if (preg_match($re_delete, $line, $matches, PREG_OFFSET_CAPTURE, 0) > 0) {
-                    $agent['address'] = $matches[1][0];
-                    if (isset($matches[2][0]) === false || empty($matches[2][0]) === true) {
-                        $agent['name'] = '';
-                    } else {
-                        $agent['name'] = $matches[2][0];
-                    }
+                    $agent['name'] = $matches[1][0];
 
                     $agent['type'] = 'delete_host';
 

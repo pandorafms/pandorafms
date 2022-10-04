@@ -467,7 +467,7 @@ function config_update_config()
                 break;
 
                 case 'pass':
-                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === 1) {
+                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === true) {
                         if (config_update_value('enable_pass_policy', get_parameter('enable_pass_policy'), true) === false) {
                             $error_update[] = __('Enable password policy');
                         }

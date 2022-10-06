@@ -933,7 +933,7 @@ class HTML
         $cb_args = $data['cb_args'];
 
         $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output_head .= '" '.$form['extra'].'>';
+        $output_head .= '" id="'.$form['id'].'" '.$form['extra'].'>';
 
         if ($return === false) {
             echo $output_head;

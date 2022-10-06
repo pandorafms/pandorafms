@@ -683,7 +683,6 @@ form.modal-dashboard
   justify-content: center;
   align-items: center;
   width: 98%;
-  padding: 5px;
 }
 .container-grouped-meter .container-info-module-meter {
   display: flex;

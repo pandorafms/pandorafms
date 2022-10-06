@@ -41,6 +41,7 @@ class GroupedMeterGraphs extends Widget
     private const STATUS_CRITICAL = 'critical';
     private const STATUS_WARNING = 'warning';
     private const RATIO_WITH_BOX = 20.1518;
+    private const MAX_MODULES = 20;
 
     /**
      * Name widget.
@@ -66,14 +67,14 @@ class GroupedMeterGraphs extends Widget
     /**
      * Class name widget.
      *
-     * @var [type]
+     * @var string
      */
     protected $className;
 
     /**
      * Values options for each widget.
      *
-     * @var [type]
+     * @var array
      */
     protected $values;
 
@@ -534,7 +535,24 @@ class GroupedMeterGraphs extends Widget
             );
         }
 
-        if ($modules !== false && empty($modules) === false) {
+        if ($modules !== false
+            && empty($modules) === false
+            && is_array($modules) === true
+        ) {
+            if (count($modules) > self::MAX_MODULES) {
+                $output .= '<div class="container-center">';
+                $output .= \ui_print_info_message(
+                    __(
+                        'The maximum number of modules to display is %d, please reconfigure the widget.',
+                        self::MAX_MODULES
+                    ),
+                    '',
+                    true
+                );
+                $output .= '</div>';
+                return $output;
+            }
+
             $moduleData = array_map(
                 function ($module) {
                     return ($module['data'] ?? 0);
@@ -657,7 +675,6 @@ class GroupedMeterGraphs extends Widget
         $output .= '<div class="container-info-module-meter">';
 
         // Module name.
-        $output .= '<div class="container-info-module-meter-title">';
         $name = '';
         switch ($this->values['label']) {
             case 'agent':
@@ -674,6 +691,7 @@ class GroupedMeterGraphs extends Widget
             break;
         }
 
+        $output .= '<div class="container-info-module-meter-title" title="'.$name.'">';
         $output .= $name;
         $output .= '</div>';
 
@@ -698,27 +716,29 @@ class GroupedMeterGraphs extends Widget
         $class .= ' meter-data-';
         $class .= $this->getThresholdStatus($module_data);
 
-        $output .= '<div class="'.$class.'">';
+        $result_data = '';
         if ($data['data'] !== null && $data['data'] !== '') {
             if (isset($this->values['formatData']) === true
                 && (bool) $this->values['formatData'] === true
             ) {
-                $output .= format_for_graph(
+                $result_data .= format_for_graph(
                     $data['data'],
                     $config['graph_precision']
                 );
             } else {
-                $output .= sla_truncate(
+                $result_data .= sla_truncate(
                     $data['data'],
                     $config['graph_precision']
                 );
             }
 
-            $output .= ' '.$data['unit'];
+            $result_data .= ' '.$data['unit'];
         } else {
-            $output .= '--';
+            $result_data .= '--';
         }
 
+        $output .= '<div class="'.$class.'" title="'.$result_data.'">';
+        $output .= $result_data;
         $output .= '</div>';
 
         $output .= '</div>';

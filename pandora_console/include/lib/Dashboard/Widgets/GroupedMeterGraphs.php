@@ -42,6 +42,7 @@ class GroupedMeterGraphs extends Widget
     private const STATUS_WARNING = 'warning';
     private const RATIO_WITH_BOX = 20.1518;
     private const MAX_MODULES = 20;
+    private const MAX_INCREASE = 0.10;
 
     /**
      * Name widget.
@@ -257,6 +258,16 @@ class GroupedMeterGraphs extends Widget
             $values['label'] = $decoder['label'];
         }
 
+        $values['min_value'] = null;
+        if (isset($decoder['min_value']) === true) {
+            $values['min_value'] = $decoder['min_value'];
+        }
+
+        $values['max_value'] = null;
+        if (isset($decoder['max_value']) === true) {
+            $values['max_value'] = $decoder['max_value'];
+        }
+
         $values['min_critical'] = null;
         if (isset($decoder['min_critical']) === true) {
             $values['min_critical'] = $decoder['min_critical'];
@@ -334,6 +345,36 @@ class GroupedMeterGraphs extends Widget
                 'type'  => 'switch',
                 'value' => $values['formatData'],
             ],
+        ];
+
+        $inputs['inputs']['row1'][] = [
+            'class'         => 'dashboard-input-threshold',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Values'),
+                    'arguments' => [],
+                ],
+                [
+                    'label'     => __('Min'),
+                    'arguments' => [
+                        'name'  => 'min_value',
+                        'id'    => 'min_value',
+                        'type'  => 'number',
+                        'value' => $values['min_value'],
+                    ],
+                ],
+                [
+                    'label'     => __('Max'),
+                    'arguments' => [
+                        'name'  => 'max_value',
+                        'id'    => 'max_value',
+                        'type'  => 'number',
+                        'value' => $values['max_value'],
+                    ],
+                ],
+            ],
+
         ];
 
         $inputs['inputs']['row1'][] = [
@@ -478,6 +519,9 @@ class GroupedMeterGraphs extends Widget
 
         $values['label'] = \get_parameter('label', 'module');
 
+        $values['min_value'] = \get_parameter('min_value', null);
+        $values['max_value'] = \get_parameter('max_value', null);
+
         $values['min_critical'] = \get_parameter('min_critical', null);
         $values['max_critical'] = \get_parameter('max_critical', null);
         $values['min_warning'] = \get_parameter('min_warning', null);
@@ -553,41 +597,75 @@ class GroupedMeterGraphs extends Widget
                 return $output;
             }
 
-            $moduleData = array_map(
-                function ($module) {
-                    return ($module['data'] ?? 0);
-                },
-                $modules
-            );
+            $max = null;
+            $min = null;
+            // Dinamic treshold.
+            if ($this->values['min_critical'] !== null
+                || $this->values['max_critical'] !== null
+                || $this->values['min_warning'] !== null
+                || $this->values['max_warning'] !== null
+            ) {
+                if ($this->values['max_value'] === null || $this->values['min_value'] === null) {
+                    $tresholdData = [
+                        ($this->values['min_critical'] ?? 0),
+                        ($this->values['max_critical'] ?? 0),
+                        ($this->values['min_warning'] ?? 0),
+                        ($this->values['max_warning'] ?? 0),
+                    ];
 
-            $tresholdData = [
-                ($this->values['min_critical'] ?? 0),
-                ($this->values['max_critical'] ?? 0),
-                ($this->values['min_warning'] ?? 0),
-                ($this->values['max_warning'] ?? 0),
-            ];
+                    $moduleData = array_map(
+                        function ($module) {
+                            return ($module['data'] ?? 0);
+                        },
+                        $modules
+                    );
+                }
 
-            $max = max(
-                array_merge(
-                    $moduleData,
-                    $tresholdData
-                )
-            );
+                if ($this->values['max_value'] === null) {
+                    $max = max(
+                        array_merge(
+                            $moduleData,
+                            $tresholdData
+                        )
+                    );
+                } else {
+                    $max = $this->values['max_value'];
+                }
 
-            $min = min(
-                array_merge(
-                    $moduleData,
-                    $tresholdData
-                )
-            );
+                // Increases max.
+                if ($this->values['max_critical'] === null && $this->values['max_value'] === null) {
+                    $max_increase = ($max * self::MAX_INCREASE);
+                    $max = ($max + $max_increase);
+                }
 
-            $this->thresholds = $this->calculateThreshold($max, $min);
+                if ($this->values['min_value'] === null) {
+                    $min = min(
+                        array_merge(
+                            $moduleData,
+                            $tresholdData
+                        )
+                    );
+                } else {
+                    $min = $this->values['min_value'];
+                }
 
-            $output .= '<div class="container-grouped-meter" style="color:'.$this->values['fontColor'].'">';
+                $tresholds_array = [
+                    'min_critical' => $this->values['min_critical'],
+                    'max_critical' => $this->values['max_critical'],
+                    'min_warning'  => $this->values['min_warning'],
+                    'max_warning'  => $this->values['max_warning'],
+                ];
+
+                $this->thresholds = $this->calculateThreshold($max, $min, $tresholds_array);
+            }
+
+            $style = 'color:'.$this->values['fontColor'].';';
+            $output .= '<div class="container-grouped-meter" style="'.$style.'">';
             foreach ($modules as $module) {
                 $output .= $this->drawRowModule(
                     $module,
-                    $max
+                    $max,
+                    $min
                 );
             }
 
@@ -658,18 +736,63 @@ class GroupedMeterGraphs extends Widget
     /**
      * Draw info module.
      *
-     * @param array $data Data module.
-     * @param float $max  Value max.
+     * @param array      $data Data module.
+     * @param null|float $max  Value max.
+     * @param null|float $min  Value min.
      *
      * @return string
      */
     private function drawRowModule(
         array $data,
-        float $max
+        ?float $max,
+        ?float $min
     ):string {
         global $config;
 
-        $module_data = $this->getBoxPercentageMaths($max, $data['data']);
+        // Dinamic.
+        if ($max === null && $min === null) {
+            $all_values_module = [
+                ($data['w_min'] ?? 0),
+                ($data['w_max'] ?? 0),
+                ($data['c_min'] ?? 0),
+                ($data['c_max'] ?? 0),
+                ($data['data'] ?? 0),
+            ];
+
+            if ($this->values['max_value'] === null) {
+                $max = max($all_values_module);
+            } else {
+                $max = $this->values['max_value'];
+            }
+
+            // Increases max.
+            if (empty($data['c_max']) === true
+                && $this->values['max_value'] === null
+            ) {
+                $max_increase = ($max * self::MAX_INCREASE);
+                $max = ($max + $max_increase);
+            }
+
+            $min = 0;
+            if ($this->values['min_value'] !== null) {
+                $min = $this->values['min_value'];
+            }
+
+            $thresholds_array = [
+                'min_critical' => (empty($data['c_min']) === true) ? null : $data['c_min'],
+                'max_critical' => (empty($data['c_max']) === true) ? null : $data['c_max'],
+                'min_warning'  => (empty($data['w_min']) === true) ? null : $data['w_min'],
+                'max_warning'  => (empty($data['w_max']) === true) ? null : $data['w_max'],
+            ];
+
+            $this->thresholds = $this->calculateThreshold(
+                $max,
+                $min,
+                $thresholds_array
+            );
+        }
+
+        $module_data = $this->getBoxPercentageMaths($max, $min, $data['data']);
 
         $output = '';
         $output .= '<div class="container-info-module-meter">';
@@ -765,41 +888,42 @@ class GroupedMeterGraphs extends Widget
     /**
      * Get tresholds.
      *
-     * @param float $max Value max.
-     * @param float $min Value min.
+     * @param float $max              Value max.
+     * @param float $min              Value min.
+     * @param array $thresholds_array Array thresholds.
      *
      * @return array Array threshold.
      */
-    private function calculateThreshold(float $max, float $min)
+    private function calculateThreshold(float $max, float $min, array $thresholds_array)
     {
         $nMax = null;
-        if ($this->values['min_warning'] !== null) {
-            $nMax = $this->getBoxPercentageMaths($max, $this->values['min_warning']);
+        if ($thresholds_array['min_warning'] !== null) {
+            $nMax = $this->getBoxPercentageMaths($max, $min, $thresholds_array['min_warning']);
         }
 
         $wMin = null;
-        if ($this->values['min_warning'] !== null) {
-            $wMin = $this->getBoxPercentageMaths($max, $this->values['min_warning']);
+        if ($thresholds_array['min_warning'] !== null) {
+            $wMin = $this->getBoxPercentageMaths($max, $min, $thresholds_array['min_warning']);
         }
 
         $wMax = null;
-        if ($this->values['max_warning'] !== null) {
-            $wMax = $this->getBoxPercentageMaths($max, $this->values['max_warning']);
+        if ($thresholds_array['max_warning'] !== null) {
+            $wMax = $this->getBoxPercentageMaths($max, $min, $thresholds_array['max_warning']);
         }
 
         $cMin = null;
-        if ($this->values['min_critical'] !== null) {
-            $cMin = $this->getBoxPercentageMaths($max, $this->values['min_critical']);
+        if ($thresholds_array['min_critical'] !== null) {
+            $cMin = $this->getBoxPercentageMaths($max, $min, $thresholds_array['min_critical']);
         }
 
         $cMax = null;
-        if ($this->values['max_critical'] !== null) {
-            $cMax = $this->getBoxPercentageMaths($max, $this->values['max_critical']);
+        if ($thresholds_array['max_critical'] !== null) {
+            $cMax = $this->getBoxPercentageMaths($max, $min, $thresholds_array['max_critical']);
         }
 
         $thresholds = [
             'normal'   => [
-                'min' => $min,
+                'min' => $this->getBoxPercentageMaths($max, $min, $min),
                 'max' => $nMax,
             ],
             'warning'  => [
@@ -820,13 +944,17 @@ class GroupedMeterGraphs extends Widget
      * Get porcentage.
      *
      * @param float $max   Maximum.
+     * @param float $min   Minimum.
      * @param float $value Value.
      *
      * @return float
      */
-    private function getBoxPercentageMaths(float $max, float $value):float
-    {
-        return (($value / $max) * $this->boxNumber);
+    private function getBoxPercentageMaths(
+        float $max,
+        float $min,
+        float $value
+    ):float {
+        return (((($value - $min) / ($max - $min))) * $this->boxNumber);
     }
 
 

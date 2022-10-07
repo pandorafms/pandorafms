@@ -1444,7 +1444,7 @@ html_print_input_hidden('json_profile', '');
 echo '</form>';
 
 
-profile_print_profile_table($id);
+profile_print_profile_table($id, io_safe_output($json_profile));
 
 echo '<br />';
 
@@ -1560,11 +1560,11 @@ $(document).ready (function () {
         switch_ehorus_conf();
     });
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
-
     var img_delete = '<?php echo $delete_image; ?>';
     var id_user = '<?php echo io_safe_output($id); ?>';
     var is_metaconsole = '<?php echo $meta; ?>';
     var user_is_global_admin = '<?php echo users_is_admin($id); ?>';
+    var is_err = '<?php echo $is_err; ?>';
     var data = [];
 
     $('input:image[name="add"]').click(function (e) {
@@ -1588,7 +1588,7 @@ $(document).ready (function () {
             return;
         }
 
-        if (id_user === '') {
+        if (id_user === '' || is_err === 1) {
             let new_json = `{"profile":${profile},"group":${group},"tags":[${tags}],"hierarchy":${hierarchy}}`;
             data.push(new_json);
             json_profile.val('['+data+']');

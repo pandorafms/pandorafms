@@ -181,7 +181,7 @@ function profile_delete_profile_and_clean_users($id_profile)
  * @param int User id
  * @param bool Show the tags select or not
  */
-function profile_print_profile_table($id)
+function profile_print_profile_table($id, $json_profile=false)
 {
     global $config;
 
@@ -243,7 +243,19 @@ function profile_print_profile_table($id)
     }
 
     if ($result === false) {
-        $result = [];
+        if ($json_profile !== false && empty($json_profile) !== true) {
+            $profile_decoded = json_decode($json_profile);
+            foreach ($profile_decoded as $profile) {
+                        $result[] = [
+                            'id_grupo'  => $profile->group,
+                            'id_perfil' => $profile->profile,
+                            'tags'      => $profile->tags,
+                            'hierarchy' => $profile->hierarchy,
+                        ];
+            }
+        } else {
+            $result = [];
+        }
     }
 
     foreach ($result as $profile) {
@@ -268,7 +280,12 @@ function profile_print_profile_table($id)
         if (empty($profile['tags'])) {
             $data['tags'] = '';
         } else {
-            $tags_ids = explode(',', $profile['tags']);
+            if (is_array($profile['tags'] === false)) {
+                $tags_ids = explode(',', $profile['tags']);
+            } else {
+                $tags_ids = $profile['tags'];
+            }
+
             $tags = tags_get_tags($tags_ids);
             $data['tags'] = tags_get_tags_formatted($tags);
         }

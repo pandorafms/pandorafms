@@ -688,6 +688,58 @@ class AgentWizard extends HTML
                     'return'      => true,
                 ],
             ];
+
+            $user_groups = users_get_groups(false, 'AR');
+            if (users_is_admin() === true || isset($user_groups[0]) === true) {
+                $credentials = db_get_all_rows_sql(
+                    'SELECT identifier FROM tcredential_store WHERE product LIKE "WMI"'
+                );
+            } else {
+                $credentials = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT identifier FROM tcredential_store WHERE product LIKE "WMI" AND id_group IN (%s)',
+                        implode(',', array_keys($user_groups))
+                    )
+                );
+            }
+
+            if (empty($credentials) === false) {
+                $test = [];
+                foreach ($credentials as $key => $value) {
+                    $test[$value['identifier']] = $value['identifier'];
+                }
+
+                $inputs[] = [
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('Credential store'),
+                            'id'        => 'slc-credential',
+                            'arguments' => [
+                                'name'          => 'credential',
+                                'input_class'   => 'flex-row',
+                                'type'          => 'select',
+                                'nothing'       => __('None'),
+                                'nothing_value' => 0,
+                                'fields'        => $test,
+                                'class'         => '',
+                                'return'        => true,
+                                'sort'          => true,
+                            ],
+                        ],
+                        [
+                            'arguments' => [
+                                'label'      => __('Apply'),
+                                'name'       => 'btn-credential',
+                                'id'         => 'btn-credential',
+                                'type'       => 'button',
+                                'attributes' => 'class="sub next" onclick="" style="margin-left: 20px;padding-top: 3px;padding-bottom: 3px;background-position: 92% 6px;"',
+                                'return'     => true,
+                            ],
+                        ],
+                    ],
+                ];
+            }
         }
 
         $hint_server = '&nbsp;';
@@ -744,6 +796,22 @@ class AgentWizard extends HTML
                     'return'      => true,
                 ],
             ];
+
+            $user_groups = users_get_groups(false, 'AR');
+            if (users_is_admin() === true || isset($user_groups[0]) === true) {
+                $credentials = db_get_all_rows_sql(
+                    'SELECT identifier FROM tcredential_store WHERE product LIKE "SNMP"'
+                );
+            } else {
+                $credentials = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT identifier FROM tcredential_store WHERE product LIKE "SNMP" AND id_group IN (%s)',
+                        implode(',', array_keys($user_groups))
+                    )
+                );
+            }
+
+            hd($credentials);
         }
 
         $inputs[] = [
@@ -5803,6 +5871,33 @@ class AgentWizard extends HTML
                 // Filter search interfaces snmp.
                 $('#text-filter-search').keyup(function() {
                     filterInterfaces();
+                });
+
+                $('#button-btn-credential').click(function() {
+
+                    if ($('#credential').val() !== '0') {
+                        alert('jejeje si');
+                    }
+                    // $.ajax({
+                    //         method: "post",
+                    //         url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                    //         data: {
+                    //             page: "<?php echo $this->ajaxController; ?>",
+                    //             method: "listModulesToCreate",
+                    //             data: JSON.stringify(datas),
+                    //             id_agente: "<?php echo $this->idAgent; ?>",
+                    //             id: "<?php echo $this->idPolicy; ?>"
+                    //         },
+                    //         datatype: "html",
+                    //         success: function(data) {
+                    //             // Show hidden OK button
+                    //             $('.sub.ok.submit-next').removeClass('invisible_important');
+                    //             $('#' + id).empty().append(data);
+                    //         },
+                    //         error: function(e) {
+                    //             showMsg(e);
+                    //         }
+                    //     });
                 });
 
                 // Loading.

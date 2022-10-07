@@ -1133,7 +1133,7 @@ class CredentialStore extends Wizard
                     'name'        => 'version',
                     'input_class' => 'flex-row',
                     'type'        => 'select',
-                    'script'      => '',
+                    'script'      => 'showVersion()',
                     'fields'      => [
                         '1'  => __('1'),
                         '2'  => __('2'),
@@ -1148,11 +1148,12 @@ class CredentialStore extends Wizard
             $inputs[] = [
                 'label'     => __('Security level'),
                 'id'        => 'li_snmp_3',
+                'style'     => ($json_values['version'] !== '3') ? 'display: none;' : '',
                 'arguments' => [
                     'name'        => 'securityLevelV3',
                     'input_class' => 'flex-row',
                     'type'        => 'select',
-                    'script'      => '',
+                    'script'      => 'showSecurity()',
                     'fields'      => [
                         'authNoPriv'   => __('Authenticated and non-private method'),
                         'authPriv'     => __('Authenticated and private method'),
@@ -1166,6 +1167,7 @@ class CredentialStore extends Wizard
             $inputs[] = [
                 'label'     => __('User authentication'),
                 'id'        => 'li_snmp_4',
+                'style'     => ($json_values['version'] !== '3') ? 'display: none;' : '',
                 'arguments' => [
                     'name'        => 'authUserV3',
                     'input_class' => 'flex-row',
@@ -1175,14 +1177,19 @@ class CredentialStore extends Wizard
                 ],
             ];
 
+            $authNoPrivate = (
+                isset($json_values['securityLevelV3']) &&
+                ($json_values['securityLevelV3'] === 'authNoPriv' || $json_values['securityLevelV3'] === 'authPriv')
+            ) ? '' : 'display: none;';
+
             $inputs[] = [
                 'label'     => __('Authentication method'),
                 'id'        => 'li_snmp_5',
+                'style'     => $authNoPrivate,
                 'arguments' => [
                     'name'        => 'authMethodV3',
                     'input_class' => 'flex-row',
                     'type'        => 'select',
-                    'script'      => '',
                     'fields'      => [
                         'MD5' => __('MD5'),
                         'SHA' => __('SHA'),
@@ -1195,6 +1202,7 @@ class CredentialStore extends Wizard
             $inputs[] = [
                 'label'     => __('Password authentication'),
                 'id'        => 'li_snmp_6',
+                'style'     => $authNoPrivate,
                 'arguments' => [
                     'name'        => 'authPassV3',
                     'input_class' => 'flex-row',
@@ -1204,14 +1212,18 @@ class CredentialStore extends Wizard
                 ],
             ];
 
+            $authPrivate = (isset($json_values['securityLevelV3']) && $json_values['securityLevelV3'] === 'authPriv')
+                ? ''
+                : 'display: none;';
+
             $inputs[] = [
                 'label'     => __('Privacy method'),
                 'id'        => 'li_snmp_7',
+                'style'     => $authPrivate,
                 'arguments' => [
                     'name'        => 'privacyMethodV3',
                     'input_class' => 'flex-row',
                     'type'        => 'select',
-                    'script'      => '',
                     'fields'      => [
                         'AES' => __('AES'),
                         'DES' => __('DES'),
@@ -1224,6 +1236,7 @@ class CredentialStore extends Wizard
             $inputs[] = [
                 'label'     => __('Privacy pass'),
                 'id'        => 'li_snmp_8',
+                'style'     => $authPrivate,
                 'arguments' => [
                     'name'        => 'privacyPassV3',
                     'input_class' => 'flex-row',
@@ -1366,6 +1379,8 @@ class CredentialStore extends Wizard
 
                 if ($('#li_snmp_1').length > 0) {
                     console.log($('#li_snmp_1').length);
+                    const test = '<?php echo $json_values; ?>';
+                    console.log(test);
                 } else {
                     const ul = $('#modal_form').children('ul')[0];
 
@@ -1391,19 +1406,7 @@ class CredentialStore extends Wizard
                     select_version.name = 'version';
                     select_version.id = 'version';
                     select_version.onchange = function() {
-                        if (this.value === '3') {
-                            $('#li_snmp_3').show();
-                            $('#li_snmp_4').show();
-                            $('#li_snmp_5').show();
-                            $('#li_snmp_6').show();
-                        } else {
-                            $('#li_snmp_3').hide();
-                            $('#li_snmp_4').hide();
-                            $('#li_snmp_5').hide();
-                            $('#li_snmp_6').hide();
-                            $('#li_snmp_7').hide();
-                            $('#li_snmp_8').hide();
-                        }
+                        showVersion();
                     };
                     let option1 = document.createElement("option");
                     let option2 = document.createElement("option");
@@ -1433,34 +1436,9 @@ class CredentialStore extends Wizard
                     label_security.textContent = '<?php echo __('Security level'); ?>';
                     const select_security = document.createElement("select");
                     select_security.name = 'securityLevelV3';
-                    select_security.id = 'security';
+                    select_security.id = 'securityLevelV3';
                     select_security.onchange = function() {
-                        switch (this.value) {
-                            case 'noAuthNoPriv':
-                                $('#li_snmp_4').show();
-                                $('#li_snmp_5').hide();
-                                $('#li_snmp_6').hide();
-                                $('#li_snmp_7').hide();
-                                $('#li_snmp_8').hide();
-                            break;
-
-                            case 'authPriv':
-                                $('#li_snmp_4').show();
-                                $('#li_snmp_5').show();
-                                $('#li_snmp_6').show();
-                                $('#li_snmp_7').show();
-                                $('#li_snmp_8').show();
-                            break;
-
-                            case 'authNoPriv':
-                            default:
-                                $('#li_snmp_4').show();
-                                $('#li_snmp_5').show();
-                                $('#li_snmp_6').show();
-                                $('#li_snmp_7').hide();
-                                $('#li_snmp_8').hide();
-                            break;
-                        }
+                        showSecurity();
                     }
                     option1 = document.createElement("option");
                     option2 = document.createElement("option");
@@ -1477,7 +1455,7 @@ class CredentialStore extends Wizard
                     li_security.append(label_security);
                     li_security.append(select_security);
                     ul.append(li_security);
-                    $("#security").select2();
+                    $("#securityLevelV3").select2();
 
                     // User.
                     const li_user = document.createElement("li");
@@ -1568,6 +1546,63 @@ class CredentialStore extends Wizard
                     $('#li_snmp_8').hide();
                 }
             }
+        }
+
+        function showVersion() {
+            if ($('#version').val() === '3') {
+                $('#li_snmp_3').show();
+                $('#li_snmp_4').show();
+                $('#li_snmp_5').show();
+                $('#li_snmp_6').show();
+            } else {
+                $('#li_snmp_3').hide();
+                $('#li_snmp_4').hide();
+                $('#li_snmp_5').hide();
+                $('#li_snmp_6').hide();
+                $('#li_snmp_7').hide();
+                $('#li_snmp_8').hide();
+            }
+        }
+
+        function showSecurity() {
+            const value = $('#securityLevelV3').val();
+            switch (value) {
+                case 'noAuthNoPriv':
+                    $('#li_snmp_4').show();
+                    $('#li_snmp_5').hide();
+                    $('#li_snmp_6').hide();
+                    $('#li_snmp_7').hide();
+                    $('#li_snmp_8').hide();
+                break;
+
+                case 'authPriv':
+                    $('#li_snmp_4').show();
+                    $('#li_snmp_5').show();
+                    $('#li_snmp_6').show();
+                    $('#li_snmp_7').show();
+                    $('#li_snmp_8').show();
+                break;
+
+                case 'authNoPriv':
+                default:
+                    $('#li_snmp_4').show();
+                    $('#li_snmp_5').show();
+                    $('#li_snmp_6').show();
+                    $('#li_snmp_7').hide();
+                    $('#li_snmp_8').hide();
+                break;
+            }
+        }
+
+        function hideSNMP() {
+            $('#li_snmp_1').hide();
+            $('#li_snmp_2').hide();
+            $('#li_snmp_3').hide();
+            $('#li_snmp_4').hide();
+            $('#li_snmp_5').hide();
+            $('#li_snmp_6').hide();
+            $('#li_snmp_7').hide();
+            $('#li_snmp_8').hide();
         }
 
         /**

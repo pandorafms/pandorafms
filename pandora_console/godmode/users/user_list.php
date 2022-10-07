@@ -31,8 +31,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
@@ -133,6 +131,8 @@ if (is_ajax()) {
         return;
     }
 }
+
+enterprise_hook('open_meta_frame');
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
@@ -924,7 +924,7 @@ enterprise_hook('close_meta_frame');
             var request = $.ajax({
                 url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
                 type: 'GET',
-                dataType: 'JSON',
+                dataType: 'json',
                 data: {
                     page: 'godmode/users/user_list',
                     get_user_profile_group: 1,
@@ -943,6 +943,9 @@ enterprise_hook('close_meta_frame');
                         }
                         count ++;
                     });
+                },
+                error: function (e, textStatus) {
+                    console.error(textStatus);
                 }
             });
             $(`#hidden-show_groups_${id_user}`).val('1');

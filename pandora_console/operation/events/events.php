@@ -258,7 +258,9 @@ $custom_data = get_parameter(
     ($filter['custom_data'] ?? '')
 );
 
-if (is_metaconsole() === true) {
+if (is_metaconsole() === true
+    && is_array($server_id) === false
+) {
     // Connect to node database.
     $id_node = (int) $server_id;
     if ($id_node !== 0) {
@@ -279,7 +281,9 @@ if (empty($text_module) === true && empty($id_agent_module) === false) {
     $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
 }
 
-if (is_metaconsole() === true) {
+if (is_metaconsole() === true
+    && is_array($server_id) === false
+) {
     // Return to metaconsole database.
     if ($id_node != 0) {
         metaconsole_restore_db();

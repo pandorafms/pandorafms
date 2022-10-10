@@ -194,11 +194,9 @@ class ServiceViewWidget extends Widget
             $this->name = 'service_view';
         }
 
-        // // This forces at least a first configuration.
-        // $this->configurationRequired = false;
-        // if (empty($this->values['serviceId']) === true) {
-        // $this->configurationRequired = true;
-        // }
+        // This forces at least a first configuration.
+        $this->configurationRequired = false;
+
         $this->overflow_scrollbars = false;
     }
 

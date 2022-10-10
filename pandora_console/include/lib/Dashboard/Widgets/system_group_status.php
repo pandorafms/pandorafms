@@ -459,18 +459,19 @@ class SystemGroupStatusWidget extends Widget
         }
 
         $module_counters = groupview_get_modules_counters($selected_groups);
+        $result_groups = [];
+        if (empty($module_counters) === false) {
+            foreach ($module_counters as $key => $item) {
+                $module_counters[$key]['name'] = groups_get_name($item['g']);
+            }
 
-        foreach ($module_counters as $key => $item) {
-            $module_counters[$key]['name'] = groups_get_name($item['g']);
-        }
+            $keys = array_column($module_counters, 'g');
+            $values = array_values($module_counters);
+            $result_groups = array_combine($keys, $values);
 
-        $keys = array_column($module_counters, 'g');
-        $values = array_values($module_counters);
-
-        $result_groups = array_combine($keys, $values);
-
-        if (empty($all_counters) === false) {
-            $result_groups[0] = $all_counters;
+            if (empty($all_counters) === false) {
+                $result_groups[0] = $all_counters;
+            }
         }
 
         $this->values['groupId'] = $selected_groups;

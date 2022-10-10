@@ -387,8 +387,6 @@ function events_delete($id_evento, $filter=null, $history=false, $force_node=fal
         $filter = ['group_rep' => EVENT_GROUP_REP_ALL];
     }
 
-    hd($filter['group_rep'], true);
-
     switch ($filter['group_rep']) {
         case EVENT_GROUP_REP_ALL:
         case EVENT_GROUP_REP_AGENTS:
@@ -1543,8 +1541,8 @@ function events_get_all(
         }
     }
 
-    if (($filter['group_rep'] === EVENT_GROUP_REP_EVENTS
-        || $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) && $count === false
+    if (((int) $filter['group_rep'] === EVENT_GROUP_REP_EVENTS
+        || (int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) && $count === false
     ) {
         $sql = sprintf(
             'SELECT %s
@@ -1576,7 +1574,9 @@ function events_get_all(
             %s
             %s
             %s JOIN tgrupo tg
-                ON %s',
+                ON %s 
+            %s
+            %s',
             join(',', $fields),
             $group_selects_trans,
             $tevento,
@@ -1605,7 +1605,8 @@ function events_get_all(
             join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
-            join(' ', $sql_filters)
+            join(' ', $sql_filters),
+            $order_by
         );
     } else {
         $sql = sprintf(

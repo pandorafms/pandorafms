@@ -5608,7 +5608,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0,
                     $data['agent_ids'],
                     $data['selectionModules'],
-                    true
+                    true,
+                    false,
+                    (isset($data['notStringModules']) === true && $data['notStringModules'] === true) ? true : false
                 );
             }
 

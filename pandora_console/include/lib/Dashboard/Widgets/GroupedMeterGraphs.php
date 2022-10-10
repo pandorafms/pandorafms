@@ -253,6 +253,10 @@ class GroupedMeterGraphs extends Widget
             $values['formatData'] = $decoder['formatData'];
         }
 
+        if (isset($decoder['manualThresholds']) === true) {
+            $values['manualThresholds'] = $decoder['manualThresholds'];
+        }
+
         $values['label'] = 'module';
         if (isset($decoder['label']) === true) {
             $values['label'] = $decoder['label'];
@@ -377,8 +381,25 @@ class GroupedMeterGraphs extends Widget
 
         ];
 
+        // Format Data.
         $inputs['inputs']['row1'][] = [
-            'class'         => 'dashboard-input-threshold',
+            'label'     => __('Manual thresholds'),
+            'arguments' => [
+                'name'     => 'manualThresholds',
+                'id'       => 'manualThresholds',
+                'type'     => 'switch',
+                'value'    => $values['manualThresholds'],
+                'onchange' => 'showManualThresholds(this)',
+            ],
+        ];
+
+        $class_invisible = '';
+        if ((bool) $values['manualThresholds'] !== true) {
+            $class_invisible = 'invisible_important';
+        }
+
+        $inputs['inputs']['row1'][] = [
+            'class'         => 'dashboard-input-threshold dashboard-input-threshold-warning '.$class_invisible,
             'direct'        => 1,
             'block_content' => [
                 [
@@ -407,7 +428,7 @@ class GroupedMeterGraphs extends Widget
         ];
 
         $inputs['inputs']['row1'][] = [
-            'class'         => 'dashboard-input-threshold',
+            'class'         => 'dashboard-input-threshold dashboard-input-threshold-critical '.$class_invisible,
             'direct'        => 1,
             'block_content' => [
                 [
@@ -464,6 +485,7 @@ class GroupedMeterGraphs extends Widget
                 'selectionModulesNameId' => 'selectionGroupedMeterGraphs',
                 'modules_ids'            => $values['moduleGroupedMeterGraphs'],
                 'modules_name'           => 'moduleGroupedMeterGraphs[]',
+                'notStringModules'       => true,
             ],
         ];
 
@@ -522,6 +544,7 @@ class GroupedMeterGraphs extends Widget
         $values['min_value'] = \get_parameter('min_value', null);
         $values['max_value'] = \get_parameter('max_value', null);
 
+        $values['manualThresholds'] = \get_parameter_switch('manualThresholds', 0);
         $values['min_critical'] = \get_parameter('min_critical', null);
         $values['max_critical'] = \get_parameter('max_critical', null);
         $values['min_warning'] = \get_parameter('min_warning', null);
@@ -792,7 +815,7 @@ class GroupedMeterGraphs extends Widget
             );
         }
 
-        $module_data = $this->getBoxPercentageMaths($max, $min, $data['data']);
+        $module_data = $this->getBoxPercentageMaths($max, $min, (float) $data['data']);
 
         $output = '';
         $output .= '<div class="container-info-module-meter">';
@@ -954,6 +977,10 @@ class GroupedMeterGraphs extends Widget
         float $min,
         float $value
     ):float {
+        if ($min === 0.00 && $max === 0.00) {
+            return 0;
+        }
+
         return (((($value - $min) / ($max - $min))) * $this->boxNumber);
     }
 
@@ -1021,7 +1048,7 @@ class GroupedMeterGraphs extends Widget
     {
         $size = [
             'width'  => (is_metaconsole() === true) ? 1000 : 900,
-            'height' => 480,
+            'height' => 550,
         ];
 
         return $size;

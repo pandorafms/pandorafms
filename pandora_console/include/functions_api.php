@@ -14757,6 +14757,11 @@ function api_set_metaconsole_license_file($key)
         return;
     }
 
+    $license_encryption_key = db_get_value('value', 'tupdate_settings', '`key`', 'license_encryption_key');
+    if (empty($license_encryption_key) === false) {
+        $key = openssl_blowfish_encrypt_hex($key, io_safe_output($license_encryption_key));
+    }
+
     // Update the license file.
     $result = file_put_contents($config['remote_config'].'/'.LICENSE_FILE, $key);
     if ($result === false) {
@@ -17549,9 +17554,11 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
     }
 }
 
+
 /**
  * Make report (PDF, CSV or XML) and send it via e-mail (this method is intended to be used by server's execution
  * of alert actions that involve sending reports by e-mail).
+ *
  * @param [string] $server_id        id server (Node)
  * @param [string] $console_event_id console Id node event in tevent
  * @param [string] $trash2           don't use
@@ -17598,15 +17605,12 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
     $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
     $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
 
-
     if ($make_report_from_template === true) {
         $filter['id_report'] = $id_item;
 
         $template = reports_get_report_templates(
             $filter,
-            [
-                'description'
-            ],
+            ['description'],
             $return_all_group,
             'RR'
         )[0];
@@ -17614,15 +17618,16 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         $description = $template['description'];
 
         // Report macros post-process.
-        $body_email = str_replace([
+        $body_email = str_replace(
+            [
                 '_report_description_',
                 '_report_generated_date_',
-                '_report_date_'
+                '_report_date_',
             ],
             [
                 $description,
                 $date_today,
-                $date_today
+                $date_today,
             ],
             $body_email
         );
@@ -17636,7 +17641,7 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
             $template_regex_agents,
             false,
             '',
-            $email, 
+            $email,
             $subject_email,
             $body_email,
             $report_type,
@@ -17651,15 +17656,16 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         }
 
         // Report macros post-process.
-        $body_email = str_replace([
+        $body_email = str_replace(
+            [
                 '_report_description_',
                 '_report_generated_date_',
-                '_report_date_'
+                '_report_date_',
             ],
             [
                 $report['description'],
                 $date_today,
-                $date_today
+                $date_today,
             ],
             $body_email
         );
@@ -17846,4 +17852,3 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         returnData($returnType, $data, ';');
     }
 }
-

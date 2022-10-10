@@ -1409,6 +1409,7 @@ function custom_fields_macros_report($macro, $key_macro)
     return $result;
 }
 
+
 /**
  * Get a list of the reports the user can view.
  *
@@ -1481,4 +1482,3 @@ function reports_get_report_templates(
 
     return $templates;
 }
-

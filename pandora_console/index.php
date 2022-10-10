@@ -323,7 +323,7 @@ if (isset($config['id_user']) === false) {
                         $userIP,
                         $nick
                     ),
-                    $userIP
+                    $nick
                 );
                 while (ob_get_length() > 0) {
                     ob_end_flush();

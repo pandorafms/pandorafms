@@ -881,14 +881,16 @@ if (($create != '') || ($view != '')) {
                         'class' => 'invert_filter',
                     ]
                 ).'</a>&nbsp;&nbsp;';
-                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image(
-                    'images/cross.png',
-                    true,
-                    [
-                        'border' => '0',
-                        'class'  => 'invert_filter',
-                    ]
-                ).'</a>';
+                if ((bool) $row['no_delete'] === false) {
+                    echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image(
+                        'images/cross.png',
+                        true,
+                        [
+                            'border' => '0',
+                            'class'  => 'invert_filter',
+                        ]
+                    ).'</a>';
+                }
 
                 echo '</td>';
             }

@@ -3655,7 +3655,7 @@ function ui_print_datatable(array $parameters)
             order: [[ '.$order.' ]]
         };
 
-        var dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)

@@ -266,7 +266,7 @@ sub help_screen{
 sub api_call($$$;$$$$) {
 	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
- 
+
 	eval {
 		# Set the parameters for the POST request.
 		my $params = {};
@@ -294,7 +294,7 @@ sub api_call($$$;$$$$) {
 			$content = $response->decoded_content();
 		}
 	};
-	
+
 	return $content;
 }
 
@@ -8054,7 +8054,7 @@ sub pandora_manage_main ($$$) {
 			cli_get_gis_agent();
 		}
 		elsif ($param eq '--insert_gis_data'){
-			# param_check($ltotal, 4, 0);
+			param_check($ltotal, 4, 0);
 			cli_insert_gis_data();
 		}
 		else {

@@ -93,7 +93,9 @@ final class Config
         }
 
         if (empty($settings) === true) {
-            if ($config['history_db_connection'] !== false) {
+            if (isset($config['history_db_connection']) === true
+                && $config['history_db_connection'] !== false
+            ) {
                 $data = \db_get_all_rows_sql(
                     'SELECT * FROM `tconfig`',
                     false,

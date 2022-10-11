@@ -90,7 +90,9 @@ final class Config
             }
 
             ob_get_clean();
+        }
 
+        if (empty($settings) === true) {
             if ($config['history_db_connection'] !== false) {
                 $data = \db_get_all_rows_sql(
                     'SELECT * FROM `tconfig`',

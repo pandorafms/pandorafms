@@ -1577,9 +1577,10 @@ function config_update_config()
                     }
 
                     $history_db_string_days = get_parameter('history_db_string_days');
-                    if (is_numeric($history_db_string_days) === false
+                    if ((is_numeric($history_db_string_days) === false
                         || $history_db_string_days <= 0
-                        || config_update_value('history_db_string_days', $history_db_string_days) === false
+                        || config_update_value('history_db_string_days', $history_db_string_days) === false)
+                        && get_parameter_switch('history_db_adv', 0) === 1
                     ) {
                         $error_update[] = __('String Days');
                     }
@@ -1843,7 +1844,7 @@ function config_update_config()
         $config['error_config_update_config']['correct'] = false;
         $values = implode('<br> -', $error_update);
         $config['error_config_update_config']['message'] = sprintf(
-            __('Failed updated: the next values cannot update: <br> -%s'),
+            __('Update failed. The next values could not be updated: <br> -%s'),
             $values
         );
 

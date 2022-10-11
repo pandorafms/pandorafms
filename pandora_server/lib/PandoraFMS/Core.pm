@@ -7222,7 +7222,7 @@ sub pandora_snmptrapd_still_working ($$) {
 		logger($pa_config, 'lastTimestampSaved: '.$lastTimestampSaved);
 		logger($pa_config, 'lastTimestampLogFile: '.$lastTimestampLogFile);
 		if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved ge ($lastTimestampLogFile + $timeMaxLapse)) {
-			my $lapseMessage = "snmptrapd service probably is stuck. Please check the status."
+			my $lapseMessage = "snmptrapd service probably is stuck.";
 			logger($pa_config, $lapseMessage, 1);
 			pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
 		}

@@ -215,6 +215,7 @@ our @EXPORT = qw(
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
 	pandora_output_password
+	pandora_snmptrapd_still_working
 	pandora_planned_downtime
 	pandora_planned_downtime_set_quiet_elements
 	pandora_planned_downtime_unset_quiet_elements
@@ -7191,6 +7192,42 @@ sub notification_get_groups {
 	return @results;
 }
 
+########################################################################
+
+=head2 C<< pandora_snmptrapd_still_working (I<$pa_config>, I<$dbh>) >> 
+snmptrapd sometimes freezes and eventually its status needs to be checked.
+=cut
+
+########################################################################
+sub pandora_snmptrapd_still_working ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	if ($pa_config->{'snmpserver'} eq '1') {
+		# Variable that defines the maximum time of delay between kksks.
+		my $timeMaxLapse = 360;
+		# Check last snmptrapd saved in DB.
+		my $lastTimestampSaved = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(timestamp)
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT 1');
+		# Read the last log file line.
+		use Tie::File;
+		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
+		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
+		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
+		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
+		my ($hour, $min, $sec) = split(/:/, $time, 3);
+		my ($year, $month, $day) = split(/-/, $date, 3);
+		$lastTimestampLogFile = timelocal($sec, $min, $hour, $day, $month, $year);
+		logger($pa_config, 'lastTimestampSaved: '.$lastTimestampSaved);
+		logger($pa_config, 'lastTimestampLogFile: '.$lastTimestampLogFile);
+		if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved ge ($lastTimestampLogFile + $timeMaxLapse)) {
+			my $lapseMessage = "snmptrapd service probably is stuck. Please check the status."
+			logger($pa_config, $lapseMessage, 1);
+			pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+		}
+	}
+}
 
 # End of function declaration
 # End of defined Code

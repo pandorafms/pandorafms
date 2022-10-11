@@ -92,31 +92,29 @@ final class Config
             ob_get_clean();
         }
 
-        if (empty($settings) === true) {
-            if (isset($config['history_db_connection']) === true
-                && $config['history_db_connection'] !== false
-            ) {
-                $data = \db_get_all_rows_sql(
-                    'SELECT * FROM `tconfig`',
-                    false,
-                    false,
-                    $config['history_db_connection']
-                );
-            }
-
-            if (is_array($data) !== true) {
-                return [];
-            }
-
-            self::$settings = array_reduce(
-                $data,
-                function ($carry, $item) {
-                    $carry[$item['token']] = $item['value'];
-                    return $carry;
-                },
-                []
+        if (isset($config['history_db_connection']) === true
+            && $config['history_db_connection'] !== false
+        ) {
+            $data = \db_get_all_rows_sql(
+                'SELECT * FROM `tconfig`',
+                false,
+                false,
+                $config['history_db_connection']
             );
         }
+
+        if (is_array($data) !== true) {
+            return [];
+        }
+
+        self::$settings = array_reduce(
+            $data,
+            function ($carry, $item) {
+                $carry[$item['token']] = $item['value'];
+                return $carry;
+            },
+            []
+        );
     }
 
 

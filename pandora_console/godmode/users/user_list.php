@@ -54,6 +54,43 @@ if (is_ajax()) {
 
     $return_all = false;
 
+    if ($get_user_profile_group === true) {
+        $id_user = get_parameter('id_user');
+
+        $user_is_admin = users_is_admin();
+
+        $user_profiles = [];
+
+        if ($user_is_admin === false) {
+            $group_um = users_get_groups_UM($config['id_user']);
+        }
+
+        // User profiles.
+        if ($user_is_admin || $id_user == $config['id_user'] || isset($group_um[0])) {
+            $user_profiles = db_get_all_rows_field_filter(
+                'tusuario_perfil',
+                'id_usuario',
+                $id_user
+            );
+        } else {
+            $user_profiles_aux = users_get_user_profile($id_user);
+            foreach ($group_um as $key => $value) {
+                if (isset($user_profiles_aux[$key]) === true) {
+                    $user_profiles[$key] = $user_profiles_aux[$key];
+                    unset($user_profiles_aux[$key]);
+                }
+            }
+        }
+
+        foreach ($user_profiles as $key => $value) {
+            $user_profiles[$key]['id_perfil'] = profile_get_name($value['id_perfil']);
+            $user_profiles[$key]['id_grupo'] = groups_get_name($value['id_grupo'], true);
+        }
+
+        echo json_encode($user_profiles);
+        return;
+    }
+
     if ($group_id == -1) {
         $sql = 'SELECT tusuario.id_user FROM tusuario 
                         LEFT OUTER JOIN tusuario_perfil
@@ -91,43 +128,6 @@ if (is_ajax()) {
         }
 
         echo json_encode($ret_id);
-        return;
-    }
-
-    if ($get_user_profile_group === true) {
-        $id_user = get_parameter('id_user');
-
-        $user_is_admin = users_is_admin();
-
-        $user_profiles = [];
-
-        if ($user_is_admin === false) {
-            $group_um = users_get_groups_UM($config['id_user']);
-        }
-
-        // User profiles.
-        if ($user_is_admin || $id_user == $config['id_user'] || isset($group_um[0])) {
-            $user_profiles = db_get_all_rows_field_filter(
-                'tusuario_perfil',
-                'id_usuario',
-                $id_user
-            );
-        } else {
-            $user_profiles_aux = users_get_user_profile($id_user);
-            foreach ($group_um as $key => $value) {
-                if (isset($user_profiles_aux[$key]) === true) {
-                    $user_profiles[$key] = $user_profiles_aux[$key];
-                    unset($user_profiles_aux[$key]);
-                }
-            }
-        }
-
-        foreach ($user_profiles as $key => $value) {
-            $user_profiles[$key]['id_perfil'] = profile_get_name($value['id_perfil']);
-            $user_profiles[$key]['id_grupo'] = groups_get_name($value['id_grupo'], true);
-        }
-
-        echo json_encode($user_profiles);
         return;
     }
 }

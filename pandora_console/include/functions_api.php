@@ -13298,12 +13298,6 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
-        $meta = true;
-    } else {
-        $meta = $other['data'][1];
-    }
-
     if (!check_acl($config['id_user'], 0, 'EW')) {
         returnError('forbidden', 'string');
         return;
@@ -13314,13 +13308,46 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         return;
     } else if ($other['type'] == 'array') {
         $comment = $other['data'][0];
-        $history = $other['data'][2];
 
-        $status = events_comment(
-            $id,
-            $comment,
-            'Added comment'
-        );
+        $node_int = 0;
+        if (is_metaconsole() === true) {
+            if (isset($other['data'][1]) === true
+                && empty($other['data'][1]) === false
+            ) {
+                $node_int = $other['data'][1];
+            }
+        }
+
+        try {
+            if (is_metaconsole() === true
+                && (int) $node_int > 0
+            ) {
+                $node = new Node($node_int);
+                $node->connect();
+            }
+
+            $status = events_comment(
+                $id,
+                $comment,
+                'Added comment'
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $node_int > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $status = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $node_int > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+
         if (is_error($status)) {
             returnError(
                 'The event comment could not be added.'

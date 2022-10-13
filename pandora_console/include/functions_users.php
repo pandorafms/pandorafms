@@ -878,3 +878,52 @@ function users_get_users_group_by_group($id_group)
 
     return $users;
 }
+
+
+/**
+ * Check if IP is in range. Check wildcard `*`, single IP and IP ranges.
+ *
+ * @param array  $arrayIP List of IPs.
+ * @param string $userIP  IP for determine if is in the list.
+ *
+ * @return boolean True if IP is in range.
+ */
+function checkIPInRange(
+    array $arrayIP,
+    string $userIP=''
+) {
+    $output = false;
+
+    if (empty($userIP) === true) {
+        $userIP = $_SERVER['REMOTE_ADDR'];
+    }
+
+    if (empty($arrayIP) === false) {
+        foreach ($arrayIP as $ip) {
+            if ($ip === '*') {
+                // The list has wildcard, this accept all IPs.
+                $output = true;
+                break;
+            } else if ($ip === $userIP) {
+                $output = true;
+                break;
+            } else if (preg_match('/([0-2]?[0-9]{1,2})[.]([0-2]?[0-9]{1,2})[.]([0-2]?[0-9]{0,2})[.](0){1}/', $ip) > 0) {
+                $rangeArrayIP = explode('.', $ip);
+                $userArrayIP = explode('.', $userIP);
+                foreach ($rangeArrayIP as $position => $segmentIP) {
+                    if ($segmentIP === $userArrayIP[$position]) {
+                        $output = true;
+                    } else if ((string) $segmentIP === '0') {
+                        break 2;
+                    } else {
+                        $output = false;
+                    }
+                }
+            } else {
+                $output = false;
+            }
+        }
+    }
+
+    return $output;
+}

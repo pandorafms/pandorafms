@@ -119,6 +119,10 @@ networkserver 1
 
 dataserver 1
 
+# Enable (1) or disable (0) the Data Server smart queue, which gives priority
+# to new data coming from agents at the expense of buffered XML files.
+dataserver_smart_queue 1
+
 # Activate (1) Pandora FMS Recon server
 
 reconserver 1

@@ -79,7 +79,13 @@ sub new ($$;$) {
 	$XMLinSem = Thread::Semaphore->new (1);
 	
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
+	my $self;
+	if ($config->{'dataserver_smart_queue'} == 0) {
+		$self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
+	} else {
+		logger($config, "Smart queue enabled for the Pandora FMS DataServer.", 3);
+		$self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer_smart_queue, \&PandoraFMS::DataServer::data_consumer, $dbh);
+	}
 
 	# Load external .enc files for XML::Parser.
 	if ($config->{'enc_dir'} ne '') {
@@ -173,6 +179,53 @@ sub data_producer ($) {
 
 		next if (agent_lock($pa_config, $dbh, $agent_name) == 0);
 			
+		push (@tasks, $file);
+	}
+
+	return @tasks;
+}
+
+###############################################################################
+# Data producer with smart queuing.
+###############################################################################
+sub data_producer_smart_queue ($) {
+	my $self = shift;
+	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
+
+	my @tasks;
+	my @files;
+	my @sorted;
+
+	# Open the incoming directory
+	opendir (DIR, $pa_config->{'incomingdir'})
+		|| die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
+
+	# Do not read more than max_queue_files files
+	my $smart_queue = {};
+ 	while (my $file = readdir (DIR)) {
+ 		$file = Encode::decode( locale_fs => $file );
+
+		# Data files must have the extension .data
+		next if ($file !~ /^(.*)[\._]\d+\.data$/);
+		my $agent_name = $1;
+
+		# Queue a new file.
+		if (!defined($smart_queue->{$agent_name})) {
+			$smart_queue->{$agent_name} = $file;
+		}
+		# Or update a file in the queue.
+		else {
+			# Always work in LIFO mode.
+			if (-M $pa_config->{'incomingdir'} . '/' . $file < -M $pa_config->{'incomingdir'} . '/' . $smart_queue->{$agent_name}) {
+				$smart_queue->{$agent_name} = $file;
+			}
+		}
+	}
+	closedir(DIR);
+
+	# Do not process more than one XML from the same agent at the same time:
+	while (my ($agent_name, $file) = each(%{$smart_queue})) {
+		next if (agent_lock($pa_config, $dbh, $agent_name) == 0);
 		push (@tasks, $file);
 	}
 

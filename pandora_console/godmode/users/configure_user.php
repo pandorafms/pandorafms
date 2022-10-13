@@ -1,17 +1,32 @@
 <?php
+/**
+ * User creation / update.
+ *
+ * @category   Users
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -343,6 +358,8 @@ if ($create_user) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
+    $values['allowed_ip_active'] = ((int) get_parameter_switch('allowed_ip_active', -1) === 0);
+    $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
     $values['is_admin'] = $user_is_admin;
     $values['language'] = get_parameter('language', 'default');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -358,20 +375,20 @@ if ($create_user) {
     $values['block_size'] = (int) get_parameter('block_size', $config['block_size']);
 
     $values['section'] = get_parameter('section');
-    if (($values['section'] == 'Event list') || ($values['section'] == 'Group view') || ($values['section'] == 'Alert detail') || ($values['section'] == 'Tactical view') || ($values['section'] == 'Default')) {
+    if (($values['section'] === 'Event list') || ($values['section'] === 'Group view') || ($values['section'] === 'Alert detail') || ($values['section'] === 'Tactical view') || ($values['section'] === 'Default')) {
         $values['data_section'] = '';
-    } else if ($values['section'] == 'Dashboard') {
+    } else if ($values['section'] === 'Dashboard') {
         $values['data_section'] = $dashboard;
-    } else if (io_safe_output($values['section']) == 'Visual console') {
+    } else if (io_safe_output($values['section']) === 'Visual console') {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link') {
+    } else if ($values['section'] === 'Other' || io_safe_output($values['section']) === 'External link') {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole() === true) {
             $values['metaconsole_access'] = get_parameter('metaconsole_access', 'basic');
             $values['metaconsole_agents_manager'] = ($user_is_admin == 1 ? 1 : get_parameter('metaconsole_agents_manager', '0'));
             $values['metaconsole_access_node'] = ($user_is_admin == 1 ? 1 : get_parameter('metaconsole_access_node', '0'));
@@ -384,8 +401,8 @@ if ($create_user) {
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
 
-    // eHorus user level conf
-    if ($config['ehorus_user_level_conf']) {
+    // eHorus user level conf.
+    if ((bool) $config['ehorus_user_level_conf'] === true) {
         $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
         if ($values['ehorus_user_level_enabled'] === true) {
             $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
@@ -397,7 +414,7 @@ if ($create_user) {
     }
 
 
-    if ($id == '') {
+    if (empty($id) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
         $user_info = $values;
@@ -411,7 +428,7 @@ if ($create_user) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
-    } else if ($password_new == '') {
+    } else if (empty($password_new) === true) {
         $is_err = true;
         ui_print_error_message(__('Passwords cannot be empty'));
         $user_info = $values;
@@ -438,6 +455,9 @@ if ($create_user) {
         }
 
         $info = '{"Id_user":"'.$values['id_user'].'","FullName":"'.$values['fullname'].'","Firstname":"'.$values['firstname'].'","Lastname":"'.$values['lastname'].'","Email":"'.$values['email'].'","Phone":"'.$values['phone'].'","Comments":"'.$values['comments'].'","Is_admin":"'.$values['is_admin'].'","Language":"'.$values['language'].'","Timezone":"'.$values['timezone'].'","Block size":"'.$values['block_size'].'"';
+        if ($values['allowed_ip_active'] === true) {
+            $info .= ',"IPS Allowed":"'.$values['allowed_ip_list'].'"';
+        }
 
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
             $info .= ',"Skin":"'.$values['id_skin'].'"}';
@@ -540,6 +560,8 @@ if ($update_user) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
+    $values['allowed_ip_active'] = ((int) get_parameter('allowed_ip_active', -1) === 0);
+    $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
     $values['is_admin'] = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -573,17 +595,17 @@ if ($update_user) {
     $values['block_size'] = get_parameter('block_size', $config['block_size']);
 
     $values['section'] = get_parameter('section');
-    if (($values['section'] == 'Event list') || ($values['section'] == 'Group view') || ($values['section'] == 'Alert detail') || ($values['section'] == 'Tactical view') || ($values['section'] == 'Default')) {
+    if (($values['section'] === 'Event list') || ($values['section'] === 'Group view') || ($values['section'] === 'Alert detail') || ($values['section'] === 'Tactical view') || ($values['section'] === 'Default')) {
         $values['data_section'] = '';
-    } else if ($values['section'] == 'Dashboard') {
+    } else if ($values['section'] === 'Dashboard') {
         $values['data_section'] = $dashboard;
-    } else if (io_safe_output($values['section']) == 'Visual console') {
+    } else if (io_safe_output($values['section']) === 'Visual console') {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link') {
+    } else if ($values['section'] === 'Other' || io_safe_output($values['section']) === 'External link') {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    if (enterprise_installed() && defined('METACONSOLE')) {
+    if (enterprise_installed() === true && is_metaconsole() === true) {
         $values['metaconsole_access'] = get_parameter('metaconsole_access');
         $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
         $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
@@ -611,9 +633,9 @@ if ($update_user) {
                 $correct_password = true;
             }
 
-            if ($password_confirm == $password_new) {
+            if ((string) $password_confirm === (string) $password_new) {
                 if ($correct_password === true || is_user_admin($config['id_user'])) {
-                    if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                    if ((is_user_admin($config['id_user']) === false || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
                         $pass_ok = login_validate_pass($password_new, $id, true);
                         if ($pass_ok != 1) {
                             ui_print_error_message($pass_ok);
@@ -704,19 +726,23 @@ if ($update_user) {
 				"Block size":"'.$values['block_size'].'",
 				"Section":"'.$values['section'].'"';
 
+            if ($values['allowed_ip_active'] === true) {
+                $info .= ',"IPS Allowed":"'.$values['allowed_ip_list'].'"';
+            }
+
             if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
                 $info .= ',"Skin":"'.$values['id_skin'].'"';
                 $has_skin = true;
             }
 
-            if (enterprise_installed() && defined('METACONSOLE')) {
+            if (enterprise_installed() === true && is_metaconsole() === true) {
                 $info .= ',"Wizard access":"'.$values['metaconsole_access'].'"}';
                 $has_wizard = true;
-            } else if ($has_skin) {
+            } else if ($has_skin === true) {
                 $info .= '}';
             }
 
-            if (!$has_skin && !$has_wizard) {
+            if ($has_skin === false && $has_wizard === false) {
                 $info .= '}';
             }
 
@@ -744,7 +770,7 @@ if ($update_user) {
     }
 
 
-    if ($values['strict_acl']) {
+    if ((bool) $values['strict_acl'] === true) {
         $count_groups = 0;
         $count_tags = 0;
 
@@ -754,7 +780,7 @@ if ($update_user) {
         }
 
         foreach ($profiles as $profile) {
-            $count_groups = ($count_groups + 1);
+            $count_groups++;
             $arr_tags = explode(',', $profile['tags']);
             $count_tags = ($count_tags + count($arr_tags));
         }
@@ -783,7 +809,7 @@ if ($add_profile && empty($json_profile)) {
     $no_hierarchy = (int) get_parameter('no_hierarchy', 0);
 
     foreach ($tags as $k => $tag) {
-        if (empty($tag)) {
+        if (empty($tag) === true) {
             unset($tags[$k]);
         }
     }
@@ -826,7 +852,7 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     );
 
     $result = db_get_all_rows_sql($sql);
-    if ($result == false && $user_info['is_admin'] == false) {
+    if ((bool) $result === false && (bool) $user_info['is_admin'] === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
@@ -837,12 +863,13 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     }
 }
 
-if (defined('METACONSOLE')) {
-    if ($id) {
-        echo '<div class="user_form_title">'.__('Update User').'</div>';
-    } else {
-        echo '<div class="user_form_title">'.__('Create User').'</div>';
-    }
+if (is_metaconsole() === true) {
+    html_print_div(
+        [
+            'class'   => 'user_form_title',
+            'content' => ((bool) $id === true) ? __('Update User') : __('Create User'),
+        ]
+    );
 }
 
 if (!$new_user) {
@@ -1030,6 +1057,26 @@ $comments .= html_print_textarea(
     true
 );
 
+$allowedIP = '<p class="edit_user_labels">';
+$allowedIP .= __('Login allowed IP list').'&nbsp;';
+$allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'), true).'&nbsp;';
+$allowedIP .= html_print_checkbox_switch(
+    'allowed_ip_active',
+    0,
+    $user_info['allowed_ip_active'],
+    true
+);
+$allowedIP .= '</p>';
+$allowedIP .= html_print_textarea(
+    'allowed_ip_list',
+    2,
+    65,
+    $user_info['allowed_ip_list'],
+    (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
+    true
+);
+
+
 // If we want to create a new user, skins displayed are the skins of the creator's group. If we want to update, skins displayed are the skins of the modified user.
 $own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
@@ -1046,8 +1093,8 @@ if ($new_user) {
     $id_usr = $id;
 }
 
-if (!$meta) {
-    // User only can change skins if has more than one group
+if ((bool) $meta === false) {
+    // User only can change skins if has more than one group.
     if (count($usr_groups) > 1) {
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
             $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
@@ -1056,7 +1103,7 @@ if (!$meta) {
     }
 }
 
-if ($meta) {
+if ((bool) $meta === true) {
     $array_filters = get_filters_custom_fields_view(0, true);
 
     $search_custom_fields_view = '<div class="label_select"><p class="edit_user_labels">'.__('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true).'</p>';
@@ -1413,6 +1460,20 @@ echo '</div>
 <div class="user_edit_third_row white_box">
     <div class="edit_user_comments">'.$comments.'</div>
 </div>';
+
+html_print_div(
+    [
+        'class'   => 'user_edit_third_row white_box',
+        'content' => html_print_div(
+            [
+                'class'   => 'edit_user_allowed_ip',
+                'content' => $allowedIP,
+            ],
+            true
+        ),
+    ]
+);
+
 if (!empty($ehorus)) {
     echo '<div class="user_edit_third_row white_box">'.$ehorus.'</div>';
 }

@@ -387,17 +387,17 @@ class BlockHistogram extends Widget
         $output = '';
 
         if (is_metaconsole() === true) {
-                $modules_nodes = array_reduce(
-                    $this->values['moduleBlockHistogram'],
-                    function ($carry, $item) {
-                        $explode = explode('|', $item);
-                        $carry[$explode[0]][] = $explode[1];
-                        return $carry;
-                    },
-                    []
-                );
+            $modules_nodes = array_reduce(
+                $this->values['moduleBlockHistogram'],
+                function ($carry, $item) {
+                    $explode = explode('|', $item);
+                    $carry[$explode[0]][] = $explode[1];
+                    return $carry;
+                },
+                []
+            );
 
-                $modules = [];
+            $modules = [];
             foreach ($modules_nodes as $n => $mod) {
                 try {
                     $node = new Node((int) $n);
@@ -475,7 +475,8 @@ class BlockHistogram extends Widget
     private function getInfoModules(array $modules): array
     {
         $where = sprintf(
-            'tagente_modulo.id_agente_modulo IN (%s)',
+            'tagente_modulo.id_agente_modulo IN (%s)
+            AND tagente_modulo.delete_pending = 0',
             implode(',', $modules)
         );
 

@@ -117,8 +117,6 @@ function createVisualConsole(
                   visualConsole.updateElements(items);
                 }
 
-                console.log(visualConsole.props);
-                console.log(id_user);
                 if (
                   visualConsole.props.maintenanceMode != null &&
                   visualConsole.props.maintenanceMode.user !== id_user
@@ -162,7 +160,6 @@ function createVisualConsole(
       // Wait to start the fetch interval.
       asyncTaskManager.init("visual-console-start");
     } else {
-      console.log("vendria aki");
       // Start the fetch interval immediately.
       asyncTaskManager.init("visual-console");
     }
@@ -486,8 +483,6 @@ function createVisualConsole(
       }
     },
     forceUpdateVisualConsole: function() {
-      console.log(visualConsole);
-      console.log("Entrando desde el force");
       asyncTaskManager.cancel("visual-console");
       asyncTaskManager.cancel("visual-console-start");
       updateVisualConsole(visualConsole.props.id);

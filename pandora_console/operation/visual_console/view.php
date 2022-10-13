@@ -701,6 +701,20 @@ ui_require_css_file('form');
                 window.history.replaceState({}, document.title, href);
             }
         }
+
+        if(newProps.maintenanceMode != null) {
+            $('input[name=maintenance-mode]').prop('checked', true);
+            if(newProps.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
+                $('#edit-mode-control').css('visibility', 'hidden');
+                $('#maintenance-mode-control').css('visibility', '');
+            } else {
+                $('#edit-mode-control').css('visibility', '');
+            }
+        }  else {
+            $('input[name=maintenance-mode]').prop('checked', false);
+            $('#edit-mode-control').css('visibility', '');
+            $('#maintenance-mode-control').css('visibility', '');
+        }
     }
 
     // Add the datetime when the item was received.
@@ -722,7 +736,6 @@ ui_require_css_file('form');
         '<?php echo $config['id_user']; ?>',
     );
 
-    console.log(props);
     if(props.maintenanceMode != null) {
         if(props.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
             visualConsoleManager.visualConsole.enableMaintenanceMode();
@@ -734,25 +747,25 @@ if ($edit_capable === true) {
     ?>
     // Enable/disable the edition mode.
     $('input[name=edit-mode]').change(function(event) {
-        const maintenanceMode = '<?php echo json_encode($maintenanceMode); ?>';
+        var maintenanceMode = visualConsoleManager.visualConsole.props.maintenanceMode;
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
             $('#force_check_control').hide();
             $('#edit-controls').css('visibility', '');
-            if (maintenanceMode == 'null') {
-                $('#maintenance-mode-control').css('visibility', '');
-            }
+            $('#maintenance-mode-control').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
             $('#force_check_control').show();
             $('#edit-controls').css('visibility', 'hidden');
-            if(maintenanceMode == 'null') {
+            if(maintenanceMode != null && maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
                 $('#maintenance-mode-control').css('visibility', 'hidden');
             }
         }
+
+        resetInterval();
     });
 
     // Enable/disable the maintenance mode.
@@ -761,9 +774,26 @@ if ($edit_capable === true) {
         const idVisualConsole = '<?php echo $visualConsoleId; ?>';
         const mode = ($(this).prop('checked') === true) ? 1 : 0;
 
+        var maintenanceMode = visualConsoleManager.visualConsole.props.maintenanceMode;
+        var msg = '';
+        if(maintenanceMode == null) {
+            msg = '<?php echo __('Are you sure you wish to set the visual console in maintenance mode'); ?>';
+            msg += '?';
+        } else if (maintenanceMode.user === '<?php echo $config['id_user']; ?>') {
+            msg += '<?php echo __('Are you sure you wish to disable maintenance mode'); ?>';
+            msg += '?';
+        } else {
+            msg = '<?php echo __('The visual console has been in maintenance mode since'); ?>';
+            msg += ' ' + maintenanceMode.timestamp;
+            msg += ' ' + '<?php echo __('by user'); ?>';
+            msg += ' ' + maintenanceMode.user;
+            msg += '. ' + '<?php echo __('Are you sure you wish to disable maintenance mode'); ?>';
+            msg += '?';
+        }
+        
         confirmDialog({
             title: '<?php echo __('Maintenance mode'); ?>',
-            message: '<?php echo __('XXXXXXXXXXXXXXXXXXX'); ?>',
+            message: msg,
             onAccept: function() {
                 $.ajax({
                     type: "POST",
@@ -777,13 +807,9 @@ if ($edit_capable === true) {
                     },
                     success: function (data) {
                         if(data.result) {
-                            console.log('----------------');
                             $('input[name=maintenance-mode]').prop('checked', mode);
                             $('input[name=maintenance-mode]').trigger('change');
-
-                            //if ($('input[name=edit-mode]').prop('checked') === false) {
-                            //    $('#maintenance-mode-control').css('visibility', 'hidden');
-                            //}
+                            resetInterval();
                         }
                     },
                     error: function (err) {

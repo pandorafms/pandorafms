@@ -259,7 +259,15 @@ final class Container extends Model
             null
         );
 
-        return ($maintenance_mode !== null) ? json_decode($maintenance_mode, true) : null;
+        $result = null;
+        if ($maintenance_mode !== null) {
+            $result = json_decode($maintenance_mode, true);
+            $result['timestamp'] = human_time_description_raw(
+                (time() - $result['timestamp'])
+            );
+        }
+
+        return $result;
     }
 
 
@@ -323,9 +331,6 @@ final class Container extends Model
 
         // Clean HTML entities.
         $row = \io_safe_output($row);
-
-        hd('?????????????????????', true);
-        hd($row, true);
 
         $row['relationLineWidth'] = (int) $config['vc_line_thickness'];
 

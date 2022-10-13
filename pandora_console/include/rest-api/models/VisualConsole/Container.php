@@ -90,6 +90,7 @@ final class Container extends Model
             'backgroundURL'     => static::extractBackgroundUrl($data),
             'relationLineWidth' => (int) $data['relationLineWidth'],
             'hash'              => static::extractHash($data),
+            'maintenanceMode'   => static::extractMaintenanceMode($data),
         ];
     }
 
@@ -239,6 +240,30 @@ final class Container extends Model
 
 
     /**
+     * Extract a background color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the color (not empty) or null.
+     */
+    private static function extractMaintenanceMode(array $data)
+    {
+        $maintenance_mode = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'maintenanceMode',
+                    'maintenance_mode',
+                ]
+            ),
+            null
+        );
+
+        return ($maintenance_mode !== null) ? json_decode($maintenance_mode, true) : null;
+    }
+
+
+    /**
      * Extract the "is favorite" switch value.
      *
      * @param array $data Unknown input data structure.
@@ -298,6 +323,9 @@ final class Container extends Model
 
         // Clean HTML entities.
         $row = \io_safe_output($row);
+
+        hd('?????????????????????', true);
+        hd($row, true);
 
         $row['relationLineWidth'] = (int) $config['vc_line_thickness'];
 

@@ -117,6 +117,17 @@ function createVisualConsole(
                   visualConsole.updateElements(items);
                 }
 
+                console.log(visualConsole.props);
+                console.log(id_user);
+                if (
+                  visualConsole.props.maintenanceMode != null &&
+                  visualConsole.props.maintenanceMode.user !== id_user
+                ) {
+                  visualConsole.enableMaintenanceMode();
+                } else {
+                  visualConsole.disableMaintenanceMode();
+                }
+
                 // Emit the VC update event.
                 if (onUpdate) onUpdate(prevProps, visualConsole.props);
               } catch (ignored) {} // eslint-disable-line no-empty
@@ -151,6 +162,7 @@ function createVisualConsole(
       // Wait to start the fetch interval.
       asyncTaskManager.init("visual-console-start");
     } else {
+      console.log("vendria aki");
       // Start the fetch interval immediately.
       asyncTaskManager.init("visual-console");
     }
@@ -159,6 +171,7 @@ function createVisualConsole(
   // Initialize the Visual Console.
   try {
     visualConsole = new VisualConsole(container, props, items);
+
     // VC Item clicked.
     visualConsole.onItemClick(function(e) {
       var data = e.item.props || {};
@@ -357,7 +370,6 @@ function createVisualConsole(
         })
         .init();
     });
-
     // VC Item resized.
     visualConsole.onItemResized(function(e) {
       var item = e.item;
@@ -472,6 +484,13 @@ function createVisualConsole(
       if (dimensions != null) {
         updateVisualConsole(visualConsole.props.id, interval, null, dimensions);
       }
+    },
+    forceUpdateVisualConsole: function() {
+      console.log(visualConsole);
+      console.log("Entrando desde el force");
+      asyncTaskManager.cancel("visual-console");
+      asyncTaskManager.cancel("visual-console-start");
+      updateVisualConsole(visualConsole.props.id);
     },
     createItem: function(typeString) {
       var type;

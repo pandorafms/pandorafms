@@ -33,7 +33,6 @@ global $config;
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
-// TODO: include file functions.
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
 
@@ -102,6 +101,9 @@ $visualConsoleName = io_safe_input(strip_tags(io_safe_output($visualConsoleData[
 $aclRead   = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VR');
 $aclWrite  = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VW');
 $aclManage = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VM');
+
+// Maintenance Mode.
+$maintenanceMode = $visualConsoleData['maintenanceMode'];
 
 if ($aclRead === false && $aclWrite === false && $aclManage === false) {
     db_pandora_audit(
@@ -398,18 +400,56 @@ if ($pure === false) {
         echo '</div>';
 
         if ($aclWrite === true || $aclManage === true) {
-            if (!is_metaconsole()) {
-                echo '<a id ="force_check" href="" style="margin-right: 25px;">'.html_print_image(
+            echo '<div class="flex-row" style="width:220px;">';
+            if (is_metaconsole() === false) {
+                echo '<div id="force_check_control" class="flex-column">';
+                echo html_print_label(__('Force'), 'force-mode', true);
+                echo '<a id ="force_check" href="">';
+                echo html_print_image(
                     'images/target.png',
                     true,
                     [
                         'title' => __('Force remote checks'),
                         'class' => 'invert_filter',
                     ]
-                ).'</a>';
+                );
+                echo '</a>';
+                echo '</div>';
             }
 
+            $style_edit_mode = '';
+            if ($aclManage === true) {
+                $style = '';
+                $value_maintenance_mode = true;
+                if ($maintenanceMode === null) {
+                    $style = ' style="visibility:hidden"';
+                    $value_maintenance_mode = false;
+                } else {
+                    if ($maintenanceMode['user'] !== $config['id_user']) {
+                        $style_edit_mode = ' style="visibility:hidden"';
+                    }
+                }
+
+                echo '<div id="maintenance-mode-control" class="flex-column" '.$style.'>';
+                echo html_print_label(
+                    __('Maintenance Mode'),
+                    'maintenance-mode',
+                    true
+                );
+                echo html_print_checkbox_switch(
+                    'maintenance-mode',
+                    1,
+                    $value_maintenance_mode,
+                    true
+                );
+                echo '</div>';
+            }
+
+            echo '<div id="edit-mode-control" class="flex-column" '.$style_edit_mode.'>';
+            echo html_print_label(__('Edit Mode'), 'edit-mode', true);
             echo html_print_checkbox_switch('edit-mode', 1, false, true);
+            echo '</div>';
+            echo '</div>';
         }
 
         echo '</div>';
@@ -676,26 +716,82 @@ ui_require_css_file('form');
         items,
         baseUrl,
         <?php echo ($refr * 1000); ?>,
-        handleUpdate
+        handleUpdate,
+        false,
+        undefined,
+        '<?php echo $config['id_user']; ?>',
     );
+
+    console.log(props);
+    if(props.maintenanceMode != null) {
+        if(props.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
+            visualConsoleManager.visualConsole.enableMaintenanceMode();
+        }
+    }
 
 <?php
 if ($edit_capable === true) {
     ?>
     // Enable/disable the edition mode.
     $('input[name=edit-mode]').change(function(event) {
+        const maintenanceMode = '<?php echo json_encode($maintenanceMode); ?>';
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
-            $('#force_check').hide();
+            $('#force_check_control').hide();
             $('#edit-controls').css('visibility', '');
+            if (maintenanceMode == 'null') {
+                $('#maintenance-mode-control').css('visibility', '');
+            }
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
+            $('#force_check_control').show();
             $('#edit-controls').css('visibility', 'hidden');
-            $('#force_check').show();
+            if(maintenanceMode == 'null') {
+                $('#maintenance-mode-control').css('visibility', 'hidden');
+            }
         }
+    });
+
+    // Enable/disable the maintenance mode.
+    $('input[name=maintenance-mode]').click(function(event) {
+        event.preventDefault();
+        const idVisualConsole = '<?php echo $visualConsoleId; ?>';
+        const mode = ($(this).prop('checked') === true) ? 1 : 0;
+
+        confirmDialog({
+            title: '<?php echo __('Maintenance mode'); ?>',
+            message: '<?php echo __('XXXXXXXXXXXXXXXXXXX'); ?>',
+            onAccept: function() {
+                $.ajax({
+                    type: "POST",
+                    url: "ajax.php",
+                    dataType: "json",
+                    data: {
+                        page: "include/ajax/visual_console.ajax",
+                        update_maintanance_mode: true,
+                        idVisualConsole: idVisualConsole,
+                        mode: mode
+                    },
+                    success: function (data) {
+                        if(data.result) {
+                            console.log('----------------');
+                            $('input[name=maintenance-mode]').prop('checked', mode);
+                            $('input[name=maintenance-mode]').trigger('change');
+
+                            //if ($('input[name=edit-mode]').prop('checked') === false) {
+                            //    $('#maintenance-mode-control').css('visibility', 'hidden');
+                            //}
+                        }
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        });
     });
     <?php
 }
@@ -797,6 +893,7 @@ if ($edit_capable === true) {
 
     function resetInterval() {
         visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>);
+        visualConsoleManager.forceUpdateVisualConsole();
     }
 
     /**

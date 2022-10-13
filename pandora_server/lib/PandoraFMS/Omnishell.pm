@@ -503,8 +503,12 @@ sub execute_command_timeout {
 
   if ($remaining_timeout > 0) {
     # Retrieve output from child.
-    $output = do { local $/; <$RET> };
-    $output = $output>>8;
+    $output = do { 
+		no warnings;
+		local $/;
+		<$RET>
+	};
+    $output = $output>>8 if looks_like_number($output);
   }
   else {
     # Timeout expired.
@@ -564,7 +568,7 @@ sub execute_command_block {
       } while ((--$retries) > 0);
 
       # Do not continue evaluating block if failed.
-      last unless ($err_level == 0);
+      last unless (looks_like_number($err_level) && $err_level == 0);
     }
   }
 
@@ -599,7 +603,7 @@ sub evaluate_command {
   );
 
   # Precondition not satisfied.
-  return $self->report_command($ref, $err_level) unless ($err_level == 0);
+  return $self->report_command($ref, $err_level) unless (looks_like_number($err_level) && $err_level == 0);
 
   # Main run.
   $err_level = $self->execute_command_block(
@@ -609,7 +613,7 @@ sub evaluate_command {
   );
 
   # Script not success.
-  return $self->report_command($ref, $err_level) unless ($err_level == 0);
+  return $self->report_command($ref, $err_level) unless (looks_like_number($err_level) && $err_level == 0);
 
   # Check postconditions
   $err_level = $self->execute_command_block(

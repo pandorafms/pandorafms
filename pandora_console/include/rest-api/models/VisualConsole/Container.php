@@ -248,6 +248,7 @@ final class Container extends Model
      */
     private static function extractMaintenanceMode(array $data)
     {
+        global $config;
         $maintenance_mode = static::notEmptyStringOr(
             static::issetInArray(
                 $data,
@@ -262,6 +263,12 @@ final class Container extends Model
         $result = null;
         if ($maintenance_mode !== null) {
             $result = json_decode($maintenance_mode, true);
+
+            $result['date'] = date(
+                $config['date_format'],
+                $result['timestamp']
+            );
+
             $result['timestamp'] = human_time_description_raw(
                 (time() - $result['timestamp'])
             );

@@ -159,10 +159,10 @@ export interface VisualConsoleProps extends Size {
   backgroundColor: string | null;
   isFavorite: boolean;
   relationLineWidth: number;
-  maintenanceMode: maintenanceModeInterface | null;
+  maintenanceMode: MaintenanceModeInterface | null;
 }
 
-export interface maintenanceModeInterface {
+export interface MaintenanceModeInterface {
   user: string;
   timestamp: number;
 }

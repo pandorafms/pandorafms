@@ -417,22 +417,20 @@ if ($pure === false) {
                 echo '</div>';
             }
 
-            $style_edit_mode = '';
+            $disabled_edit_mode = false;
             if ($aclManage === true) {
-                $style = '';
                 $value_maintenance_mode = true;
                 if ($maintenanceMode === null) {
-                    $style = ' style="visibility:hidden"';
                     $value_maintenance_mode = false;
                 } else {
                     if ($maintenanceMode['user'] !== $config['id_user']) {
-                        $style_edit_mode = ' style="visibility:hidden"';
+                        $disabled_edit_mode = true;
                     }
                 }
 
-                echo '<div id="maintenance-mode-control" class="flex-column" '.$style.'>';
+                echo '<div id="maintenance-mode-control" class="flex-column">';
                 echo html_print_label(
-                    __('Maintenance Mode'),
+                    __('Maintenance'),
                     'maintenance-mode',
                     true
                 );
@@ -445,9 +443,9 @@ if ($pure === false) {
                 echo '</div>';
             }
 
-            echo '<div id="edit-mode-control" class="flex-column" '.$style_edit_mode.'>';
-            echo html_print_label(__('Edit Mode'), 'edit-mode', true);
-            echo html_print_checkbox_switch('edit-mode', 1, false, true);
+            echo '<div id="edit-mode-control" class="flex-column">';
+            echo html_print_label(__('Edit'), 'edit-mode', true);
+            echo html_print_checkbox_switch('edit-mode', 1, false, true, $disabled_edit_mode);
             echo '</div>';
             echo '</div>';
         }
@@ -705,15 +703,13 @@ ui_require_css_file('form');
         if(newProps.maintenanceMode != null) {
             $('input[name=maintenance-mode]').prop('checked', true);
             if(newProps.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
-                $('#edit-mode-control').css('visibility', 'hidden');
-                $('#maintenance-mode-control').css('visibility', '');
+                $('input[name=edit-mode]').prop('disabled', true);
             } else {
-                $('#edit-mode-control').css('visibility', '');
+                $('input[name=edit-mode]').prop('disabled', false);
             }
         }  else {
             $('input[name=maintenance-mode]').prop('checked', false);
-            $('#edit-mode-control').css('visibility', '');
-            $('#maintenance-mode-control').css('visibility', '');
+            $('input[name=edit-mode]').prop('disabled', false);
         }
     }
 
@@ -751,18 +747,12 @@ if ($edit_capable === true) {
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
-            $('#force_check_control').hide();
             $('#edit-controls').css('visibility', '');
-            $('#maintenance-mode-control').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
-            $('#force_check_control').show();
             $('#edit-controls').css('visibility', 'hidden');
-            if(maintenanceMode != null && maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
-                $('#maintenance-mode-control').css('visibility', 'hidden');
-            }
         }
 
         resetInterval();
@@ -783,9 +773,9 @@ if ($edit_capable === true) {
             msg += '<?php echo __('Are you sure you wish to disable maintenance mode'); ?>';
             msg += '?';
         } else {
-            msg = '<?php echo __('The visual console has been in maintenance mode since'); ?>';
-            msg += ' ' + maintenanceMode.timestamp;
-            msg += ' ' + '<?php echo __('by user'); ?>';
+            msg = '<?php echo __('The visual console was set to maintenance mode'); ?>';
+            msg += ' ' + '<span title="'+maintenanceMode.date+'">' + maintenanceMode.timestamp + '</span>';
+            msg += ' ' + '<?php echo __('ago by user'); ?>';
             msg += ' ' + maintenanceMode.user;
             msg += '. ' + '<?php echo __('Are you sure you wish to disable maintenance mode'); ?>';
             msg += '?';

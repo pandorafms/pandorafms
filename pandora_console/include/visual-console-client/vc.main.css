@@ -7,13 +7,11 @@
   margin-top: 5px;
 }
 
-#visual-console-container.is-maintenance {
-  border: 2px solid green;
-
+.is-maintenance {
   background-image: url(maintenanceMode.png) !important;
 }
 
-#visual-console-container.is-maintenance :nth-child(1) {
+.is-maintenance :nth-child(1) {
   display: none;
 }
 

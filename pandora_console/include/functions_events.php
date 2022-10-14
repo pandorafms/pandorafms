@@ -1472,7 +1472,6 @@ function events_get_all(
     // Secondary groups.
     $event_lj = '';
     if (!$user_is_admin || ($user_is_admin && isset($groups) === true && $groups > 0)) {
-        db_process_sql('SET group_concat_max_len = 9999999');
         if ((bool) $filter['search_secondary_groups'] === true) {
             $event_lj = events_get_secondary_groups_left_join($table);
         }
@@ -1485,6 +1484,8 @@ function events_get_all(
             if ($idx !== false) {
                 unset($fields[$idx]);
             }
+
+            db_process_sql('SET group_concat_max_len = 9999999');
 
             $group_selects = sprintf(
                 ',COUNT(id_evento) AS event_rep,
@@ -1694,7 +1695,7 @@ function events_get_all(
                 $result_meta = Promise\wait(
                     parallelMap(
                         $metaconsole_connections,
-                        function ($node_int) use ($sql) {
+                        function ($node_int) use ($sql, $history) {
                             try {
                                 if (is_metaconsole() === true
                                     && (int) $node_int > 0
@@ -1703,7 +1704,7 @@ function events_get_all(
                                     $node->connect();
                                 }
 
-                                $res = db_get_all_rows_sql($sql);
+                                $res = db_get_all_rows_sql($sql, $history);
                                 if ($res === false) {
                                     $res = [];
                                 }
@@ -1834,7 +1835,7 @@ function events_get_all(
         }
     }
 
-    return db_get_all_rows_sql($sql);
+    return db_get_all_rows_sql($sql, $history);
 }
 
 

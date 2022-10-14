@@ -265,71 +265,75 @@ $delete_user = (bool) get_parameter('user_del', false);
 if ($delete_user === true) {
     // Delete user.
     $id_user = get_parameter('delete_user', 0);
-    if (users_is_admin($id_user) === true && users_is_admin() === false) {
-        db_pandora_audit(
-            AUDIT_LOG_ACL_VIOLATION,
-            'Trying to delete admininstrator user by non administrator user '.$config['id_user']
-        );
-
-        include 'general/noaccess.php';
-        exit;
-    }
-
-    // Only allow delete user if is not the actual user.
-    if ($id_user != $config['id_user']) {
-        $user_row = users_get_user_by_id($id_user);
-
-        $result = delete_user($id_user);
-
-        if ($result) {
+    if ($id_user !== 0) {
+        if (users_is_admin($id_user) === true && users_is_admin() === false) {
             db_pandora_audit(
-                AUDIT_LOG_USER_MANAGEMENT,
-                __('Deleted user %s', io_safe_output($id_user))
+                AUDIT_LOG_ACL_VIOLATION,
+                'Trying to delete admininstrator user by non administrator user '.$config['id_user']
             );
+
+            include 'general/noaccess.php';
+            exit;
         }
 
-        ui_print_result_message(
-            $result,
-            __('Successfully deleted'),
-            __('There was a problem deleting the user')
-        );
+        // Only allow delete user if is not the actual user.
+        if ($id_user != $config['id_user']) {
+            $user_row = users_get_user_by_id($id_user);
 
-        // Delete the user in all the consoles.
-        if (is_metaconsole() === true && isset($_GET['delete_all'])) {
-            $servers = metaconsole_get_servers();
-            foreach ($servers as $server) {
-                // Connect to the remote console.
-                if (metaconsole_connect($server) === NOERR) {
-                    // Delete the user.
-                    $result = delete_user($id_user);
+            $result = delete_user($id_user);
+
+            if ($result) {
+                db_pandora_audit(
+                    AUDIT_LOG_USER_MANAGEMENT,
+                    __('Deleted user %s', io_safe_output($id_user))
+                );
+            }
+
+            ui_print_result_message(
+                $result,
+                __('Successfully deleted'),
+                __('There was a problem deleting the user')
+            );
+
+            // Delete the user in all the consoles.
+            if (is_metaconsole() === true && isset($_GET['delete_all'])) {
+                $servers = metaconsole_get_servers();
+                foreach ($servers as $server) {
+                    // Connect to the remote console.
+                    if (metaconsole_connect($server) === NOERR) {
+                        // Delete the user.
+                        $result = delete_user($id_user);
+                        if ($result) {
+                            db_pandora_audit(
+                                AUDIT_LOG_USER_MANAGEMENT,
+                                __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            );
+                        }
+
+                        // Restore the db connection.
+                        metaconsole_restore_db();
+                    }
+
+                    // Log to the metaconsole too.
                     if ($result) {
                         db_pandora_audit(
                             AUDIT_LOG_USER_MANAGEMENT,
-                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
                         );
                     }
 
-                    // Restore the db connection.
-                    metaconsole_restore_db();
-                }
-
-                // Log to the metaconsole too.
-                if ($result) {
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_MANAGEMENT,
-                        __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
+                    ui_print_result_message(
+                        $result,
+                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
                     );
                 }
-
-                ui_print_result_message(
-                    $result,
-                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                );
             }
+        } else {
+            ui_print_error_message(__('There was a problem deleting the user'));
         }
     } else {
-        ui_print_error_message(__('There was a problem deleting the user'));
+        ui_print_error_message(__('ID user cannot be empty'));
     }
 } else if (isset($_GET['profile_del'])) {
     // Delete profile.
@@ -586,6 +590,10 @@ $rowPair = true;
 $iterator = 0;
 $cont = 0;
 foreach ($info as $user_id => $user_info) {
+    if (empty($user_id) === true) {
+        continue;
+    }
+
     // User profiles.
     if ($user_is_admin || $user_id == $config['id_user'] || isset($group_um[0])) {
         $user_profiles = db_get_all_rows_field_filter(

@@ -70,14 +70,12 @@ if ($edit_users === 1) {
             $update['language'] = $language;
         }
 
-        $block_size = (int) get_parameter('block_size', -1);
-        $default_block_size = get_parameter('default_block_size', 0);
-        if ($default_block_size) {
-            $block_size = $config['block_size'];
-        }
-
-        if ($block_size !== -1) {
-            $update['block_size'] = $block_size;
+        $block_size_change = (int) get_parameter('block_size_change');
+        if ($block_size_change === 0) {
+            $block_size = (int) get_parameter('block_size', -1);
+            if ($block_size !== -1) {
+                $update['block_size'] = $block_size;
+            }
         }
 
         $section = get_parameter('section', '-1');
@@ -125,14 +123,23 @@ if ($edit_users === 1) {
             $update['timezone'] = $timezone;
         }
 
+        $disabled = (int) get_parameter('disabled', -1);
+        if ($disabled !== -1) {
+            $update['disabled'] = $disabled;
+        }
+
         $error = [];
         $success = [];
         foreach ($users as $key => $user) {
-            $result = update_user($user, $update);
-            if ($result === false) {
-                $error[] = $user;
+            if (empty($update) === false) {
+                $result = update_user($user, $update);
+                if ($result === false) {
+                    $error[] = $user;
+                } else {
+                    $success[] = $user;
+                }
             } else {
-                $success[] = $user;
+                $error[] = $user;
             }
         }
 
@@ -251,8 +258,9 @@ $language .= html_print_select(
 $block_size = $config['global_block_size'];
 $size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
 $size_pagination .= html_print_input_text('block_size', $block_size, '', 5, 5, true);
-$size_pagination .= html_print_checkbox_switch('default_block_size', 1, false, true);
-$size_pagination .= '<span>'.__('Default').' ('.$config['global_block_size'].')</span>'.ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</div>';
+$size_pagination .= html_print_checkbox_switch('block_size_change', 1, 1, true);
+$size_pagination .= '<span>'.__('No change').'</span>';
+$size_pagination .= '</div>';
 
 // Home screen.
 $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
@@ -484,8 +492,64 @@ if (is_metaconsole() === false) {
         </div>';
 }
 
+// Status (Disable / Enable).
+$status = '</br>';
+$status .= '<div class="label_select"><p class="edit_user_labels">'.__('Status').'</p>';
+
+$table = new StdClass();
+$table->width = '100%';
+$table->class = 'databox filters';
+
+$table->data[0][0] = __('No change');
+$table->data[0][0] .= html_print_radio_button_extended(
+    'disabled',
+    -1,
+    '',
+    -1,
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[0][0] .= __('Disable');
+$table->data[0][0] .= html_print_radio_button_extended(
+    'disabled',
+    1,
+    '',
+    '',
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+$table->data[0][0] .= __('Enable');
+$table->data[0][0] .= html_print_radio_button_extended(
+    'disabled',
+    0,
+    '',
+    '',
+    false,
+    '',
+    'class="mrgn_right_40px"',
+    true
+);
+
+$status .= html_print_table($table, true);
+
 echo '<div id="users_options" class="user_edit_second_row white_box" style="display: none">';
-echo '<div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$autorefresh_show.$time_autorefresh.$timezone.$timezone_map.'</div>';
+echo sprintf(
+    '<div class="edit_user_options">%s %s %s %s %s %s %s %s %s %s</div>',
+    $language,
+    $size_pagination,
+    $skin,
+    $home_screen,
+    $event_filter,
+    $autorefresh_show,
+    $time_autorefresh,
+    $timezone,
+    $timezone_map,
+    $status
+);
 echo '</div>';
 
 attachActionButton('edit_users', 'update', '100%');
@@ -538,30 +602,35 @@ if (is_metaconsole() === false) {
         $("#right_autorefreshlist").click (function () {
             jQuery.each($("select[name='autorefresh_list_out[]'] option:selected"), function (key, value) {
                 imodule_name = $(value).html();
-                if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                if (imodule_name != <?php echo "'".__('None')."'"; ?> || imodule_name != <?php echo "'".__('No change')."'"; ?>) {
                     id_imodule = $(value).attr('value');
                     $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+                    // $("select[name='autorefresh_list[]']").val(id_imodule).prop("selected", "selected");
                     $("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
-                    $("#autorefresh_list").find("option[value='']").remove();
+                    $("#autorefresh_list").find("option[value='-1']").remove();
                     $("#autorefresh_list").find("option[value='0']").remove();
                     if($("#autorefresh_list_out option").length == 0) {
-                        $("select[name='autorefresh_list_out[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+                        $("select[name='autorefresh_list_out[]']").append($("<option></option>").val('0').html('<i><?php echo __('None'); ?></i>'));
                     }
                 }
             });
+
+            $('#autorefresh_list option').prop('selected', true);
         });
 
         $("#left_autorefreshlist").click (function () {
             jQuery.each($("select[name='autorefresh_list[]'] option:selected"), function (key, value) {
                 imodule_name = $(value).html();
-                if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                if (imodule_name != <?php echo "'".__('None')."'"; ?> || imodule_name != <?php echo "'".__('No change')."'"; ?>) {
                     id_imodule = $(value).attr('value');
                     $("#autorefresh_list").find("option[value='" + id_imodule + "']").remove();
-                    $("#autorefresh_list_out").find("option[value='']").remove();
+                    $("#autorefresh_list_out").find("option[value='0']").remove();
                     $("select[name='autorefresh_list_out[]']").append($("<option><option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
                     $("#autorefresh_list_out option").last().remove();
                     if($("#autorefresh_list option").length == 0) {
-                        $("select[name='autorefresh_list[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+                        $("select[name='autorefresh_list[]']").append($("<option></option>").val('-1').html('<i><?php echo __('No change'); ?></i>'));
+                        $("select[name='autorefresh_list[]']").append($("<option></option>").val('0').html('<i><?php echo __('None'); ?></i>'));
+                        $('#autorefresh_list').val('-1').prop('selected', true);
                     }
                 }
             });

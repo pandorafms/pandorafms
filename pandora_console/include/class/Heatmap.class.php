@@ -139,7 +139,7 @@ class Heatmap
         ui_require_css_file('heatmap');
 
         $settings = [
-            'type'     => 'POST',
+            'type'     => 'GET',
             'dataType' => 'html',
             'url'      => ui_get_full_url(
                 'ajax.php',
@@ -169,11 +169,41 @@ class Heatmap
                     setting['data']['height'] = $(`#div_${randomId}`).height() + 10;
                     setting['data']['width'] = $(`#div_${randomId}`).width();
 
+                    var totalModules = 0;
+
                     // Initial charge.
-                    ajaxRequest(
-                        `div_${randomId}`,
-                        setting
-                    );
+                    $.ajax({
+                        type: setting.type,
+                        dataType: setting.dataType,
+                        url: setting.url,
+                        data: setting.data,
+                        success: function(data) {
+                            $(`#div_${randomId}`).append(data);
+                            totalModules = $('rect').length;
+                            let cont = 0;
+                            while (cont < Math.ceil(totalModules / 10)) {
+                                oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                                cont ++;
+                            }
+                        }
+                    });
+
+                    function getRandomInteger(min, max) {
+                        return Math.floor(Math.random() * max) + min;
+                    }
+
+                    function oneSquare(solid, time) {
+                        var randomPoint = getRandomInteger(1, totalModules);
+                        let target = $(`#${randomId}_${randomPoint}`);
+                        setTimeout(function() {
+                            let class_name = target.attr('class');
+                            class_name = class_name.split(' ')[0];
+                            const newClassName = class_name.split('_')[0];
+                            target.removeClass(`${class_name} hover`);
+                            target.addClass(`${newClassName}_${solid} hover`);
+                            oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                        }, time);
+                    }
 
                     // Refresh.
                     setInterval(
@@ -206,23 +236,29 @@ class Heatmap
                                     // randomly sort.
                                     lista = lista.sort(function() {return Math.random() - 0.5});
 
-                                    const countPerSecond = total / refresh;
+                                    let countPerSecond = total / refresh;
+                                    if (countPerSecond < 1) {
+                                        countPerSecond = 1;
+                                    }
 
                                     let cont = 0;
                                     let limit = countPerSecond - 1;
 
                                     const timer = setInterval(
-                                        function() {
-                                            while (cont <= limit) {
-                                                $(`#${randomId}_${lista[cont]['id']}`).removeClass();
-                                                $(`#${randomId}_${lista[cont]['id']}`).addClass(`${lista[cont]['status']} hover`);
-
-                                                cont++;
+                                    function() {
+                                        while (cont <= limit) {
+                                            if (typeof lista[cont] !== 'undefined') {
+                                                const rect = document.getElementsByName(`${lista[cont]['id']}`);
+                                                $(`#${rect[0].id}`).removeClass();
+                                                $(`#${rect[0].id}`).addClass(`${lista[cont]['status']} hover`);
                                             }
-                                            limit = limit + countPerSecond;
-                                        },
-                                        1000
-                                    );
+
+                                            cont++;
+                                        }
+                                        limit = limit + countPerSecond;
+                                    },
+                                    1000
+                                );
 
                                     setTimeout(
                                         function(){
@@ -568,6 +604,97 @@ class Heatmap
 
 
     /**
+     * Get all modules group by agents
+     *
+     * @return array
+     */
+    protected function getAllModulesByAgents()
+    {
+        $filter_name = '';
+        if (empty($this->search) === false) {
+            $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
+        }
+
+        // All modules.
+        $sql = sprintf(
+            'SELECT am.id_agente_modulo AS id, ae.known_status AS `status`, am.id_agente AS id_grupo, ae.last_status_change FROM tagente_modulo am
+            INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
+            WHERE am.disabled = 0 %s GROUP BY ae.id_agente_modulo ORDER BY id_grupo',
+            $filter_name
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        // Module status.
+        foreach ($result as $key => $module) {
+            $status = '';
+            switch ($module['status']) {
+                case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                case 1:
+                case 100:
+                    $status = 'critical';
+                break;
+
+                case AGENT_MODULE_STATUS_NORMAL:
+                case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                case 0:
+                case 300:
+                    $status = 'normal';
+                break;
+
+                case AGENT_MODULE_STATUS_WARNING:
+                case AGENT_MODULE_STATUS_WARNING_ALERT:
+                case 2:
+                case 200:
+                    $status = 'warning';
+                break;
+
+                default:
+                case AGENT_MODULE_STATUS_UNKNOWN:
+                case 3:
+                    $status = 'unknown';
+                break;
+                case AGENT_MODULE_STATUS_NOT_INIT:
+                case 5:
+                    $status = 'notinit';
+                break;
+            }
+
+            if ($module['last_status_change'] != 0) {
+                $seconds = (time() - $module['last_status_change']);
+
+                if ($seconds >= SECONDS_1DAY) {
+                    $status .= '_10';
+                } else if ($seconds >= 77760) {
+                    $status .= '_9';
+                } else if ($seconds >= 69120) {
+                    $status .= '_8';
+                } else if ($seconds >= 60480) {
+                    $status .= '_7';
+                } else if ($seconds >= 51840) {
+                    $status .= '_6';
+                } else if ($seconds >= 43200) {
+                    $status .= '_5';
+                } else if ($seconds >= 34560) {
+                    $status .= '_4';
+                } else if ($seconds >= 25920) {
+                    $status .= '_3';
+                } else if ($seconds >= 17280) {
+                    $status .= '_2';
+                } else if ($seconds >= 8640) {
+                    $status .= '_1';
+                }
+            }
+
+            $result[$key]['status'] = $status;
+        }
+
+        return $result;
+    }
+
+
+    /**
      * GetData
      *
      * @return array
@@ -575,6 +702,10 @@ class Heatmap
     public function getData()
     {
         switch ($this->type) {
+            case 3:
+                $data = $this->getAllModulesByAgents();
+            break;
+
             case 2:
                 $data = $this->getAllModulesByGroup();
             break;
@@ -709,9 +840,10 @@ class Heatmap
         $groups = [];
         $contX = 0;
         $contY = 0;
+        $cont = 1;
         foreach ($result as $value) {
-            echo '<rect id="'.$this->randomId.'_'.$value['id'].'" class="'.$value['status'].' hover"
-                width="1" height="1" x ="'.$contX.' "y="'.$contY.'" />';
+            echo '<rect id="'.$this->randomId.'_'.$cont.'" class="'.$value['status'].' hover"
+                width="1" height="1" x ="'.$contX.' "y="'.$contY.'" name="'.$value['id'].'" />';
 
             $contX++;
             if ($contX >= $Xaxis) {
@@ -724,14 +856,15 @@ class Heatmap
             } else {
                 $groups[$value['id_grupo']] += 1;
             }
+
+            $cont++;
         }
 
         ?>
             <script type="text/javascript">
                 $('rect').click(function() {
                     const type = <?php echo $this->type; ?>;
-                    const hash = '<?php echo $this->randomId; ?>';
-                    const id = this.id.replace(`${hash}_`, '');
+                    const id = $(`#${this.id}`).attr("name");
 
                     $("#info_dialog").dialog({
                         resizable: true,
@@ -778,6 +911,10 @@ class Heatmap
             foreach ($groups as $key => $group) {
                 $name = '';
                 switch ($this->type) {
+                    case 3:
+                        $name = agents_get_alias($key);
+                    break;
+
                     case 2:
                         $name = modules_get_modulegroup_name($key);
                     break;

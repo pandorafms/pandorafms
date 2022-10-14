@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.765 Build 221013";
+my $version = "7.0NG.765 Build 221014";
 
 # save program name for logging
 my $progname = basename($0);
@@ -142,7 +142,7 @@ sub help_screen{
 	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
 	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
-	help_screen_line('--update_agent_custom_fields', '<id_agent> <type_field> <field_to_change> <new_value>', "Update an agent custom field. The fields can be \n\t  the following: Serial number, Department ... and types can be 0 text and 1 combo ");
+	help_screen_line('--agent_update_custom_fields', '<id_agent> <type_field> <field_to_change> <new_value>', "Update an agent custom field. The fields can be \n\t  the following: Serial number, Department ... and types can be 0 text and 1 combo ");
 
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add data server module to agent');
@@ -3135,7 +3135,7 @@ sub cli_user_update() {
 
 ##############################################################################
 # Update an agent customs field.
-# Related option: --update_agent_custom_fields
+# Related option: --agent_update_custom_fields
 ##############################################################################
 
 sub cli_agent_update_custom_fields() {
@@ -3149,6 +3149,7 @@ sub cli_agent_update_custom_fields() {
 
 	if($agent_name eq '') {
 		print_log "[ERROR] Agent '$id_agent' doesn't exist\n\n";
+		print "--agent_update_custom_fields, <id_agent> <type_field> <field_to_change> <new_value>, Updates an agent custom field. The fields can be \n\t  the following: Serial number, Department ... and types can be 0 text and 1 combo )\n\n";
 		exit;
 	}
 
@@ -3158,6 +3159,7 @@ sub cli_agent_update_custom_fields() {
 
 	if($custom_field eq '') {
 			print_log "[ERROR] Field '$field' doesn't exist\n\n";
+			print "--agent_update_custom_fields, <id_agent> <type_field> <field_to_change> <new_value>, Updates an agent custom field. The fields can be \n\t  the following: Serial number, Department ... and types can be 0 text and 1 combo )\n\n";
 			exit;
 	}
 
@@ -3178,7 +3180,7 @@ sub cli_agent_update_custom_fields() {
 
 	print_log "\n[INFO] Updating field '$field' in agent with ID '$id_agent'\n\n";
 
-	my $result = 	pandora_update_agent_custom_field ($dbh, $new_value, $custom_field, $id_agent);
+	my $result = 	pandora_agent_update_custom_field ($dbh, $new_value, $custom_field, $id_agent);
 
 	if($result == "0E0"){
 			print_log "[ERROR] Error updating field '$field'\n\n";

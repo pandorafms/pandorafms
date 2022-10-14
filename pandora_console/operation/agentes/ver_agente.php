@@ -222,9 +222,16 @@ if (is_ajax()) {
             $id_group,
             $id_agents,
             $selection,
-            $select_mode
+            $select_mode,
+            true
         );
-        echo json_encode($modules);
+
+        // Clean double safe input.
+        foreach ($modules as $id => $name) {
+            $result[$id] = io_safe_output($name);
+        }
+
+        echo json_encode($result);
         return;
     }
 

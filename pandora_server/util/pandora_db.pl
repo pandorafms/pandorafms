@@ -35,10 +35,13 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.764 Build 220920";
+my $version = "7.0NG.765 Build 221014";
 
 # Pandora server configuration
 my %conf;
+
+# History DB configuration
+my $h_conf;
 
 # Long operations are divided in XX steps for performance
 my $BIG_OPERATION_STEP = 100;	# 100 is default
@@ -73,8 +76,8 @@ sub log_message ($$;$) {
 ########################################################################
 # Delete old data from the database.
 ########################################################################
-sub pandora_purgedb ($$) {
-	my ($conf, $dbh) = @_;
+sub pandora_purgedb ($$$) {
+	my ($conf, $dbh, $h_conf) = @_;
 	
 	# 1) Obtain last value for date limit
 	# 2) Delete all elements below date limit
@@ -141,12 +144,12 @@ sub pandora_purgedb ($$) {
 		
 		# Delete sessions data
 		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
-	
-		# Delete old inventory data
 	}
 	else {
 		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
 	}
+
+	pandora_delete_old_tplanned_downtime(\%conf, $dbh, $h_conf);
 
 	# String data deletion
 	if (!defined($conf->{'_string_purge'})){
@@ -644,6 +647,8 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_user'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_user'");
 	$conf->{'_history_db_pass'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_pass'");
 	$conf->{'_history_db_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_days'");
+	$conf->{'_history_db_adv'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_adv'");
+	$conf->{'_history_db_string_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_string_days'");
 	$conf->{'_history_event_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_days'");
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
@@ -1023,6 +1028,33 @@ sub pandora_delete_old_export_data {
 }
 
 ##############################################################################
+# Delete old data from tplanned_downtime.
+##############################################################################
+sub pandora_delete_old_tplanned_downtime {
+	my ($conf, $dbh, $h_conf) = @_;
+
+	# Use the configuration from the history DB if available, which should be
+	# less restrictive.
+	my $days_purge = $conf->{'_days_purge'};
+	if (defined($h_conf) &&
+	    defined($h_conf->{'_days_purge'}) &&
+		$h_conf->{'_days_purge'} > 0) {
+		$days_purge = $h_conf->{'_days_purge'};
+	}
+
+	# _days_purge was not configured.
+	return unless $days_purge > 0;
+
+	my $ulimit_timestamp = time() - (86400 * $days_purge);
+
+	log_message ('PURGE', "Deleting data older than $days_purge days from tplanned_downtime.");
+
+	db_do($dbh, "DELETE FROM tplanned_downtime
+	             WHERE type_execution = 'once'
+	             AND date_to < ?", $ulimit_timestamp);
+}
+
+##############################################################################
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
@@ -1112,13 +1144,13 @@ sub pandoradb_history ($$) {
 ###############################################################################
 # Main
 ###############################################################################
-sub pandoradb_main ($$$;$) {
-	my ($conf, $dbh, $history_dbh) = @_;
+sub pandoradb_main {
+	my ($conf, $dbh, $h_conf, $history_dbh) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
 	# Purge
-	pandora_purgedb ($conf, $dbh);
+	pandora_purgedb ($conf, $dbh, $h_conf);
 
 	# Consistency check
 	pandora_checkdb_consistency ($conf, $dbh);
@@ -1128,7 +1160,7 @@ sub pandoradb_main ($$$;$) {
 
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
-		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
 		if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}
@@ -1221,6 +1253,7 @@ if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1'
 	eval {
 		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
 		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));
+	 	$h_conf = pandoradb_load_history_conf($history_dbh);
 	};
 	if ($@) {
 		if (is_offline(\%conf)) {
@@ -1269,12 +1302,11 @@ if ($lock == 0) {
 }
 
 # Main
-pandoradb_main(\%conf, $dbh, $history_dbh);
+pandoradb_main(\%conf, $dbh, $h_conf, $history_dbh);
 
 # history_dbh is unset in pandoradb_main if not in use.
 if (defined($history_dbh)) {
 	log_message('', " [>] DB Tool running on historical database.\n");
-	my $h_conf = pandoradb_load_history_conf($history_dbh);
 
 	# Keep base settings.
 	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};

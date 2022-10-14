@@ -7213,7 +7213,7 @@ function reporting_sql($report, $content)
         $sql = $content['external_source'];
     }
 
-    // Check if exist sql macro
+    // Check if exist sql macro.
     $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.
@@ -7746,15 +7746,7 @@ function reporting_advanced_sla(
             }
 
             if (isset($max_value) === false || (int) $max_value === 0) {
-                if ($max_value === '0'
-                    && $max_value < $min_value
-                    && isset($min_value_warning) === true
-                    && $min_value_warning > $max_value
-                ) {
-                    $max_value = $min_value_warning;
-                } else {
-                    $max_value = null;
-                }
+                $max_value = null;
             }
 
             if (isset($max_value) === false && isset($min_value) === false) {
@@ -8309,18 +8301,21 @@ function reporting_advanced_sla(
                                             $inverse_interval
                                         );
 
-                                        // Warning SLA check.
-                                        $sla_check_value_warning = sla_check_value(
-                                            $current_data['datos'],
-                                            $min_value_warning,
-                                            $max_value_warning,
-                                            $inverse_interval_warning,
-                                            1
-                                        );
+                                        $sla_check_value_warning = false;
+                                        if ($sla_check_value === true) {
+                                            // Warning SLA check.
+                                            $sla_check_value_warning = sla_check_value(
+                                                $current_data['datos'],
+                                                $min_value_warning,
+                                                $max_value_warning,
+                                                $inverse_interval_warning,
+                                                1
+                                            );
+                                        }
                                     }
 
                                     // Not unknown nor not init values.
-                                    if ($sla_check_value_warning && $sla_check_warning === true) {
+                                    if ($sla_check_value_warning === true && $sla_check_warning === true) {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0
                                             && $i !== 0)
@@ -11542,7 +11537,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
         $data['status'] = 'critical';
     } else if ($data['monitor_warning'] > 0) {
         $data['status'] = 'warning';
-    } else if (($data['monitor_unknown'] > 0) || ($data['agents_unknown'] > 0)) {
+    } else if (($data['monitor_unknown'] > 0) || ($data['agent_unknown'] > 0)) {
         $data['status'] = 'unknown';
     } else if ($data['monitor_ok'] > 0) {
         $data['status'] = 'ok';
@@ -14718,6 +14713,25 @@ function reporting_sql_macro(array $report, string $sql): string
     if (preg_match('/_timefrom_/', $sql)) {
         $sql = str_replace(
             '_timefrom_',
+            $report['datetime'],
+            $sql
+        );
+    }
+
+    if (preg_match('/_start_date_/', $sql)) {
+        $date_init = get_parameter('date_init', date(DATE_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $time_init = get_parameter('time_init', date(TIME_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $datetime_init = strtotime($date_init.' '.$time_init);
+        $sql = str_replace(
+            '_start_date_',
+            $datetime_init,
+            $sql
+        );
+    }
+
+    if (preg_match('/_end_date_/', $sql)) {
+        $sql = str_replace(
+            '_end_date_',
             $report['datetime'],
             $sql
         );

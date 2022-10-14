@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 /**
  * Custom graph Widgets
  */
@@ -178,6 +180,41 @@ class CustomGraphWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['id_graph']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node = new Node($this->values['node']);
+                    $node->connect();
+                }
+
+                $check_exist = \db_get_value(
+                    'name',
+                    'tgraph',
+                    'id_graph',
+                    $this->values['id_graph']
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
     }

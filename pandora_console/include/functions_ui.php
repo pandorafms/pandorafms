@@ -1075,7 +1075,7 @@ function ui_format_alert_row(
         }
     }
 
-    if (is_metaconsole() === true) {
+    if (is_metaconsole() === true && (int) $server_id !== 0) {
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -3655,7 +3655,7 @@ function ui_print_datatable(array $parameters)
             order: [[ '.$order.' ]]
         };
 
-        var dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
@@ -4101,17 +4101,20 @@ function ui_toggle(
     // JQuery Toggle.
     $output .= '<script type="text/javascript">'."\n";
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
+    $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
     $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-    $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
-    $output .= "			else {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
+    $output .= '            if (is_metaconsole == 0) {';
+    $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    }\n";
+    $output .= "			    else {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    }\n";
+    $output .= "		    }\n";
     $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";

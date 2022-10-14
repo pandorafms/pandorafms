@@ -356,6 +356,10 @@ if (is_ajax() === true) {
                             $order['field'] = 'agent_name';
                         break;
 
+                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                            $order['field'] = 'ack_utimestamp';
+                        break;
+
                         default:
                             $order['field'] = $field;
                         break;

@@ -5190,6 +5190,14 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
             $sort_field_translated = 'id_extra';
         break;
 
+        case 'agent_name':
+            $sort_field_translated = 'ta.nombre';
+        break;
+
+        case 'module_custom_id':
+            $sort_field_translated = 'am.custom_id';
+        break;
+
         default:
             $sort_field_translated = $sort_field;
         break;

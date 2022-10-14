@@ -4193,6 +4193,11 @@ function modules_get_counter_by_states($state)
 
 function modules_get_state_condition($state, $prefix='tae')
 {
+    // Not  use empty state 0 -> AGENT_MODULE_STATUS_NORMAL.
+    if ($state === '') {
+        return '1=1';
+    }
+
     switch ($state) {
         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         case AGENT_MODULE_STATUS_CRITICAL_BAD:

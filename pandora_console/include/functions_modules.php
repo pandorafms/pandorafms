@@ -3674,7 +3674,7 @@ function get_modules_agents(
                     $id_agents,
                     $selection,
                     false,
-                    false,
+                    $useName,
                     true,
                     $notStringModules
                 );
@@ -3703,8 +3703,8 @@ function get_modules_agents(
                 if ($occurrences === $nodes_consulted) {
                     // Module already present in ALL nodes.
                     $modules[] = [
-                        'id_agente_modulo' => $module_name,
-                        'nombre'           => $module_name,
+                        'id_agente_modulo' => io_safe_output($module_name),
+                        'nombre'           => io_safe_output($module_name),
                     ];
                 }
             }
@@ -3749,7 +3749,7 @@ function get_modules_agents(
             function ($carry, $item) use ($useName) {
                 // Only works in select mode.
                 if ($useName === true) {
-                    $carry[io_safe_input($item['nombre'])] = $item['nombre'];
+                    $carry[$item['id_node'].'|'.$item['nombre']] = $item['nombre'];
                 } else {
                     $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
                 }
@@ -3764,7 +3764,7 @@ function get_modules_agents(
             $id_agents,
             $selection,
             false,
-            false,
+            $useName,
             false,
             $notStringModules
         );

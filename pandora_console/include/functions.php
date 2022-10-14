@@ -1008,6 +1008,30 @@ function get_parameter_post($name, $default='')
 
 
 /**
+ * Get header.
+ *
+ * @param string      $key     Key.
+ * @param string|null $default Default.
+ *
+ * @return string|null
+ */
+function get_header(string $key, ?string $default=null): ?string
+{
+    static $headers;
+    if (!isset($headers)) {
+        $headers = getAllHeaders();
+    }
+
+    $adjust_key = ucwords(strtolower($key));
+    if (isset($headers[$adjust_key])) {
+        return $headers[$adjust_key];
+    }
+
+    return $default;
+}
+
+
+/**
  * Get name of a priority value.
  *
  * @param integer $priority Priority value

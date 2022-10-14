@@ -1381,7 +1381,7 @@ function events_get_all(
     // Pagination.
     $pagination = '';
     if (is_metaconsole() === true
-        && empty($id_server) === true
+        && (empty($id_server) === true || is_array($id_server) === true)
         && isset($filter['csv_all']) === false
     ) {
         // TODO: XXX TIP. captura el error.
@@ -1472,7 +1472,6 @@ function events_get_all(
     // Secondary groups.
     $event_lj = '';
     if (!$user_is_admin || ($user_is_admin && isset($groups) === true && $groups > 0)) {
-        db_process_sql('SET group_concat_max_len = 9999999');
         if ((bool) $filter['search_secondary_groups'] === true) {
             $event_lj = events_get_secondary_groups_left_join($table);
         }
@@ -1485,6 +1484,8 @@ function events_get_all(
             if ($idx !== false) {
                 unset($fields[$idx]);
             }
+
+            db_process_sql('SET group_concat_max_len = 9999999');
 
             $group_selects = sprintf(
                 ',COUNT(id_evento) AS event_rep,
@@ -1656,7 +1657,9 @@ function events_get_all(
 
     if ($count === true
         && (is_metaconsole() === false
-        || (is_metaconsole() === true && empty($filter['server_id']) === false))
+        || (is_metaconsole() === true
+        && empty($filter['server_id']) === false
+        && is_array($filter['server_id']) === false))
     ) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
     }
@@ -1672,14 +1675,27 @@ function events_get_all(
                     $metaconsole_connections = array_flip($metaconsole_connections);
                     $metaconsole_connections['meta'] = 0;
                 } else {
-                    $only_id_server[$metaconsole_connections[$id_server]] = $id_server;
-                    $metaconsole_connections = $only_id_server;
+                    if (is_array($id_server) === false) {
+                        $only_id_server[$metaconsole_connections[$id_server]] = $id_server;
+                        $metaconsole_connections = $only_id_server;
+                    } else {
+                        $metaConnections = [];
+                        foreach ($id_server as $idser) {
+                            if ((int) $idser === 0) {
+                                $metaConnections['meta'] = 0;
+                            } else {
+                                $metaConnections[$metaconsole_connections[$idser]] = $idser;
+                            }
+                        }
+
+                        $metaconsole_connections = $metaConnections;
+                    }
                 }
 
                 $result_meta = Promise\wait(
                     parallelMap(
                         $metaconsole_connections,
-                        function ($node_int) use ($sql) {
+                        function ($node_int) use ($sql, $history) {
                             try {
                                 if (is_metaconsole() === true
                                     && (int) $node_int > 0
@@ -1688,7 +1704,7 @@ function events_get_all(
                                     $node->connect();
                                 }
 
-                                $res = db_get_all_rows_sql($sql);
+                                $res = db_get_all_rows_sql($sql, $history);
                                 if ($res === false) {
                                     $res = [];
                                 }
@@ -1747,7 +1763,7 @@ function events_get_all(
             }
         }
 
-        if (empty($filter['server_id']) === true) {
+        if ($count === false) {
             if ($sort_field !== 'agent_name'
                 && $sort_field !== 'server_name'
                 && $sort_field !== 'timestamp'
@@ -1819,7 +1835,7 @@ function events_get_all(
         }
     }
 
-    return db_get_all_rows_sql($sql);
+    return db_get_all_rows_sql($sql, $history);
 }
 
 

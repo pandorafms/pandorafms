@@ -377,8 +377,8 @@ if ($save_event_filter) {
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
-    if (is_metaconsole()) {
-        $values['server_id'] = get_parameter('server_id');
+    if (is_metaconsole() === true) {
+        $values['server_id'] = implode(',', get_parameter('server_id'));
     }
 
     $exists = (bool) db_get_value_filter(
@@ -435,7 +435,7 @@ if ($update_event_filter) {
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
     if (is_metaconsole() === true) {
-        $values['server_id'] = get_parameter('server_id');
+        $values['server_id'] = implode(',', get_parameter('server_id'));
     }
 
     if (io_safe_output($values['tag_with']) == '["0"]') {

@@ -795,7 +795,7 @@ function alerts_delete_alert_template($id_alert_template)
  *
  * @return mixed Array with selected alert templates or false if something goes wrong.
  */
-function alerts_get_alert_templates($filter=false, $fields=false)
+function alerts_get_alert_templates($filter=false, $fields=false, $total=false)
 {
     global $config;
 
@@ -811,31 +811,16 @@ function alerts_get_alert_templates($filter=false, $fields=false)
 
     $templates_sql = @db_get_all_rows_filter('talert_templates', $filter, $fields, 'AND', false, true);
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " LIMIT $offset, $limit ";
-            } else {
-                $limit_sql = '';
-            }
-
-            $sql = sprintf('%s %s', $templates_sql, $limit_sql);
-
-            $alert_templates = db_get_all_rows_sql($sql);
-        break;
-
-        case 'oracle':
-            $set = [];
-            if (isset($offset) && isset($limit)) {
-                $set['limit'] = $limit;
-                $set['offset'] = $offset;
-            }
-
-            $alert_templates = oracle_recode_query($templates_sql, $set, 'AND', false);
-        break;
+    $limit_sql = '';
+    if (isset($offset) && isset($limit) && $total === false) {
+        $limit_sql = " LIMIT $offset, $limit ";
+    } else {
+        $limit_sql = '';
     }
+
+    $sql = sprintf('%s %s', $templates_sql, $limit_sql);
+
+    $alert_templates = db_get_all_rows_sql($sql);
 
     return $alert_templates;
 }

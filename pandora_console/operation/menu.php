@@ -206,13 +206,19 @@ if ($access_console_node === true) {
             }
 
             $layouts = visual_map_get_user_layouts($config['id_user'], false, false, $returnAllGroups, true);
-
             $sub2 = [];
 
             if ($layouts === false) {
                 $layouts = [];
             } else {
                 $id = (int) get_parameter('id', -1);
+                $delete_layout = (bool) get_parameter('delete_layout');
+
+                if ($delete_layout === true) {
+                    $id_layout = (int) get_parameter('id_layout');
+                    unset($layouts[$id_layout]);
+                }
+
                 $break_max_console = false;
                 $max = $config['vc_menu_items'];
                 $i = 0;

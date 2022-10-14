@@ -187,7 +187,7 @@ if (!$double_auth_enabled
   })
     .show();    
     // Don't allow close the dialog with X button
-    $('.ui-dialog-titlebar-close').css('display', 'none');
+    // $('.ui-dialog-titlebar-close').css('display', 'none');
 
     </script>
     <?php

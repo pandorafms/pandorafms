@@ -3815,22 +3815,24 @@ function visual_map_get_user_layouts(
     $retval = [];
     foreach ($layouts as $layout) {
         if ($only_names) {
-            $retval[$layout['id']]['name'] = $layout['name'];
+            $retval[$layout['id']] = $layout['name'];
         } else {
             $retval[$layout['id']] = $layout;
         }
 
-        // Aad_perms.
-        if (isset($groups[$layout['id_group']]['vconsole_view'])) {
-            $retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
-        }
+        if ($only_names === false) {
+            // Aad_perms.
+            if (isset($groups[$layout['id_group']]['vconsole_view'])) {
+                $retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
+            }
 
-        if (isset($groups[$layout['id_group']]['vconsole_edit'])) {
-            $retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
-        }
+            if (isset($groups[$layout['id_group']]['vconsole_edit'])) {
+                $retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
+            }
 
-        if (isset($groups[$layout['id_group']]['vconsole_management'])) {
-            $retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+            if (isset($groups[$layout['id_group']]['vconsole_management'])) {
+                $retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+            }
         }
     }
 

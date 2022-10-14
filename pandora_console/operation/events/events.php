@@ -1475,7 +1475,9 @@ if ($pure) {
     }
 
     // If the history event is not enabled, dont show the history tab.
-    if (isset($config['metaconsole_events_history']) === false || $config['metaconsole_events_history'] != 1) {
+    if (isset($config['history_db_enabled']) === false
+        || (bool) $config['history_db_enabled'] === false
+    ) {
         unset($onheader['history']);
     }
 

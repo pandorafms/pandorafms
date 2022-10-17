@@ -7673,8 +7673,7 @@ function api_set_planned_downtimes_delete_agents($id, $thrash1, $other, $thrash3
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents WHERE id_agent = %d AND id_downtime = %d', $agent, $id)) !== false) {
@@ -7750,8 +7749,7 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {

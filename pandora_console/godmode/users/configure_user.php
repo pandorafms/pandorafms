@@ -509,6 +509,10 @@ if ($create_user) {
             if (!empty($json_profile)) {
                 $json_profile = json_decode(io_safe_output($json_profile), true);
                 foreach ($json_profile as $key => $profile) {
+                    if (is_array($profile) === false) {
+                        $profile = json_decode($profile, true);
+                    }
+
                     if (!empty($profile)) {
                         $group2 = $profile['group'];
                         $profile2 = $profile['profile'];
@@ -531,6 +535,14 @@ if ($create_user) {
                         );
 
                         $result_profile = profile_create_user_profile($id, $profile2, $group2, false, $tags, $no_hierarchy);
+
+                        if ($result_profile === false) {
+                            $is_err = true;
+                            $user_info = $values;
+                            $password_new = '';
+                            $password_confirm = '';
+                            $new_user = true;
+                        }
 
                         ui_print_result_message(
                             $result_profile,
@@ -824,6 +836,10 @@ if ($add_profile && empty($json_profile)) {
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
     );
     $return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
+    if ($return === false) {
+        $is_err = true;
+    }
+
     ui_print_result_message(
         $return,
         __('Profile added successfully'),
@@ -1492,12 +1508,12 @@ if ($config['admin_can_add_user']) {
 
 echo '</div>';
 
-html_print_input_hidden('json_profile', '');
+html_print_input_hidden('json_profile', $json_profile);
 
 echo '</form>';
 
 
-profile_print_profile_table($id);
+profile_print_profile_table($id, io_safe_output($json_profile));
 
 echo '<br />';
 
@@ -1613,13 +1629,18 @@ $(document).ready (function () {
         switch_ehorus_conf();
     });
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
-
     var img_delete = '<?php echo $delete_image; ?>';
     var id_user = '<?php echo io_safe_output($id); ?>';
     var is_metaconsole = '<?php echo $meta; ?>';
     var user_is_global_admin = '<?php echo users_is_admin($id); ?>';
+    var is_err = '<?php echo $is_err; ?>';
     var data = [];
+    var aux = 0;
 
+    if(json_profile.val() != '') {
+        var data = JSON.parse(json_profile.val());
+    }
+    
     $('input:image[name="add"]').click(function (e) {
         e.preventDefault();
         var profile = $('#assign_profile').val();
@@ -1641,10 +1662,14 @@ $(document).ready (function () {
             return;
         }
 
-        if (id_user === '') {
+        if (id_user == '' || is_err == 1) {
             let new_json = `{"profile":${profile},"group":${group},"tags":[${tags}],"hierarchy":${hierarchy}}`;
             data.push(new_json);
-            json_profile.val('['+data+']');
+            json_profile.val(JSON.stringify(data));
+            profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
+            group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="bot forced_title" alt="${group_text}"/>`;
+            group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
+
             $('#table_profiles tr:last').before(
                 `<tr>
                     <td>${profile_text}</td>
@@ -1654,6 +1679,10 @@ $(document).ready (function () {
                     <td>${img_delete}</td>
                 </tr>`
             );
+
+            getGroupIcon(group, $(`#img_group_${aux}`));
+            aux++;
+
         } else {
             this.form.submit();
         }

@@ -25,6 +25,9 @@ if (! check_acl($config['id_user'], 0, 'RW')) {
     exit;
 }
 
+$get_log_agents = (bool) get_parameter('get_log_agents', 0);
+$agents_id = get_parameter('id_agents', []);
+$agents_id = get_parameter('source', 0);
 $delete_sla_item = get_parameter('delete_sla_item', 0);
 $delete_general_item = get_parameter('delete_general_item', 0);
 $get_custom_sql = get_parameter('get_custom_sql', 0);
@@ -242,5 +245,62 @@ if ($change_custom_fields_macros_report === true) {
     }
 
     echo $custom_field_draw;
+    return;
+}
+
+if ($get_log_agents === true) {
+    try {
+        $agents_id = json_decode($agents_id, true);
+    } catch (Exception $e) {
+        $data['correct'] = 0;
+        echo json_encode($data);
+        return;
+    }
+
+    if ($source) {
+        $sql_log_report = 'SELECT id_agente, alias
+                FROM tagente, tagent_module_log
+                WHERE tagente.id_agente = tagent_module_log.id_agent
+                AND tagente.disabled = 0
+                AND tagent_module_log.source like "'.$source.'"';
+    } else {
+        $sql_log_report = 'SELECT id_agente, alias
+                FROM tagente, tagent_module_log
+                WHERE tagente.id_agente = tagent_module_log.id_agent
+                AND tagente.disabled = 0';
+    }
+
+    $all_agent_log = db_get_all_rows_sql($sql_log_report);
+
+    if (isset($all_agent_log) && is_array($all_agent_log)) {
+        foreach ($all_agent_log as $key => $value) {
+            $select_agents[$value['id_agente']] = $value['alias'];
+        }
+    }
+
+    if ((empty($select_agents)) || $select_agents == -1) {
+        $agents = [];
+    }
+
+    $agents_selected = [];
+    if (is_array($agents_id) === true || is_object($agents_id) === true) {
+        foreach ($select_agents as $key => $a) {
+            if (in_array((string) $key, $agents_id)) {
+                $agents_selected[$key] = $key;
+            }
+        }
+    }
+
+    $data['select_agents'] = $select_agents;
+    $data['agents_selected'] = $agents_selected;
+
+    $data['correct'] = 1;
+
+    if ($result === false) {
+        $data['correct'] = 0;
+    }
+
+    echo json_encode($data);
+
     return;
 }

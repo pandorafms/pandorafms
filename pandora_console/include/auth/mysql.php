@@ -807,7 +807,7 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
     ldap_set_option(
         $ds,
         LDAP_OPT_TIMELIMIT,
-        (empty($config['ldap_search_timmeout']) === true) ? 5 : ((int) $config['ldap_search_timeout'])
+        (empty($config['ldap_search_timeout']) === true) ? 5 : ((int) $config['ldap_search_timeout'])
     );
 
     if ($ldap['ldap_start_tls']) {

@@ -350,8 +350,10 @@ class Heatmap
 
         // All agents.
         $sql = sprintf(
-            'SELECT DISTINCT id_agente as id,alias,id_grupo,normal_count,warning_count,critical_count, unknown_count,notinit_count,total_count,fired_count,
-            (SELECT last_status_change FROM tagente_estado WHERE id_agente = tagente.id_agente ORDER BY last_status_change DESC LIMIT 1) AS last_status_change
+            'SELECT DISTINCT id_agente as id,alias,id_grupo,normal_count,warning_count,critical_count,
+            unknown_count,notinit_count,total_count,fired_count,
+            (SELECT last_status_change FROM tagente_estado WHERE id_agente = tagente.id_agente
+            ORDER BY last_status_change DESC LIMIT 1) AS last_status_change
             FROM tagente WHERE `disabled` = 0 %s %s ORDER BY id_grupo,id_agente ASC',
             $alias,
             $id_grupo
@@ -427,7 +429,8 @@ class Heatmap
 
         // All modules.
         $sql = sprintf(
-            'SELECT am.id_agente_modulo AS id, ae.known_status AS `status`, am.id_module_group AS id_grupo, ae.last_status_change FROM tagente_modulo am
+            'SELECT am.id_agente_modulo AS id, ae.estado AS `status`, am.id_module_group AS id_grupo,
+            ae.last_status_change FROM tagente_modulo am
             INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
             WHERE am.disabled = 0 %s %s GROUP BY am.id_module_group, am.id_agente_modulo',
             $filter_group,
@@ -525,7 +528,8 @@ class Heatmap
 
         // All modules.
         $sql = sprintf(
-            'SELECT ae.id_agente_modulo AS id, ae.known_status AS `status`, tm.id_tag AS id_grupo, ae.last_status_change FROM tagente_estado ae 
+            'SELECT ae.id_agente_modulo AS id, ae.estado AS `status`, tm.id_tag AS id_grupo,
+            ae.last_status_change FROM tagente_estado ae
             INNER JOIN ttag_module tm ON tm.id_agente_modulo = ae.id_agente_modulo
             WHERE 1=1 %s %s GROUP BY tm.id_tag, ae.id_agente_modulo',
             $filter_tag,
@@ -617,7 +621,8 @@ class Heatmap
 
         // All modules.
         $sql = sprintf(
-            'SELECT am.id_agente_modulo AS id, ae.known_status AS `status`, am.id_agente AS id_grupo, ae.last_status_change FROM tagente_modulo am
+            'SELECT am.id_agente_modulo AS id, ae.estado AS `status`, am.id_agente AS id_grupo,
+            ae.last_status_change FROM tagente_modulo am
             INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
             WHERE am.disabled = 0 %s GROUP BY ae.id_agente_modulo ORDER BY id_grupo',
             $filter_name

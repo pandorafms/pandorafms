@@ -562,13 +562,29 @@ sub cli_create_snmp_trap ($$) {
 sub pandora_create_user ($$$$$) {
 	my ($dbh, $name, $password, $is_admin, $comments) = @_;
 
-	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
 		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
 		exit;
 	}
+	
+  my $query = 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin) VALUES (?, ?, ?, ?, ?)';
+	my @values = (
+		safe_input($name),
+		safe_input($name),
+		$password,
+		safe_input($comments),
+		$is_admin
+	);
 
-	return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
-                         VALUES (?, ?, ?, ?, ?)', safe_input($name), safe_input($name), $password, safe_input($comments), $is_admin);
+	my $res = db_insert($dbh, 'id_user', $query, @values);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_insert($dbh, $conf, 'tusuario', $query, $res, @values);
+	} else {
+		return $res;
+	}
 }
 
 ##########################################################################

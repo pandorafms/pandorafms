@@ -113,6 +113,7 @@ our @EXPORT = qw(
 		get_agentmodule_status_str
 		get_agentmodule_data
 		set_ssl_opts
+		db_synch_insert
 		$RDBMS
 		$RDBMS_QUOTE
 		$RDBMS_QUOTE_STRING
@@ -1669,6 +1670,40 @@ sub set_ssl_opts($) {
 	}
 	if (defined($pa_config->{'dbsslcafile'}) && $pa_config->{'dbsslcafile'} ne "") {
 		$SSL_OPTS .= ";mysql_ssl_ca_file=" . $pa_config->{'dbsslcafile'};
+	}
+}
+
+########################################################################
+## Synch insert query with nodes.
+########################################################################
+sub db_synch_insert ($$$$$@) {
+	my ($dbh, $pa_config, $table, $query, $result, @values) = @_;
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+	my $query_string = sprintf($query, @values);
+
+	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup');
+	foreach my $node (@nodes) {
+		eval {
+			local $SIG{__DIE__};
+			my @values_queue = (
+				safe_input($query_string),
+				$node->{'id'},
+				time(),
+				'INSERT INTO',
+				$table,
+				'',
+				$result
+			);
+			
+			my $query_queue = 'INSERT INTO tsync_queue (`sql`, `target`, `utimestamp`, `operation`, `table`, `error`, `result`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+			db_insert ($dbh, 'id', $query_queue, @values_queue);
+		};
+		if ($@) {
+			logger($pa_config, "Error add sync_queue: $@", 10);
+			return;
+		}
 	}
 }
 

@@ -1397,6 +1397,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     $module_names = (array) get_parameter('module');
     $modules_selection_mode = (string) get_parameter('modules_selection_mode');
     $type_downtime = (string) get_parameter('type_downtime', 'quiet');
+    $recursion = (bool) get_parameter_checkbox('recursion', false);
 
     $all_modules = ($modules_selection_mode === 'all' && (empty($module_names) || (string) $module_names[0] === '0'));
     $all_common_modules = ($modules_selection_mode === 'common' && (empty($module_names) || (string) $module_names[0] === '0'));
@@ -1423,6 +1424,15 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     } else {
         // If is selected 'Any', get all the agents.
         if (count($agents) === 1 && (int) $agents[0] === -2) {
+            if ($recursion === true) {
+                $filter_group = groups_get_children_ids(
+                    $filter_group,
+                    false,
+                    true,
+                    'AW'
+                );
+            };
+
             $agents = db_get_all_rows_filter(
                 'tagente',
                 ['id_grupo' => $filter_group],
@@ -1886,7 +1896,6 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         $('input.hasDatepicker[readonly]').disable();
 
         $("#checkbox-recursion").click(function() {
-            recursion = this.checked;
             $("#filter_group").trigger("change");
         });
 
@@ -1896,6 +1905,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         });
 
         function populate_agents_selector() {
+            recursion = $("#checkbox-recursion").prop('checked');
             jQuery.post ("ajax.php",
                 {"page": "operation/agentes/ver_agente",
                     "get_agents_group_json": 1,

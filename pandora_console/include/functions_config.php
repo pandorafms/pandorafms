@@ -2275,7 +2275,7 @@ function config_process_config()
                     'ifOutDiscards'   => 0,
                     'ifInErrors'      => 0,
                     'ifOutErrors'     => 0,
-                ],
+                ]
             )
         );
     }

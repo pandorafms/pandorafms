@@ -6385,8 +6385,10 @@ sub cli_disable_double_auth () {
 sub cli_user_enable () {
 	my $user_id = @ARGV[2];
 
-	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
-		print_log "[ERROR] This node is configured with centralized mode. To enable a user go to metaconsole. \n\n";
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
 		exit;
 	}
 
@@ -6403,7 +6405,13 @@ sub cli_user_enable () {
 
 	$user_id = safe_input($user_id);
 
-  db_do ($dbh, "UPDATE tusuario SET disabled = '0' WHERE id_user = '$user_id'");  	
+  my $result = db_do ($dbh, "UPDATE tusuario SET disabled = '0' WHERE id_user = '$user_id'");  	
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		my @values;
+		db_synch_update($dbh, $conf, 'tusuario', $dbh->{Statement}, $result, @values);
+	}
+
   exit;
 }
 
@@ -6414,8 +6422,10 @@ sub cli_user_enable () {
 sub cli_user_disable () {
 	my $user_id = @ARGV[2];
 
-	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
-		print_log "[ERROR] This node is configured with centralized mode. To disable a user go to metaconsole. \n\n";
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
 		exit;
 	}
 
@@ -6432,9 +6442,14 @@ sub cli_user_disable () {
 
 	$user_id = safe_input($user_id);
 	
-    db_do ($dbh, "UPDATE tusuario SET disabled = '1' WHERE id_user = '$user_id'");
+  my $result = db_do ($dbh, "UPDATE tusuario SET disabled = '1' WHERE id_user = '$user_id'");
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		my @values;
+		db_synch_update($dbh, $conf, 'tusuario', $dbh->{Statement}, $result, @values);
+	}
     	
-    exit;
+  exit;
 }
 
 ###############################################################################

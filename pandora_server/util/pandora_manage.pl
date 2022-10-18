@@ -251,6 +251,11 @@ sub help_screen{
 	print "\nEVENTS\n\n" unless $param ne '';
 	help_screen_line('--event_in_progress', '<id_event> ', 'Set event in progress');
 
+	print "\nGIS\n\n" unless $param ne '';
+	help_screen_line('--get_gis_agent', '<agent_id> ', 'Gets agent GIS information');
+	help_screen_line('--insert_gis_data', '<agent_id> [<latitude>] [<longitude>] [<altitude>]', 'Sets new GIS data for specified agent');
+
+
 	print "\n";
 	exit;
 }
@@ -261,7 +266,7 @@ sub help_screen{
 sub api_call($$$;$$$$) {
 	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
- 
+
 	eval {
 		# Set the parameters for the POST request.
 		my $params = {};
@@ -275,10 +280,11 @@ sub api_call($$$;$$$$) {
 		$params->{"other"} = $other;
 		$params->{"return_type"} = $return_type;
 		$params->{"other_mode"} = "url_encode_separator_|";
-		
+
 		# Call the API.
 		my $ua = new LWP::UserAgent;
 		my $url = $pa_config->{"console_api_url"};
+
 		my $response = $ua->post($url, $params);
 
 		if ($response->is_success) {
@@ -288,7 +294,7 @@ sub api_call($$$;$$$$) {
 			$content = $response->decoded_content();
 		}
 	};
-	
+
 	return $content;
 }
 
@@ -8045,6 +8051,14 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 4, 5);
 			cli_agent_update_custom_fields();
 		}
+		elsif ($param eq '--get_gis_agent') {
+			param_check($ltotal, 1, 0);
+			cli_get_gis_agent();
+		}
+		elsif ($param eq '--insert_gis_data'){
+			param_check($ltotal, 4, 0);
+			cli_insert_gis_data();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -8764,4 +8778,33 @@ sub pandora_validate_alert_id($$$$) {
 		);
 
     return 1;
+}
+
+##############################################################################
+# Get GIS data from agent
+##############################################################################
+
+sub cli_get_gis_agent(){
+
+	my $agent_id = @ARGV[2];
+
+	my $result = api_call(\%conf,'get', 'gis_agent', $agent_id);
+	print "$result \n\n ";
+
+}
+
+##############################################################################
+# Set GIS data for specified agent
+##############################################################################
+
+sub cli_insert_gis_data(){
+
+	my ($agent_id, $latitude, $longitude, $altitude) = @ARGV[2..5];
+	my $agent_id = @ARGV[2];
+	my @position = @ARGV[3..5];
+	my $other = join('|', @position);
+
+	my $result = api_call(\%conf,'set', 'gis_agent_only_position', $agent_id, undef, "$other");
+	print "$result \n\n ";
+
 }

@@ -1423,9 +1423,19 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     } else {
         // If is selected 'Any', get all the agents.
         if (count($agents) === 1 && (int) $agents[0] === -2) {
-            $agents = agents_get_agents(
+            $agents = db_get_all_rows_filter(
+                'tagente',
                 ['id_grupo' => $filter_group],
-                'id_agent'
+                'id_agente'
+            );
+
+            $agents = array_reduce(
+                $agents,
+                function ($carry, $item) {
+                    $carry[] = $item['id_agente'];
+
+                    return $carry;
+                }
             );
         }
 

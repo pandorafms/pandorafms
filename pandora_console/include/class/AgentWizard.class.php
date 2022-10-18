@@ -1916,12 +1916,21 @@ class AgentWizard extends HTML
                         $values['configuration_data'] = io_safe_input($cfData);
                     } else {
                         $values['id_module'] = MODULE_PLUGIN;
-                        $fieldsPlugin = db_get_value_sql(
-                            sprintf(
-                                'SELECT macros FROM tplugin WHERE id=%d',
-                                (int) $infoMacros['server_plugin']
-                            )
-                        );
+                        if ((int) $infoMacros['server_plugin'] === 12) {
+                            // Search plugin by execute.
+                            $plugin_wmi = db_get_row_sql(
+                                'SELECT id, macros FROM tplugin WHERE execute like "%wizard_wmi_module%"'
+                            );
+                            $fieldsPlugin = $plugin_wmi['macros'];
+                            $infoMacros['server_plugin'] = $plugin_wmi['id'];
+                        } else {
+                            $fieldsPlugin = db_get_value_sql(
+                                sprintf(
+                                    'SELECT macros FROM tplugin WHERE id=%d',
+                                    (int) $infoMacros['server_plugin']
+                                )
+                            );
+                        }
 
                         if ($fieldsPlugin !== false) {
                             $fieldsPlugin = json_decode($fieldsPlugin, true);
@@ -2360,12 +2369,21 @@ class AgentWizard extends HTML
                         );
                     } else {
                         $tmp->id_modulo(MODULE_PLUGIN);
-                        $fieldsPlugin = db_get_value_sql(
-                            sprintf(
-                                'SELECT macros FROM tplugin WHERE id=%d',
-                                (int) $infoMacros['server_plugin']
-                            )
-                        );
+                        if ((int) $infoMacros['server_plugin'] === 12) {
+                            // Search plugin by execute.
+                            $plugin_wmi = db_get_row_sql(
+                                'SELECT id, macros FROM tplugin WHERE execute like "%wizard_wmi_module%"'
+                            );
+                            $fieldsPlugin = $plugin_wmi['macros'];
+                            $infoMacros['server_plugin'] = $plugin_wmi['id'];
+                        } else {
+                            $fieldsPlugin = db_get_value_sql(
+                                sprintf(
+                                    'SELECT macros FROM tplugin WHERE id=%d',
+                                    (int) $infoMacros['server_plugin']
+                                )
+                            );
+                        }
 
                         if ($fieldsPlugin !== false) {
                             $fieldsPlugin = json_decode($fieldsPlugin, true);

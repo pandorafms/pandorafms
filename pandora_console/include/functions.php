@@ -1008,6 +1008,30 @@ function get_parameter_post($name, $default='')
 
 
 /**
+ * Get header.
+ *
+ * @param string      $key     Key.
+ * @param string|null $default Default.
+ *
+ * @return string|null
+ */
+function get_header(string $key, ?string $default=null): ?string
+{
+    static $headers;
+    if (!isset($headers)) {
+        $headers = getAllHeaders();
+    }
+
+    $adjust_key = ucwords(strtolower($key));
+    if (isset($headers[$adjust_key])) {
+        return $headers[$adjust_key];
+    }
+
+    return $default;
+}
+
+
+/**
  * Get name of a priority value.
  *
  * @param integer $priority Priority value
@@ -6216,4 +6240,32 @@ function notify_reporting_console_node()
     }
 
     return $return;
+}
+
+
+/**
+ * Auxiliar Ordenation function
+ *
+ * @param string $sort      Direction of sort.
+ * @param string $sortField Field for perform the sorting.
+ *
+ * @return mixed
+ */
+function arrayOutputSorting($sort, $sortField)
+{
+    return function ($a, $b) use ($sort, $sortField) {
+        if ($sort === 'up' || $sort === 'asc') {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcasecmp($a[$sortField], $b[$sortField]);
+            } else {
+                return ($a[$sortField] - $b[$sortField]);
+            }
+        } else {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcasecmp($b[$sortField], $a[$sortField]);
+            } else {
+                return ($a[$sortField] + $b[$sortField]);
+            }
+        }
+    };
 }

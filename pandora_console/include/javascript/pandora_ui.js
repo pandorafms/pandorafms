@@ -740,3 +740,26 @@ function reveal_password(name) {
     revealElement.attr("src", imagesPath + "eye_show.png");
   }
 }
+
+/**
+ * Returns html img group icon.
+ * @param {int} $id_group
+ */
+function getGroupIcon(id_group, img_container) {
+  $.ajax({
+    type: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "godmode/groups/group_list",
+      get_group_json: 1,
+      id_group: id_group
+    },
+    success: function(data) {
+      img_container.attr("src", "images/groups_small/" + data["icon"] + ".png");
+    },
+    error: function() {
+      img_container.attr("src", "");
+    }
+  });
+}

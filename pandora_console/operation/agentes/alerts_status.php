@@ -28,7 +28,7 @@
 
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 if (is_ajax()) {
@@ -37,7 +37,7 @@ if (is_ajax()) {
     $get_alert_fired = get_parameter('get_alert_fired', 0);
 
     if ($get_alert_fired) {
-        // Calculate alerts fired
+        // Calculate alerts fired.
         $data_reporting = reporting_get_group_stats();
         echo $data_reporting['monitor_alerts_fired'];
     }
@@ -294,7 +294,7 @@ if ($free_search != '') {
 
             $columns = array_merge(
                 $columns,
-                ['agent']
+                ['agent_name']
             );
         }
 
@@ -309,10 +309,10 @@ if ($free_search != '') {
 
         $columns = array_merge(
             $columns,
-            ['module'],
-            ['template'],
+            ['agent_module_name'],
+            ['template_name'],
             ['action'],
-            ['lastFired'],
+            ['last_fired'],
             ['status']
         );
 
@@ -359,7 +359,7 @@ if ($free_search != '') {
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module',
+                        'field'     => 'agent_module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),
@@ -400,7 +400,7 @@ if ($free_search != '') {
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module',
+                        'field'     => 'agent_module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),

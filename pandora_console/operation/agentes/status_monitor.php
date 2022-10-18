@@ -899,6 +899,7 @@ $order = null;
 
 switch ($sortField) {
     case 'agent_alias':
+        $fieldForSorting = 'agent_alias';
         switch ($sort) {
             case 'up':
                 $selectAgentNameUp = $selected;
@@ -919,6 +920,7 @@ switch ($sortField) {
     break;
 
     case 'type':
+        $fieldForSorting = 'module_type';
         switch ($sort) {
             case 'up':
                 $selectDataTypeUp = $selected;
@@ -939,6 +941,7 @@ switch ($sortField) {
     break;
 
     case 'moduletype':
+        $fieldForSorting = 'module_type';
         switch ($sort) {
             case 'up':
                 $selectTypeUp = $selected;
@@ -959,6 +962,7 @@ switch ($sortField) {
     break;
 
     case 'module_name':
+        $fieldForSorting = 'module_name';
         switch ($sort) {
             case 'up':
                 $selectModuleNameUp = $selected;
@@ -979,6 +983,7 @@ switch ($sortField) {
     break;
 
     case 'interval':
+        $fieldForSorting = 'module_interval';
         switch ($sort) {
             case 'up':
                 $selectIntervalUp = $selected;
@@ -999,6 +1004,7 @@ switch ($sortField) {
     break;
 
     case 'status':
+        $fieldForSorting = 'estado';
         switch ($sort) {
             case 'up':
                 $selectStatusUp = $selected;
@@ -1019,6 +1025,7 @@ switch ($sortField) {
     break;
 
     case 'last_status_change':
+        $fieldForSorting = 'last_status_change';
         switch ($sort) {
             case 'up':
                 $selectStatusUp = $selected;
@@ -1039,6 +1046,7 @@ switch ($sortField) {
     break;
 
     case 'timestamp':
+        $fieldForSorting = 'utimestamp';
         switch ($sort) {
             case 'up':
                 $selectTimestampUp = $selected;
@@ -1059,6 +1067,7 @@ switch ($sortField) {
     break;
 
     case 'data':
+        $fieldForSorting = 'datos';
         switch ($sort) {
             case 'up':
                 $selectDataUp = $selected;
@@ -1079,6 +1088,7 @@ switch ($sortField) {
     break;
 
     default:
+        $fieldForSorting = 'agent_alias';
         $selectAgentNameUp = $selected;
         $selectAgentNameDown = false;
         $selectDataTypeUp = false;
@@ -1101,6 +1111,7 @@ switch ($sortField) {
         ];
     break;
 }
+
 
         $sql = 'SELECT
     (SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
@@ -1215,6 +1226,8 @@ if ($autosearch) {
 
                 $result = array_merge($result, $result_server);
             }
+
+            usort($result, arrayOutputSorting($sort, $fieldForSorting));
 
             metaconsole_restore_db();
         }

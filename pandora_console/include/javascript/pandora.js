@@ -886,7 +886,6 @@ function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").css("display", "none");
   $("#" + name + "_default").css("display", "inline");
-
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
     $("#text-" + name + "_text").val(300);
@@ -897,7 +896,7 @@ function period_select_init(name, allow_zero) {
     } else {
       $("#" + name + "_select option:eq(1)").prop("selected", true);
     }
-  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
+  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero == 1) {
     $("#" + name + "_units option:last").prop("selected", false);
     $("#" + name + "_manual").css("display", "inline");
     $("#" + name + "_default").css("display", "none");
@@ -1041,10 +1040,10 @@ function adjustTextUnits(name) {
     var restInt = parseInt(rest).toString();
 
     if (rest != restInt && unitsSelected == false) {
-      $("#" + name + "_units option:eq(" + ($(this).index() - 1) + ")").prop(
-        "selected",
-        true
-      );
+      var value_selected = $(
+        "#" + name + "_units option:eq(" + ($(this).index() - 1) + ")"
+      ).val();
+      $("#" + name + "_units").val(value_selected);
 
       $("#text-" + name + "_text").val(restPrev);
       unitsSelected = true;

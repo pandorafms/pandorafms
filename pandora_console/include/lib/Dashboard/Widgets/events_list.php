@@ -553,6 +553,18 @@ class EventsListWidget extends Widget
                 );
                 $filter['module_search'] = $name[0]['nombre'];
             }
+        } else if (empty($this->values['customFilter']) === false
+            && (int) $this->values['customFilter'] !== -1
+        ) {
+            $output = '<div class="container-center">';
+            $output .= \ui_print_error_message(
+                __('Widget cannot be loaded').'. '.__('Please, event filter has been removed.'),
+                '',
+                true
+            );
+            $output .= '</div>';
+            echo $output;
+            return;
         } else {
             // Filtering.
             $filter['event_view_hr'] = $this->values['maxHours'];

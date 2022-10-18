@@ -599,8 +599,8 @@ sub pandora_create_user ($$$$$) {
 		safe_input($name),
 		safe_input($name),
 		$password,
-		safe_input($comments),
-		$is_admin
+		decode_entities($comments),
+		$is_admin ? '1' : '0'
 	);
 
 	my $res = db_insert($dbh, 'id_user', $query, @values);

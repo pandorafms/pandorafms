@@ -710,9 +710,13 @@ class AgentModuleWidget extends Widget
 
                 if (empty($allModules) === false) {
                     if (is_metaconsole() === true && $this->values['mShowCommonModules'] !== 'on') {
-                        $modules = $agent->searchModules(
-                            ['nombre' => array_keys($reduceAllModules['modules_selected'][$tserver])]
-                        );
+                        if (isset($reduceAllModules['modules_selected'][$tserver]) === true) {
+                            $modules = $agent->searchModules(
+                                ['nombre' => array_keys($reduceAllModules['modules_selected'][$tserver])]
+                            );
+                        } else {
+                            $modules = null;
+                        }
                     } else {
                         $modules = $agent->searchModules(
                             ['nombre' => array_keys($allModules)]

@@ -467,7 +467,7 @@ function config_update_config()
                 break;
 
                 case 'pass':
-                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === 1) {
+                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === true) {
                         if (config_update_value('enable_pass_policy', get_parameter('enable_pass_policy'), true) === false) {
                             $error_update[] = __('Enable password policy');
                         }
@@ -907,6 +907,16 @@ function config_update_config()
 
                     if (config_update_value('wmiBinary', get_parameter('wmiBinary'), true) === false) {
                         $error_update[] = __('Default WMI Binary');
+                    }
+
+                    // Walk the array with defaults.
+                    $defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
+                    foreach ($defaultAgentWizardOptions as $key => $value) {
+                        $selectedAgentWizardOptions[$key] = get_parameter_switch('agent_wizard_defaults_'.$key);
+                    }
+
+                    if (config_update_value('agent_wizard_defaults', json_encode($selectedAgentWizardOptions), true) === false) {
+                        $error_update[] = __('SNMP Interface Agent Wizard');
                     }
 
                     $pjs = get_parameter('phantomjs_cache_interval');
@@ -2242,6 +2252,32 @@ function config_process_config()
 
     if (!isset($config['2Fa_auth'])) {
         config_update_value('2Fa_auth', '');
+    }
+
+    if (isset($config['agent_wizard_defaults']) === false) {
+        config_update_value(
+            'agent_wizard_defaults',
+            json_encode(
+                [
+                    'ifOperStatus'    => 1,
+                    'ifInOctets'      => 1,
+                    'ifOutOctets'     => 1,
+                    'ifInUcastPkts'   => 0,
+                    'ifOutUcastPkts'  => 0,
+                    'ifInNUcastPkts'  => 0,
+                    'ifOutNUcastPkts' => 0,
+                    'locIfInCRC'      => 1,
+                    'Bandwidth'       => 1,
+                    'inUsage'         => 1,
+                    'outUsage'        => 1,
+                    'ifAdminStatus'   => 0,
+                    'ifInDiscards'    => 0,
+                    'ifOutDiscards'   => 0,
+                    'ifInErrors'      => 0,
+                    'ifOutErrors'     => 0,
+                ],
+            )
+        );
     }
 
     /*

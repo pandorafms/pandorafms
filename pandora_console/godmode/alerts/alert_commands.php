@@ -828,7 +828,8 @@ if (isset($data) === true && count($table->data) > 0) {
     );
 }
 
-if ($is_management_allowed === true && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
+// Commands can only be created by the super administrator.
+if (users_is_admin() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');

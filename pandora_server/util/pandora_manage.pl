@@ -573,8 +573,8 @@ sub pandora_create_user ($$$$$) {
 		exit;
 	}
 
-	return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
-                         VALUES (?, ?, ?, ?, ?)', safe_input($name), safe_input($name), $password, safe_input($comments), $is_admin);
+	return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, is_admin, comments)
+                         VALUES (?, ?, ?, ?, ?)', safe_input($name), safe_input($name), $password, $is_admin ? '1' : '0', decode_entities($comments));
 }
 
 ##########################################################################

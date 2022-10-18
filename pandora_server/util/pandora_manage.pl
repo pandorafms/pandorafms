@@ -533,8 +533,27 @@ sub pandora_add_profile_to_user ($$$;$) {
 	
 	$group_id = 0 unless defined($group_id);
 	
-	db_do ($dbh, 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo)
-				  VALUES (?, ?, ?)', safe_input($user_id), $profile_id, $group_id);
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
+		exit;
+	}
+	
+  my $query = 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)';
+	my @values = (
+		safe_input($user_id),
+		$profile_id,
+		$group_id
+	);
+
+	my $res = db_do ($dbh, $query, @values);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_insert($dbh, $conf, 'tusuario_perfil', $query, $res, @values);
+	}
+	
+	return $res;
 }
 
 
@@ -582,9 +601,9 @@ sub pandora_create_user ($$$$$) {
 
 	if(is_metaconsole($conf) == 1 && $centralized) {
 		db_synch_insert($dbh, $conf, 'tusuario', $query, $res, @values);
-	} else {
-		return $res;
 	}
+	
+	return $res;
 }
 
 ##########################################################################
@@ -593,16 +612,26 @@ sub pandora_create_user ($$$$$) {
 sub pandora_delete_user ($$) {
 my ($dbh, $name) = @_;
 
-	if(is_metaconsole($conf) != 1 && pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
 		print_log "[ERROR] This node is configured with centralized mode. To delete a user go to metaconsole. \n\n";
 		exit;
 	}
 
 	# Delete user profiles
-	db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario = ?', $name);
+	my $result_profile = db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario = ?', $name);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_delete($dbh, $conf, 'tusuario_perfil', $result_profile, $name);
+	}
 
 	# Delete the user
 	my $return = db_do ($dbh, 'DELETE FROM tusuario WHERE id_user = ?', $name);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_delete($dbh, $conf, 'tusuario', $return, $name);
+	}
 
 	if($return eq '0E0') {
 		return -1;
@@ -633,25 +662,79 @@ else {
 ## Assign a profile to the given user/group.
 ##########################################################################
 sub pandora_create_user_profile ($$$$) {
-        my ($dbh, $user_id, $profile_id, $group_id) = @_;
-        
-        return db_insert ($dbh, 'id_up', 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)', $user_id, $profile_id, $group_id);
+  my ($dbh, $user_id, $profile_id, $group_id) = @_;
+
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
+		exit;
+	}
+	
+  my $query = 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)';
+	my @values = (
+		safe_input($user_id),
+		$profile_id,
+		$group_id
+	);
+
+	my $res = db_insert ($dbh, 'id_up', $query, @values);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_insert($dbh, $conf, 'tusuario_perfil', $query, $res, @values);
+	}
+	
+	return $res;
 }
 
 ##########################################################################
 ## Create profile.
 ##########################################################################
 sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$) {
-        my ($dbh, $profile_name, $agent_view,
+    my ($dbh, $profile_name, $agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
+	
+		my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
 
-		return db_insert ($dbh, 'id_up', 'INSERT INTO tperfil (name,agent_view,agent_edit,agent_disable,alert_edit,alert_management,user_management,db_management,event_view,event_edit,event_management,report_view,report_edit,report_management,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management,pandora_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-		safe_input($profile_name), $agent_view,
-		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
-		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
-		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
+		if(is_metaconsole($conf) != 1 && $centralized) {
+			print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
+			exit;
+		}
+		
+		my $query = 'INSERT INTO tperfil (name,agent_view,agent_edit,agent_disable,alert_edit,alert_management,user_management,db_management,event_view,event_edit,event_management,report_view,report_edit,report_management,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management,pandora_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+		my @values = (
+			safe_input($profile_name),
+			$agent_view,
+			$agent_edit,
+			$agent_disable,
+			$alert_edit,
+			$alert_management,
+			$user_management,
+			$db_management,
+			$event_view,
+			$event_edit,
+			$event_management,
+			$report_view,
+			$report_edit,
+			$report_management,
+			$map_view,
+			$map_edit,
+			$map_management,
+			$vconsole_view,
+			$vconsole_edit,
+			$vconsole_management,
+			$pandora_management
+		);
+
+		my $res = db_insert ($dbh, 'id_perfil', $query, @values);
+
+		if(is_metaconsole($conf) == 1 && $centralized) {
+			db_synch_insert($dbh, $conf, 'tperfil', $query, $res, @values);
+		}
+		
+		return $res;
 }
 
 ##########################################################################
@@ -663,11 +746,33 @@ sub pandora_update_profile ($$$$$$$$$$$$$$$$$$$$$$) {
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
 
-		return db_update ($dbh, 'UPDATE tperfil SET agent_view = ?, agent_edit = ?, agent_disable = ?, alert_edit = ?, alert_management = ?, user_management = ?, db_management = ?, event_view = ?, event_edit = ?, event_management = ?, report_view = ?, report_edit = ?, report_management = ?, map_view = ?, map_edit = ?, map_management = ?, vconsole_view = ?, vconsole_edit = ?, vconsole_management = ?, pandora_management = ? WHERE name=?;',
-		$agent_view,
-		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
-		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
-		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management, safe_input($profile_name));
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
+		print_log "[ERROR] This node is configured with centralized mode. To create a user go to metaconsole. \n\n";
+		exit;
+	}
+
+	my @parameters = (
+		$agent_view, $agent_edit, $agent_disable,
+		$alert_edit, $alert_management,
+		$user_management, $db_management,
+		$event_view, $event_edit, $event_management,
+		$report_view, $report_edit, $report_management,
+		$map_view, $map_edit, $map_management,
+		$vconsole_view, $vconsole_edit, $vconsole_management,
+		$pandora_management, safe_input($profile_name)
+	);
+	
+	my $query = 'UPDATE tperfil SET agent_view = ?, agent_edit = ?, agent_disable = ?, alert_edit = ?, alert_management = ?, user_management = ?, db_management = ?, event_view = ?, event_edit = ?, event_management = ?, report_view = ?, report_edit = ?, report_management = ?, map_view = ?, map_edit = ?, map_management = ?, vconsole_view = ?, vconsole_edit = ?, vconsole_management = ?, pandora_management = ? WHERE name=?;';
+	
+	my $result = db_update ($dbh, $query, @parameters);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_update($dbh, $conf, 'tperfil', $query, $result, @parameters);
+	}
+
+	return $result;
 }
 
 ##########################################################################
@@ -675,8 +780,28 @@ sub pandora_update_profile ($$$$$$$$$$$$$$$$$$$$$$) {
 ##########################################################################
 sub pandora_delete_user_profile ($$$$) {
 	my ($dbh, $user_id, $profile_id, $group_id) = @_;
+
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+
+	if(is_metaconsole($conf) != 1 && $centralized) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete a user go to metaconsole. \n\n";
+		exit;
+	}
+
+	my @parameters = (
+		$user_id,
+		$profile_id,
+		$group_id
+	);
+
+	# Delete the user
+	my $return = db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario=? AND id_perfil=? AND id_grupo=?', @parameters);
+
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		db_synch_delete($dbh, $conf, 'tusuario_perfil', $return, @parameters);
+	}
 	
-	return db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario=? AND id_perfil=? AND id_grupo=?', $user_id, $profile_id, $group_id);
+	return $return;
 }
 
 ##########################################################################
@@ -826,9 +951,18 @@ sub pandora_validate_event_id ($$$) {
 ##########################################################################
 sub pandora_update_user_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
+	my $centralized = pandora_get_tconfig_token ($dbh, 'centralized_management', '');
+	my $result = db_process_update($dbh, 'tusuario', $parameters, {$where_column => $where_value});
+	if(is_metaconsole($conf) == 1 && $centralized) {
+		my @values = (
+			values %$parameters,
+			$where_value
+		);
 
-	my $user_id = db_process_update($dbh, 'tusuario', $parameters, {$where_column => $where_value});
-	return $user_id;
+		db_synch_update($dbh, $conf, 'tusuario', $dbh->{Statement}, $result, @values);
+	}
+	
+	return $result;
 }
 
 ##########################################################################
@@ -6263,9 +6397,8 @@ sub cli_user_enable () {
 
 	$user_id = safe_input($user_id);
 
-    db_do ($dbh, "UPDATE tusuario SET disabled = '0' WHERE id_user = '$user_id'");
-    	
-    exit;
+  db_do ($dbh, "UPDATE tusuario SET disabled = '0' WHERE id_user = '$user_id'");  	
+  exit;
 }
 
 ###############################################################################

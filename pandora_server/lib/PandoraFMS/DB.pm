@@ -114,6 +114,9 @@ our @EXPORT = qw(
 		get_agentmodule_data
 		set_ssl_opts
 		db_synch_insert
+		db_synch_update
+		db_synch_delete
+		db_synch
 		$RDBMS
 		$RDBMS_QUOTE
 		$RDBMS_QUOTE_STRING
@@ -1683,15 +1686,53 @@ sub db_synch_insert ($$$$$@) {
 	$query =~ s/\?/$substr/g;
 	my $query_string = sprintf($query, @values);
 
+	db_synch($dbh, $pa_config, 'INSERT INTO', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch update query with nodes.
+########################################################################
+sub db_synch_update ($$$$$@) {
+	my ($dbh, $pa_config, $table, $query, $result, @values) = @_;
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+	my $query_string = sprintf($query, @values);
+
+	db_synch($dbh, $pa_config, 'UPDATE', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch delete query with nodes.
+########################################################################
+sub db_synch_delete ($$$$@) {
+	my ($dbh, $pa_config, $table, $result, @parameters) = @_;
+
+	#Build query string.
+	my $query = $dbh->{Statement};
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+
+	my $query_string = sprintf($query, @parameters);
+
+	db_synch($dbh, $pa_config, 'DELETE FROM', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch queries with nodes.
+########################################################################
+sub db_synch ($$$$$$) {
+	my ($dbh, $pa_config, $type, $table, $query, $result) = @_;
 	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup');
 	foreach my $node (@nodes) {
 		eval {
 			local $SIG{__DIE__};
 			my @values_queue = (
-				safe_input($query_string),
+				safe_input($query),
 				$node->{'id'},
 				time(),
-				'INSERT INTO',
+				$type,
 				$table,
 				'',
 				$result

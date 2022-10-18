@@ -223,7 +223,7 @@ if (is_ajax()) {
             $id_agents,
             $selection,
             $select_mode,
-            true
+            (bool) !$select_mode
         );
 
         // Clean double safe input.

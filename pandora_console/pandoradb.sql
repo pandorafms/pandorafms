@@ -1743,6 +1743,7 @@ CREATE TABLE IF NOT EXISTS `tplugin` (
   `plugin_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `macros` TEXT,
   `parameters` TEXT,
+  `no_delete` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4; 
 
@@ -2323,6 +2324,7 @@ CREATE TABLE IF NOT EXISTS `tmap` (
   `generated` INT UNSIGNED NOT NULL DEFAULT 0,
   `filter` TEXT,
   `id_group_map` INT UNSIGNED NOT NULL DEFAULT 0,
+  `refresh_time` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2655,6 +2657,8 @@ CREATE TABLE IF NOT EXISTS `tmodule_inventory` (
   `data_format` TEXT ,
   `code` BLOB NOT NULL,
   `block_mode` INT NOT NULL DEFAULT 0,
+  `script_mode` INT NOT NULL DEFAULT 1,
+  `script_path` VARCHAR(1000) DEFAULT '',
   PRIMARY KEY  (`id_module_inventory`),
   FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
     ON UPDATE CASCADE ON DELETE CASCADE

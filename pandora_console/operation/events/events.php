@@ -222,8 +222,35 @@ $id_source_event = get_parameter(
 
 $server_id = get_parameter(
     'filter[server_id]',
-    ($filter['id_server_meta'] ?? 0)
+    ($filter['id_server_meta'] ?? '')
 );
+
+if (is_metaconsole() === true) {
+    $servers = metaconsole_get_servers();
+    if (is_array($servers) === true) {
+        $servers = array_reduce(
+            $servers,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['server_name'];
+                return $carry;
+            }
+        );
+    } else {
+        $servers = [];
+    }
+
+    $servers[0] = __('Metaconsola');
+
+    if ($server_id === '') {
+        $server_id = array_keys($servers);
+    } else if (is_array($server_id) === false) {
+        if ((int) $server_id !== 0) {
+            $server_id = [$server_id];
+        } else {
+            $server_id = array_keys($servers);
+        }
+    }
+}
 
 $custom_data_filter_type = get_parameter(
     'filter[custom_data_filter_type]',
@@ -235,7 +262,9 @@ $custom_data = get_parameter(
     ($filter['custom_data'] ?? '')
 );
 
-if (is_metaconsole() === true) {
+if (is_metaconsole() === true
+    && is_array($server_id) === false
+) {
     // Connect to node database.
     $id_node = (int) $server_id;
     if ($id_node !== 0) {
@@ -256,7 +285,9 @@ if (empty($text_module) === true && empty($id_agent_module) === false) {
     $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
 }
 
-if (is_metaconsole() === true) {
+if (is_metaconsole() === true
+    && is_array($server_id) === false
+) {
     // Return to metaconsole database.
     if ($id_node != 0) {
         metaconsole_restore_db();
@@ -367,7 +398,8 @@ if (is_ajax() === true) {
             $buffers = [];
             if (is_metaconsole() === false
                 || (is_metaconsole() === true
-                && empty($filter['server_id']) === false)
+                && empty($filter['server_id']) === false
+                && is_array($filter['server_id']) === false)
             ) {
                 $count = events_get_all(
                     'count',
@@ -468,7 +500,7 @@ if (is_ajax() === true) {
                         $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
-                            $tmp->ack_utimestamp,
+                            (int) $tmp->ack_utimestamp,
                             true
                         );
                         $tmp->timestamp = ui_print_timestamp(
@@ -1448,7 +1480,9 @@ if ($pure) {
     }
 
     // If the history event is not enabled, dont show the history tab.
-    if (isset($config['metaconsole_events_history']) === false || $config['metaconsole_events_history'] != 1) {
+    if (isset($config['history_db_enabled']) === false
+        || (bool) $config['history_db_enabled'] === false
+    ) {
         unset($onheader['history']);
     }
 
@@ -1822,14 +1856,19 @@ $adv_inputs[] = $in;
 // Mixed. Metaconsole => server, Console => module.
 if (is_metaconsole() === true) {
     $title = __('Server');
-    $data = html_print_select_from_sql(
-        'SELECT id, server_name FROM tmetaconsole_setup',
+    $data = html_print_select(
+        $servers,
         'server_id',
         $server_id,
         '',
-        __('All'),
-        '0',
-        true
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'height: 60px;'
     );
 } else {
     $title = __('Module search');
@@ -2851,7 +2890,7 @@ $(document).ready( function() {
                     data: {
                         page: 'include/ajax/events',
                         load_filter_modal: 1
-                        },
+                    },
                     success: function (data){
                         $('#load-modal-filter')
                         .empty()

@@ -1385,7 +1385,7 @@ function events_get_all(
     // Pagination.
     $pagination = '';
     if (is_metaconsole() === true
-        && empty($id_server) === true
+        && (empty($id_server) === true || is_array($id_server) === true)
         && isset($filter['csv_all']) === false
     ) {
         // TODO: XXX TIP. captura el error.
@@ -1476,7 +1476,6 @@ function events_get_all(
     // Secondary groups.
     $event_lj = '';
     if (!$user_is_admin || ($user_is_admin && isset($groups) === true && $groups > 0)) {
-        db_process_sql('SET group_concat_max_len = 9999999');
         if ((bool) $filter['search_secondary_groups'] === true) {
             $event_lj = events_get_secondary_groups_left_join($table);
         }
@@ -1489,6 +1488,8 @@ function events_get_all(
             if ($idx !== false) {
                 unset($fields[$idx]);
             }
+
+            db_process_sql('SET group_concat_max_len = 9999999');
 
             $group_selects = sprintf(
                 ',COUNT(id_evento) AS event_rep,
@@ -1660,7 +1661,9 @@ function events_get_all(
 
     if ($count === true
         && (is_metaconsole() === false
-        || (is_metaconsole() === true && empty($filter['server_id']) === false))
+        || (is_metaconsole() === true
+        && empty($filter['server_id']) === false
+        && is_array($filter['server_id']) === false))
     ) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
     }
@@ -1676,14 +1679,27 @@ function events_get_all(
                     $metaconsole_connections = array_flip($metaconsole_connections);
                     $metaconsole_connections['meta'] = 0;
                 } else {
-                    $only_id_server[$metaconsole_connections[$id_server]] = $id_server;
-                    $metaconsole_connections = $only_id_server;
+                    if (is_array($id_server) === false) {
+                        $only_id_server[$metaconsole_connections[$id_server]] = $id_server;
+                        $metaconsole_connections = $only_id_server;
+                    } else {
+                        $metaConnections = [];
+                        foreach ($id_server as $idser) {
+                            if ((int) $idser === 0) {
+                                $metaConnections['meta'] = 0;
+                            } else {
+                                $metaConnections[$metaconsole_connections[$idser]] = $idser;
+                            }
+                        }
+
+                        $metaconsole_connections = $metaConnections;
+                    }
                 }
 
                 $result_meta = Promise\wait(
                     parallelMap(
                         $metaconsole_connections,
-                        function ($node_int) use ($sql) {
+                        function ($node_int) use ($sql, $history) {
                             try {
                                 if (is_metaconsole() === true
                                     && (int) $node_int > 0
@@ -1692,7 +1708,7 @@ function events_get_all(
                                     $node->connect();
                                 }
 
-                                $res = db_get_all_rows_sql($sql);
+                                $res = db_get_all_rows_sql($sql, $history);
                                 if ($res === false) {
                                     $res = [];
                                 }
@@ -1751,7 +1767,7 @@ function events_get_all(
             }
         }
 
-        if (empty($filter['server_id']) === true) {
+        if ($count === false) {
             if ($sort_field !== 'agent_name'
                 && $sort_field !== 'server_name'
                 && $sort_field !== 'timestamp'
@@ -1823,7 +1839,7 @@ function events_get_all(
         }
     }
 
-    return db_get_all_rows_sql($sql);
+    return db_get_all_rows_sql($sql, $history);
 }
 
 
@@ -3498,7 +3514,7 @@ function events_page_responses($event)
             __('Execute'),
             'custom_response_button',
             false,
-            'execute_response('.$event['id_evento'].','.$server_id.')',
+            'execute_response('.$event['id_evento'].','.$server_id.',0)',
             "class='sub next w70p'",
             true
         );
@@ -3509,27 +3525,15 @@ function events_page_responses($event)
     $responses_js = "<script>
 			$('#select_custom_response').change(function() {
 				var id_response = $('#select_custom_response').val();
-				var params = get_response_params(id_response);
-				var description = get_response_description(id_response);
-				$('.params_rows').remove();
-				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"height_30px\" colspan=\"2\">'+description+'</td></tr>');
-
-				if (params.length == 1 && params[0] == '') {
-					return;
-				}
-
-				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td class=\"left pdd_l_20px height_30px\" colspan=\"3\">".__('Parameters')."</td></tr>');
-
-				for (i = 0; i < params.length; i++) {
-					add_row_param('responses_table',params[i]);
-				}
+                table_info_response_event(id_response,".$event['id_evento'].','.$event['server_id'].");
 			});
 			$('#select_custom_response').trigger('change');
 			</script>";
 
-    $responses = '<div id="extended_event_responses_page" class="extended_event_pages">'.html_print_table($table_responses, true).$responses_js.'</div>';
+    $responses = '<div id="extended_event_responses_page" class="extended_event_pages">';
+    $responses .= html_print_table($table_responses, true);
+    $responses .= $responses_js;
+    $responses .= '</div>';
 
     return $responses;
 }
@@ -3538,14 +3542,20 @@ function events_page_responses($event)
 /**
  * Replace macros in the target of a response and return it.
  *
- * @param integer $event_id    Event identifier.
- * @param integer $response_id Event response identifier.
+ * @param integer      $event_id            Event identifier.
+ * @param array        $event_response      Event Response.
+ * @param array|null   $response_parameters If parameters response values.
+ * @param integer|null $server_id           Server Id.
+ * @param string|null  $server_name         Name server.
  *
  * @return string The response text with the macros applied.
  */
 function events_get_response_target(
     int $event_id,
-    int $response_id
+    array $event_response,
+    ?array $response_parameters=null,
+    ?int $server_id=0,
+    ?string $server_name=''
 ) {
     global $config;
 
@@ -3558,9 +3568,36 @@ function events_get_response_target(
     }
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    $event_response = db_get_row('tevent_response', 'id', $response_id);
     $target = io_safe_output($event_response['target']);
 
+    // Replace parameters response.
+    if (isset($response_parameters) === true
+        && empty($response_parameters) === false
+    ) {
+        $response_parameters = array_reduce(
+            $response_parameters,
+            function ($carry, $item) {
+                $carry[$item['name']] = $item['value'];
+                return $carry;
+            }
+        );
+    }
+
+    if (empty($event_response['params']) === false) {
+        $response_params = explode(',', $event_response['params']);
+        if (is_array($response_params) === true) {
+            foreach ($response_params as $param) {
+                $param = trim(io_safe_output($param));
+                $target = str_replace(
+                    '_'.$param.'_',
+                    $response_parameters['values_params_'.$param],
+                    $target
+                );
+            }
+        }
+    }
+
+    // Replace macros.
     if (strpos($target, '_agent_alias_') !== false) {
         $agente_table_name = 'tagente';
         $filter = ['id_agente' => $event['id_agente']];
@@ -3882,6 +3919,26 @@ function events_get_response_target(
         $target = str_replace(
             '_current_username_',
             io_safe_output($fullname['fullname']),
+            $target
+        );
+    }
+
+    if (is_metaconsole() === true
+        && strpos($target, '_node_id_') !== false
+    ) {
+        $target = str_replace(
+            '_node_id_',
+            $server_id,
+            $target
+        );
+    }
+
+    if (is_metaconsole() === true
+        && strpos($target, '_node_name_') !== false
+    ) {
+        $target = str_replace(
+            '_node_name_',
+            $server_name,
             $target
         );
     }
@@ -5530,5 +5587,116 @@ function events_get_criticity_class($criticity)
 
         default:
         return 'datos_blue';
+    }
+}
+
+
+/**
+ * Draw row response events.
+ *
+ * @param array        $event_response Response.
+ * @param integer|null $response_id    Id .
+ * @param boolean      $end            End block.
+ * @param integer|null $index          Index block.
+ *
+ * @return string Html output.
+ */
+function get_row_response_action(
+    array $event_response,
+    ?int $response_id,
+    $end=false,
+    $index=null
+) {
+    $output = '<div class="container-massive-events-response-cell">';
+    $display_command = (bool) $event_response['display_command'];
+    $command_str = ($display_command === true) ? $event_response['target'] : '';
+
+    // String command.
+    $output .= '<div class="container-massive-events-response-command">';
+    $output .= '<b>';
+    $output .= __('Event # %d', $event_response['event_id']);
+    if (empty($command_str) === false) {
+        $output .= ' ';
+        $output .= __('Executing command: ');
+    }
+
+    $output .= '</b>';
+    $output .= '<span>'.$command_str.'</span>';
+    $output .= '</div>';
+
+    // Spinner.
+    $output .= '<div id="response_loading_command'.$index.'" style="display:none">';
+    $output .= html_print_image(
+        'images/spinner.gif',
+        true
+    );
+    $output .= '</div>';
+
+    // Output.
+    $output .= '<div id="response_out'.$index.'" class="container-massive-events-response-output"></div>';
+
+    // Butom.
+    $output .= '<div id="re_exec_command'.$index.'" style="display:none" class="container-massive-events-response-execute">';
+    $output .= html_print_button(
+        __('Execute again'),
+        'btn_str',
+        false,
+        'perform_response(\''.base64_encode(json_encode($event_response)).'\','.$response_id.',\''.trim($index).'\')',
+        "class='sub next'",
+        true
+    );
+    $output .= '</div>';
+
+    $output .= '</div>';
+
+    return $output;
+}
+
+
+/**
+ * Get evet get response target.
+ *
+ * @param integer $event_id       Id event.
+ * @param array   $event_response Response.
+ * @param integer $server_id      Server id.
+ *
+ * @return string
+ */
+function get_events_get_response_target(
+    $event_id,
+    $event_response,
+    $server_id=0,
+    $response_parameters=[]
+) {
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
+
+        return events_get_response_target(
+            $event_id,
+            $event_response,
+            $response_parameters,
+            $server_id,
+            ($server_id !== 0) ? $node->server_name() : 'Metaconsole'
+        );
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        return '';
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
 }

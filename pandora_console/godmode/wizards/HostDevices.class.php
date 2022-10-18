@@ -941,6 +941,7 @@ class HostDevices extends Wizard
                         'return'                  => true,
                         'class'                   => 'discovery_list_input',
                         'simple_multiple_options' => true,
+                        'required'                => true,
                     ]
                 );
 
@@ -1001,6 +1002,7 @@ class HostDevices extends Wizard
                             $("#text-interval_text").val(10);
                             $("#hidden-interval").val('.$interval.');
                             $("#interval_units").val('.$unit.');
+                            $("#interval_units").trigger("change");
                         }
                     }).change();
                     

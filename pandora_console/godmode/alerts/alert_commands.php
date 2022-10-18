@@ -285,13 +285,13 @@ if (is_ajax()) {
                         $ffield .= '<div name="field'.$i.'_value_container">'.html_print_switch(
                             [
                                 'name'  => 'field'.$i.'_value[]',
-                                'value' => ''
+                                'value' => '',
                             ]
                         ).'</div>';
                         $rfield .= '<div name="field'.$i.'_recovery_value_container">'.html_print_switch(
                             [
                                 'name'  => 'field'.$i.'_recovery_value[]',
-                                'value' => ''
+                                'value' => '',
                             ]
                         ).'</div>';
 
@@ -379,7 +379,7 @@ if (is_ajax()) {
                             $filter,
                             [
                                 'name',
-                                'id_report'
+                                'id_report',
                             ],
                             $return_all_group,
                             'RR'
@@ -419,7 +419,7 @@ if (is_ajax()) {
                             $filter,
                             [
                                 'name',
-                                'id_report'
+                                'id_report',
                             ],
                             $return_all_group,
                             'RR'

@@ -64,9 +64,9 @@ $add_comment = (bool) get_parameter('add_comment');
 $dialogue_event_response = (bool) get_parameter('dialogue_event_response');
 $perform_event_response = (bool) get_parameter('perform_event_response');
 $get_response = (bool) get_parameter('get_response');
-$get_response_target = (bool) get_parameter('get_response_target');
-$get_response_params = (bool) get_parameter('get_response_params');
-$get_response_description = (bool) get_parameter('get_response_description');
+$get_response_massive = (bool) get_parameter('get_response_massive');
+$get_row_response_action = (bool) get_parameter('get_row_response_action');
+$draw_row_response_info = (bool) get_parameter('draw_row_response_info', false);
 $meta = get_parameter('meta', 0);
 $history = get_parameter('history', 0);
 $table_events = get_parameter('table_events', 0);
@@ -373,8 +373,8 @@ if ($save_event_filter) {
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
-    if (is_metaconsole()) {
-        $values['server_id'] = get_parameter('server_id');
+    if (is_metaconsole() === true) {
+        $values['server_id'] = implode(',', get_parameter('server_id'));
     }
 
     $exists = (bool) db_get_value_filter(
@@ -432,7 +432,7 @@ if ($update_event_filter) {
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
     if (is_metaconsole() === true) {
-        $values['server_id'] = get_parameter('server_id');
+        $values['server_id'] = implode(',', get_parameter('server_id'));
     }
 
     if (io_safe_output($values['tag_with']) == '["0"]') {
@@ -1061,87 +1061,6 @@ $(document).ready(function (){
 }
 
 
-if ($get_response_description) {
-    $response_id = get_parameter('response_id');
-
-    $description = db_get_value('description', 'tevent_response', 'id', $response_id);
-
-    if ($description === false) {
-        return;
-    }
-
-    $description = io_safe_output($description);
-    $description = str_replace("\r\n", '<br>', $description);
-
-    echo $description;
-
-    return;
-}
-
-if ($get_response_params) {
-    if (! check_acl($config['id_user'], 0, 'EW')) {
-        echo 'unauthorized';
-        return;
-    }
-
-    $response_id = get_parameter('response_id');
-
-    $params = db_get_value('params', 'tevent_response', 'id', $response_id);
-
-    if ($params === false) {
-        return;
-    }
-
-    echo json_encode(explode(',', $params));
-
-    return;
-}
-
-if ($get_response_target === true) {
-    if (! check_acl($config['id_user'], 0, 'EW')) {
-        echo 'unauthorized';
-        return;
-    }
-
-    $response_id = (int) get_parameter('response_id');
-    $event_id = (int) get_parameter('event_id');
-    $server_id = (int) get_parameter('server_id');
-
-    try {
-        if (is_metaconsole() === true
-            && $server_id > 0
-        ) {
-            $node = new Node($server_id);
-            $node->connect();
-        }
-
-        $event_response = db_get_row('tevent_response', 'id', $response_id);
-
-        if (empty($event_response) === true) {
-            return;
-        }
-
-        echo events_get_response_target($event_id, $response_id);
-    } catch (\Exception $e) {
-        // Unexistent agent.
-        if (is_metaconsole() === true
-            && $server_id > 0
-        ) {
-            $node->disconnect();
-        }
-
-        return;
-    } finally {
-        if (is_metaconsole() === true
-            && $server_id > 0
-        ) {
-            $node->disconnect();
-        }
-    }
-
-    return;
-}
-
 if ($get_response === true) {
     if (! check_acl($config['id_user'], 0, 'EW')) {
         echo 'unauthorized';
@@ -1149,62 +1068,27 @@ if ($get_response === true) {
     }
 
     $response_id = get_parameter('response_id');
-    $server_id = (int) get_parameter('server_id');
+    $server_id = (int) get_parameter('server_id', 0);
+    $event_id = (int) get_parameter('event_id', 0);
+    $response_parameters = json_decode(
+        io_safe_output(
+            get_parameter('response_parameters', '')
+        ),
+        true
+    );
 
-    try {
-        if (is_metaconsole() === true
-            && $server_id > 0
-        ) {
-            $node = new Node($server_id);
-            $node->connect();
-        }
-
-        $event_response = db_get_row(
-            'tevent_response',
-            'id',
-            $response_id
-        );
-    } catch (\Exception $e) {
-        // Unexistent agent.
-        if (is_metaconsole() === true
-            && $server_id > 0
-        ) {
-            $node->disconnect();
-        }
-
-        return;
-    } finally {
-        if (is_metaconsole() === true
-            && $server_id > 0
-        ) {
-            $node->disconnect();
-        }
-    }
+    $event_response = db_get_row(
+        'tevent_response',
+        'id',
+        $response_id
+    );
 
     if (empty($event_response) === true) {
-        return;
+        return [];
     }
 
-    echo json_encode($event_response);
 
-    return;
-}
-
-if ($perform_event_response === true) {
-    global $config;
-
-    if (! check_acl($config['id_user'], 0, 'EW')) {
-        echo 'unauthorized';
-        return;
-    }
-
-    $target = get_parameter('target', '');
-    $response_id = get_parameter('response_id');
-    $event_id = (int) get_parameter('event_id');
-    $server_id = (int) get_parameter('server_id', 0);
-
-    $event_response = false;
-    if (empty($target) === true) {
+    if (empty($event_id) === false) {
         try {
             if (is_metaconsole() === true
                 && $server_id > 0
@@ -1213,20 +1097,12 @@ if ($perform_event_response === true) {
                 $node->connect();
             }
 
-            $event_response = db_get_row(
-                'tevent_response',
-                'id',
-                $response_id
-            );
-
-            if (empty($event_response) === true) {
-                return;
-            }
-
-            $command = events_get_response_target(
+            $event_response['target'] = events_get_response_target(
                 $event_id,
-                $response_id,
-                $server_id
+                $event_response,
+                $response_parameters,
+                $server_id,
+                ($server_id !== 0) ? $node->server_name() : 'Metaconsole'
             );
         } catch (\Exception $e) {
             // Unexistent agent.
@@ -1244,10 +1120,130 @@ if ($perform_event_response === true) {
                 $node->disconnect();
             }
         }
-    } else {
-        $command = $target;
     }
 
+    echo json_encode($event_response);
+
+    return;
+}
+
+
+if ($get_response_massive === true) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $response_id = get_parameter('response_id');
+
+    $event_response = db_get_row(
+        'tevent_response',
+        'id',
+        $response_id
+    );
+
+    if (empty($event_response) === true) {
+        return [];
+    }
+
+    $events = json_decode(
+        io_safe_output(
+            get_parameter('events', '')
+        ),
+        true
+    );
+
+    $response_parameters = json_decode(
+        io_safe_output(
+            get_parameter('response_parameters', '')
+        ),
+        true
+    );
+
+    $event_response_targets = [];
+    if (is_metaconsole() === true) {
+        foreach ($events as $server_id => $idEvents) {
+            foreach ($idEvents as $idEvent) {
+                $event_response_targets[$idEvent.'|'.$server_id]['target'] = get_events_get_response_target(
+                    $idEvent,
+                    $event_response,
+                    $server_id,
+                    $response_parameters
+                );
+            }
+        }
+    } else {
+        foreach ($events as $idEvent) {
+            $event_response_targets[$idEvent]['target'] = get_events_get_response_target(
+                $idEvent,
+                $event_response,
+                0,
+                $response_parameters
+            );
+        }
+    }
+
+    $result = [
+        'event_response'         => $event_response,
+        'event_response_targets' => $event_response_targets,
+    ];
+
+    echo json_encode($result);
+
+    return;
+}
+
+if ($get_row_response_action === true) {
+    $response_id = get_parameter('response_id');
+    $response = json_decode(
+        io_safe_output(
+            get_parameter('response', '')
+        ),
+        true
+    );
+
+    $end = (bool) get_parameter('end', false);
+    $index = $response['event_id'];
+    if (is_metaconsole() === true) {
+        $index .= '-'.$response['server_id'];
+    }
+
+    echo get_row_response_action(
+        $response,
+        $response_id,
+        $end,
+        $index
+    );
+
+    return;
+}
+
+if ($perform_event_response === true) {
+    global $config;
+
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo __('unauthorized');
+        return;
+    }
+
+    $target = get_parameter('target', '');
+    $response_id = get_parameter('response_id');
+    $event_id = (int) get_parameter('event_id');
+    $server_id = (int) get_parameter('server_id', 0);
+    $response = json_decode(
+        io_safe_output(
+            get_parameter('response', '')
+        ),
+        true
+    );
+
+    $event_response = $response;
+    if (empty($event_response) === true) {
+        echo __('No data');
+        return;
+    }
+
+    $command = $event_response['target'];
     $command_timeout = ($event_response !== false) ? $event_response['command_timeout'] : 90;
     if (enterprise_installed() === true) {
         if ($event_response !== false
@@ -1327,7 +1323,7 @@ if ($perform_event_response === true) {
             break;
         }
 
-            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
+        system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
     }
 
     if ($ret_val != 0) {
@@ -1350,78 +1346,19 @@ if ($dialogue_event_response) {
     $event_id = get_parameter('event_id');
     $response_id = get_parameter('response_id');
     $command = get_parameter('target');
-    $massive = get_parameter('massive');
-    $end = get_parameter('end');
-    $show_execute_again_btn = get_parameter('show_execute_again_btn');
-    $out_iterator = get_parameter('out_iterator');
-    $event_response = db_get_row('tevent_response', 'id', $response_id);
-    $server_id = get_parameter('server_id');
+    $event_response = json_decode(
+        io_safe_output(
+            get_parameter('response', '')
+        ),
+        true
+    );
 
-    $event = db_get_row('tevento', 'id_evento', $event_id);
-
-    $prompt = '<br>> ';
     switch ($event_response['type']) {
         case 'command':
-            $display_command = (bool) $event_response['display_command'];
-            $command_str = ($display_command === true) ? $command : '';
-
-            if ($massive) {
-                echo "<div class='left'>";
-                echo $prompt.sprintf(
-                    '(Event #'.$event_id.') '.__(
-                        'Executing command: %s',
-                        $command_str
-                    )
-                );
-                echo '</div><br>';
-
-                echo "<div id='response_loading_command_".$out_iterator."' style='display: none'>";
-                echo html_print_image(
-                    'images/spinner.gif',
-                    true
-                );
-                echo '</div><br>';
-                echo "<br><div id='response_out_".$out_iterator."'><br><br></div><br>";
-
-                if ($end) {
-                    echo "<br><div id='re_exec_command_".$out_iterator."' style='display: none'><br>";
-                    html_print_button(
-                        __('Execute again'),
-                        'btn_str',
-                        false,
-                        'execute_event_response(false);',
-                        "class='sub next'"
-                    );
-                    echo "<span id='execute_again_loading' style='display: none'>";
-                    echo html_print_image(
-                        'images/spinner.gif',
-                        true
-                    );
-                    echo '</span>';
-                    echo '</div>';
-                }
-            } else {
-                echo "<div class='left'>";
-
-                echo $prompt.'Executing command: '.$command_str;
-                echo '</div><br>';
-
-                echo "<div id='response_loading_command' style='display:none'>";
-                echo html_print_image('images/spinner.gif', true);
-                echo '</div>';
-                echo "<br><br><br><div id='response_out' class='left'></div>";
-
-                echo "<br><div id='re_exec_command' style='display:none'><br><br>";
-                html_print_button(
-                    __('Execute again'),
-                    'btn_str',
-                    false,
-                    "perform_response({'target':'".$command."','event_id':".$event_id.",'server_id':".$server_id.'}, '.$response_id.');',
-                    "class='sub next'"
-                );
-
-                echo '</div>';
-            }
+            echo get_row_response_action(
+                $event_response,
+                $response_id
+            );
         break;
 
         case 'url':
@@ -2540,5 +2477,77 @@ if ($get_events_fired) {
     }
 
     echo io_json_mb_encode($return);
+    return;
+}
+
+if ($draw_row_response_info === true) {
+    $event_response = json_decode(
+        io_safe_output(
+            get_parameter('response', '')
+        ),
+        true
+    );
+
+    $massive = (bool) get_parameter('massive', false);
+
+    $output .= '';
+    if ($massive === true) {
+        $output .= '<div>';
+        $output .= '<h5>';
+        $output .= $event_response['description'];
+        $output .= '</h5>';
+        $output .= '</div>';
+    } else {
+        $output .= '<tr class="params_rows">';
+        $output .= '<td>';
+        $output .= __('Description');
+        $output .= '</td>';
+        $output .= '<td class="height_30px" colspan="2">';
+        $output .= $event_response['description'];
+        $output .= '</td>';
+        $output .= '</tr>';
+    }
+
+    if (empty($event_response['params']) === false) {
+        $response_params = explode(',', $event_response['params']);
+        if (is_array($response_params) === true) {
+            if ($massive === true) {
+                $output .= '<div>';
+            } else {
+                $output .= '<tr class="params_rows">';
+                $output .= '<td class="left pdd_l_20px height_30px" colspan="3">';
+                $output .= __('Parameters');
+                $output .= '</td>';
+                $output .= '</tr>';
+            }
+
+            foreach ($response_params as $param) {
+                $param = trim(io_safe_output($param));
+                if ($massive === true) {
+                    $output .= '<div>';
+                    $output .= '<label>';
+                    $output .= $param;
+                    $output .= '</label>';
+                    $output .= '<input type="text" name="values_params_'.$param.'" />';
+                    $output .= '</div>';
+                } else {
+                    $output .= '<tr class="params_rows">';
+                    $output .= '<td style="text-align:left; padding-left:40px; font-weight: normal; font-style: italic;">';
+                    $output .= $param;
+                    $output .= '</td>';
+                    $output .= '<td style="text-align:left" colspan="2">';
+                    $output .= '<input type="text" name="values_params_'.$param.'" />';
+                    $output .= '</td>';
+                    $output .= '</tr>';
+                }
+            }
+
+            if ($massive === true) {
+                $output .= '</div>';
+            }
+        }
+    }
+
+    echo $output;
     return;
 }

@@ -328,7 +328,7 @@ class ServiceMapWidget extends Widget
         ];
 
         $inputs[] = [
-            'label'     => __('Enable sunburst'),
+            'label'     => __('Show sunburst by default'),
             'arguments' => [
                 'type'   => 'switch',
                 'name'   => 'sunburst',

@@ -116,7 +116,7 @@ $public_login = false;
 
 
 if (false === ((bool) get_parameter('doLogin', false) === true
-    && $page === 'include/rest-api/index.php')
+    && $page === realpath('include/rest-api/index.php'))
 ) {
     // Check user.
     if (class_exists($auth_class) === false || $public_hash === false) {

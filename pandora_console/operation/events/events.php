@@ -173,6 +173,10 @@ $search_secondary_groups = get_parameter(
     'filter[search_secondary_groups]',
     0
 );
+$search_recursive_groups = get_parameter(
+    'filter[search_recursive_groups]',
+    0
+);
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group'] ?? '')
@@ -1090,6 +1094,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
 
         $filter_only_alert = $filter['filter_only_alert'];
         $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
+        $search_recursive_groups = ($filter['search_recursive_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
         $time_from = $filter['time_from'];
@@ -1710,6 +1715,28 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// Search recursive groups.
+$data = html_print_checkbox_switch(
+    'search_recursive_groups',
+    $search_recursive_groups,
+    $search_recursive_groups,
+    true,
+    false,
+    'search_in_secondary_groups(this);',
+    true
+);
+
+$in = '<div class="filter_input filter_input_switch"><label>';
+$in .= __('Group recursion');
+$in .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in .= '</label>';
+$in .= $data;
+$in .= '</div>';
+$inputs[] = $in;
+
 // Search secondary groups.
 $data = html_print_checkbox_switch(
     'search_secondary_groups',
@@ -1721,8 +1748,15 @@ $data = html_print_checkbox_switch(
     true
 );
 
-$in = '<div class="filter_input filter_input_switch"><label>'.__('Search in secondary groups').'</label>';
-$in .= $data.'</div>';
+$in = '<div class="filter_input filter_input_switch"><label>';
+$in .= __('Search in secondary groups');
+$in .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in .= '</label>';
+$in .= $data;
+$in .= '</div>';
 $inputs[] = $in;
 
 // Trick view in table.

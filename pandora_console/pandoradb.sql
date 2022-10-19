@@ -1245,6 +1245,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `tag_without` TEXT,
   `filter_only_alert` INT NOT NULL DEFAULT -1,
   `search_secondary_groups` INT NOT NULL DEFAULT 0,
+  `search_recursive_groups` INT NOT NULL DEFAULT 0,
   `date_from` date DEFAULT NULL,
   `date_to` date DEFAULT NULL,
   `source` TINYTEXT,

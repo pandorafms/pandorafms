@@ -360,10 +360,11 @@ if ($save_event_filter) {
     );
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
     $values['search_secondary_groups'] = get_parameter('search_secondary_groups');
+    $values['search_recursive_groups'] = get_parameter('search_recursive_groups');
     $values['id_group_filter'] = get_parameter('id_group_filter');
-    $values['date_from'] = get_parameter('date_from');
+    $values['date_from'] = get_parameter('date_from', null);
     $values['time_from'] = get_parameter('time_from');
-    $values['date_to'] = get_parameter('date_to');
+    $values['date_to'] = get_parameter('date_to', null);
     $values['time_to'] = get_parameter('time_to');
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
@@ -417,6 +418,7 @@ if ($update_event_filter) {
     );
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
     $values['search_secondary_groups'] = get_parameter('search_secondary_groups');
+    $values['search_recursive_groups'] = get_parameter('search_recursive_groups');
     $values['id_group_filter'] = get_parameter('id_group_filter');
     $values['date_from'] = get_parameter('date_from');
     $values['time_from'] = get_parameter('time_from');
@@ -471,6 +473,7 @@ if ($get_filter_values) {
             'module_search'           => '',
             'filter_only_alert'       => '-1',
             'search_secondary_groups' => 0,
+            'search_recursive_groups' => 0,
             'user_comment'            => '',
             'id_extra'                => '',
             'id_user_ack'             => '',
@@ -657,6 +660,8 @@ function load_form_filter() {
                     $("#filter_only_alert").val(val);
                 if (i == 'search_secondary_groups')
                     $("#checkbox-search_secondary_groups").val(val);
+                if (i == 'search_recursive_groups')
+                    $("#checkbox-search_recursive_groups").val(val);
                 if (i == 'id_group_filter')
                     $("#id_group_filter").val(val);
                 if (i == 'source')
@@ -900,6 +905,7 @@ function save_new_filter() {
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
             "filter_only_alert" : $("#filter_only_alert").val(),
             "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
+            "search_recursive_groups" : $("#checkbox-search_recursive_groups").val(),
             "id_group_filter": $("#id_group_filter_dialog").val(),
             "date_from": $("#text-date_from").val(),
             "time_from": $("#text-time_from").val(),
@@ -976,6 +982,7 @@ function save_update_filter() {
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),
         "filter_only_alert" : $("#filter_only_alert").val(),
         "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
+        "search_recursive_groups" : $("#checkbox-search_recursive_groups").val(),
         "id_group_filter": $("#id_group_filter_dialog").val(),
         "date_from": $("#text-date_from").val(),
         "time_from": $("#text-time_from").val(),
@@ -2416,6 +2423,7 @@ if ($get_events_fired) {
             'tag_without'             => [],
             'filter_only_alert'       => -1,
             'search_secondary_groups' => 0,
+            'search_recursive_groups' => 0,
             'source'                  => '',
             'id_extra'                => '',
             'user_comment'            => '',

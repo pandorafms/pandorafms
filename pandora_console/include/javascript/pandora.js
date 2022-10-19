@@ -196,6 +196,13 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
     serialized = "";
   }
 
+  var id_group = null;
+  if (typeof $("#filter_group") !== "undefined") {
+    try {
+      id_group = $("#filter_group").val();
+    } catch (error) {}
+  }
+
   $("#module")
     .prop("disabled", true)
     .empty()
@@ -238,7 +245,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       selection_mode: selection_mode,
       serialized: serialized,
       id_server: id_server,
-      status_module: module_status
+      status_module: module_status,
+      id_group: id_group
     },
     function(data) {
       $("#module").empty();
@@ -575,7 +583,8 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
       status_module: status_module,
       "module_name[]": idModules,
       selection_mode: selection_mode,
-      tags: tags_selected
+      tags: tags_selected,
+      id_group: id_group
     },
     function(data) {
       $("#agents").append(

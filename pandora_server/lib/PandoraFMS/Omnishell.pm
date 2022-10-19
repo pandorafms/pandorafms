@@ -459,65 +459,13 @@ sub execute_command_timeout {
     || $timeout <= 0
   ) {
     `$cmd`;
-    return $?>>8;
-  }
-
-  my $remaining_timeout = $timeout;
-
-  my $RET;
-  my $output;
-
-  my $pid = open ($RET, "-|");
-  if (!defined($pid)) {
-    # Failed to fork.
-    $self->set_last_error('[command] Failed to fork.');
-    return undef;
-  }
-  if ($pid == 0) {
-    # Child.
-    my $ret;
-    eval {
-      local $SIG{ALRM} = sub { die "timeout\n" };
-      alarm $timeout;
-      `$cmd`;
-      alarm 0;
-    };
-
-    my $result = ($?>>8);
-    return $result;
-
-    # Exit child.
-    # Child finishes.
-    exit;
-
+  } elsif ($^O eq 'MSWin32') {
+    `pandora_agent_exec.exe $timeout $cmd`;
   } else {
-    # Parent waiting.
-    while( --$remaining_timeout > 0 ){
-      if (wait == -1) {
-        last;
-      }
-      # Wait child up to timeout seconds.
-      sleep 1;
-    }
+    `pandora_agent_exec $timeout $cmd`;
   }
-
-  if ($remaining_timeout > 0) {
-    # Retrieve output from child.
-    $output = do { 
-		no warnings;
-		local $/;
-		<$RET>
-	};
-    $output = $output>>8 if looks_like_number($output);
-  }
-  else {
-    # Timeout expired.
-    return 124;
-  }
-
-  close($RET);
-
-  return $output;
+  	
+  return $?>>8;
 }
 
 ################################################################################

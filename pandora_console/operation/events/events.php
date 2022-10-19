@@ -1445,7 +1445,7 @@ if ($pure) {
     ).'</a>';
 
     // If the user has administrator permission display manage tab.
-    if ($event_w || $event_m) {
+    if ($event_w === true || $event_m === true) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
@@ -1771,7 +1771,7 @@ $buttons[] = [
     'onclick' => '',
 ];
 
-if ($event_w || $event_m) {
+if ($event_w === true || $event_m === true) {
     $buttons[] = [
         'id'      => 'save-filter',
         'class'   => 'float-left margin-right-2 sub wand',
@@ -2393,6 +2393,16 @@ if (is_user_admin($config['id_user'])) {
             'type'     => 'command',
         ]
     );
+}
+
+$array_events_actions = [];
+if ($event_w === true && $readonly === false) {
+    $array_events_actions['in_progress_selected'] = __('In progress selected');
+    $array_events_actions['validate_selected'] = __('Validate selected');
+}
+
+if ($event_m === true && $readonly === false) {
+    $array_events_actions['delete_selected'] = __('Delete selected');
 }
 
 foreach ($event_responses as $val) {

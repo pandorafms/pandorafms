@@ -707,7 +707,7 @@ function execute_event_response(event_list_btn) {
               }
 
               in_process_event(
-                "events",
+                "table_events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -727,7 +727,7 @@ function execute_event_response(event_list_btn) {
               }
 
               validate_event(
-                "events",
+                "table_events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -747,7 +747,7 @@ function execute_event_response(event_list_btn) {
               }
 
               execute_delete_event_reponse(
-                "events",
+                "table_events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,

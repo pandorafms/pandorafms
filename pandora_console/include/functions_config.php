@@ -467,7 +467,7 @@ function config_update_config()
                 break;
 
                 case 'pass':
-                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === 1) {
+                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === true) {
                         if (config_update_value('enable_pass_policy', get_parameter('enable_pass_policy'), true) === false) {
                             $error_update[] = __('Enable password policy');
                         }
@@ -784,14 +784,7 @@ function config_update_config()
                 case 'perf':
                     // PERFORMANCE SETUP.
                     if (config_update_value('event_purge', get_parameter('event_purge'), true) === false) {
-                        $check_metaconsole_events_history = get_parameter('metaconsole_events_history', -1);
-                        $error_update[] = $check_metaconsole_events_history;
-                    }
-
-                    if ($check_metaconsole_events_history != -1) {
-                        if (config_update_value('metaconsole_events_history', get_parameter('metaconsole_events_history'), true) === false) {
-                            $error_update[] = __('Max. days before delete events');
-                        }
+                        $error_update[] = __('Event purge');
                     }
 
                     if (config_update_value('trap_purge', get_parameter('trap_purge'), true) === false) {
@@ -2105,10 +2098,6 @@ function config_process_config()
 
     if (!isset($config['event_purge'])) {
         config_update_value('event_purge', 15);
-    }
-
-    if (!isset($config['metaconsole_events_history'])) {
-        config_update_value('metaconsole_events_history', 0);
     }
 
     if (!isset($config['realtimestats'])) {

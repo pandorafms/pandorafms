@@ -2102,39 +2102,91 @@ class NetworkMap
                 $i++;
             }
 
-            if (!$this->relations) {
-                // Search for relations.
-                foreach ($this->nodes as $k => $item) {
-                    $target = $this->calculateRelations($k);
+            // Search for relations.
+            foreach ($this->nodes as $k => $item) {
+                $target = $this->calculateRelations($k);
 
-                    // Adopt all orphan nodes but pandora one.
-                    if (empty($target)) {
-                        if (isset($this->noPandoraNode) === false
-                            || $this->noPandoraNode == false
-                        ) {
-                            if ($item['id_node'] != 0) {
-                                $rel = [];
-                                $rel['id_parent'] = 0;
-                                $rel['id_child'] = $item['id_node'];
-                                $rel['parent_type'] = NODE_PANDORA;
-                                $rel['child_type'] = $item['node_type'];
-                                $rel['id_child_source_data'] = $item['id_source_data'];
+                // Adopt all orphan nodes but pandora one.
+                if (empty($target) === true) {
+                    if (isset($this->noPandoraNode) === false
+                        || $this->noPandoraNode == false
+                    ) {
+                        if ($item['id_node'] != 0) {
+                            $rel = [];
+                            $rel['id_parent'] = 0;
+                            $rel['id_child'] = $item['id_node'];
+                            $rel['parent_type'] = NODE_PANDORA;
+                            $rel['child_type'] = $item['node_type'];
+                            $rel['id_child_source_data'] = $item['id_source_data'];
 
-                                $orphans[] = $rel;
-                            }
-                        }
-                    } else {
-                        // Flattern edges.
-                        foreach ($target as $rel) {
-                            $edges[] = $rel;
+                            $orphans[] = $rel;
                         }
                     }
+                } else {
+                    // Flattern edges.
+                    foreach ($target as $rel) {
+                        $edges[] = $rel;
+                    }
                 }
-            } else {
-                $edges = $this->relations;
             }
 
             if (is_array($edges)) {
+                $array_aux = $edges;
+                $target_aux = $edges;
+                foreach ($edges as $key => $rel) {
+                    foreach ($array_aux as $key2 => $rel2) {
+                        if ($key2 <= $key) {
+                            continue;
+                        }
+
+                        if ($rel['child_type'] == 1 && $rel['parent_type'] == 1
+                            && $rel2['child_type'] == 1 && $rel2['parent_type'] == 1
+                        ) {
+                            if ($rel['id_parent'] == $rel2['id_parent'] && $rel['id_child'] == $rel2['id_child']) {
+                                if ($rel['id_parent_source_data'] == $rel2['id_parent_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                } else if ($rel['id_child_source_data'] == $rel2['id_child_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                }
+                            } else if ($rel['id_parent'] == $rel2['id_child'] && $rel['id_child'] == $rel2['id_parent']) {
+                                if ($rel['id_parent_source_data'] == $rel2['id_child_source_data']
+                                    && $rel['id_child_source_data'] == $rel2['id_parent_source_data']
+                                ) {
+                                    unset($target_aux[$key2]);
+                                    continue;
+                                }
+
+                                if ($rel['id_parent_source_data'] == $rel2['id_child_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                } else if ($rel['id_child_source_data'] == $rel2['id_parent_source_data']) {
+                                    if (modules_get_agentmodule_type($rel['id_parent_source_data']) === 6) {
+                                        unset($target_aux[$key]);
+                                    } else if (modules_get_agentmodule_type($rel2['id_child_source_data']) === 6) {
+                                        unset($target_aux[$key2]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $edges = [];
+                foreach ($target_aux as $key => $value) {
+                    $edges[] = $value;
+                }
+
                 foreach ($edges as $rel) {
                     $graph .= $this->createDotEdge(
                         [
@@ -2629,6 +2681,79 @@ class NetworkMap
 
 
     /**
+     * Regenerates a nodes - relationships array using graphviz dot
+     * schema and stores nodes&relations into $this->graph.
+     *
+     * @return object
+     */
+    public function recalculateCoords()
+    {
+        global $config;
+
+        include_once 'include/functions_os.php';
+
+        $map_filter = $this->mapOptions['map_filter'];
+
+        /*
+         * Let graphviz place the nodes.
+         */
+
+        if ($map_filter['empty_map']) {
+            $this->generateEmptyDotGraph();
+        } else if (!isset($this->dotGraph)) {
+            $this->generateDotGraph();
+        }
+
+        $graph = $this->calculateCoords();
+
+        if (is_array($graph) === true) {
+            $nodes = $graph['nodes'];
+        } else {
+            return [];
+        }
+
+        $nodes_aux = [];
+
+        // Prepare graph nodes.
+        foreach ($nodes as $id => $coords) {
+            $node_tmp['id'] = $id;
+
+            $source = $this->getNodeData($id);
+
+            $node_tmp['type'] = $source['node_type'];
+            $node_tmp['x'] = $coords['x'];
+            $node_tmp['y'] = $coords['y'];
+
+            switch ($node_tmp['type']) {
+                case NODE_AGENT:
+                    $node_tmp['source_data'] = $source['id_agente'];
+                break;
+
+                case NODE_MODULE:
+                    $node_tmp['source_data'] = $source['id_agente_modulo'];
+                break;
+
+                case NODE_PANDORA:
+                    $node_tmp['source_data'] = 0;
+                    $node_center['x'] = ($coords['x'] - MAP_X_CORRECTION);
+                    $node_center['y'] = ($coords['y'] - MAP_Y_CORRECTION);
+                break;
+
+                case NODE_GENERIC:
+                default:
+                    $node_tmp['source_data'] = $source['id_source'];
+                break;
+            }
+
+            $nodes_aux[$index] = $node_tmp;
+            $index++;
+        }
+
+        return $nodes_aux;
+    }
+
+
+    /**
      * Transform node information into JS data.
      *
      * @return string HTML code with JS data.
@@ -2799,7 +2924,6 @@ class NetworkMap
         $output .= "var add_node_menu = '".__('Add node')."';\n";
         $output .= "var set_center_menu = '".__('Set center')."';\n";
         $output .= "var refresh_menu = '".__('Refresh')."';\n";
-        $output .= "var refresh_holding_area_menu = '".__('Refresh Holding area')."';\n";
         $output .= "var ok_button = '".__('Proceed')."';\n";
         $output .= "var message_to_confirm = '".__('Resetting the map will delete all customizations you have done, including manual relationships between elements, new items, etc.')."';\n";
         $output .= "var warning_message = '".__('WARNING')."';\n";
@@ -3066,8 +3190,8 @@ class NetworkMap
         $table->data['template_row']['node_target'] = '';
         $table->data['template_row']['edit'] = '';
 
-        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span><span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a></span>';
-
+        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>';
+        // <span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a></span>';
         $table->data['template_row']['edit'] .= '<a class="delete_icon" href="#">'.html_print_image('images/delete.png', true, ['class' => 'invert_filter']).'</a>';
 
         $table->colspan['no_relations']['0'] = 5;
@@ -3278,7 +3402,7 @@ class NetworkMap
         $table->data[1][1] = html_print_select(
             $list_networkmaps,
             'networkmap_to_link',
-            '',
+            0,
             '',
             '',
             0,
@@ -3318,6 +3442,10 @@ class NetworkMap
      */
     public function loadController(?bool $return=true)
     {
+        if (isset($this->mapOptions['refresh_time']) === false) {
+            $this->mapOptions['refresh_time'] = 0;
+        }
+
         $output = '';
 
         if ($this->useTooltipster
@@ -3359,13 +3487,34 @@ class NetworkMap
             node_radius: node_radius,
             holding_area_dimensions: networkmap_holding_area_dimensions,
             url_background_grid: url_background_grid,
+            refresh_time: '.$this->mapOptions['refresh_time'].',
             font_size: '.$this->mapOptions['font_size'].',
             base_url_homedir: "'.ui_get_full_url(false).'"
         });
         init_drag_and_drop();
         init_minimap();
         function_open_minimap();
-        
+
+        if ('.$this->mapOptions['refresh_time'].' > 0) {
+            var startCountDown = function (duration, cb) {
+                $("div.vc-countdown").countdown("destroy");
+                if (!duration) return;
+                var t = new Date();
+                t.setTime(t.getTime() + duration * 1000);
+                $("div.vc-countdown").countdown({
+                    until: t,
+                    format: "MS",
+                    layout: "(%M%nn%M:%S%nn%S '.__('Until refresh').') ",
+                    alwaysExpire: true,
+                    onExpiry: function () {
+                        refresh();
+                    }
+                });
+            }
+
+            startCountDown('.($this->mapOptions['refresh_time']).', false);
+        }
+
         $(document.body).on("mouseleave",
             ".context-menu-list",
             function(e) {
@@ -3503,6 +3652,10 @@ class NetworkMap
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
             }
+
+            $output .= '<div id="spinner_networkmap" style="position: absolute; width: 100%;height: 100%; z-index:1; justify-content: center; align-items: center; display:none; background-color:rgba(0, 0, 0, 0.2);">';
+            $output .= html_print_image('/images/spinner.gif', true, ['style' => 'width: 22px; height: 22px']);
+            $output .= '</div>';
 
             $output .= '<div style="display: '.$minimap_display.';">';
             $output .= '<canvas id="minimap_'.$networkmap['id'].'"';

@@ -85,29 +85,6 @@ function show_event_dialog(event, dialog_page) {
       $("#refrcounter").countdown("pause");
       $("div.vc-countdown").countdown("pause");
 
-      /*
-      switch (result) {
-        case "comment_ok":
-          $("#notification_comment_success").show();
-          break;
-        case "comment_error":
-          $("#notification_comment_error").show();
-          break;
-        case "status_ok":
-          $("#notification_status_success").show();
-          break;
-        case "status_error":
-          $("#notification_status_error").show();
-          break;
-        case "owner_ok":
-          $("#notification_owner_success").show();
-          break;
-        case "owner_error":
-          $("#notification_owner_error").show();
-          break;
-      }
-      */
-
       forced_title_callback();
     },
     "html"
@@ -119,37 +96,152 @@ function show_event_dialog(event, dialog_page) {
 function execute_response(event_id, server_id) {
   var response_id = $("#select_custom_response option:selected").val();
 
-  var response = get_response(response_id, server_id);
-
-  // If cannot get response abort it
-  if (response == null) {
-    return;
+  var response_parameters_list = $('input[name^="values_params_"]');
+  var response_parameters = [];
+  if (response_parameters_list.length > 0) {
+    response_parameters_list.each(function() {
+      var acum = {
+        name: $(this).attr("name"),
+        value: $(this).val()
+      };
+      response_parameters.push(acum);
+    });
   }
 
-  response["target"] = get_response_target(event_id, response_id, server_id);
-  response["event_id"] = event_id;
-  response["server_id"] = server_id;
+  var params = [];
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "get_response", value: 1 });
+  params.push({ name: "response_id", value: response_id });
+  params.push({ name: "server_id", value: server_id });
+  params.push({ name: "event_id", value: event_id });
+  params.push({
+    name: "response_parameters",
+    value: JSON.stringify(response_parameters)
+  });
 
-  if (response["type"] == "url" && response["new_window"] == 1) {
-    window.open(response["target"], "_blank");
-  } else {
-    show_response_dialog(response_id, response);
-  }
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: $("#hidden-ajax_file").val(),
+    dataType: "json",
+    success: function(response) {
+      // If cannot get response abort it
+      if (response == null) {
+        return [];
+      }
+
+      response["event_id"] = event_id;
+      response["server_id"] = server_id;
+      if (response["type"] == "url" && response["new_window"] == 1) {
+        window.open(response["target"], "_blank");
+      } else {
+        show_response_dialog(response_id, response);
+      }
+    }
+  });
+}
+
+// Check the response type and open it in a modal dialog or new window
+function execute_response_massive(events, response_id, response_parameters) {
+  var params = [];
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "get_response_massive", value: 1 });
+  params.push({ name: "response_id", value: response_id });
+  params.push({ name: "events", value: JSON.stringify(events) });
+  params.push({ name: "response_parameters", value: response_parameters });
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: $("#hidden-ajax_file").val(),
+    dataType: "json",
+    success: function(data) {
+      // If cannot get response abort it
+      if (data == null) {
+        return [];
+      }
+
+      $(".container-massive-events-response").empty();
+
+      // Convert to array.
+      var array_data = Object.entries(data.event_response_targets);
+      var total_count = array_data.length;
+
+      // Each input checkeds.
+      array_data.forEach(function(element, index) {
+        var id = element[0];
+        var target = element[1].target;
+        var meta = $("#hidden-meta").val();
+        var event_id = id;
+        var server_id = 0;
+        if (meta != 0) {
+          var split_id = id.split("|");
+          event_id = split_id[0];
+          server_id = split_id[1];
+        }
+
+        var end = 0;
+        if (total_count - 1 === index) {
+          end = 1;
+        }
+
+        var response = data.event_response;
+        response["event_id"] = event_id;
+        response["server_id"] = server_id;
+        response["target"] = target;
+        if (response["type"] == "url" && response["new_window"] == 1) {
+          window.open(response["target"], "_blank");
+        } else {
+          var params = [];
+          params.push({ name: "page", value: "include/ajax/events" });
+          params.push({ name: "get_row_response_action", value: 1 });
+          params.push({ name: "response_id", value: response_id });
+          params.push({ name: "server_id", value: response.server_id });
+          params.push({ name: "end", value: end });
+          params.push({ name: "response", value: JSON.stringify(response) });
+
+          jQuery.ajax({
+            data: params,
+            type: "POST",
+            url: $("#hidden-ajax_file").val(),
+            dataType: "html",
+            success: function(data) {
+              $(".container-massive-events-response").append(data);
+              response["event_id"] = event_id;
+              response["server_id"] = server_id;
+              response["target"] = target;
+
+              var indexstr = event_id;
+              if (meta != 0) {
+                indexstr += "-" + server_id;
+              }
+
+              perform_response(
+                btoa(JSON.stringify(response)),
+                response_id,
+                indexstr
+              );
+            }
+          });
+        }
+      });
+    }
+  });
 }
 
 //Show the modal window of an event response
 function show_response_dialog(response_id, response) {
   var params = [];
-  params.push("page=include/ajax/events");
-  params.push("dialogue_event_response=1");
-  params.push("massive=0");
-  params.push("event_id=" + response["event_id"]);
-  params.push("target=" + encodeURIComponent(response["target"]));
-  params.push("response_id=" + response_id);
-  params.push("server_id=" + response["server_id"]);
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "dialogue_event_response", value: 1 });
+  params.push({ name: "event_id", value: response.event_id });
+  params.push({ name: "target", value: response.target });
+  params.push({ name: "response_id", value: response_id });
+  params.push({ name: "server_id", value: response.server_id });
+  params.push({ name: "response", value: JSON.stringify(response) });
 
   jQuery.ajax({
-    data: params.join("&"),
+    data: params,
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     dataType: "html",
@@ -164,271 +256,49 @@ function show_response_dialog(response_id, response) {
           draggable: true,
           modal: false,
           open: function() {
-            perform_response(response, response_id);
+            perform_response(btoa(JSON.stringify(response)), response_id, "");
           },
           width: response["modal_width"],
-          height: response["modal_height"]
+          height: response["modal_height"],
+          buttons: []
         })
         .show();
     }
   });
 }
 
-//Show the modal window of event responses when multiple events are selected
-function show_massive_response_dialog(
-  response_id,
-  response,
-  out_iterator,
-  end
-) {
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("dialogue_event_response=1");
-  params.push("massive=1");
-  params.push("end=" + end);
-  params.push("out_iterator=" + out_iterator);
-  params.push("event_id=" + response["event_id"]);
-  params.push("target=" + response["target"]);
-  params.push("response_id=" + response_id);
-  params.push("server_id=" + response["server_id"]);
+// Perform a response and put the output into a div
+function perform_response(response, response_id, index) {
+  $("#re_exec_command" + index).hide();
+  $("#response_loading_command" + index).show();
+  $("#response_out" + index).html("");
 
-  jQuery.ajax({
-    data: params.join("&"),
-    response_tg: response,
-    response_id: response_id,
-    out_iterator: out_iterator,
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    dataType: "html",
-    success: function(data) {
-      if (out_iterator === 0) $("#event_response_window").empty();
-
-      $("#event_response_window")
-        .hide()
-        .append(data)
-        .dialog({
-          title: $("#select_custom_response option:selected").html(),
-          resizable: true,
-          draggable: true,
-          modal: false,
-          open: function() {
-            $("#response_loading_dialog").hide();
-            $("#button-submit_event_response").show();
-          },
-          close: function() {
-            $("#checkbox-all_validate_box").prop("checked", false);
-            $(".chk_val").prop("checked", false);
-          },
-          width: response["modal_width"],
-          height: response["modal_height"]
-        })
-        .show();
-
-      perform_response_massive(
-        this.response_tg,
-        this.response_id,
-        this.out_iterator
-      );
-    }
-  });
-}
-
-// Get an event response from db
-function get_response(response_id, server_id) {
-  var response = "";
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_response=1");
-  params.push("response_id=" + response_id);
-  params.push("server_id=" + server_id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "json",
-    success: function(data) {
-      response = data;
-    }
-  });
-
-  return response;
-}
-
-// Get an event response params from db
-function get_response_params(response_id) {
-  var response_params;
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_response_params=1");
-  params.push("response_id=" + response_id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "json",
-    success: function(data) {
-      response_params = data;
-    }
-  });
-
-  return response_params;
-}
-
-// Get an event response description from db
-function get_response_description(response_id) {
-  var response_description = "";
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_response_description=1");
-  params.push("response_id=" + response_id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "html",
-    success: function(data) {
-      response_description = data;
-    }
-  });
-
-  return response_description;
-}
-
-function add_row_param(id_table, param) {
-  $("#" + id_table).append(
-    '<tr class="params_rows"><td style="text-align:left; padding-left:40px; font-weight: normal; font-style: italic;">' +
-      param +
-      '</td><td style="text-align:left" colspan="2"><input type="text" name="' +
-      param +
-      '" id="' +
-      param +
-      '"></td></tr>'
-  );
-}
-
-// Get an event response from db
-function get_response_target(
-  event_id,
-  response_id,
-  server_id,
-  response_command
-) {
-  var target = "";
-
-  // Replace the main macros
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_response_target=1");
-  params.push("event_id=" + event_id);
-  params.push("response_id=" + response_id);
-  params.push("server_id=" + server_id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: false,
-    dataType: "html",
-    success: function(data) {
-      target = data;
-    }
-  });
-
-  // Replace the custom params macros.
-  var response_params = get_response_params(response_id);
-  if (response_params.length > 1 || response_params[0] != "") {
-    for (var i = 0; i < response_params.length; i++) {
-      if (!response_command) {
-        var response_param = "_" + response_params[i] + "_";
-
-        if (
-          response_params[i].startsWith("_") &&
-          response_params[i].endsWith("_")
-        ) {
-          response_param = response_params[i];
-        }
-
-        target = target.replace(
-          response_param,
-          $("#" + response_params[i]).val()
-        );
-      } else {
-        target = target.replace(
-          "_" + response_params[i] + "_",
-          response_command[response_params[i] + "-" + i]
-        );
-      }
-    }
+  try {
+    response = JSON.parse(atob(response));
+  } catch (e) {
+    console.error(e);
+    return;
   }
 
-  return target;
-}
-
-// Perform a response and put the output into a div
-function perform_response(response, response_id) {
-  $("#re_exec_command").hide();
-  $("#response_loading_command").show();
-  $("#response_out").html("");
-
   var params = [];
-  params.push("page=include/ajax/events");
-  params.push("perform_event_response=1");
-  params.push("target=" + encodeURIComponent(response["target"]));
-  params.push("response_id=" + response_id);
-  params.push("event_id=" + response["event_id"]);
-  params.push("server_id=" + response["server_id"]);
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "perform_event_response", value: 1 });
+  params.push({ name: "target", value: response["target"] });
+  params.push({ name: "response_id", value: response_id });
+  params.push({ name: "event_id", value: response["event_id"] });
+  params.push({ name: "server_id", value: response["server_id"] });
+  params.push({ name: "response", value: JSON.stringify(response) });
 
   jQuery.ajax({
-    data: params.join("&"),
+    data: params,
     type: "POST",
     url: $("#hidden-ajax_file").val(),
-    async: true,
     dataType: "html",
     success: function(data) {
       var out = data.replace(/[\n|\r]/g, "<br>");
-      $("#response_out").html(out);
-      $("#response_loading_command").hide();
-      $("#re_exec_command").show();
-    }
-  });
-
-  return false;
-}
-
-// Perform a response and put the output into a div
-function perform_response_massive(response, response_id, out_iterator) {
-  $("#re_exec_command").hide();
-  $("#response_loading_command_" + out_iterator).show();
-  $("#response_out_" + out_iterator).html("");
-
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("perform_event_response=1");
-  params.push("target=" + response["target"]);
-  params.push("response_id=" + response_id);
-  params.push("event_id=" + response["event_id"]);
-  params.push("server_id=" + response["server_id"]);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    async: true,
-    dataType: "html",
-    success: function(data) {
-      var out = data.replace(/[\n|\r]/g, "<br>");
-      $("#response_out_" + out_iterator).html(out);
-      $("#response_loading_command_" + out_iterator).hide();
-      $("#re_exec_command_" + out_iterator).show();
+      $("#response_out" + index).html(out);
+      $("#response_loading_command" + index).hide();
+      $("#re_exec_command" + index).show();
     }
   });
 
@@ -466,9 +336,12 @@ function event_change_status(event_ids, server_id) {
       }
 
       if (data.status == "status_ok") {
-        if (typeof dt_events !== "undefined") {
-          dt_events.draw(false);
-        }
+        // if (typeof dt_events !== "undefined") {
+        //   dt_events.draw(false);
+        // }
+        $("#table_events")
+          .DataTable()
+          .draw(false);
         $("#notification_status_success").show();
         if (new_status == 1) {
           $("#extended_event_general_page table td.general_acknowleded").text(
@@ -526,9 +399,12 @@ function event_change_owner(event_id, server_id) {
       }
 
       if (data == "owner_ok") {
-        if (typeof dt_events !== "undefined") {
-          dt_events.draw(false);
-        }
+        // if (typeof dt_events !== "undefined") {
+        //   dt_events.draw(false);
+        // }
+        $("#table_events")
+          .DataTable()
+          .draw(false);
         $("#notification_owner_success").show();
         if (new_owner == -1) {
           $("#extended_event_general_page table td.general_owner").html(
@@ -592,54 +468,6 @@ function event_comment(current_event) {
   });
 
   return false;
-}
-
-function show_event_response_command_dialog(id, response, total_checked) {
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("get_table_response_command=1");
-  params.push("event_response_id=" + id);
-
-  jQuery.ajax({
-    data: params.join("&"),
-    type: "POST",
-    url: $("#hidden-ajax_file").val(),
-    dataType: "html",
-    success: function(data) {
-      $("#event_response_command_window")
-        .hide()
-        .empty()
-        .append(data)
-        .dialog({
-          resizable: true,
-          draggable: true,
-          modal: false,
-          open: function() {
-            $("#response_loading_dialog").hide();
-            $("#button-submit_event_response").show();
-          },
-          width: 600,
-          height: 300
-        })
-        .show();
-
-      $("#submit-enter_command").on("click", function(e) {
-        e.preventDefault();
-        var response_command = [];
-
-        $(".response_command_input").each(function() {
-          response_command[$(this).attr("name")] = $(this).val();
-        });
-
-        check_massive_response_event(
-          id,
-          response,
-          total_checked,
-          response_command
-        );
-      });
-    }
-  });
 }
 
 var processed = 0;
@@ -814,8 +642,13 @@ function execute_delete_event_reponse(
 
 // Imported from old files.
 function execute_event_response(event_list_btn) {
+  var response_id = $("select[name=response_id]").val();
+  if (!isNaN(response_id)) {
+    table_info_response_event(response_id, 0, 0, true);
+  }
+
   var message =
-    "<h4 style = 'text-align: center; color:black' > Are you sure?</h4> ";
+    "<h4 style = 'text-align: center; color:black' > Are you sure?</h4> <div id='massive-parameters-response'></div> ";
   confirmDialog({
     title: "ATTENTION",
     message: message,
@@ -827,8 +660,6 @@ function execute_event_response(event_list_btn) {
       $("#max_custom_event_resp_msg").hide();
       $("#max_custom_selected").hide();
 
-      var response_id = $("select[name=response_id]").val();
-
       var total_checked = $(".chk_val:checked").length;
 
       // Check select an event.
@@ -838,58 +669,28 @@ function execute_event_response(event_list_btn) {
       }
 
       if (!isNaN(response_id)) {
-        // It is a custom response
-        var response = get_response(response_id);
-
-        // If cannot get response abort it
-        if (response == null) {
-          return;
+        var response_parameters_list = $('input[name^="values_params_"]');
+        var response_parameters = [];
+        if (response_parameters_list.length > 0) {
+          response_parameters_list.each(function() {
+            var acum = {
+              name: $(this).attr("name"),
+              value: $(this).val()
+            };
+            response_parameters.push(acum);
+          });
         }
 
-        // Limit number of events to apply custom responses
-        // due performance reasons.
-        if (total_checked > $("#max_execution_event_response").val()) {
-          $("#max_custom_event_resp_msg").show();
-          return;
-        }
-
-        var response_command = [];
-        $(".response_command_input").each(function() {
-          response_command[$(this).attr("name")] = $(this).val();
-        });
+        response_parameters = JSON.stringify(response_parameters);
 
         if (event_list_btn) {
           $("#button-submit_event_response").hide(function() {
             $("#response_loading_dialog").show(function() {
-              var check_params = get_response_params(response_id);
-
-              if (check_params[0] !== "") {
-                show_event_response_command_dialog(
-                  response_id,
-                  response,
-                  total_checked
-                );
-              } else {
-                check_massive_response_event(
-                  response_id,
-                  response,
-                  total_checked,
-                  response_command
-                );
-              }
+              show_response_dialog_massive(response_id, response_parameters);
             });
           });
         } else {
-          $("#button-btn_str").hide(function() {
-            $("#execute_again_loading").show(function() {
-              check_massive_response_event(
-                response_id,
-                response,
-                total_checked,
-                response_command
-              );
-            });
-          });
+          check_execute_response_massive(response_id, response_parameters);
         }
       } else {
         // It is not a custom response
@@ -964,15 +765,63 @@ function execute_event_response(event_list_btn) {
   });
 }
 
-function check_massive_response_event(
-  response_id,
-  response,
-  total_checked,
-  response_command
-) {
-  var counter = 0;
-  var end = 0;
+function show_response_dialog_massive(response_id, response_parameters) {
+  var params = [];
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "get_response", value: 1 });
+  params.push({ name: "response_id", value: response_id });
 
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: $("#hidden-ajax_file").val(),
+    dataType: "json",
+    success: function(response) {
+      // If cannot get response abort it
+      if (response == null) {
+        return [];
+      }
+
+      $("#event_response_window")
+        .hide()
+        .empty()
+        .append('<div class="container-massive-events-response"></div>')
+        .dialog({
+          title: $("#response_id option:selected").html(),
+          resizable: true,
+          draggable: true,
+          modal: false,
+          open: function() {
+            check_execute_response_massive(response_id, response_parameters);
+          },
+          close: function() {
+            $("#checkbox-all_validate_box").prop("checked", false);
+            $(".chk_val").prop("checked", false);
+            $("#response_loading_dialog").hide();
+            $("#button-submit_event_response").show();
+          },
+          buttons: [
+            {
+              text: "Execute All",
+              id: "execute-again-all",
+              class:
+                "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+              click: function() {
+                execute_event_response(false);
+              }
+            }
+          ],
+          width: response["modal_width"],
+          height: response["modal_height"]
+        })
+        .show();
+    }
+  });
+}
+
+function check_execute_response_massive(response_id, response_parameters) {
+  var events = [];
+  $(".container-massive-events-response").empty();
   $(".chk_val:checked").each(function() {
     var event_id = $(this).val();
     var meta = $("#hidden-meta").val();
@@ -981,23 +830,18 @@ function check_massive_response_event(
       var split_id = event_id.split("|");
       event_id = split_id[0];
       server_id = split_id[1];
+
+      if (events[server_id] === undefined) {
+        events[server_id] = [];
+      }
+
+      events[server_id].push(event_id);
+    } else {
+      events.push(event_id);
     }
-
-    response["target"] = get_response_target(
-      event_id,
-      response_id,
-      server_id,
-      response_command
-    );
-    response["server_id"] = server_id;
-    response["event_id"] = event_id;
-
-    if (total_checked - 1 === counter) end = 1;
-
-    show_massive_response_dialog(response_id, response, counter, end);
-
-    counter++;
   });
+
+  execute_response_massive(events, response_id, response_parameters);
 }
 
 function event_widget_options() {
@@ -1280,4 +1124,44 @@ function check_event_sound(settings) {
     },
     "json"
   );
+}
+
+function table_info_response_event(response_id, event_id, server_id, massive) {
+  var params = [];
+  params.push({ name: "page", value: "include/ajax/events" });
+  params.push({ name: "get_response", value: 1 });
+  params.push({ name: "response_id", value: response_id });
+  params.push({ name: "server_id", value: server_id });
+  params.push({ name: "event_id", value: event_id });
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: $("#hidden-ajax_file").val(),
+    dataType: "json",
+    success: function(response) {
+      if (response) {
+        var params = [];
+        params.push({ name: "page", value: "include/ajax/events" });
+        params.push({ name: "draw_row_response_info", value: 1 });
+        params.push({ name: "massive", value: massive === true ? 1 : 0 });
+        params.push({ name: "response", value: JSON.stringify(response) });
+
+        jQuery.ajax({
+          data: params,
+          type: "POST",
+          url: $("#hidden-ajax_file").val(),
+          dataType: "html",
+          success: function(output) {
+            if (massive === true) {
+              $("#massive-parameters-response").append(output);
+            } else {
+              $(".params_rows").remove();
+              $("#responses_table").append(output);
+            }
+          }
+        });
+      }
+    }
+  });
 }

@@ -76,6 +76,43 @@ if (is_ajax() === true) {
     $get_networkmap_from_fictional = (bool) get_parameter('get_networkmap_from_fictional', false);
     $get_reset_map_form            = (bool) get_parameter('get_reset_map_form', false);
     $reset_map                     = (bool) get_parameter('reset_map', false);
+    $refresh_map                   = (bool) get_parameter('refresh_map', false);
+
+    if ($refresh_map) {
+        $id_map = get_parameter('id');
+
+        include_once $config['homedir'].'/include/class/NetworkMap.class.php';
+
+        $map_manager = new NetworkMap(
+            ['id_map' => $id_map]
+        );
+
+        $filter = json_decode($map_manager->map['filter'], true);
+        $z_dash = $filter['z_dash'];
+
+        $nodes = $map_manager->recalculateCoords();
+
+        foreach ($nodes as $key => $value) {
+            if ($value['type'] == 0 || $value['type'] == 2) {
+                $node['x'] = ($value['x'] + ($map_manager->map['center_x'] / 2) / $z_dash);
+                $node['y'] = ($value['y'] + ($map_manager->map['center_y'] / 2) / $z_dash);
+                $node['refresh'] = 0;
+
+                db_process_sql_update(
+                    'titem',
+                    $node,
+                    [
+                        'source_data' => $value['source_data'],
+                        'id_map'      => $id_map,
+                    ]
+                );
+            }
+        }
+
+        echo $id_map;
+
+        return;
+    }
 
     if ($get_reset_map_form) {
         $map_id = get_parameter('map_id');
@@ -937,6 +974,7 @@ if (is_ajax() === true) {
     }
 
     if ($refresh_holding_area) {
+        ob_start();
         $networkmap_id = (int) get_parameter('id', 0);
         $x = (int) get_parameter('x', 666);
         $y = (int) get_parameter('y', 666);
@@ -944,12 +982,11 @@ if (is_ajax() === true) {
         $return['correct'] = false;
         $return['holding_area'] = [];
 
-        // ACL for the network map
+        // ACL for the network map.
         $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
         $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
         $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
-
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
@@ -965,6 +1002,8 @@ if (is_ajax() === true) {
             $return['correct'] = true;
             $return['holding_area'] = $data;
         }
+
+        ob_end_clean();
 
         echo json_encode($return);
 
@@ -2268,6 +2307,10 @@ if ($networkmap === false) {
                 ]
             ).'</a>',
         ];
+        $buttons['test'] = [
+            'active' => false,
+            'text'   => '<div style="width:100%;height:54px;display:flex;align-items:center"><div class="vc-countdown"></div></div>',
+        ];
     } else {
         if (!$dash_mode) {
             $buttons['screen'] = [
@@ -2292,6 +2335,21 @@ if ($networkmap === false) {
                     ]
                 ).'</a>',
             ];
+            $buttons['option'] = [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=edit&edit_networkmap=1&id_networkmap='.$id.'">'.html_print_image(
+                    'images/setup.png',
+                    true,
+                    [
+                        'title' => __('Options'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+            ];
+            $buttons['test'] = [
+                'active' => false,
+                'text'   => '<div style="width:100%;height:54px;display:flex;align-items:center"><div class="vc-countdown"></div></div>',
+            ];
         }
     }
 
@@ -2311,8 +2369,15 @@ if ($networkmap === false) {
 
     include_once $config['homedir'].'/include/class/NetworkMap.class.php';
 
+    $filter = json_decode($networkmap['filter'], true);
+    $zoom = $filter['z_dash'];
+
     $map_manager = new NetworkMap(
-        [ 'id_map' => $networkmap['id']]
+        [
+            'id_map'   => $networkmap['id'],
+            'center_x' => $networkmap['center_x'],
+            'center_y' => $networkmap['center_y'],
+        ]
     );
 
     $map_manager->printMap();

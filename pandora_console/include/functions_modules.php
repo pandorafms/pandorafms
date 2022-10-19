@@ -3656,7 +3656,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
                     $id_agents,
                     $selection,
                     false,
-                    false,
+                    $useName,
                     true
                 );
 
@@ -3684,8 +3684,8 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
                 if ($occurrences === $nodes_consulted) {
                     // Module already present in ALL nodes.
                     $modules[] = [
-                        'id_agente_modulo' => $module_name,
-                        'nombre'           => $module_name,
+                        'id_agente_modulo' => io_safe_output($module_name),
+                        'nombre'           => io_safe_output($module_name),
                     ];
                 }
             }
@@ -3730,7 +3730,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             function ($carry, $item) use ($useName) {
                 // Only works in select mode.
                 if ($useName === true) {
-                    $carry[io_safe_input($item['nombre'])] = $item['nombre'];
+                    $carry[$item['id_node'].'|'.$item['nombre']] = $item['nombre'];
                 } else {
                     $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
                 }
@@ -3744,6 +3744,8 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             $id_module_group,
             $id_agents,
             $selection,
+            false,
+            $useName,
             false
         );
     }
@@ -4191,6 +4193,11 @@ function modules_get_counter_by_states($state)
 
 function modules_get_state_condition($state, $prefix='tae')
 {
+    // Not  use empty state 0 -> AGENT_MODULE_STATUS_NORMAL.
+    if ($state === '') {
+        return '1=1';
+    }
+
     switch ($state) {
         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         case AGENT_MODULE_STATUS_CRITICAL_BAD:

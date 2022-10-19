@@ -128,7 +128,7 @@ class User implements PublicLogin
     {
         $user = new self($data);
 
-        if ($user === null) {
+        if ($user->idUser === null) {
             return false;
         }
 

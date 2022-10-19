@@ -69,7 +69,7 @@ final class Config
             $link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
             $rc = mysqli_real_connect(
                 $link,
-                $$config['history_db_host'],
+                $config['history_db_host'],
                 $config['history_db_user'],
                 io_output_password($config['history_db_pass']),
                 $config['history_db_name'],

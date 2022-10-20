@@ -1666,3 +1666,11 @@ godmode/um_client/vendor/sebastian/object-enumerator
 godmode/um_client/vendor/sebastian
 godmode/um_client/vendor
 update_manager_client/resources/styles/pandora.css
+enterprise/views/cluster/edit.php
+enterprise/views/cluster/list.php
+enterprise/views/cluster/view.php
+enterprise/include/lib/Cluster.php
+enterprise/include/lib/ClusterModule.php
+enterprise/include/lib/ClusterViewer/ClusterManager.php
+enterprise/include/lib/ClusterViewer/ClusterWizard.php
+enterprise/operation/cluster/cluster.php

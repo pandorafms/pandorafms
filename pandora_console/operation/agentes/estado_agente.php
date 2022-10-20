@@ -847,10 +847,10 @@ foreach ($agents as $agent) {
 
     if ($agent['id_os'] == CLUSTER_OS_ID) {
         if (enterprise_installed()) {
-            $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
                 $agent['id_agente']
             );
-            $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+            $url = 'index.php?sec=reporting&sec2=';
             $url .= '/operation/cluster/cluster';
             $url = ui_get_full_url(
                 $url.'&op=view&id='.$cluster->id()
@@ -866,10 +866,10 @@ foreach ($agents as $agent) {
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
             if (enterprise_installed()) {
-                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                $cluster = PandoraFMS\Cluster::loadFromAgentId(
                     $agent['id_agente']
                 );
-                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+                $url = 'index.php?sec=reporting&sec2=';
                 $url .= '/operation/cluster/cluster';
                 $url = ui_get_full_url(
                     $url.'&op=update&id='.$cluster->id()

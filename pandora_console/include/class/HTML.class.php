@@ -935,6 +935,12 @@ class HTML
         $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" id="'.$form['id'].'" '.$form['extra'].'>';
 
+        if (isset($form['title']) === true && empty($form['title']) === false) {
+            $output_head .= '<div class="form_title"">';
+            $output_head .= '<span>'.$form['title'].'</span>';
+            $output_head .= '</div>';
+        }
+
         if ($return === false) {
             echo $output_head;
         }

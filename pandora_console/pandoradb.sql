@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
-  UNIQUE (`id_agent_module`, `id_alert_template`),
+  UNIQUE (`id_agent_module`, `id_alert_template`, `id_policy_alerts`),
   INDEX force_execution (`force_execution`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

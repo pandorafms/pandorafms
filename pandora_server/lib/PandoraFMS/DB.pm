@@ -1146,10 +1146,10 @@ sub db_update ($$;@) {
 ##########################################################################
 ## Return alert template-module ID given the module and template ids.
 ##########################################################################
-sub get_alert_template_module_id ($$$) {
-	my ($dbh, $id_module, $id_template) = @_;
+sub get_alert_template_module_id ($$$$) {
+	my ($dbh, $id_module, $id_template, $id_policy_alerts) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ?", $id_module, $id_template);
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ? AND id_policy_alerts = ?", $id_module, $id_template, $id_policy_alerts);
 	return defined ($rc) ? $rc : -1;
 }
 

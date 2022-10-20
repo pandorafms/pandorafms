@@ -128,7 +128,7 @@ class User implements PublicLogin
     {
         $user = new self($data);
 
-        if ($user === null) {
+        if ($user->idUser === null) {
             return false;
         }
 
@@ -186,6 +186,14 @@ class User implements PublicLogin
             }
         } else {
             $config['public_access'] = false;
+        }
+
+        if (empty($other_secret) === true) {
+            $auth_token_secret = db_get_value('auth_token_secret', 'tusuario', 'id_user', $config['id_user']);
+
+            if (empty($auth_token_secret) === false) {
+                $other_secret = $auth_token_secret;
+            }
         }
 
         // Build a hash to check.

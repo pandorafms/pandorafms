@@ -19,11 +19,121 @@ use PandoraFMS\Dashboard\Manager;
 
 require_once 'include/functions_menu.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
+require_once 'include/class/MenuItem.class.php';
 
 enterprise_include('operation/menu.php');
 
 $menu_operation = [];
 $menu_operation['class'] = 'operation';
+
+$menuOperation = [];
+
+$subMenuMonitoring = [];
+
+
+$subMenuMonitoringViews = [];
+
+// L0. Monitoring.
+$menuOperation['monitoring'] = new MenuItem(__('Monitoring'));
+$menuOperation['monitoring']->setIcon('icon');
+$menuOperation['monitoring']->setClass('menu');
+$menuOperation['monitoring']->setACL(['AR']);
+$monitoringItems = [];
+
+// L1. Views.
+$monitoringItems['views'] = new MenuItem(__('Views'));
+$monitoringItems['views']->setIcon('icono');
+$monitoringItems['views']->setClass('submenu');
+$monitoringViewsItems = [];
+
+// L2. Tactical view.
+$monitoringViewsItems['tacticalView'] = new MenuItem(__('Tactical view'));
+$monitoringViewsItems['tacticalView']->setSec('view');
+$monitoringViewsItems['tacticalView']->setSec2('operation/agentes/tactical');
+$monitoringViewsItems['tacticalView']->setClass('submenu');
+
+// L2. Group View.
+$monitoringViewsItems['groupView'] = new MenuItem(__('Group view'));
+$monitoringViewsItems['groupView']->setSec('view');
+$monitoringViewsItems['groupView']->setSec2('operation/agentes/group_view');
+$monitoringViewsItems['groupView']->setClass('submenu');
+
+// L2. Tree View.
+$monitoringViewsItems['treeView'] = new MenuItem(__('Tree view'));
+$monitoringViewsItems['treeView']->setSec('view');
+$monitoringViewsItems['treeView']->setSec2('operation/tree');
+$monitoringViewsItems['treeView']->setClass('submenu');
+
+// L2. Monitor detail.
+$monitoringViewsItems['monitorDetail'] = new MenuItem(__('Monitor detail'));
+$monitoringViewsItems['monitorDetail']->setSec('view');
+$monitoringViewsItems['monitorDetail']->setSec2('operation/agentes/status_monitor');
+$monitoringViewsItems['monitorDetail']->setClass('submenu');
+
+// L2. Interface view.
+$monitoringViewsItems['interfaceView'] = new MenuItem(__('Interface View'));
+$monitoringViewsItems['interfaceView']->setSec('view');
+$monitoringViewsItems['interfaceView']->setSec2('operation/agentes/interface_view');
+$monitoringViewsItems['interfaceView']->setClass('submenu');
+
+// L2. Enterprise Tag view.
+$idTagView = 'tagView';
+$monitoringViewsItems[$idTagView] = enterprise_hook('tag_view_submenu', $idTagView);
+
+// L2. Alert detail view.
+$monitoringViewsItems['alertDetail'] = new MenuItem(__('Alert Detail'));
+$monitoringViewsItems['alertDetail']->setSec('view');
+$monitoringViewsItems['alertDetail']->setSec2('operation/agentes/alerts_status');
+$monitoringViewsItems['alertDetail']->setClass('submenu');
+
+// L2. Heatmap view.
+$monitoringViewsItems['heatmapView'] = new MenuItem(__('Heatmap view'));
+$monitoringViewsItems['heatmapView']->setSec('view');
+$monitoringViewsItems['heatmapView']->setSec2('operation/heatmap');
+$monitoringViewsItems['heatmapView']->setClass('submenu');
+
+$monitoringItems['views']->setSubmenu($monitoringViewsItems);
+
+// L1. Inventory.
+$monitoringItems['inventory'] = new MenuItem(__('Inventory'));
+$monitoringItems['inventory']->setSec('estado');
+$monitoringItems['inventory']->setSec2('enterprise/operation/inventory/inventory');
+$monitoringItems['inventory']->setClass('submenu');
+
+// L1. Network.
+$monitoringItems['network'] = new MenuItem();
+$monitoringItems['network']->setDisplay((bool) $config['activate_netflow'] === true);
+$monitoringItems['network']->setText(__('Network'));
+
+// L2. Netflow explorer.
+$monitoringNetworkItems['netflowExplorer'] = new MenuItem();
+$monitoringNetworkItems['netflowExplorer']->setText(__('Netflow Explorer'));
+$monitoringNetworkItems['netflowExplorer']->setSec('network_traffic');
+$monitoringNetworkItems['netflowExplorer']->setSec2('operation/netflow/netflow_explorer');
+
+// L2. Netflow Live view.
+$monitoringNetworkItems['netflowLiveView'] = new MenuItem();
+$monitoringNetworkItems['netflowLiveView']->setText(__('Netflow Live View'));
+$monitoringNetworkItems['netflowLiveView']->setSec('network_traffic');
+$monitoringNetworkItems['netflowLiveView']->setSec2('operation/netflow/nf_live_view');
+
+// L2. Network usage map.
+$monitoringNetworkItems['networkUsageMap'] = new MenuItem();
+$monitoringNetworkItems['networkUsageMap']->setText(__('Network usage map'));
+$monitoringNetworkItems['networkUsageMap']->setSec('network_traffic');
+$monitoringNetworkItems['networkUsageMap']->setSec2('operation/network/network_usage_map');
+
+$monitoringItems['network']->setSubmenu($monitoringNetworkItems);
+
+$menuOperation['monitoring']->setSubmenu($monitoringItems);
+
+// L0. Topology Maps.
+$menuOperation['topologyMaps'] = new MenuItem(__('Topology Maps'));
+$menuOperation['topologyMaps']->setIcon('icon');
+$menuOperation['topologyMaps']->setClass('menu');
+
+$menuOperation['topologyMaps']->setSubmenu($topologyMapsItems);
+
 
 $access_console_node = !is_reporting_console_node();
 if ($access_console_node === true) {
@@ -74,8 +184,8 @@ if ($access_console_node === true) {
         $sub['view']['sub2'] = $sub2;
 
         enterprise_hook('inventory_menu');
-
-        if ($config['activate_netflow']) {
+        /*
+            if ($config['activate_netflow']) {
             $sub['network_traffic'] = [
                 'text'    => __('Network'),
                 'id'      => 'Network',
@@ -112,8 +222,8 @@ if ($access_console_node === true) {
             );
 
             $sub['network_traffic']['sub2'] = $netflow_sub;
-        }
-
+            }
+        */
         if ($config['log_collector'] == 1) {
             enterprise_hook('log_collector_menu');
         }

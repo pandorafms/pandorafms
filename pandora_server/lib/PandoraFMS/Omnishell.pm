@@ -449,22 +449,22 @@ sub cleanup_old_commands {
 }
 
 ################################################################################
-# Executes a command using defined timeout.
+# Executes a command.
 ################################################################################
 sub execute_command_timeout {
-  my ($self, $cmd, $timeout) = @_;
+  my ($self, $cmd, $std_files, $timeout) = @_;
 
   if (!defined($timeout)
     || !looks_like_number($timeout)
     || $timeout <= 0
   ) {
-    `$cmd`;
+    `($cmd) $std_files`;
   } elsif ($^O eq 'MSWin32') {
-    `pandora_agent_exec.exe $timeout $cmd`;
+    `(pandora_agent_exec.exe $timeout $cmd) $std_files`;
   } else {
-    `pandora_agent_exec $timeout $cmd`;
+    `(pandora_agent_exec $timeout $cmd) $std_files`;
   }
-  	
+
   return $?>>8;
 }
 
@@ -490,7 +490,8 @@ sub execute_command_block {
 
     do {
       $err_level = $self->execute_command_timeout(
-        "($commands) $std_files",
+        $commands,
+		$std_files,
         $timeout
       );
 
@@ -506,7 +507,8 @@ sub execute_command_block {
 
       do {
         $err_level = $self->execute_command_timeout(
-          "($comm) $std_files",
+          $comm,
+		  $std_files,
           $timeout
         );
 

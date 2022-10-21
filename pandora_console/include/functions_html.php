@@ -3322,36 +3322,70 @@ function html_print_input_color($name, $value, $id='', $class=false, $return=fal
  * @param string  $label      Input label.
  * @param string  $name       Input name.
  * @param boolean $disabled   Whether to disable by default or not. Enabled by default.
- * @param array   $attributes Additional HTML attributes.
+ * @param mixed   $attributes Additional HTML attributes.
  * @param boolean $return     Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.
  */
 function html_print_submit_button($label='OK', $name='', $disabled=false, $attributes='', $return=false)
 {
-    if (!$name) {
+    if (empty($name) === true) {
         $name = 'unnamed';
     }
 
-    if (is_array($attributes)) {
+    // Icon for show in button.
+    $iconToUse = '';
+    if (is_array($attributes) === true) {
         $attr_array = $attributes;
         $attributes = '';
         foreach ($attr_array as $attribute => $value) {
-            $attributes .= $attribute.'="'.$value.'" ';
+            if ($attribute === 'icon') {
+                $iconToUse = $value;
+            } else if ($attribute === 'secondary') {
+                $secondary = true;
+            } else {
+                $attributes .= $attribute.'="'.$value.'" ';
+            }
         }
+    } else if (empty($attributes) === false && is_string($attributes) === true) {
+        $tmpData = explode(' ', $attributes);
+        $iconToUse = $tmpData[(array_search('sub', $tmpData) + 1)];
+        $iconToUse = preg_replace('([^A-Za-z])', '', $iconToUse);
     }
 
-    $output = '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'.$label.'" '.$attributes;
-    if ($disabled) {
-        $output .= ' disabled="disabled"';
+    // $secondary = true;
+    // Transform secondary boolean to string.
+    $secondary = ($secondary === true) ? ' secondary' : '';
+
+    if (empty($iconToUse) === false) {
+        $iconDiv = html_print_div(
+            [
+                'style' => '',
+                'class' => sprintf(
+                    'subIcon %s%s',
+                    $iconToUse,
+                    $secondary
+                ),
+            ],
+            true
+        );
+    } else {
+        $iconDiv = '';
     }
 
-    $output .= ' />';
-    if (!$return) {
+    $output = sprintf(
+        '<button class="submitButton%s"%s>%s%s</button>',
+        $secondary,
+        ($disabled === true) ? ' disabled' : '',
+        $label,
+        $iconDiv
+    );
+
+    if ($return === false) {
         echo $output;
+    } else {
+        return $output;
     }
-
-    return $output;
 }
 
 
@@ -3364,7 +3398,7 @@ function html_print_submit_button($label='OK', $name='', $disabled=false, $attri
  * @param string  $name        Input name.
  * @param boolean $disabled    Whether to disable by default or not. Enabled by default.
  * @param string  $script      JavaScript to attach
- * @param string  $attributes  Additional HTML attributes.
+ * @param mixed   $attributes  Additional HTML attributes.
  * @param boolean $return      Whether to return an output string or echo now (optional, echo by default).
  * @param boolean $imageButton Set the button as a image button without text, by default is false.
  *
@@ -3374,30 +3408,80 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 {
     $output = '';
 
-    $alt = $title = '';
-    if ($imageButton) {
-        $alt = $title = $label;
-        $label = '';
+    if (empty($name) === true) {
+        $name = 'unnamed';
     }
 
-    $output .= '<input title="'.$title.'" alt="'.$alt.'" type="button" id="button-'.$name.'" name="'.$name.'" value="'.$label.'" onClick="'.$script.'" '.$attributes;
-    if ($disabled) {
-        $output .= ' disabled';
+    // Icon for show in button.
+    $iconToUse = '';
+    if (is_array($attributes) === true) {
+        $attr_array = $attributes;
+        $attributes = '';
+        foreach ($attr_array as $attribute => $value) {
+            if ($attribute === 'icon') {
+                $iconToUse = $value;
+            } else if ($attribute === 'secondary') {
+                $secondary = true;
+            } else {
+                $attributes .= $attribute.'="'.$value.'" ';
+            }
+        }
+    } else if (empty($attributes) === false && is_string($attributes) === true) {
+        $tmpData = explode(' ', $attributes);
+        $iconToUse = $tmpData[(array_search('sub', $tmpData) + 1)];
+        $iconToUse = preg_replace('([^A-Za-z])', '', $iconToUse);
     }
 
-    $output .= ' />';
+    // $secondary = true;
+    // Transform secondary boolean to string.
+    $secondary = ($secondary === true) ? ' secondary' : '';
 
-    if ($modal && !enterprise_installed()) {
+    if (empty($iconToUse) === false) {
+        $iconDiv = html_print_div(
+            [
+                'style' => '',
+                'class' => sprintf(
+                    'subIcon %s%s',
+                    $iconToUse,
+                    $secondary
+                ),
+            ],
+            true
+        );
+    } else {
+        $iconDiv = '';
+    }
+
+    if ($imageButton === false) {
+        $content = $label;
+        $content .= $iconDiv;
+    } else {
+        $content = $iconDiv;
+    }
+
+    $output = sprintf(
+        '<button class="inputButton %s " %s %s %s %s %s > %s </button>',
+        $secondary,
+        (empty($name) === false) ? ' name="'.$name.'"' : '',
+        (empty($name) === false) ? ' id="button-'.$name.'"' : '',
+        (empty($label) === false) ? ' value="'.$label.'"' : '',
+        ($disabled === true) ? ' disabled' : '',
+        (empty($script) === false) ? ' onClick="'.$script.'"' : '',
+        $content
+    );
+
+    if ($modal !== false && enterprise_installed() === false) {
         $output .= "
 		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
-    if ($return) {
+    if ($return === true) {
         return $output;
+    } else {
+        echo $output;
     }
 
-    echo $output;
 }
 
 

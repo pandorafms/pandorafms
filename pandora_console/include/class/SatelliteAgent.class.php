@@ -304,8 +304,8 @@ class SatelliteAgent extends HTML
 
             foreach ($this->satellite_config as $line) {
                 $re = '/^#*add_host \b(\S+) (\S*)/m';
-                $re_disable = '/^ignore_host \b(\S+) (\S*)/m';
-                $re_delete = '/^delete_host \b(\S+) (\S*)/m';
+                $re_disable = '/^ignore_host \b(\S+)/m';
+                $re_delete = '/^delete_host \b(\S+)/m';
 
                 if (preg_match($re, $line, $matches, PREG_OFFSET_CAPTURE, 0) > 0) {
                     $agent['address'] = $matches[1][0];
@@ -321,12 +321,7 @@ class SatelliteAgent extends HTML
                 }
 
                 if (preg_match($re_disable, $line, $matches, PREG_OFFSET_CAPTURE, 0) > 0) {
-                    $agent['address'] = $matches[1][0];
-                    if (isset($matches[2][0]) === false || empty($matches[2][0]) === true) {
-                        $agent['name'] = '';
-                    } else {
-                        $agent['name'] = $matches[2][0];
-                    }
+                    $agent['name'] = $matches[1][0];
 
                     $agent['type'] = 'ignore_host';
 
@@ -334,12 +329,7 @@ class SatelliteAgent extends HTML
                 }
 
                 if (preg_match($re_delete, $line, $matches, PREG_OFFSET_CAPTURE, 0) > 0) {
-                    $agent['address'] = $matches[1][0];
-                    if (isset($matches[2][0]) === false || empty($matches[2][0]) === true) {
-                        $agent['name'] = '';
-                    } else {
-                        $agent['name'] = $matches[2][0];
-                    }
+                    $agent['name'] = $matches[1][0];
 
                     $agent['type'] = 'delete_host';
 
@@ -732,7 +722,7 @@ class SatelliteAgent extends HTML
                         $this->satellite_config = $array_merge;
 
                         // Remove ignore_host.
-                        $pattern = io_safe_expreg('ignore_host '.$values['address'].' '.$values['name']);
+                        $pattern = io_safe_expreg('ignore_host '.$values['name']);
                         $pos = preg_grep('/'.$pattern.'/', $this->satellite_config);
 
                         $key_pos = 0;
@@ -750,7 +740,7 @@ class SatelliteAgent extends HTML
                 } else {
                     $pos = preg_grep('/^\#INIT delete_host/', $this->satellite_config);
                     if (empty($pos) === false) {
-                        $string_hosts = 'ignore_host '.$values['address'].' '.$values['name']."\n";
+                        $string_hosts = 'ignore_host '.$values['name']."\n";
 
                         $key_pos = 0;
                         foreach ($pos as $key => $value) {
@@ -802,7 +792,7 @@ class SatelliteAgent extends HTML
                         $this->satellite_config = $array_merge;
 
                         // Remove delete_host.
-                        $pattern = io_safe_expreg('delete_host '.$values['address'].' '.$values['name']);
+                        $pattern = io_safe_expreg('delete_host '.$values['name']);
                         $pos = preg_grep('/'.$pattern.'/', $this->satellite_config);
 
                         $key_pos = 0;
@@ -830,7 +820,7 @@ class SatelliteAgent extends HTML
                         unset($this->satellite_config[$key_pos]);
                     }
 
-                    $string_hosts = 'delete_host '.$values['address'].' '.$values['name']."\n";
+                    $string_hosts = 'delete_host '.$values['name']."\n";
                     $pos = preg_grep('/delete_host/', $this->satellite_config);
                     if (empty($pos) === false) {
                         $key_pos = array_keys($pos)[(count($pos) - 1)];

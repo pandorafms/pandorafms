@@ -1990,12 +1990,10 @@ function api_set_create_os($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [];
@@ -2030,12 +2028,10 @@ function api_set_update_os($id_os, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [];
@@ -2209,8 +2205,8 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
         }
     } else {
         // Delete only if the centralised mode is disabled.
-        $headers = getallheaders();
-        if (isset($headers['idk']) === false && is_management_allowed($headers['idk']) === false) {
+        $idk = get_header('idk');
+        if (is_management_allowed($idk) === false) {
             returnError('centralized');
             exit;
         }
@@ -5079,12 +5075,10 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -5181,12 +5175,10 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -5456,12 +5448,10 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -5628,12 +5618,10 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($name == '') {
@@ -5771,12 +5759,10 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id_template == '') {
@@ -5923,12 +5909,10 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id_template == '') {
@@ -7117,12 +7101,10 @@ function api_set_tag($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [];
@@ -7691,8 +7673,7 @@ function api_set_planned_downtimes_delete_agents($id, $thrash1, $other, $thrash3
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents WHERE id_agent = %d AND id_downtime = %d', $agent, $id)) !== false) {
@@ -7768,8 +7749,7 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
@@ -7827,12 +7807,10 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -7947,12 +7925,10 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8070,12 +8046,10 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8177,12 +8151,10 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8311,12 +8283,10 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8607,12 +8577,10 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8774,12 +8742,10 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8939,12 +8905,10 @@ function api_set_remove_agent_from_policy_by_id($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['data'][0] == '' || !$other['data'][0]) {
@@ -8980,12 +8944,10 @@ function api_set_remove_agent_from_policy_by_name($id, $thrash1, $other, $thrash
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['data'][0] == '' || !$other['data'][0]) {
@@ -9024,12 +8986,10 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group_name = $id;
@@ -9147,12 +9107,10 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if (db_get_value('id_grupo', 'tgrupo', 'id_grupo', $id_group) === false) {
@@ -9224,12 +9182,10 @@ function api_set_delete_group($id_group, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group = db_get_row_filter('tgrupo', ['id_grupo' => $id_group]);
@@ -9541,20 +9497,20 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
 {
     global $config;
 
-    // if (defined ('METACONSOLE')) {
-    // return;
-    // }
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
-        returnError('centralized');
+    if (empty($id) === true) {
+        returnError('Id cannot be empty.');
         return;
+    }
+
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
+        returnError('centralized');
+        exit;
     }
 
     $values = [];
@@ -9571,6 +9527,11 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+
+    if (empty($password) === true) {
+        returnError('Password cannot be empty.');
+        return;
+    }
 
     if (!create_user($id, $password, $values)) {
         returnError('The user could not created');
@@ -9607,12 +9568,10 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $fields_user = [
@@ -9707,12 +9666,10 @@ function api_set_enable_disable_user($id, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -9986,12 +9943,10 @@ function api_set_new_alert_template($id, $id2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['type'] == 'string') {
@@ -10212,7 +10167,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
                 $xmlTemplate,
                 io_safe_output(get_os_name($agent['id_os'])),
                 io_safe_output($agent['os_version']),
-                $agent['intervalo'],
+                $agentModule['module_interval'],
                 io_safe_output($agent['agent_version']),
                 date('Y/m/d H:i:s', $time),
                 io_safe_output($agent['nombre']),
@@ -10409,12 +10364,10 @@ function api_set_alert_actions($id, $id2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['type'] == 'string') {
@@ -10565,12 +10518,10 @@ function api_set_new_module_group($id, $thrash2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
@@ -10639,12 +10590,10 @@ function api_set_alert_commands($id, $thrash2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $name = db_get_value('id', 'talert_commands', 'name', $id);
@@ -11790,20 +11739,20 @@ function api_set_delete_user($id, $thrash1, $thrash2, $thrash3)
 {
     global $config;
 
-    // if (defined ('METACONSOLE')) {
-    // return;
-    // }
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
-        returnError('centralized');
+    if (empty($id) === true) {
+        returnError('Id cannot be empty.');
         return;
+    }
+
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
+        returnError('centralized');
+        exit;
     }
 
     if (!delete_user($id)) {
@@ -11841,12 +11790,10 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group = (int) $other['data'][0];
@@ -11902,12 +11849,10 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group = $other['data'][0];
@@ -12017,12 +11962,10 @@ function api_set_create_user_profile_info($thrash1, $thrash2, $other, $returnTyp
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [
@@ -12078,12 +12021,10 @@ function api_set_update_user_profile_info($id_profile, $thrash1, $other, $return
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
@@ -12145,12 +12086,10 @@ function api_set_delete_user_profile_info($id_profile, $thrash1, $thrash2, $retu
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $profile = db_get_value('id_perfil', 'tperfil', 'id_perfil', $id_profile);
@@ -13037,12 +12976,10 @@ function api_set_create_tag($id, $trash1, $other, $returnType)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $data = [];
@@ -13368,12 +13305,6 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
-        $meta = true;
-    } else {
-        $meta = $other['data'][1];
-    }
-
     if (!check_acl($config['id_user'], 0, 'EW')) {
         returnError('forbidden', 'string');
         return;
@@ -13384,13 +13315,46 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         return;
     } else if ($other['type'] == 'array') {
         $comment = $other['data'][0];
-        $history = $other['data'][2];
 
-        $status = events_comment(
-            $id,
-            $comment,
-            'Added comment'
-        );
+        $node_int = 0;
+        if (is_metaconsole() === true) {
+            if (isset($other['data'][1]) === true
+                && empty($other['data'][1]) === false
+            ) {
+                $node_int = $other['data'][1];
+            }
+        }
+
+        try {
+            if (is_metaconsole() === true
+                && (int) $node_int > 0
+            ) {
+                $node = new Node($node_int);
+                $node->connect();
+            }
+
+            $status = events_comment(
+                $id,
+                $comment,
+                'Added comment'
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $node_int > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $status = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $node_int > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+
         if (is_error($status)) {
             returnError(
                 'The event comment could not be added.'
@@ -17130,12 +17094,10 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['data'][0] != '') {
@@ -17191,12 +17153,10 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $sql = 'SELECT id_up 
@@ -17554,9 +17514,11 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
     }
 }
 
+
 /**
  * Make report (PDF, CSV or XML) and send it via e-mail (this method is intended to be used by server's execution
  * of alert actions that involve sending reports by e-mail).
+ *
  * @param [string] $server_id        id server (Node)
  * @param [string] $console_event_id console Id node event in tevent
  * @param [string] $trash2           don't use
@@ -17603,15 +17565,12 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
     $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
     $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
 
-
     if ($make_report_from_template === true) {
         $filter['id_report'] = $id_item;
 
         $template = reports_get_report_templates(
             $filter,
-            [
-                'description'
-            ],
+            ['description'],
             $return_all_group,
             'RR'
         )[0];
@@ -17619,15 +17578,16 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         $description = $template['description'];
 
         // Report macros post-process.
-        $body_email = str_replace([
+        $body_email = str_replace(
+            [
                 '_report_description_',
                 '_report_generated_date_',
-                '_report_date_'
+                '_report_date_',
             ],
             [
                 $description,
                 $date_today,
-                $date_today
+                $date_today,
             ],
             $body_email
         );
@@ -17641,7 +17601,7 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
             $template_regex_agents,
             false,
             '',
-            $email, 
+            $email,
             $subject_email,
             $body_email,
             $report_type,
@@ -17656,15 +17616,16 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         }
 
         // Report macros post-process.
-        $body_email = str_replace([
+        $body_email = str_replace(
+            [
                 '_report_description_',
                 '_report_generated_date_',
-                '_report_date_'
+                '_report_date_',
             ],
             [
                 $report['description'],
                 $date_today,
-                $date_today
+                $date_today,
             ],
             $body_email
         );
@@ -17851,4 +17812,3 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         returnData($returnType, $data, ';');
     }
 }
-

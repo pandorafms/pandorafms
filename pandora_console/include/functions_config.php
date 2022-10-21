@@ -788,14 +788,7 @@ function config_update_config()
                 case 'perf':
                     // PERFORMANCE SETUP.
                     if (config_update_value('event_purge', get_parameter('event_purge'), true) === false) {
-                        $check_metaconsole_events_history = get_parameter('metaconsole_events_history', -1);
-                        $error_update[] = $check_metaconsole_events_history;
-                    }
-
-                    if ($check_metaconsole_events_history != -1) {
-                        if (config_update_value('metaconsole_events_history', get_parameter('metaconsole_events_history'), true) === false) {
-                            $error_update[] = __('Max. days before delete events');
-                        }
+                        $error_update[] = __('Event purge');
                     }
 
                     if (config_update_value('trap_purge', get_parameter('trap_purge'), true) === false) {
@@ -918,6 +911,16 @@ function config_update_config()
 
                     if (config_update_value('wmiBinary', get_parameter('wmiBinary'), true) === false) {
                         $error_update[] = __('Default WMI Binary');
+                    }
+
+                    // Walk the array with defaults.
+                    $defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
+                    foreach ($defaultAgentWizardOptions as $key => $value) {
+                        $selectedAgentWizardOptions[$key] = get_parameter_switch('agent_wizard_defaults_'.$key);
+                    }
+
+                    if (config_update_value('agent_wizard_defaults', json_encode($selectedAgentWizardOptions), true) === false) {
+                        $error_update[] = __('SNMP Interface Agent Wizard');
                     }
 
                     $pjs = get_parameter('phantomjs_cache_interval');
@@ -1581,9 +1584,10 @@ function config_update_config()
                     }
 
                     $history_db_string_days = get_parameter('history_db_string_days');
-                    if (is_numeric($history_db_string_days) === false
+                    if ((is_numeric($history_db_string_days) === false
                         || $history_db_string_days <= 0
-                        || config_update_value('history_db_string_days', $history_db_string_days) === false
+                        || config_update_value('history_db_string_days', $history_db_string_days) === false)
+                        && get_parameter_switch('history_db_adv', 0) === 1
                     ) {
                         $error_update[] = __('String Days');
                     }
@@ -1847,7 +1851,7 @@ function config_update_config()
         $config['error_config_update_config']['correct'] = false;
         $values = implode('<br> -', $error_update);
         $config['error_config_update_config']['message'] = sprintf(
-            __('Failed updated: the next values cannot update: <br> -%s'),
+            __('Update failed. The next values could not be updated: <br> -%s'),
             $values
         );
 
@@ -2111,10 +2115,6 @@ function config_process_config()
         config_update_value('event_purge', 15);
     }
 
-    if (!isset($config['metaconsole_events_history'])) {
-        config_update_value('metaconsole_events_history', 0);
-    }
-
     if (!isset($config['realtimestats'])) {
         config_update_value('realtimestats', 1);
     }
@@ -2261,6 +2261,32 @@ function config_process_config()
 
     if (!isset($config['2Fa_auth'])) {
         config_update_value('2Fa_auth', '');
+    }
+
+    if (isset($config['agent_wizard_defaults']) === false) {
+        config_update_value(
+            'agent_wizard_defaults',
+            json_encode(
+                [
+                    'ifOperStatus'    => 1,
+                    'ifInOctets'      => 1,
+                    'ifOutOctets'     => 1,
+                    'ifInUcastPkts'   => 0,
+                    'ifOutUcastPkts'  => 0,
+                    'ifInNUcastPkts'  => 0,
+                    'ifOutNUcastPkts' => 0,
+                    'locIfInCRC'      => 1,
+                    'Bandwidth'       => 1,
+                    'inUsage'         => 1,
+                    'outUsage'        => 1,
+                    'ifAdminStatus'   => 0,
+                    'ifInDiscards'    => 0,
+                    'ifOutDiscards'   => 0,
+                    'ifInErrors'      => 0,
+                    'ifOutErrors'     => 0,
+                ]
+            )
+        );
     }
 
     /*

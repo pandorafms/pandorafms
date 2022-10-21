@@ -44,7 +44,7 @@ class AuditLog extends HTML
      *
      * @var array
      */
-    public $AJAXMethods = [ 'draw' ];
+    public $AJAXMethods = ['draw'];
 
     /**
      * Ajax page.
@@ -78,7 +78,6 @@ class AuditLog extends HTML
 
         // Set the ajax controller.
         $this->ajaxController = $ajaxController;
-
     }
 
 
@@ -232,7 +231,6 @@ class AuditLog extends HTML
 
         // Load own javascript file.
         echo $this->loadJS();
-
     }
 
 
@@ -368,39 +366,38 @@ class AuditLog extends HTML
 
         // Javascript content.
         ?>
-        <script type="text/javascript">
-            function format ( d ) {
-                var output = '';
+    <script type="text/javascript">
+        function format(d) {
+            var output = '';
 
-                if (d.extendedInfo === '') {
-                    output = "<?php echo __('There is no additional information to display'); ?>";
-                } else {
-                    output = d.extendedInfo;
-                }
-
-                return output;
+            if (d.extendedInfo === '') {
+                output = "<?php echo __('There is no additional information to display'); ?>";
+            } else {
+                output = d.extendedInfo;
             }
-            
-            $(document).ready(function() {
-                // Add event listener for opening and closing details
-                $('#audit_logs tbody').on('click', 'td.show_extended_info', function () {
-                    var tr = $(this).closest('tr');
-                    var table = <?php echo 'dt_'.$this->tableId; ?>;
-                    var row = table.row( tr );
-            
-                    if ( row.child.isShown() ) {
-                        // This row is already open - close it
-                        row.child.hide();
-                        tr.removeClass('shown');
-                    }
-                    else {
-                        // Open this row
-                        row.child( format(row.data()) ).show();
-                        tr.addClass('shown');
-                    }
-                } );
-            } );
-        </script>
+
+            return output;
+        }
+
+        $(document).ready(function() {
+            // Add event listener for opening and closing details
+            $('#audit_logs tbody').on('click', 'td.show_extended_info', function() {
+                var tr = $(this).closest('tr');
+                var table = $("#<?php echo $this->tableId; ?>").DataTable();
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+        });
+    </script>
         <?php
         // EOF Javascript content.
         return ob_get_clean();

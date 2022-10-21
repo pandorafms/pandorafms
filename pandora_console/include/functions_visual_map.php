@@ -3788,7 +3788,6 @@ function visual_map_get_user_layouts(
         unset($filter['can_manage_group_all']);
     }
 
-    $where = '';
     if ($check_user_groups === true && !empty($groups)) {
         if (empty($where)) {
             $where = '';

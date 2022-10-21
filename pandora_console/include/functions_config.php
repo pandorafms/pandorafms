@@ -612,6 +612,10 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP password');
                     }
 
+                    if (config_update_value('ldap_search_timeout', (int) get_parameter('ldap_search_timeout', 5), true) === false) {
+                        $error_update[] = __('Ldap search timeout');
+                    }
+
                     if (config_update_value('ldap_server_secondary', get_parameter('ldap_server_secondary'), true) === false) {
                         $error_update[] = __('Secondary LDAP server');
                     }
@@ -2695,6 +2699,10 @@ function config_process_config()
 
     if (!isset($config['ldap_admin_pass'])) {
         config_update_value('ldap_admin_pass', '');
+    }
+
+    if (!isset($config['ldap_search_timeout'])) {
+        config_update_value('ldap_search_timeout', 5);
     }
 
     if (!isset($config['ldap_server_secondary'])) {

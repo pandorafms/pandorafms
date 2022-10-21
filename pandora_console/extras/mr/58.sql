@@ -12,4 +12,9 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `warning_time` int(10) UNSIGNED DEFA
 ALTER TABLE `tlocal_component` ADD COLUMN `warning_time` int(10) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `warning_time` int(10) UNSIGNED DEFAULT 0;
 
+ALTER TABLE `tagente_modulo` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
+ALTER TABLE `tnetwork_component` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
+ALTER TABLE `tlocal_component` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
+ALTER TABLE `tpolicy_modules` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
+
 COMMIT;

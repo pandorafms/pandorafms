@@ -369,7 +369,15 @@ echo ui_print_help_tip(
 );
 
 echo '</td><td>';
-echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
+html_print_submit_button(
+    __('Search'),
+    'srcbutton',
+    false,
+    [
+        'icon'      => 'search',
+        'secondary' => true,
+    ]
+);
 echo '</form>';
 echo '<td>';
 echo '</tr></table>';
@@ -945,7 +953,7 @@ if ($agents !== false) {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Create agent button.
     echo '<div class="action-buttons">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
@@ -953,7 +961,10 @@ if (check_acl($config['id_user'], 0, 'AW')) {
         __('Create agent'),
         'crt-2',
         false,
-        'class="sub next"'
+        [
+            'icon'      => 'search',
+            'secondary' => true,
+        ]
     );
     echo '</form>';
     echo '</div>';

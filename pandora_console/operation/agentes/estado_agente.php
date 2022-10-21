@@ -290,8 +290,11 @@ echo '</td><td class="nowrap">';
 html_print_submit_button(
     __('Search'),
     'srcbutton',
-    '',
-    ['class' => 'sub search']
+    false,
+    [
+        'icon'      => 'search',
+        'secondary' => true,
+    ]
 );
 
 echo '</td>';

@@ -226,7 +226,15 @@ if (($policy_page) || (isset($agent))) {
         html_print_input_hidden('edit_module', 1);
         echo '</td>';
         echo '<td class="datos w10p">';
-        echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
+        html_print_submit_button(
+            __('Create'),
+            'updbutton',
+            false,
+            [
+                'icon'      => 'next',
+                'secondary' => true,
+            ]
+        );
         echo '</td>';
         echo '</tr>';
         echo '</form>';

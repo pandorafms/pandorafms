@@ -280,7 +280,15 @@ function mainModuleGroups()
     html_print_input_text('module_group_search', $module_group_search);
 
     echo '</td><td>';
-    echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
+    html_print_submit_button(
+        __('Search'),
+        'srcbutton',
+        false,
+        [
+            'icon'      => 'search',
+            'secondary' => true,
+        ]
+    );
     echo '</form>';
     echo '<td>';
     echo '</tr></table>';

@@ -91,6 +91,10 @@ if ($is_ajax === false && $pure === false) {
 
     $header_name = __('Heatmap view');
     switch ($type) {
+        case 3:
+            $header_name .= ' - '.__('Agents');
+        break;
+
         case 2:
             if (current($filter) == 0) {
                 $header_name .= ' - '.__('Module group').': '.__('Not assigned');

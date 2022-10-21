@@ -10135,7 +10135,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
     }
 
     if ($other['type'] == 'array') {
-        if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string', 'AW')) {
+        if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string')) {
             return;
         }
 

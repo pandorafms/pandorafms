@@ -34,6 +34,23 @@
  */
 
 @font-face {
+  font-family: "Pandora-Bold";
+  src: url("../fonts/Pandora-Bold.woff") format("woff");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Pandora-Regular";
+  src: url("../fonts/Pandora-Regular.woff") format("woff");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Pandora-Light";
+  src: url("../fonts/Pandora-Light.woff") format("woff");
+  font-weight: 100;
+}
+@font-face {
   font-family: "lato";
   src: url("../fonts/Lato-Regular.woff") format("woff");
   font-weight: 400;
@@ -139,7 +156,7 @@ body {
   flex-direction: column;
   min-height: 100%;
   font-weight: 400;
-  font-family: "lato";
+  font-family: "Pandora-Regular";
 }
 
 body.body-report {
@@ -176,11 +193,6 @@ input.button {
   background: #fff;
   padding: 2px 3px;
   margin: 10px 15px;
-}
-
-input[type="submit"],
-input[type="button"] {
-  cursor: pointer;
 }
 
 h1,
@@ -1810,7 +1822,10 @@ table.rounded_cells td {
   border-radius: 6px;
 }
 
-.action-buttons,
+.action-buttons {
+  display: flex;
+  flex-direction: row-reverse;
+}
 .right {
   text-align: right;
 }
@@ -1856,107 +1871,6 @@ input.default,
 input.pdf,
 input.spinn {
   padding-right: 30px;
-}
-
-button.next,
-input.next {
-  background-image: url(../../images/input_go.png);
-}
-button.upd,
-input.upd {
-  background-image: url(../../images/input_update.png);
-}
-button.wand,
-input.wand {
-  background-image: url(../../images/input_wand.png);
-}
-button.wand:disabled,
-input.wand:disabled {
-  background-image: url(../../images/input_wand.disabled.png);
-}
-button.search,
-input.search {
-  background-image: url(../../images/input_zoom.png);
-}
-button.search:disabled,
-input.search:disabled {
-  background-image: url(../../images/input_zoom.disabled.png);
-}
-button.ok,
-input.ok {
-  background-image: url(../../images/input_tick.png);
-}
-button.ok:disabled,
-input.ok:disabled {
-  background-image: url(../../images/input_tick.disabled.png);
-}
-button.add,
-input.add {
-  background-image: url(../../images/input_add.png);
-}
-button.add:disabled,
-input.add:disabled {
-  background-image: url(../../images/input_add.disabled.png);
-}
-button.cancel,
-input.cancel {
-  background-image: url(../../images/input_cross.png);
-}
-button.cancel:disabled,
-input.cancel:disabled {
-  background-image: url(../../images/input_cross.disabled.png);
-}
-button.delete,
-input.delete {
-  background-image: url(../../images/input_delete.png);
-}
-button.delete:disabled,
-input.delete:disabled {
-  background-image: url(../../images/input_delete.disabled.png);
-}
-button.cog,
-input.cog {
-  background-image: url(../../images/input_cog.png);
-}
-button.cog:disabled,
-input.cog:disabled {
-  background-image: url(../../images/input_cog.disabled.png);
-}
-button.config,
-input.config {
-  background-image: url(../../images/input_config.png);
-}
-button.config:disabled,
-input.config:disabled {
-  background-image: url(../../images/input_config.disabled.png);
-}
-button.filter,
-input.filter {
-  background-image: url(../../images/input_filter.png);
-}
-button.filter:disabled,
-input.filter:disabled {
-  background-image: url(../../images/input_filter.disabled.png);
-}
-button.pdf,
-input.pdf {
-  background-image: url(../../images/input_pdf.png);
-}
-button.pdf:disabled,
-input.pdf:disabled {
-  background-image: url(../../images/input_pdf.disabled.png);
-}
-button.camera,
-input.camera {
-  background-image: url(../../images/input_camera.png);
-}
-button.spinn,
-input.spinn {
-  background-image: url(../../images/spinner_green.gif);
-}
-button.deploy,
-input.deploy {
-  background-image: url(../../images/input_deploy.png);
 }
 
 button.add-item-img,
@@ -7128,12 +7042,6 @@ div.graph div.legend table {
   height: 30em;
 }
 
-.agent_manager {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
 #p_configurar_agente {
   float: right;
   font-style: lato;
@@ -9072,13 +8980,407 @@ div#err_msg_centralised {
   }
 }
 
-.text_input {
-  background-color: transparent !important;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 4px;
-  padding: 2px 5px;
+input {
+  background-color: #f6f7fb;
+  height: 24px;
+  border: 1px solid #c0ccdc;
+  border-radius: 8px;
+  padding-left: 12px;
+  font: normal normal normal 12px Pandora-Light;
+  color: #2b3332;
+}
+
+input:disabled {
+  background-color: #e5e9ed;
+  color: #8a96a6;
+}
+
+input[type="button"],
+input[type="submit"] {
+  width: 175px;
+  height: 45px;
+  background-color: #14524f;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  letter-spacing: 0px;
+  color: #ffffff;
+  font-family: Pandora-Regular;
+  font-size: 16px;
+  margin-left: 1em;
+  cursor: pointer;
+}
+
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  background-color: #1d7873;
+}
+
+input[type="button"]:active,
+input[type="submit"]:active {
+  background-color: #0d312f;
+  color: #ffffff;
+}
+
+input[type="button"].secondary,
+input[type="submit"].secondary {
+  width: 175px;
+  height: 45px;
+  background-color: #ffffff;
+  border: 2px solid #14524f;
+  color: #14524f;
+}
+
+input[type="button"].secondary:hover,
+input[type="submit"].secondary:hover {
+  border: 2px solid #1d7873;
+  color: #1d7873;
+}
+
+input[type="button"].secondary:active,
+input[type="submit"].secondary:active {
+  border: 2px solid #0d312f;
+  color: #0d312f;
+}
+
+button.inputButton,
+button.submitButton {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  min-width: 110px;
+  height: 32px;
+  font-size: 16px !important;
+  align-items: center;
+  line-height: 24px;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  background-color: #14524f;
+  color: #fff;
+  border: 1px solid #14524f;
+  border-radius: 5px;
+  padding-left: 0.5em;
+  cursor: pointer;
+}
+
+button.inputButton:hover,
+button.submitButton:hover {
+  background-color: #1d7873;
+  border-color: #1d7873;
+}
+
+button.inputButton:active,
+button.submitButton:active {
+  background-color: #0d312f;
+  border-color: #0d312f;
+}
+
+/* Button */
+button.inputButton > div,
+button.submitButton > div {
+  background-color: #fff;
+  width: 2rem;
+  height: 2rem;
+  margin-left: 1rem;
+}
+
+button.inputButton.secondary,
+button.submitButton.secondary {
+  background-color: #fff;
+  color: #14524f;
+  border: 2px solid #14524f;
+}
+
+button.inputButton.secondary > div,
+button.submitButton.secondary > div {
+  background-color: #14524f !important;
+}
+
+button.inputButton.secondary:hover,
+button.submitButton.secondary:hover {
+  color: #1d7873 !important;
+  border-color: #1d7873 !important;
+}
+
+button.inputButton.secondary:hover > div,
+button.submitButton.secondary:hover > div {
+  background-color: #1d7873 !important;
+}
+
+button.inputButton.secondary:active,
+button.submitButton.secondary:active {
+  color: #0d312f !important;
+  border-color: #0d312f !important;
+}
+
+button.inputButton.secondary:active > div,
+button.submitButton.secondary:active > div {
+  background-color: #0d312f !important;
+}
+
+button div.camera {
+  mask: url(../../images/svg/picture.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/picture.svg) no-repeat center / contain;
+}
+
+button div.ok {
+  mask: url(../../images/svg/ok.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/ok.svg) no-repeat center / contain;
+}
+
+button div.next {
+  mask: url(../../images/svg/arrow.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/arrow.svg) no-repeat center / contain;
+}
+
+button div.search {
+  mask: url(../../images/svg/search.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/search.svg) no-repeat center / contain;
+}
+
+button div.wand,
+button div.upd {
+  mask: url(../../images/svg/success.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/success.svg) no-repeat center / contain;
+}
+
+button div.add {
+  mask: url(../../images/svg/plus.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/plus.svg) no-repeat center / contain;
+}
+
+button div.delete {
+  mask: url(../../images/svg/trash.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/trash.svg) no-repeat center / contain;
+}
+
+button div.cancel {
+  mask: url(../../images/svg/left.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/left.svg) no-repeat center / contain;
+}
+
+.ui-dialog-buttonset {
+  display: flex;
+}
+
+button.ui-button-text-only.ui-widget.sub {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-content: center;
+  min-width: 100px;
+  height: 32px;
+  font-size: 16px !important;
+  align-items: center;
+  line-height: 24px;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0;
+}
+
+button.ui-button.ui-widget.submit-next {
+  background-color: #14524f;
+  color: #fff;
+  border: 1px solid #14524f;
+}
+
+button.ui-button.ui-widget.submit-next:hover {
+  background-color: #1d7873;
+  border-color: #1d7873;
+}
+
+button.ui-button.ui-widget.submit-next:active {
+  background-color: #0d312f;
+  border-color: #0d312f;
+}
+
+button.ui-button.ui-widget.submit-cancel {
+  background-color: #fff;
+  color: #14524f;
+  border: 1px solid #fff;
+}
+
+button.ui-button.ui-widget.submit-cancel:hover {
+  color: #1d7873;
+}
+
+button.ui-button.ui-widget.submit-cancel:active {
+  color: #0d312f;
+}
+
+/* clean the next */
+button.next,
+input.next {
+  background-image: url(../../images/svg/arrow.svg);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+}
+
+button.upd,
+input.upd {
+  background-image: url(../../images/input_update.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.wand,
+input.wand {
+  background-image: url(../../images/input_wand.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.wand:disabled,
+input.wand:disabled {
+  background-image: url(../../images/input_wand.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.search,
+input.search {
+  background-image: url(../../images/input_zoom.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.search:disabled,
+input.search:disabled {
+  background-image: url(../../images/input_zoom.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.ok,
+input.ok {
+  background-image: url(../../images/input_tick.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.ok:disabled,
+input.ok:disabled {
+  background-image: url(../../images/input_tick.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.add,
+input.add {
+  background-image: url(../../images/input_add.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.add:disabled,
+input.add:disabled {
+  background-image: url(../../images/input_add.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.cancel,
+input.cancel {
+  background-image: url(../../images/input_cross.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.cancel:disabled,
+input.cancel:disabled {
+  background-image: url(../../images/input_cross.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.delete,
+input.delete {
+  background-image: url(../../images/input_delete.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.delete:disabled,
+input.delete:disabled {
+  background-image: url(../../images/input_delete.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.cog,
+input.cog {
+  background-image: url(../../images/input_cog.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.cog:disabled,
+input.cog:disabled {
+  background-image: url(../../images/input_cog.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.config,
+input.config {
+  background-image: url(../../images/input_config.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.config:disabled,
+input.config:disabled {
+  background-image: url(../../images/input_config.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.filter,
+input.filter {
+  background-image: url(../../images/input_filter.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.filter:disabled,
+input.filter:disabled {
+  background-image: url(../../images/input_filter.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.pdf,
+input.pdf {
+  background-image: url(../../images/input_pdf.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.pdf:disabled,
+input.pdf:disabled {
+  background-image: url(../../images/input_pdf.disabled.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.camera,
+input.camera {
+  background-image: url(../../images/input_camera.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.spinn,
+input.spinn {
+  background-image: url(../../images/spinner_green.gif);
+  background-position: 90% center;
+  background-repeat: no-repeat;
+}
+
+button.deploy,
+input.deploy {
+  background-image: url(../../images/input_deploy.png);
+  background-position: 90% center;
+  background-repeat: no-repeat;
 }
 
 .password_input {
@@ -9118,4 +9420,8 @@ div#err_msg_centralised {
   float: right;
   margin-right: -110px;
   margin-top: 13px;
+}
+
+.svg_ico_border {
+  fill: #fff;
 }

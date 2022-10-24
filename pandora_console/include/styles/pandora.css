@@ -9047,16 +9047,16 @@ button.submitButton {
   justify-content: space-between;
   flex-direction: row;
   min-width: 110px;
-  height: 32px;
-  font-size: 16px !important;
+  height: 48px;
+  font-size: 14px !important;
   align-items: center;
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
   background-color: #14524f;
   color: #fff;
   border: 1px solid #14524f;
-  border-radius: 5px;
-  padding-left: 0.5em;
+  border-radius: 50px;
+  padding: 0 10px 0 12px;
   cursor: pointer;
 }
 
@@ -9072,7 +9072,6 @@ button.submitButton:active {
   border-color: #0d312f;
 }
 
-/* Button */
 button.inputButton > div,
 button.submitButton > div {
   background-color: #fff;
@@ -9204,183 +9203,6 @@ button.ui-button.ui-widget.submit-cancel:hover {
 
 button.ui-button.ui-widget.submit-cancel:active {
   color: #0d312f;
-}
-
-/* clean the next */
-button.next,
-input.next {
-  background-image: url(../../images/svg/arrow.svg);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-  background-size: 24px;
-}
-
-button.upd,
-input.upd {
-  background-image: url(../../images/input_update.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.wand,
-input.wand {
-  background-image: url(../../images/input_wand.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.wand:disabled,
-input.wand:disabled {
-  background-image: url(../../images/input_wand.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.search,
-input.search {
-  background-image: url(../../images/input_zoom.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.search:disabled,
-input.search:disabled {
-  background-image: url(../../images/input_zoom.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.ok,
-input.ok {
-  background-image: url(../../images/input_tick.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.ok:disabled,
-input.ok:disabled {
-  background-image: url(../../images/input_tick.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.add,
-input.add {
-  background-image: url(../../images/input_add.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.add:disabled,
-input.add:disabled {
-  background-image: url(../../images/input_add.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.cancel,
-input.cancel {
-  background-image: url(../../images/input_cross.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.cancel:disabled,
-input.cancel:disabled {
-  background-image: url(../../images/input_cross.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.delete,
-input.delete {
-  background-image: url(../../images/input_delete.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.delete:disabled,
-input.delete:disabled {
-  background-image: url(../../images/input_delete.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.cog,
-input.cog {
-  background-image: url(../../images/input_cog.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.cog:disabled,
-input.cog:disabled {
-  background-image: url(../../images/input_cog.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.config,
-input.config {
-  background-image: url(../../images/input_config.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.config:disabled,
-input.config:disabled {
-  background-image: url(../../images/input_config.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.filter,
-input.filter {
-  background-image: url(../../images/input_filter.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.filter:disabled,
-input.filter:disabled {
-  background-image: url(../../images/input_filter.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.pdf,
-input.pdf {
-  background-image: url(../../images/input_pdf.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.pdf:disabled,
-input.pdf:disabled {
-  background-image: url(../../images/input_pdf.disabled.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.camera,
-input.camera {
-  background-image: url(../../images/input_camera.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.spinn,
-input.spinn {
-  background-image: url(../../images/spinner_green.gif);
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
-
-button.deploy,
-input.deploy {
-  background-image: url(../../images/input_deploy.png);
-  background-position: 90% center;
-  background-repeat: no-repeat;
 }
 
 .password_input {

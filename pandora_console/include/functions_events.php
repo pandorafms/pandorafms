@@ -1102,13 +1102,13 @@ function events_get_all(
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
-                    io_safe_output($filter['custom_data'])
+                    $filter['custom_data']
                 );
             } else {
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
-                    io_safe_output($filter['custom_data'])
+                    $filter['custom_data']
                 );
             }
         } else {

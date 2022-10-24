@@ -292,8 +292,8 @@ html_print_submit_button(
     'srcbutton',
     false,
     [
-        'icon'      => 'search',
-        'secondary' => true,
+        'icon' => 'search',
+        'mode' => 'secondary',
     ]
 );
 

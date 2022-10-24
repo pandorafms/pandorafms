@@ -998,16 +998,16 @@ class ModuleTemplates extends HTML
     {
         global $config;
 
-        $createNewTemplate = ($this->id_np == 0) ? true : false;
+        $createNewTemplate = ((int) $this->id_np === 0);
 
-        if ($createNewTemplate) {
+        if ($createNewTemplate === true) {
             // Assignation for submit button.
-            $formButtonClass = 'sub wand';
+            $formButtonClass = 'wand';
             $formAction = 'create';
             $formButtonLabel = __('Create');
         } else {
             // Assignation for submit button.
-            $formButtonClass = 'sub upd';
+            $formButtonClass = 'update';
             $formAction = 'update';
             $formButtonLabel = __('Update');
         }
@@ -1099,7 +1099,7 @@ class ModuleTemplates extends HTML
                 'name'       => 'action_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
-                'attributes' => 'class="float-right '.$formButtonClass.'"',
+                'attributes' => [ 'icon' => $formButtonClass ],
                 'return'     => true,
             ],
         ];
@@ -1110,7 +1110,7 @@ class ModuleTemplates extends HTML
                     'name'       => 'add_components_button',
                     'label'      => __('Add components'),
                     'type'       => 'button',
-                    'attributes' => 'class="float-right sub cog"',
+                    'attributes' => [ 'icon' => 'cog' ],
                     'script'     => 'showAddComponent();',
                     'return'     => true,
                 ],

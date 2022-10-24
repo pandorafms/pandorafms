@@ -553,16 +553,13 @@ if ($load_filter_modal) {
     $table->width = '100%';
     $table->cellspacing = 4;
     $table->cellpadding = 4;
+    $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
     $table->class = 'databox';
-    if (is_metaconsole()) {
+    $filter_id_width = '200px';
+    if (is_metaconsole() === true) {
         $table->cellspacing = 0;
         $table->cellpadding = 0;
         $table->class = 'databox filters';
-    }
-
-    $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    $filter_id_width = '200px';
-    if (is_metaconsole()) {
         $filter_id_width = '150px';
     }
 
@@ -587,7 +584,10 @@ if ($load_filter_modal) {
         __('Load filter'),
         'load_filter',
         false,
-        'class="sub upd"',
+        [
+            'icon' => 'update',
+            'mode' => 'secondary',
+        ],
         true
     );
     $data[1] .= html_print_input_hidden('load_filter', 1, true);
@@ -726,14 +726,14 @@ if ($save_filter_modal) {
         $table->cellspacing = 4;
         $table->cellpadding = 4;
         $table->class = 'databox';
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $table->class = 'databox filters';
             $table->cellspacing = 0;
             $table->cellpadding = 0;
         }
 
         $table->styleTable = 'font-weight: bold; text-align:left;';
-        if (!is_metaconsole()) {
+        if (is_metaconsole() === false) {
             $table->style[0] = 'width: 50%; width:50%;';
         }
 
@@ -824,15 +824,23 @@ if ($save_filter_modal) {
         $table->rowclass[] = '';
 
         html_print_table($table);
-        echo '<div>';
-            echo html_print_submit_button(
-                __('Save filter'),
-                'save_filter',
-                false,
-                'class="sub upd float-right" onclick="save_new_filter();"',
-                true
-            );
-        echo '</div>';
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Save filter'),
+                    'save_filter',
+                    false,
+                    [
+                        'icon'    => 'update',
+                        'mode'    => 'secondary',
+                        'onClick' => 'save_new_filter();',
+                    ],
+                    true
+                ),
+            ]
+        );
     } else {
         include 'general/noaccess.php';
     }

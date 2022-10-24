@@ -675,10 +675,10 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
     html_print_input_hidden('update', 1);
     html_print_input_hidden('id', $id);
-    html_print_submit_button(__('Update'), 'crt', false, 'class="sub upd"');
+    html_print_submit_button(__('Update'), 'crt', false, ['icon' => 'update']);
 } else {
     html_print_input_hidden('create', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub wand"');
+    html_print_submit_button(__('Create'), 'crt', false, ['icon' => 'wand']);
 }
 
 echo '</div>';

@@ -285,8 +285,8 @@ function mainModuleGroups()
         'srcbutton',
         false,
         [
-            'icon'      => 'search',
-            'secondary' => true,
+            'icon' => 'search',
+            'mode' => 'secondary',
         ]
     );
     echo '</form>';

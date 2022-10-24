@@ -967,26 +967,34 @@ echo '</span>';
 
 
 if ($id_agente) {
-    echo '<div class="action-buttons">';
-    html_print_submit_button(
+    $submitButton = html_print_submit_button(
         __('Update'),
         'updbutton',
         false,
-        'class="sub upd"'
+        [ 'icon' => 'update'],
+        true
     );
-    html_print_input_hidden('update_agent', 1);
-    html_print_input_hidden('id_agente', $id_agente);
+    $submitButton .= html_print_input_hidden('update_agent', 1);
+    $submitButton .= html_print_input_hidden('id_agente', $id_agente);
 } else {
-    html_print_submit_button(
+    $submitButton = html_print_submit_button(
         __('Create'),
         'crtbutton',
         false,
-        'class="sub wand"'
+        [ 'icon' => 'wand'],
+        true
     );
-    html_print_input_hidden('create_agent', 1);
+    $submitButton .= html_print_input_hidden('create_agent', 1);
 }
 
-echo '</div></form>';
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $submitButton,
+    ]
+);
+
+echo '</form>';
 
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');

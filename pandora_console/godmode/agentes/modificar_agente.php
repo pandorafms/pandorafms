@@ -374,8 +374,8 @@ html_print_submit_button(
     'srcbutton',
     false,
     [
-        'icon'      => 'search',
-        'secondary' => true,
+        'icon' => 'search',
+        'mode' => 'mini',
     ]
 );
 echo '</form>';
@@ -955,19 +955,23 @@ if ($agents !== false) {
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Create agent button.
-    echo '<div class="action-buttons">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-    html_print_submit_button(
-        __('Create agent'),
-        'crt-2',
-        false,
+    html_print_div(
         [
-            'icon'      => 'search',
-            'secondary' => true,
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Create agent'),
+                'crt-2',
+                false,
+                [
+                    'icon' => 'cog',
+                    'mode' => 'secondary',
+                ],
+                true
+            ),
         ]
     );
     echo '</form>';
-    echo '</div>';
 }
 
 echo '</td></tr></table>';

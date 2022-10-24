@@ -231,8 +231,8 @@ if (($policy_page) || (isset($agent))) {
             'updbutton',
             false,
             [
-                'icon'      => 'next',
-                'secondary' => true,
+                'icon' => 'next',
+                'mode' => 'secondary',
             ]
         );
         echo '</td>';

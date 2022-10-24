@@ -3335,16 +3335,15 @@ function html_print_submit_button($label='OK', $name='', $disabled=false, $attri
 
     // Icon for show in button.
     $iconToUse = '';
+    $attributesOutput = '';
     if (is_array($attributes) === true) {
-        $attr_array = $attributes;
-        $attributes = '';
-        foreach ($attr_array as $attribute => $value) {
+        foreach ($attributes as $attribute => $value) {
             if ($attribute === 'icon') {
                 $iconToUse = $value;
             } else if ($attribute === 'secondary') {
                 $secondary = true;
             } else {
-                $attributes .= $attribute.'="'.$value.'" ';
+                $attributesOutput .= $attribute.'="'.$value.'" ';
             }
         }
     } else if (empty($attributes) === false && is_string($attributes) === true) {
@@ -3374,9 +3373,10 @@ function html_print_submit_button($label='OK', $name='', $disabled=false, $attri
     }
 
     $output = sprintf(
-        '<button class="submitButton%s"%s>%s%s</button>',
+        '<button class="submitButton%s"%s%s>%s%s</button>',
         $secondary,
         ($disabled === true) ? ' disabled' : '',
+        $attributesOutput,
         $label,
         $iconDiv
     );
@@ -3460,7 +3460,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     }
 
     $output = sprintf(
-        '<button class="inputButton %s " %s %s %s %s %s > %s </button>',
+        '<button type="button" class="inputButton %s " %s %s %s %s %s > %s </button>',
         $secondary,
         (empty($name) === false) ? ' name="'.$name.'"' : '',
         (empty($name) === false) ? ' id="button-'.$name.'"' : '',

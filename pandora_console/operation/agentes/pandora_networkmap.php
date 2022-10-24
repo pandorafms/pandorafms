@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -822,19 +822,27 @@ switch ($tab) {
         }
 
         if ($networkmaps_write || $networkmaps_manage) {
-            echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
-            echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+            echo '<form id="new_networkmap" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
             html_print_input_hidden('new_networkmap', 1);
-            html_print_submit_button(__('Create network map'), 'crt', false, 'class="sub next float-right"');
             echo '</form>';
-            echo '</div>';
 
-            echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
-            echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+            echo '<form id="empty_networkmap" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
             html_print_input_hidden('new_empty_networkmap', 1);
-            html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next float-right mrgn_right_20px"');
             echo '</form>';
-            echo '</div>';
+
+            html_print_div(
+                [
+                    'class'   => 'action-buttons',
+                    'content' => html_print_submit_button(__('Create network map'), 'crt', false, [ 'icon' => 'next', 'form' => 'new_networkmap' ], true).html_print_submit_button(__('Create empty network map'), 'crt', false, [ 'icon' => 'next', 'form' => 'empty_networkmap' ], true),
+                ],
+                false
+            );
+            /*
+                echo "<div style='width: ".$table->width."; margin-top: 5px;' class='action-buttons'>";
+                html_print_submit_button(__('Create network map'), 'crt', false, 'class="sub next"');
+                html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next"');
+                echo '</div>';
+            */
         }
     break;
 }

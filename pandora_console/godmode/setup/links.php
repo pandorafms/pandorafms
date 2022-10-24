@@ -123,11 +123,25 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     echo '</table>';
     echo "<table width='100%'>";
     echo "<tr><td align='right'>";
-    if (isset($_GET['form_add'])) {
-        echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+    if (isset($_GET['form_add']) === true) {
+        $actionForPerform = __('Create');
+        $iconForPerform = 'wand';
     } else {
-        echo "<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+        $actionForPerform = __('Update');
+        $iconForPerform = 'update';
     }
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                $actionForPerform,
+                'crtbutton',
+                false,
+                [ 'icon' => $iconForPerform ]
+            ),
+        ],
+    );
 
     echo '</form></td></tr></table>';
 } else {
@@ -170,6 +184,18 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     echo "<table width='100%'>";
     echo "<tr><td align='right'>";
     echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
-    echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Add'),
+                'form_add',
+                false,
+                [ 'icon' => 'wand' ]
+            ),
+        ],
+    );
+
     echo '</form></table>';
 }

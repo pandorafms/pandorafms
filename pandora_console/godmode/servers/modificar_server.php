@@ -96,17 +96,30 @@ if (isset($_GET['server'])) {
 
     html_print_table($table);
 
-    echo '<div class="action-buttons w100p">';
-    echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Update'),
+                '',
+                false,
+                [ 'icon' => 'update' ],
+                true
+            ),
+        ]
+    );
+
     echo '</form>';
 
-    if ($row['server_type'] == 13) {
-        echo '<div style="margin-top: 20px;">';
-        ui_toggle($content, __('Credential boxes'), '', 'toggle_credential', false);
-        echo '</div>';
+    if ((int) $row['server_type'] === 13) {
+        html_print_div(
+            [
+                'class'   => 'mrgn_top_20px',
+                'content' => ui_toggle($content, __('Credential boxes'), '', 'toggle_credential', false, true),
+            ],
+        );
     }
-} else if (isset($_GET['server_remote'])) {
+} else if (isset($_GET['server_remote']) === true) {
     // Headers.
     $id_server = get_parameter_get('server_remote');
     $ext = get_parameter('ext', '');
@@ -168,7 +181,7 @@ if (isset($_GET['server'])) {
     ui_print_page_header(__('%s servers', get_product_name()), 'images/gm_servers.png', false, '', true);
 
     // Move SNMP modules back to the enterprise server.
-    if (isset($_GET['server_reset_snmp_enterprise'])) {
+    if (isset($_GET['server_reset_snmp_enterprise']) === true) {
         $result = db_process_sql('UPDATE tagente_estado SET last_error=0');
 
         if ($result === false) {

@@ -38,7 +38,12 @@ Transaction graphs represent the different processes within our infrastructure t
             ?>
                                                                                         </p>
         <form action="index.php?sec=network&sec2=enterprise/operation/agentes/manage_transmap_creation&create_transaction=1" method="post">
-            <input type="submit" class="button_task" value="<?php echo __('Create Transactions'); ?>" />
+            <?php
+            html_print_submit_button(
+                __('Create Transactions'),
+                'createTransButton'
+            );
+            ?>
         </form>
     </div>
 </div>

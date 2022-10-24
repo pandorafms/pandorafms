@@ -155,9 +155,18 @@ ul.wizard li > textarea {
 }
 
 .action_button_list {
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
   height: 60px;
 }
 
+.action_button_list ul {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-items: center;
+}
 .action_button_list li {
   display: inline;
 }

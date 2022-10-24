@@ -198,13 +198,28 @@ $table->data[4][1] .= ui_print_help_tip('Defines threshold as a percentage of va
 $table->data[4][1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true);
 $table->data[4][1] .= '</div>';
 
+$table->data[5][0] .= '<span id="warning_time">'.__('Change to critical status after');
+$table->data[5][1] .= html_print_input_text(
+    'warning_time',
+    $warning_time,
+    '',
+    5,
+    255,
+    true,
+    $disabledBecauseInPolicy,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
+$table->data[5][1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
+
 $table->data[4][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 $table->colspan[4][2] = 2;
 $table->rowspan[4][2] = 3;
 
-$table->data[5][0] = __('Critical status');
-$table->data[5][1] = '<span id="minmax_critical"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
-$table->data[5][1] .= html_print_input_text(
+$table->data[6][0] = __('Critical status');
+$table->data[6][1] = '<span id="minmax_critical"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
+$table->data[6][1] .= html_print_input_text(
     'min_critical',
     $min_critical,
     '',
@@ -212,8 +227,8 @@ $table->data[5][1] .= html_print_input_text(
     15,
     true
 );
-$table->data[5][1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
-$table->data[5][1] .= html_print_input_text(
+$table->data[6][1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
+$table->data[6][1] .= html_print_input_text(
     'max_critical',
     $max_critical,
     '',
@@ -221,8 +236,8 @@ $table->data[5][1] .= html_print_input_text(
     15,
     true
 ).'</span>';
-$table->data[5][1] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
-$table->data[5][1] .= html_print_input_text(
+$table->data[6][1] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
+$table->data[6][1] .= html_print_input_text(
     'str_critical',
     $str_critical,
     '',
@@ -230,28 +245,28 @@ $table->data[5][1] .= html_print_input_text(
     1024,
     true
 ).'</span>';
-$table->data[5][1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>';
-$table->data[5][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
-$table->data[5][1] .= '</div>';
+$table->data[6][1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>';
+$table->data[6][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
+$table->data[6][1] .= '</div>';
 
-$table->data[5][1] .= '<div id="percentage_critical"><em>'.__('Percentage').'</em>';
-$table->data[5][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-$table->data[5][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true);
-$table->data[5][1] .= '</div>';
+$table->data[6][1] .= '<div id="percentage_critical"><em>'.__('Percentage').'</em>';
+$table->data[6][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+$table->data[6][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true);
+$table->data[6][1] .= '</div>';
 
 
-$table->data[6][0] = __('FF threshold');
-$table->colspan[6][1] = 3;
+$table->data[7][0] = __('FF threshold');
+$table->colspan[7][1] = 3;
 
-$table->data[6][1] = __('Keep counters');
-$table->data[6][1] .= html_print_checkbox(
+$table->data[7][1] = __('Keep counters');
+$table->data[7][1] .= html_print_checkbox(
     'ff_type',
     1,
     $ff_type,
     true
 ).'<br />';
 
-$table->data[6][1] .= html_print_radio_button(
+$table->data[7][1] .= html_print_radio_button(
     'each_ff',
     0,
     '',
@@ -259,7 +274,7 @@ $table->data[6][1] .= html_print_radio_button(
     true
 ).' '.__('All state changing').' : ';
 
-$table->data[6][1] .= html_print_input_text(
+$table->data[7][1] .= html_print_input_text(
     'ff_event',
     $ff_event,
     '',
@@ -267,15 +282,15 @@ $table->data[6][1] .= html_print_input_text(
     15,
     true
 ).'<br />';
-$table->data[6][1] .= html_print_radio_button(
+$table->data[7][1] .= html_print_radio_button(
     'each_ff',
     1,
     '',
     $each_ff,
     true
 ).' '.__('Each state changing').' : ';
-$table->data[6][1] .= __('To normal');
-$table->data[6][1] .= html_print_input_text(
+$table->data[7][1] .= __('To normal');
+$table->data[7][1] .= html_print_input_text(
     'ff_event_normal',
     $ff_event_normal,
     '',
@@ -283,8 +298,8 @@ $table->data[6][1] .= html_print_input_text(
     15,
     true
 ).' ';
-$table->data[6][1] .= __('To warning');
-$table->data[6][1] .= html_print_input_text(
+$table->data[7][1] .= __('To warning');
+$table->data[7][1] .= html_print_input_text(
     'ff_event_warning',
     $ff_event_warning,
     '',
@@ -292,8 +307,8 @@ $table->data[6][1] .= html_print_input_text(
     15,
     true
 ).' ';
-$table->data[6][1] .= __('To critical');
-$table->data[6][1] .= html_print_input_text(
+$table->data[7][1] .= __('To critical');
+$table->data[7][1] .= html_print_input_text(
     'ff_event_critical',
     $ff_event_critical,
     '',
@@ -302,41 +317,41 @@ $table->data[6][1] .= html_print_input_text(
     true
 );
 
-$table->data[7][0] = __('Historical data');
-$table->data[7][1] = html_print_checkbox('history_data', 1, $history_data, true);
+$table->data[8][0] = __('Historical data');
+$table->data[8][1] = html_print_checkbox('history_data', 1, $history_data, true);
 
-$table->data[8][0] = __('Min. Value');
-$table->data[8][1] = html_print_input_text('min', $min, '', 5, 15, true).' '.ui_print_help_tip(__('Any value below this number is discarted'), true);
-$table->data[8][2] = __('Max. Value');
-$table->data[8][3] = html_print_input_text('max', $max, '', 5, 15, true).' '.ui_print_help_tip(__('Any value over this number is discarted'), true);
-$table->data[9][0] = __('Unit');
-$table->data[9][1] = html_print_input_text('unit', $unit, '', 12, 25, true);
+$table->data[9][0] = __('Min. Value');
+$table->data[9][1] = html_print_input_text('min', $min, '', 5, 15, true).' '.ui_print_help_tip(__('Any value below this number is discarted'), true);
+$table->data[9][2] = __('Max. Value');
+$table->data[9][3] = html_print_input_text('max', $max, '', 5, 15, true).' '.ui_print_help_tip(__('Any value over this number is discarted'), true);
+$table->data[10][0] = __('Unit');
+$table->data[10][1] = html_print_input_text('unit', $unit, '', 12, 25, true);
 
-$table->data[9][2] = __('Discard unknown events');
-$table->data[9][3] = html_print_checkbox(
+$table->data[10][2] = __('Discard unknown events');
+$table->data[10][3] = html_print_checkbox(
     'throw_unknown_events',
     1,
     network_components_is_disable_type_event($id, EVENTS_GOING_UNKNOWN),
     true
 );
 
-$table->data[10][0] = __('Critical instructions').ui_print_help_tip(__('Instructions when the status is critical'), true);
-$table->data[10][1] = html_print_textarea('critical_instructions', 2, 65, $critical_instructions, '', true);
-$table->colspan[10][1] = 3;
-
-$table->data[11][0] = __('Warning instructions').ui_print_help_tip(__('Instructions when the status is warning'), true);
-$table->data[11][1] = html_print_textarea('warning_instructions', 2, 65, $warning_instructions, '', true);
+$table->data[11][0] = __('Critical instructions').ui_print_help_tip(__('Instructions when the status is critical'), true);
+$table->data[11][1] = html_print_textarea('critical_instructions', 2, 65, $critical_instructions, '', true);
 $table->colspan[11][1] = 3;
 
-$table->data[12][0] = __('Unknown instructions').ui_print_help_tip(__('Instructions when the status is unknown'), true);
-$table->data[12][1] = html_print_textarea('unknown_instructions', 2, 65, $unknown_instructions, '', true);
+$table->data[12][0] = __('Warning instructions').ui_print_help_tip(__('Instructions when the status is warning'), true);
+$table->data[12][1] = html_print_textarea('warning_instructions', 2, 65, $warning_instructions, '', true);
 $table->colspan[12][1] = 3;
 
-$table->data[13][0] = __('Description');
-$table->data[13][1] = html_print_textarea('description', 2, 65, $description, '', true);
+$table->data[13][0] = __('Unknown instructions').ui_print_help_tip(__('Instructions when the status is unknown'), true);
+$table->data[13][1] = html_print_textarea('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 $table->colspan[13][1] = 3;
 
-$next_row = 14;
+$table->data[14][0] = __('Description');
+$table->data[14][1] = html_print_textarea('description', 2, 65, $description, '', true);
+$table->colspan[14][1] = 3;
+
+$next_row = 15;
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $table->data[$next_row][0] = __('Category');

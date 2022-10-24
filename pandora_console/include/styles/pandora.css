@@ -9044,7 +9044,7 @@ input[type="submit"].secondary:active {
   color: #0d312f;
 }
 
-button.inputButton,
+button.buttonButton,
 button.submitButton {
   display: flex;
   justify-content: space-between;
@@ -9063,8 +9063,43 @@ button.submitButton {
   cursor: pointer;
 }
 
-button.inputButton:not(.secondary),
-button.submitButton:not(.secondary) {
+button.buttonButton.mini,
+button.submitButton.mini {
+  height: 32px;
+}
+
+button.buttonButton.link,
+button.submitButton.link {
+  height: 32px;
+  text-decoration: underline;
+  box-shadow: none;
+  background: rgba(0, 0, 0, 0) !important;
+  border-color: rgba(0, 0, 0, 0) !important;
+  color: #14524f;
+}
+
+button.buttonButton.link > div,
+button.submitButton.link > div {
+  color: #14524f;
+}
+
+button.buttonButton.link:hover,
+button.submitButton.link:hover,
+button.buttonButton.link > div:hover,
+button.submitButton.link > div:hover {
+  background-color: #e1e7ee;
+}
+
+button.buttonButton.link:hover,
+button.submitButton.link:hover,
+button.buttonButton.link > div:hover,
+button.submitButton.link > div:hover {
+  color: #fff;
+  background-color: #96a2bf;
+}
+
+button.buttonButton:not(.secondary):not(.link),
+button.submitButton:not(.secondary):not(.link) {
   background: linear-gradient(
     90deg,
     #14524f 0%,
@@ -9076,24 +9111,18 @@ button.submitButton:not(.secondary) {
   transition: ease-in 0.3s;
 }
 
-button.inputButton:hover,
+button.buttonButton:hover,
 button.submitButton:hover {
-  background-position: -100% 0;
-  /*border: 5px solid #1d7873;*/
+  background-position: -100% 0 !important;
 }
 
-button.inputButton:active,
+button.buttonButton:active,
 button.submitButton:active {
   transition: ease-in 100ms;
   border: 2px solid #57ea82;
 }
-/*button.inputButton:active,
-button.submitButton:active {
-  transition: ease-in 100ms;
-  background-color: #0d312f;
-}*/
 
-button.inputButton > div,
+button.buttonButton > div,
 button.submitButton > div {
   background-color: #fff;
   width: 2rem;
@@ -9101,36 +9130,36 @@ button.submitButton > div {
   margin-left: 1rem;
 }
 
-button.inputButton.secondary,
+button.buttonButton.secondary,
 button.submitButton.secondary {
   background-color: #fff;
   color: #14524f;
   border: 2px solid #14524f;
 }
 
-button.inputButton.secondary > div,
+button.buttonButton.secondary > div,
 button.submitButton.secondary > div {
   background-color: #14524f !important;
 }
 
-button.inputButton.secondary:hover,
+button.buttonButton.secondary:hover,
 button.submitButton.secondary:hover {
   color: #1d7873 !important;
   border-color: #1d7873 !important;
 }
 
-button.inputButton.secondary:hover > div,
+button.buttonButton.secondary:hover > div,
 button.submitButton.secondary:hover > div {
   background-color: #1d7873 !important;
 }
 
-button.inputButton.secondary:active,
+button.buttonButton.secondary:active,
 button.submitButton.secondary:active {
   color: #0d312f !important;
   border-color: #0d312f !important;
 }
 
-button.inputButton.secondary:active > div,
+button.buttonButton.secondary:active > div,
 button.submitButton.secondary:active > div {
   background-color: #0d312f !important;
 }

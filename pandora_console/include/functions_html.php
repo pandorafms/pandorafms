@@ -3329,56 +3329,19 @@ function html_print_input_color($name, $value, $id='', $class=false, $return=fal
  */
 function html_print_submit_button($label='OK', $name='', $disabled=false, $attributes='', $return=false)
 {
-    if (empty($name) === true) {
-        $name = 'unnamed';
+    if (is_string($attributes) === true) {
+        $attributes = [];
     }
 
-    // Icon for show in button.
-    $iconToUse = '';
-    $attributesOutput = '';
-    if (is_array($attributes) === true) {
-        foreach ($attributes as $attribute => $value) {
-            if ($attribute === 'icon') {
-                $iconToUse = $value;
-            } else if ($attribute === 'secondary') {
-                $secondary = true;
-            } else {
-                $attributesOutput .= $attribute.'="'.$value.'" ';
-            }
-        }
-    } else if (empty($attributes) === false && is_string($attributes) === true) {
-        $tmpData = explode(' ', $attributes);
-        $iconToUse = $tmpData[(array_search('sub', $tmpData) + 1)];
-        $iconToUse = preg_replace('([^A-Za-z])', '', $iconToUse);
-    }
+    $attributes['type'] = 'submit';
 
-    // $secondary = true;
-    // Transform secondary boolean to string.
-    $secondary = ($secondary === true) ? ' secondary' : '';
-
-    if (empty($iconToUse) === false) {
-        $iconDiv = html_print_div(
-            [
-                'style' => '',
-                'class' => sprintf(
-                    'subIcon %s%s',
-                    $iconToUse,
-                    $secondary
-                ),
-            ],
-            true
-        );
-    } else {
-        $iconDiv = '';
-    }
-
-    $output = sprintf(
-        '<button class="submitButton%s"%s%s>%s%s</button>',
-        $secondary,
-        ($disabled === true) ? ' disabled' : '',
-        $attributesOutput,
+    $output = html_print_button(
         $label,
-        $iconDiv
+        $name,
+        $disabled,
+        '',
+        $attributes,
+        true
     );
 
     if ($return === false) {
@@ -3407,6 +3370,7 @@ function html_print_submit_button($label='OK', $name='', $disabled=false, $attri
 function html_print_button($label='OK', $name='', $disabled=false, $script='', $attributes='', $return=false, $imageButton=false, $modal=false, $message='')
 {
     $output = '';
+    $classes = '';
 
     if (empty($name) === true) {
         $name = 'unnamed';
@@ -3420,8 +3384,14 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         foreach ($attr_array as $attribute => $value) {
             if ($attribute === 'icon') {
                 $iconToUse = $value;
-            } else if ($attribute === 'secondary') {
-                $secondary = true;
+            } else if ($attribute === 'mode') {
+                $buttonMode = $value;
+                $classes .= ' '.$value;
+            } else if ($attribute === 'type') {
+                $buttonType = $value;
+                $classes .= ' '.$value.'Button';
+            } else if ($attribute === 'class') {
+                $classes .= ' '.$value;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
@@ -3432,18 +3402,14 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconToUse = preg_replace('([^A-Za-z])', '', $iconToUse);
     }
 
-    // $secondary = true;
-    // Transform secondary boolean to string.
-    $secondary = ($secondary === true) ? ' secondary' : '';
-
     if (empty($iconToUse) === false) {
         $iconDiv = html_print_div(
             [
                 'style' => '',
                 'class' => sprintf(
-                    'subIcon %s%s',
+                    'subIcon %s %s',
                     $iconToUse,
-                    $secondary
+                    (isset($buttonMode) === true) ? $buttonMode : ''
                 ),
             ],
             true
@@ -3459,9 +3425,16 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $content = $iconDiv;
     }
 
+    // In case of not selected button type, in this case, will be normal button.
+    if (isset($buttonType) === false || ($buttonType !== 'button' && $buttonType !== 'submit')) {
+        $buttonType = 'button';
+        $classes .= ' buttonButton';
+    }
+
     $output = sprintf(
-        '<button type="button" class="inputButton %s " %s %s %s %s %s > %s </button>',
-        $secondary,
+        '<button type="%s" class="%s" %s %s %s %s %s >%s</button>',
+        $buttonType,
+        $classes,
         (empty($name) === false) ? ' name="'.$name.'"' : '',
         (empty($name) === false) ? ' id="button-'.$name.'"' : '',
         (empty($label) === false) ? ' value="'.$label.'"' : '',

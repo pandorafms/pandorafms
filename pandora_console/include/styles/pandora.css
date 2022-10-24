@@ -9057,10 +9057,14 @@ button.submitButton {
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
   color: #fff;
-  border: 1px solid #14524f;
+  border: 2px solid #14524f;
   border-radius: 50px;
   padding: 0 10px 0 12px;
   cursor: pointer;
+}
+
+button.inputButton:not(.secondary),
+button.submitButton:not(.secondary) {
   background: linear-gradient(
     90deg,
     #14524f 0%,
@@ -9075,13 +9079,19 @@ button.submitButton {
 button.inputButton:hover,
 button.submitButton:hover {
   background-position: -100% 0;
+  /*border: 5px solid #1d7873;*/
 }
 
 button.inputButton:active,
 button.submitButton:active {
   transition: ease-in 100ms;
-  border: 5px solid #57ea82;
+  border: 2px solid #57ea82;
 }
+/*button.inputButton:active,
+button.submitButton:active {
+  transition: ease-in 100ms;
+  background-color: #0d312f;
+}*/
 
 button.inputButton > div,
 button.submitButton > div {

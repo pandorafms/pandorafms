@@ -70,10 +70,12 @@ $options_agents = [
 ];
 
 if (check_acl($config['id_user'], 0, 'UM')) {
-    $options_users = [
-        'add_profiles'    => __('Bulk profile add'),
-        'delete_profiles' => __('Bulk profile delete'),
-    ];
+    if (is_metaconsole() === false) {
+        $options_users = [
+            'add_profiles'    => __('Bulk profile add'),
+            'delete_profiles' => __('Bulk profile delete'),
+        ];
+    }
 
     if (users_is_admin() === true) {
         $options_users['edit_users'] = __('Edit users in bulk');

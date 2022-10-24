@@ -9051,7 +9051,8 @@ button.submitButton {
   flex-direction: row;
   min-width: 110px;
   height: 48px;
-  font-size: 14px !important;
+  font-size: 13px !important;
+  font-family: "Pandora-Light";
   align-items: center;
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
@@ -9166,6 +9167,10 @@ button div.cancel {
   -webkit-mask: url(../../images/svg/left.svg) no-repeat center / contain;
 }
 
+button div.cog {
+  mask: url(../../images/svg/cog.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/cog.svg) no-repeat center / contain;
+}
 .ui-dialog-buttonset {
   display: flex;
 }

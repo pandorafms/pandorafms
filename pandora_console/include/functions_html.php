@@ -3402,14 +3402,14 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconToUse = preg_replace('([^A-Za-z])', '', $iconToUse);
     }
 
-    if (empty($iconToUse) === false) {
+    if (empty($iconToUse) === false || (isset($buttonMode) === true && $buttonMode !== 'onlyIcon')) {
         $iconDiv = html_print_div(
             [
                 'style' => '',
                 'class' => sprintf(
                     'subIcon %s %s',
                     $iconToUse,
-                    (isset($buttonMode) === true) ? $buttonMode : ''
+                    (empty($buttonMode) === false) ? $buttonMode : ''
                 ),
             ],
             true

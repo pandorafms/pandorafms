@@ -595,7 +595,10 @@ function print_form_filter_monitors(
         'filter',
         false,
         'filter_modules();',
-        'class="sub search"',
+        [
+            'icon' => 'search',
+            'mode' => 'secondary mini',
+        ],
         true
     );
     $table->data[0][8] = html_print_button(
@@ -603,7 +606,10 @@ function print_form_filter_monitors(
         'filter',
         false,
         'reset_filter_modules();',
-        'class="sub upd mgn_tp_0"',
+        [
+            'icon' => 'fail',
+            'mode' => 'secondary mini',
+        ],
         true
     );
     $form_text .= html_print_table($table, true);

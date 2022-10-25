@@ -423,16 +423,22 @@ if ($free_search != '') {
             );
         }
 
-        if (!is_metaconsole()) {
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                    echo '<div class="action-buttons" style="width: '.$table->width.';">';
-                    html_print_submit_button(__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
-                    echo '</div>';
-            }
+        if ((is_metaconsole() === false) && ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
+            html_print_div(
+                [
+                    'class'   => 'action-buttons',
+                    'content' => html_print_submit_button(
+                        __('Validate'),
+                        'alert_validate',
+                        false,
+                        [ 'icon' => 'wand' ],
+                        true
+                    ),
+                ]
+            );
         }
 
-
-            $html_content = ob_get_clean();
+        $html_content = ob_get_clean();
 
         if ($agent_view_page === true) {
             // Create controlled toggle content.
@@ -451,7 +457,7 @@ if ($free_search != '') {
             echo $html_content;
         }
 
-            // strict user hidden
+            // Strict user hidden.
             echo '<div id="strict_hidden" class="invisible">';
             html_print_input_text('strict_user_hidden', $strict_user);
 

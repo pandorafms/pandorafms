@@ -165,17 +165,28 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
 $form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false);
 $form_filter .= '</td></tr>';
 
+$updateButton = html_print_submit_button(
+    __('Update'),
+    '',
+    false,
+    [
+        'icon' => 'update',
+        'mode' => 'mini',
+    ],
+    true
+);
+
 if (is_metaconsole() === true) {
     $form_filter .= '<tr>';
     $form_filter .= "<td colspan='6' align='right'>";
-    $form_filter .= html_print_submit_button(__('Update'), '', false, 'class="sub upd"', true);
+    $form_filter .= $updateButton;
     $form_filter .= '</td>';
     $form_filter .= '</tr>';
     $form_filter .= '</table>';
 } else {
     $form_filter .= '</table>';
     $form_filter .= "<div class='right height_100p'>";
-    $form_filter .= html_print_submit_button(__('Update'), '', false, 'class="sub upd"', true);
+    $form_filter .= $updateButton;
     $form_filter .= '</div>';
 }
 

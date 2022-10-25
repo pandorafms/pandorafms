@@ -375,7 +375,7 @@ html_print_submit_button(
     false,
     [
         'icon' => 'search',
-        'mode' => 'mini',
+        'mode' => 'secondary mini',
     ]
 );
 echo '</form>';
@@ -963,10 +963,7 @@ if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
                 __('Create agent'),
                 'crt-2',
                 false,
-                [
-                    'icon' => 'cog',
-                    'mode' => 'secondary',
-                ],
+                [ 'icon' => 'next' ],
                 true
             ),
         ]

@@ -389,7 +389,13 @@ class ExternalTools extends HTML
                 'id'      => '',
                 'class'   => 'action-buttons',
                 'style'   => 'width: 100%',
-                'content' => html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true),
+                'content' => html_print_submit_button(
+                    __('Update'),
+                    'update_button',
+                    false,
+                    [ 'icon' => 'update' ],
+                    true
+                ),
             ],
             true
         );
@@ -578,7 +584,22 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[0][6] = "<input style='margin:0px;' name=submit type=submit class='sub next' value='".__('Execute')."'>";
+        $table->data[0][6] = html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Execute'),
+                    'submit',
+                    false,
+                    [
+                        'icon' => 'cog',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
 
         // Output string.
         $output = '';

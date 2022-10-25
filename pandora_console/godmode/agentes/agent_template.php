@@ -185,7 +185,21 @@ echo "<tr><td class='datos w50p'>";
 html_print_select($select, 'template_id', '', '', '', 0, false, false, true, '', false, 'max-width: 200px !important');
 echo '</td>';
 echo '<td class="datos">';
-html_print_submit_button(__('Assign'), 'crt', false, 'class="sub next mgn_tp_0"');
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Assign'),
+            'crt',
+            false,
+            [
+                'icon' => 'wand',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ]
+);
 echo '</td>';
 echo '</tr>';
 echo '</form>';

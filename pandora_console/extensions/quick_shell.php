@@ -202,7 +202,7 @@ function quickShell()
                         'arguments' => [
                             'type'       => 'submit',
                             'label'      => __('Connect'),
-                            'attributes' => 'class="sub next"',
+                            'attributes' => ['icon' => 'cog'],
                         ],
                     ],
                 ],

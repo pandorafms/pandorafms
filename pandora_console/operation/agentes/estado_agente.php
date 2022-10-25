@@ -293,7 +293,7 @@ html_print_submit_button(
     false,
     [
         'icon' => 'search',
-        'mode' => 'secondary',
+        'mode' => 'secondary mini',
     ]
 );
 
@@ -968,7 +968,12 @@ if (!empty($table->data)) {
     if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
         echo '<div class="right float-right">';
         echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
+            html_print_submit_button(
+                __('Create agent'),
+                'crt',
+                false,
+                [ 'icon' => 'next']
+            );
         echo '</form>';
         echo '</div>';
     }
@@ -978,7 +983,12 @@ if (!empty($table->data)) {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
     echo '<div class="right float-right">';
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-        html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
+    html_print_submit_button(
+        __('Create agent'),
+        'crt',
+        false,
+        [ 'icon' => 'next']
+    );
     echo '</form>';
     echo '</div>';
 }

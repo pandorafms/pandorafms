@@ -189,21 +189,45 @@ if ($own_info['is_admin']) {
         true
     );
 
-    if (!isset($step)) {
+    if (isset($step) === false) {
         echo '<form class="add_alert_form" method="post">';
         html_print_table($table);
     }
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    if (isset($step) === false) {
+        $output = '';
 
-    if (!isset($step)) {
         if ($id_cluster) {
-            echo "<input onclick='window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");' type=button name='store' class='sub upd right mrgn_lft_20px' value='".__('Finish and view cluster')."'>";
+            $output .= html_print_button(
+                __('Finish and view cluster'),
+                'store',
+                false,
+                'window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");',
+                [
+                    'icon' => 'update',
+                    'mode' => 'secondary mini',
+                ],
+                true
+            );
         }
 
-        html_print_submit_button(__('Add alert'), 'add', false, 'class="sub wand"');
+        $output .= html_print_submit_button(
+            __('Add alert'),
+            'add',
+            false,
+            [ 'icon' => 'wand' ],
+            true
+        );
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => $output,
+            ]
+        );
+
         html_print_input_hidden('create_alert', 1);
-        echo '</div></form>';
+        echo '</form>';
     }
 
     ui_require_css_file('cluetip', 'include/styles/js/');

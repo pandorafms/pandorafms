@@ -1366,7 +1366,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         ]
     ).'</a>';
 
-    if ($tab == 'manage') {
+    if ($tab === 'manage') {
         $managetab['active'] = true;
     } else {
         $managetab['active'] = false;

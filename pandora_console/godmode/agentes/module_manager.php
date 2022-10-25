@@ -80,7 +80,15 @@ if (($policy_page !== false) || (isset($agent) === true)) {
 
 echo '</td>';
 echo "<td class='datos w10p'>";
-html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"');
+html_print_submit_button(
+    __('Filter'),
+    'filter',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'secondary mini',
+    ]
+);
 echo '</td>';
 echo "<td class='datos w10p'></td>";
 echo '</form>';
@@ -232,7 +240,7 @@ if (($policy_page) || (isset($agent))) {
             false,
             [
                 'icon' => 'next',
-                'mode' => 'secondary',
+                'mode' => 'mini secondary',
             ]
         );
         echo '</td>';
@@ -1283,33 +1291,43 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
 
 html_print_table($table);
 
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-
+if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
     html_print_input_hidden('submit_modules_action', 1);
 
-    html_print_select(
+    html_print_div(
         [
-            'disable' => 'Disable selected modules',
-            'delete'  => 'Delete selected modules',
-        ],
-        'module_action',
-        '',
-        '',
-        '',
-        0,
-        false,
-        false,
-        false
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Execute action'),
+                'submit_modules_action',
+                false,
+                [
+                    'icon' => 'next',
+                    'mode' => 'link',
+                ],
+                true
+            ).html_print_select(
+                [
+                    'disable' => 'Disable selected modules',
+                    'delete'  => 'Delete selected modules',
+                ],
+                'module_action',
+                '',
+                '',
+                '',
+                0,
+                true,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                300
+            ),
+        ]
     );
 
-    html_print_submit_button(
-        __('Execute action'),
-        'submit_modules_action',
-        false,
-        'class="sub next"'
-    );
-    echo '</div>';
     echo '</form>';
 }
 ?>
@@ -1317,7 +1335,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
 <script type="text/javascript">
 
     $(document).ready (function () {
-        
+
         $('[id^=checkbox-id_delete]').change(function(){
             if($(this).parent().parent().hasClass('checkselected')){
                 $(this).parent().parent().removeClass('checkselected');

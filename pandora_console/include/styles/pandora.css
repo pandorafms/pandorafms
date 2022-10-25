@@ -708,6 +708,9 @@ select:-internal-list-box {
   justify-content: space-between;
   align-content: center;
 }
+.flex-items-center {
+  align-items: center;
+}
 .flex-nowrap {
   flex-wrap: nowrap;
 }
@@ -9096,6 +9099,24 @@ button.submitButton > div {
   margin-left: 1rem;
 }
 
+button.buttonButton.onlyIcon,
+button.submitButton.onlyIcon {
+  width: 32px;
+  border: none;
+  box-shadow: none;
+}
+
+button.buttonButton.onlyIcon.pending,
+button.submitButton.onlyIcon.pending {
+  mask: url(../../images/svg/arrow.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/arrow.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.completed,
+button.submitButton.onlyIcon.completed {
+  mask: url(../../images/svg/success.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/success.svg) no-repeat right / contain;
+}
 button.buttonButton.secondary,
 button.submitButton.secondary {
   background-color: #fff;
@@ -9175,6 +9196,7 @@ button div.ok {
   -webkit-mask: url(../../images/svg/ok.svg) no-repeat center / contain;
 }
 
+button div.pending,
 button div.next {
   mask: url(../../images/svg/arrow.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/arrow.svg) no-repeat center / contain;

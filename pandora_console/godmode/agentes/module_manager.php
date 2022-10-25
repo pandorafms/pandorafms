@@ -40,16 +40,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_servers.php';
 
-$search_string = io_safe_output(
-    urldecode(
-        trim(
-            get_parameter(
-                'search_string',
-                ''
-            )
-        )
-    )
-);
+$search_string = get_parameter('search_string');
 
 global $policy_page;
 

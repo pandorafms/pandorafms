@@ -1825,6 +1825,7 @@ table.rounded_cells td {
 .action-buttons {
   display: flex;
   flex-direction: row-reverse;
+  align-items: center;
 }
 .action-buttons > button {
   margin-left: 16px;
@@ -9209,6 +9210,10 @@ button div.cancel {
 button div.cog {
   mask: url(../../images/svg/cog.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/cog.svg) no-repeat center / contain;
+}
+button div.fail {
+  mask: url(../../images/svg/fail.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/svg/fail.svg) no-repeat center / contain;
 }
 .ui-dialog-buttonset {
   display: flex;

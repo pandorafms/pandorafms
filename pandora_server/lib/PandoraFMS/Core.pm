@@ -1299,12 +1299,16 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
 	}
 
-	my $agent_status;
-	if(ref ($module) eq "HASH") {
-		$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+	my $time_down;
+	if ($alert_mode == RECOVERED_ALERT && defined($extra_macros->{'_modulelaststatuschange_'})) {
+		$time_down = (time() - $extra_macros->{'_modulelaststatuschange_'});
+	} else {
+		my $agent_status;
+		if(ref ($module) eq "HASH") {
+			$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+		}
+		$time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 	}
-
-	my $time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 
 	if (is_numeric($data)) {
 		my $data_precision = $pa_config->{'graph_precision'};

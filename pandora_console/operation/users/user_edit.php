@@ -440,14 +440,22 @@ if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $
 }
 
 if ($double_auth_enabled && $config['double_auth_enabled']) {
-    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+    $double_authentication .= html_print_button(
+        __('Show information'),
+        'show_info',
+        false,
+        'show_double_auth_info();',
+        [ 'icon' => 'camera' ],
+        '',
+        true
+    );
 }
 
-if (isset($double_authentication)) {
+if (isset($double_authentication) === true) {
     $double_authentication .= '</div>';
 }
 
-if (check_acl($config['id_user'], 0, 'ER')) {
+if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
     $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
     $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', true))));
     $event_filter .= html_print_select_from_sql(
@@ -736,7 +744,14 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
 
     $row = [];
     $row['name'] = __('Test');
-    $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
+    $row['control'] = html_print_button(
+        __('Start'),
+        'test-ehorus',
+        false,
+        'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')',
+        [ 'icon' => 'next' ],
+        true
+    );
     $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -782,7 +797,14 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
 
     $row = [];
     $row['name'] = __('Test');
-    $row['control'] = html_print_button(__('Start'), 'test-integria', false, 'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')', 'class="sub next"', true);
+    $row['control'] = html_print_button(
+        __('Start'),
+        'test-integria',
+        false,
+        'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')',
+        [ 'icon' => 'next' ],
+        true
+    );
     $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -796,15 +818,25 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
 
 
 if ($is_management_allowed === true) {
-    echo '<div class="edit_user_button">';
-    if (!$config['user_can_update_info']) {
-        echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
+    if ((bool) $config['user_can_update_info'] === false) {
+        $outputButton = '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
     } else {
-        html_print_csrf_hidden();
-        html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
+        $outputButton = html_print_submit_button(
+            __('Update'),
+            'uptbutton',
+            $view_mode,
+            [ 'icon' => 'update' ],
+            true
+        );
+        $outputButton .= html_print_csrf_hidden(true);
     }
 
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => $outputButton,
+        ]
+    );
 }
 
 echo '</form>';

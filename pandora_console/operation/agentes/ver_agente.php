@@ -1386,7 +1386,7 @@ $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_age
     ]
 ).'</a>';
 
-if ($tab == 'main') {
+if ($tab === 'main') {
     $maintab['active'] = true;
 } else {
     $maintab['active'] = false;

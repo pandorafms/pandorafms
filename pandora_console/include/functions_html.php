@@ -3333,13 +3333,14 @@ function html_print_submit_button($label='OK', $name='', $disabled=false, $attri
         $attributes = [];
     }
 
+    // Set the button type from here.
     $attributes['type'] = 'submit';
 
     $output = html_print_button(
         $label,
         $name,
         $disabled,
-        '',
+        (isset($attributes['onclick']) === true) ? $attributes['onclick'] : '',
         $attributes,
         true
     );

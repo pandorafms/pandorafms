@@ -751,7 +751,10 @@ class AgentWizard extends HTML
                 'label'      => $this->actionLabel,
                 'name'       => 'sub-protocol',
                 'type'       => 'submit',
-                'attributes' => 'class="sub next" onclick="$(\'#form-main-wizard\').submit();"',
+                'attributes' => [
+                    'icon'    => 'cog',
+                    'onclick' => '$(\'#form-main-wizard\').submit();',
+                ],
                 'return'     => true,
             ],
         ];
@@ -3658,7 +3661,7 @@ class AgentWizard extends HTML
                 'label'      => __('Create modules'),
                 'name'       => 'create-modules-action',
                 'type'       => 'button',
-                'attributes' => 'class="sub cog float-right"',
+                'attributes' => [ 'icon' => 'next' ],
                 'script'     => 'processListModules();',
                 'return'     => true,
             ],

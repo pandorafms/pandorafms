@@ -9071,7 +9071,6 @@ button.submitButton.mini {
 button.buttonButton.link,
 button.submitButton.link {
   height: 32px;
-  text-decoration: underline;
   box-shadow: none;
   background: rgba(0, 0, 0, 0) !important;
   border-color: rgba(0, 0, 0, 0) !important;
@@ -9091,11 +9090,14 @@ button.submitButton.link > div:hover {
 }
 
 button.buttonButton.link:hover,
-button.submitButton.link:hover,
+button.submitButton.link:hover {
+  color: #1d7873;
+  text-decoration: underline;
+  font-family: "Pandora-Bold";
+}
 button.buttonButton.link > div:hover,
 button.submitButton.link > div:hover {
-  color: #fff;
-  background-color: #96a2bf;
+  background-color: #1d7873;
 }
 
 button.buttonButton:not(.secondary):not(.link),

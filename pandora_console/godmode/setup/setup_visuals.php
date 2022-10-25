@@ -160,7 +160,18 @@ $table_styles->data[$row][1] = html_print_select(
     '',
     true
 );
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'status_set_preview', false, '', 'class="sub camera logo_preview"', true);
+$table_styles->data[$row][1] .= html_print_button(
+    __('View'),
+    'status_set_preview',
+    false,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true
+);
 $row++;
 
 // Divs to show icon status Colours (Default).
@@ -1579,9 +1590,19 @@ echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab
 html_print_table($table_other);
 echo '</fieldset>';
 
-echo '<div class="action-buttons" style="width: '.$table_other->width.'">';
-html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-echo '</div>';
+html_print_div(
+    [
+        'class'   => 'action-buttons w100p',
+        'content' => html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+    ]
+);
+
 echo '</form>';
 
 

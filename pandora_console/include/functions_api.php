@@ -652,8 +652,6 @@ $module_field_column_mampping = [
     'module_id_module'         => 'id_modulo as module_id_module',
     'module_disabled'          => 'disabled as module_disabled',
     'module_id_export'         => 'id_export as module_id_export',
-    'module_plugin_user'       => 'plugin_user as module_plugin_user',
-    'module_plugin_pass'       => 'plugin_pass as module_plugin_pass',
     'module_plugin_parameter'  => 'plugin_parameter as module_plugin_parameter',
     'module_id_plugin'         => 'id_plugin as module_id_plugin',
     'module_post_process'      => 'post_process as module_post_process',
@@ -805,8 +803,6 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         'module_id_module',
         'module_disabled',
         'module_id_export',
-        'module_plugin_user',
-        'module_plugin_pass',
         'module_plugin_parameter',
         'module_id_plugin',
         'module_post_process',
@@ -1015,9 +1011,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         $groups = [];
     }
 
-    $groups = str_replace('\n', $returnReplace, $groups);
-
     foreach ($groups as &$group) {
+        $group = str_replace('\n', $returnReplace, $group);
+
         $group['type_row'] = 'group';
         $returnVar[] = $group;
 
@@ -1033,9 +1029,19 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
             $agents = [];
         }
 
-        $agents = str_replace('\n', $returnReplace, $agents);
+        if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true) {
+            if (array_search('module_plugin_user', $fields) !== false) {
+                $module_additional_columns .= ' ,plugin_user as module_plugin_user';
+            }
+
+            if (array_search('module_plugin_user', $fields) !== false) {
+                $module_additional_columns .= ' ,plugin_pass as module_plugin_pass';
+            }
+        }
 
         foreach ($agents as $index => &$agent) {
+            $agent = str_replace('\n', $returnReplace, $agent);
+
             $agent['type_row']  = 'agent';
             $returnVar[] = $agent;
 
@@ -1062,9 +1068,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
                 $modules = [];
             }
 
-            $modules = str_replace('\n', $returnReplace, $modules);
-
             foreach ($modules as &$module) {
+                $module = str_replace('\n', $returnReplace, $module);
+
                 $module['type_row'] = 'module';
 
                 if ($module['module_macros']) {

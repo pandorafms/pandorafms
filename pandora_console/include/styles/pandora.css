@@ -4227,12 +4227,7 @@ form ul.form_flex li ul li {
   text-align: center;
 }
 
-.div-v-centered {
-  display: flex;
-  align-items: center;
-}
-
-.div-v-centered > form > input[type="image"] {
+.flex_center > form > input[type="image"] {
   margin: 0;
   padding: 0;
   width: 14px;
@@ -9068,38 +9063,6 @@ button.submitButton.mini {
   height: 32px;
 }
 
-button.buttonButton.link,
-button.submitButton.link {
-  height: 32px;
-  box-shadow: none;
-  background: rgba(0, 0, 0, 0) !important;
-  border-color: rgba(0, 0, 0, 0) !important;
-  color: #14524f;
-}
-
-button.buttonButton.link > div,
-button.submitButton.link > div {
-  color: #14524f;
-}
-
-button.buttonButton.link:hover,
-button.submitButton.link:hover,
-button.buttonButton.link > div:hover,
-button.submitButton.link > div:hover {
-  background-color: #e1e7ee;
-}
-
-button.buttonButton.link:hover,
-button.submitButton.link:hover {
-  color: #1d7873;
-  text-decoration: underline;
-  font-family: "Pandora-Bold";
-}
-button.buttonButton.link > div:hover,
-button.submitButton.link > div:hover {
-  background-color: #1d7873;
-}
-
 button.buttonButton:not(.secondary):not(.link),
 button.submitButton:not(.secondary):not(.link) {
   background: linear-gradient(
@@ -9137,6 +9100,7 @@ button.submitButton.secondary {
   background-color: #fff;
   color: #14524f;
   border: 2px solid #14524f;
+  box-shadow: none;
 }
 
 button.buttonButton.secondary > div,
@@ -9166,6 +9130,40 @@ button.submitButton.secondary:active > div {
   background-color: #0d312f !important;
 }
 
+button.buttonButton.link,
+button.submitButton.link {
+  background-color: rgba(0, 0, 0, 0);
+  color: #14524f;
+  border: 0;
+  box-shadow: none;
+  justify-content: flex-start;
+}
+
+button.buttonButton.link > div,
+button.submitButton.link > div {
+  background-color: #14524f !important;
+}
+
+button.buttonButton.link:hover,
+button.submitButton.link:hover {
+  color: #1d7873 !important;
+  text-decoration: underline;
+}
+
+button.buttonButton.link:hover > div,
+button.submitButton.link:hover > div {
+  background-color: #1d7873 !important;
+}
+
+button.buttonButton.link:active,
+button.submitButton.link:active {
+  color: #0d312f !important;
+}
+
+button.buttonButton.link:active > div,
+button.submitButton.link:active > div {
+  background-color: #0d312f !important;
+}
 button div.camera {
   mask: url(../../images/svg/picture.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/picture.svg) no-repeat center / contain;
@@ -9255,7 +9253,6 @@ button.ui-button.ui-widget.submit-cancel {
 }
 
 button.ui-button.ui-widget.submit-cancel:hover {
-  /*color: #1d7873;*/
   background-color: #e1e7ee;
   border-color: #e1e7ee;
 }
@@ -9266,6 +9263,12 @@ button.ui-button.ui-widget.submit-cancel:active {
   border-color: #96a2bf;
 }
 
+.list_button_alignment {
+  display: flex;
+  align-items: center;
+}
+
+/* FINISH */
 .password_input {
   background-color: transparent !important;
   border: none !important;

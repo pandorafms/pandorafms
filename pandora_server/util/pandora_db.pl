@@ -897,17 +897,10 @@ sub pandora_checkdb_consistency {
 	log_message ('CHECKDB',
 		"Checking database consistency (Missing status).");
 	
-	my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
+	my @modules = get_db_rows ($dbh, 'SELECT m.id_agente, m.id_agente_modulo, e.id_agente_estado FROM tagente_modulo AS m LEFT JOIN tagente_estado AS e ON m.id_agente_modulo = e.id_agente_modulo WHERE e.id_agente_estado IS NULL');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 		my $id_agente = $module->{'id_agente'};
-		
-		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh,
-			'SELECT COUNT(*)
-			FROM tagente_estado
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		next if (defined ($count) && $count > 0);
 		
 		db_do ($dbh,
 			'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
@@ -923,16 +916,9 @@ sub pandora_checkdb_consistency {
 	#    tagente_modulo, if there is any, delete it
 	#-------------------------------------------------------------------
 	
-	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_estado');
+	@modules = get_db_rows ($dbh, 'SELECT e.id_agente_modulo, m.id_agente FROM tagente_estado AS e LEFT JOIN tagente_modulo AS m ON e.id_agente_modulo = m.id_agente_modulo WHERE m.id_agente IS NULL');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
-		
-		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh,
-			'SELECT COUNT(*)
-			FROM tagente_modulo
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		next if (defined ($count) && $count > 0);
 		
 		db_do ($dbh, 'DELETE FROM tagente_estado
 			WHERE id_agente_modulo = ?', $id_agente_modulo);

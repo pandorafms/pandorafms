@@ -758,6 +758,12 @@ function delete_user(string $id_user)
 function update_user_password(string $user, string $password_new)
 {
     global $config;
+
+    if (excludedPassword($password_new) === true) {
+        $config['auth_error'] = __('The password provided is not valid. Please, set another one.');
+        return false;
+    }
+
     if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
             "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"

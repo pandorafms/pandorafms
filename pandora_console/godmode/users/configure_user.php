@@ -1508,14 +1508,20 @@ if ($config['admin_can_add_user']) {
             __('Create'),
             'crtbutton',
             false,
-            'class="sub wand" form="user_profile_form"'
+            [
+                'icon' => 'wand',
+                'form' => 'user_profile_form',
+            ]
         );
     } else {
         html_print_submit_button(
             __('Update'),
             'uptbutton',
             false,
-            'class="sub upd" form="user_profile_form"'
+            [
+                'icon' => 'update',
+                'form' => 'user_profile_form',
+            ]
         );
     }
 }

@@ -3325,7 +3325,10 @@ function events_page_responses($event)
             'owner_button',
             false,
             'event_change_owner('.$event['id_evento'].', '.$event['server_id'].');',
-            'class="sub next w70p"',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
 
@@ -3404,7 +3407,10 @@ function events_page_responses($event)
             'status_button',
             false,
             'event_change_status(\''.$event['similar_ids'].'\','.$event['server_id'].');',
-            'class="sub next w70p"',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
     }
@@ -3432,7 +3438,10 @@ function events_page_responses($event)
             'comment_button',
             false,
             '$(\'#link_comments\').trigger(\'click\');',
-            'class="sub next w70p"',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
 
@@ -3456,7 +3465,10 @@ function events_page_responses($event)
             'delete_button',
             false,
             'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();',
-            'class="sub cancel w70p"',
+            [
+                'icon' => 'cancel',
+                'mode' => 'mini secondary',
+            ],
             true
         );
         $data[2] .= html_print_input_hidden('delete', 1, true);
@@ -3511,7 +3523,10 @@ function events_page_responses($event)
             'custom_response_button',
             false,
             'execute_response('.$event['id_evento'].','.$server_id.',0)',
-            "class='sub next w70p'",
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
     }
@@ -4190,7 +4205,10 @@ function events_page_details($event, $server_id=0)
             'custom_button',
             false,
             '$(\'#link_custom_fields\').trigger(\'click\');',
-            'class="sub next"',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
         $table_details->data[] = $data;
@@ -5042,7 +5060,10 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             'comment_button',
             false,
             'event_comment(\''.base64_encode(json_encode($event)).'\');',
-            'class="sub next"',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
         $comments_form .= '</div><br></div>';
@@ -5638,7 +5659,10 @@ function get_row_response_action(
         'btn_str',
         false,
         'perform_response(\''.base64_encode(json_encode($event_response)).'\','.$response_id.',\''.trim($index).'\')',
-        "class='sub next'",
+        [
+            'icon' => 'next',
+            'mode' => 'mini secondary',
+        ],
         true
     );
     $output .= '</div>';

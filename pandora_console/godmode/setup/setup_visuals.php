@@ -130,6 +130,7 @@ $table_styles = new stdClass();
 $table_styles->width = '100%';
 $table_styles->class = 'databox filters';
 $table_styles->style[0] = 'font-weight: bold;';
+$table_styles->style[1] = 'display: flex; align-items: center;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
@@ -145,7 +146,6 @@ $table_styles->data[$row][1] = html_print_select(
     true
 );
 $row++;
-
 
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
@@ -236,7 +236,18 @@ $table_styles->data[$row][1] = html_print_select(
     false,
     'width:240px'
 );
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'login_background_preview', false, '', 'class="sub camera logo_preview"', true);
+$table_styles->data[$row][1] .= html_print_button(
+    __('View'),
+    'login_background_preview',
+    false,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true
+);
 $row++;
 
 
@@ -290,16 +301,44 @@ function logo_custom_enterprise($name, $logo)
 
 $table_styles->data[$row][0] = __('Custom logo (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo collapsed (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_collapsed_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (header white background)');
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $ent_files = list_files('enterprise/images/custom_logo', 'png', 1, 0);
     $open_files = list_files('images/custom_logo', 'png', 1, 0);
 
@@ -334,7 +373,21 @@ if (enterprise_installed()) {
     );
 }
 
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_white_bg_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (login)');
@@ -371,11 +424,25 @@ if (enterprise_installed()) {
     );
 }
 
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_login_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_login_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
-// Splash login
-if (enterprise_installed()) {
+// Splash login.
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Custom Splash (login)');
 
     $table_styles->data[$row][1] = html_print_select(
@@ -393,11 +460,25 @@ if (enterprise_installed()) {
         'width:240px'
     );
 
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_splash_login_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_splash_login_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     // Get all the custom logos.
     $files = list_files('enterprise/images/custom_general_logos', 'png', 1, 0);
 
@@ -418,7 +499,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_docs_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_docs_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 
     // Custom support icon.
@@ -437,7 +532,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_support_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_support_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 
     // Custom center networkmap icon.
@@ -456,7 +565,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_network_center_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_network_center_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 
     // Custom center mobile console icon.
@@ -475,7 +598,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_mobile_console_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_mobile_console_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 }
 
@@ -489,45 +626,45 @@ $table_styles->data[$row][0] = __('Subtitle (header)');
 $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
 $row++;
 
-// login title1
-if (enterprise_installed()) {
+// Login title1.
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Title 1 (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_title1_login', $config['custom_title1_login'], '', 50, 50, true);
     $row++;
 }
 
-// login text2
-if (enterprise_installed()) {
+// Login text2.
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Title 2 (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_title2_login', $config['custom_title2_login'], '', 50, 50, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Docs URL (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_docs_url', $config['custom_docs_url'], '', 50, 50, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Support URL (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_support_url', $config['custom_support_url'], '', 50, 50, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Product name');
     $table_styles->data[$row][1] = html_print_input_text('rb_product_name', get_product_name(), '', 30, 255, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Copyright notice');
     $table_styles->data[$row][1] = html_print_input_text('rb_copyright_notice', get_copyright_notice(), '', 30, 255, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Disable logo in graphs');
     $table_styles->data[$row][1] = html_print_checkbox_switch(
         'fixed_graph',
@@ -563,7 +700,7 @@ $table_styles->data[$row][1] = html_print_checkbox_switch(
 $row++;
 
 
-// For 5.1 Autohidden menu feature
+// For 5.1 Autohidden menu feature.
 $table_styles->data['autohidden'][0] = __('Automatically hide submenu');
 $table_styles->data['autohidden'][1] = html_print_checkbox_switch(
     'autohidden_menu',
@@ -589,6 +726,7 @@ $table_gis = new stdClass();
 $table_gis->width = '100%';
 $table_gis->class = 'databox filters';
 $table_gis->style[0] = 'font-weight: bold;';
+$table_gis->style[1] = 'display: flex; align-items: center;';
 $table_gis->size[0] = '50%';
 $table_gis->data = [];
 
@@ -617,7 +755,18 @@ $table_gis->data[$row][1] = html_print_select(
     '',
     true
 );
-$table_gis->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'gis_icon_preview', false, '', 'class="sub camera logo_preview"', true);
+$table_gis->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'gis_icon_preview',
+    false,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true
+);
 $row++;
 
 // ----------------------------------------------------------------------
@@ -1323,15 +1472,15 @@ $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_f
 $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
 $row++;
 
-if ($config['prominent_time'] == 'comparation') {
+if ($config['prominent_time'] === 'comparation') {
     $timestamp = false;
     $comparation = true;
     $compact = false;
-} else if ($config['prominent_time'] == 'timestamp') {
+} else if ($config['prominent_time'] === 'timestamp') {
     $timestamp = true;
     $comparation = false;
     $compact = false;
-} else if ($config['prominent_time'] == 'compact') {
+} else if ($config['prominent_time'] === 'compact') {
     $timestamp = false;
     $comparation = false;
     $compact = true;
@@ -1363,7 +1512,10 @@ $table_other->data[$row][3] = html_print_button(
     'custom_value_add_btn',
     false,
     '',
-    'class="sub next"',
+    [
+        'icon' => 'next',
+        'mode' => 'secondary mini',
+    ],
     true
 );
 
@@ -1386,10 +1538,13 @@ $table_other->data[$row][3] = html_print_button(
     'custom_values_del_btn',
     empty($count_custom_postprocess),
     '',
-    'class="sub cancel"',
+    [
+        'icon' => 'cancel',
+        'mode' => 'secondary mini',
+    ],
     true
 );
-// This hidden field will be filled from jQuery before submit
+// This hidden field will be filled from jQuery before submit.
 $table_other->data[$row][1] .= html_print_input_hidden(
     'custom_value_to_delete',
     '',
@@ -1414,17 +1569,37 @@ $units = [
 $table_other->data[$row][1] = __('Value').': ';
 $table_other->data[$row][1] .= html_print_input_text('interval_value', '', '', 5, 5, true);
 $table_other->data[$row][2] = html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false);
-$table_other->data[$row][3] = html_print_button(__('Add'), 'interval_add_btn', false, '', 'class="sub next"', true);
+$table_other->data[$row][3] = html_print_button(
+    __('Add'),
+    'interval_add_btn',
+    false,
+    '',
+    [
+        'icon' => 'next',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 
 $row++;
 
 $table_other->data[$row][0] = '';
 $table_other->data[$row][1] = __('Delete interval').': ';
 $table_other->data[$row][2] = html_print_select(get_periods(false, false), 'intervals', '', '', '', '', true);
-$table_other->data[$row][3] = html_print_button(__('Delete'), 'interval_del_btn', empty($config['interval_values']), '', 'class="sub cancel"', true);
+$table_other->data[$row][3] = html_print_button(
+    __('Delete'),
+    'interval_del_btn',
+    empty($config['interval_values']),
+    '',
+    [
+        'icon' => 'cancel',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 
 $table_other->data[$row][1] .= html_print_input_hidden('interval_values', $config['interval_values'], true);
-// This hidden field will be filled from jQuery before submit
+// This hidden field will be filled from jQuery before submit.
 $table_other->data[$row][1] .= html_print_input_hidden('interval_to_delete', '', true);
 $table_other->data[$row][3] .= '<br><br>';
 // ----------------------------------------------------------------------
@@ -1434,7 +1609,17 @@ $table_other->data[$row][0] = __('Module units');
 $table_other->data[$row][1] = __('Value').': ';
 $table_other->data[$row][1] .= html_print_input_text('custom_module_unit', '', '', 15, 50, true);
 $table_other->data[$row][2] = '';
-$table_other->data[$row][3] = html_print_button(__('Add'), 'module_unit_add_btn', false, '', 'class="sub next"', true);
+$table_other->data[$row][3] = html_print_button(
+    __('Add'),
+    'module_unit_add_btn',
+    false,
+    '',
+    [
+        'icon' => 'next',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 
 $row++;
 $table_other->data[$row][0] = '';
@@ -1445,7 +1630,10 @@ $table_other->data[$row][3] = html_print_button(
     'custom_module_unit_del_btn',
     empty($count_custom_postprocess),
     '',
-    'class="sub cancel"',
+    [
+        'icon' => 'cancel',
+        'mode' => 'secondary mini',
+    ],
     true
 );
 

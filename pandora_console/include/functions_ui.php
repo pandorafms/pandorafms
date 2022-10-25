@@ -3381,23 +3381,45 @@ function ui_print_datatable(array $parameters)
         }
 
         $filter .= '<li>';
-        // Search button.
-        $filter .= '<input type="submit" class="'.$search_button_class.'" ';
-        $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
 
         // Extra buttons.
         if (isset($parameters['form']['extra_buttons']) === true
             && is_array($parameters['form']['extra_buttons']) === true
         ) {
             foreach ($parameters['form']['extra_buttons'] as $button) {
-                $filter .= '<button id="'.$button['id'].'" ';
-                $filter .= ' class="'.$button['class'].'" ';
-                $filter .= ' style="'.($button['style'] ?? '').'" ';
-                $filter .= ' onclick="'.$button['onclick'].'" >';
-                $filter .= $button['text'];
-                $filter .= '</button>';
+                $filter .= html_print_button(
+                    $button['text'],
+                    $button['id'],
+                    false,
+                    $button['onclick'],
+                    [
+                        'style' => ($button['style'] ?? ''),
+                        'mode'  => 'mini secondary',
+                        'class' => $button['class'],
+                    ],
+                    true
+                );
             }
         }
+
+        // Search button.
+        $filter .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Filter'),
+                    $form_id.'_search_bt',
+                    false,
+                    [
+                        'icon'  => 'search',
+                        'mode'  => 'mini',
+                        'class' => $search_button_class,
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
 
         $filter .= '</li>';
 

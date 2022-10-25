@@ -612,7 +612,7 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (config_update_value('ldap_admin_pass', io_input_password(io_safe_output(get_parameter('ldap_admin_pass'))), true) === false) {
+                    if (config_update_value('ldap_admin_pass', io_input_password(get_parameter('ldap_admin_pass')), true) === false) {
                         $error_update[] = __('Admin LDAP password');
                     }
 
@@ -648,7 +648,7 @@ function config_update_config()
                         $error_update[] = __('Admin secondary LDAP login');
                     }
 
-                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(io_safe_output(get_parameter('ldap_admin_pass_secondary'))), true) === false) {
+                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(get_parameter('ldap_admin_pass_secondary')), true) === false) {
                         $error_update[] = __('Admin secondary LDAP password');
                     }
 

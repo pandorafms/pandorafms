@@ -2374,25 +2374,38 @@ if (check_acl(
     echo '<div class="multi-response-buttons">';
     echo '<form method="post" id="form_event_response">';
     echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
-    html_print_select(
+
+    $elements = html_print_button(
+        __('Execute event response'),
+        'submit_event_response',
+        false,
+        'execute_event_response(true);',
+        [
+            'icon' => 'cog',
+            'mode' => 'mini',
+        ],
+        true
+    );
+
+    $elements .= html_print_select(
         $array_events_actions,
         'response_id',
         '',
         '',
         '',
         0,
-        false,
+        true,
         false,
         false
     );
-    echo '&nbsp&nbsp';
-    html_print_button(
-        __('Execute event response'),
-        'submit_event_response',
-        false,
-        'execute_event_response(true);',
-        'class="sub next"'
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => $elements,
+        ]
     );
+
     echo "<span id='response_loading_dialog' class='invisible'>".html_print_image(
         'images/spinner.gif',
         true

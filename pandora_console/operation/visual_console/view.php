@@ -60,7 +60,10 @@ function visual_map_print_button_editor_refactor(
         $idDiv,
         $disabled,
         '',
-        'class=" sub visual_editor_button_toolbox '.$idDiv.' '.$class.'"',
+        [
+            'class' => $class,
+            'mode'  => 'onlyIcon',
+        ],
         false,
         true
     );
@@ -249,7 +252,7 @@ if ($pure === false) {
     if ($edit_capable === true) {
         echo '<div id ="edit-vc">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
-        echo '<div>';
+        echo '<div class="toolbox-buttons">';
         $class_camera = 'camera_min link-create-item';
         $class_percentile = 'percentile_item_min link-create-item';
         $class_module_graph = 'graph_min link-create-item';
@@ -269,7 +272,7 @@ if ($pure === false) {
         $class_basic_chart = 'basic_chart_min link-create-item';
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+        if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
             $class_camera = 'camera_min_white link-create-item';
             $class_percentile = 'percentile_item_min_white link-create-item';
             $class_module_graph = 'graph_min_white link-create-item';

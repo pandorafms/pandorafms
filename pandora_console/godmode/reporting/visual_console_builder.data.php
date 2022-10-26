@@ -1,40 +1,52 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Login check
+/**
+ * Visual console Builder Wizard Data.
+ *
+ * @category   Legacy.
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 check_login();
 
-if (empty($idVisualConsole)) {
-    // ACL for the a new visual console
-    // if (!isset($vconsole_read))
-    // $vconsole_read = check_acl ($config['id_user'], 0, "VR");
-    if (!isset($vconsole_write)) {
+if (empty($idVisualConsole) === true) {
+    // ACL for the a new visual console.
+    if (isset($vconsole_write) === false) {
         $vconsole_write = check_acl($config['id_user'], 0, 'VW');
     }
 
-    if (!isset($vconsole_manage)) {
+    if (isset($vconsole_manage) === false) {
         $vconsole_manage = check_acl($config['id_user'], 0, 'VM');
     }
 } else {
-    // ACL for the existing visual console
-    // if (!isset($vconsole_read))
-    // $vconsole_read = check_acl ($config['id_user'], $idGroup, "VR");
-    if (!isset($vconsole_write)) {
+    // ACL for the existing visual console.
+    if (isset($vconsole_write) === false) {
         $vconsole_write = check_acl($config['id_user'], $idGroup, 'VW');
     }
 
-    if (!isset($vconsole_manage)) {
+    if (isset($vconsole_manage) === false) {
         $vconsole_manage = check_acl($config['id_user'], $idGroup, 'VM');
     }
 }
@@ -55,7 +67,7 @@ $pure = get_parameter('pure', 0);
 
 switch ($action) {
     case 'new':
-        if (!defined('METACONSOLE')) {
+        if (is_metaconsole() === false) {
             echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=".$activeTab."' enctype='multipart/form-data'>";
             html_print_input_hidden('action', 'save');
         } else {
@@ -66,18 +78,18 @@ switch ($action) {
 
     case 'update':
     case 'save':
-        if (!defined('METACONSOLE')) {
+        if (is_metaconsole() === false) {
             echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=".$activeTab.'&id_visual_console='.$idVisualConsole."' enctype='multipart/form-data'>";
             html_print_input_hidden('action', 'update');
         } else {
-            // echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
             echo "<form id='back' action='index.php?sec=screen&sec2=screens/screens&tab=".$activeTab.'&id_visual_console='.$idVisualConsole.'&id_visualmap='.$idVisualConsole."&action=visualmap' method='post' enctype='multipart/form-data'>";
             html_print_input_hidden('action2', 'update');
         }
     break;
 
     case 'edit':
-        if (!defined('METACONSOLE')) {
+    default:
+        if (is_metaconsole() === false) {
             echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=".$activeTab.'&id_visual_console='.$idVisualConsole."' enctype='multipart/form-data'>";
             html_print_input_hidden('action', 'update');
         } else {
@@ -89,7 +101,7 @@ switch ($action) {
 
 $table = new stdClass();
 $table->width = '100%';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->class = 'databox data';
     $table->head[0] = __('Create visual console');
     $table->head_colspan[0] = 5;
@@ -100,8 +112,8 @@ if (defined('METACONSOLE')) {
 
 $table->class = 'databox filters';
 $table->size[0] = '20%';
-$table->size[1] = '20%';
-$table->size[1] = '50%';
+$table->size[1] = '100%';
+$table->style[1] = 'display: flex;flex-direction: row;flex-wrap: wrap;align-items: center;';
 $table->data = [];
 $table->data[0][0] = __('Name:').ui_print_help_tip(__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 
@@ -115,13 +127,11 @@ $table->data[0][1] = html_print_input_text(
 );
 
 $table->rowspan[0][2] = 6;
-if ($action == 'new') {
-    $table->data[0][2] = '<img id="imagen2" class="invisible" 
-	src="">';
-    $table->data[0][2] .= '<img id="imagen" class="invisible" 
-	src="">';
+if ($action === 'new') {
+    $table->data[0][2] = '<img id="imagen2" class="invisible" src="">';
+    $table->data[0][2] .= '<img id="imagen" class="invisible" src="">';
 } else {
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $table->data[0][2] = '<img id="imagen2" style="width:230px;"
 		src="../../images/console/background/'.$background.'">';
     } else {
@@ -129,8 +139,7 @@ if ($action == 'new') {
 		src="images/console/background/'.$background.'">';
     }
 
-    $table->data[0][2] .= '<img id="imagen" class="invisible" 
-	src="">';
+    $table->data[0][2] .= '<img id="imagen" class="invisible" src="">';
 }
 
 $table->data[1][0] = __('Group');
@@ -210,14 +219,35 @@ if ($idVisualConsole) {
 
 $table->data[5][0] = __('Layout size').': <span id="preimagew">'.$preimagew.'</span> x <span id="preimageh">'.$preimageh.'</span>';
 
-$table->data[5][1] = '<button id="modsize" 
-	style="margin-right:20px;" value="modsize">'.__('Set custom size').'</button>';
+$table->data[5][1] = html_print_button(
+    __('Set custom size'),
+    'modsize',
+    false,
+    '',
+    [
+        'icon'  => 'cog',
+        'mode'  => 'link',
+        'value' => 'modsize',
+    ],
+    true
+);
 
 $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', $preimagew, '', 10, 10, true, false).' x '.html_print_input_text('height', $preimageh, '', 10, 10, true, false).'</span>';
 
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
-			<button id="getsize" class="margin_lft_20px" 
-			value="modsize">'.__('Get default image size').'</button></span>';
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">';
+$table->data[5][1] .= html_print_button(
+    __('Get default image size'),
+    'getsize',
+    false,
+    '',
+    [
+        'icon'  => 'cog',
+        'mode'  => 'link',
+        'value' => 'modsize',
+    ],
+    true
+);
+$table->data[5][1] .= '</span>';
 
 $table->data[6][0] = __('Favourite visual console');
 $table->data[6][1] = html_print_checkbox('is_favourite', 0, $is_favourite, true);
@@ -225,24 +255,28 @@ $table->data[6][1] = html_print_checkbox('is_favourite', 0, $is_favourite, true)
 $table->data[7][0] = __('Auto adjust to screen in fullscreen');
 $table->data[7][1] = html_print_checkbox('auto_adjust', 0, $auto_adjust, true);
 
-if ($action == 'new') {
+if ($action === 'new') {
     $textButtonSubmit = __('Save');
-    $classButtonSubmit = 'sub wand';
+    $classButtonSubmit = 'wand';
 } else {
     $textButtonSubmit = __('Update');
-    $classButtonSubmit = 'sub upd';
+    $classButtonSubmit = 'update';
 }
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(
-    $textButtonSubmit,
-    'update_layout',
-    false,
-    'class="'.$classButtonSubmit.'"'
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            $textButtonSubmit,
+            'update_layout',
+            false,
+            [ 'icon' => $classButtonSubmit ],
+            true
+        ),
+    ]
 );
-echo '</div>';
 
 echo '</form>';
 ui_require_css_file('color-picker', 'include/styles/js/');
@@ -252,15 +286,14 @@ ui_require_jquery_file('colorpicker');
 <script type="text/javascript">
 
 $(document).ready (function () {
-    $("#modsize").click(function(event){
+    $("#button-modsize").click(function(event){
         event.preventDefault();
-        
+
         if($('.opt').css('visibility') == 'hidden'){
             $('.opt').css('visibility','visible');
         }
-        
+
         if ($('#imagen').attr('src') != '') {
-            
             if (parseInt($('#imagen').width()) < 1024){
                 alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
                 $('input[name=width]').val('1024');
@@ -279,26 +312,24 @@ $(document).ready (function () {
                 $('input[name=height]').val($('#imagen').height());
                 $('#preimageh').html($('#imagen').height());
             }
-                        
+
         }
     });
 
-    $("#getsize").click(function(event){
+    $("#button-getsize").click(function(event){
         event.preventDefault();
-        
         if ($('#imagen').attr('src') != '') {
-        
         if (parseInt($('#imagen').width()) < 1024){
             alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
             $('input[name=width]').val('1024');
-            $('#preimagew').html(1024);            
+            $('#preimagew').html(1024);
         }
         else{
             $('input[name=width]').val($('#imagen').width());
-            $('#preimagew').html($('#imagen').width());            
+            $('#preimagew').html($('#imagen').width());
         }
         if (parseInt($('#imagen').height()) < 768){
-            alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');    
+            alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');
             $('input[name=height]').val('768');
             $('#preimageh').html(768);
         }
@@ -306,7 +337,6 @@ $(document).ready (function () {
             $('input[name=height]').val($('#imagen').height());
             $('#preimageh').html($('#imagen').height());
         }
-        
     }
     else{
         original_image=new Image();
@@ -315,14 +345,14 @@ $(document).ready (function () {
         if (parseInt(original_image.width) < 1024){
             alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
             $('input[name=width]').val('1024');
-            $('#preimagew').html(1024);            
+            $('#preimagew').html(1024);
         }
         else{
             $('input[name=width]').val(original_image.height);
-            $('#preimagew').html(original_image.height);            
+            $('#preimagew').html(original_image.height);
         }
         if (parseInt(original_image.height) < 768){
-            alert('Default height is '+original_image.height+'px, smaller than minimum -> 768px');    
+            alert('Default height is '+original_image.height+'px, smaller than minimum -> 768px');
             $('input[name=height]').val('768');
             $('#preimageh').html(768);
         }
@@ -330,9 +360,7 @@ $(document).ready (function () {
             $('input[name=height]').val(original_image.height);
             $('#preimageh').html(original_image.height);
         }
-        
     }
-        
     });
     
     $( "input[type=submit]" ).click(function( event ) {

@@ -1,22 +1,38 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Login check
+/**
+ * Visual console Builder Elements.
+ *
+ * @category   Legacy.
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 check_login();
 
-// Visual console required
-if (empty($visualConsole)) {
+// Visual console required.
+if (empty($visualConsole) === true) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
@@ -739,43 +755,56 @@ foreach ($layoutDatas as $layoutData) {
 
 $pure = get_parameter('pure', 0);
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     echo '<form class="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
-} else {
-    echo "<form class='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
-}
-
-if (!defined('METACONSOLE')) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'; margin-bottom:15px;">';
-}
-
-if (!defined('METACONSOLE')) {
     html_print_input_hidden('action', 'update');
 } else {
+    echo "<form class='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
     html_print_input_hidden('action2', 'update');
 }
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(__('Update'), 'go', false, 'class="sub next"');
-echo '&nbsp;';
-html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
-echo '</div>';
+$buttons = html_print_submit_button(
+    __('Update'),
+    'go',
+    false,
+    [ 'icon' => 'next' ],
+    true
+);
+
+$buttons .= html_print_button(
+    __('Delete'),
+    'delete',
+    false,
+    'submit_delete_multiple_items();',
+    [
+        'icon' => 'delete',
+        'mode' => 'secondary',
+    ],
+    true
+);
+
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $buttons,
+    ]
+);
+
 echo '</form>';
 
-// Form for multiple delete
-if (!defined('METACONSOLE')) {
-    $url_multiple_delete = 'index.php?'.'sec=network&'.'sec2=godmode/reporting/visual_console_builder&'.'tab='.$activeTab.'&'.'id_visual_console='.$visualConsole['id'];
-
-    echo '<form id="form_multiple_delete" method="post" action="'.$url_multiple_delete.'">';
+// Form for multiple delete.
+if (is_metaconsole() === false) {
+    $url_multiple_delete = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
 } else {
-    $url_multiple_delete = 'index.php?'.'operation=edit_visualmap&'.'sec=screen&'.'sec2=screens/screens&'.'action=visualmap&'.'pure=0&'.'tab=list_elements&'.'id_visual_console='.$idVisualConsole;
-
-    echo "<form id='form_multiple_delete' method='post' action=".$url_multiple_delete.'>';
+    $url_multiple_delete = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console='.$idVisualConsole;
 }
 
-if (!defined('METACONSOLE')) {
+
+echo "<form id='form_multiple_delete' method='post' action=".$url_multiple_delete.'>';
+
+if (is_metaconsole() === false) {
     html_print_input_hidden('action', 'multiple_delete');
 } else {
     html_print_input_hidden('action2', 'multiple_delete');

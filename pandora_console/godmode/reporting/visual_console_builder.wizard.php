@@ -1,16 +1,32 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Login check
+/**
+ * Visual console Builder Wizard.
+ *
+ * @category   Legacy.
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 check_login();
@@ -408,7 +424,7 @@ $table->rowstyle['all_4'] = 'display: none;';
 $table->data['all_4'][0] = __('Agents').ui_print_help_tip(__('If you select several agents, only the common modules will be displayed'), true);
 
 $agents_list = [];
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     $agents_list = agents_get_group_agents(
         0,
         false,
@@ -469,7 +485,7 @@ $table->data['all_7'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_butto
 
 
 $parents = visual_map_get_items_parents($visualConsole['id']);
-if (empty($parents)) {
+if (empty($parents) === true) {
     $parents = [];
 }
 
@@ -502,7 +518,7 @@ $table->data['all_8'][3] = '<span id="parent_column_3_item_in_visual_map">'.html
 
 
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $pure = get_parameter('pure', 0);
 
     echo '<form method="post"
@@ -514,22 +530,32 @@ if (is_metaconsole()) {
 		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
 }
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     echo "<div class='title_tactical mrgn_top_15px'>".__('Wizard').'</div>';
 }
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     html_print_input_hidden('action2', 'update');
 } else {
     html_print_input_hidden('action', 'update');
 }
 
 html_print_input_hidden('id_visual_console', $visualConsole['id']);
-html_print_submit_button(__('Add'), 'go', false, 'class="sub wizard wand"');
-echo '</div>';
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Add'),
+            'go',
+            false,
+            [ 'icon' => 'wand' ],
+            true
+        ),
+    ]
+);
+
 echo '</form>';
 
 // Trick for it have a traduct text for javascript.

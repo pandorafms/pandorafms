@@ -3607,8 +3607,26 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 }
 
 
-function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true, $useName=false)
-{
+/**
+ * Get modules agents.
+ *
+ * @param integer $id_module_group  ID module group.
+ * @param array   $id_agents        Array agents.
+ * @param boolean $selection        Selection.
+ * @param boolean $select_mode      Mode.
+ * @param boolean $useName          Use name.
+ * @param boolean $notStringModules Not string modules.
+ *
+ * @return array Modules for this agents.
+ */
+function get_modules_agents(
+    $id_module_group,
+    $id_agents,
+    $selection,
+    $select_mode=true,
+    $useName=false,
+    $notStringModules=false
+) {
     if ((bool) is_metaconsole() === true) {
         if ($select_mode === true) {
             $agents = array_reduce(
@@ -3657,7 +3675,8 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
                     $selection,
                     false,
                     $useName,
-                    true
+                    true,
+                    $notStringModules
                 );
 
                 metaconsole_restore_db();
@@ -3746,7 +3765,8 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             $selection,
             false,
             $useName,
-            false
+            false,
+            $notStringModules
         );
     }
 
@@ -4193,6 +4213,11 @@ function modules_get_counter_by_states($state)
 
 function modules_get_state_condition($state, $prefix='tae')
 {
+    // Not  use empty state 0 -> AGENT_MODULE_STATUS_NORMAL.
+    if ($state === '') {
+        return '1=1';
+    }
+
     switch ($state) {
         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         case AGENT_MODULE_STATUS_CRITICAL_BAD:

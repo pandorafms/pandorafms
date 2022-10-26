@@ -858,11 +858,12 @@ var TreeController = {
                 $content.append($statusImage);
               }
               var image_tooltip =
-                '<span><img class="invert_filter" src="' +
-                (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                'images/help.png" class="img_help" title="' +
+                '<span><img class="invert_filter forced_title" data-title="' +
                 (element.title ? element.title : element.name) +
-                '" alt="' +
+                '" data-use_title_for_force_title="1" src="' +
+                (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                'images/help.png" class="img_help" ' +
+                ' alt="' +
                 element.name +
                 '"/></span> ';
 
@@ -883,7 +884,6 @@ var TreeController = {
                     window.location.href = element.serviceDetail;
                   })
                   .css("cursor", "pointer");
-
                 $content.append($serviceDetailImage);
                 $content.append(" " + image_tooltip);
 

@@ -357,10 +357,10 @@ class Events
                             );
 
                             if (isset($group_rep) === false) {
-                                $group_rep = 0;
+                                $group_rep = EVENT_GROUP_REP_ALL;
                             }
 
-                            if ((int) $group_rep !== 0) {
+                            if ((int) $group_rep !== EVENT_GROUP_REP_ALL) {
                                 if ($event['event_rep'] <= 1) {
                                     $event['event_repeated'] = '<i>'.__('No').'</i>';
                                 } else {
@@ -1068,7 +1068,7 @@ class Events
             $filters['id_agent'] = $this->id_agent;
         }
 
-        $filters['group_rep'] = 1;
+        $filters['group_rep'] = EVENT_GROUP_REP_EVENTS;
 
         if (isset($this->limit) === true
             && $this->limit !== -1

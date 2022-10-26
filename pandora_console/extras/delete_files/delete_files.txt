@@ -1666,3 +1666,4 @@ godmode/um_client/vendor/sebastian/object-enumerator
 godmode/um_client/vendor/sebastian
 godmode/um_client/vendor
 update_manager_client/resources/styles/pandora.css
+enterprise/meta/general/upload_head_image.php

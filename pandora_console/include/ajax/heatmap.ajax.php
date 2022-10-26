@@ -78,6 +78,7 @@ if (is_ajax() === true) {
                         0 => __('Group agents'),
                         1 => __('Group modules by tag'),
                         2 => __('Group modules by module group'),
+                        3 => __('Group modules by agents'),
                     ],
                     'type',
                     $type,
@@ -203,6 +204,10 @@ if (is_ajax() === true) {
                     '5'
                 );
             break;
+
+            case 3:
+                // Empty.
+            break;
         }
 
         echo '</div>';
@@ -212,6 +217,7 @@ if (is_ajax() === true) {
         enterprise_include_once('include/functions_agents.php');
         $id = get_parameter('id', 0);
         switch ($type) {
+            case 3:
             case 2:
                 $data = db_get_row('tagente_modulo', 'id_agente_modulo', $id);
 

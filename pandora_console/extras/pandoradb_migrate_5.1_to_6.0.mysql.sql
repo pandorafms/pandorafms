@@ -175,12 +175,12 @@ ALTER TABLE tagente_modulo ADD COLUMN `prediction_threshold` int(4) default 0;
 ALTER TABLE tagente_modulo ADD COLUMN `percentage_critical` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE tagente_modulo ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE tagente_modulo ADD COLUMN `warning_time` int(10) UNSIGNED DEFAULT 0;
-ALTER TABLE tagente_modulo ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_estado`
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_estado ADD COLUMN `last_dynamic_update` bigint(20) NOT NULL default '0';
+ALTER TABLE tagente_estado ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tgraph_source`
@@ -200,7 +200,6 @@ ALTER TABLE tevent_filter ADD COLUMN `id_agent` int(25) DEFAULT 0;
 ALTER TABLE `tnetwork_component` ADD COLUMN `percentage_critical` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tnetwork_component` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tnetwork_component` ADD COLUMN `warning_time` int(10) UNSIGNED DEFAULT 0;
-ALTER TABLE `tnetwork_component` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_filter`
@@ -208,7 +207,6 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `warning_count` int(10) UNSIGNED DEF
 ALTER TABLE `tlocal_component` ADD COLUMN `percentage_critical` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tlocal_component` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `local_component` ADD COLUMN `warning_time` int(10) UNSIGNED DEFAULT 0;
-ALTER TABLE `local_component` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_filter`
@@ -216,4 +214,3 @@ ALTER TABLE `local_component` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAUL
 ALTER TABLE `tpolicy_modules` ADD COLUMN `percentage_critical` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `percentage_warning` tinyint(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tpolicy_modules` ADD COLUMN `warning_time` int(10) UNSIGNED DEFAULT 0;
-ALTER TABLE `tpolicy_modules` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT 0;

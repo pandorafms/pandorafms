@@ -215,20 +215,24 @@ if (isset($data)) {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined filters') ]);
 }
 
-if (!defined('METACONSOLE')) {
-    echo "<div class='pdd_b_20px right w100p'>";
-} else {
-    echo "<div class='right'>";
-}
-
-    echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
-        html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
-    echo '</form>';
-echo '</div>';
+echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Create filter'),
+            'crt',
+            false,
+            [ 'icon' => 'wand' ],
+            true
+        ),
+    ]
+);
+echo '</form>';
 ?>
 
 <script type="text/javascript">
-    
+
     $( document ).ready(function() {
 
         $('[id^=checkbox-delete_multiple]').change(function(){

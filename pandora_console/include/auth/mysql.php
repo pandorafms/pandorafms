@@ -846,6 +846,9 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
         $ldap[$token] = $secondary_server === true ? $config[$token.'_secondary'] : $config[$token];
     }
 
+    // Remove entities ldap admin pass.
+    $ldap['ldap_admin_pass'] = io_safe_output($ldap['ldap_admin_pass']);
+
     // Connect to the LDAP server
     if (stripos($ldap['ldap_server'], 'ldap://') !== false
         || stripos($ldap['ldap_server'], 'ldaps://') !== false

@@ -620,7 +620,7 @@ echo '<legend>'.__('Mail configuration').'</legend>';
         'email_test_dialog',
         false,
         "show_email_test('".$uniqid."');",
-        'class="sub next"',
+        [ 'icon' => 'next' ],
         true
     );
 
@@ -634,9 +634,19 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     echo '<fieldset>';
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Update'),
+                'update_button',
+                false,
+                ['icon' => 'update'],
+                true
+            ),
+        ]
+    );
+
     echo '</form>';
 
 
@@ -667,16 +677,25 @@ echo '<legend>'.__('Mail configuration').'</legend>';
             true
         );
 
-        $table_mail_test->data[1][0] = html_print_button(
-            __('Send'),
-            'email_test',
-            false,
-            '',
-            'class="sub next"',
+        $table_mail_test->data[1][0] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
+
+        $table_mail_test->data[1][1] = html_print_div(
+            [
+                'class'   => 'action-buttons w100p',
+                'content' => html_print_button(
+                    __('Send'),
+                    'email_test',
+                    false,
+                    '',
+                    [
+                        'icon' => 'cog',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
             true
         );
-
-        $table_mail_test->data[1][1] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
 
         echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).'</div>';
     }
@@ -814,6 +833,6 @@ $(document).ready (function () {
         }
     })
 
-    $('input#button-email_test').click(perform_email_test);
+    $('#button-email_test').click(perform_email_test);
 });
 </script>

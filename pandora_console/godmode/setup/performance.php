@@ -725,15 +725,19 @@ echo '<fieldset>';
     html_print_table($table_other);
 echo '</fieldset>';
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden('update_config', 1);
-html_print_submit_button(
-    __('Update'),
-    'update_button',
-    false,
-    'class="sub upd"'
+html_print_div(
+    [
+        'class'   => 'action-buttons w100p',
+        'content' => html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            [ 'icon' => 'update' ],
+            true
+        ),
+    ]
 );
-echo '</div>';
 echo '</form>';
 ?>
 

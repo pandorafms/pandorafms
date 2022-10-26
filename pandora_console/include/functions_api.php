@@ -13171,7 +13171,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         if ($other['data'][7] != '') {
             $values['id_agentmodule'] = $other['data'][7];
         } else {
-            $value['id_agentmodule'] = 0;
+            $values['id_agentmodule'] = 0;
         }
 
         if ($other['data'][8] != '') {

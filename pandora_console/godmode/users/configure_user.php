@@ -1665,7 +1665,25 @@ $(document).ready (function () {
         }
 
         if (profile === '0' || group === '-1') {
-            alert('<?php echo __('please select profile and group'); ?>');
+            alert('<?php echo __('Please select profile and group'); ?>');
+            return;
+        }
+
+        var rows = $("#table_profiles tr");
+        var control_profiles = 0;
+
+        $('#table_profiles tr').each(function() {
+            var profile_user = $(this).find("td:first").text();
+            var group_user = $(this).find("td").eq(1).text();
+
+            if(profile_user === profile_text && group_user === group_text){
+               control_profiles = 1;
+               alert('<?php echo __('This profile is already defined'); ?>');
+               return;
+            }
+        });
+
+        if (control_profiles === 1){
             return;
         }
 

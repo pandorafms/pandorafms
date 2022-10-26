@@ -172,6 +172,7 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
   `last_dynamic_update` BIGINT NOT NULL DEFAULT 0,
   `last_unknown_update` BIGINT NOT NULL DEFAULT 0,
   `last_status_change` BIGINT NOT NULL DEFAULT 0,
+  `warning_count` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `idx_agente` (`id_agente`),
@@ -272,7 +273,6 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
-  `warning_count` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -1004,7 +1004,6 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
-  `warning_count` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2424,7 +2423,6 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
-  `warning_count` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_network_component_group`) REFERENCES tnetwork_component_group(`id_sg`)
     ON DELETE CASCADE ON UPDATE CASCADE
@@ -2508,7 +2506,6 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
-  `warning_count` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id`),
   KEY `main_idx` (`id_policy`),
   UNIQUE (`id_policy`, `name`)

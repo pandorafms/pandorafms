@@ -2094,6 +2094,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $new_status = get_module_status ($processed_data, $module, $module_type, $last_data_value);
 	my $last_status_change = $agent_status->{'last_status_change'};
 
+
+	# Escalate warning to critical if needed.
+	$new_status = escalate_warning($pa_config, $agent, $module, $agent_status, $new_status, $known_status);
+
 	# Set the last status change macro. Even if its value changes later, whe want the original value.
 	$extra_macros->{'_modulelaststatuschange_'} = $last_status_change;
 	
@@ -2269,11 +2273,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
 				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?,
-				last_status_change = ?
+				last_status_change = ?, warning_count = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
-			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $module->{'id_agente_modulo'});
+			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $agent_status->{'warning_count'}, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.
@@ -7191,6 +7195,40 @@ sub notification_get_groups {
 	return @results;
 }
 
+##########################################################################
+=head2 C<< escalate_warning (I<$pa_config>, I<$agent>, I<$module>, I<$agent_status>, I<$new_status>, I<$known_status>) >>
+
+Return the new module status after taking warning escalation into
+consideration. Updates counters in $agent_status.
+
+=cut
+##########################################################################
+sub escalate_warning {
+	my ($pa_config, $agent, $module, $agent_status, $new_status, $known_status) = @_;
+
+	# Warning escalation disabled. Return the new status.
+	if ($module->{'warning_time'} == 0) {
+		return $new_status;
+	}
+
+	# Updating or reset warning counts.
+	if ($new_status != MODULE_WARNING) {
+		$agent_status->{'warning_count'} = 0;
+		return $new_status;
+	}
+
+	if ($known_status == MODULE_WARNING) {
+		$agent_status->{'warning_count'} += 1;
+	}
+
+	if ($agent_status->{'warning_count'} > $module->{'warning_time'}) {
+		logger($pa_config, "Escalating warning status to critical status for agent ID " . $agent->{'id_agente'} . " module '" . $module->{'nombre'} . "'.", 10);
+		$agent_status->{'warning_count'} = $module->{'warning_time'} + 1; # Prevent overflows.
+		return MODULE_CRITICAL;
+	}
+
+	return MODULE_WARNING;
+}
 
 # End of function declaration
 # End of defined Code

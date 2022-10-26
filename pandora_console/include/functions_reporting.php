@@ -1833,14 +1833,24 @@ function reporting_event_top_n(
 
                         $divisor = get_data_multiplier($units[$key_dt]);
 
-                        $data['formated_value'] = format_for_graph(
-                            $dt,
-                            2,
-                            '.',
-                            ',',
-                            $divisor,
-                            $units[$key_dt]
-                        );
+                        if ((bool) $content['use_prefix_notation'] === false) {
+                            $data['formated_value'] = number_format(
+                                $dt,
+                                2,
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            ).' '.$units[$key_dt];
+                        } else {
+                            $data['formated_value'] = format_for_graph(
+                                $dt,
+                                2,
+                                '.',
+                                ',',
+                                $divisor,
+                                $units[$key_dt]
+                            );
+                        }
+
                         $data_return[] = $data;
                     }
 
@@ -1901,14 +1911,25 @@ function reporting_event_top_n(
                         $data['agent'] = $an;
                         $data['module'] = $module_name[$key_an];
                         $data['value'] = $data_top[$key_an];
-                        $data['formated_value'] = format_for_graph(
-                            $data_top[$key_an],
-                            2,
-                            '.',
-                            ',',
-                            $divisor,
-                            $units[$key_an]
-                        );
+
+                        if ((bool) $content['use_prefix_notation'] === false) {
+                            $data['formated_value'] = number_format(
+                                $data_top[$key_an],
+                                2,
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            ).' '.$units[$key_an];
+                        } else {
+                            $data['formated_value'] = format_for_graph(
+                                $data_top[$key_an],
+                                2,
+                                '.',
+                                ',',
+                                $divisor,
+                                $units[$key_an]
+                            );
+                        }
+
                         $data_return[] = $data;
                     }
 
@@ -6925,6 +6946,13 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
+                } else if ((bool) $content['use_prefix_notation'] === false) {
+                    $formated_value = number_format(
+                        $value,
+                        $config['graph_precision'],
+                        $config['decimal_separator'],
+                        $config['thousand_separator']
+                    ).' '.$unit;
                 } else {
                     $formated_value = format_for_graph(
                         $value,
@@ -7085,6 +7113,13 @@ function reporting_value($report, $content, $type, $pdf=false)
             );
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
+            } else if ((bool) $content['use_prefix_notation'] === false) {
+                $formated_value = number_format(
+                    $value,
+                    $config['graph_precision'],
+                    $config['decimal_separator'],
+                    $config['thousand_separator']
+                ).' '.$unit;
             } else {
                 $divisor = get_data_multiplier($unit);
 

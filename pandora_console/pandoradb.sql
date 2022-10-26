@@ -1617,6 +1617,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `ipam_ip_not_assigned_to_agent` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `macros_definition` TEXT,
   `render_definition` TEXT,
+  `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE
@@ -3244,6 +3245,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
   `ipam_ip_not_assigned_to_agent` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `macros_definition` TEXT,
   `render_definition` TEXT,
+  `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   PRIMARY KEY(`id_rc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

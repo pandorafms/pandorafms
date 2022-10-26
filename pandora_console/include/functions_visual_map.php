@@ -924,7 +924,7 @@ function visual_map_print_item(
 
                 $value_text = format_for_graph($module_value, 2);
                 if ($value_text <= 0) {
-                    $value_text = remove_right_zeros(number_format($module_value, $config['graph_precision']));
+                    $value_text = remove_right_zeros(number_format($module_value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                 }
 
                 if (!empty($unit_text)) {
@@ -1743,7 +1743,7 @@ function visual_map_print_item(
                                 || (modules_is_boolean($layoutData['id_agente_modulo']) && $layoutData['show_last_value'] != 0)
                             ) {
                                 if (is_numeric($value)) {
-                                    $img_style_title .= ' <br>'.__('Last value: ').remove_right_zeros(number_format($value, $config['graph_precision']));
+                                    $img_style_title .= ' <br>'.__('Last value: ').remove_right_zeros(number_format($value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                                 } else {
                                     $img_style_title .= ' <br>'.__('Last value: ').$value;
                                 }
@@ -1881,13 +1881,13 @@ function visual_map_print_item(
                             echo '</tr>';
                             echo "<tr class='bg_whitesmoke height_90p'>";
                                 echo '<td>';
-                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='critical_vm'>Critical</div>";
-                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
+                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='warning_vm'>Warning</div>";
-                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
+                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='normal_vm'>Normal</div>";
-                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
+                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='unknown_vm'>Unknown</div>";
                                 echo '</td>';
                             echo '</tr>';
@@ -2462,7 +2462,7 @@ function visual_map_get_simple_value($type, $id_module, $period=SECONDS_1DAY)
                 } else {
                     if (is_numeric($value)) {
                         if ($config['simple_module_value']) {
-                            $value = remove_right_zeros(number_format($value, $config['graph_precision']));
+                            $value = remove_right_zeros(number_format($value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                         }
                     }
 

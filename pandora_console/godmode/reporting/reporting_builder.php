@@ -1888,6 +1888,9 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
+                                );
                                 $good_format = true;
                             break;
 
@@ -1910,6 +1913,9 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
                                 );
                                 $good_format = true;
                             break;
@@ -2696,6 +2702,9 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
+                                );
                                 $good_format = true;
                             break;
 
@@ -2711,6 +2720,9 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
                                 );
                                 $good_format = true;
                             break;

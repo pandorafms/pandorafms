@@ -2546,6 +2546,8 @@ class AgentWizard extends HTML
      */
     private function resultsInterfaceWizard()
     {
+        global $config;
+
         $generalInterfaceModules = $this->getInterfacesModules();
         $generalInterfaceTables = [];
         $generalInterfaceModulesUpdated = [];
@@ -2759,7 +2761,12 @@ class AgentWizard extends HTML
                 // Format current value with thousands and decimals.
                 if (is_numeric($currentValue) === true) {
                     $decimals = (is_float($currentValue) === true) ? 2 : 0;
-                    $currentValue = number_format($currentValue, $decimals);
+                    $currentValue = number_format(
+                        $currentValue,
+                        $decimals,
+                        $config['decimal_separator'],
+                        $config['thousand_separator']
+                    );
                 }
 
                 // It unit of measure have data, attach to current value.

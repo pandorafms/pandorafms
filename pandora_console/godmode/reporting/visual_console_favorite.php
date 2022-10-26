@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2007-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -145,7 +145,7 @@ $ag_group  = (int) get_parameter('ag_group', 0);
 $recursion = (int) get_parameter('recursion', 0);
 
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     echo "<form method='post'
 		action='index.php?sec=network&amp;sec2=godmode/reporting/visual_console_favorite'>";
 } else {
@@ -185,7 +185,15 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
         echo __('Group Recursion');
         html_print_checkbox('recursion', 1, $recursion, false, false, '');
         echo '</li><li>';
-        echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
+        html_print_submit_button(
+            __('Search'),
+            'search_visual_console',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'secondary mini',
+            ]
+        );
         echo '</li></ul></li></ul>';
         echo '</form>';
 
@@ -224,7 +232,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
         } else {
             echo "<ul class='container'>";
             foreach ($favorite_array as $favorite_k => $favourite_v) {
-                if ($is_metaconsole) {
+                if (is_metaconsole() === true) {
                     $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$favourite_v['id'];
                 } else {
                     $url = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$favourite_v['id'];

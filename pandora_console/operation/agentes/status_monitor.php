@@ -168,9 +168,7 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
     $autosearch = true;
 }
 
-$is_metaconsole = is_metaconsole();
-
-if (!$is_metaconsole) {
+if (is_metaconsole() === false) {
     $ag_group = (int) get_parameter('ag_group', 0);
 } else {
     $ag_group  = get_parameter('ag_group', 0);
@@ -221,7 +219,7 @@ if (is_numeric($ag_group)) {
 }
 
 // Agent group selector.
-if (!$is_metaconsole) {
+if (is_metaconsole() === false) {
     if ($ag_group > 0 && check_acl($config['id_user'], $ag_group, 'AR')) {
         if ($recursion) {
             $all_groups = groups_get_children_ids($ag_group, true);
@@ -274,7 +272,7 @@ if (!$is_metaconsole) {
 }
 
 // Module group.
-if ($is_metaconsole) {
+if (is_metaconsole() === true) {
     if ($modulegroup != '-1') {
         $sql_conditions .= sprintf(' AND tagente_modulo.id_module_group '.$not_condition.' IN (%s)', $modulegroup);
     }
@@ -372,7 +370,7 @@ if (!empty($ag_custom_fields)) {
 
 // Filter by tag.
 if ($tag_filter !== 0) {
-    if ($is_metaconsole) {
+    if (is_metaconsole() === true) {
         $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
@@ -417,7 +415,7 @@ if (!defined('METACONSOLE')) {
 }
 
 // Get limit_sql depend of the metaconsole or standard mode.
-if ($is_metaconsole) {
+if (is_metaconsole() === true) {
     // Offset will be used to get the subset of modules.
     $inferior_limit = $offset;
     $superior_limit = ($config['block_size'] + $offset);
@@ -516,7 +514,7 @@ $table->data[0][3] = html_print_select(
 $rows_select = [];
 $table->data[0][4] = __('Module group');
 $rows_select[0] = __('Not assigned');
-if (!$is_metaconsole) {
+if (is_metaconsole() === false) {
     $rows = db_get_all_rows_sql(
         'SELECT *
 		FROM tmodule_group ORDER BY name'
@@ -619,25 +617,25 @@ if ($develop_bypass) {
 
 $typemodules = [];
 $typemodules[1] = __('Data server module');
-if ($network_available || $is_metaconsole) {
+if ($network_available || is_metaconsole() === true) {
     $typemodules[2] = __('Network server module');
 }
 
-if ($plugin_available || $is_metaconsole) {
+if ($plugin_available || is_metaconsole() === true) {
     $typemodules[4] = __('Plugin server module');
 }
 
-if ($wmi_available || $is_metaconsole) {
+if ($wmi_available || is_metaconsole() === true) {
     $typemodules[6] = __('WMI server module');
 }
 
-if ($prediction_available || $is_metaconsole) {
+if ($prediction_available || is_metaconsole() === true) {
     $typemodules[5] = __('Prediction server module');
 }
 
 if (enterprise_installed()) {
     $typemodules[7] = __('Web server module');
-    if ($wux_available || $is_metaconsole) {
+    if ($wux_available || is_metaconsole() === true) {
           $typemodules[8] = __('Wux server module');
     }
 }
@@ -857,11 +855,20 @@ $table->data[3][0] = ui_toggle(
 
 $table->colspan[4][0] = 7;
 $table->cellstyle[4][0] = 'padding-top: 0px;';
-$table->data[4][0] = html_print_submit_button(
-    __('Show'),
-    'uptbutton',
-    false,
-    'class="sub search mgn_tp_0 right"',
+$table->data[4][0] = html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Show'),
+            'uptbutton',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
     true
 );
 

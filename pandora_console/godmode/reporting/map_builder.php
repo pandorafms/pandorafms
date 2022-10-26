@@ -338,7 +338,7 @@ if ($ag_group > 0) {
 
 echo "<table class='databox filters bolder mrgn_btn_10px' width='100%'>
 	<tr>";
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     echo "<form method='post'
 		action='index.php?sec=network&amp;sec2=godmode/reporting/map_builder'>";
 } else {
@@ -369,7 +369,15 @@ echo __('Group Recursion').'&nbsp;';
 html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
 
 echo "</td><td class='w22p'>";
-echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
+html_print_submit_button(
+    __('Search'),
+    'search_visual_console',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'secondary mini',
+    ]
+);
 echo '</form>';
 echo '</td>';
 echo '</tr></table>';
@@ -401,7 +409,7 @@ $table->align[4] = 'left';
 // or has "VR" privileges, otherwise show only maps of user group
 $filters['offset'] = $offset;
 $filters['limit'] = $pagination;
-if (!empty($search)) {
+if (empty($search) === false) {
     $filters['name'] = io_safe_input($search);
 }
 
@@ -410,7 +418,7 @@ if ($ag_group) {
 }
 
 $own_info = get_user_info($config['id_user']);
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $url = 'index.php?sec=network&amp;sec2=godmode/reporting/map_builder&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
 } else {
     $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
@@ -441,7 +449,7 @@ if ($own_info['is_admin'] || $vconsoles_read) {
     $total_maps = count($count_maps);
 }
 
-if (!$maps && !is_metaconsole()) {
+if (!$maps && is_metaconsole() === false) {
     $total = count(visual_map_get_user_layouts($config['id_user'], false, false, false));
     if (!$total) {
         include_once $config['homedir'].'/general/first_task/map_builder.php';
@@ -453,7 +461,7 @@ if (!$maps && !is_metaconsole()) {
             ]
         );
     }
-} else if (!$maps && is_metaconsole()) {
+} else if (!$maps && is_metaconsole() === true) {
     $total = count(visual_map_get_user_layouts($config['id_user'], false, false, false));
     if (!$total) {
         ui_print_info_message(
@@ -473,20 +481,20 @@ if (!$maps && !is_metaconsole()) {
 } else {
     ui_pagination($total_maps, $url, $offset, $pagination);
     foreach ($maps as $map) {
-        // ACL for the visual console permission
+        // ACL for the visual console permission.
         $vconsole_write = false;
         $vconsole_manage = false;
-        if (isset($map['vw'])) {
+        if (isset($map['vw']) === true) {
             $vconsole_write = true;
         }
 
-        if (isset($map['vm'])) {
+        if (isset($map['vm']) === true) {
             $vconsole_manage = true;
         }
 
         $data = [];
 
-        if (!is_metaconsole()) {
+        if (is_metaconsole() === false) {
             $data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
         } else {
             $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_visualmap='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
@@ -499,7 +507,7 @@ if (!$maps && !is_metaconsole()) {
         $vconsoles_manage_action_btn = check_acl_restricted_all($config['id_user'], $map['id_group'], 'VM');
 
         if ($vconsoles_write_action_btn || $vconsoles_manage_action_btn) {
-            if (!is_metaconsole()) {
+            if (is_metaconsole() === false) {
                 $table->cellclass[] = [
                     3 => 'action_buttons',
                     4 => 'action_buttons',
@@ -539,28 +547,36 @@ if (!$maps && !is_metaconsole()) {
 }
 
 if ($maps) {
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         echo '<div class="action-buttons w100p right_align">';
     } else {
         echo '<div class="w100p right right_align mrgn_btn_20px">';
     }
 }
 
-if ($maps || defined('METACONSOLE')) {
+if ($maps || is_metaconsole() === true) {
     if ($vconsoles_write || $vconsoles_manage) {
-        if (!defined('METACONSOLE')) {
+        if (is_metaconsole() === false) {
             echo '<form action="index.php?sec=network&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
         } else {
             echo '<form action="index.php?sec=screen&sec2=screens/screens&action=visualmap&action2=new&operation=new_visualmap&tab=data&pure='.$pure.'" method="post">';
         }
 
         html_print_input_hidden('edit_layout', 1);
-        html_print_submit_button(
-            __('Create'),
-            '',
-            false,
-            'class="sub next"'
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Create'),
+                    '',
+                    false,
+                    [ 'icon' => 'next'],
+                    true
+                ),
+            ]
         );
+
         echo '</form>';
     }
 

@@ -247,7 +247,7 @@ $row[] = __('Agent status');
 $row[] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '', '', 0, true, false, true, '', false, 'width:10em');
 $row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
 
-// Button
+// Button.
 if (is_metaconsole() === true) {
     $table->data[] = $row;
     $row = [];
@@ -257,7 +257,16 @@ if (is_metaconsole() === true) {
     $row = [];
 }
 
-$row[] = html_print_submit_button(__('Filter'), 'uptbutton', false, 'class="sub search"', true);
+$row[] = html_print_submit_button(
+    __('Filter'),
+    'uptbutton',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 
 $table->data[] = $row;
 

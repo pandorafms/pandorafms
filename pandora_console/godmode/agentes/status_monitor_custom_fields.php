@@ -202,10 +202,19 @@ $table->data[1][2] = html_print_select(
 echo '<form id="custom_status_monitor" method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(__('Update'), 'upd_button', false, 'class="sub upd"');
+html_print_div(
+    [
+        'class'   => 'action-buttons w100p',
+        'content' => html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            [ 'icon' => 'update' ],
+            true
+        ),
+    ]
+);
 echo '</form>';
-echo '</div>';
 ?>
 
 <script type="text/javascript">

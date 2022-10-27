@@ -5592,7 +5592,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .css("background","url(\'"+image+"\') right center no-repeat");
+            .css("background","url(\'"+image+"\') 95% center no-repeat");
         }
 
 		function set_functions_change_autocomplete_'.$input_name.'() {
@@ -5865,7 +5865,7 @@ function ui_print_agent_autocomplete_input($parameters)
                 select_item_click = 0;
                 $("#'.$input_id.'")
                 .css("background",
-                    "url(\"'.$icon_image.'\") right center no-repeat");
+                    "url(\"'.$icon_image.'\") 95% center no-repeat");
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -5881,7 +5881,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			//Set loading
 			$("#'.$input_id.'")
 				.css("background",
-					"url(\"'.$spinner_image.'\") right center no-repeat");
+					"url(\"'.$spinner_image.'\") 95% center no-repeat");
 			
 			
 			
@@ -5903,7 +5903,7 @@ function ui_print_agent_autocomplete_input($parameters)
 							//Set icon
 							$("#'.$input_id.'")
 								.css("background",
-									"url(\"'.$icon_image.'\") right center no-repeat");
+									"url(\"'.$icon_image.'\") 95% center no-repeat");
 							
 							return;
 						}
@@ -5955,7 +5955,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						//Set icon
 						$("#'.$input_id.'")
 							.css("background",
-								"url(\"'.$icon_image.'\") right center no-repeat");
+								"url(\"'.$icon_image.'\") 95% center no-repeat");
 						
 						return;
 					}
@@ -5975,7 +5975,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'padding-right: 20px; padding: 2px 5px; margin-bottom: 4px; border: none; border-bottom: 1px solid #ccc; border-radius: 0; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'background: url('.$icon_image.') no-repeat 95% center; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

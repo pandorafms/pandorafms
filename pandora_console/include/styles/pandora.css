@@ -232,9 +232,7 @@ a:hover {
   text-decoration: underline;
   font-weight: bold;
 }
-:focus {
-  outline-color: #82b92e;
-}
+
 a:focus,
 input:focus,
 button:focus {
@@ -8987,15 +8985,29 @@ select:focus {
   border: 1px solid #8a96a6;
 }
 
+:focus {
+  outline: #8a96a6;
+}
+
+#autorefresh_list_out::-webkit-scrollbar {
+  /*color: test;*/
+}
 textarea,
 select {
   padding: 10px;
 }
 
-select {
+select[multiple] {
   min-height: 10em;
 }
 
+select:focus {
+  border-color: #8a96a6;
+}
+
+.dataTables_length > label > select {
+  min-height: 3em;
+}
 input[type="button"],
 input[type="submit"] {
   width: 175px;
@@ -9351,7 +9363,12 @@ button.ui-button.ui-widget.submit-cancel:active {
   width: 17px !important;
   background: url(../../images/svg/down.svg) no-repeat content-box !important;
 }
-
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__placeholder {
+  color: #999;
+  line-height: 30px;
+}
 .select2-container .select2-selection--single .select2-selection__rendered {
   display: block;
   padding-left: 8px;

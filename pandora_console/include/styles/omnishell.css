@@ -387,23 +387,6 @@ label {
   width: 100%;
 }
 
-li > input[type="text"],
-li > input[type="email"],
-li > input[type="password"],
-li > input[type="email"],
-.discovery_text_input > input[type="password"],
-.discovery_text_input > input[type="text"],
-#interval_manual > input[type="text"] {
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #ccc;
-  font-weight: lighter;
-  padding: 0px 0px 2px 0px;
-  box-sizing: border-box;
-  margin-bottom: 4px;
-}
-
 #interval_manual > input[type="text"] {
   width: 50px;
   margin-left: 10px;

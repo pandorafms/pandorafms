@@ -932,12 +932,12 @@ function html_print_select(
     }
 
     $select2 = 'select2.min';
-    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+    if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $select2 = 'select2_dark.min';
     }
 
     if (($multiple === false || $select2_multiple_enable === true) && $select2_enable === true) {
-        if (is_ajax()) {
+        if (is_ajax() === true) {
             $output .= '<script src="';
             $output .= ui_get_full_url(
                 'include/javascript/select2.min.js',
@@ -1814,7 +1814,9 @@ function html_print_select_from_sql(
         false,
         // Required.
         $required,
-        $truncate_size
+        $truncate_size,
+        true,
+        true
     );
 }
 

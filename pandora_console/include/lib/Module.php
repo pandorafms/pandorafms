@@ -749,6 +749,10 @@ class Module extends Entity
         $updates = $this->fields;
         $updates['id_tipo_modulo'] = $this->moduleType()->id_tipo();
 
+        if (empty($updates['debug_content']) === false) {
+            $updates['debug_content'] = str_replace("'", '"', $updates['debug_content']);
+        }
+
         // In the case of the webserver modules, debug_content special characters must be handled.
         if ($updates['id_tipo_modulo'] >= MODULE_TYPE_WEB_ANALYSIS
             && $updates['id_tipo_modulo'] <= MODULE_TYPE_WEB_CONTENT_STRING

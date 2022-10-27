@@ -396,3 +396,59 @@ div.multi-response-buttons {
 .white_table_graph_header {
   align-items: center;
 }
+
+.container-massive-events-response {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.container-massive-events-response-cell {
+  margin-bottom: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+.container-massive-events-response-command > span {
+  font-style: italic;
+}
+
+.container-massive-events-response-output {
+  /*border: 2px dashed #ddd;*/
+  /*padding: 10px;*/
+  margin: 10px;
+}
+
+.container-massive-events-response-execute {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+#massive-parameters-response {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#massive-parameters-response > div {
+  width: 80%;
+}
+
+#massive-parameters-response > div h5 {
+  text-align: center;
+}
+
+#massive-parameters-response > div div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}

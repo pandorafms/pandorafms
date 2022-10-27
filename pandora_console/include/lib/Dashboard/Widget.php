@@ -416,6 +416,7 @@ class Widget
                     $className .= '\OsQuickReportWidget';
                 break;
 
+                case 'GroupedMeterGraphs':
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
                     $className .= '\\'.$name;

@@ -235,27 +235,31 @@ function groups_combine_acl($acl_group_a, $acl_group_b)
     }
 
     $acl_list = [
-        'agent_view'          => 1,
-        'agent_edit'          => 1,
-        'agent_disable'       => 1,
-        'alert_edit'          => 1,
-        'alert_management'    => 1,
-        'pandora_management'  => 1,
-        'db_management'       => 1,
-        'user_management'     => 1,
-        'report_view'         => 1,
-        'report_edit'         => 1,
-        'report_management'   => 1,
-        'event_view'          => 1,
-        'event_edit'          => 1,
-        'event_management'    => 1,
-        'map_view'            => 1,
-        'map_edit'            => 1,
-        'map_management'      => 1,
-        'vconsole_view'       => 1,
-        'vconsole_edit'       => 1,
-        'vconsole_management' => 1,
-        'tags'                => 1,
+        'agent_view'                => 1,
+        'agent_edit'                => 1,
+        'agent_disable'             => 1,
+        'alert_edit'                => 1,
+        'alert_management'          => 1,
+        'pandora_management'        => 1,
+        'db_management'             => 1,
+        'user_management'           => 1,
+        'report_view'               => 1,
+        'report_edit'               => 1,
+        'report_management'         => 1,
+        'event_view'                => 1,
+        'event_edit'                => 1,
+        'event_management'          => 1,
+        'map_view'                  => 1,
+        'map_edit'                  => 1,
+        'map_management'            => 1,
+        'vconsole_view'             => 1,
+        'vconsole_edit'             => 1,
+        'vconsole_management'       => 1,
+        'tags'                      => 1,
+        'network_config_view'       => 1,
+        'network_config_edit'       => 1,
+        'network_config_management' => 1,
+
     ];
 
     foreach ($acl_group_a['tags'] as $key => $value) {
@@ -838,13 +842,14 @@ function users_has_profile_without_UM($id_user, $id_groups)
 }
 
 
-function users_get_user_profile($id_user)
+function users_get_user_profile($id_user, $limit='')
 {
     $sql = sprintf(
         "SELECT * FROM tusuario_perfil
         INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
-        WHERE tusuario_perfil.id_usuario like '%s'",
-        $id_user
+        WHERE tusuario_perfil.id_usuario like '%s' %s",
+        $id_user,
+        $limit
     );
 
     $aux = db_get_all_rows_sql($sql);

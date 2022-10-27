@@ -45,6 +45,11 @@ define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
 define('EVENT_NO_VALIDATED', 3);
 
+// Events group by constants.
+define('EVENT_GROUP_REP_ALL', 0);
+define('EVENT_GROUP_REP_EVENTS', 1);
+define('EVENT_GROUP_REP_AGENTS', 2);
+define('EVENT_GROUP_REP_EXTRAIDS', 3);
 
 // Agents disabled status.
 define('AGENT_ENABLED', 0);

@@ -199,7 +199,7 @@ label {
 .discovery_full_width_input {
   width: 100%;
 }
-
+/*
 li > input[type="number"],
 li > input[type="text"],
 li > input[type="email"],
@@ -216,7 +216,7 @@ li > input[type="email"],
   box-sizing: border-box;
   margin-bottom: 4px;
 }
-
+*/
 #interval_manual > input[type="text"] {
   width: 50px;
   margin-left: 10px;

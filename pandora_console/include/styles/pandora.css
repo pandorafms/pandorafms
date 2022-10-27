@@ -163,19 +163,9 @@ body.body-report {
   display: block;
 }
 
-input,
-textarea {
-  padding: 5px;
-  border: 1px solid #ddd;
-}
-
 textarea {
   min-height: 100px;
   width: 99%;
-}
-
-input {
-  vertical-align: middle;
 }
 
 input[type="checkbox"] {
@@ -2207,7 +2197,7 @@ div#event_control {
 }
 
 .ac_loading {
-  background: white url("../images/loading.gif") right center no-repeat;
+  background: white url("../images/loading.gif") 95% center no-repeat;
 }
 
 .ac_over {
@@ -2582,10 +2572,7 @@ td.datos_orangef9 {
 }
 
 /* global */
-input#text-id_parent.ac_input,
-input,
-textarea,
-select {
+input#text-id_parent.ac_input {
   background-color: #ffffff;
   border: 1px solid #cbcbcb;
   -moz-border-radius: 3px;
@@ -4751,16 +4738,13 @@ input:checked + .p-slider:before {
 
 .edit_user_info_right input,
 .input_line {
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #343434;
-  padding: 10px 0px 2px 35px;
+  padding: 0px 0px 2px 35px;
   box-sizing: border-box;
   background-repeat: no-repeat;
-  background-position: left bottom 2px;
+  background-position: 10px 50%;
   width: 100%;
   margin-bottom: 4px;
+  height: 32px;
 }
 
 .edit_user_info_right input:focus {
@@ -4818,11 +4802,6 @@ input:checked + .p-slider:before {
 
 .edit_user_timezone #zonepicker {
   width: 100%;
-}
-
-.edit_user_comments #textarea_comments {
-  background-color: #fbfbfb;
-  padding-left: 10px;
 }
 
 .edit_user_labels {
@@ -6153,10 +6132,6 @@ form#form-filter-interfaces ul li.select-interfaces {
 
 li .select2 {
   max-width: 400px !important;
-}
-
-.select2-container {
-  min-width: 110px !important;
 }
 
 div.graph td.legendLabel {
@@ -8987,9 +8962,11 @@ div#err_msg_centralised {
   }
 }
 
-input {
+input,
+textarea,
+select {
   background-color: #f6f7fb;
-  height: 24px;
+  height: 28px;
   border: 1px solid #c0ccdc;
   border-radius: 8px;
   padding-left: 12px;
@@ -8997,9 +8974,26 @@ input {
   color: #2b3332;
 }
 
-input:disabled {
+input:disabled,
+textarea:disabled,
+select:disabled,
+.select2-container .select2-selection--single:disabled {
   background-color: #e5e9ed;
   color: #8a96a6;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid #8a96a6;
+}
+
+textarea,
+select {
+  padding: 10px;
+}
+
+select {
+  min-height: 10em;
 }
 
 input[type="button"],
@@ -9307,6 +9301,105 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 /* FINISH */
+/* select */
+
+.select2-container {
+  box-sizing: border-box;
+  display: inline-block;
+  margin: 0;
+  position: relative;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.select2-container .select2-selection--single {
+  background-color: #fff !important;
+  height: 32px !important;
+  border: 1px solid #c0ccdc !important;
+  border-radius: 8px !important;
+  padding-left: 4px !important;
+  font: normal normal normal 12px Pandora-Light !important;
+  color: #2b3332 !important;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.select2-hidden-accessible {
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+}
+
+.select2-selection__arrow b {
+  top: 0 !important;
+  left: 0 !important;
+  border: 0 !important;
+  height: 17px !important;
+  margin-left: -4px !important;
+  margin-top: 7px !important;
+  position: absolute !important;
+  width: 17px !important;
+  background: url(../../images/svg/down.svg) no-repeat content-box !important;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  display: block;
+  padding-left: 8px;
+  padding-right: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #444 !important;
+  line-height: 32px !important;
+}
+
+.select2-container--default.select2-container--open.select2-container--below
+  .select2-selection--single,
+.select2-container--default.select2-container--open.select2-container--below
+  .select2-selection--multiple {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.select2-container--default.select2-container--open.select2-container--above
+  .select2-selection--single,
+.select2-container--default.select2-container--open.select2-container--above
+  .select2-selection--multiple {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow {
+  height: 26px;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 20px;
+}
+
+.select2-container {
+  min-width: 150px !important;
+}
+
+.select2-container--default.select2-container--focus
+  > .selection
+  > .select2-selection--single {
+  border-color: #8a96a6 !important;
+}
+
+/* FINISH SELECT2 */
 .password_input {
   background-color: transparent !important;
   border: none !important;

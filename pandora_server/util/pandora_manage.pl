@@ -21,7 +21,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
 use LWP::Simple;
-#use Data::Dumper;
+use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -1142,6 +1142,22 @@ sub param_check ($$;$) {
 sub help_screen_line($$$){
 	my ($option, $parameters, $help) = @_;
 	print "\n\t$option $parameters : $help.\n" unless ($param ne '' && $param ne $option);
+}
+
+sub test ($) {
+	my (@item) = @_;
+	my @args = @ARGV;
+	my $arg_cont = 2;
+	my $total = $#args;
+
+	print_log Dumper(@item);
+
+	# print_log "$item[0]{name}\n\n";
+
+	while ($arg_cont <= $total) {
+		print_log "$args[$arg_cont]\n\n";
+		$arg_cont++;
+	}
 }
 
 ###############################################################################
@@ -7648,9 +7664,16 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 20, 17);
-			cli_create_event();
-		}		
+			my @items = (
+				{'type' => 'string', 'name' => 'user'},
+				{'type' => 'int', 'name' => 'group'}
+			);
+
+			test(\@items);
+			# param_check($ltotal, 20, 17);
+
+			# cli_create_event();
+		}
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 8, 7);
 			cli_validate_event();

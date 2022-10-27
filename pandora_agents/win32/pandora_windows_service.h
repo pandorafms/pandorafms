@@ -124,6 +124,7 @@ namespace Pandora {
 		long           getInterval ();
 		long           getIntensiveInterval ();
 		string         generateAgentName ();
+		bool           writeToBuffer (string temporal);
 
 	};
 }

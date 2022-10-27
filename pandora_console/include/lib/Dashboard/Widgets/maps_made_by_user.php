@@ -29,6 +29,7 @@
 namespace PandoraFMS\Dashboard;
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
+use PandoraFMS\Enterprise\Metaconsole\Node;
 use PandoraFMS\User;
 /**
  * Maps by users Widgets.
@@ -183,12 +184,36 @@ class MapsMadeByUser extends Widget
         if (empty($this->values['vcId']) === true) {
             $this->configurationRequired = true;
         } else {
-            $check_exist = db_get_value(
-                'id',
-                'tlayout',
-                'id',
-                $this->values['vcId']
-            );
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node = new Node($this->values['node']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_value(
+                    'id',
+                    'tlayout',
+                    'id',
+                    $this->values['vcId']
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
 
             if ($check_exist === false) {
                 $this->loadError = true;
@@ -334,12 +359,14 @@ class MapsMadeByUser extends Widget
         $inputs[] = [
             'label'     => __('Visual console'),
             'arguments' => [
-                'id'       => 'vcId',
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'vcId',
-                'selected' => $values['vcId'],
-                'return'   => true,
+                'id'            => 'vcId',
+                'type'          => 'select',
+                'fields'        => $fields,
+                'name'          => 'vcId',
+                'selected'      => $values['vcId'],
+                'return'        => true,
+                'nothing'       => __('None'),
+                'nothing_value' => 0,
             ],
         ];
 

@@ -57,11 +57,17 @@ function mysql_connect_db(
         $port = $config['dbport'];
     }
 
-    if ($ssl === null && (bool) $config['dbssl'] === true) {
+    if ($ssl === null
+        && isset($config['dbssl']) === true
+        && (bool) $config['dbssl'] === true
+    ) {
         $ssl = $config['dbsslcafile'];
     }
 
-    if ($verify === null && (bool) $config['sslverifyservercert'] === true) {
+    if ($verify === null
+        && isset($config['sslverifyservercert']) === true
+        && (bool) $config['sslverifyservercert'] === true
+    ) {
         $verify = 'verified';
     }
 

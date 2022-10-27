@@ -200,6 +200,17 @@ class ServiceMapWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['serviceId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = db_get_value(
+                'id',
+                'tservice',
+                'id',
+                $this->values['serviceId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -317,7 +328,7 @@ class ServiceMapWidget extends Widget
         ];
 
         $inputs[] = [
-            'label'     => __('Enable sunburst'),
+            'label'     => __('Show sunburst by default'),
             'arguments' => [
                 'type'   => 'switch',
                 'name'   => 'sunburst',

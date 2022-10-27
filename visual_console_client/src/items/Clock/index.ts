@@ -525,17 +525,21 @@ export default class Clock extends Item<ClockProps> {
     const element: HTMLDivElement = document.createElement("div");
     element.className = "digital-clock";
 
-    const { width } = this.getElementSize(); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
+    const { width, height } = this.getElementSize(); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
+    let modified = width;
+    if (height < width) {
+      modified = height;
+    }
 
     // Calculate font size to adapt the font to the item size.
-    const baseTimeFontSize = 20; // Per 100px of width.
+    const baseTimeFontSize = 35; // Per 100px of width.
     const dateFontSizeMultiplier = 0.5;
     const tzFontSizeMultiplier = 6 / this.props.clockTimezone.length;
-    const timeFontSize = (baseTimeFontSize * width) / 100;
+    const timeFontSize = (baseTimeFontSize * modified) / 100;
     const dateFontSize =
-      (baseTimeFontSize * dateFontSizeMultiplier * width) / 100;
+      (baseTimeFontSize * dateFontSizeMultiplier * modified) / 100;
     const tzFontSize = Math.min(
-      (baseTimeFontSize * tzFontSizeMultiplier * width) / 100,
+      (baseTimeFontSize * tzFontSizeMultiplier * modified) / 100,
       (width / 100) * 10
     );
 

@@ -31,8 +31,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
@@ -52,7 +50,46 @@ if (is_ajax()) {
     $method = get_parameter('method');
     $group_id = get_parameter('group_id');
     $group_recursion = (bool) get_parameter('group_recursion', 0);
+    $get_user_profile_group = (bool) get_parameter('get_user_profile_group', false);
+
     $return_all = false;
+
+    if ($get_user_profile_group === true) {
+        $id_user = get_parameter('id_user');
+
+        $user_is_admin = users_is_admin();
+
+        $user_profiles = [];
+
+        if ($user_is_admin === false) {
+            $group_um = users_get_groups_UM($config['id_user']);
+        }
+
+        // User profiles.
+        if ($user_is_admin || $id_user == $config['id_user'] || isset($group_um[0])) {
+            $user_profiles = db_get_all_rows_field_filter(
+                'tusuario_perfil',
+                'id_usuario',
+                $id_user
+            );
+        } else {
+            $user_profiles_aux = users_get_user_profile($id_user);
+            foreach ($group_um as $key => $value) {
+                if (isset($user_profiles_aux[$key]) === true) {
+                    $user_profiles[$key] = $user_profiles_aux[$key];
+                    unset($user_profiles_aux[$key]);
+                }
+            }
+        }
+
+        foreach ($user_profiles as $key => $value) {
+            $user_profiles[$key]['id_perfil'] = profile_get_name($value['id_perfil']);
+            $user_profiles[$key]['id_grupo'] = groups_get_name($value['id_grupo'], true);
+        }
+
+        echo json_encode($user_profiles);
+        return;
+    }
 
     if ($group_id == -1) {
         $sql = 'SELECT tusuario.id_user FROM tusuario 
@@ -94,6 +131,8 @@ if (is_ajax()) {
         return;
     }
 }
+
+enterprise_hook('open_meta_frame');
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
@@ -265,71 +304,75 @@ $delete_user = (bool) get_parameter('user_del', false);
 if ($delete_user === true) {
     // Delete user.
     $id_user = get_parameter('delete_user', 0);
-    if (users_is_admin($id_user) === true && users_is_admin() === false) {
-        db_pandora_audit(
-            AUDIT_LOG_ACL_VIOLATION,
-            'Trying to delete admininstrator user by non administrator user '.$config['id_user']
-        );
-
-        include 'general/noaccess.php';
-        exit;
-    }
-
-    // Only allow delete user if is not the actual user.
-    if ($id_user != $config['id_user']) {
-        $user_row = users_get_user_by_id($id_user);
-
-        $result = delete_user($id_user);
-
-        if ($result) {
+    if ($id_user !== 0) {
+        if (users_is_admin($id_user) === true && users_is_admin() === false) {
             db_pandora_audit(
-                AUDIT_LOG_USER_MANAGEMENT,
-                __('Deleted user %s', io_safe_output($id_user))
+                AUDIT_LOG_ACL_VIOLATION,
+                'Trying to delete admininstrator user by non administrator user '.$config['id_user']
             );
+
+            include 'general/noaccess.php';
+            exit;
         }
 
-        ui_print_result_message(
-            $result,
-            __('Successfully deleted'),
-            __('There was a problem deleting the user')
-        );
+        // Only allow delete user if is not the actual user.
+        if ($id_user != $config['id_user']) {
+            $user_row = users_get_user_by_id($id_user);
 
-        // Delete the user in all the consoles.
-        if (is_metaconsole() === true && isset($_GET['delete_all'])) {
-            $servers = metaconsole_get_servers();
-            foreach ($servers as $server) {
-                // Connect to the remote console.
-                if (metaconsole_connect($server) === NOERR) {
-                    // Delete the user.
-                    $result = delete_user($id_user);
+            $result = delete_user($id_user);
+
+            if ($result) {
+                db_pandora_audit(
+                    AUDIT_LOG_USER_MANAGEMENT,
+                    __('Deleted user %s', io_safe_output($id_user))
+                );
+            }
+
+            ui_print_result_message(
+                $result,
+                __('Successfully deleted'),
+                __('There was a problem deleting the user')
+            );
+
+            // Delete the user in all the consoles.
+            if (is_metaconsole() === true && isset($_GET['delete_all'])) {
+                $servers = metaconsole_get_servers();
+                foreach ($servers as $server) {
+                    // Connect to the remote console.
+                    if (metaconsole_connect($server) === NOERR) {
+                        // Delete the user.
+                        $result = delete_user($id_user);
+                        if ($result) {
+                            db_pandora_audit(
+                                AUDIT_LOG_USER_MANAGEMENT,
+                                __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            );
+                        }
+
+                        // Restore the db connection.
+                        metaconsole_restore_db();
+                    }
+
+                    // Log to the metaconsole too.
                     if ($result) {
                         db_pandora_audit(
                             AUDIT_LOG_USER_MANAGEMENT,
-                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
                         );
                     }
 
-                    // Restore the db connection.
-                    metaconsole_restore_db();
-                }
-
-                // Log to the metaconsole too.
-                if ($result) {
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_MANAGEMENT,
-                        __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
+                    ui_print_result_message(
+                        $result,
+                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
                     );
                 }
-
-                ui_print_result_message(
-                    $result,
-                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                );
             }
+        } else {
+            ui_print_error_message(__('There was a problem deleting the user'));
         }
     } else {
-        ui_print_error_message(__('There was a problem deleting the user'));
+        ui_print_error_message(__('ID user cannot be empty'));
     }
 } else if (isset($_GET['profile_del'])) {
     // Delete profile.
@@ -586,15 +629,17 @@ $rowPair = true;
 $iterator = 0;
 $cont = 0;
 foreach ($info as $user_id => $user_info) {
+    if (empty($user_id) === true) {
+        continue;
+    }
+
     // User profiles.
     if ($user_is_admin || $user_id == $config['id_user'] || isset($group_um[0])) {
-        $user_profiles = db_get_all_rows_field_filter(
-            'tusuario_perfil',
-            'id_usuario',
-            $user_id
+        $user_profiles = db_get_all_rows_sql(
+            'SELECT * FROM tusuario_perfil where id_usuario LIKE "'.$user_id.'" LIMIT 5'
         );
     } else {
-        $user_profiles_aux = users_get_user_profile($user_id);
+        $user_profiles_aux = users_get_user_profile($user_id, 'LIMIT 5');
         $user_profiles = [];
         foreach ($group_um as $key => $value) {
             if (isset($user_profiles_aux[$key]) === true) {
@@ -674,38 +719,34 @@ foreach ($info as $user_id => $user_info) {
     if ($user_profiles !== false) {
         $total_profile = 0;
 
-            $data[4] .= '<div class="text_end">';
+        $data[4] .= '<div class="text_end">';
         foreach ($user_profiles as $row) {
-            if ($total_profile <= 5) {
-                $data[4] .= "<div class='float-left'>";
-                $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= ' / </div>';
-                $data[4] .= "<div class='float-left pdd_l_5px'>";
-                $data[4] .= groups_get_name($row['id_grupo'], true);
-                $data[4] .= '</div>';
+            $data[4] .= "<div class='float-left'>";
+            $data[4] .= profile_get_name($row['id_perfil']);
+            $data[4] .= ' / </div>';
+            $data[4] .= "<div class='float-left pdd_l_5px'>";
+            $data[4] .= groups_get_name($row['id_grupo'], true);
+            $data[4] .= '</div>';
 
-                if ($total_profile == 0 && count($user_profiles) >= 5) {
-                    $data[4] .= '<span onclick="showGroups()" class="pdd_l_15px">
-            '.html_print_image(
-                        'images/zoom.png',
-                        true,
-                        [
-                            'title' => __('Show'),
-                            'class' => 'invert_filter',
-                        ]
-                    ).'</span>';
-                }
+            if ($total_profile == 0 && count($user_profiles) >= 5) {
+                $data[4] .= '<span onclick="showGroups(`'.$row['id_usuario'].'`)">'.html_print_image(
+                    'images/zoom.png',
+                    true,
+                    [
+                        'title' => __('Show profiles'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</span>';
 
-                $data[4] .= '<br />';
-                $data[4] .= '<br />';
-                $data[4] .= '</div>';
-            } else {
-                $data[4] .= "<div id='groups_list' class='invisible'>";
-                $data[4] .= '<div >';
-                $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= ' / '.groups_get_name($row['id_grupo'], true).'</div>';
-                $data[4] .= '<br/>';
+                $data[4] .= html_print_input_hidden(
+                    'show_groups_'.$row['id_usuario'],
+                    -1,
+                    true
+                );
             }
+
+            $data[4] .= '<br/>';
+            $data[4] .= '<br/>';
 
             $total_profile++;
         }
@@ -718,6 +759,8 @@ foreach ($info as $user_id => $user_info) {
             );
         }
 
+        $data[4] .= '</div>';
+        $data[4] .= '<div class="invisible" id="profiles_'.$user_profiles[0]['id_usuario'].'">';
         $data[4] .= '</div>';
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');
@@ -882,16 +925,46 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
-echo '<script type="text/javascript">
-function showGroups(){
-var groups_list = document.getElementById("groups_list");
+?>
+<script type="text/javascript">
+    function showGroups(id_user) {
+        if ($(`#hidden-show_groups_${id_user}`).val() === '-1') {
+            var request = $.ajax({
+                url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    page: 'godmode/users/user_list',
+                    get_user_profile_group: 1,
+                    id_user: id_user
+                },
+                success: function (data, textStatus, xhr) {
+                    let count = 1;
+                    data.forEach( function(valor, indice, array) {
+                        if (count >= 6) {
+                            let main_div = $(`#profiles_${id_user}`);
+                            main_div.append(
+                                `<div id="left_${id_user}_${count}" class='float-left'>${valor.id_perfil} / </div>`,
+                                `<div id="right_${id_user}_${count}" class='float-left pdd_l_5px'>${valor.id_grupo}</div>`,
+                                `<br/><br/>`
+                            );
+                        }
+                        count ++;
+                    });
+                },
+                error: function (e, textStatus) {
+                    console.error(textStatus);
+                }
+            });
+            $(`#hidden-show_groups_${id_user}`).val('1');
+            $(`#profiles_${id_user}`).show();
+        } else if ($(`#hidden-show_groups_${id_user}`).val() === '1') {
+            $(`#hidden-show_groups_${id_user}`).val('0');
+            $(`#profiles_${id_user}`).hide();
+        } else {
+            $(`#hidden-show_groups_${id_user}`).val('1');
+            $(`#profiles_${id_user}`).show();
+        }
+    }
 
-if(groups_list.style.display == "none"){
-    document.querySelectorAll("[id=groups_list]").forEach(element=> 
-    element.style.display = "block");
-}else{
-    document.querySelectorAll("[id=groups_list]").forEach(element=> 
-    element.style.display = "none");
-};
-}
-</script>';
+</script>

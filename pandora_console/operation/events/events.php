@@ -84,7 +84,7 @@ ui_require_javascript_file('pandora_events');
 $default_filter = [
     'status'        => EVENT_NO_VALIDATED,
     'event_view_hr' => $config['event_view_hr'],
-    'group_rep'     => 1,
+    'group_rep'     => EVENT_GROUP_REP_EVENTS,
     'tag_with'      => [],
     'tag_without'   => [],
     'history'       => false,
@@ -173,6 +173,10 @@ $search_secondary_groups = get_parameter(
     'filter[search_secondary_groups]',
     0
 );
+$search_recursive_groups = get_parameter(
+    'filter[search_recursive_groups]',
+    0
+);
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group'] ?? '')
@@ -218,8 +222,35 @@ $id_source_event = get_parameter(
 
 $server_id = get_parameter(
     'filter[server_id]',
-    ($filter['id_server_meta'] ?? 0)
+    ($filter['id_server_meta'] ?? '')
 );
+
+if (is_metaconsole() === true) {
+    $servers = metaconsole_get_servers();
+    if (is_array($servers) === true) {
+        $servers = array_reduce(
+            $servers,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['server_name'];
+                return $carry;
+            }
+        );
+    } else {
+        $servers = [];
+    }
+
+    $servers[0] = __('Metaconsola');
+
+    if ($server_id === '') {
+        $server_id = array_keys($servers);
+    } else if (is_array($server_id) === false) {
+        if ((int) $server_id !== 0) {
+            $server_id = [$server_id];
+        } else {
+            $server_id = array_keys($servers);
+        }
+    }
+}
 
 $custom_data_filter_type = get_parameter(
     'filter[custom_data_filter_type]',
@@ -231,7 +262,9 @@ $custom_data = get_parameter(
     ($filter['custom_data'] ?? '')
 );
 
-if (is_metaconsole() === true) {
+if (is_metaconsole() === true
+    && is_array($server_id) === false
+) {
     // Connect to node database.
     $id_node = (int) $server_id;
     if ($id_node !== 0) {
@@ -252,7 +285,9 @@ if (empty($text_module) === true && empty($id_agent_module) === false) {
     $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
 }
 
-if (is_metaconsole() === true) {
+if (is_metaconsole() === true
+    && is_array($server_id) === false
+) {
     // Return to metaconsole database.
     if ($id_node != 0) {
         metaconsole_restore_db();
@@ -325,6 +360,10 @@ if (is_ajax() === true) {
                             $order['field'] = 'agent_name';
                         break;
 
+                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                            $order['field'] = 'ack_utimestamp';
+                        break;
+
                         default:
                             $order['field'] = $field;
                         break;
@@ -363,7 +402,8 @@ if (is_ajax() === true) {
             $buffers = [];
             if (is_metaconsole() === false
                 || (is_metaconsole() === true
-                && empty($filter['server_id']) === false)
+                && empty($filter['server_id']) === false
+                && is_array($filter['server_id']) === false)
             ) {
                 $count = events_get_all(
                     'count',
@@ -464,7 +504,7 @@ if (is_ajax() === true) {
                         $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
-                            $tmp->ack_utimestamp,
+                            (int) $tmp->ack_utimestamp,
                             true
                         );
                         $tmp->timestamp = ui_print_timestamp(
@@ -741,6 +781,8 @@ if (is_ajax() === true) {
                         // Owner.
                         if (empty($tmp->owner_user) === true) {
                             $tmp->owner_user = __('System');
+                        } else {
+                            $tmp->owner_user = get_user_fullname($tmp->owner_user).' ('.$tmp->owner_user.')';
                         }
 
                         // Group name.
@@ -1056,6 +1098,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
 
         $filter_only_alert = $filter['filter_only_alert'];
         $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
+        $search_recursive_groups = ($filter['search_recursive_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
         $time_from = $filter['time_from'];
@@ -1406,7 +1449,7 @@ if ($pure) {
     ).'</a>';
 
     // If the user has administrator permission display manage tab.
-    if ($event_w || $event_m) {
+    if ($event_w === true || $event_m === true) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
@@ -1441,7 +1484,9 @@ if ($pure) {
     }
 
     // If the history event is not enabled, dont show the history tab.
-    if (isset($config['metaconsole_events_history']) === false || $config['metaconsole_events_history'] != 1) {
+    if (isset($config['history_db_enabled']) === false
+        || (bool) $config['history_db_enabled'] === false
+    ) {
         unset($onheader['history']);
     }
 
@@ -1624,9 +1669,10 @@ $inputs[] = $in;
 // Duplicates group { events | agents }.
 $data = html_print_select(
     [
-        0 => __('All events'),
-        1 => __('Group events'),
-        2 => __('Group agents'),
+        EVENT_GROUP_REP_ALL      => __('All events'),
+        EVENT_GROUP_REP_EVENTS   => __('Group events'),
+        EVENT_GROUP_REP_AGENTS   => __('Group agents'),
+        EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
     ],
     'group_rep',
     $group_rep,
@@ -1674,6 +1720,28 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// Search recursive groups.
+$data = html_print_checkbox_switch(
+    'search_recursive_groups',
+    $search_recursive_groups,
+    $search_recursive_groups,
+    true,
+    false,
+    'search_in_secondary_groups(this);',
+    true
+);
+
+$in = '<div class="filter_input filter_input_switch"><label>';
+$in .= __('Group recursion');
+$in .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in .= '</label>';
+$in .= $data;
+$in .= '</div>';
+$inputs[] = $in;
+
 // Search secondary groups.
 $data = html_print_checkbox_switch(
     'search_secondary_groups',
@@ -1685,8 +1753,15 @@ $data = html_print_checkbox_switch(
     true
 );
 
-$in = '<div class="filter_input filter_input_switch"><label>'.__('Search in secondary groups').'</label>';
-$in .= $data.'</div>';
+$in = '<div class="filter_input filter_input_switch"><label>';
+$in .= __('Search in secondary groups');
+$in .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in .= '</label>';
+$in .= $data;
+$in .= '</div>';
 $inputs[] = $in;
 
 // Trick view in table.
@@ -1701,7 +1776,7 @@ $buttons[] = [
     'onclick' => '',
 ];
 
-if ($event_w || $event_m) {
+if ($event_w === true || $event_m === true) {
     $buttons[] = [
         'id'      => 'save-filter',
         'class'   => 'float-left margin-right-2 sub wand',
@@ -1786,14 +1861,19 @@ $adv_inputs[] = $in;
 // Mixed. Metaconsole => server, Console => module.
 if (is_metaconsole() === true) {
     $title = __('Server');
-    $data = html_print_select_from_sql(
-        'SELECT id, server_name FROM tmetaconsole_setup',
+    $data = html_print_select(
+        $servers,
         'server_id',
         $server_id,
         '',
-        __('All'),
-        '0',
-        true
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'height: 60px;'
     );
 } else {
     $title = __('Module search');
@@ -2225,12 +2305,14 @@ try {
     $active_filters_div .= '<div>';
     $active_filters_div .= '<div class="label box-shadow">'.__('Duplicated').'</div>';
     $active_filters_div .= '<div id="summary_duplicates" class="content">';
-    if ($group_rep == 0) {
+    if ($group_rep == EVENT_GROUP_REP_ALL) {
         $active_filters_div .= __('All events.');
-    } else if ($group_rep == 1) {
+    } else if ($group_rep == EVENT_GROUP_REP_EVENTS) {
         $active_filters_div .= __('Group events');
-    } else if ($group_rep == 2) {
+    } else if ($group_rep == EVENT_GROUP_REP_AGENTS) {
         $active_filters_div .= __('Group agents.');
+    } else if ($group_rep == EVENT_GROUP_REP_EXTRAIDS) {
+        $active_filters_div .= __('Group extra id.');
     }
 
     $active_filters_div .= '</div>';
@@ -2318,6 +2400,16 @@ if (is_user_admin($config['id_user'])) {
             'type'     => 'command',
         ]
     );
+}
+
+$array_events_actions = [];
+if ($event_w === true && $readonly === false) {
+    $array_events_actions['in_progress_selected'] = __('In progress selected');
+    $array_events_actions['validate_selected'] = __('Validate selected');
+}
+
+if ($event_m === true && $readonly === false) {
+    $array_events_actions['delete_selected'] = __('Delete selected');
 }
 
 foreach ($event_responses as $val) {
@@ -2815,7 +2907,7 @@ $(document).ready( function() {
                     data: {
                         page: 'include/ajax/events',
                         load_filter_modal: 1
-                        },
+                    },
                     success: function (data){
                         $('#load-modal-filter')
                         .empty()

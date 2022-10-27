@@ -1014,8 +1014,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.764';
-use constant AGENT_BUILD => '220922';
+use constant AGENT_VERSION => '7.0NG.765';
+use constant AGENT_BUILD => '221027';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1145,7 +1145,9 @@ my %DefaultConf = (
 	'secondary_server_opts' => '',
 	'secondary_temporal' => '/var/spool/pandora',
 	'autotime' => 0,
-	'temporal_min_size' => 1,
+	'temporal_min_size' => 1024,
+	'temporal_max_files' => 1024,
+	'temporal_max_size' => 1024,
 	'timezone_offset' => 0,
 	'pandora_exec' => 'pandora_agent_exec',
 	'agent_threads' => 1,
@@ -2110,13 +2112,13 @@ sub send_xml_file ($) {
 		swap_servers();
 
 		# Secondary buffer.
-		if ($rc_sec != 0 && $Conf{'xml_buffer'} == 1 && temporal_freedisk () > $Conf{'temporal_min_size'}) {
+		if ($rc_sec != 0 && write_to_buffer($Conf{'secondary_temporal'}) == 1) {
 			copy($file, $Conf{'secondary_temporal'}) || die("Error copying file $file to " . $Conf{'secondary_temporal'} . ": $!");
 		}
 	}
 
 	# Primary buffer.
-	if ($rc == 0 || $Conf{'xml_buffer'} == 0 || temporal_freedisk () <= $Conf{'temporal_min_size'}) {
+	if ($rc == 0 || write_to_buffer($Conf{'temporal'}) == 0) {
 		if ($Conf{'debug'} eq '1') {
 			rename($file, $file . "sent");
 		} else {
@@ -3761,20 +3763,45 @@ sub kill_signal_handler (){
 }
 
 ################################################################################
-# Get the free disk space in the temporal directory (in bytes).
+# Get the free disk space in the temporal directory (in megabytes).
 ################################################################################
-sub temporal_freedisk () {
+sub temporal_freedisk {
+	my ($temporal) = @_;
 
 	# Call df
 	return 0 unless defined (DF_CMDS->{$OS});
-	my $cmd = DF_CMDS->{$OS} . ' ' . $Conf{'temporal'} . ' | awk \'NR > 1 {print $4}\'';	
+	my $cmd = DF_CMDS->{$OS} . ' ' . $temporal . ' | awk \'NR > 1 {print $4}\'';	
 	my $temporal_freedisk = `$cmd`;
 
 	# Check for errors
 	return 0 unless ($? eq 0);
 
-	# Convert to bytes
-	return 1024 * int ($temporal_freedisk);
+	# Convert from KB to MB.
+	return $temporal_freedisk / 1024;
+}
+
+################################################################################
+# Return the number of data files in the temporal directory and their total
+# size (in megabytes).
+################################################################################
+sub temporal_stats {
+	my ($temporal) = @_;
+	
+	my $file_count = 0;
+	my $file_size = 0;
+	opendir(my $dir, $temporal) or die($!);
+	while (my $f = readdir($dir)) {
+		if ($f =~ m/.data$/ || $f =~ m/.datasent$/) {
+			$file_count += 1;
+			$file_size += (stat $temporal . '/' . $f)[7];
+		}
+	}
+	closedir($dir);
+
+	# Convert from B to MB.
+	$file_size /= 1048576;
+
+	return ($file_count, $file_size);
 }
 
 ################################################################################
@@ -3960,6 +3987,27 @@ sub get_ehkey {
 	return '';
 }
 
+################################################################################
+# Return 1 if XML files should be written to the buffer. 0 otherwise.
+################################################################################
+sub write_to_buffer {
+	my ($temporal) = @_;
+
+	# The XML buffer is disabled.
+	return 0 if ($Conf{'xml_buffer'} == 0);
+
+	# Check available disk space.
+	return 0 if ($Conf{'temporal_min_size'} != 0 && temporal_freedisk($temporal) < $Conf{'temporal_min_size'});
+
+	# Check buffer file count and size limits.
+	my ($file_count, $file_size) = temporal_stats($temporal);
+	return 0 if ($Conf{'temporal_max_files'} != 0 && $file_count > $Conf{'temporal_max_files'});
+	return 0 if ($Conf{'temporal_max_size'} != 0 && $file_size > $Conf{'temporal_max_size'});
+
+	# It's OK to write to the buffer.
+	return 1;
+}
+	
 ################################################################################
 # Main.
 ################################################################################

@@ -66,7 +66,19 @@ if ($doLogin === true) {
         ]
     ) === true
     ) {
-        echo json_encode(['auth_hash' => User::generatePublicHash()]);
+        $newGeneratedSecret = bin2hex(openssl_random_pseudo_bytes(15));
+
+        $res_update = update_user(
+            $id_user,
+            ['auth_token_secret' => $newGeneratedSecret]
+        );
+
+        if ($res_update === false) {
+            http_response_code(404);
+            return;
+        }
+
+        echo json_encode(['auth_hash' => User::generatePublicHash($newGeneratedSecret)]);
     } else {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,

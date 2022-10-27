@@ -17185,6 +17185,32 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
 
     ];
 
+    $group_exist = db_get_value_filter(
+        'id_grupo',
+        'tgrupo',
+        [
+            'id_grupo' => $values['id_grupo'],
+        ]
+    );
+
+    if ((bool) $group_exist === false) {
+        returnError('Selected group does not exist');
+        return;
+    }
+
+    $profile_exist = db_get_value_filter(
+        'id_perfil',
+        'tperfil',
+        [
+            'id_perfil' => $values['id_perfil'],
+        ]
+    );
+
+    if ((bool) $profile_exist === false) {
+        returnError('Selected profile does not exist');
+        return;
+    }
+
     $where_id_up = ['id_up' => $other['data'][4]];
     if ($exist_profile === $other['data'][4] && $where_id_up !== null) {
         $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);

@@ -181,7 +181,7 @@ function profile_delete_profile_and_clean_users($id_profile)
  * @param int User id
  * @param bool Show the tags select or not
  */
-function profile_print_profile_table($id)
+function profile_print_profile_table($id, $json_profile=false, $return=false)
 {
     global $config;
 
@@ -243,7 +243,23 @@ function profile_print_profile_table($id)
     }
 
     if ($result === false) {
-        $result = [];
+        if ($json_profile !== false && empty($json_profile) !== true) {
+            $profile_decoded = json_decode($json_profile);
+            foreach ($profile_decoded as $profile) {
+                if (is_object($profile) === false) {
+                    $profile = json_decode($profile);
+                }
+
+                        $result[] = [
+                            'id_grupo'  => $profile->group,
+                            'id_perfil' => $profile->profile,
+                            'tags'      => $profile->tags,
+                            'hierarchy' => $profile->hierarchy,
+                        ];
+            }
+        } else {
+            $result = [];
+        }
     }
 
     foreach ($result as $profile) {
@@ -268,7 +284,12 @@ function profile_print_profile_table($id)
         if (empty($profile['tags'])) {
             $data['tags'] = '';
         } else {
-            $tags_ids = explode(',', $profile['tags']);
+            if (is_array($profile['tags'] === false)) {
+                $tags_ids = explode(',', $profile['tags']);
+            } else {
+                $tags_ids = $profile['tags'];
+            }
+
             $tags = tags_get_tags($tags_ids);
             $data['tags'] = tags_get_tags_formatted($tags);
         }
@@ -276,10 +297,10 @@ function profile_print_profile_table($id)
         $data['hierarchy'] = $profile['no_hierarchy'] ? __('Yes') : __('No');
 
         $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+        $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, ['class' => 'invert_filter'], true);
         $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
         $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
         $data['actions'] .= html_print_input_hidden('id_user', $id, true);
-        $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, ['class' => 'invert_filter'], true);
         $data['actions'] .= '</form>';
 
         array_push($table->data, $data);
@@ -345,8 +366,7 @@ function profile_print_profile_table($id)
     $data['actions'] .= '</form>';
 
     array_push($table->data, $data);
-
-    html_print_table($table);
+    html_print_table($table, $return);
     if (!is_metaconsole()) {
         echo '</div>';
     }

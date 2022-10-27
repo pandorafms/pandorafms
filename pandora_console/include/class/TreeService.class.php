@@ -537,7 +537,7 @@ class TreeService extends Tree
                     if (empty($title) === true) {
                         $tmp['title'] = '';
                     } else {
-                        $tmp['title'] = $title.'/';
+                        $tmp['title'] = io_safe_output($title).'/';
                     }
 
                     $tmp['title'] .= $service->name();

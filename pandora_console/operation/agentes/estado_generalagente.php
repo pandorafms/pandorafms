@@ -564,7 +564,10 @@ for ($i = 0; $i < $custom_fields_count; $i++) {
         $columns = array_merge($first_column, $second_column);
     } else {
         $columns = $first_column;
-        $filas = count($table_data->data);
+        if ($table_data->data !== null) {
+            $filas = count($table_data->data);
+        }
+
         $table_data->colspan[$filas][1] = 3;
     }
 

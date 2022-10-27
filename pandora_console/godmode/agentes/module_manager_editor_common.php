@@ -669,13 +669,12 @@ $table_advanced->data[2][3] = __('Max. Value');
 $table_advanced->data[2][4] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 
-
 $table_advanced->data[3][0] = __('Dynamic Threshold Interval');
 $table_advanced->data[3][1] = html_print_extended_select_for_time(
     'dynamic_interval',
     $dynamic_interval,
     '',
-    'None',
+    __('None'),
     '0',
     10,
     true,

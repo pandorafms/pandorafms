@@ -647,7 +647,12 @@ if ($get_agent_alerts_datatable === true) {
     $order = get_datatable_order(true);
     $url = get_parameter('url', '#');
 
-    $free_search_alert = $filter_alert['free_search_alert'];
+    if (empty($filter_alert['free_search']) === false) {
+        $free_search_alert = $filter_alert['free_search'];
+    } else {
+        $free_search_alert = $filter_alert['free_search_alert'];
+    }
+
     $idGroup = $filter_alert['ag_group'];
     $tag_filter = $filter_alert['tag_filter'];
     $action_filter = $filter_alert['action'];
@@ -676,7 +681,7 @@ if ($get_agent_alerts_datatable === true) {
         $selectLastFiredDown = false;
 
         switch ($sortField) {
-            case 'module':
+            case 'agent_module_name':
                 switch ($sort) {
                     case 'asc':
                         $selectModuleasc = $selected;
@@ -696,7 +701,7 @@ if ($get_agent_alerts_datatable === true) {
                 }
             break;
 
-            case 'template':
+            case 'template_name':
                 switch ($sort) {
                     case 'asc':
                         $selectTemplateasc = $selected;
@@ -736,7 +741,7 @@ if ($get_agent_alerts_datatable === true) {
                 }
             break;
 
-            case 'agent':
+            case 'agent_name':
                 switch ($sort) {
                     case 'asc':
                         $selectLastFiredasc = $selected;
@@ -857,7 +862,7 @@ if ($get_agent_alerts_datatable === true) {
         if (is_metaconsole() === true) {
             include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
             if ($idAgent != 0) {
-                $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+                $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
                 $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
             } else {
@@ -865,7 +870,7 @@ if ($get_agent_alerts_datatable === true) {
                     users_get_groups($config['id_user'], 'AR', false)
                 );
 
-                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
                 $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
             }
@@ -885,11 +890,31 @@ if ($get_agent_alerts_datatable === true) {
             }
         }
 
+        // Order and pagination metacosole.
+        if (is_metaconsole() === true) {
+            // Status order.
+            if ($sortField === 'status') {
+                foreach ($alerts['alerts_simple'] as $i => $alert) {
+                    if ($alert['times_fired'] > 0) {
+                        $alerts['alerts_simple'][$i]['status'] = '3';
+                    } else if ($alert['disabled'] > 0) {
+                        $alerts['alerts_simple'][$i]['status']  = '1';
+                    } else {
+                        $alerts['alerts_simple'][$i]['status']  = '2';
+                    }
+                }
+            }
+
+            usort($alerts['alerts_simple'], arrayOutputSorting($sort, $sortField));
+            $alerts['alerts_simple'] = array_slice($alerts['alerts_simple'], $start, $length);
+        }
+
         $data = [];
         if ($alerts['alerts_simple']) {
             foreach ($alerts['alerts_simple'] as $alert) {
                 $data[] = ui_format_alert_row($alert, true, $url, 'font-size: 7pt;');
             }
+
 
             $data = array_reduce(
                 $data,
@@ -902,11 +927,11 @@ if ($get_agent_alerts_datatable === true) {
                     $tmp->policy = $row[0];
                     $tmp->standby = $row[1];
                     $tmp->force = $row[2];
-                    $tmp->agent = $row[3];
-                    $tmp->module = $row[4];
-                    $tmp->template = $row[5];
+                    $tmp->agent_name = $row[3];
+                    $tmp->agent_module_name = $row[4];
+                    $tmp->template_name = $row[5];
                     $tmp->action = $row[6];
-                    $tmp->lastFired = $row[7];
+                    $tmp->last_fired = $row[7];
                     $tmp->status = $row[8];
                     $tmp->validate = $row[9];
 
@@ -915,6 +940,7 @@ if ($get_agent_alerts_datatable === true) {
                 }
             );
         }
+
 
          // Datatables format: RecordsTotal && recordsfiltered.
         echo json_encode(

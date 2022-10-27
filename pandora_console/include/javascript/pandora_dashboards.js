@@ -1536,3 +1536,18 @@ function loadSliceWidget(settings) {
     }
   });
 }
+
+// eslint-disable-next-line no-unused-vars
+function showManualThresholds(element) {
+  $("#min_warning").val(null);
+  $("#max_warning").val(null);
+  $("#min_critical").val(null);
+  $("#max_critical").val(null);
+  if ($(element).is(":checked") === true) {
+    $(".dashboard-input-threshold-warning").removeClass("invisible_important");
+    $(".dashboard-input-threshold-critical").removeClass("invisible_important");
+  } else {
+    $(".dashboard-input-threshold-warning").addClass("invisible_important");
+    $(".dashboard-input-threshold-critical").addClass("invisible_important");
+  }
+}

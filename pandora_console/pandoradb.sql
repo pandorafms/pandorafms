@@ -1246,6 +1246,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `tag_without` TEXT,
   `filter_only_alert` INT NOT NULL DEFAULT -1,
   `search_secondary_groups` INT NOT NULL DEFAULT 0,
+  `search_recursive_groups` INT NOT NULL DEFAULT 0,
   `date_from` date DEFAULT NULL,
   `date_to` date DEFAULT NULL,
   `source` TINYTEXT,
@@ -1309,6 +1310,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `integria_user_level_pass` VARCHAR(45),
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,
+  `auth_token_secret` VARCHAR(45) DEFAULT NULL,
   CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1743,6 +1745,7 @@ CREATE TABLE IF NOT EXISTS `tplugin` (
   `plugin_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `macros` TEXT,
   `parameters` TEXT,
+  `no_delete` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4; 
 
@@ -2323,6 +2326,7 @@ CREATE TABLE IF NOT EXISTS `tmap` (
   `generated` INT UNSIGNED NOT NULL DEFAULT 0,
   `filter` TEXT,
   `id_group_map` INT UNSIGNED NOT NULL DEFAULT 0,
+  `refresh_time` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2514,6 +2518,7 @@ CREATE TABLE IF NOT EXISTS `tpolicies` (
   `id_group` INT UNSIGNED DEFAULT 0,
   `status` INT UNSIGNED NOT NULL DEFAULT 0,
   `force_apply` TINYINT DEFAULT 0,
+  `apply_to_secondary_groups` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
@@ -2654,6 +2659,8 @@ CREATE TABLE IF NOT EXISTS `tmodule_inventory` (
   `data_format` TEXT ,
   `code` BLOB NOT NULL,
   `block_mode` INT NOT NULL DEFAULT 0,
+  `script_mode` INT NOT NULL DEFAULT 1,
+  `script_path` VARCHAR(1000) DEFAULT '',
   PRIMARY KEY  (`id_module_inventory`),
   FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
     ON UPDATE CASCADE ON DELETE CASCADE

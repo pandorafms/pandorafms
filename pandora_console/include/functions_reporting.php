@@ -4011,7 +4011,7 @@ function reporting_groups_nodes($content)
         }
 
         // Grouped.
-        $filters['group_rep'] = 1;
+        $filters['group_rep'] = EVENT_GROUP_REP_EVENTS;
 
         $events = Event::search(
             [
@@ -11537,7 +11537,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
         $data['status'] = 'critical';
     } else if ($data['monitor_warning'] > 0) {
         $data['status'] = 'warning';
-    } else if (($data['monitor_unknown'] > 0) || ($data['agents_unknown'] > 0)) {
+    } else if (($data['monitor_unknown'] > 0) || ($data['agent_unknown'] > 0)) {
         $data['status'] = 'unknown';
     } else if ($data['monitor_ok'] > 0) {
         $data['status'] = 'ok';

@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.764
+# Version 7.0NG.765
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -144,6 +144,10 @@ networkserver 1
 # Activate (1) Pandora Data Server
 
 dataserver 1
+
+# Enable (1) or disable (0) the Data Server smart queue, which gives priority
+# to new data coming from agents at the expense of buffered XML files.
+dataserver_smart_queue 1
 
 # Activate (1) Pandora FMS Discovery server
 

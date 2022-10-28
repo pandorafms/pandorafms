@@ -4701,22 +4701,30 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Timestamp');
 
-    if ($group_rep == 1 && $event['event_rep'] > 1) {
-        $data[1] = __('First event').': '.date($config['date_format'], $event['timestamp_first']).'<br>'.__('Last event').': '.date($config['date_format'], $event['timestamp_last']);
+    if ($event['event_rep'] > 1) {
+        $data[1] = __('First event').': ';
+        $data[1] .= date($config['date_format'], $event['timestamp_first']);
+        $data[1] .= '<br>';
+        $data[1] .= __('Last event').': ';
+        $data[1] .= date($config['date_format'], $event['timestamp_last']);
     } else {
         $data[1] = date($config['date_format'], $event['utimestamp']);
     }
 
     $table_general->data[] = $data;
 
-    // $event['owner_user'] = $event['id_usuario'];
     $data = [];
     $data[0] = __('Owner');
-    if (empty($event['owner_user'])) {
+    if (empty($event['owner_user']) === true) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
-        $user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
-        if (empty($user_owner)) {
+        $user_owner = db_get_value(
+            'fullname',
+            'tusuario',
+            'id_user',
+            $event['owner_user']
+        );
+        if (empty($user_owner) === true) {
             $user_owner = $event['owner_user'];
         }
 

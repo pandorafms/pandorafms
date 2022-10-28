@@ -764,7 +764,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
   `identifier` VARCHAR(100) NOT NULL,
   `id_group` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') DEFAULT 'CUSTOM',
+  `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP', 'WMI', 'SNMP') DEFAULT 'CUSTOM',
   `username` TEXT,
   `password` TEXT,
   `extra_1` TEXT,

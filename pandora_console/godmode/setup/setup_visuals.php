@@ -102,7 +102,6 @@ $table_behaviour->data[$row][0] = __('Display text when proc modules have state 
 $table_behaviour->data[$row][1] = html_print_input_text('render_proc_fail', $config['render_proc_fail'], '', 25, 25, true);
 $row++;
 
-// Daniel maya 02/06/2016 Display menu with click --INI
 $table_behaviour->data[$row][0] = __('Click to display lateral menus');
 $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'click_display',
@@ -111,8 +110,8 @@ $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     true
 );
 $row++;
-// Daniel maya 02/06/2016 Display menu with click --END
-if (enterprise_installed()) {
+
+if (enterprise_installed() === true) {
     $table_behaviour->data[$row][0] = __('Service label font size');
     $table_behaviour->data[$row][1] = html_print_input_text('service_label_font_size', $config['service_label_font_size'], '', 5, 5, true);
     $row++;
@@ -853,118 +852,24 @@ $table_chars = new stdClass();
 $table_chars->width = '100%';
 $table_chars->class = 'databox filters';
 $table_chars->style[0] = 'font-weight: bold;';
+$table_chars->style[1] = 'display: flex;';
 $table_chars->size[0] = '50%';
 $table_chars->data = [];
 
-$table_chars->data[$row][0] = __('Graph color #1');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color1',
-    $config['graph_color1'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
+$graphColorAmount = 10;
 
-$table_chars->data[$row][0] = __('Graph color #2');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color2',
-    $config['graph_color2'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #3');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color3',
-    $config['graph_color3'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #4');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color4',
-    $config['graph_color4'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #5');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color5',
-    $config['graph_color5'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #6');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color6',
-    $config['graph_color6'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #7');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color7',
-    $config['graph_color7'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #8');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color8',
-    $config['graph_color8'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #9');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color9',
-    $config['graph_color9'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #10');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color10',
-    $config['graph_color10'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
+for ($i = 1; $i <= $graphColorAmount; $i++) {
+    $table_chars->data[$row][0] = __('Graph color #'.$i);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color'.$i,
+        $config['graph_color'.$i],
+        '',
+        10,
+        8,
+        true
+    );
+    $row++;
+}
 
 $table_chars->data[$row][0] = __('Value to interface graphics');
 $table_chars->data[$row][1] = html_print_input_text(

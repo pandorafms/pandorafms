@@ -9312,6 +9312,19 @@ button.ui-button.ui-widget.submit-cancel:active {
   align-items: center;
 }
 
+.hasColorPicker {
+  z-index: 10;
+}
+
+span.ColorPickerDivSample {
+  margin-left: -10px;
+  padding: 0px 10px;
+  position: relative;
+  cursor: pointer;
+  width: 10px;
+  border-radius: 8px;
+  border: 1px solid #c0ccdc;
+}
 /* FINISH */
 /* select */
 

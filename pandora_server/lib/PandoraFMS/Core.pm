@@ -7204,7 +7204,7 @@ sub pandora_snmptrapd_still_working ($$) {
 
 	if ($pa_config->{'snmpserver'} eq '1') {
 		# Variable that defines the maximum time of delay between kksks.
-		my $timeMaxLapse = 360;
+		my $timeMaxLapse = 3600;
 		# Check last snmptrapd saved in DB.
 		my $lastTimestampSaved = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(timestamp)
 			FROM ttrap
@@ -7219,9 +7219,7 @@ sub pandora_snmptrapd_still_working ($$) {
 		my ($hour, $min, $sec) = split(/:/, $time, 3);
 		my ($year, $month, $day) = split(/-/, $date, 3);
 		$lastTimestampLogFile = timelocal($sec, $min, $hour, $day, $month, $year);
-		logger($pa_config, 'lastTimestampSaved: '.$lastTimestampSaved);
-		logger($pa_config, 'lastTimestampLogFile: '.$lastTimestampLogFile);
-		if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved ge ($lastTimestampLogFile + $timeMaxLapse)) {
+		if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved gt ($lastTimestampLogFile + $timeMaxLapse)) {
 			my $lapseMessage = "snmptrapd service probably is stuck.";
 			logger($pa_config, $lapseMessage, 1);
 			pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);

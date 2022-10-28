@@ -77,6 +77,7 @@ $table_remote->id = 'ehorus-remote-setup';
 $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
+$table_remote->style['control'] = 'display: flex;align-items: center;';
 
 // Enable eHorus user configuration.
 $row = [];

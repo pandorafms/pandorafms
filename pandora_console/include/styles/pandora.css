@@ -9338,7 +9338,7 @@ span.ColorPickerDivSample {
 }
 
 .select2-container .select2-selection--single {
-  background-color: #fff !important;
+  background-color: #f6f7fb !important;
   height: 32px !important;
   border: 1px solid #c0ccdc !important;
   border-radius: 8px !important;
@@ -9430,14 +9430,6 @@ span.ColorPickerDivSample {
 }
 
 /* FINISH SELECT2 */
-.password_input {
-  background-color: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  border-bottom: 1px solid #ccc !important;
-  margin-bottom: 4px !important;
-  padding: 2px 5px !important;
-}
 
 .dataTables_wrapper {
   overflow: auto;

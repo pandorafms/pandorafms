@@ -1,16 +1,25 @@
 <?php
+/**
+ * Export Data view
+ *
+ * @category   Community
+ * @package    Pandora FMS
+ * @subpackage Tools
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2022 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
 // Load global vars
@@ -30,7 +39,7 @@ if (!check_acl($config['id_user'], 0, 'RR')) {
 ui_require_javascript_file('calendar');
 
 
-// Header
+// Header.
 ui_print_page_header(__('Export data'), 'images/server_export_mc.png');
 
 $group = get_parameter_post('group', 0);
@@ -264,7 +273,7 @@ if (empty($export_btn) || $show_form) {
         $agents[$row['id_agente']] = $row['nombre'];
     }
 
-    // Src code of lightning image with skins
+    // Src code of lightning image with skins.
     $src_code = html_print_image('images/lightning_go.png', true, false, true);
 
     $params = [];
@@ -275,10 +284,11 @@ if (empty($export_btn) || $show_form) {
     $params['value'] = agents_get_name($agent);
     $params['javascript_is_function_select'] = true;
     $params['add_none_module'] = false;
+    $params['size'] = 38;
     $params['selectbox_id'] = 'module_arr';
     $table->data[1][1] = ui_print_agent_autocomplete_input($params);
 
-    // Module selector
+    // Module selector.
     $table->data[2][0] = '<b>'.__('Modules').'</b>';
     $table->data[2][0] .= ui_print_help_tip(__('No modules of type string. You can not calculate their average'), true);
 
@@ -288,8 +298,8 @@ if (empty($export_btn) || $show_form) {
         $modules = [];
     }
 
-    if (!empty($modules)) {
-        // remove modules of type string because you cant calculate their average.
+    if (empty($modules) === false) {
+        // Remove modules of type string because you cant calculate their average.
         $i = 0;
         foreach ($modules as $key => $module) {
             $id_module_type = modules_get_agentmodule_type($key);
@@ -301,6 +311,9 @@ if (empty($export_btn) || $show_form) {
                 case 33:
                     unset($modules[$i]);
                 break;
+
+                default:
+                continue;
             }
 
             $i++;
@@ -308,20 +321,20 @@ if (empty($export_btn) || $show_form) {
     }
 
     $disabled_export_button = false;
-    if (empty($modules)) {
+    if (empty($modules) === true) {
         $disabled_export_button = true;
     }
 
-    $table->data[2][1] = html_print_select($modules, 'module_arr[]', array_keys($modules), '', '', 0, true, true, true, 'w155', false);
+    $table->data[2][1] = html_print_select($modules, 'module_arr[]', array_keys($modules), '', '', 0, true, true, true, 'w250px', false);
 
-    // Start date selector
+    // Start date selector.
     $table->data[3][0] = '<b>'.__('Begin date').'</b>';
 
     $table->data[3][1] = html_print_input_text(
         'start_date',
         date('Y-m-d', (get_system_time() - SECONDS_1DAY)),
         false,
-        10,
+        13,
         10,
         true
     );
@@ -343,13 +356,13 @@ if (empty($export_btn) || $show_form) {
         true
     );
 
-    // End date selector
+    // End date selector.
     $table->data[4][0] = '<b>'.__('End date').'</b>';
     $table->data[4][1] = html_print_input_text(
         'end_date',
         date('Y-m-d', get_system_time()),
         false,
-        10,
+        13,
         10,
         true
     );
@@ -371,7 +384,7 @@ if (empty($export_btn) || $show_form) {
         true
     );
 
-    // Export type
+    // Export type.
     $table->data[5][0] = '<b>'.__('Export type').'</b>';
 
     $export_types = [];
@@ -380,14 +393,26 @@ if (empty($export_btn) || $show_form) {
     $export_types['excel'] = __('MS Excel');
     $export_types['avg'] = __('Average per hour/day');
 
-    $table->data[5][1] = html_print_select($export_types, 'export_type', $export_type, '', '', 0, true, false, true, 'w130', false);
+    $table->data[5][1] = html_print_select($export_types, 'export_type', $export_type, '', '', 0, true, false, true, 'w250px', false);
 
     html_print_table($table);
 
-    // Submit button
-    echo '<div class="action-buttons w100p">';
-        html_print_button(__('Export'), 'export_btn', false, 'change_action()', 'class="sub wand"');
-    echo '</div></form>';
+    // Submit button.
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_button(
+                __('Export'),
+                'export_btn',
+                false,
+                'change_action()',
+                ['icon' => 'wand'],
+                true
+            ),
+        ]
+    );
+
+    echo '</form>';
 }
 
 ui_require_jquery_file('pandora.controls');

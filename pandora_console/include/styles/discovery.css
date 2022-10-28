@@ -164,10 +164,6 @@ span.breadcrumb_link {
  * Discovery forms structure
  */
 
-form.discovery * {
-  font-size: 10pt;
-}
-
 form.discovery .label_select b {
   font-weight: bolder;
 }

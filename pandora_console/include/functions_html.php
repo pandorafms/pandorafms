@@ -2173,7 +2173,7 @@ function html_print_extended_select_for_time(
             false,
             $class,
             $readonly,
-            'padding: 7px 3px;'.$select_style,
+            'padding: 7px 3px;height: 32px;'.$select_style,
             false,
             false,
             false,
@@ -4695,7 +4695,7 @@ function html_print_autocomplete_modules(
 
     $text_color = '';
     $module_icon = 'images/search_module.png';
-    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+    if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
     }
@@ -4709,11 +4709,11 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'border: none; padding: 2px 5px; margin-bottom: 4px; border-bottom: 1px solid #ccc; border-radius: 0; background: url('.$module_icon.') 95% right; '.$text_color.'']
+        ['style' => 'background: url('.$module_icon.') 95% right; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         ui_print_help_tip(__('Type at least two characters to search the module.'), false);
     }
 
@@ -6301,7 +6301,10 @@ function html_print_go_back_button(string $url, array $options=[], bool $return=
                 'go_back',
                 false,
                 'window.location.href = \''.$url.'\'',
-                'class="sub '.($options['action_class'] ?? ' cancel').' right"',
+                [
+                    'icon' => ($options['action_class'] ?? 'cancel'),
+                    'mode' => 'secondary',
+                ],
                 true
             ),
         ],

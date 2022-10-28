@@ -239,7 +239,7 @@ $integria_users_csv = integria_api_call(null, null, null, null, 'get_users', [])
 $csv_array = explode("\n", $integria_users_csv);
 
 foreach ($csv_array as $csv_line) {
-    if (!empty($csv_line)) {
+    if (empty($csv_line) === false) {
         $integria_users_values[$csv_line] = $csv_line;
     }
 }
@@ -272,6 +272,7 @@ $table_remote->id = 'integria-remote-setup';
 $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
+$table_remote->style['control'] = 'display: flex;align-items: center;';
 
 // Enable eHorus user configuration.
 $row = [];

@@ -415,7 +415,7 @@ class Wizard
                         'name'       => 'submit',
                         'label'      => __('Go back'),
                         'type'       => 'submit',
-                        'attributes' => 'class="sub cancel"',
+                        'attributes' => ['icon' => 'cancel'],
                         'return'     => true,
                     ],
                 ],

@@ -221,10 +221,6 @@
   background: #fff;
 }
 
-.filters input {
-  background: #fbfbfb;
-}
-
 .datos4 {
   /*Add because in php the function html_print_table write style in cell and this is style head.*/
   text-align: center;

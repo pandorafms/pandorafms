@@ -291,25 +291,18 @@ $output .= '</tr>';
 
 $output .= '</table>';
 
-$stringButton = ($edit_graph === true) ? __('Update') : __('Create');
-
 $output .= html_print_div(
     [
-        'class'   => 'w100p',
-        'content' => "<input type=submit name='store' class='sub next right databox' value='".$stringButton."'>",
-    ],
-    true
-);
-
-$output .= html_print_div(
-    [
-        'class'   => 'w100p',
-        'content' => html_print_button(
-            __('Go back'),
-            'go_back',
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            ($edit_graph === true) ? __('Update') : __('Create'),
+            'store',
             false,
-            'window.location.href = \'index.php?sec=reporting&sec2=godmode/reporting/graphs\'',
-            'class="sub cancel right"',
+            [ 'icon' => 'next' ],
+            true
+        ).html_print_go_back_button(
+            'index.php?sec=reporting&sec2=godmode/reporting/graphs',
+            [],
             true
         ),
     ],

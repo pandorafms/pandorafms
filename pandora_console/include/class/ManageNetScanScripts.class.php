@@ -468,7 +468,19 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                echo "<input name='crtbutton' type='submit' class='sub next float-right' value='".__('Add')."'>";
+                html_print_div(
+                    [
+                        'class'   => 'action-buttons',
+                        'content' => html_print_submit_button(
+                            __('Add'),
+                            'crtbutton',
+                            false,
+                            [ 'icon' => 'next' ],
+                            true
+                        ),
+                    ],
+                    true
+                );
             echo '</form>';
         } else {
             ui_print_info_message(
@@ -756,16 +768,30 @@ class ManageNetScanScripts extends Wizard
 
         html_print_table($table);
 
-        echo '<table width=100%>';
-        echo '<tr><td align="right">';
-
         if ($id_script === 0) {
-            echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+            $buttonName = 'crtbutton';
+            $buttonCaption = __('Create');
+            $buttonIcon = 'wand';
         } else {
-            echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+            $buttonName = 'updbutton';
+            $buttonCaption = __('Update');
+            $buttonIcon = 'update';
         }
 
-        echo '</form></table>';
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    $buttonCaption,
+                    $buttonName,
+                    false,
+                    [ 'icon' => $buttonIcon ],
+                    true
+                ),
+            ]
+        );
+
+        echo '</form>';
 
         ui_require_javascript_file('pandora_modules');
     }

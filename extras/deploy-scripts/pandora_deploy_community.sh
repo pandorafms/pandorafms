@@ -170,7 +170,7 @@ http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
 execute_cmd "yum install -y $extra_repos" "Installing extra repositories"
-execute_cmd "yum-config-manager --enable remi-php74" "Configuring PHP"
+execute_cmd "yum-config-manager --enable remi-php80" "Configuring PHP"
 
 # Install percona Database
 #[ -f /etc/my.cnf ] && rm -rf /etc/my.cnf

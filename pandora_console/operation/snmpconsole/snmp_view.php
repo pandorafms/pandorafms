@@ -671,8 +671,8 @@ $filter_resume['group_by'] = $group_by;
 $filter_resume['hours_ago'] = $hours_ago;
 $filter_resume['trap_type'] = $trap_types[$trap_type];
 
-$traps = db_get_all_rows_sql($sql);
-$trapcount = (int) db_get_value_sql($sql_count);
+$traps = db_get_all_rows_sql($sql, true);
+$trapcount = (int) db_get_value_sql($sql_count, false, true);
 
 // No traps.
 if (empty($traps)) {

@@ -631,6 +631,7 @@ sub pandora_load_config_pdb ($) {
 
 	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
 	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
+	$conf->{'_trap_history_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
 	$conf->{'_audit_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
 	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'string_purge'");
 	$conf->{'_gis_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'gis_purge'");
@@ -641,6 +642,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
 	$conf->{'_history_db_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_enabled'");
 	$conf->{'_history_event_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_enabled'");
+	$conf->{'_history_trap_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_trap_enabled'");
 	$conf->{'_history_db_host'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_host'");
 	$conf->{'_history_db_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_port'");
 	$conf->{'_history_db_name'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_name'");
@@ -650,6 +652,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_adv'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_adv'");
 	$conf->{'_history_db_string_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_string_days'");
 	$conf->{'_history_event_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_days'");
+	$conf->{'_history_trap_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_trap_days'");
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
@@ -1119,6 +1122,26 @@ sub pandoradb_history ($$) {
 		log_message ('', "\n");
 	}
 
+	# Delete old traps.
+	if ($conf->{'_trap_history_purge'} > 0) {
+		log_message ('PURGE', "Deleting traps older than " . $conf->{'_trap_history_purge'} . " days from ttrap (history).", '');
+
+		my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_history_purge'}));
+
+		my $traps_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM ttrap WHERE timestamp < ?", $trap_limit);
+		while($traps_to_delete > 0) {
+			db_delete_limit($dbh, 'ttrap', "timestamp < ?", $BIG_OPERATION_STEP, $trap_limit);
+			$traps_to_delete = $traps_to_delete - $BIG_OPERATION_STEP;
+
+			# Mark the progress.
+			log_message ('', ".");
+				
+			# Do not overload the MySQL server.
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+
 	# Update tconfig with last time of database maintance time (now)
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
@@ -1148,6 +1171,9 @@ sub pandoradb_main {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
 		if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		}
+		if (defined($conf{'_history_trap_enabled'}) && $conf->{'_history_trap_enabled'} ne "" && $conf->{'_history_trap_enabled'} == 1) {
+			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_trap', [$dbh, $history_dbh, $conf->{'_history_trap_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}
 	}
 

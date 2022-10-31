@@ -442,6 +442,13 @@ if ($create_user) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
+    } else if (excludedPassword($password_new) === true) {
+        $is_err = true;
+        ui_print_error_message(__('The password provided is not valid. Please set another one.'));
+        $user_info = $values;
+        $password_new = '';
+        $password_confirm = '';
+        $new_user = true;
     } else {
         if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
             $pass_ok = login_validate_pass($password_new, $id, true);
@@ -1964,7 +1971,7 @@ function show_double_auth_activation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -2042,7 +2049,7 @@ function show_double_auth_deactivation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"

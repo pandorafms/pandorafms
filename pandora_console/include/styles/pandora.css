@@ -9119,3 +9119,37 @@ div#err_msg_centralised {
   margin-right: -110px;
   margin-top: 13px;
 }
+
+.tag-editor {
+  padding: 0.5em !important;
+}
+
+.tag-editor div {
+  float: right !important;
+}
+
+.tag-editor .tag-editor-tag {
+  padding: 5px !important;
+  color: #fff !important;
+  background: #82b92e !important;
+  border-radius: 0 2px 2px 0 !important;
+}
+
+.tag-editor .tag-editor-delete {
+  padding: 5px !important;
+  line-height: 16px !important;
+  background: #82b92e !important;
+  border-radius: 2px 0 0 2px !important;
+}
+
+.tag-editor .tag-editor-delete i {
+  line-height: 16pt !important;
+}
+
+.tag-editor .tag-editor-delete i:before {
+  color: #fff !important;
+}
+
+.tag-editor .tag-editor-delete:hover i:before {
+  color: #ccc !important;
+}

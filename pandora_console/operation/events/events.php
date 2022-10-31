@@ -84,7 +84,7 @@ ui_require_javascript_file('pandora_events');
 $default_filter = [
     'status'        => EVENT_NO_VALIDATED,
     'event_view_hr' => $config['event_view_hr'],
-    'group_rep'     => 1,
+    'group_rep'     => EVENT_GROUP_REP_EVENTS,
     'tag_with'      => [],
     'tag_without'   => [],
     'history'       => false,
@@ -358,6 +358,10 @@ if (is_ajax() === true) {
                     switch ($field) {
                         case 'ta.alias as agent_name':
                             $order['field'] = 'agent_name';
+                        break;
+
+                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                            $order['field'] = 'ack_utimestamp';
                         break;
 
                         default:
@@ -1445,7 +1449,7 @@ if ($pure) {
     ).'</a>';
 
     // If the user has administrator permission display manage tab.
-    if ($event_w || $event_m) {
+    if ($event_w === true || $event_m === true) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
@@ -1665,9 +1669,10 @@ $inputs[] = $in;
 // Duplicates group { events | agents }.
 $data = html_print_select(
     [
-        0 => __('All events'),
-        1 => __('Group events'),
-        2 => __('Group agents'),
+        EVENT_GROUP_REP_ALL      => __('All events'),
+        EVENT_GROUP_REP_EVENTS   => __('Group events'),
+        EVENT_GROUP_REP_AGENTS   => __('Group agents'),
+        EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
     ],
     'group_rep',
     $group_rep,
@@ -1771,7 +1776,7 @@ $buttons[] = [
     'onclick' => '',
 ];
 
-if ($event_w || $event_m) {
+if ($event_w === true || $event_m === true) {
     $buttons[] = [
         'id'      => 'save-filter',
         'class'   => 'float-left margin-right-2 sub wand',
@@ -2300,12 +2305,14 @@ try {
     $active_filters_div .= '<div>';
     $active_filters_div .= '<div class="label box-shadow">'.__('Duplicated').'</div>';
     $active_filters_div .= '<div id="summary_duplicates" class="content">';
-    if ($group_rep == 0) {
+    if ($group_rep == EVENT_GROUP_REP_ALL) {
         $active_filters_div .= __('All events.');
-    } else if ($group_rep == 1) {
+    } else if ($group_rep == EVENT_GROUP_REP_EVENTS) {
         $active_filters_div .= __('Group events');
-    } else if ($group_rep == 2) {
+    } else if ($group_rep == EVENT_GROUP_REP_AGENTS) {
         $active_filters_div .= __('Group agents.');
+    } else if ($group_rep == EVENT_GROUP_REP_EXTRAIDS) {
+        $active_filters_div .= __('Group extra id.');
     }
 
     $active_filters_div .= '</div>';
@@ -2393,6 +2400,16 @@ if (is_user_admin($config['id_user'])) {
             'type'     => 'command',
         ]
     );
+}
+
+$array_events_actions = [];
+if ($event_w === true && $readonly === false) {
+    $array_events_actions['in_progress_selected'] = __('In progress selected');
+    $array_events_actions['validate_selected'] = __('Validate selected');
+}
+
+if ($event_m === true && $readonly === false) {
+    $array_events_actions['delete_selected'] = __('Delete selected');
 }
 
 foreach ($event_responses as $val) {

@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+ALTER TABLE `tlayout` ADD COLUMN `maintenance_mode` TEXT;
+
 ALTER TABLE `tusuario` ADD COLUMN `auth_token_secret` VARCHAR(45) DEFAULT NULL;
 
 ALTER TABLE `tmodule_inventory` ADD COLUMN `script_mode` INT NOT NULL DEFAULT 2;

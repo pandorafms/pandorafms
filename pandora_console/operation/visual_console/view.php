@@ -33,7 +33,6 @@ global $config;
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
-// TODO: include file functions.
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
 
@@ -102,6 +101,9 @@ $visualConsoleName = io_safe_input(strip_tags(io_safe_output($visualConsoleData[
 $aclRead   = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VR');
 $aclWrite  = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VW');
 $aclManage = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VM');
+
+// Maintenance Mode.
+$maintenanceMode = $visualConsoleData['maintenanceMode'];
 
 if ($aclRead === false && $aclWrite === false && $aclManage === false) {
     db_pandora_audit(
@@ -398,18 +400,54 @@ if ($pure === false) {
         echo '</div>';
 
         if ($aclWrite === true || $aclManage === true) {
-            if (!is_metaconsole()) {
-                echo '<a id ="force_check" href="" style="margin-right: 25px;">'.html_print_image(
+            echo '<div class="flex-row" style="width:220px;">';
+            if (is_metaconsole() === false) {
+                echo '<div id="force_check_control" class="flex-column">';
+                echo html_print_label(__('Force'), 'force-mode', true);
+                echo '<a id ="force_check" href="">';
+                echo html_print_image(
                     'images/target.png',
                     true,
                     [
                         'title' => __('Force remote checks'),
                         'class' => 'invert_filter',
                     ]
-                ).'</a>';
+                );
+                echo '</a>';
+                echo '</div>';
             }
 
-            echo html_print_checkbox_switch('edit-mode', 1, false, true);
+            $disabled_edit_mode = false;
+            if ($aclManage === true) {
+                $value_maintenance_mode = true;
+                if ($maintenanceMode === null) {
+                    $value_maintenance_mode = false;
+                } else {
+                    if ($maintenanceMode['user'] !== $config['id_user']) {
+                        $disabled_edit_mode = true;
+                    }
+                }
+
+                echo '<div id="maintenance-mode-control" class="flex-column">';
+                echo html_print_label(
+                    __('Maintenance'),
+                    'maintenance-mode',
+                    true
+                );
+                echo html_print_checkbox_switch(
+                    'maintenance-mode',
+                    1,
+                    $value_maintenance_mode,
+                    true
+                );
+                echo '</div>';
+            }
+
+            echo '<div id="edit-mode-control" class="flex-column">';
+            echo html_print_label(__('Edit'), 'edit-mode', true);
+            echo html_print_checkbox_switch('edit-mode', 1, false, true, $disabled_edit_mode);
+            echo '</div>';
+            echo '</div>';
         }
 
         echo '</div>';
@@ -661,6 +699,18 @@ ui_require_css_file('form');
                 window.history.replaceState({}, document.title, href);
             }
         }
+
+        if(newProps.maintenanceMode != null) {
+            $('input[name=maintenance-mode]').prop('checked', true);
+            if(newProps.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
+                $('input[name=edit-mode]').prop('disabled', true);
+            } else {
+                $('input[name=edit-mode]').prop('disabled', false);
+            }
+        }  else {
+            $('input[name=maintenance-mode]').prop('checked', false);
+            $('input[name=edit-mode]').prop('disabled', false);
+        }
     }
 
     // Add the datetime when the item was received.
@@ -676,26 +726,88 @@ ui_require_css_file('form');
         items,
         baseUrl,
         <?php echo ($refr * 1000); ?>,
-        handleUpdate
+        handleUpdate,
+        false,
+        undefined,
+        '<?php echo $config['id_user']; ?>',
     );
+
+    if(props.maintenanceMode != null) {
+        if(props.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
+            visualConsoleManager.visualConsole.enableMaintenanceMode();
+        }
+    }
 
 <?php
 if ($edit_capable === true) {
     ?>
     // Enable/disable the edition mode.
     $('input[name=edit-mode]').change(function(event) {
+        var maintenanceMode = visualConsoleManager.visualConsole.props.maintenanceMode;
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
-            $('#force_check').hide();
             $('#edit-controls').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
             $('#edit-controls').css('visibility', 'hidden');
-            $('#force_check').show();
         }
+
+        resetInterval();
+    });
+
+    // Enable/disable the maintenance mode.
+    $('input[name=maintenance-mode]').click(function(event) {
+        event.preventDefault();
+        const idVisualConsole = '<?php echo $visualConsoleId; ?>';
+        const mode = ($(this).prop('checked') === true) ? 1 : 0;
+
+        var maintenanceMode = visualConsoleManager.visualConsole.props.maintenanceMode;
+        var msg = '';
+        if(maintenanceMode == null) {
+            msg = '<?php echo __('Are you sure you wish to set the visual console in maintenance mode'); ?>';
+            msg += '?';
+        } else if (maintenanceMode.user === '<?php echo $config['id_user']; ?>') {
+            msg += '<?php echo __('Are you sure you wish to disable maintenance mode'); ?>';
+            msg += '?';
+        } else {
+            msg = '<?php echo __('The visual console was set to maintenance mode'); ?>';
+            msg += ' ' + '<span title="'+maintenanceMode.date+'">' + maintenanceMode.timestamp + '</span>';
+            msg += ' ' + '<?php echo __('ago by user'); ?>';
+            msg += ' ' + maintenanceMode.user;
+            msg += '. ' + '<?php echo __('Are you sure you wish to disable maintenance mode'); ?>';
+            msg += '?';
+        }
+        
+        confirmDialog({
+            title: '<?php echo __('Maintenance mode'); ?>',
+            message: msg,
+            onAccept: function() {
+                $.ajax({
+                    type: "POST",
+                    url: "ajax.php",
+                    dataType: "json",
+                    data: {
+                        page: "include/ajax/visual_console.ajax",
+                        update_maintanance_mode: true,
+                        idVisualConsole: idVisualConsole,
+                        mode: mode
+                    },
+                    success: function (data) {
+                        if(data.result) {
+                            $('input[name=maintenance-mode]').prop('checked', mode);
+                            $('input[name=maintenance-mode]').trigger('change');
+                            resetInterval();
+                        }
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        });
     });
     <?php
 }
@@ -797,6 +909,7 @@ if ($edit_capable === true) {
 
     function resetInterval() {
         visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>);
+        visualConsoleManager.forceUpdateVisualConsole();
     }
 
     /**

@@ -154,8 +154,10 @@ $(document).ready(function() {
 
         if (selector == "search") {
           $("#search_title_result h2").append(
-            "<span class='pandora_green_text'>" + search_modules + "</span>"
+            "<span class='pandora_green_text' id='search_string'></span>"
           );
+
+          $("#search_string").text(search_modules);
         }
 
         if (total_posts < 1) {

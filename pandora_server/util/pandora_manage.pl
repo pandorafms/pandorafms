@@ -1144,18 +1144,54 @@ sub help_screen_line($$$){
 	print "\n\t$option $parameters : $help.\n" unless ($param ne '' && $param ne $option);
 }
 
-sub test ($) {
-	my (@item) = @_;
-	my @args = @ARGV;
+sub check_values($) {
+	my ($check) = @_;
+	use experimental 'smartmatch';
+
 	my $arg_cont = 2;
+	my $cont = 0;
+	my @args = @ARGV;
 	my $total = $#args;
 
-	print_log Dumper(@item);
-
-	# print_log "$item[0]{name}\n\n";
-
 	while ($arg_cont <= $total) {
-		print_log "$args[$arg_cont]\n\n";
+		# Check type.
+		if ($check->[$cont]->{'type'} eq 'json') {
+			my $json_out = eval { decode_json($args[$arg_cont]) };
+			if ($@)
+			{
+					print "\nValue `$args[$arg_cont]` is an invalid json. \nError:$@\n";
+					exit;
+			}
+		}
+
+		# Check values.
+		if (defined($check->[$cont]->{'values'})) {
+			if (!($args[$arg_cont] ~~ $check->[$cont]->{'values'})) {
+				print "\nError: value `$args[$arg_cont]` is not valid for $check->[$cont]->{'name'}\n";
+				print "\tAvailable options: \t$check->[$cont]->{'values'}->[0]";
+				if (defined($check->[$cont]->{'text_extra'}->[0])) {
+					print " $check->[$cont]->{'text_extra'}->[0]";
+				}
+				print "\n";
+
+				my $cont_aux = 1;
+				my $while = 'false';
+				while ($while eq 'false') {
+					if (defined($check->[$cont]->{'values'}->[$cont_aux])) {
+						print "\t\t\t\t$check->[$cont]->{'values'}->[$cont_aux]";
+						if (defined($check->[$cont]->{'text_extra'}->[$cont_aux])) {
+							print " $check->[$cont]->{'text_extra'}->[$cont_aux]";
+						}
+						print "\n";
+					} else {
+						exit;
+					}
+					$cont_aux++;
+				}
+			}
+		}
+
+		$cont++;
 		$arg_cont++;
 	}
 }
@@ -7664,13 +7700,54 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			my @items = (
-				{'type' => 'string', 'name' => 'user'},
-				{'type' => 'int', 'name' => 'group'}
+			my @fields = (
+				{'name' => 'event'},
+				{
+					'name' => 'event_type',
+					'values' => [
+						'unknown','alert_fired','alert_recovered','alert_ceased',
+						'alert_manual_validation','recon_host_detected','system',
+						'error','new_agent','going_up_warning','going_up_criticalgoing_down_warning',
+						'going_down_normal','going_down_critical','going_up_normal','configuration_change'
+					]
+				},
+				{'name' => 'group_name'},
+				{'name' => 'agent_name'},
+				{'name' => 'module_name'},
+				{
+					'name' => 'event_status',
+					'values' => ['0', '1'],
+					'text_extra' => ['(New)', '(Validated)']
+				},
+				{
+					'name' => 'severity',
+					'values' => ['0', '1', '2', '3', '4', '5', '6'],
+					'text_extra' => [
+						'(Maintenance)', '(Informational)', '(Normal)',
+						'(Warning)', '(Critical)', '(Minor)', '(Major)'
+					]
+				},
+				{'name' => 'template_name'},
+				{'name' => 'user_name'},
+				{'name' => 'comment'},
+				{'name' => 'source'},
+				{'name' => 'id_extra'},
+				{'name' => 'tags'},
+				{'type' => 'json', 'name' => 'custom_data_json'},
+				{
+					'name' => 'force_create_agent',
+					'values' => ['0', '1']
+				},
+				{'name' => 'critical_instructions'},
+				{'name' => 'warning_instructions'},
+				{'name' => 'unknown_instructions'},
+				{'name' => 'use_alias'},
+				{'name' => 'metaconsole'}
 			);
 
-			test(\@items);
-			# param_check($ltotal, 20, 17);
+			param_check($ltotal, 20, 17);
+
+			check_values(\@fields);
 
 			# cli_create_event();
 		}

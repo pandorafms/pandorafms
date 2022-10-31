@@ -1270,13 +1270,20 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Set the lock name for pandora_db.
-my $lock_name = $conf{'dbname'};
+# Get a lock on the main database.
+my $db_lock = db_get_lock ($dbh, $conf{'dbname'} . '_pandora_db', $LOCK_TIMEOUT, 1);
+if ($db_lock == 0) { 
+	log_message ('', " [*] Another instance of DB Tool seems to be running on the main database.\n\n");
+	exit 1;
+}
 
-# Release the database lock in forced mode.
-if ($conf{'_force'} == 1) {
-	log_message ('', " [*] Releasing database lock.\n\n");
-	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+# Get a lock on the history database.
+if (defined($history_dbh)) {
+	my $history_lock = db_get_lock ($history_dbh, $conf{'_history_db_name'} . '_pandora_db', $LOCK_TIMEOUT, 1);
+	if ($history_lock == 0) { 
+		log_message ('', " [*] Another instance of DB Tool seems to be running on the history database.\n\n");
+		exit 1;
+	}
 }
 
 # Get a lock merging.
@@ -1290,13 +1297,6 @@ if ($lock_merge == 0) {
 my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
 if ($lock_merge_events == 0) { 
 	log_message ('', " [*] Merge events is running.\n\n");
-	exit 1;
-}
-
-# Get a lock on dbname.
-my $lock = db_get_pandora_lock ($dbh, $lock_name, $LOCK_TIMEOUT);
-if ($lock == 0) { 
-	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
 }
 
@@ -1335,9 +1335,6 @@ if (scalar(@types) != 0) {
 	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 }
-
-# Release the lock
-db_release_pandora_lock ($dbh, $lock_name);
 
 # Cleanup and exit
 db_disconnect ($history_dbh) if defined ($history_dbh);

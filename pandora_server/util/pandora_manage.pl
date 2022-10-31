@@ -7749,7 +7749,7 @@ sub pandora_manage_main ($$$) {
 
 			check_values(\@fields);
 
-			# cli_create_event();
+			cli_create_event();
 		}
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 8, 7);

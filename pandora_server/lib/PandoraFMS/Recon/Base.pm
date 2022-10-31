@@ -215,6 +215,7 @@ sub new {
     snmp_security_level => '',
     snmp_timeout => 2,
     snmp_version => 1,
+    snmp_skip_non_enabled_ifs => 1,
     subnets => [],
     autoconfiguration_enabled => 0,
 
@@ -312,6 +313,7 @@ sub new {
     $self->{'snmp_privacy_method'} = '';
     $self->{'snmp_privacy_pass'} = '';
     $self->{'snmp_security_level'} = '';
+    $self->{'snmp_skip_non_enabled_ifs'} = '';
   }
 
   return $self;

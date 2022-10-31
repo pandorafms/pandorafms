@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1;
+
 ALTER TABLE `tlayout` ADD COLUMN `maintenance_mode` TEXT;
 
 ALTER TABLE `tusuario` ADD COLUMN `auth_token_secret` VARCHAR(45) DEFAULT NULL;

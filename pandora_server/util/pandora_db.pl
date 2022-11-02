@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.765 Build 221027";
+my $version = "7.0NG.765 Build 221102";
 
 # Pandora server configuration
 my %conf;
@@ -631,6 +631,7 @@ sub pandora_load_config_pdb ($) {
 
 	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
 	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
+	$conf->{'_trap_history_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
 	$conf->{'_audit_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
 	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'string_purge'");
 	$conf->{'_gis_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'gis_purge'");
@@ -641,6 +642,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
 	$conf->{'_history_db_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_enabled'");
 	$conf->{'_history_event_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_enabled'");
+	$conf->{'_history_trap_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_trap_enabled'");
 	$conf->{'_history_db_host'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_host'");
 	$conf->{'_history_db_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_port'");
 	$conf->{'_history_db_name'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_name'");
@@ -650,6 +652,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_adv'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_adv'");
 	$conf->{'_history_db_string_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_string_days'");
 	$conf->{'_history_event_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_days'");
+	$conf->{'_history_trap_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_trap_days'");
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
@@ -897,17 +900,10 @@ sub pandora_checkdb_consistency {
 	log_message ('CHECKDB',
 		"Checking database consistency (Missing status).");
 	
-	my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
+	my @modules = get_db_rows ($dbh, 'SELECT m.id_agente, m.id_agente_modulo, e.id_agente_estado FROM tagente_modulo AS m LEFT JOIN tagente_estado AS e ON m.id_agente_modulo = e.id_agente_modulo WHERE e.id_agente_estado IS NULL');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 		my $id_agente = $module->{'id_agente'};
-		
-		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh,
-			'SELECT COUNT(*)
-			FROM tagente_estado
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		next if (defined ($count) && $count > 0);
 		
 		db_do ($dbh,
 			'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
@@ -923,16 +919,9 @@ sub pandora_checkdb_consistency {
 	#    tagente_modulo, if there is any, delete it
 	#-------------------------------------------------------------------
 	
-	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_estado');
+	@modules = get_db_rows ($dbh, 'SELECT e.id_agente_modulo, m.id_agente FROM tagente_estado AS e LEFT JOIN tagente_modulo AS m ON e.id_agente_modulo = m.id_agente_modulo WHERE m.id_agente IS NULL');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
-		
-		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh,
-			'SELECT COUNT(*)
-			FROM tagente_modulo
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		next if (defined ($count) && $count > 0);
 		
 		db_do ($dbh, 'DELETE FROM tagente_estado
 			WHERE id_agente_modulo = ?', $id_agente_modulo);
@@ -1133,6 +1122,26 @@ sub pandoradb_history ($$) {
 		log_message ('', "\n");
 	}
 
+	# Delete old traps.
+	if ($conf->{'_trap_history_purge'} > 0) {
+		log_message ('PURGE', "Deleting traps older than " . $conf->{'_trap_history_purge'} . " days from ttrap (history).", '');
+
+		my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_history_purge'}));
+
+		my $traps_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM ttrap WHERE timestamp < ?", $trap_limit);
+		while($traps_to_delete > 0) {
+			db_delete_limit($dbh, 'ttrap', "timestamp < ?", $BIG_OPERATION_STEP, $trap_limit);
+			$traps_to_delete = $traps_to_delete - $BIG_OPERATION_STEP;
+
+			# Mark the progress.
+			log_message ('', ".");
+				
+			# Do not overload the MySQL server.
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+
 	# Update tconfig with last time of database maintance time (now)
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
@@ -1162,6 +1171,9 @@ sub pandoradb_main {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
 		if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		}
+		if (defined($conf{'_history_trap_enabled'}) && $conf->{'_history_trap_enabled'} ne "" && $conf->{'_history_trap_enabled'} == 1) {
+			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_trap', [$dbh, $history_dbh, $conf->{'_history_trap_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}
 	}
 
@@ -1270,13 +1282,20 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Set the lock name for pandora_db.
-my $lock_name = $conf{'dbname'};
+# Get a lock on the main database.
+my $db_lock = db_get_lock ($dbh, $conf{'dbname'} . '_pandora_db', $LOCK_TIMEOUT, 1);
+if ($db_lock == 0) { 
+	log_message ('', " [*] Another instance of DB Tool seems to be running on the main database.\n\n");
+	exit 1;
+}
 
-# Release the database lock in forced mode.
-if ($conf{'_force'} == 1) {
-	log_message ('', " [*] Releasing database lock.\n\n");
-	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+# Get a lock on the history database.
+if (defined($history_dbh)) {
+	my $history_lock = db_get_lock ($history_dbh, $conf{'_history_db_name'} . '_pandora_db', $LOCK_TIMEOUT, 1);
+	if ($history_lock == 0) { 
+		log_message ('', " [*] Another instance of DB Tool seems to be running on the history database.\n\n");
+		exit 1;
+	}
 }
 
 # Get a lock merging.
@@ -1290,13 +1309,6 @@ if ($lock_merge == 0) {
 my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
 if ($lock_merge_events == 0) { 
 	log_message ('', " [*] Merge events is running.\n\n");
-	exit 1;
-}
-
-# Get a lock on dbname.
-my $lock = db_get_pandora_lock ($dbh, $lock_name, $LOCK_TIMEOUT);
-if ($lock == 0) { 
-	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
 }
 
@@ -1335,9 +1347,6 @@ if (scalar(@types) != 0) {
 	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 }
-
-# Release the lock
-db_release_pandora_lock ($dbh, $lock_name);
 
 # Cleanup and exit
 db_disconnect ($history_dbh) if defined ($history_dbh);

@@ -167,7 +167,7 @@ if (!$double_auth_enabled
     resizable: true,
     draggable: true,
     modal: true,
-    title: "<?php echo __('Double autentication activation'); ?>",
+    title: "<?php echo __('Double authentication activation'); ?>",
     overlay: {
       opacity: 0.5,
       background: "black"

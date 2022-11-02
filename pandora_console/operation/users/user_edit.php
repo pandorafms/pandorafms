@@ -425,7 +425,7 @@ $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</d
 // Double auth.
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 
-if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $double_auth_enabled)) {
+if ((bool) $config['double_auth_enabled'] === true) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
     if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
         || ($config['2FA_all_users'] != '' && !$double_auth_enabled)
@@ -437,9 +437,6 @@ if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $
 
     // Dialog.
     $double_authentication .= '<div id="dialog-double_auth"class="invisible"><div id="dialog-double_auth-container"></div></div>';
-}
-
-if ($double_auth_enabled && $config['double_auth_enabled']) {
     $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
@@ -1166,7 +1163,7 @@ function show_double_auth_activation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -1242,7 +1239,7 @@ function show_double_auth_deactivation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"

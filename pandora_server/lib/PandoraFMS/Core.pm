@@ -116,7 +116,6 @@ use XML::Simple;
 use HTML::Entities;
 use Tie::File;
 use Time::Local;
-use Time::Piece;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime);
@@ -7221,8 +7220,7 @@ sub pandora_snmptrapd_still_working ($$) {
 		if ($time ne '' && $date ne '') {
 			my ($hour, $min, $sec) = split(/:/, $time, 3);
 			my ($year, $month, $day) = split(/-/, $date, 3);
-			my $completeDate = Time::Piece->strptime("$sec $min $hour $day $month $year", '%S %M %H %d %m %Y');
-			$lastTimestampLogFile = $completeDate->epoch;
+			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);
 			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved gt ($lastTimestampLogFile + $timeMaxLapse)) {
 				my $lapseMessage = "snmptrapd service probably is stuck.";
 				logger($pa_config, $lapseMessage, 1);

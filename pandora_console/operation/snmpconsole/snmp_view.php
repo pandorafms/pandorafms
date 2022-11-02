@@ -303,14 +303,7 @@ switch ($config['dbtype']) {
     case 'mysql':
         $sql = 'SELECT *
 			FROM ttrap
-			WHERE (
-				`source` IN ('.implode(',', $address_by_user_groups).") OR
-				`source`='' OR
-				`source` NOT IN (".implode(',', $all_address_agents).')
-				)
-				%s
-			ORDER BY timestamp DESC
-			LIMIT %d,%d';
+			ORDER BY timestamp DESC';
     break;
 
     case 'postgresql':
@@ -673,6 +666,15 @@ $filter_resume['trap_type'] = $trap_types[$trap_type];
 
 $traps = db_get_all_rows_sql($sql, true);
 $trapcount = (int) db_get_value_sql($sql_count, false, true);
+
+// Re-sort traps by timestamp if history db is enabled.
+if ($config['history_db_enabled'] == 1) {
+    usort($traps, function($a, $b)
+        {
+            return strtotime($a['timestamp']) < strtotime($b['timestamp']);
+        }
+    );
+}
 
 // No traps.
 if (empty($traps)) {

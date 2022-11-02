@@ -679,7 +679,6 @@ class ConsoleSupervisor
                 $max_age = 0;
             break;
 
-            case 'NOTIF.LICENSE.EXPIRATION':
             case 'NOTIF.FILES.ATTACHMENT':
             case 'NOTIF.FILES.DATAIN':
             case 'NOTIF.FILES.DATAIN.BADXML':
@@ -846,7 +845,7 @@ class ConsoleSupervisor
         }
 
         // Expiry.
-        if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
+        if (($days_to_expiry <= 15) && ($days_to_expiry > 0) && (is_user_admin($config['id_user']))) {
             if ($config['license_mode'] == 1) {
                 $title = __('License is about to expire');
                 $msg = 'Your license will expire in %d days. Please, contact our sales department.';
@@ -867,7 +866,7 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
-        } else if ($days_to_expiry < 0) {
+        } else if (($days_to_expiry < 0) && (is_user_admin($config['id_user']))) {
             if ($config['license_mode'] == 1) {
                 $title = __('Expired license');
                 $msg = __('Your license has expired. Please, contact our sales department.');

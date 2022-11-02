@@ -442,8 +442,12 @@ $table->data[10][1] = html_print_select(
     true
 );
 
-$repeated_sel[0] = __('All events');
-$repeated_sel[1] = __('Group events');
+$repeated_sel = [
+    EVENT_GROUP_REP_ALL      => __('All events'),
+    EVENT_GROUP_REP_EVENTS   => __('Group events'),
+    EVENT_GROUP_REP_AGENTS   => __('Group agents'),
+    EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
+];
 $table->data[11][0] = '<b>'.__('Repeated').'</b>';
 $table->data[11][1] = html_print_select(
     $repeated_sel,

@@ -223,8 +223,9 @@ class SatelliteAgent extends HTML
 
         echo $modal.$msg.$aux;
 
-        echo '<div id="satellite_actions" class="action-buttons" style="width: 100%">';
+        echo '<div style="display: flex;justify-content: space-between;">';
 
+        echo '<div class="flex-content-left">';
         html_print_select(
             [
                 '0' => 'Disable / Enable selected agents',
@@ -248,18 +249,18 @@ class SatelliteAgent extends HTML
         );
         echo '</div>';
 
-        echo '</br></br>';
-
-        // Create button.
-        echo '<div class="w100p flex-content-right">';
+        // Create button add host.
+        echo '<div class="flex-content-right">';
         html_print_submit_button(
             __('Add host'),
             'create',
             false,
             'class="sub next"'
         );
+        echo '</div>';
 
         echo '</div>';
+
         // Load own javascript file.
         echo $this->loadJS();
     }
@@ -1255,6 +1256,8 @@ class SatelliteAgent extends HTML
 
         $(document).ready(function() {
 
+            $('body').append('<div id="dialog"></div>');
+
             $("#submit-create").on('click', function() {
                 show_form();
             });
@@ -1267,61 +1270,140 @@ class SatelliteAgent extends HTML
             $('#submit-submit_satellite_action').click(function() {
                 const checks = $('input[name*=check_]:checked');
                 const action = $('#satellite_action').val();
-                $.each(checks, function(i, val) {
-                    const params = val.value.split(",");
-                    if (action === '0') {
-                        if (params[2] === '0') {
-                            $.ajax({
-                                method: 'post',
-                                async: false,
-                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                                data: {
-                                    page: 'enterprise/godmode/servers/agents_satellite',
-                                    method: 'disableAgent',
-                                    address: params[0],
-                                    disable: params[3],
-                                    id: params[4],
-                                    name: params[1],
-                                    no_msg: 1,
-                                    server_remote:  <?php echo $this->satellite_server; ?>,
-                                },
-                                datatype: "json",
-                                success: function (data) {
-                                },
-                                error: function(e) {
-                                    console.error(e);
-                                }
-                            });
-                        }
-                    } else {
-                        if (params[3] === '0') {
-                            $.ajax({
-                                method: 'post',
-                                async: false,
-                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                                data: {
-                                    page: 'enterprise/godmode/servers/agents_satellite',
-                                    method: 'deleteAgent',
-                                    address: params[0],
-                                    name: params[1],
-                                    id: params[4],
-                                    delete: params[2],
-                                    no_msg: 1,
-                                    server_remote:  <?php echo $this->satellite_server; ?>,
-                                },
-                                datatype: "json",
-                                success: function (data) {
-                                },
-                                error: function(e) {
-                                    console.error(e);
-                                }
-                            });
-                        }
-                    }
-                });
+                let agent_delete_error = [];
+                let agent_disable_error = [];
+                $('#aux').empty();
+                $('#aux').text('<?php echo __('Are you sure?'); ?>');
+                $('#aux').dialog({
+                    title: (action === '0') ? '<?php echo __('Disable / Enable Agents'); ?>' : '<?php echo __('Delete / create Agents'); ?>',
+                    buttons: [
+                        {
+                            class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel',
+                            text: '<?php echo __('Cancel'); ?>',
+                            click: function(e) {
+                                $(this).dialog('close');
+                                cleanupDOM();
 
-                var dt_satellite_agents = $("#satellite_agents").DataTable();
-                dt_satellite_agents.draw();
+                            }
+                        },
+                        {
+                            text: '<?php echo __('Ok'); ?>',
+                            class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next',
+                            click: function(e) {
+                                $(this).dialog('close');
+                                $.each(checks, function(i, val) {
+                                    const params = val.value.split(",");
+                                    if (action === '0') {
+                                        if (params[2] === '0') {
+                                            $.ajax({
+                                                method: 'post',
+                                                async: false,
+                                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                                                data: {
+                                                    page: 'enterprise/godmode/servers/agents_satellite',
+                                                    method: 'disableAgent',
+                                                    address: params[0],
+                                                    disable: params[3],
+                                                    id: params[4],
+                                                    name: params[1],
+                                                    no_msg: 1,
+                                                    server_remote:  <?php echo $this->satellite_server; ?>,
+                                                },
+                                                datatype: "json",
+                                                success: function (data) {
+                                                },
+                                                error: function(e) {
+                                                    console.error(e);
+                                                }
+                                            });
+                                        } else {
+                                            agent_disable_error.push(params[0]);
+                                        }
+                                    } else {
+                                        if (params[3] === '0') {
+                                            $.ajax({
+                                                method: 'post',
+                                                async: false,
+                                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                                                data: {
+                                                    page: 'enterprise/godmode/servers/agents_satellite',
+                                                    method: 'deleteAgent',
+                                                    address: params[0],
+                                                    name: params[1],
+                                                    id: params[4],
+                                                    delete: params[2],
+                                                    no_msg: 1,
+                                                    server_remote:  <?php echo $this->satellite_server; ?>,
+                                                },
+                                                datatype: "json",
+                                                success: function (data) {
+                                                },
+                                                error: function(e) {
+                                                    console.error(e);
+                                                }
+                                            });
+                                        } else {
+                                            agent_delete_error.push(params[0]);
+                                        }
+                                    }
+                                });
+
+                                if (agent_delete_error.length > 0) {
+                                     $("#dialog").dialog({
+                                        resizable: true,
+                                        draggable: true,
+                                        modal: true,
+                                        height: 240,
+                                        width: 600,
+                                        title: '<?php echo __('Warning'); ?>',
+                                        open: function(){
+                                            let text = '<?php echo __('These agents could not be deleted. They must first be enabled'); ?>';
+                                            text += ` (${agent_delete_error.join()})`;
+                                            $('#dialog').html(`<br><table><tr><td><img src="images/icono-warning-triangulo.png" class="float-left mrgn_lft_25px"></td><td><p id="p_configurar_agente" >${text}</p></td></tr></table>`);
+                                        },
+                                        buttons: [
+                                            {
+                                                text: "Ok",
+                                                click: function() {
+                                                    $( this ).dialog( "close" );
+                                                    return false;
+                                                }
+                                            }
+                                        ]
+                                    });
+                                }
+
+                                if (agent_disable_error.length > 0) {
+                                     $("#dialog").dialog({
+                                        resizable: true,
+                                        draggable: true,
+                                        modal: true,
+                                        height: 240,
+                                        width: 600,
+                                        title: '<?php echo __('Warning'); ?>',
+                                        open: function(){
+                                            let text = '<?php echo __('These agents could not be disabled. They must first be created'); ?>';
+                                            text += ` (${agent_disable_error.join()})`;
+                                            $('#dialog').html(`<br><table><tr><td><img src="images/icono-warning-triangulo.png" class="float-left mrgn_lft_25px"></td><td><p id="p_configurar_agente" >${text}</p></td></tr></table>`);
+                                        },
+                                        buttons: [
+                                            {
+                                                text: "Ok",
+                                                click: function() {
+                                                    $( this ).dialog( "close" );
+                                                    return false;
+                                                }
+                                            }
+                                        ]
+                                    });
+                                }
+
+                                var dt_satellite_agents = $("#satellite_agents").DataTable();
+                                dt_satellite_agents.draw();
+                            }
+                        }
+                    ]
+                });
             });
         });
 

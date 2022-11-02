@@ -70,10 +70,16 @@ $options_agents = [
 ];
 
 if (check_acl($config['id_user'], 0, 'UM')) {
-    $options_users = [
-        'add_profiles'    => __('Bulk profile add'),
-        'delete_profiles' => __('Bulk profile delete'),
-    ];
+    if (is_metaconsole() === false) {
+        $options_users = [
+            'add_profiles'    => __('Bulk profile add'),
+            'delete_profiles' => __('Bulk profile delete'),
+        ];
+    }
+
+    if (users_is_admin() === true) {
+        $options_users['edit_users'] = __('Edit users in bulk');
+    }
 } else {
     $options_users = [];
 }
@@ -477,6 +483,10 @@ switch ($option) {
 
     case 'edit_plugins':
         include_once $config['homedir'].'/godmode/massive/massive_edit_plugins.php';
+    break;
+
+    case 'edit_users':
+        include_once $config['homedir'].'/godmode/massive/massive_edit_users.php';
     break;
 
     default:

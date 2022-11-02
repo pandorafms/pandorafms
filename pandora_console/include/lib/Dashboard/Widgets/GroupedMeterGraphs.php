@@ -126,21 +126,21 @@ class GroupedMeterGraphs extends Widget
      *
      * @var array
      */
-    private array $size;
+    private $size;
 
     /**
      * Number of boxes.
      *
      * @var float
      */
-    private float $boxNumber;
+    private $boxNumber;
 
     /**
      * Thresholds.
      *
      * @var array
      */
-    private array $thresholds;
+    private $thresholds;
 
 
     /**

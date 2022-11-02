@@ -302,8 +302,15 @@ if (empty($all_address_agents)) {
 switch ($config['dbtype']) {
     case 'mysql':
         $sql = 'SELECT *
-			FROM ttrap
-			ORDER BY timestamp DESC';
+            FROM ttrap
+			WHERE (
+				`source` IN ('.implode(',', $address_by_user_groups).") OR
+				`source`='' OR
+				`source` NOT IN (".implode(',', $all_address_agents).')
+				)
+				%s
+			ORDER BY timestamp DESC
+			LIMIT %d,%d';
     break;
 
     case 'postgresql':

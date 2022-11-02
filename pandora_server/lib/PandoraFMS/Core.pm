@@ -114,7 +114,9 @@ use Encode;
 use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
+use Tie::File;
 use Time::Local;
+use Time::Piece;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime);
@@ -7211,8 +7213,6 @@ sub pandora_snmptrapd_still_working ($$) {
 			ORDER BY timestamp DESC
 			LIMIT 1');
 		# Read the last log file line.
-		use Tie::File;
-		use Time::Piece;
 		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
 		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
 		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];

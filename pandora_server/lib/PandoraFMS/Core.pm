@@ -7216,14 +7216,18 @@ sub pandora_snmptrapd_still_working ($$) {
 		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
 		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
 		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
-		my ($hour, $min, $sec) = split(/:/, $time, 3);
-		my ($year, $month, $day) = split(/-/, $date, 3);
-		$lastTimestampLogFile = timelocal($sec, $min, $hour, $day, $month, $year);
-		if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved gt ($lastTimestampLogFile + $timeMaxLapse)) {
-			my $lapseMessage = "snmptrapd service probably is stuck.";
-			logger($pa_config, $lapseMessage, 1);
-			pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+		# If time or date not filled in, probably havent caught any snmptraps yet.
+		if ($time ne '' && $date ne '') {
+			my ($hour, $min, $sec) = split(/:/, $time, 3);
+			my ($year, $month, $day) = split(/-/, $date, 3);
+			$lastTimestampLogFile = timelocal($sec, $min, $hour, $day, $month, $year);
+			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved gt ($lastTimestampLogFile + $timeMaxLapse)) {
+				my $lapseMessage = "snmptrapd service probably is stuck.";
+				logger($pa_config, $lapseMessage, 1);
+				pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+			}
 		}
+
 	}
 }
 

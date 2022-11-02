@@ -7212,6 +7212,7 @@ sub pandora_snmptrapd_still_working ($$) {
 			LIMIT 1');
 		# Read the last log file line.
 		use Tie::File;
+		use Time::Piece;
 		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
 		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
 		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
@@ -7220,7 +7221,8 @@ sub pandora_snmptrapd_still_working ($$) {
 		if ($time ne '' && $date ne '') {
 			my ($hour, $min, $sec) = split(/:/, $time, 3);
 			my ($year, $month, $day) = split(/-/, $date, 3);
-			$lastTimestampLogFile = timelocal($sec, $min, $hour, $day, $month, $year);
+			my $completeDate = Time::Piece->strptime("$sec $min $hour $day $month $year", '%S %M %H %d %m %Y');
+			$lastTimestampLogFile = $completeDate->epoch;
 			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved gt ($lastTimestampLogFile + $timeMaxLapse)) {
 				my $lapseMessage = "snmptrapd service probably is stuck.";
 				logger($pa_config, $lapseMessage, 1);

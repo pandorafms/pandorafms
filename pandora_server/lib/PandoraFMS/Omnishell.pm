@@ -491,7 +491,7 @@ sub execute_command_block {
     do {
       $err_level = $self->execute_command_timeout(
         $commands,
-		$std_files,
+        $std_files,
         $timeout
       );
 
@@ -508,7 +508,7 @@ sub execute_command_block {
       do {
         $err_level = $self->execute_command_timeout(
           $comm,
-		  $std_files,
+          $std_files,
           $timeout
         );
 

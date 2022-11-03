@@ -834,7 +834,7 @@ function update_user(string $id_user, array $values)
                         'id_user'   => $id_user,
                     ]
                 );
-            } else {
+            } else if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
                 @db_process_sql_insert(
                     'tnotification_source_user',
                     [

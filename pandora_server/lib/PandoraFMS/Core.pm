@@ -127,7 +127,7 @@ use Text::ParseWords;
 use Math::Trig;			# Math functions
 
 # Debugging
-#use Data::Dumper;
+use Data::Dumper;
 
 # Force XML::Simple to use XML::Parser instead SAX to manage XML
 # due a bug processing some XML with blank spaces.
@@ -7221,7 +7221,7 @@ sub pandora_snmptrapd_still_working ($$) {
 			my ($hour, $min, $sec) = split(/:/, $time, 3);
 			my ($year, $month, $day) = split(/-/, $date, 3);
 			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);
-			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampSaved gt ($lastTimestampLogFile + $timeMaxLapse)) {
+			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampLogFile gt ($lastTimestampSaved + $timeMaxLapse)) {
 				my $lapseMessage = "snmptrapd service probably is stuck.";
 				logger($pa_config, $lapseMessage, 1);
 				pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);

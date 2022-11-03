@@ -565,13 +565,23 @@ if ($create_user) {
                                     $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
                                     foreach ($notificationSources as $notification) {
                                         if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
-                                            @db_process_sql_insert(
+                                            $notification_user = db_get_value_filter(
+                                                'id_source',
                                                 'tnotification_source_user',
                                                 [
                                                     'id_source' => $notification['id'],
                                                     'id_user'   => $id,
                                                 ]
                                             );
+                                            if ($notification_user === false) {
+                                                @db_process_sql_insert(
+                                                    'tnotification_source_user',
+                                                    [
+                                                        'id_source' => $notification['id'],
+                                                        'id_user'   => $id,
+                                                    ]
+                                                );
+                                            }
                                         }
                                     }
                                 }
@@ -888,13 +898,23 @@ if ($add_profile && empty($json_profile)) {
                 $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
                 foreach ($notificationSources as $notification) {
                     if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
-                        @db_process_sql_insert(
+                        $notification_user = db_get_value_filter(
+                            'id_source',
                             'tnotification_source_user',
                             [
                                 'id_source' => $notification['id'],
                                 'id_user'   => $id,
                             ]
                         );
+                        if ($notification_user === false) {
+                            @db_process_sql_insert(
+                                'tnotification_source_user',
+                                [
+                                    'id_source' => $notification['id'],
+                                    'id_user'   => $id,
+                                ]
+                            );
+                        }
                     }
                 }
             }

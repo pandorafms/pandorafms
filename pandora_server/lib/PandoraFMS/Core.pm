@@ -127,7 +127,7 @@ use Text::ParseWords;
 use Math::Trig;			# Math functions
 
 # Debugging
-use Data::Dumper;
+#use Data::Dumper;
 
 # Force XML::Simple to use XML::Parser instead SAX to manage XML
 # due a bug processing some XML with blank spaces.

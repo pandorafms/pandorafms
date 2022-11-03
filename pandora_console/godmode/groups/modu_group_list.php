@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ if (is_ajax() === true) {
     $get_group_json = (bool) get_parameter('get_group_json');
     $get_group_agents = (bool) get_parameter('get_group_agents');
 
-    if ($get_group_json) {
+    if ($get_group_json === true) {
         $id_group = (int) get_parameter('id_group');
 
         if (! check_acl($config['id_user'], $id_group, 'AR')) {
@@ -174,7 +174,7 @@ if ($is_management_allowed === true && $delete_group === true) {
 
     $result = db_process_sql_delete('tmodule_group', ['id_mg' => $id_group]);
 
-    if ($result) {
+    if ((bool) $result === true) {
         $result = db_process_sql_update(
             'tagente_modulo',
             ['id_module_group' => 0],
@@ -223,11 +223,11 @@ if ($is_management_allowed === true && $delete_group === true) {
         }
     }
 
-    if (! $result) {
-        ui_print_error_message(__('There was a problem deleting group'));
-    } else {
-        ui_print_success_message(__('Group successfully deleted'));
-    }
+    ui_print_result_message(
+        $result,
+        __('Group successfully deleted'),
+        __('There was a problem deleting group')
+    );
 }
 
 // Prepare pagination.
@@ -298,13 +298,17 @@ if (empty($groups) === false) {
 
 if ($is_management_allowed === true) {
     echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(
-        __('Create module group'),
-        'crt',
-        false,
-        'class="sub next"'
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Create module group'),
+                'crt',
+                false,
+                [ 'icon' => 'next' ],
+                true
+            ),
+        ]
     );
-    echo '</div>';
     echo '</form>';
 }

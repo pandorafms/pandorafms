@@ -436,64 +436,27 @@ class ModuleTemplates extends HTML
                         return;
                     }
 
-                    // It's important to keep the structure and order in the same way for backwards compatibility.
-                    switch ($config['dbtype']) {
-                        case 'mysql':
-                            $sql = sprintf(
-                                '
-                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-                                    components.max_critical, components.str_critical, components.min_ff_event, components.dynamic_interval, components.dynamic_max, components.dynamic_min, components.dynamic_two_tailed, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
-                                FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-                                WHERE tpc.id_nc = components.id_nc
-                                    AND components.id_group = comp_group.id_sg
-                                    AND tpc.id_np = %d',
-                                $this->id_np
-                            );
-                        break;
-
-                        case 'postgresql':
-                            $sql = sprintf(
-                                '
-                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-                                    components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
-                                FROM "tnetwork_component" AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-                                WHERE tpc.id_nc = components.id_nc
-                                    AND components.id_group = comp_group.id_sg
-                                    AND tpc.id_np = %d',
-                                $this->id_np
-                            );
-                        break;
-
-                        case 'oracle':
-                            $sql = sprintf(
-                                '
-                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-                                    components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
-                                FROM tnetwork_component AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-                                WHERE tpc.id_nc = components.id_nc
-                                    AND components.id_group = comp_group.id_sg
-                                    AND tpc.id_np = %d',
-                                $this->id_np
-                            );
-                        break;
-                    }
+                    $sql = sprintf(
+                        '
+                        SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
+                            components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
+                            components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
+                            components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
+                            components.max_critical, components.str_critical, components.min_ff_event, components.dynamic_interval, components.dynamic_max, components.dynamic_min, components.dynamic_two_tailed, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
+                        FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
+                        WHERE tpc.id_nc = components.id_nc
+                            AND components.id_group = comp_group.id_sg
+                            AND tpc.id_np = %d',
+                        $this->id_np
+                    );
 
                     $components = db_get_all_rows_sql($sql);
 
                     $row_names = [];
                     $inv_names = [];
-                    // Find the names of the rows that we are getting and throw away the duplicate numeric keys
+                    // Find the names of the rows that we are getting and throw away the duplicate numeric keys.
                     foreach ($components[0] as $row_name => $detail) {
-                        if (is_numeric($row_name)) {
+                        if (is_numeric($row_name) === true) {
                             $inv_names[] = $row_name;
                         } else {
                             $row_names[] = $row_name;
@@ -501,17 +464,17 @@ class ModuleTemplates extends HTML
                     }
 
                     $fileName = io_safe_output($profile_info['name']);
-                    // Send headers to tell the browser we're sending a file
+                    // Send headers to tell the browser we're sending a file.
                     header('Content-type: application/octet-stream');
                     header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $fileName).'.csv');
                     header('Pragma: no-cache');
                     header('Expires: 0');
 
-                    // Clean up output buffering
+                    // Clean up output buffering.
                     while (@ob_end_clean()) {
                     }
 
-                    // Then print the first line (row names)
+                    // Then print the first line (row names).
                     echo '"'.implode('"'.$config['csv_divider'].'"', $row_names).'"';
                     echo "\n";
 
@@ -960,7 +923,7 @@ class ModuleTemplates extends HTML
                 'label'      => __('Create'),
                 'name'       => 'crt',
                 'type'       => 'submit',
-                'attributes' => 'class="sub wand"',
+                'attributes' => ['icon' => 'wand'],
                 'return'     => true,
             ],
         ];
@@ -970,7 +933,7 @@ class ModuleTemplates extends HTML
                 'label'      => __('Delete selected'),
                 'name'       => 'erase',
                 'type'       => 'button',
-                'attributes' => 'class="sub cancel"',
+                'attributes' => ['icon' => 'cancel'],
                 'return'     => true,
             ],
         ];

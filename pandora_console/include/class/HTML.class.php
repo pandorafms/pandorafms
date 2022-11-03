@@ -418,7 +418,7 @@ class HTML
                         'name'       => 'submit',
                         'label'      => __('Go back'),
                         'type'       => 'submit',
-                        'attributes' => [ 'icon' => 'back' ],
+                        'attributes' => [ 'icon' => 'cancel' ],
                         'return'     => true,
                     ],
                 ],

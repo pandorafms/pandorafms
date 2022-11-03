@@ -1,21 +1,36 @@
 <?php
+/**
+ * Edit Category.
+ *
+ * @category   Category
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 check_login();
 
 enterprise_hook('open_meta_frame');
 
-// Include functions code
+// Include functions code.
 require_once $config['homedir'].'/include/functions_categories.php';
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
@@ -36,7 +51,7 @@ $create_category = (int) get_parameter('create_category', 0);
 $name_category = (string) get_parameter('name_category', '');
 $tab = (string) get_parameter('tab', 'list');
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $buttons = [
         'list' => [
             'active' => false,
@@ -68,8 +83,8 @@ if (defined('METACONSOLE')) {
 
 $buttons[$tab]['active'] = false;
 
-// Header
-if (defined('METACONSOLE')) {
+// Header.
+if (is_metaconsole() === true) {
     ui_meta_print_header(__('Categories configuration'), __('Editor'), $buttons);
 } else {
     ui_print_page_header(__('Categories configuration'), 'images/gm_modules.png', false, '', true, $buttons);
@@ -186,32 +201,30 @@ if (defined('METACONSOLE')) {
 
 echo '</table>';
 
-echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
-echo '<tr>';
-echo '<td align=right>';
-if ($action == 'update') {
+if ($action === 'update') {
     html_print_input_hidden('update_category', 1);
-    html_print_submit_button(
-        __('Update'),
-        'update_button',
-        false,
-        'class="sub next"'
-    );
-}
-
-if ($action == 'new') {
+    $buttonCaption = __('Update');
+    $buttonName = 'update_button';
+    $buttonIcon = 'update';
+} else if ($action === 'new') {
     html_print_input_hidden('create_category', 1);
-    html_print_submit_button(
-        __('Create'),
-        'create_button',
-        false,
-        'class="sub next"'
-    );
+    $buttonCaption = __('Create');
+    $buttonName = 'create_button';
+    $buttonIcon = 'next';
 }
 
-echo '</td>';
-echo '</tr>';
-echo '</table>';
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            $buttonCaption,
+            $buttonName,
+            false,
+            [ 'icon' => $buttonIcon ],
+            true
+        ),
+    ]
+);
 
 echo '</div>';
 echo '</form>';

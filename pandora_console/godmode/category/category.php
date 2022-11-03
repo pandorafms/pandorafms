@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -228,7 +228,6 @@ if (empty($result) === false) {
 
 if ($is_management_allowed === true) {
     // Form to add new categories or search categories.
-    echo "<div class='w100p right_align'>";
     if (is_metaconsole() === true) {
         echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
     } else {
@@ -236,9 +235,21 @@ if ($is_management_allowed === true) {
     }
 
     html_print_input_hidden('create_category', '1', true);
-    html_print_submit_button(__('Create category'), 'create_button', false, 'class="sub next"');
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Create category'),
+                'create_button',
+                false,
+                [ 'icon' => 'next' ],
+                true
+            ),
+        ]
+    );
+
     echo '</form>';
-    echo '</div>';
 
     enterprise_hook('close_meta_frame');
 }

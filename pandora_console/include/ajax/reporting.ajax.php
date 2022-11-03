@@ -26,8 +26,10 @@ if (! check_acl($config['id_user'], 0, 'RW')) {
 }
 
 $get_log_agents = (bool) get_parameter('get_log_agents', 0);
+$get_agents = (bool) get_parameter('get_agents', 0);
 $agents_id = get_parameter('id_agents', []);
-$agents_id = get_parameter('source', 0);
+$source = get_parameter('source', 0);
+$group = get_parameter('group', 0);
 $delete_sla_item = get_parameter('delete_sla_item', 0);
 $delete_general_item = get_parameter('delete_general_item', 0);
 $get_custom_sql = get_parameter('get_custom_sql', 0);
@@ -248,7 +250,55 @@ if ($change_custom_fields_macros_report === true) {
     return;
 }
 
+if ($get_agents === true) {
+    $agents_id = str_replace('&quot;', '', $agents_id);
+
+    try {
+        $agents_id = json_decode($agents_id, true);
+    } catch (Exception $e) {
+        $data['correct'] = 0;
+        echo json_encode($data);
+        return;
+    }
+
+    $agents = agents_get_agents_selected($group);
+
+    if (isset($agents) && is_array($agents)) {
+        foreach ($agents as $key => $value) {
+            $select_agents[$key] = $value;
+        }
+    }
+
+    if ((empty($select_agents)) || $select_agents == -1) {
+        $agents = [];
+    }
+
+    $agents_selected = [];
+    if (is_array($agents_id) === true || is_object($agents_id) === true) {
+        foreach ($select_agents as $key => $a) {
+            if (in_array((string) $key, $agents_id) === true) {
+                $agents_selected[$key] = $key;
+            }
+        }
+    }
+
+    $data['select_agents'] = $select_agents;
+    $data['agents_selected'] = $agents_selected;
+
+    $data['correct'] = 1;
+
+    if ($result === false) {
+        $data['correct'] = 0;
+    }
+
+    echo json_encode($data);
+
+    return;
+}
+
 if ($get_log_agents === true) {
+    $agents_id = str_replace('&quot;', '', $agents_id);
+
     try {
         $agents_id = json_decode($agents_id, true);
     } catch (Exception $e) {
@@ -259,15 +309,10 @@ if ($get_log_agents === true) {
 
     if ($source) {
         $sql_log_report = 'SELECT id_agente, alias
-                FROM tagente, tagent_module_log
-                WHERE tagente.id_agente = tagent_module_log.id_agent
-                AND tagente.disabled = 0
-                AND tagent_module_log.source like "'.$source.'"';
+                FROM tagente';
     } else {
         $sql_log_report = 'SELECT id_agente, alias
-                FROM tagente, tagent_module_log
-                WHERE tagente.id_agente = tagent_module_log.id_agent
-                AND tagente.disabled = 0';
+                FROM tagente';
     }
 
     $all_agent_log = db_get_all_rows_sql($sql_log_report);

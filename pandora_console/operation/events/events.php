@@ -153,6 +153,10 @@ $id_user_ack = get_parameter(
     'filter[id_user_ack]',
     ($filter['id_user_ack'] ?? '')
 );
+$owner_user = get_parameter(
+    'filter[owner_user]',
+    ($filter['owner_user'] ?? '')
+);
 $group_rep = get_parameter(
     'filter[group_rep]',
     ($filter['group_rep'] ?? '')
@@ -1089,6 +1093,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $pagination = $filter['pagination'];
         $event_view_hr = $filter['event_view_hr'];
         $id_user_ack = $filter['id_user_ack'];
+        $owner_user = $filter['owner_user'];
         $group_rep = $filter['group_rep'];
         $tag_with = json_decode(io_safe_output($filter['tag_with']));
         $tag_without = json_decode(io_safe_output($filter['tag_without']));
@@ -1911,6 +1916,19 @@ $data = html_print_select(
     true
 );
 $in = '<div class="filter_input"><label>'.__('User ack.').'</label>';
+$in .= $data.'</div>';
+$adv_inputs[] = $in;
+
+$data = html_print_select(
+    $user_users,
+    'owner_user',
+    $owner_user,
+    '',
+    __('Any'),
+    0,
+    true
+);
+$in = '<div class="filter_input"><label>'.__('Owner').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
 

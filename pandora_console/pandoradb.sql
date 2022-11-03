@@ -1258,6 +1258,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `time_to` TIME NULL,
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
+  `owner_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

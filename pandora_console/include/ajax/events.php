@@ -357,6 +357,7 @@ if ($save_event_filter) {
     $values['pagination'] = get_parameter('pagination');
     $values['event_view_hr'] = get_parameter('event_view_hr');
     $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['owner_user'] = get_parameter('owner_user');
     $values['group_rep'] = get_parameter('group_rep');
     $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
     $values['tag_without'] = get_parameter(
@@ -415,6 +416,7 @@ if ($update_event_filter) {
     $values['pagination'] = get_parameter('pagination');
     $values['event_view_hr'] = get_parameter('event_view_hr');
     $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['owner_user'] = get_parameter('owner_user');
     $values['group_rep'] = get_parameter('group_rep');
     $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
     $values['tag_without'] = get_parameter(
@@ -481,6 +483,7 @@ if ($get_filter_values) {
             'user_comment'            => '',
             'id_extra'                => '',
             'id_user_ack'             => '',
+            'owner_user'              => '',
             'date_from'               => '',
             'time_from'               => '',
             'date_to'                 => '',
@@ -654,6 +657,8 @@ function load_form_filter() {
                     $("#text-event_view_hr").val(val);
                 if (i == 'id_user_ack')
                     $("#id_user_ack").val(val);
+                if (i == 'owner_user')
+                    $("#owner_user").val(val);
                 if (i == 'group_rep')
                     $("#group_rep").val(val);
                 if (i == 'tag_with')
@@ -904,6 +909,7 @@ function save_new_filter() {
             "pagination" : $("#pagination").val(),
             "event_view_hr" : $("#text-event_view_hr").val(),
             "id_user_ack" : $("#id_user_ack").val(),
+            "owner_user" : $("#owner_user").val(),
             "group_rep" : $("#group_rep").val(),
             "tag_with": Base64.decode($("#hidden-tag_with").val()),
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
@@ -981,6 +987,7 @@ function save_update_filter() {
         "pagination" : $("#pagination").val(),
         "event_view_hr" : $("#text-event_view_hr").val(),
         "id_user_ack" : $("#id_user_ack").val(),
+        "owner_user" : $("#owner_user").val(),
         "group_rep" : $("#group_rep").val(),
         "tag_with" : Base64.decode($("#hidden-tag_with").val()),
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),

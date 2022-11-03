@@ -645,6 +645,7 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'user_comment'
  *     'source'
  *     'id_user_ack'
+ *     'owner_user'
  *     'tag_with'
  *     'tag_without'
  *     'filter_only_alert'
@@ -1153,8 +1154,16 @@ function events_get_all(
     // Validated or in process by.
     if (empty($filter['id_user_ack']) === false) {
         $sql_filters[] = sprintf(
-            ' AND te.owner_user like lower("%%%s%%") ',
+            ' AND te.id_usuario like lower("%%%s%%") ',
             $filter['id_user_ack']
+        );
+    }
+
+    // Owner by.
+    if (empty($filter['owner_user']) === false) {
+        $sql_filters[] = sprintf(
+            ' AND te.owner_user like lower("%%%s%%") ',
+            $filter['owner_user']
         );
     }
 

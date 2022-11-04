@@ -204,12 +204,8 @@ $table->data[5][1] .= html_print_input_text(
     $warning_time,
     '',
     5,
-    255,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
+    15,
+    true
 );
 $table->data[5][1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
 

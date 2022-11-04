@@ -4481,7 +4481,8 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
 function html_print_input_file($name, $return=false, $options=false)
 {
     $output = '';
-
+    // Start to build the input.
+    $output .= '<label class="inputFile">';
     $output .= '<input type="file" value="" name="'.$name.'" id="file-'.$name.'" ';
 
     if ($options) {
@@ -4510,7 +4511,20 @@ function html_print_input_file($name, $return=false, $options=false)
         }
     }
 
-    $output .= ' />';
+    // Close input.
+    $output .= '/>';
+    $output .= ($options['caption'] ?? __('Select a file'));
+    $output .= '</label>';
+    $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
+    // Add script.
+    $output .= '<script>';
+    $output .= 'let inputElement = document.getElementById("file-'.$name.'");
+                let inputFilename = document.getElementById("span-'.$name.'");
+                inputElement.addEventListener("change", ()=>{
+                    let inputImage = document.querySelector("input[type=file]").files[0];
+                inputFilename.innerText = inputImage.name;
+                });';
+    $output .= '</script>';
 
     if ($return) {
         return $output;

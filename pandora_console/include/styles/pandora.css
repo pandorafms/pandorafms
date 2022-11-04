@@ -8960,6 +8960,24 @@ div#err_msg_centralised {
   }
 }
 
+.inputFile {
+  background-color: #f6f7fb;
+  height: 28px;
+  border: 1px solid #c0ccdc;
+  border-radius: 8px;
+  font: normal normal normal 12px Pandora-Light;
+  color: #2b3332;
+  padding: 5.5pt 20pt;
+  cursor: pointer;
+}
+
+.inputFile>input[type=file] {
+  display: none;
+}
+
+.inputFileSpan {
+  color: color: #2b3332;
+}
 input,
 textarea,
 select {

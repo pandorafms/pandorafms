@@ -676,8 +676,9 @@ $trapcount = (int) db_get_value_sql($sql_count, false, true);
 
 // Re-sort traps by timestamp if history db is enabled.
 if ($config['history_db_enabled'] == 1) {
-    usort($traps, function($a, $b)
-        {
+    usort(
+        $traps,
+        function ($a, $b) {
             return strtotime($a['timestamp']) < strtotime($b['timestamp']);
         }
     );

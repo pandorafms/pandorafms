@@ -170,6 +170,11 @@ function configure_modules_form() {
           data["dynamic_min"] == 0 ? 0 : data["dynamic_min"]
         );
 
+        $("#text-warning_time").attr(
+          "value",
+          data["warning_time"] == 0 ? 0 : data["warning_time"]
+        );
+
         if (data["dynamic_two_tailed"])
           $("#checkbox-dynamic_two_tailed").check();
         else $("#checkbox-dynamic_two_tailed").uncheck();
@@ -460,6 +465,11 @@ function configure_modules_form() {
           $("#post_process_manual").show();
           $("#post_process_default").hide();
         }
+
+        $("#text-warning_time").attr(
+          "value",
+          data["warning_time"] == 0 ? 0 : data["warning_time"]
+        );
 
         $("#text-post_process_text").attr(
           "value",

@@ -1265,36 +1265,47 @@ switch ($action) {
         if (check_acl($config['id_user'], 0, 'RW')
             || check_acl($config['id_user'], 0, 'RM')
         ) {
-            echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-            if (is_metaconsole() === true) {
-                echo '<div class="action-buttons w100p">';
-            } else {
-                echo '<div class="action-buttons w100p">';
-            }
-
-            html_print_submit_button(
+            $output = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
+            $buttonsOutput .= html_print_submit_button(
                 __('Create report'),
                 'create',
                 false,
-                'class="sub next"'
+                [ 'icon' => 'next' ],
+                true
             );
+            $output .= '</form>';
 
-            echo '</form>';
-            echo '<form class="inline_line" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
+            $output .= '<form class="inline_line" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
 
             foreach ($reports as $report) {
-                echo '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';
+                $output .= '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';
             }
 
-            echo '<input id="hidden-action" name="action" type="hidden" value="delete_report">';
-            html_print_submit_button(
-                __('Delete'),
-                'delete_btn',
-                false,
-                'class="sub delete" class="mrgn_lft_5px"'
+            if (empty($report) === false) {
+                $output .= '<input id="hidden-action" name="action" type="hidden" value="delete_report">';
+                $buttonsOutput .= html_print_submit_button(
+                    __('Delete'),
+                    'delete_btn',
+                    false,
+                    [
+                        'icon' => 'delete',
+                        'mode' => 'secondary',
+                    ],
+                    true
+                );
+            }
+
+            $output .= html_print_div(
+                [
+                    'class'   => 'action-buttons',
+                    'content' => $buttonsOutput,
+                ],
+                true
             );
-            echo '</form>';
-            echo '</div>';
+
+            $output .= '</form>';
+
+            echo $output;
         }
 
         enterprise_hook('close_meta_frame');

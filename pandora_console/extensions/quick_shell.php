@@ -151,7 +151,7 @@ function quickShell()
                                 'name'       => 'submit',
                                 'label'      => __('Retry'),
                                 'type'       => 'submit',
-                                'attributes' => 'class="sub next"',
+                                'attributes' => ['icon' => 'next'],
                                 'return'     => true,
                             ],
                         ],

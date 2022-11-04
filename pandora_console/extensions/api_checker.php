@@ -208,10 +208,21 @@ function extension_api_checker()
     html_print_table($table3);
     echo '</fieldset>';
 
-    echo "<div class='right'>";
     html_print_input_hidden('api_execute', 1);
-    html_print_submit_button(__('Call'), 'submit', false, 'class="sub next"');
-    echo '</div>';
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Call'),
+                'submit',
+                false,
+                [ 'icon' => 'next' ],
+                true
+            ),
+        ]
+    );
+
     echo '</form>';
 
     if ($api_execute) {

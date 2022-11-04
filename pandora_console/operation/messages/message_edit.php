@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -198,24 +198,37 @@ if ($read_message) {
         html_print_input_hidden('orig_user', $message['id_usuario_destino']);
     echo '</form>';
 
-    echo "<div class= 'action-buttons' style=' width:".$table->width."'>";
-    html_print_submit_button(
-        __('Delete conversation'),
-        'delete_btn',
-        false,
-        'form="delete_message" class="sub delete"'
-    );
-    echo '&nbsp';
     if (empty($message['id_usuario_origen']) !== true) {
-        html_print_submit_button(
+        $outputButtons .= html_print_submit_button(
             __('Reply'),
             'reply',
             false,
-            'form="reply_message" class="sub next"'
+            [
+                'icon' => 'next',
+                'form' => 'reply_message',
+            ],
+            true
         );
     }
 
-    echo '</div>';
+    $outputButtons .= html_print_submit_button(
+        __('Delete conversation'),
+        'delete_btn',
+        false,
+        [
+            'icon' => 'delete',
+            'mode' => 'secondary',
+            'form' => 'delete_message',
+        ],
+        true
+    );
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => $outputButtons,
+        ],
+    );
 
     return;
 }
@@ -391,12 +404,11 @@ html_print_table($table);
 html_print_div(
     [
         'class'   => 'action-buttons',
-        'style'   => 'width: '.$table->width,
         'content' => html_print_submit_button(
             __('Send message'),
             'send_mes',
             false,
-            'class="sub wand"',
+            [ 'icon' => 'wand' ],
             true
         ),
     ]

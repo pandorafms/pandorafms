@@ -203,10 +203,20 @@ function mainInsertData()
 
     html_print_table($table);
 
-    echo "<div class='right' style='width: ".$table->width."'>";
     html_print_input_hidden('save', 1);
-    html_print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
-    echo '</div>';
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Save'),
+                'submit',
+                (empty($id_agent) === true),
+                [ 'icon' => 'next' ],
+                true
+            ),
+        ]
+    );
 
     echo '</form>';
 

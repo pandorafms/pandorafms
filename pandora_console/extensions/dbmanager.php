@@ -195,15 +195,18 @@ function dbmgr_extension_main()
         );
     }
 
-    $data[4][2] = '<div class="action-buttons w100p">';
-    $data[4][2] .= html_print_submit_button(
-        __('Execute SQL'),
-        '',
-        false,
-        'class="sub next"',
-        true
+    $data[4][2] = html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Execute SQL'),
+                '',
+                false,
+                [ 'icon' => 'cog' ],
+                true
+            ),
+        ]
     );
-    $data[4][2] .= '</div>';
 
     $table->data = $data;
     html_print_table($table);

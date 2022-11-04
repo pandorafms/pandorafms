@@ -164,7 +164,16 @@ if ($fields) {
 }
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(__('Create field'), 'crt', false, 'class="sub next"');
-echo '</div>';
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Create field'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+    ]
+);
 echo '</form>';

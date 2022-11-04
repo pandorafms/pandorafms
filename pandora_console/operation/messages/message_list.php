@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -279,36 +279,55 @@ if (empty($messages) === true) {
     }
 }
 
+$outputButton = html_print_submit_button(
+    __('Create message'),
+    'create',
+    false,
+    [
+        'icon' => 'next',
+        'form' => 'create_message_form',
+    ],
+    true
+);
+
 if (empty($messages) === false) {
     if ($show_sent === true) {
-        echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1">';
+        echo '<form id="message_form" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1">';
     } else {
-        echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list">';
+        echo '<form id="message_form" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list">';
     }
 
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-        echo "<div class='float-right'>";
-            html_print_submit_button(
-                __('Delete'),
-                'delete_btn',
-                false,
-                'class="sub delete"'
-            );
-        echo '</div>';
     echo '</form>';
+
+    $outputButton .= html_print_submit_button(
+        __('Delete'),
+        'delete_btn',
+        false,
+        [
+            'icon' => 'delete',
+            'mode' => 'secondary',
+            'form' => 'message_form',
+        ],
+        true
+    );
 }
 
-echo "<div class='float-right'>";
-    echo '<form method="post" class="float-right" action="index.php?sec=message_list&sec2=operation/messages/message_edit">';
-        html_print_submit_button(__('Create message'), 'create', false, 'class="sub next mrgn_right_5px"');
-    echo '</form>';
-echo '</div>';
+    echo '<form id="create_message_form" method="post" class="float-right" action="index.php?sec=message_list&sec2=operation/messages/message_edit"></form>';
 
-if (is_ajax() !== true && is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
-}
-?>
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => $outputButton,
+        ]
+    );
+
+    if (is_ajax() !== true && is_metaconsole() === true) {
+        enterprise_hook('close_meta_frame');
+    }
+
+    ?>
 
 <script type="text/javascript">
 

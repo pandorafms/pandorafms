@@ -281,6 +281,12 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         "<?php echo get_parameter('hash', ''); ?>"
     );
 
+    if(props.maintenanceMode != null) {
+        if(props.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
+            visualConsoleManager.visualConsole.enableMaintenanceMode();
+        }
+    }
+
     var controls = document.getElementById('vc-controls');
     autoHideElement(controls, 1000);
 

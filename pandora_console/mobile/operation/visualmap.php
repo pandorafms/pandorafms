@@ -358,6 +358,7 @@ class Visualmap
                 'uniq'                       => $uniq,
                 'mobile'                     => true,
                 'vcId'                       => $visualConsoleId,
+                'id_user'                    => $config['id_user'],
                 'mobile_view_orientation_vc' => (bool) !$config['mobile_view_orientation_vc'],
             ]
         );

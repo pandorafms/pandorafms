@@ -1386,6 +1386,12 @@ function dashboardLoadVC(settings) {
       : "dashboard"
   );
 
+  if (settings.props.maintenanceMode != null) {
+    if (settings.props.maintenanceMode.user !== settings.id_user) {
+      visualConsoleManager.visualConsole.enableMaintenanceMode();
+    }
+  }
+
   if (settings.mobile_view_orientation_vc === true) {
     $(window).on("orientationchange", function() {
       $(container).width($(window).height());

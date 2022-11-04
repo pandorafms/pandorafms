@@ -140,6 +140,49 @@ if ($id_module_type >= 6 && $id_module_type <= 7) {
 
 push_table_simple($data, 'target_ip');
 
+$user_groups = users_get_groups(false, 'AR');
+if (users_is_admin() === true || isset($user_groups[0]) === true) {
+    $credentials = db_get_all_rows_sql(
+        'SELECT identifier FROM tcredential_store WHERE product LIKE "SNMP"'
+    );
+} else {
+    $credentials = db_get_all_rows_sql(
+        sprintf(
+            'SELECT identifier FROM tcredential_store WHERE product LIKE "SNMP" AND id_group IN (%s)',
+            implode(',', array_keys($user_groups))
+        )
+    );
+}
+
+if (empty($credentials) === false) {
+    $fields = [];
+    foreach ($credentials as $key => $value) {
+        $fields[$value['identifier']] = $value['identifier'];
+    }
+
+    $data = [];
+    $data[0] = __('Credential store');
+    $data[1] = html_print_select(
+        $fields,
+        'credentials',
+        0,
+        '',
+        __('None'),
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        false,
+        '',
+        false
+    );
+
+    push_table_simple($data, 'snmp_credentials');
+}
+
+
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
@@ -316,6 +359,7 @@ if ($id_module_type < 15 || $id_module_type > 18) {
     // NOT SNMP.
     $table_simple->rowstyle['snmp_1'] = 'display: none';
     $table_simple->rowstyle['snmp_2'] = 'display: none';
+    $table_simple->rowstyle['snmp_credentials'] = 'display: none';
 }
 
 // For a policy.
@@ -567,6 +611,49 @@ $(document).ready (function () {
 
     $("#select_snmp_oid").blur (function () {
         $(this).css ("width", "180px");
+    });
+
+    $("#credentials").change (function() {
+        if ($('#credentials').val() !== '0') {
+            $.ajax({
+                method: "post",
+                url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                data: {
+                    page: "godmode/agentes/agent_wizard",
+                    method: "getCredentials",
+                    identifier: $('#credentials').val()
+                },
+                datatype: "json",
+                success: function(data) {
+                    data = JSON.parse(data);
+                    extra = JSON.parse(data['extra_1']);
+                    $('#snmp_version').val(extra['version']);
+                    $('#snmp_version').trigger('change');
+                    $('#text-snmp_community').val(extra['community']);
+
+                    if (extra['version'] === '3') {
+                        $('#snmp3_security_level').val(extra['securityLevelV3']);
+                        $('#snmp3_security_level').trigger('change');
+                        $('#text-snmp3_auth_user').val(extra['authUserV3']);
+
+                        if (extra['securityLevelV3'] === 'authNoPriv' || extra['securityLevelV3'] === 'authPriv') {
+                            $('#snmp3_auth_method').val(extra['authMethodV3']);
+                            $('#snmp3_auth_method').trigger('change');
+                            $('#password-snmp3_auth_pass').val(extra['authPassV3']);
+
+                            if (extra['securityLevelV3'] === 'authPriv') {
+                                $('#snmp3_privacy_method').val(extra['privacyMethodV3']);
+                                $('#snmp3_privacy_method').trigger('change');
+                                $('#password-snmp3_privacy_pass').val(extra['privacyPassV3']);
+                            }
+                        }
+                    }
+                },
+                error: function(e) {
+                    console.error(e);
+                }
+            });
+        }
     });
 
     $("#id_module_type").click (

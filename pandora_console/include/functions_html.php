@@ -3435,7 +3435,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     }
 
     $output = sprintf(
-        '<button type="%s" class="%s" %s %s %s %s %s >%s</button>',
+        '<button type="%s" class="%s" %s %s %s %s %s %s>%s</button>',
         $buttonType,
         $classes,
         (empty($name) === false) ? ' name="'.$name.'"' : '',
@@ -3443,6 +3443,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         (empty($label) === false) ? ' value="'.$label.'"' : '',
         ($disabled === true) ? ' disabled' : '',
         (empty($script) === false) ? ' onClick="'.$script.'"' : '',
+        (empty($attributes) === false) ? $attributes : '',
         $content
     );
 

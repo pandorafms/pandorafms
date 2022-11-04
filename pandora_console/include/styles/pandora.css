@@ -8963,20 +8963,22 @@ div#err_msg_centralised {
 .inputFile {
   background-color: #f6f7fb;
   height: 28px;
-  border: 1px solid #c0ccdc;
-  border-radius: 8px;
-  font: normal normal normal 12px Pandora-Light;
-  color: #2b3332;
+  font: normal normal normal 13px Pandora-Light;
   padding: 5.5pt 20pt;
   cursor: pointer;
+  background-color: #fff;
+  color: #14524f;
+  border: 2px solid #14524f;
+  box-shadow: none;
+  border-radius: 50px;
 }
 
-.inputFile>input[type=file] {
+.inputFile > input[type="file"] {
   display: none;
 }
 
 .inputFileSpan {
-  color: color: #2b3332;
+  padding-left: 1em;
 }
 input,
 textarea,

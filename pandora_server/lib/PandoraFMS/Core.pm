@@ -114,6 +114,7 @@ use Encode;
 use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
+use Tie::File;
 use Time::Local;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
@@ -215,6 +216,7 @@ our @EXPORT = qw(
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
 	pandora_output_password
+	pandora_snmptrapd_still_working
 	pandora_planned_downtime
 	pandora_planned_downtime_set_quiet_elements
 	pandora_planned_downtime_unset_quiet_elements
@@ -7228,6 +7230,43 @@ sub escalate_warning {
 	}
 
 	return MODULE_WARNING;
+}
+########################################################################
+
+=head2 C<< pandora_snmptrapd_still_working (I<$pa_config>, I<$dbh>) >> 
+snmptrapd sometimes freezes and eventually its status needs to be checked.
+=cut
+
+########################################################################
+sub pandora_snmptrapd_still_working ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	if ($pa_config->{'snmpserver'} eq '1') {
+		# Variable that defines the maximum time of delay between kksks.
+		my $timeMaxLapse = 3600;
+		# Check last snmptrapd saved in DB.
+		my $lastTimestampSaved = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(timestamp)
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT 1');
+		# Read the last log file line.
+		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
+		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
+		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
+		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
+		# If time or date not filled in, probably havent caught any snmptraps yet.
+		if ($time ne '' && $date ne '') {
+			my ($hour, $min, $sec) = split(/:/, $time, 3);
+			my ($year, $month, $day) = split(/-/, $date, 3);
+			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);
+			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampLogFile gt ($lastTimestampSaved + $timeMaxLapse)) {
+				my $lapseMessage = "snmptrapd service probably is stuck.";
+				logger($pa_config, $lapseMessage, 1);
+				pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+			}
+		}
+
+	}
 }
 
 # End of function declaration

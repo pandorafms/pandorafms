@@ -809,7 +809,44 @@ function update_user(string $id_user, array $values)
         return false;
     }
 
-    return db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
+    $output = db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
+
+    if (isset($values['is_admin']) === true && (bool) $values['is_admin'] === true) {
+        // Administrator user must be activated in all notifications sections.
+        $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+
+        foreach ($notificationSources as $notification) {
+            $user_source = db_get_value_filter(
+                'id_source',
+                'tnotification_source_user',
+                [
+                    'id_source' => $notification['id'],
+                    'id_user'   => $id_user,
+                ]
+            );
+
+            if ($user_source !== false) {
+                @db_process_sql_update(
+                    'tnotification_source_user',
+                    ['enabled' => 1],
+                    [
+                        'id_source' => $notification['id'],
+                        'id_user'   => $id_user,
+                    ]
+                );
+            } else if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
+                @db_process_sql_insert(
+                    'tnotification_source_user',
+                    [
+                        'id_source' => $notification['id'],
+                        'id_user'   => $id_user,
+                    ]
+                );
+            }
+        }
+    }
+
+    return $output;
 }
 
 

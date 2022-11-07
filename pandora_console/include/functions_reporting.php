@@ -2018,26 +2018,8 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
-    $id_meta = 0;
-    $node_historical_event_enbled = '';
-    if (is_metaconsole() === true && empty($content['server_name']) === false) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-
-        // Check if node historical event is enable.
-        $sql = sprintf(
-            'SELECT value
-            FROM tconfig
-            WHERE token LIKE "history_event_enabled"'
-        );
-
-        $result = db_get_row_sql($sql);
-        $node_historical_event_enbled = $result['value'];
-    }
-
     $history = false;
-    if ($config['history_event_enabled'] || $node_historical_event_enbled) {
+    if ($config['history_event_enabled']) {
         $history = true;
     }
 
@@ -2075,12 +2057,26 @@ function reporting_event_report_group(
     $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
 
     // Filter.
-    $show_summary_group         = $event_filter['show_summary_group'];
-    $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
-    $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
-    $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
+    $show_summary_group = $event_filter['show_summary_group'];
+    $filter_event_severity = json_decode($event_filter['filter_event_severity'], true);
+    $filter_event_type = json_decode($event_filter['filter_event_type'], true);
+    $filter_event_status = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
     $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
+
+    $servers = false;
+    if (is_metaconsole() === true) {
+        // Only meta by default.
+        $servers = [0];
+        if (isset($event_filter['server_multiple']) === true) {
+            $servers = json_decode($event_filter['server_multiple'], true);
+        } else {
+            // Retrocompatibility.
+            if (empty($content['server_name']) === false) {
+                $servers = [metaconsole_get_id_server($content['server_name'])];
+            }
+        }
+    }
 
     // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
@@ -2112,10 +2108,6 @@ function reporting_event_report_group(
         }
     }
 
-    if (is_metaconsole() === true) {
-        metaconsole_restore_db();
-    }
-
     $data = events_get_agent(
         false,
         $content['period'],
@@ -2130,7 +2122,7 @@ function reporting_event_report_group(
         true,
         false,
         false,
-        $id_meta,
+        $servers,
         $filter_event_filter_exclude
     );
 

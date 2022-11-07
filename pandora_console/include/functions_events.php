@@ -1852,6 +1852,7 @@ function events_get_all(
                 && isset($filter['csv_all']) === false
             ) {
                 $count = count($data);
+                // -1 For pagination 'All'.
                 ((int) $limit === -1)
                     ? $end = count($data)
                     : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;

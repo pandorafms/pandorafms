@@ -1819,46 +1819,10 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
-                if ($source) {
-                    $sql_log_report = 'SELECT id_agente, alias
-							FROM tagente, tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent
-                            AND tagente.disabled = 0
-                            AND tagent_module_log.source like "'.$source.'"';
-                } else {
-                    $sql_log_report = 'SELECT id_agente, alias
-							FROM tagente, tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent
-                            AND tagente.disabled = 0';
-                }
-
-                $all_agent_log = db_get_all_rows_sql($sql_log_report);
-
-                if (isset($all_agent_log) && is_array($all_agent_log)) {
-                    foreach ($all_agent_log as $key => $value) {
-                        $agents2[$value['id_agente']] = $value['alias'];
-                    }
-                }
-
-                if ((empty($agents2)) || $agents2 == -1) {
-                    $agents = [];
-                }
-
-                    $agents_select = [];
-                if (is_array($id_agents) || is_object($id_agents)) {
-                    foreach ($id_agents as $id) {
-                        foreach ($agents2 as $key => $a) {
-                            if ($key == (int) $id) {
-                                $agents_select[$key] = $key;
-                            }
-                        }
-                    }
-                }
-
                 html_print_select(
-                    $agents2,
+                    [],
                     'id_agents3[]',
-                    $agents_select,
+                    '',
                     $script = '',
                     '',
                     0,
@@ -1884,9 +1848,9 @@ $class = 'databox filters';
                 $all_agents = agents_get_agents_selected($group);
 
                 html_print_select(
-                    $all_agents,
+                    [],
                     'id_agents2[]',
-                    $id_agents,
+                    '',
                     $script = '',
                     '',
                     0,
@@ -6143,6 +6107,148 @@ function addGeneralRow() {
     }
 }
 
+function loadGeneralAgents(agent_group) {
+    var params = [];
+
+    var group = <?php echo $group; ?>;
+    group = agent_group || group;
+
+    params.push("get_agents=1");
+    params.push("group="+parseInt(group));
+    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
+    params.push("page=include/ajax/reporting.ajax");
+
+
+    $('#id_agents2')
+        .find('option')
+        .remove();
+
+    $('#id_agents2')
+        .append('<option>Loading agents...</option>');
+
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action=
+        <?php
+        echo '"'.ui_get_full_url(
+            false,
+            false,
+            false,
+            false
+        ).'"';
+        ?>
+        + "/ajax.php",
+        timeout: 300000,
+        dataType: 'json',
+        success: function (data) {
+            if (data['correct']) {
+                $('#id_agents2')
+                    .find('option')
+                    .remove();
+
+                var selectElements = [];
+                var selectedStr = 'selected="selected"';
+
+                if (data['select_agents'] === null) {
+                    return;
+                }
+
+                if (Array.isArray(data['select_agents'])) {
+                    data['select_agents'].forEach(function(agentAlias, agentID) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents2')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    });
+                } else {
+                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents2')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadLogAgents() {
+    var params = [];
+
+    params.push("get_log_agents=1");
+    params.push("source=<?php echo $source; ?>");
+    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
+    params.push("page=include/ajax/reporting.ajax");
+
+    $('#id_agents3')
+        .find('option')
+        .remove();
+
+    $('#id_agents3')
+        .append('<option>Loading agents...</option>');
+
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action=
+        <?php
+        echo '"'.ui_get_full_url(
+            false,
+            false,
+            false,
+            false
+        ).'"';
+        ?>
+        + "/ajax.php",
+        timeout: 300000,
+        dataType: 'json',
+        success: function (data) {
+            if (data['correct']) {
+                $('#id_agents3')
+                    .find('option')
+                    .remove();
+
+                var selectElements = [];
+                var selectedStr = 'selected="selected"';
+
+                if (data['select_agents'] === null) {
+                    return;
+                }
+
+                if (Array.isArray(data['select_agents'])) {
+                    data['select_agents'].forEach(function(agentAlias, agentID) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents3')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    });
+                } else {
+                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents3')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    }
+                }
+            }
+        }
+    });
+}
+
 function chooseType() {
     var meta = '<?php echo (is_metaconsole() === true) ? 1 : 0; ?>';
     type = $("#type").val();
@@ -6312,6 +6418,9 @@ function chooseType() {
             $("#agents_row").show();
             $("#row_source").show();
             $("#row_historical_db_check").hide();
+
+            loadLogAgents();
+
             break;
 
         case 'increment':
@@ -6602,6 +6711,13 @@ function chooseType() {
                 $("#lapse_select").val('0').trigger('change');
                 $("#hidden-lapse").val('0');
             }
+
+            loadGeneralAgents();
+
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
+
             break;
 
         case 'event_report_group':
@@ -6797,6 +6913,12 @@ function chooseType() {
             $("#agents_modules_row").show();
             $("#modules_row").show();
             $("#row_historical_db_check").hide();
+
+            loadGeneralAgents();
+
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
             break;
 
         case 'inventory_changes':
@@ -7173,7 +7295,6 @@ function change_custom_fields_macros_report(id) {
             "macro_id": id
         },
         function (data, status) {
-            console.log(id);
             $("td#table-macros-definition-"+id+"-value").empty();
             $("td#table-macros-definition-"+id+"-value").append(data);
         },

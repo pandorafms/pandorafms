@@ -20,4 +20,7 @@ ALTER TABLE `tagente_estado` ADD COLUMN `warning_count` int(10) UNSIGNED DEFAULT
 
 ALTER TABLE `tcredential_store` MODIFY COLUMN `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP', 'WMI', 'SNMP') DEFAULT 'CUSTOM';
 
+ALTER TABLE `talert_template_modules` DROP INDEX `id_agent_module`;
+ALTER TABLE `talert_template_modules` ADD UNIQUE (`id_agent_module`, `id_alert_template`, `id_policy_alerts`);
+
 COMMIT;

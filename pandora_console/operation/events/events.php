@@ -1732,7 +1732,7 @@ $buttons = [];
 
 $buttons[] = [
     'id'      => 'load-filter',
-    'class'   => 'float-left margin-right-2 sub config',
+    'class'   => 'float-left margin-right-2',
     'text'    => __('Load filter'),
     'onclick' => '',
 ];
@@ -1740,7 +1740,7 @@ $buttons[] = [
 if ($event_w || $event_m) {
     $buttons[] = [
         'id'      => 'save-filter',
-        'class'   => 'float-left margin-right-2 sub wand',
+        'class'   => 'float-left margin-right-2',
         'text'    => __('Save filter'),
         'onclick' => '',
     ];
@@ -2857,7 +2857,7 @@ $(document).ready( function() {
     /* Summary updates end. */
 
     /* Filter management */
-    $('#load-filter').click(function (){
+    $('#button-load-filter').click(function (){
         if($('#load-filter-select').length) {
             $('#load-filter-select').dialog();
         } else {
@@ -2881,7 +2881,7 @@ $(document).ready( function() {
         }
     });
 
-    $('#save-filter').click(function (){
+    $('#button-save-filter').click(function (){
         if($('#save-filter-select').length) {
             $('#save-filter-select').dialog();
         } else {

@@ -826,7 +826,7 @@ foreach ($simple_alerts as $alert) {
                     __('Add'),
                     'addbutton',
                     false,
-                    ['class' => 'sub next right'],
+                    ['icon' => 'next'],
                     true
                 );
             $data[3] .= '</form>';
@@ -981,11 +981,20 @@ if (isset($dont_display_alert_create_bttn)) {
 }
 
 if ($display_create && (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], $template_group, 'LM')) && !$id_cluster) {
-    echo '<div class="action-buttons" style="width: '.$table_alert_list->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
-    html_print_submit_button(__('Create'), 'crtbtn', false, 'class="sub next"');
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Create'),
+                'crtbtn',
+                false,
+                ['icon' => 'next'],
+                true
+            ),
+        ]
+    );
     echo '</form>';
-    echo '</div>';
 }
 
 ui_require_css_file('cluetip', 'include/styles/js/');

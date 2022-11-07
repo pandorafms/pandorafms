@@ -1419,7 +1419,7 @@ $table_other->data[$row][3] = html_print_button(
     '',
     [
         'icon' => 'next',
-        'mode' => 'secondary mini',
+        'mode' => 'link',
     ],
     true
 );
@@ -1444,8 +1444,8 @@ $table_other->data[$row][3] = html_print_button(
     empty($count_custom_postprocess),
     '',
     [
-        'icon' => 'cancel',
-        'mode' => 'secondary mini',
+        'icon' => 'delete',
+        'mode' => 'link',
     ],
     true
 );
@@ -1481,7 +1481,7 @@ $table_other->data[$row][3] = html_print_button(
     '',
     [
         'icon' => 'next',
-        'mode' => 'secondary mini',
+        'mode' => 'link',
     ],
     true
 );
@@ -1497,8 +1497,8 @@ $table_other->data[$row][3] = html_print_button(
     empty($config['interval_values']),
     '',
     [
-        'icon' => 'cancel',
-        'mode' => 'secondary mini',
+        'icon' => 'delete',
+        'mode' => 'link',
     ],
     true
 );
@@ -1521,7 +1521,7 @@ $table_other->data[$row][3] = html_print_button(
     '',
     [
         'icon' => 'next',
-        'mode' => 'secondary mini',
+        'mode' => 'link',
     ],
     true
 );
@@ -1536,8 +1536,8 @@ $table_other->data[$row][3] = html_print_button(
     empty($count_custom_postprocess),
     '',
     [
-        'icon' => 'cancel',
-        'mode' => 'secondary mini',
+        'icon' => 'delete',
+        'mode' => 'link',
     ],
     true
 );

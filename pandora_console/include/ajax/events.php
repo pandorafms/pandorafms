@@ -586,7 +586,7 @@ if ($load_filter_modal) {
         false,
         [
             'icon' => 'update',
-            'mode' => 'secondary',
+            'mode' => 'secondary mini',
         ],
         true
     );
@@ -834,7 +834,7 @@ if ($save_filter_modal) {
                     false,
                     [
                         'icon'    => 'update',
-                        'mode'    => 'secondary',
+                        'mode'    => 'secondary mini',
                         'onClick' => 'save_new_filter();',
                     ],
                     true

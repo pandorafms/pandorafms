@@ -3327,7 +3327,7 @@ function events_page_responses($event)
             'event_change_owner('.$event['id_evento'].', '.$event['server_id'].');',
             [
                 'icon' => 'next',
-                'mode' => 'mini secondary',
+                'mode' => 'link',
             ],
             true
         );
@@ -3409,7 +3409,7 @@ function events_page_responses($event)
             'event_change_status(\''.$event['similar_ids'].'\','.$event['server_id'].');',
             [
                 'icon' => 'next',
-                'mode' => 'mini secondary',
+                'mode' => 'link',
             ],
             true
         );
@@ -3440,7 +3440,7 @@ function events_page_responses($event)
             '$(\'#link_comments\').trigger(\'click\');',
             [
                 'icon' => 'next',
-                'mode' => 'mini secondary',
+                'mode' => 'link',
             ],
             true
         );
@@ -3467,7 +3467,7 @@ function events_page_responses($event)
             'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();',
             [
                 'icon' => 'cancel',
-                'mode' => 'mini secondary',
+                'mode' => 'link',
             ],
             true
         );
@@ -3523,10 +3523,7 @@ function events_page_responses($event)
             'custom_response_button',
             false,
             'execute_response('.$event['id_evento'].','.$server_id.',0)',
-            [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
-            ],
+            ['mode' => 'link'],
             true
         );
     }

@@ -3394,7 +3394,7 @@ function ui_print_datatable(array $parameters)
                     $button['onclick'],
                     [
                         'style' => ($button['style'] ?? ''),
-                        'mode'  => 'mini secondary',
+                        'mode'  => 'link',
                         'class' => $button['class'],
                     ],
                     true

@@ -3388,7 +3388,12 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
             if ($attribute === 'icon') {
                 $iconToUse = $value;
             } else if ($attribute === 'mode') {
-                $buttonMode = $value;
+                if ($value !== 'link') {
+                    $buttonMode = $value;
+                } else {
+                    $iconToUse = '';
+                }
+
                 $classes .= ' '.$value;
             } else if ($attribute === 'type') {
                 $buttonType = $value;

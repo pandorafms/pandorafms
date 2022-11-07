@@ -555,7 +555,7 @@ final class ModuleGraph extends Item
                         'label'     => __('Module Graph'),
                         'arguments' => [
                             'type'         => 'radio_button',
-                            'attributes'   => 'class="btn"',
+                            'attributes'   => 'class="btn" style="flex: 1;"',
                             'name'         => 'choosetype',
                             'value'        => 'module',
                             'checkedvalue' => $checkedModule,
@@ -567,7 +567,7 @@ final class ModuleGraph extends Item
                         'label'     => __('Custom Graph'),
                         'arguments' => [
                             'type'         => 'radio_button',
-                            'attributes'   => 'class="btn"',
+                            'attributes'   => 'class="btn" style="flex: 1;"',
                             'name'         => 'choosetype',
                             'value'        => 'custom',
                             'checkedvalue' => $checkedCustom,

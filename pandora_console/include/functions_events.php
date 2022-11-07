@@ -1848,11 +1848,13 @@ function events_get_all(
             );
 
             if (isset($limit, $offset) === true
-                && $limit !== 0
+                && (int) $limit !== 0
                 && isset($filter['csv_all']) === false
             ) {
                 $count = count($data);
-                $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
+                ((int) $limit === -1)
+                    ? $end = count($data)
+                    : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
                     'buffers' => $buffers,

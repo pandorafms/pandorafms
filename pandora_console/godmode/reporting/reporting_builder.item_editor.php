@@ -147,6 +147,7 @@ $image_threshold = false;
 $time_compare_overlapped = false;
 
 // Added for events items.
+$server_multiple = [0];
 $show_summary_group = false;
 $filter_event_severity = false;
 $filter_event_type = false;
@@ -639,9 +640,10 @@ switch ($action) {
                     $filter_search = $style['event_filter_search'];
                     $filter_exclude = $style['event_filter_exclude'];
 
+                    $server_multiple = json_decode($style['server_multiple'], true);
                     $filter_event_severity = json_decode($style['filter_event_severity'], true);
-                    $filter_event_status   = json_decode($style['filter_event_status'], true);
-                    $filter_event_type     = json_decode($style['filter_event_type'], true);
+                    $filter_event_status = json_decode($style['filter_event_status'], true);
+                    $filter_event_type = json_decode($style['filter_event_type'], true);
 
 
                     $include_extended_events = $item['show_extended_events'];
@@ -1221,6 +1223,37 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+            <?php
+        }
+        ?>
+
+        <?php
+        if ($meta) {
+            ?>
+                <tr id="row_multiple_servers"   class="datos">
+                    <td class="bolder"><?php echo __('Server'); ?></td>
+                    <td  >
+                <?php
+                $server_ids = [];
+                $server_ids[0] = __('Local metaconsole');
+                $get_servers = metaconsole_get_servers();
+                foreach ($get_servers as $key => $server) {
+                    $server_ids[$server['id']] = $server['server_name'];
+                }
+
+                html_print_select(
+                    $server_ids,
+                    'server_multiple[]',
+                    $server_multiple,
+                    '',
+                    '',
+                    0,
+                    false,
+                    true
+                );
+                ?>
+                    </td>
+                </tr>
             <?php
         }
         ?>
@@ -6173,6 +6206,7 @@ function chooseType() {
     $("#row_alert_templates").hide();
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
+    $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
     $("#row_agent_multi").hide();
@@ -6244,7 +6278,7 @@ function chooseType() {
         case 'event_report_group':
             $("#row_description").show();
             $("#row_period").show();
-            $("#row_servers").show();
+            $("#row_multiple_servers").show();
             $("#row_group").show();
             $("#row_event_filter").show();
             $("#row_event_graphs").show();

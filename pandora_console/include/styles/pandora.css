@@ -1823,7 +1823,7 @@ table.rounded_cells td {
 }
 .toolbox-buttons {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   align-items: center;
 }
 .right {
@@ -8984,12 +8984,15 @@ input,
 textarea,
 select {
   background-color: #f6f7fb;
-  height: 28px;
+  height: 32px;
   border: 1px solid #c0ccdc;
   border-radius: 8px;
   padding-left: 12px;
   font: normal normal normal 12px Pandora-Light;
   color: #2b3332;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 input:disabled,
@@ -9149,6 +9152,129 @@ button.submitButton.onlyIcon.completed {
   mask: url(../../images/svg/success.svg) no-repeat right / contain;
   -webkit-mask: url(../../images/svg/success.svg) no-repeat right / contain;
 }
+/* Visual Consoles */
+button.buttonButton.onlyIcon.camera_min,
+button.submitButton.onlyIcon.camera_min {
+  mask: url(../../images/svg/static-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/static-graph.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.percentile_item_min,
+button.submitButton.onlyIcon.percentile_item_min {
+  mask: url(../../images/svg/percentil.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/percentil.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.graph_min,
+button.submitButton.onlyIcon.graph_min {
+  mask: url(../../images/svg/module-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/module-graph.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.donut_graph_min,
+button.submitButton.onlyIcon.donut_graph_min {
+  mask: url(../../images/svg/donut-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/donut-graph.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.bars_graph_min,
+button.submitButton.onlyIcon.bars_graph {
+  mask: url(../../images/svg/bars-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/bars-graph.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.auto_sla_graph_min,
+button.submitButton.onlyIcon.auto_sla_graph_min {
+  mask: url(../../images/svg/event-history.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/event-history.svg) no-repeat right /
+    contain;
+}
+
+button.buttonButton.onlyIcon.binary_min,
+button.submitButton.onlyIcon.binary_min {
+  mask: url(../../images/svg/simple-value.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/simple-value.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.label_min,
+button.submitButton.onlyIcon.label_min {
+  mask: url(../../images/svg/item-label.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/item-label.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.icon_min,
+button.submitButton.onlyIcon.icon_min {
+  mask: url(../../images/svg/item-icon.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/item-icon.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.clock_min,
+button.submitButton.onlyIcon.clock_min {
+  mask: url(../../images/svg/clock.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/clock.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.group_item_min,
+button.submitButton.onlyIcon.group_item_min {
+  mask: url(../../images/svg/item-group.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/item-group.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.box_item,
+button.submitButton.onlyIcon.box_item {
+  mask: url(../../images/svg/item-box.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/item-box.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.line_item,
+button.submitButton.onlyIcon.line_item {
+  mask: url(../../images/svg/item-line.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/item-line.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.color_cloud_min,
+button.submitButton.onlyIcon.color_cloud_min {
+  mask: url(../../images/svg/color-cloud.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/color-cloud.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.network_link_min,
+button.submitButton.onlyIcon.network_link_min {
+  mask: url(../../images/svg/network-line.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/network-line.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.odometer_min,
+button.submitButton.onlyIcon.odometer_min {
+  mask: url(../../images/svg/odometro.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/odometro.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.service_min,
+button.submitButton.onlyIcon.service_min {
+  mask: url(../../images/svg/item-service.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/item-service.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.delete_item,
+button.submitButton.onlyIcon.delete_item {
+  mask: url(../../images/svg/trash.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/trash.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.copy_item,
+button.submitButton.onlyIcon.copy_item {
+  mask: url(../../images/svg/duplicate.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/svg/duplicate.svg) no-repeat right / contain;
+}
+
+button.buttonButton.link-create-item,
+button.submitButton.link-create-item {
+  border-radius: 0;
+  margin: 0 0.5em;
+}
+
+/* End for Visual Consoles */
 button.buttonButton.secondary,
 button.submitButton.secondary {
   background-color: #fff;
@@ -9191,6 +9317,7 @@ button.submitButton.link {
   border: 0;
   box-shadow: none;
   justify-content: flex-start;
+  height: 24px;
 }
 
 button.buttonButton.link > div,
@@ -9336,6 +9463,15 @@ button.ui-button.ui-widget.submit-cancel:active {
   z-index: 10;
 }
 
+input[type="color"] {
+  background: transparent;
+  padding: 0 10px;
+  width: 50px;
+  box-sizing: initial;
+  border: 2px solid #14524f;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  border-radius: 16px;
+}
 span.ColorPickerDivSample {
   margin-left: -10px;
   padding: 0px 10px;

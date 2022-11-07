@@ -200,7 +200,7 @@ label {
 .discovery_full_width_input {
   width: 100%;
 }
-
+/*
 li > input[type="number"],
 li > input[type="text"]:not(.search_input),
 li > input[type="email"],
@@ -216,7 +216,7 @@ li > input[type="password"],
   box-sizing: border-box;
   margin-bottom: 4px;
 }
-
+*/
 #interval_manual > input[type="text"] {
   width: 50px;
   margin-left: 10px;
@@ -323,11 +323,13 @@ form.modal ul.wizard li {
   width: 90%;
   margin: 0.5em auto;
   justify-items: center;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 form.modal-dashboard ul.wizard li *,
 form.modal ul.wizard li * {
-  flex: 1;
+  flex: 1 1 50%;
 }
 
 ul.wizard li.flex-indep {

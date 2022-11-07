@@ -72,6 +72,7 @@ div#vc-controls img.vc-qr {
   flex: 1;
   display: flex;
   justify-content: space-between;
+  margin: 1em 0;
 }
 
 .visual-console-edit-controls > span {
@@ -80,6 +81,7 @@ div#vc-controls img.vc-qr {
 
 .visual-console-copy-delete {
   margin-right: 20px;
+  display: flex;
 }
 
 #edit-vc label {

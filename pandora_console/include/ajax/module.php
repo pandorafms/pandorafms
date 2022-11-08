@@ -59,6 +59,11 @@ if (check_login()) {
         0
     );
 
+    $get_data_dataMatrix = (bool) get_parameter(
+        'get_data_dataMatrix',
+        0
+    );
+
     if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
 
@@ -1427,6 +1432,141 @@ if (check_login()) {
             $params_combined
         );
         echo $output;
+
+        return;
+    }
+
+    if ($get_data_dataMatrix === true) {
+        global $config;
+
+        $table_id = get_parameter('table_id', '');
+        $modules = json_decode(
+            io_safe_output(
+                get_parameter('modules', '')
+            ),
+            true
+        );
+        $period = get_parameter('period', 0);
+        $slice = get_parameter('slice', 0);
+
+        // Datatables offset, limit.
+        $start = get_parameter('start', 0);
+        $length = get_parameter(
+            'length',
+            $config['block_size']
+        );
+
+        $order = get_datatable_order(true);
+
+        $time_all_box = ($length * $slice);
+        $total_box = ceil($period / $slice);
+
+        if ($start > 0) {
+            $start = ($start / $length);
+        }
+
+        // Uncompress.
+        try {
+            ob_start();
+            $date = (get_system_time() - ($time_all_box * $start));
+            $datelimit = ($date - $time_all_box);
+            foreach ($modules as $key => $value) {
+                $module_data = db_uncompress_module_data(
+                    $value['id'],
+                    $datelimit,
+                    $date,
+                    $slice,
+                    true
+                );
+
+                $uncompressData[] = array_reduce(
+                    $module_data,
+                    function ($carry, $item) use ($value) {
+                        if (is_array($item['data']) === true) {
+                            foreach ($item['data'] as $i => $v) {
+                                $carry[] = [
+                                    'utimestamp'           => $v['utimestamp'],
+                                    'Column-'.$value['id'] => $v['datos'],
+                                ];
+                            }
+                        }
+
+                        return $carry;
+                    },
+                    []
+                );
+            }
+
+            if (empty($uncompressData) === false) {
+                $data = array_reduce(
+                    $uncompressData,
+                    function ($carry, $item) {
+                        foreach ($item as $data_module) {
+                            foreach ($data_module as $key => $value) {
+                                if ($key === 'utimestamp') {
+                                    $carry[$data_module['utimestamp']]['date'] = date('Y-m-d H:i', (int) $value);
+                                } else {
+                                    $carry[$data_module['utimestamp']][$key] = $value;
+                                }
+                            }
+                        }
+
+                        // TODO: TO BE CONTINUED.
+                        /*
+                            if (is_numeric($tmp->data) === true) {
+                            $tmp->data = format_numeric(
+                                $tmp->data,
+                                $config['graph_precision']
+                            );
+                            } else {
+                            $tmp->data = ui_print_truncate_text($tmp->data, 10);
+                            }
+
+                            $carry[] = $tmp;
+                        */
+
+                        return $carry;
+                    }
+                );
+            }
+
+            if (empty($data) === false) {
+                $data = array_reverse(array_values($data));
+            } else {
+                $data = [];
+            }
+
+            // RecordsTotal && recordsfiltered resultados totales.
+            echo json_encode(
+                [
+                    'data'            => $data,
+                    'recordsTotal'    => $total_box,
+                    'recordsFiltered' => $total_box,
+                ]
+            );
+
+            $response = ob_get_clean();
+
+            // Clean output buffer.
+            while (ob_get_level() !== 0) {
+                ob_end_clean();
+            }
+        } catch (Exception $e) {
+            echo json_encode(
+                ['error' => $e->getMessage()]
+            );
+        }
+
+        // If not valid it will throw an exception.
+        json_decode($response);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            // If valid dump.
+            echo $response;
+        } else {
+            echo json_encode(
+                ['error' => $response]
+            );
+        }
 
         return;
     }

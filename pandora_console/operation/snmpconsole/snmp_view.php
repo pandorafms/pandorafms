@@ -302,7 +302,7 @@ if (empty($all_address_agents)) {
 switch ($config['dbtype']) {
     case 'mysql':
         $sql = 'SELECT *
-			FROM ttrap
+            FROM ttrap
 			WHERE (
 				`source` IN ('.implode(',', $address_by_user_groups).") OR
 				`source`='' OR
@@ -671,8 +671,18 @@ $filter_resume['group_by'] = $group_by;
 $filter_resume['hours_ago'] = $hours_ago;
 $filter_resume['trap_type'] = $trap_types[$trap_type];
 
-$traps = db_get_all_rows_sql($sql);
-$trapcount = (int) db_get_value_sql($sql_count);
+$traps = db_get_all_rows_sql($sql, true);
+$trapcount = (int) db_get_value_sql($sql_count, false, true);
+
+// Re-sort traps by timestamp if history db is enabled.
+if ($config['history_db_enabled'] == 1) {
+    usort(
+        $traps,
+        function ($a, $b) {
+            return strtotime($a['timestamp']) < strtotime($b['timestamp']);
+        }
+    );
+}
 
 // No traps.
 if (empty($traps)) {

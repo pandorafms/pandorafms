@@ -35,33 +35,26 @@ function handleConnection() {
     return;
   }
 
-  if (navigator.onLine) {
-    $.ajax({
-      url: homeurl + "include/connection_check.php",
-      type: "post",
-      dataType: "json"
+  $.ajax({
+    url: homeurl + "include/connection_check.php",
+    type: "post",
+    dataType: "json"
+  })
+    .done(function(response) {
+      connected = true;
+      showConnectionMessage(connected, msg);
     })
-      .done(function(response) {
+    .fail(function(err) {
+      // If test connection file is not found, do not show message.
+      if (err.status != 404) {
+        connected = false;
+        msg = err;
+      } else {
         connected = true;
-        showConnectionMessage(connected, msg);
-      })
-      .fail(function(err) {
-        // If test connection file is not found, do not show message.
-        if (err.status != 404) {
-          connected = false;
-          msg = err;
-        } else {
-          connected = true;
-        }
+      }
 
-        showConnectionMessage(connected, msg);
-      });
-  } else {
-    // handle offline status
-    connected = false;
-    msg = "Connection offline";
-    showConnectionMessage(connected, msg);
-  }
+      showConnectionMessage(connected, msg);
+    });
 }
 
 /**

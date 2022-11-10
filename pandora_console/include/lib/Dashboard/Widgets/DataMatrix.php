@@ -117,13 +117,6 @@ class DataMatrix extends Widget
      */
     protected $cellId;
 
-    /**
-     * Size.
-     *
-     * @var array
-     */
-    private $size;
-
 
     /**
      * Construct.
@@ -287,20 +280,9 @@ class DataMatrix extends Widget
             $inputs['inputs']['row1'][] = $vInput;
         }
 
-        if (empty($values['fontColor']) === true) {
-            $values['fontColor'] = '#2c3e50';
+        if (isset($values['formatData']) === false) {
+            $values['formatData'] = 1;
         }
-
-        $inputs['inputs']['row1'][] = [
-            'label'     => __('Font color'),
-            'arguments' => [
-                'wrapper' => 'div',
-                'name'    => 'fontColor',
-                'type'    => 'color',
-                'value'   => $values['fontColor'],
-                'return'  => true,
-            ],
-        ];
 
         // Format Data.
         $inputs['inputs']['row1'][] = [
@@ -310,24 +292,6 @@ class DataMatrix extends Widget
                 'id'    => 'formatData',
                 'type'  => 'switch',
                 'value' => $values['formatData'],
-            ],
-        ];
-
-        // Type Label.
-        $fields = [
-            'module'       => __('Module'),
-            'agent'        => __('Agent'),
-            'agent_module' => __('Agent / module'),
-        ];
-
-        $inputs['inputs']['row1'][] = [
-            'label'     => __('Label'),
-            'arguments' => [
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'label',
-                'selected' => $values['label'],
-                'return'   => true,
             ],
         ];
 
@@ -386,6 +350,24 @@ class DataMatrix extends Widget
                 'class'    => 'event-widget-input',
                 'name'     => 'limit',
                 'selected' => $values['limit'],
+                'return'   => true,
+            ],
+        ];
+
+        // Type Label.
+        $fields = [
+            'module'       => __('Module'),
+            'agent'        => __('Agent'),
+            'agent_module' => __('Agent / module'),
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Label'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'label',
+                'selected' => $values['label'],
                 'return'   => true,
             ],
         ];
@@ -450,7 +432,7 @@ class DataMatrix extends Widget
             $agModule
         );
 
-        $values['formatData'] = \get_parameter_switch('formatData', 0);
+        $values['formatData'] = \get_parameter_switch('formatData', 1);
         $values['fontColor'] = \get_parameter('fontColor', '#2c3e50');
         $values['label'] = \get_parameter('label', 'module');
 
@@ -544,7 +526,6 @@ class DataMatrix extends Widget
                         'ajax_data'           => [
                             'get_data_dataMatrix' => 1,
                             'table_id'            => $tableId,
-                            'length'              => $this->values['limit'],
                             'period'              => $this->values['period'],
                             'slice'               => $this->values['slice'],
                             'formatData'          => $this->values['formatData'],
@@ -556,6 +537,7 @@ class DataMatrix extends Widget
                             'field'     => 'date',
                             'direction' => 'desc',
                         ],
+                        'csv'                 => 0,
                     ]
                 );
             } catch (\Exception $e) {
@@ -704,7 +686,7 @@ class DataMatrix extends Widget
     {
         $size = [
             'width'  => (is_metaconsole() === true) ? 1000 : 900,
-            'height' => 550,
+            'height' => 480,
         ];
 
         return $size;

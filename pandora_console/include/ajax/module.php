@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 if (check_login()) {
     global $config;
@@ -1472,7 +1474,16 @@ if (check_login()) {
             $date = (get_system_time() - ($time_all_box * $start));
             $datelimit = ($date - $time_all_box);
             foreach ($modules as $key => $value) {
-                // TODO: tresholds.
+                if (is_metaconsole() === true) {
+                    try {
+                        $node = new Node((int) $value['id_node']);
+                        $node->connect();
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        $node->disconnect();
+                    }
+                }
+
                 $value['thresholds'] = [
                     'min_critical' => (empty($value['c_min']) === true) ? null : $value['c_min'],
                     'max_critical' => (empty($value['c_max']) === true) ? null : $value['c_max'],
@@ -1504,8 +1515,9 @@ if (check_login()) {
                             $vdata,
                             $value['thresholds']
                         );
+
                         $resultData = '<span style="color:'.$status['color'].'">';
-                        if ($vdata !== null && $vdata !== '') {
+                        if ($vdata !== null && $vdata !== '' && $vdata !== false) {
                             if (isset($formatData) === true
                                 && (bool) $formatData === true
                             ) {
@@ -1535,6 +1547,10 @@ if (check_login()) {
                     },
                     []
                 );
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
             }
 
             if (empty($uncompressData) === false) {

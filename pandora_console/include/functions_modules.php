@@ -4338,7 +4338,16 @@ function modules_get_regex(
 }
 
 
-function get_status_data_modules($id_module, $data, $thresholds)
+/**
+ * Status for data thresholds modules.
+ *
+ * @param integer $id_module  Module ID.
+ * @param mixed   $data       Data int, bool, null, etc.
+ * @param array   $thresholds Array thresholds.
+ *
+ * @return array
+ */
+function get_status_data_modules(int $id_module, $data, $thresholds)
 {
     // Check not init.
     if ($data === false) {
@@ -4355,6 +4364,8 @@ function get_status_data_modules($id_module, $data, $thresholds)
         }
     }
 
+    $thresholds = calculateThreshold($thresholds);
+
     foreach (getStatuses() as $status) {
         if ($thresholds[$status]['min'] === null
             && $thresholds[$status]['max'] === null
@@ -4369,11 +4380,72 @@ function get_status_data_modules($id_module, $data, $thresholds)
             || ($thresholds[$status]['min'] <= $data
             && $thresholds[$status]['max'] >= $data)
         ) {
-            return $status;
+            if ($status === 'critical') {
+                return ['color' => COL_CRITICAL];
+            } else if ($status === 'warning') {
+                return ['color' => COL_WARNING];
+            } else {
+                return ['color' => COL_NORMAL];
+            }
         }
     }
 
     return ['color' => COL_NORMAL];
+}
+
+
+/**
+ * Calculate thresholds.
+ *
+ * @param array $thresholds_array
+ *
+ * @return array
+ */
+function calculateThreshold(array $thresholds_array)
+{
+    $nMax = null;
+    if ($thresholds_array['min_warning'] !== null) {
+        $nMax = $thresholds_array['min_warning'];
+    } else if ($thresholds_array['min_critical'] !== null) {
+        $nMax = $thresholds_array['min_critical'];
+    }
+
+    $wMin = null;
+    if ($thresholds_array['min_warning'] !== null) {
+        $wMin = $thresholds_array['min_warning'];
+    }
+
+    $wMax = null;
+    if ($thresholds_array['max_warning'] !== null) {
+        $wMax = $thresholds_array['max_warning'];
+    }
+
+    $cMin = null;
+    if ($thresholds_array['min_critical'] !== null) {
+        $cMin = $thresholds_array['min_critical'];
+    }
+
+    $cMax = null;
+    if ($thresholds_array['max_critical'] !== null) {
+        $cMax = $thresholds_array['max_critical'];
+    }
+
+    $thresholds = [
+        'normal'   => [
+            'min' => null,
+            'max' => $nMax,
+        ],
+        'warning'  => [
+            'min' => $wMin,
+            'max' => $wMax,
+        ],
+        'critical' => [
+            'min' => $cMin,
+            'max' => $cMax,
+        ],
+    ];
+
+    return $thresholds;
 }
 
 
@@ -4385,8 +4457,8 @@ function get_status_data_modules($id_module, $data, $thresholds)
 function getStatuses()
 {
     return [
-        'CRITICAL',
-        'WARNING',
-        'NORMAL',
+        'critical',
+        'warning',
+        'normal',
     ];
 }

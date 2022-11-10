@@ -11310,7 +11310,7 @@ function api_get_events($node_id, $trash2, $other, $returnType)
     $separator = (isset($other['data'][0]) === true && empty($other['data'][0]) === false) ? $other['data'][0] : ';';
 
     if (is_metaconsole() === true) {
-        if (empty($node_id) === true && (int) $node_id !== 0) {
+        if (empty($node_id) === true && $node_id != 0) {
             $node_id = array_keys(metaconsole_get_names(['disabled' => 0]));
             $node_id[] = 0;
         } else {

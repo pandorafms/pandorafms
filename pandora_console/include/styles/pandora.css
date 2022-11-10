@@ -1355,18 +1355,30 @@ td.datos2f9 {
   text-align: center;
 }
 
+table.info_box.suc {
+  background-color: #d9efee;
+}
 .suc * {
   color: #5a8629;
 }
 
+table.info_box.info {
+  background-color: #d6edff;
+}
 .info * {
   color: #006f9d;
 }
 
+table.info_box.error {
+  background-color: #ffe8e8;
+}
 .error * {
   color: #f85858;
 }
 
+table.info_box.warning {
+  background-color: #fff1d6;
+}
 .warning * {
   color: #f3b200;
 }
@@ -2432,8 +2444,8 @@ td.cellBig {
 }
 
 .info_box .title * {
-  font-size: 12pt;
-  font-weight: bolder;
+  font-size: 14pt;
+  font-family: Pandora-Bold;
 }
 
 .info_box .icon {
@@ -8380,6 +8392,12 @@ div.stat-win-spinner img {
   margin-right: 5px !important;
 }
 
+.select2-results
+  > .select2-results__options
+  > .select2-results__option.select2-results__option--highlighted {
+  background-color: #d9efee;
+  color: #2b3332;
+}
 .h1-report-alert-actions {
   text-transform: none;
   text-align: left;

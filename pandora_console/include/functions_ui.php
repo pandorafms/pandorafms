@@ -280,7 +280,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         $text_message = $message;
     }
 
-    if (empty($text_title)) {
+    if (empty($text_title) === true) {
         switch ($class) {
             default:
             case 'info':
@@ -300,7 +300,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         }
     }
 
-    if (empty($icon_image)) {
+    if (empty($icon_image) === true) {
         switch ($class) {
             default:
             case 'info':
@@ -333,7 +333,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
 			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title pandora_upper pdd_t_10px text_left"><b>'.$text_title.'</b></td>
+			<td class="title font_16pt text_left"><b>'.$text_title.'</b></td>
 			<td class="icon right pdd_r_3px">';
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
@@ -344,7 +344,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output .= '</td>
 		</tr>
 		<tr>
-			<td class="black pdd_t_10px invert_filter" style="color: #000">'.$text_message.'</td>
+			<td class="black font_10pt invert_filter" style="color: #000">'.$text_message.'</td>
 			<td></td>
 		</tr>
 		</table>';

@@ -4046,7 +4046,7 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
+    $output = '<div class="max_floating_element_size '.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {

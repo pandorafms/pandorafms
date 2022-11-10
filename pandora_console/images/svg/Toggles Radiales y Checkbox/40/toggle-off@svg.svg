@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="40px" viewBox="0 0 80 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 40 / toggle-off@svg</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M20,33 C12.8202983,33 7,27.1797017 7,20 C7,12.8202983 12.8202983,7 20,7 C27.1797017,7 33,12.8202983 33,20 C33,23.4478144 31.6303611,26.7544152 29.1923882,29.1923882 C26.7544152,31.6303611 23.4478144,33 20,33 Z" id="path-1"></path>
+        <filter x="-17.3%" y="-9.6%" width="134.6%" height="134.6%" filterUnits="objectBoundingBox" id="filter-2">
+            <feMorphology radius="0.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.25 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Dark-/-40-/-toggle-off" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" fill-rule="nonzero">
+            <path d="M59.9,0.5 L20.1,0.5 C9.2746622,0.5 0.5,9.23100716 0.5,20 C0.5,30.7689928 9.2746622,39.5 20.1,39.5 L59.9,39.5 C70.7253378,39.5 79.5,30.7689928 79.5,20 C79.5,9.23100716 70.7253378,0.5 59.9,0.5 Z" id="Shape" stroke="#C0CCDC" fill="#FFFFFF"></path>
+            <g id="Path">
+                <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                <use stroke="#C0CCDC" stroke-width="1" fill="#FFFFFF" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

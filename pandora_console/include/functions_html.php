@@ -3985,14 +3985,15 @@ function html_print_radio_button($name, $value, $label='', $checkedvalue='', $re
 /**
  * Render a checkbox button input. Extended version, use html_print_checkbox() to simplify.
  *
- * @param string  $name       Input name.
- * @param string  $value      Input value.
- * @param string  $checked    Set the button to be marked (optional, unmarked by default).
- * @param boolean $disabled   Disable the button  (optional, button enabled by default).
- * @param string  $script     Script to execute when onClick event is triggered (optional).
- * @param string  $attributes Optional HTML attributes. It's a free string which will be inserted into the HTML tag, use it carefully (optional).
- * @param boolean $return     Whether to return an output string or echo now (optional, echo by default).
- * @param string  $id         Custom id.
+ * @param string  $name             Input name.
+ * @param string  $value            Input value.
+ * @param string  $checked          Set the button to be marked (optional, unmarked by default).
+ * @param boolean $disabled         Disable the button  (optional, button enabled by default).
+ * @param string  $script           Script to execute when onClick event is triggered (optional).
+ * @param string  $attributes       Optional HTML attributes. It's a free string which will be inserted into the HTML tag, use it carefully (optional).
+ * @param boolean $return           Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $id               Custom id.
+ * @param string  $customAttributes Custom Attribute for customized checkbox.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -4004,7 +4005,8 @@ function html_print_checkbox_extended(
     $script,
     $attributes,
     $return=false,
-    $id=''
+    $id='',
+    $customAttributes=''
 ) {
     static $idcounter = [];
 
@@ -4017,23 +4019,15 @@ function html_print_checkbox_extended(
 
     $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
 
-    $output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
-    if ($id == '') {
-        $output .= ' id="checkbox-'.$id_aux.'"';
-    } else {
-        $output .= ' id="'.$id.'"';
-    }
-
-    if ($script != '') {
-        $output .= ' onclick="'.$script.'"';
-    }
-
-    if ($disabled) {
-        $output .= ' disabled="disabled"';
-    }
-
+    $output = '<label class="custom_checkbox">';
+    $output .= '<input class="custom_checkbox_input" name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
+    $output .= (empty($id) === true) ? ' id="checkbox-'.$id_aux.'"' : ' id="'.$id.'"';
+    $output .= (empty($script) === false) ? ' onclick="'.$script.'"' : '';
+    $output .= ((bool) $disabled === true) ? ' disabled="disabled"' : '';
     $output .= ' '.$attributes;
     $output .= ' />';
+    $output .= '<span class="custom_checkbox_show custom_checkbox_image" '.$customAttributes.'></span>';
+    $output .= '</label>';
     $output .= "\n";
 
     if ($return === false) {
@@ -4047,15 +4041,16 @@ function html_print_checkbox_extended(
 /**
  * Render a checkbox button input.
  *
- * @param string  $name            Input name.
- * @param string  $value           Input value.
- * @param string  $checked         Set the button to be marked (optional, unmarked by default).
- * @param boolean $return          Whether to return an output string or echo now (optional, echo by default).
- * @param boolean $disabled        Disable the button (optional, button enabled by default).
- * @param string  $script          Script.
- * @param string  $disabled_hidden Disabled_hidden.
- * @param string  $attributes      Extra attributes.
- * @param string  $id              Custom ID.
+ * @param string  $name             Input name.
+ * @param string  $value            Input value.
+ * @param string  $checked          Set the button to be marked (optional, unmarked by default).
+ * @param boolean $return           Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean $disabled         Disable the button (optional, button enabled by default).
+ * @param string  $script           Script.
+ * @param string  $disabled_hidden  Disabled_hidden.
+ * @param string  $attributes       Extra attributes.
+ * @param string  $id               Custom ID.
+ * @param string  $customAttributes Custom Attribute for customized checkbox.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -4068,7 +4063,8 @@ function html_print_checkbox(
     $script='',
     $disabled_hidden=false,
     $attributes='',
-    $id=''
+    $id='',
+    $customAttributes=''
 ) {
     $output = html_print_checkbox_extended(
         $name,
@@ -4078,7 +4074,8 @@ function html_print_checkbox(
         $script,
         $attributes,
         true,
-        $id
+        $id,
+        $customAttributes
     );
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);

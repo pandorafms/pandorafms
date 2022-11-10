@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="40px" viewBox="0 0 80 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 40 / toggle-on@svg</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M20,33 C12.8202983,33 7,27.1797017 7,20 C7,12.8202983 12.8202983,7 20,7 C27.1797017,7 33,12.8202983 33,20 C33,23.4478144 31.6303611,26.7544152 29.1923882,29.1923882 C26.7544152,31.6303611 23.4478144,33 20,33 Z" id="path-1"></path>
+        <filter x="-15.4%" y="-7.7%" width="130.8%" height="130.8%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.25 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Dark-/-40-/-toggle-on" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(40.000000, 20.000000) scale(-1, 1) translate(-40.000000, -20.000000) " fill-rule="nonzero">
+            <path d="M59.9,0 L20.1,0 C8.99907653,0 0,8.954305 0,20 C0,31.045695 8.99907653,40 20.1,40 L59.9,40 C71.0009235,40 80,31.045695 80,20 C80,8.954305 71.0009235,0 59.9,0 Z" id="Shape" fill="#1D7873"></path>
+            <g id="Path">
+                <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                <use fill="#FFFFFF" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

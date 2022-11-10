@@ -271,6 +271,8 @@ fieldset legend {
   font-weight: bold;
   line-height: 20px;
   color: #3f3f3f;
+  display: flex;
+  align-items: center;
 }
 
 td input[type="checkbox"] {
@@ -986,6 +988,7 @@ p.center {
 
 .img_help {
   cursor: help;
+  margin-left: 10px;
 }
 
 /* Legacy spinner */
@@ -1966,9 +1969,7 @@ select#action {
 }
 
 /* Modules */
-table#simple {
-  padding: 30px;
-}
+
 table#simple select#id_module_type,
 table#alert_search select#id_agent,
 table#alert_search select#id_group,
@@ -2977,6 +2978,7 @@ span#plugin_description {
 a.tip {
   display: inline;
   cursor: help;
+  margin-left: 10px;
 }
 
 a.tip > img {
@@ -4511,14 +4513,17 @@ div#dialog_messages table th:last-child {
 .p-slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
+  top: 5px;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: #ccc;
   -webkit-transition: 0.4s;
   transition: 0.4s;
-  border-radius: 34px;
+  border-radius: 50px;
+  height: 12px;
+  width: 26px;
+  padding: 0 !important;
 }
 
 .p-slider-disabled {
@@ -4528,22 +4533,24 @@ div#dialog_messages table th:last-child {
 .p-slider:before {
   position: absolute;
   content: "";
-  height: 13px;
-  width: 13px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
+  height: 14px;
+  width: 14px;
+  left: -1px;
+  bottom: -2px;
   -webkit-transition: 0.4s;
   transition: 0.4s;
   border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0px 3px 6px #e5e9ed;
+  border: 1px solid #e5e9ed;
 }
 
 input:checked + .p-slider {
-  background-color: #82b92e;
+  background-color: #1d7873;
 }
 
 input:focus + .p-slider {
-  box-shadow: 0 0 1px #82b92e;
+  box-shadow: 0 0 1px #1d7873;
 }
 
 input:checked + .p-slider:before {
@@ -5302,24 +5309,6 @@ div.label_select_child_left > span {
   text-align: right;
   width: 5%;
   min-width: 30px;
-}
-
-/* Inputs type text shown as a black line */
-.agent_options input[type="text"] {
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #ccc;
-  font-size: 10pt;
-  padding: 2px 5px;
-  box-sizing: border-box;
-  background-repeat: no-repeat;
-  background-position: left bottom 2px;
-  margin-bottom: 4px;
-}
-
-.agent_options input[readonly] {
-  color: #848484;
 }
 
 /*
@@ -8371,8 +8360,8 @@ div.stat-win-spinner img {
 .select2-container--default
   .select2-selection--multiple
   .select2-selection__choice {
-  background-color: #82b92e !important;
-  border: 1px solid #82b92e !important;
+  background-color: #1d7873 !important;
+  border: 1px solid #1d7873 !important;
   padding: 0.3em 0.6em !important;
   color: #fff;
   font-size: 1em;
@@ -9028,6 +9017,9 @@ select:focus {
   border-color: #8a96a6;
 }
 
+textarea {
+  height: auto;
+}
 .dataTables_length > label > select {
   min-height: 3em;
 }
@@ -9083,22 +9075,23 @@ button.submitButton {
   justify-content: space-between;
   flex-direction: row;
   min-width: 110px;
-  height: 48px;
-  font-size: 13px !important;
-  font-family: "Pandora-Light";
+  height: 42px;
+  font-size: 14px;
+  font-family: "Pandora-Regular";
   align-items: center;
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
   color: #fff;
   border: 2px solid #14524f;
-  border-radius: 50px;
-  padding: 0 10px 0 12px;
+  border-radius: 8px;
+  padding: 0 10px;
   cursor: pointer;
 }
 
 button.buttonButton.mini,
 button.submitButton.mini {
   height: 32px;
+  border: 2px solid #14524f;
 }
 
 button.buttonButton:not(.secondary):not(.link),
@@ -9121,7 +9114,7 @@ button.submitButton:hover {
 
 button.buttonButton:active,
 button.submitButton:active {
-  transition: ease-in 100ms;
+  transition: ease-in 50ms;
   border: 2px solid #57ea82;
 }
 
@@ -9454,13 +9447,81 @@ button.ui-button.ui-widget.submit-cancel:active {
   border-color: #96a2bf;
 }
 
-.list_button_alignment {
+.hasColorPicker {
+  z-index: 10;
+}
+
+.moduleIdBox {
+  height: 30px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  margin-left: -6px;
+  border: 1px solid #c0ccdc;
+  background-color: #f6f7fb;
+  padding: 0 16px;
+  z-index: 0;
+  line-height: 32px;
+}
+
+table#simple > tbody > tr {
   display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
   align-items: center;
 }
 
-.hasColorPicker {
-  z-index: 10;
+/* Custom Checkbox Style */
+.custom_checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: arial;
+}
+
+.custom_checkbox > .custom_checkbox_input {
+  display: none;
+}
+
+.custom_checkbox_show {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-size: cover;
+}
+
+.custom_checkbox > .custom_checkbox_image {
+  background-image: url(../../images/svg/radial-off.svg);
+}
+
+.custom_checkbox > .custom_checkbox_input:checked + .custom_checkbox_image {
+  background-image: url(../../images/svg/radial-on.svg);
+}
+
+.custom_checkbox > .custom_checkbox_input:disabled + .custom_checkbox_image {
+  background-image: url(../../images/svg/radial-disabled.svg);
+}
+
+/* End custom checkbox style */
+
+table#simple tr td {
+  min-height: 42px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: flex-start;
+}
+
+table#simple tr td:first-child {
+  width: 180px;
+}
+
+.module_thresholds_fields em {
+  padding-right: 5px;
+}
+
+.module_thresholds_fields em:not(:first-child),
+.module_thresholds_fields > div > em {
+  margin-left: 5px;
 }
 
 input[type="color"] {
@@ -9587,6 +9648,9 @@ span.ColorPickerDivSample {
 
 /* FINISH SELECT2 */
 
+.max_floating_element_size {
+  max-width: 1064px;
+}
 .dataTables_wrapper {
   overflow: auto;
 }

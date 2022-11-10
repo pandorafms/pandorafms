@@ -1657,8 +1657,7 @@ function events_get_all(
         return $sql;
     }
 
-    if (!$user_is_admin) {
-        // XXX: Confirm there's no extra grants unhandled!.
+    if (!$user_is_admin && users_can_manage_group_all('ER') === false) {
         $can_manage = '0 as user_can_manage';
         if (empty($EM_groups) === false) {
             $can_manage = sprintf(

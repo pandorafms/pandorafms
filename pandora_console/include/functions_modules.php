@@ -4336,3 +4336,57 @@ function modules_get_regex(
 
     return $result;
 }
+
+
+function get_status_data_modules($id_module, $data, $thresholds)
+{
+    // Check not init.
+    if ($data === false) {
+        return ['color' => COL_NOTINIT];
+    }
+
+    // Check boolean.
+    $is_bolean = modules_is_boolean($id_module);
+    if ($is_bolean === true) {
+        if ($data > 0) {
+            return ['color' => COL_CRITICAL];
+        } else {
+            return ['color' => COL_NORMAL];
+        }
+    }
+
+    foreach (getStatuses() as $status) {
+        if ($thresholds[$status]['min'] === null
+            && $thresholds[$status]['max'] === null
+        ) {
+            continue;
+        }
+
+        if (($thresholds[$status]['min'] === null
+            && $thresholds[$status]['max'] >= $data)
+            || ($thresholds[$status]['max'] === null
+            && $thresholds[$status]['min'] <= $data)
+            || ($thresholds[$status]['min'] <= $data
+            && $thresholds[$status]['max'] >= $data)
+        ) {
+            return $status;
+        }
+    }
+
+    return ['color' => COL_NORMAL];
+}
+
+
+/**
+ * Get status.
+ *
+ * @return array
+ */
+function getStatuses()
+{
+    return [
+        'CRITICAL',
+        'WARNING',
+        'NORMAL',
+    ];
+}

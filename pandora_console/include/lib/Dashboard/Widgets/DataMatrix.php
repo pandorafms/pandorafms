@@ -547,8 +547,10 @@ class DataMatrix extends Widget
                             'length'              => $this->values['limit'],
                             'period'              => $this->values['period'],
                             'slice'               => $this->values['slice'],
+                            'formatData'          => $this->values['formatData'],
                             'modules'             => json_encode($modules),
                         ],
+                        'default_pagination'  => $this->values['limit'],
                         'no_sortable_columns' => $columns_sort,
                         'order'               => [
                             'field'     => 'date',

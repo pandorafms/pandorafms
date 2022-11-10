@@ -1451,6 +1451,7 @@ if (check_login()) {
 
         // Datatables offset, limit.
         $start = get_parameter('start', 0);
+        $formatData = (bool) get_parameter('formatData', 0);
         $length = get_parameter(
             'length',
             $config['block_size']
@@ -1471,6 +1472,14 @@ if (check_login()) {
             $date = (get_system_time() - ($time_all_box * $start));
             $datelimit = ($date - $time_all_box);
             foreach ($modules as $key => $value) {
+                // TODO: tresholds.
+                $value['thresholds'] = [
+                    'min_critical' => (empty($value['c_min']) === true) ? null : $value['c_min'],
+                    'max_critical' => (empty($value['c_max']) === true) ? null : $value['c_max'],
+                    'min_warning'  => (empty($value['w_min']) === true) ? null : $value['w_min'],
+                    'max_warning'  => (empty($value['w_max']) === true) ? null : $value['w_max'],
+                ];
+
                 $module_data = db_uncompress_module_data(
                     $value['id'],
                     $datelimit,
@@ -1481,15 +1490,46 @@ if (check_login()) {
 
                 $uncompressData[] = array_reduce(
                     $module_data,
-                    function ($carry, $item) use ($value) {
+                    function ($carry, $item) use ($value, $config, $formatData) {
+                        // Last value.
+                        $vdata = null;
                         if (is_array($item['data']) === true) {
-                            foreach ($item['data'] as $i => $v) {
-                                $carry[] = [
-                                    'utimestamp'           => $v['utimestamp'],
-                                    'Column-'.$value['id'] => $v['datos'],
-                                ];
+                            foreach ($item['data'] as $v) {
+                                $vdata = $v['datos'];
                             }
                         }
+
+                        $status = get_status_data_modules(
+                            $value['id'],
+                            $vdata,
+                            $value['thresholds']
+                        );
+                        $resultData = '<span style="color:'.$status['color'].'">';
+                        if ($vdata !== null && $vdata !== '') {
+                            if (isset($formatData) === true
+                                && (bool) $formatData === true
+                            ) {
+                                $resultData .= format_for_graph(
+                                    $vdata,
+                                    $config['graph_precision']
+                                );
+                            } else {
+                                $resultData .= sla_truncate(
+                                    $vdata,
+                                    $config['graph_precision']
+                                );
+                            }
+
+                            $resultData .= ' '.$value['unit'];
+                        } else {
+                            $resultData .= '--';
+                        }
+
+                        $resultData .= '</span>';
+                        $carry[] = [
+                            'utimestamp'           => $item['utimestamp'],
+                            'Column-'.$value['id'] => $resultData,
+                        ];
 
                         return $carry;
                     },
@@ -1510,20 +1550,6 @@ if (check_login()) {
                                 }
                             }
                         }
-
-                        // TODO: TO BE CONTINUED.
-                        /*
-                            if (is_numeric($tmp->data) === true) {
-                            $tmp->data = format_numeric(
-                                $tmp->data,
-                                $config['graph_precision']
-                            );
-                            } else {
-                            $tmp->data = ui_print_truncate_text($tmp->data, 10);
-                            }
-
-                            $carry[] = $tmp;
-                        */
 
                         return $carry;
                     }

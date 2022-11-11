@@ -11355,6 +11355,10 @@ function api_get_events($node_id, $trash2, $other, $returnType)
         } else {
             $offset = $other['data'][11];
         }
+    } else {
+        if (isset($other['data'][10]) === true) {
+            $offset = 0;
+        }
     }
 
     $fields = ['te.*'];

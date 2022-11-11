@@ -360,7 +360,7 @@ foreach ($pre_fields as $key => $value) {
 html_print_select($fields, 'os', $os, 'this.form.submit()', 'All', 0);
 
 echo '</td><td>';
-echo __('Search').'&nbsp;';
+echo __('Free search').'&nbsp;';
 html_print_input_text('search', $search, '', 12);
 
 echo ui_print_help_tip(
@@ -375,7 +375,7 @@ html_print_submit_button(
     false,
     [
         'icon' => 'search',
-        'mode' => 'secondary mini',
+        'mode' => 'mini',
     ]
 );
 echo '</form>';

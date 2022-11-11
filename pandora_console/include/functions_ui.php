@@ -338,7 +338,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.
-        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, false).'</a>';
+        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/svg/fail.svg', true, false, false, false).'</a>';
     }
 
     $output .= '</td>
@@ -5592,12 +5592,12 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .css("background","url(\'"+image+"\') 95% center no-repeat");
+            .css({"background-image":"url(\'"+image+"\')", "background-repeat":"no-repeat", "backgound-position": "95% center"});
         }
 
 		function set_functions_change_autocomplete_'.$input_name.'() {
 			var cache_'.$input_name.' = {};
-			
+
 			$("#'.$input_id.'").autocomplete({
 				minLength: 2,
 				source: function( request, response ) {
@@ -5864,8 +5864,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			if (select_item_click) {
                 select_item_click = 0;
                 $("#'.$input_id.'")
-                .css("background",
-                    "url(\"'.$icon_image.'\") 95% center no-repeat");
+                .css({"background-image":"url(\"'.$icon_image.'\")", "background-repeat":"no-repeat", "backgound-position": "95% center"});
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -5880,11 +5879,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 			//Set loading
 			$("#'.$input_id.'")
-				.css("background",
-					"url(\"'.$spinner_image.'\") 95% center no-repeat");
-			
-			
-			
+                .css({"background-image":"url(\"'.$spinner_image.'\")", "background-repeat":"no-repeat", "backgound-position": "95% center"});
 			var term = input_value; //Word to search
 			
 			'.$javascript_change_ajax_params_text.'
@@ -5901,13 +5896,10 @@ function ui_print_agent_autocomplete_input($parameters)
 				success: function (data) {
 						if (data.length < 2) {
 							//Set icon
-							$("#'.$input_id.'")
-								.css("background",
-									"url(\"'.$icon_image.'\") 95% center no-repeat");
-							
+							$("#'.$input_id.'").css({"background-image":"url(\"'.$icon_image.'\")", "background-repeat":"no-repeat", "backgound-position": "95% center"});
 							return;
 						}
-						
+
 						var agent_name = data[0].name;
 						var agent_id = data[0].id;
 						var server_name = "";
@@ -5970,12 +5962,12 @@ function ui_print_agent_autocomplete_input($parameters)
     $html = '';
 
     $text_color = '';
-    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+    if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $text_color = 'color: white';
     }
 
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat 95% center; '.$text_color.'';
+    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 95% center; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

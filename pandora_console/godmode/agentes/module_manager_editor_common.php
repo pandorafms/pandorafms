@@ -194,26 +194,34 @@ $update_module_id = (int) get_parameter_get('update_module');
 $edit_module = (bool) get_parameter_get('edit_module');
 $table_simple = new stdClass();
 $table_simple->id = 'simple';
-$table_simple->width = '100%';
-$table_simple->class = 'no-class';
+$table_simple->class = 'w100p mrgn_10px';
 $table_simple->data = [];
 $table_simple->style = [];
-$table_simple->style[0] = 'font-weight: bold; width: 25%;';
-$table_simple->style[1] = 'width: 25%';
-$table_simple->style[2] = 'font-weight: bold; width: 25%;';
-$table_simple->style[3] = 'width: 25%';
 $table_simple->cellclass = [];
-
 $table_simple->colspan = [];
-
 $table_simple->rowspan = [];
+$table_simple->cellpadding = 2;
+$table_simple->cellspacing = 0;
+$table_simple->rowspan[3][2] = 3;
+$table_simple->rowspan[4][2] = 3;
 
-$table_simple->rowspan[2][2] = 3;
-$table_simple->colspan[2][2] = 2;
-$table_simple->colspan[3][1] = 3;
+$dataRow = 0;
+$dataCol = 0;
 
-$table_simple->data[0][0] = __('Name');
-$table_simple->data[0][1] = html_print_input_text_extended(
+if (empty($id_agent_module) === false && isset($id_agente) === true) {
+    $moduleIdContent = html_print_div(
+        [
+            'class'   => 'moduleIdBox',
+            'content' => __('ID').'&nbsp;<span class="font_14pt">'.$id_agent_module.'</span>',
+        ],
+        true
+    );
+} else {
+    $moduleIdContent = '';
+}
+
+$table_simple->data[$dataRow][$dataCol++] = __('Name');
+$table_simple->data[$dataRow][$dataCol++] = html_print_input_text_extended(
     'name',
     $name,
     'text-name',
@@ -224,23 +232,7 @@ $table_simple->data[0][1] = html_print_input_text_extended(
     '',
     $largeClassDisabledBecauseInPolicy,
     true
-);
-
-if (!empty($id_agent_module) && isset($id_agente)) {
-    $table_simple->data[0][1] .= '&nbsp;<b>'.__('ID').'</b>&nbsp;&nbsp;'.$id_agent_module.' ';
-
-    $table_simple->data[0][1] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.'"
-		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-    $table_simple->data[0][1] .= html_print_image(
-        'images/cross.png',
-        true,
-        [
-            'title' => __('Delete module'),
-            'class' => 'invert_filter',
-        ]
-    );
-    $table_simple->data[0][1] .= '</a> ';
-}
+).$moduleIdContent;
 
 $disabled_enable = 0;
 $policy_link = db_get_value(
@@ -254,16 +246,26 @@ if ($policy_link != 0) {
     $disabled_enable = 1;
 }
 
-$table_simple->data[0][2] = __('Disabled');
-$table_simple->data[0][2] .= html_print_checkbox(
+$table_simple->cellclass[$dataRow][$dataCol] = 'flex_center ';
+$table_simple->data[$dataRow][$dataCol] = __('Disabled');
+$table_simple->data[$dataRow][$dataCol++] .= html_print_checkbox(
     'disabled',
     1,
     $disabled,
     true,
-    $disabled_enable
+    $disabled_enable,
+    '',
+    false,
+    '',
+    '',
+    'style="margin-left: 5px;"'
 );
-$table_simple->data[0][3] = __('Module group');
-$table_simple->data[0][3] .= html_print_select_from_sql(
+
+$dataRow++;
+$dataCol = 0;
+$table_simple->data[$dataRow][$dataCol++] = __('Module group');
+$table_simple->colspan[$dataRow][$dataCol] = '3';
+$table_simple->data[$dataRow][$dataCol++] .= html_print_select_from_sql(
     'SELECT id_mg, name FROM tmodule_group ORDER BY name',
     'id_module_group',
     $id_module_group,
@@ -274,10 +276,10 @@ $table_simple->data[0][3] .= html_print_select_from_sql(
     false,
     true,
     $disabledBecauseInPolicy,
-    'width: 150px'
+    'width: 280px'
 );
 
-if ((isset($id_agent_module) && $id_agent_module) || $id_policy_module != 0) {
+if ((isset($id_agent_module) === true && $id_agent_module) || $id_policy_module != 0) {
     $edit = false;
 } else {
     $edit = true;
@@ -285,10 +287,13 @@ if ((isset($id_agent_module) && $id_agent_module) || $id_policy_module != 0) {
 
 $in_policy = strstr($page, 'policy_modules');
 
-$table_simple->data[1][0] = __('Type').' '.ui_print_help_icon($help_type, true, '', 'images/help_green.png', '', 'module_type_help');
-$table_simple->data[1][0] .= html_print_input_hidden('id_module_type_hidden', $id_module_type, true);
+$dataRow++;
+$dataCol = 0;
+$table_simple->data[$dataRow][$dataCol] .= html_print_input_hidden('id_module_type_hidden', $id_module_type, true);
+$table_simple->data[$dataRow][$dataCol++] = __('Type').ui_print_help_icon($help_type, true, '', 'images/help_green.png', '', 'module_type_help');
+$table_simple->colspan[$dataRow][$dataCol] = '3';
 
-if (!$edit) {
+if ($edit === false) {
     $sql = sprintf(
         'SELECT id_tipo, nombre
 			FROM ttipo_modulo
@@ -304,14 +309,14 @@ if (!$edit) {
         $type_names_hash[$tn['id_tipo']] = $tn['nombre'];
     }
 
-    $table_simple->data[1][1] = '<em>'.modules_get_moduletype_description($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
-    $table_simple->data[1][1] .= html_print_input_hidden(
+    $table_simple->data[$dataRow][$dataCol] = '<em>'.modules_get_moduletype_description($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
+    $table_simple->data[$dataRow][$dataCol] .= html_print_input_hidden(
         'type_names',
         base64_encode(io_json_mb_encode($type_names_hash)),
         true
     );
 } else {
-    if (isset($id_module_type)) {
+    if (isset($id_module_type) === true) {
         $idModuleType = $id_module_type;
     } else {
         $idModuleType = '';
@@ -319,8 +324,7 @@ if (!$edit) {
 
     // Removed web analysis and log4x from select.
     $tipe_not_in = '24, 25';
-    // TODO: FIX credential store for remote command in metaconsole.
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $tipe_not_in = '24, 25, 34, 35, 36, 37';
     }
 
@@ -347,7 +351,7 @@ if (!$edit) {
         }
     }
 
-    $table_simple->data[1][1] = html_print_select(
+    $table_simple->data[$dataRow][$dataCol] = html_print_select(
         $type_description_hash,
         'id_module_type',
         $idModuleType,
@@ -359,13 +363,13 @@ if (!$edit) {
         false,
         '',
         false,
-        'width:200px',
+        'width: 280px;',
         false,
         100
     );
 
     // Store the relation between id and name of the types on a hidden field.
-    $table_simple->data[1][1] .= html_print_input_hidden(
+    $table_simple->data[$dataRow][$dataCol] .= html_print_input_hidden(
         'type_names',
         base64_encode(io_json_mb_encode($type_names_hash)),
         true
@@ -397,23 +401,22 @@ if ($edit_module) {
     if ($id_module_type >= 30 && $id_module_type <= 33) {
         $help_header = 'webserver_module_tab';
     }
-
-    $table_simple->data[1][0] = __('Type').' ';
-    $table_simple->data[1][0] .= ui_print_help_icon($help_header, true);
 }
 
 if ($disabledBecauseInPolicy) {
-    $table_simple->data[1][3] .= html_print_input_hidden(
+    $table_simple->data[$dataRow][3] .= html_print_input_hidden(
         'id_module_group',
         $id_module_group,
         true
     );
 }
 
-$table_simple->data[2][0] = __('Warning threshold');
-if (!modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[2][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
-    $table_simple->data[2][1] .= html_print_input_text(
+$dataRow++;
+$table_simple->data[$dataRow][0] .= __('Warning threshold');
+$table_simple->cellclass[$dataRow][1] = 'module_thresholds_fields';
+if (modules_is_string_type($id_module_type) === false || $edit === true) {
+    $table_simple->data[$dataRow][1] .= '<span class="flex_center" id="minmax_warning"><em>'.__('Min. ').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_input_text(
         'min_warning',
         $min_warning,
         '',
@@ -425,8 +428,8 @@ if (!modules_is_string_type($id_module_type) || $edit) {
         '',
         $classdisabledBecauseInPolicy
     );
-    $table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
-    $table_simple->data[2][1] .= html_print_input_text(
+    $table_simple->data[$dataRow][1] .= '<em>'.__('Max.').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_input_text(
         'max_warning',
         $max_warning,
         '',
@@ -440,9 +443,9 @@ if (!modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-if (modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[2][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
-    $table_simple->data[2][1] .= html_print_input_text(
+if (modules_is_string_type($id_module_type) === true || $edit === true) {
+    $table_simple->data[$dataRow][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_input_text(
         'str_warning',
         str_replace('"', '', $str_warning),
         '',
@@ -456,25 +459,31 @@ if (modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-$table_simple->data[2][1] .= '<div id="warning_inverse"><em>'.__('Inverse interval').'</em>';
-$table_simple->data[2][1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true, $disabledBecauseInPolicy);
-$table_simple->data[2][1] .= '</div>';
+$table_simple->data[$dataRow][1] .= '<div class="flex_center" id="warning_inverse"><em>'.__('Inverse interval').'</em>';
+$table_simple->data[$dataRow][1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true, $disabledBecauseInPolicy);
+$table_simple->data[$dataRow][1] .= '</div>';
 
 if (modules_is_string_type($id_module_type) === false) {
-    $table_simple->data[2][1] .= '<div id="percentage_warning"><em>'.__('Percentage').'</em>';
-    $table_simple->data[2][1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true, $disabledBecauseInPolicy);
-    $table_simple->data[2][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-    $table_simple->data[2][1] .= '</div>';
+    $table_simple->data[$dataRow][1] .= '<div class="flex_center" id="percentage_warning"><em>'.__('Percentage').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true, $disabledBecauseInPolicy);
+    $table_simple->data[$dataRow][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+    $table_simple->data[$dataRow][1] .= '</div>';
 }
 
-if (!modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[2][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
+
+
+if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) {
+    $table_simple->cellstyle[$dataRow][2] = 'top: 160px; left: 700px; position: absolute; width: 280px;';
+    $table_simple->colspan[$dataRow][2] = '2';
+    $table_simple->data[$dataRow][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
-$table_simple->data[3][0] = __('Critical threshold');
-if (!modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[3][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
-    $table_simple->data[3][1] .= html_print_input_text(
+$dataRow++;
+$table_simple->data[$dataRow][0] = __('Critical threshold');
+$table_simple->cellclass[$dataRow][1] = 'module_thresholds_fields';
+if (modules_is_string_type($id_module_type) === false || $edit === true) {
+    $table_simple->data[$dataRow][1] .= '<span class="flex_center" id="minmax_critical"><em>'.__('Min').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_input_text(
         'min_critical',
         $min_critical,
         '',
@@ -486,8 +495,8 @@ if (!modules_is_string_type($id_module_type) || $edit) {
         '',
         $classdisabledBecauseInPolicy
     );
-    $table_simple->data[3][1] .= '<br /><em>'.__('Max.').'</em>';
-    $table_simple->data[3][1] .= html_print_input_text(
+    $table_simple->data[$dataRow][1] .= '<br /><em>'.__('Max').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_input_text(
         'max_critical',
         $max_critical,
         '',
@@ -501,9 +510,9 @@ if (!modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-if (modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[3][1] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-    $table_simple->data[3][1] .= html_print_input_text(
+if (modules_is_string_type($id_module_type) === true || $edit === true) {
+    $table_simple->data[$dataRow][1] .= '<span class="flex_center" id="string_critical"><em>'.__('Str.').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_input_text(
         'str_critical',
         str_replace('"', '', $str_critical),
         '',
@@ -517,33 +526,34 @@ if (modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-$table_simple->data[3][1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>';
-$table_simple->data[3][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
-$table_simple->data[3][1] .= '</div>';
+$table_simple->data[$dataRow][1] .= '<div class="flex_center" id="critical_inverse"><em>'.__('Inverse interval').'</em>';
+$table_simple->data[$dataRow][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
+$table_simple->data[$dataRow][1] .= '</div>';
 
 
 if (modules_is_string_type($id_module_type) === false) {
-    $table_simple->data[3][1] .= '<div id="percentage_critical" /><em>'.__('Percentage').'</em>';
-    $table_simple->data[3][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-    $table_simple->data[3][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true, $disabledBecauseInPolicy);
-    $table_simple->data[3][1] .= '</div>';
+    $table_simple->data[$dataRow][1] .= '<div class="flex_center" id="percentage_critical" /><em>'.__('Percentage').'</em>';
+    $table_simple->data[$dataRow][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true, $disabledBecauseInPolicy);
+    $table_simple->data[$dataRow][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+    $table_simple->data[$dataRow][1] .= '</div>';
 }
 
-$table_simple->data[4][0] = __('Historical data');
+$dataRow++;
+$table_simple->data[$dataRow][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
     // checkbox because HTML dont send disabled fields
     // and could be disabled by error.
-    $table_simple->data[4][1] = html_print_checkbox(
+    $table_simple->data[$dataRow][1] = html_print_checkbox(
         'history_data_fake',
         1,
         $history_data,
         true,
         $disabledBecauseInPolicy
     );
-    $table_simple->data[4][1] .= '<input type="hidden" name="history_data" value="'.(int) $history_data.'">';
+    $table_simple->data[$dataRow][1] .= '<input type="hidden" name="history_data" value="'.(int) $history_data.'">';
 } else {
-    $table_simple->data[4][1] = html_print_checkbox(
+    $table_simple->data[$dataRow][1] = html_print_checkbox(
         'history_data',
         1,
         $history_data,
@@ -1677,9 +1687,11 @@ $(document).ready (function () {
         paint_graph_values();
         if ($('#checkbox-warning_inverse').prop('checked') === true){
             $('#checkbox-percentage_warning').prop('checked', false);
-            $('#percentage_warning').hide();
+            $('#percentage_warning').attr('onClick', 'return false;');
+            $('#percentage_warning>em').addClass('color_666');
         } else {
-            $('#percentage_warning').show();
+            $('#percentage_warning').removeAttr('onClick');
+            $('#percentage_warning>em').removeClass('color_666');
         }
     }); 
 
@@ -1688,9 +1700,11 @@ $(document).ready (function () {
 
         if ($('#checkbox-critical_inverse').prop('checked') === true){
             $('#checkbox-percentage_critical').prop('checked', false);
-            $('#percentage_critical').hide();
+            $('#percentage_critical').attr('onClick', 'return false;');
+            $('#percentage_critical>em').addClass('color_666');
         } else {
-            $('#percentage_critical').show();
+            $('#percentage_critical').removeAttr('onClick');
+            $('#percentage_critical>em').removeClass('color_666');
         }
     });
 
@@ -1698,9 +1712,11 @@ $(document).ready (function () {
         paint_graph_values();
         if ($('#checkbox-percentage_warning').prop('checked') === true){
             $('#checkbox-warning_inverse').prop('checked', false);
-            $('#warning_inverse').hide();
+            $('#warning_inverse').attr('onClick', 'return false;');
+            $('#warning_inverse>em').addClass('color_666');
         } else {
-            $('#warning_inverse').show();
+            $('#warning_inverse').removeAttr('onClick');
+            $('#warning_inverse>em').removeClass('color_666');
         }
     });
 
@@ -1708,10 +1724,11 @@ $(document).ready (function () {
         paint_graph_values();
         if ($('#checkbox-percentage_critical').prop('checked') === true){
             $('#checkbox-critical_inverse').prop('checked', false);
-            $('#critical_inverse').hide();
-        }
-            else {
-            $('#critical_inverse').show();
+            $('#critical_inverse').attr('onClick', 'return false;');
+            $('#critical_inverse>em').addClass('color_666');
+        } else {
+            $('#critical_inverse').removeAttr('onClick');
+            $('#critical_inverse>em').removeClass('color_666');
         }
             
     });

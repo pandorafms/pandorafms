@@ -136,10 +136,6 @@ form.flex-row div.filter_input.filter_input_switch {
   justify-content: flex-start;
 }
 
-form.flex-row div.filter_input.filter_input_switch .p-slider {
-  width: 30px;
-}
-
 fieldset {
   margin: 0 auto;
 }
@@ -299,7 +295,7 @@ ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
 }
 
 li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-active {
-  border-bottom: 4px solid rgb(130, 185, 46) !important;
+  border-bottom: 5px solid rgb(130, 185, 46) !important;
 }
 
 tr.group {

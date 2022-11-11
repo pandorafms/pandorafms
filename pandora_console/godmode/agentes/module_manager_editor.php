@@ -766,12 +766,32 @@ if ($moduletype != 13) {
 // Submit.
 echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
 if ($id_agent_module) {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Update'),
         'updbutton',
         false,
-        'class="sub upd"'
+        [ 'icon' => 'update' ],
+        true
     );
+    $actionButtons .= html_print_button(
+        __('Delete'),
+        'deleteModule',
+        false,
+        'window.location.action(\'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.')',
+        [
+            'icon' => 'delete',
+            'mode' => 'secondary',
+        ],
+        true
+    );
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => $actionButtons,
+        ]
+    );
+
     html_print_input_hidden('update_module', 1);
     html_print_input_hidden('id_agent_module', $id_agent_module);
     html_print_input_hidden('id_module_type', $id_module_type);
@@ -784,11 +804,17 @@ if ($id_agent_module) {
         <?php
     }
 } else {
-    html_print_submit_button(
-        __('Create'),
-        'crtbutton',
-        false,
-        'class="sub wand"'
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Create'),
+                'crtbutton',
+                false,
+                [ 'icon' => 'wand' ],
+                true
+            ),
+        ]
     );
     html_print_input_hidden('id_module', $moduletype);
     html_print_input_hidden('create_module', 1);

@@ -117,11 +117,11 @@ $table->data[1][1] = html_print_select(
     __('Default action'),
     '0',
     true,
-    '',
+    false,
     true,
     '',
     false,
-    'min-width: 250px;'
+    'width: 250px;'
 );
 $table->data[1][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
 $table->data[1][1] .= __('Number of alerts match from').' ';
@@ -130,11 +130,15 @@ $table->data[1][1] .= ' '.__('to').' ';
 $table->data[1][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
 
 $table->data[1][1] .= '</span>';
-if (check_acl($config['id_user'], 0, 'LM')) {
-    $table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-    $table->data[1][1] .= html_print_image('images/add.png', true, ['class' => 'invert_filter']);
-    $table->data[1][1] .= '<span class="mrgn_lft_05em">'.__('Create Action').'</span>';
-    $table->data[1][1] .= '</a>';
+if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+    $table->data[1][1] .= html_print_button(
+        __('Create Action'),
+        '',
+        false,
+        'window.location.assign(\'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'\')',
+        [ 'mode' => 'link' ],
+        true
+    );
 }
 
     $table->data[2][0] = __('Template');
@@ -163,11 +167,15 @@ if ($own_info['is_admin']) {
         'width: 250px;'
     );
     $table->data[2][1] .= ' <a class="template_details invisible" href="#">'.html_print_image('images/zoom.png', true, ['class' => 'img_help']).'</a>';
-    if (check_acl($config['id_user'], 0, 'LM')) {
-        $table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-        $table->data[2][1] .= html_print_image('images/add.png', true, ['class' => 'invert_filter']);
-        $table->data[2][1] .= '<span class=""mrgn_lft_05em>'.__('Create Template').'</span>';
-        $table->data[2][1] .= '</a>';
+    if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+        $table->data[2][1] .= html_print_button(
+            __('Create Template'),
+            '',
+            false,
+            'window.location.assign(\'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'\')',
+            [ 'mode' => 'link' ],
+            true
+        );
     }
 
     $table->data[3][0] = __('Threshold');

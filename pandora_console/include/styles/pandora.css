@@ -173,7 +173,6 @@ input[type="checkbox"] {
 }
 
 select {
-  padding: 2px 3px 3px 3px;
   vertical-align: middle;
   border: 1px solid #ddd;
 }
@@ -319,14 +318,22 @@ select:-webkit-autofill:focus {
 }
 
 /* All select type multiple */
-select[multiple] option:checked {
-  background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
-  color: #fff;
+select[multiple] {
+  min-height: 10em;
+}
+
+select[multiple] option:checked,
+select[multiple] option:active {
+  background: #d9efee;
+}
+
+select[multiple] option {
+  padding: 6px 12px;
+  margin: 0px -10px;
 }
 
 select option:checked {
-  background-color: #82b92e;
-  color: #fff;
+  background-color: #d9efee;
 }
 
 select > option:hover {
@@ -1356,6 +1363,7 @@ td.datos2f9 {
 }
 
 table.info_box.suc {
+  border-left: 5px solid #5a8629;
   background-color: #d9efee;
 }
 .suc * {
@@ -1363,6 +1371,7 @@ table.info_box.suc {
 }
 
 table.info_box.info {
+  border-left: 5px solid #006f9d;
   background-color: #d6edff;
 }
 .info * {
@@ -1370,6 +1379,7 @@ table.info_box.info {
 }
 
 table.info_box.error {
+  border-left: 5px solid #f85858;
   background-color: #ffe8e8;
 }
 .error * {
@@ -1377,6 +1387,7 @@ table.info_box.error {
 }
 
 table.info_box.warning {
+  border-left: 5px solid #f3b200;
   background-color: #fff1d6;
 }
 .warning * {
@@ -2208,7 +2219,9 @@ div#event_control {
 }
 
 .ac_loading {
-  background: white url("../images/loading.gif") 95% center no-repeat;
+  background-image: url("../images/loading.gif");
+  background-position: 95% center;
+  background-repeat: no-repeat;
 }
 
 .ac_over {
@@ -2434,9 +2447,6 @@ td.cellBig {
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 0px 5px 5px 10px;
-  border-color: #e2e2e2;
-  border-style: solid;
-  border-width: 1px;
   width: 100%;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -2449,8 +2459,7 @@ td.cellBig {
 }
 
 .info_box .icon {
-  width: 30px;
-  text-align: center;
+  width: 24px;
 }
 
 /* Standard styles for status colos (groups, events, backgrounds...) */
@@ -8104,7 +8113,6 @@ div.graph div.legend table {
 
 .icon_ui {
   padding-right: 10px;
-  padding-top: 3px;
   vertical-align: top;
 }
 
@@ -8973,7 +8981,6 @@ div#err_msg_centralised {
   font: normal normal normal 13px Pandora-Light;
   padding: 5.5pt 20pt;
   cursor: pointer;
-  background-color: #fff;
   color: #14524f;
   border: 2px solid #14524f;
   box-shadow: none;
@@ -9002,6 +9009,7 @@ select {
   box-sizing: border-box;
 }
 
+input[readonly],
 input:disabled,
 textarea:disabled,
 select:disabled,
@@ -9022,20 +9030,13 @@ select:focus {
 #autorefresh_list_out::-webkit-scrollbar {
   /*color: test;*/
 }
-textarea,
-select {
-  padding: 10px;
-}
-
-select[multiple] {
-  min-height: 10em;
-}
 
 select:focus {
   border-color: #8a96a6;
 }
 
 textarea {
+  padding: 10px;
   height: auto;
 }
 .dataTables_length > label > select {

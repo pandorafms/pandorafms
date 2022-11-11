@@ -395,7 +395,7 @@ if ($id_agente) {
             'class' => 'invert_filter',
         ]
     ).'</a>';
-    if ($tab == 'main') {
+    if ($tab === 'main') {
         $maintab['active'] = true;
     } else {
         $maintab['active'] = false;

@@ -389,10 +389,6 @@ p.error-p-validate {
   border-radius: 5px 5px 0px 0px;
 }
 
-label span.p-slider {
-  width: 30px;
-}
-
 li.interval-color-ranges > label,
 li#li-default-ranges > label {
   margin-right: 15px;

@@ -8682,8 +8682,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
                     $item['id_agent_module']
                 );
 
-                if (isset($item['compare']) === true
-                    && empty($item['compare']) === true
+                if (isset($item['compare']) === false
+                    || empty($item['compare']) === true
                 ) {
                     $row['data']['compare'] = false;
                 } else {

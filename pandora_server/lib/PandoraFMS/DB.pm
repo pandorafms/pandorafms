@@ -970,7 +970,7 @@ sub get_db_nodes ($$) {
 	      'dbpass'   => $pa_config->{'dbpass'}});
 
 	# Look for additional nodes.
-	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup');
+	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup WHERE disabled = 0');
 	foreach my $node (@nodes) {
 		push(@{$dbh_nodes},
 		     {'dbengine' => $pa_config->{'dbengine'},

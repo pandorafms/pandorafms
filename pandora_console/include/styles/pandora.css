@@ -9588,6 +9588,7 @@ tr.bring_next_field {
   position: relative;
   vertical-align: middle;
   text-align: left;
+  min-width: 150px !important;
 }
 
 .select2-container .select2-selection--single {
@@ -9689,10 +9690,6 @@ tr.bring_next_field {
   top: 1px;
   right: 1px;
   width: 20px;
-}
-
-.select2-container {
-  min-width: 150px !important;
 }
 
 .select2-container--default.select2-container--focus

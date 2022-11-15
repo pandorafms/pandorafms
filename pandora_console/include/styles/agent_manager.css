@@ -34,6 +34,7 @@
   text-align: center;
   box-sizing: border-box;
   padding: 20px 0px;
+  margin-top: 22px;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -44,13 +45,10 @@ a#qr_code_agent_view {
   margin-top: 5px;
 }
 
-.p-switch {
-  margin-right: 1em;
-}
-
 .sg_source,
 .sg_target {
-  width: 35%;
+  width: 100%;
+  height: 110px;
 }
 
 .sg_source select,

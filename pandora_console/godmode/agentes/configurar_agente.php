@@ -2210,8 +2210,8 @@ if ($disable_module) {
 }
 
 // UPDATE GIS.
-$updateGIS = get_parameter('update_gis', 0);
-if ($updateGIS) {
+$updateGIS = (bool) get_parameter('update_gis', 0);
+if ($updateGIS === true) {
     $updateGisData = get_parameter('update_gis_data');
     $lastLatitude = get_parameter('latitude');
     $lastLongitude = get_parameter('longitude');

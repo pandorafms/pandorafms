@@ -2124,35 +2124,40 @@ function html_print_extended_select_for_time(
     ob_start();
     // Use the no_meta parameter because this image is only in the base console.
     echo '<div id="'.$uniq_name.'_default" class="wauto inline_flex">';
-        html_print_select(
-            $fields,
-            $uniq_name.'_select',
-            $selected,
-            ''.$script,
-            $nothing,
-            $nothing_value,
-            false,
-            false,
-            false,
-            $class,
-            $readonly,
-            'font-size: xx-small;'.$select_style
-        );
+    html_print_select(
+        $fields,
+        $uniq_name.'_select',
+        $selected,
+        ''.$script,
+        $nothing,
+        $nothing_value,
+        false,
+        false,
+        false,
+        $class,
+        $readonly,
+        'font-size: xx-small;'.$select_style
+    );
         // The advanced control is only for admins.
-    if ($admin) {
-        echo ' <a href="javascript:">'.html_print_image(
-            'images/pencil.png',
-            true,
+    if ($admin === true) {
+        html_print_anchor(
             [
-                'class' => $uniq_name.'_toggler '.$class.' invert_filter',
-                'alt'   => __('Custom'),
-                'title' => __('Custom'),
-                'style' => 'width: 18px; margin-bottom: -5px;'.$style_icon,
-            ],
-            false,
-            false,
-            true
-        ).'</a>';
+                'href'    => 'javascript:',
+                'content' => html_print_image(
+                    'images/pencil.png',
+                    true,
+                    [
+                        'class' => $uniq_name.'_toggler '.$class.' invert_filter',
+                        'alt'   => __('Custom'),
+                        'title' => __('Custom'),
+                        'style' => 'width: 18px; margin-bottom: -5px; margin-left: 10px'.$style_icon,
+                    ],
+                    false,
+                    false,
+                    true,
+                ),
+            ]
+        );
     }
 
     echo '</div>';
@@ -6132,7 +6137,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         [$id_agente]
     );
 
-    $name = 'secondary_groups'.$options['extra_id'];
+    $name = 'secondary_groups_selected'.$options['extra_id'];
     if ($options['only_select'] === true) {
         $name = 'secondary_groups'.$options['extra_id'].'[]';
     }
@@ -6152,7 +6157,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         $name,
         // Selected.
         // No select any by default.
-        '',
+        $secondary_groups_selected['for_select'],
         // Script.
         // Javascript onChange code.
         '',
@@ -6179,7 +6184,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         false,
         // Style.
         // Inline styles (default).
-        'min-width:170px;',
+        '',
         // Option_style.
         // Option style select (default).
         false,
@@ -6212,8 +6217,8 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
                 ]
             )
         );
-
-        $adv_secondary_groups_arrows = html_print_input_image(
+        /*
+            $adv_secondary_groups_arrows = html_print_input_image(
             'add_secondary',
             'images/darrowright_green.png',
             1,
@@ -6224,9 +6229,9 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
                 'title'   => __('Add secondary groups'),
                 'onclick' => 'agent_manager_add_secondary_groups(event, '.$id_agente.',\''.$options['extra_id'].'\', \''.$options['id_form'].'\', \''.$dictionary.'\');',
             ]
-        );
+            );
 
-        $adv_secondary_groups_arrows .= html_print_input_image(
+            $adv_secondary_groups_arrows .= html_print_input_image(
             'remove_secondary',
             'images/darrowleft_green.png',
             1,
@@ -6237,10 +6242,10 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
                 'title'   => __('Remove secondary groups'),
                 'onclick' => 'agent_manager_remove_secondary_groups(event, '.$id_agente.',\''.$options['extra_id'].'\', \''.$options['id_form'].'\', \''.$dictionary.'\');',
             ]
-        );
+            );
 
-        $adv_secondary_groups_right .= html_print_select(
-        // Values.
+            $adv_secondary_groups_right .= html_print_select(
+            // Values.
             $secondary_groups_selected['for_select'],
             // HTML id.
             'secondary_groups_selected'.$options['extra_id'],
@@ -6264,8 +6269,8 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
             false,
             // Style.
             'min-width:170px;'
-        );
-
+            );
+        */
         $output = '';
         if (isset($options['container']) === true
             && $options['container'] === true
@@ -6276,13 +6281,14 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         $output .= '<div class="sg_source">';
         $output .= $adv_secondary_groups_left;
         $output .= '</div>';
-        $output .= '<div class="secondary_group_arrows">';
-        $output .= $adv_secondary_groups_arrows;
-        $output .= '</div>';
-        $output .= '<div class="sg_target">';
-        $output .= $adv_secondary_groups_right;
-        $output .= '</div>';
-
+        /*
+            $output .= '<div class="secondary_group_arrows">';
+            $output .= $adv_secondary_groups_arrows;
+            $output .= '</div>';
+            $output .= '<div class="sg_target">';
+            $output .= $adv_secondary_groups_right;
+            $output .= '</div>';
+        */
         if (isset($options['container']) === true
             && $options['container'] === true
         ) {

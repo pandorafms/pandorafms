@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,13 +49,13 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
-if (is_ajax()) {
+if (is_ajax() === true) {
     ob_get_clean();
 
     $get_agent_module_last_value = (bool) get_parameter('get_agent_module_last_value');
     $get_actions_alert_template = (bool) get_parameter('get_actions_alert_template');
 
-    if ($get_actions_alert_template) {
+    if ($get_actions_alert_template === true) {
         $id_template = get_parameter('id_template');
 
         $own_info = get_user_info($config['id_user']);
@@ -65,52 +65,18 @@ if (is_ajax()) {
         $filter_groups = '';
         $filter_groups = implode(',', array_keys($usr_groups));
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $sql = sprintf(
-                    "SELECT t1.id, t1.name,
-						(SELECT COUNT(t2.id) 
-							FROM talert_templates t2 
-							WHERE t2.id =  %d 
-								AND t2.id_alert_action = t1.id) as 'sort_order'
-					FROM talert_actions t1
-					WHERE id_group IN (%s) 
-					ORDER BY sort_order DESC",
-                    $id_template,
-                    $filter_groups
-                );
-            break;
-
-            case 'oracle':
-                $sql = sprintf(
-                    'SELECT t1.id, t1.name,
-						(SELECT COUNT(t2.id) 
-							FROM talert_templates t2 
-							WHERE t2.id =  %d 
-								AND t2.id_alert_action = t1.id) as sort_order
-					FROM talert_actions t1
-					WHERE id_group IN (%s) 
-					ORDER BY sort_order DESC',
-                    $id_template,
-                    $filter_groups
-                );
-            break;
-
-            case 'postgresql':
-                $sql = sprintf(
-                    'SELECT t1.id, t1.name,
-						(SELECT COUNT(t2.id) 
-							FROM talert_templates t2 
-							WHERE t2.id =  %d 
-								AND t2.id_alert_action = t1.id) as sort_order
-					FROM talert_actions t1
-					WHERE id_group IN (%s) 
-					ORDER BY sort_order DESC',
-                    $id_template,
-                    $filter_groups
-                );
-            break;
-        }
+        $sql = sprintf(
+            "SELECT t1.id, t1.name,
+                (SELECT COUNT(t2.id) 
+                    FROM talert_templates t2 
+                    WHERE t2.id =  %d 
+                        AND t2.id_alert_action = t1.id) as 'sort_order'
+            FROM talert_actions t1
+            WHERE id_group IN (%s) 
+            ORDER BY sort_order DESC",
+            $id_template,
+            $filter_groups
+        );
 
         $rows = db_get_all_rows_sql($sql);
 
@@ -124,7 +90,7 @@ if (is_ajax()) {
         return;
     }
 
-    if ($get_agent_module_last_value) {
+    if ($get_agent_module_last_value === true) {
         $id_module = (int) get_parameter('id_agent_module');
         $id_agent = (int) modules_get_agentmodule_agent((int) $id_module);
         if (! check_acl_one_of_groups($config['id_user'], agents_get_all_groups_agent($id_agent), 'AR')) {
@@ -189,7 +155,7 @@ $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 
 $onheader = [];
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Prepare the tab system to the future.
     $tab = 'setup';
 
@@ -230,39 +196,22 @@ ui_print_standard_header(
     ]
 );
 
-if (!$strict_user) {
-    if (tags_has_user_acl_tags()) {
+if ((bool) $strict_user === false) {
+    if (tags_has_user_acl_tags() === true) {
         ui_print_tags_warning();
     }
 }
 
 // User is deleting agent.
-if (isset($result_delete)) {
-    if ($result_delete) {
-        ui_print_success_message(__('Sucessfully deleted agent'));
-    } else {
-        ui_print_error_message(__('There was an error message deleting the agent'));
-    }
+if (isset($result_delete) === true) {
+    ui_print_result_message(
+        $result_delete,
+        __('Sucessfully deleted agent'),
+        __('There was an error message deleting the agent')
+    );
 }
 
-echo '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
-
-echo '<table cellpadding="4" cellspacing="4" class="databox filters bolder mrgn_btn_10px" width="100%">';
-
-echo '<tr><td class="nowrap w100px padding-right-2-imp">';
-
-echo __('Group').'&nbsp;'.'&nbsp;'.'&nbsp;';
-
 $groups = users_get_groups(false, $access);
-
-html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false);
-
-echo '</td><td class="nowrap">'.'&nbsp;'.'&nbsp;'.'&nbsp;'.'&nbsp;'.'&nbsp;';
-
-echo __('Recursion').'&nbsp;'.'&nbsp;'.'&nbsp;';
-html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
-
-echo '</td><td class="nowrap">';
 
 $fields = [];
 $fields[AGENT_STATUS_NORMAL] = __('Normal');
@@ -272,36 +221,56 @@ $fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
-echo __('Status').'&nbsp;'.'&nbsp;'.'&nbsp;';
-html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
+$searchForm = '';
+$searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
 
-echo '</td><td class="nowrap w100px">';
+$table = new stdClass();
+$table->style[0] = 'width: 15%';
+$table->style[2] = 'width: 15%';
+$table->class[0] = 'databox filters bolder';
 
-echo __('Search').'&nbsp;'.'&nbsp;'.'&nbsp;';
-html_print_input_text('search', $search, '', 15);
+$table->data['group'][0] = __('Group');
+$table->data['group'][1] = html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false);
 
-echo '</td><td class="nowrap w100px">';
+$table->data['group'][2] = __('Recursion');
+$table->data['group'][3] = html_print_checkbox_switch('recursion', 1, $recursion, true);
 
-echo __('Search in custom fields').'&nbsp;'.'&nbsp;'.'&nbsp;';
-html_print_input_text('search_custom', $search_custom, '', 15);
+$table->data['status'][0] = __('Status');
+$table->data['status'][1] = html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, true, false, true, '', false, 'width: 90px;');
 
-echo '</td><td class="nowrap">';
+$table->data['search_fields'][0] = __('Search');
+$table->data['search_fields'][1] = html_print_input_text('search', $search, '', 35, 255, true);
 
-html_print_submit_button(
-    __('Search'),
-    'srcbutton',
-    false,
+$table->data['search_fields'][2] = __('Search in custom fields');
+$table->data['search_fields'][3] = html_print_input_text('search_custom', $search_custom, '', 35, 255, true);
+// $table->colspan['search_fields'][3] = '2';
+$searchForm .= html_print_table($table, true);
+$searchForm .= html_print_div(
     [
-        'icon' => 'search',
-        'mode' => 'secondary mini',
-    ]
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Search'),
+            'srcbutton',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'secondary mini',
+            ],
+            true
+        ),
+    ],
+    true
 );
 
-echo '</td>';
+$searchForm .= '</form>';
 
-echo '</tr></table></form>';
+ui_toggle(
+    $searchForm,
+    __('Filter'),
+    'filter_form'
+);
 
-if ($search != '') {
+if (empty($search) === false) {
     $filter = ['string' => '%'.$search.'%'];
 } else {
     $filter = [];
@@ -540,7 +509,7 @@ if ($search != '') {
     );
 
     $id = db_get_all_rows_sql($sql);
-    if ($id != '') {
+    if (empty($id) === false) {
         $aux = $id[0]['id_agent'];
         $search_sql = sprintf(
             ' AND ( `nombre` LIKE "%%%s%%" OR tagente.id_agente = %d',
@@ -573,7 +542,7 @@ if ($search != '') {
     }
 }
 
-if (!empty($search_custom)) {
+if (empty($search_custom) === false) {
     $search_sql_custom = " AND EXISTS (SELECT * FROM tagent_custom_data 
 		WHERE id_agent = id_agente AND description LIKE '%$search_custom%')";
 } else {
@@ -660,7 +629,7 @@ if ($strict_user) {
 
     $agents = agents_get_agents(
         [
-            'order'         => 'nombre '.' ASC',
+            'order'         => 'nombre ASC',
             'id_grupo'      => $groups,
             'disabled'      => 0,
             'status'        => $status,

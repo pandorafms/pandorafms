@@ -192,7 +192,7 @@ echo '<form autocomplete="new-password" name="conf_agent" id="form_agent" method
 
 // Custom ID.
 $custom_id_div = '<div class="label_select">';
-$custom_id_div .= '<p class="input_label">'.__('Custom ID').': </p>';
+$custom_id_div .= '<p class="font_10pt">'.__('Custom ID').': </p>';
 $custom_id_div .= html_print_input_text(
     'custom_id',
     $custom_id,
@@ -247,7 +247,6 @@ if ($new_agent === true) {
 
 // QR Code table.
 if ($new_agent === false) {
-    $CodeQRContent = '<p class="input_label">'.__('QR Code Agent view').'</p>';
     $CodeQRContent .= html_print_div(['id' => 'qr_container_image'], true);
     $CodeQRContent .= html_print_anchor(
         [
@@ -261,7 +260,7 @@ if ($new_agent === false) {
     // QR code div.
     $CodeQRTable = html_print_div(
         [
-            'class'   => 'box-shadow white_box agent_qr',
+            'class'   => 'agent_qr',
             'content' => $CodeQRContent,
         ],
         true
@@ -344,8 +343,7 @@ if ($icon_path == '') {
 }
 
 $tableAgent = new stdClass();
-$tableAgent->id = 'simple';
-$tableAgent->class = 'w100p mrgn_10px';
+$tableAgent->class = 'floating_form primary_form';
 $tableAgent->data = [];
 $tableAgent->style = [];
 $tableAgent->cellclass = [];
@@ -354,9 +352,9 @@ $tableAgent->rowspan = [];
 
 // Agent name.
 if ($new_agent === false) {
-    $tableAgent->data['name'][0] = __('Agent name');
-    $tableAgent->data['name'][1] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true);
-    $tableAgent->data['name'][1] .= html_print_div(
+    $tableAgent->data['caption_name'][0] = __('Agent name');
+    $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true);
+    $tableAgent->data['name'][0] .= html_print_div(
         [
             'class'   => 'moduleIdBox',
             'content' => __('ID').'&nbsp;<span class="font_14pt">'.$id_agente.'</span>',
@@ -368,13 +366,14 @@ if ($new_agent === false) {
 }
 
 // Alias.
-$tableAgent->data['alias'][0] = __('Alias');
-$tableAgent->data['alias'][1] = html_print_input_text('alias', $alias, '', 50, 100, true, false, true);
+$tableAgent->data['caption_alias'][0] = __('Alias');
+$tableAgent->data['alias'][0] = html_print_input_text('alias', $alias, '', 50, 100, true, false, true);
 if ($new_agent === true) {
-    $tableAgent->data['alias'][2] = __('Use alias as name');
-    $tableAgent->data['alias'][3] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
+    $tableAgent->rowclass['additional_alias'] = 'subinput';
+    $tableAgent->data['additional_alias'][0] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
+    $tableAgent->data['additional_alias'][1] = __('Use alias as name');
 } else {
-    $tableAgent->data['alias'][2] = html_print_anchor(
+    $tableAgent->data['alias'][1] = html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5,
             'content' => html_print_image(
@@ -392,15 +391,14 @@ if ($new_agent === true) {
 }
 
 // Ip adress.
-$tableAgent->data['ip_address'][0] = __('IP Address');
-$tableAgent->data['ip_address'][1] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true);
+$tableAgent->data['caption_ip_address'] = __('IP Address');
+$tableAgent->data['ip_address'][0] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true);
 
-$tableAgent->data['ip_address'][2] = __('Unique IP');
-$tableAgent->data['ip_address'][3] .= html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
-
-$tableAgent->data['ip_address'][4] = __('Fix IP address');
-$tableAgent->data['ip_address'][4] .= ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true);
-$tableAgent->data['ip_address'][5] = html_print_input(
+$tableAgent->rowclass['additional_ip_address'] = 'subinput';
+$tableAgent->data['additional_ip_address'][0] = html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
+$tableAgent->data['additional_ip_address'][1] = __('Unique IP');
+$tableAgent->cellclass['additional_ip_address'][1] = 'w120px';
+$tableAgent->data['additional_ip_address'][2] = html_print_input(
     [
         'type'  => 'switch',
         'id'    => 'fixed_ip',
@@ -408,22 +406,26 @@ $tableAgent->data['ip_address'][5] = html_print_input(
         'value' => $fixed_ip,
     ]
 );
+$tableAgent->data['additional_ip_address'][3] = __('Fix IP address');
+$tableAgent->data['additional_ip_address'][3] .= ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true);
 
 // IP Address List.
 if ($new_agent === false) {
-    $tableAgent->data['ip_address_list'][0] = __('IP Address list');
-    $tableAgent->data['ip_address_list'][1] = html_print_select(agents_get_addresses($id_agente), 'address_list', $direccion_agente, '', '', 0, true);
-    $tableAgent->data['ip_address_list'][2] = __('Delete selected IPs');
-    $tableAgent->data['ip_address_list'][3] = html_print_checkbox_switch('delete_ip', 1, false, true);
+    $tableAgent->data['caption_ip_address_list'] = __('IP Address list');
+    $tableAgent->data['ip_address_list'][0] = html_print_select(agents_get_addresses($id_agente), 'address_list', $direccion_agente, '', '', 0, true, false, true, 'w220px');
+    $tableAgent->rowclass['additional_ip_address_list'] = 'subinput';
+    $tableAgent->data['additional_ip_address_list'][0] = html_print_checkbox_switch('delete_ip', 1, false, true);
+    $tableAgent->data['additional_ip_address_list'][1] = __('Delete selected IPs');
 }
 
 // Select primary group.
-$tableAgent->data['primary_group'][0] = __('Primary group');
+$tableAgent->data['caption_primary_group'][0] = __('Primary group');
 if (isset($groups[$grupo]) === true || $new_agent === true) {
     // Cannot change primary group if user have not permission for that group.
-    $tableAgent->data['primary_group'][1] = html_print_input(
+    $tableAgent->data['primary_group'][0] = html_print_input(
         [
             'type'           => 'select_groups',
+            'class'          => 'w220px',
             'returnAllGroup' => false,
             'name'           => 'grupo',
             'selected'       => $grupo,
@@ -439,7 +441,6 @@ if (isset($groups[$grupo]) === true || $new_agent === true) {
 
 $tableAgent->data['primary_group'][1] .= html_print_div(
     [
-        'class'   => 'mrgn_lft_5px',
         'content' => ui_print_group_icon(
             $grupo,
             true,
@@ -450,8 +451,9 @@ $tableAgent->data['primary_group'][1] .= html_print_div(
     true
 );
 
-$tableAgent->data['interval'][0] = __('Interval');
-$tableAgent->data['interval'][1] = html_print_extended_select_for_time(
+$tableAgent->data['caption_interval'][0] = __('Interval');
+$tableAgent->rowstyle['interval'] = 'width: 260px';
+$tableAgent->data['interval'][0] = html_print_extended_select_for_time(
     'intervalo',
     $intervalo,
     '',
@@ -461,15 +463,15 @@ $tableAgent->data['interval'][1] = html_print_extended_select_for_time(
     true,
     false,
     true,
-    'w40p'
+    'w33p'
 );
 
 if ($intervalo < SECONDS_5MINUTES) {
-    $tableAgent->data['interval'][1] .= clippy_context_help('interval_agent_min');
+    $tableAgent->data['interval'][0] .= clippy_context_help('interval_agent_min');
 }
 
-$tableAgent->data['os'][0] = __('OS');
-$tableAgent->data['os'][1] = html_print_select_from_sql(
+$tableAgent->data['caption_os'][0] = __('OS');
+$tableAgent->data['os'][0] = html_print_select_from_sql(
     'SELECT id_os, name FROM tconfig_os',
     'id_os',
     $id_os,
@@ -478,9 +480,10 @@ $tableAgent->data['os'][1] = html_print_select_from_sql(
     '0',
     true
 );
-$tableAgent->data['os'][1] .= html_print_div(
+$tableAgent->data['os'][0] .= html_print_div(
     [
         'class'   => 'mrgn_lft_5px',
+        'id'      => 'os_preview',
         'content' => ui_print_os_icon(
             $id_os,
             false,
@@ -490,20 +493,23 @@ $tableAgent->data['os'][1] .= html_print_div(
     true
 );
 
-$tableAgent->data['server'][0] = __('Server');
-$tableAgent->data['server'][1] = html_print_select(
+$tableAgent->data['caption_server'][0] = __('Server');
+$tableAgent->data['server'][0] = html_print_select(
     $servers,
     'server_name',
     $server_name,
     '',
     __('None'),
     0,
-    true
+    true,
+    false,
+    true,
+    'w220px'
 );
 
 // Description.
-$tableAgent->data['description'][0] = __('Description');
-$tableAgent->data['description'][1] = html_print_textarea(
+$tableAgent->data['caption_description'][0] = __('Description');
+$tableAgent->data['description'][0] = html_print_textarea(
     'comentarios',
     3,
     80,
@@ -559,46 +565,46 @@ html_print_div(
 
 // Advanced options.
 $tableAdvancedAgent = new stdClass();
-$tableAdvancedAgent->id = 'advanced';
-$tableAdvancedAgent->class = 'w100p mrgn_10px';
+$tableAdvancedAgent->class = 'floating_form primary_form';
 $tableAdvancedAgent->data = [];
 $tableAdvancedAgent->style = [];
 $tableAdvancedAgent->cellclass = [];
 $tableAdvancedAgent->colspan = [];
 $tableAdvancedAgent->rowspan = [];
 // Secondary groups.
-$tableAdvancedAgent->data['secondary_groups'][0] = __('Secondary groups');
-$tableAdvancedAgent->data['secondary_groups'][1] = html_print_select_agent_secondary(
+$tableAdvancedAgent->data['caption_secondary_groups'][0] = __('Secondary groups');
+$tableAdvancedAgent->data['secondary_groups'][0] = html_print_select_agent_secondary(
     $agent,
     $id_agente
 );
 // Parent agent.
-$tableAdvancedAgent->data['parent_agent'][0] = __('Parent');
-$tableAdvancedAgent->data['parent_agent'][1] = ui_print_agent_autocomplete_input($paramsParentAgent);
+$tableAdvancedAgent->data['caption_parent_agent'][0] = __('Parent');
+$tableAdvancedAgent->data['parent_agent'][0] = ui_print_agent_autocomplete_input($paramsParentAgent);
 if (enterprise_installed() === true) {
-    $tableAdvancedAgent->rowclass['cascade_protection'] = 'bring_next_field';
-    $tableAdvancedAgent->data['cascade_protection'][0] = __('Cascade protection modules');
-    $tableAdvancedAgent->data['cascade_protection'][1] = html_print_checkbox_switch(
+    $tableAdvancedAgent->data['caption_cascade_protection'][0] = __('Cascade protection modules');
+    $tableAdvancedAgent->data['cascade_protection'][0] = html_print_checkbox_switch(
         'cascade_protection',
         1,
         $cascade_protection,
         true
     );
 
-    $tableAdvancedAgent->data['cascade_module'][0] = '';
-    $tableAdvancedAgent->data['cascade_module'][1] = html_print_select(
+    $tableAdvancedAgent->data['cascade_protection'][1] = html_print_select(
         $modules_values,
         'cascade_protection_module',
         $cascade_protection_module,
         '',
         '',
         0,
-        true
+        true,
+        false,
+        true,
+        'w220p'
     );
 }
 
 // Module Definition (Learn mode).
-$tableAdvancedAgent->data['module_definition'][0] = __('Module definition');
+$tableAdvancedAgent->data['caption_module_definition'][0] = __('Module definition');
 $switchButtons = html_print_radio_button_extended(
     'modo',
     1,
@@ -630,7 +636,7 @@ $switchButtons .= html_print_radio_button_extended(
     true
 );
 
-$tableAdvancedAgent->data['module_definition'][1] = html_print_div(
+$tableAdvancedAgent->data['module_definition'][0] = html_print_div(
     [
         'class'   => 'switch_radio_button',
         'content' => $switchButtons,
@@ -639,18 +645,18 @@ $tableAdvancedAgent->data['module_definition'][1] = html_print_div(
 );
 
 // CPS - Cascade Protection Services.
-$tableAdvancedAgent->data['cps_value'][0] = __('Cascade protection services');
-$tableAdvancedAgent->data['cps_value'][1] = html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
+$tableAdvancedAgent->data['caption_cps_value'][0] = __('Cascade protection services');
+$tableAdvancedAgent->data['cps_value'][0] = html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
 
 // Update GIS data.
 if ((bool) $config['activate_gis'] === true) {
-    $tableAdvancedAgent->data['gis'][0] = __('Update new GIS data');
-    $tableAdvancedAgent->data['gis'][1] = html_print_checkbox_switch('update_gis_data', 1, ($new_agent === true), true);
+    $tableAdvancedAgent->data['caption_gis'][0] = __('Update new GIS data');
+    $tableAdvancedAgent->data['gis'][0] = html_print_checkbox_switch('update_gis_data', 1, ($new_agent === true), true);
 }
 
 // Agent Icons.
-$tableAdvancedAgent->data['agent_icon'][0] = __('Agent icon');
-$tableAdvancedAgent->data['agent_icon'][1] = html_print_select(
+$tableAdvancedAgent->data['caption_agent_icon'][0] = __('Agent icon');
+$tableAdvancedAgent->data['agent_icon'][0] = html_print_select(
     $arraySelectIcon,
     'icon_path',
     $icon_path,
@@ -659,7 +665,7 @@ $tableAdvancedAgent->data['agent_icon'][1] = html_print_select(
     '',
     true
 );
-$tableAdvancedAgent->data['agent_icon'][2] = html_print_image(
+$tableAdvancedAgent->data['agent_icon'][1] = html_print_image(
     $path_ok,
     true,
     [
@@ -683,9 +689,9 @@ $tableAdvancedAgent->data['agent_icon'][2] = html_print_image(
 );
 
 // Url address.
-$tableAdvancedAgent->data['url_description'][0] = __('Url address');
+$tableAdvancedAgent->data['caption_url_description'][0] = __('Url address');
 if (enterprise_installed() === true) {
-    $tableAdvancedAgent->data['url_description'][1] = html_print_input_text(
+    $tableAdvancedAgent->data['url_description'][0] = html_print_input_text(
         'url_description',
         $url_description,
         '',
@@ -701,7 +707,7 @@ if (enterprise_installed() === true) {
         'new-password'
     );
 } else {
-    $tableAdvancedAgent->data['url_description'][1] = html_print_input_text(
+    $tableAdvancedAgent->data['url_description'][0] = html_print_input_text(
         'url_description',
         $url_description,
         '',
@@ -712,8 +718,8 @@ if (enterprise_installed() === true) {
 }
 
 // Agent status.
-$tableAdvancedAgent->data['agent_status'][0] = __('Disabled mode');
-$tableAdvancedAgent->data['agent_status'][1] = html_print_checkbox_switch(
+$tableAdvancedAgent->data['caption_agent_status'][0] = __('Disabled mode');
+$tableAdvancedAgent->data['agent_status'][0] = html_print_checkbox_switch(
     'disabled',
     1,
     $disabled,
@@ -721,13 +727,13 @@ $tableAdvancedAgent->data['agent_status'][1] = html_print_checkbox_switch(
 );
 
 // Quiet mode.
-$tableAdvancedAgent->data['agent_quiet'][0] = __('Quiet');
-$tableAdvancedAgent->data['agent_quiet'][1] = html_print_checkbox_switch('quiet', 1, $quiet, true);
+$tableAdvancedAgent->data['caption_agent_quiet'][0] = __('Quiet');
+$tableAdvancedAgent->data['agent_quiet'][0] = html_print_checkbox_switch('quiet', 1, $quiet, true);
 
 // Remote configuration.
 if ($new_agent === false && isset($filename) === true && file_exists($filename['md5']) === true) {
-    $tableAdvancedAgent->data['remote_configuration'][0] = __('Remote configuration');
-    $tableAdvancedAgent->data['remote_configuration'][1] = html_print_input_text(
+    $tableAdvancedAgent->data['caption_remote_configuration'][0] = __('Remote configuration');
+    $tableAdvancedAgent->data['remote_configuration'][0] = html_print_input_text(
         'remote_file_timestamp',
         date('F d Y H:i:s', fileatime($filename['md5'])),
         '',
@@ -736,7 +742,7 @@ if ($new_agent === false && isset($filename) === true && file_exists($filename['
         true,
         true
     );
-    $tableAdvancedAgent->data['remote_configuration'][1] .= html_print_anchor(
+    $tableAdvancedAgent->data['remote_configuration'][0] .= html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente,
             'content' => html_print_image(
@@ -753,11 +759,9 @@ if ($new_agent === false && isset($filename) === true && file_exists($filename['
 }
 
 // Safe operation mode.
-$tableAdvancedAgent->rowclass['safe_operation'] = 'bring_next_field';
-$tableAdvancedAgent->data['safe_operation'][0] = __('Safe operation mode');
-$tableAdvancedAgent->data['safe_operation'][1] = html_print_checkbox_switch('safe_mode', 1, $safe_mode, true);
-$tableAdvancedAgent->data['safe_operation_module'][0] = '';
-$tableAdvancedAgent->data['safe_operation_module'][1] = html_print_select($safe_mode_modules, 'safe_mode_module', $safe_mode_module, '', '', 0, true);
+$tableAdvancedAgent->data['caption_safe_operation'][0] = __('Safe operation mode');
+$tableAdvancedAgent->data['safe_operation'][0] = html_print_checkbox_switch('safe_mode', 1, $safe_mode, true);
+$tableAdvancedAgent->data['safe_operation'][1] = html_print_select($safe_mode_modules, 'safe_mode_module', $safe_mode_module, '', '', 0, true);
 
 if (enterprise_installed() === true) {
     ui_toggle(
@@ -773,16 +777,6 @@ if (enterprise_installed() === true) {
 }
 
 // Custom fields.
-/*
-    $table = new stdClass();
-    $table->width = '100%';
-    $table->class = 'custom_fields_table';
-    $table->class = '';
-    $table->style = [];
-    $table->style[0] = 'font-weight: bold;';
-    $table->data = [];
-    $table->rowstyle = [];
-*/
 $customOutputData = '';
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -923,6 +917,11 @@ if ($new_agent === false) {
         'crtbutton',
         false,
         [ 'icon' => 'wand'],
+        true
+    );
+    $submitButton .= html_print_go_back_button(
+        'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+        ['button_class' => ''],
         true
     );
     $submitButton .= html_print_input_hidden('create_agent', 1);
@@ -1067,8 +1066,8 @@ ui_require_jquery_file('bgiframe');
             paint_qrcode(
                 "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
                 "#qr_code_agent_view",
-                128,
-                128
+                256,
+                256
             );
         }
         $("#text-agente").prop('readonly', true);

@@ -215,12 +215,6 @@ table.table_modal_alternate tr td {
   min-height: 33px;
 }
 
-table.table_modal_alternate tr td:first-child {
-  width: 50%;
-  font-weight: 600;
-  padding-left: 20px;
-}
-
 ul.events_tabs {
   background: #ffffff;
   border: 0px;

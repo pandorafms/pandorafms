@@ -2162,7 +2162,7 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" class="w100 inline_line">';
+    echo '<div id="'.$uniq_name.'_manual" class="w100p inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -2178,7 +2178,7 @@ function html_print_extended_select_for_time(
             false,
             $class,
             $readonly,
-            'padding: 7px 3px;height: 32px;'.$select_style,
+            'padding: 7px 3px;height: 32px;margin-top: -2px;width: 100px;'.$select_style,
             false,
             false,
             false,

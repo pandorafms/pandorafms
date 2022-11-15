@@ -150,7 +150,7 @@ html {
 }
 
 body {
-  background-color: #fff;
+  background-color: #fbfbfb;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -917,14 +917,14 @@ div#page {
 }
 
 body.pure {
-  background-color: #fff;
+  background-color: #fbfbfb;
 }
 
 div#container {
   margin: 0 auto;
   min-width: 960px;
   text-align: left;
-  background: #fff;
+  background: #fbfbfb;
   width: 100%;
 }
 
@@ -1455,9 +1455,7 @@ td.datos2_id {
   padding-top: 2px;
   padding-bottom: 1px;
 }
-.w120 {
-  width: 120px;
-}
+
 .w130,
 #table-agent-configuration select {
   width: 130px;
@@ -1747,9 +1745,14 @@ div#agent_wizard_subtabs {
 table.databox {
   background-color: #f9faf9;
   border-spacing: 0px;
-  -moz-box-shadow: 0px 0px 0px #ddd;
-  -webkit-box-shadow: 0px 0px 0px #ddd;
-  box-shadow: 0px 0px 0px #ddd;
+  -moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  border-radius: 4px;
+  border: 1px solid #e2e2e2;
+  padding: 20px;
+  max-width: 1064px;
+  margin-bottom: 20px;
 }
 
 .databox > tbody > tr > td {
@@ -5942,8 +5945,8 @@ table.table_modal_alternate tr td {
 }
 
 table.table_modal_alternate tr td:first-child {
-  width: 35%;
-  font-weight: 600;
+  width: 30%;
+  font-size: 10pt;
   padding-left: 20px;
 }
 /* END - Table for show more info in events and config menu in modules graphs */
@@ -9503,7 +9506,8 @@ button.ui-button.ui-widget.submit-cancel:active {
 /* End custom checkbox style */
 
 table#simple tr td,
-table#advanced tr td {
+table#advanced tr td,
+.white_table_graph > table tr td {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -9511,25 +9515,28 @@ table#advanced tr td {
 }
 
 table#simple > tbody > tr,
-table#advanced > tbody > tr {
+table#advanced > tbody > tr,
+.white_table_graph tr {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: center;
-  min-height: 55px;
+  /*min-height: 55px;*/
 }
 
-table#simple tr td:nth-child(even):not(:nth-child(2)) {
-  margin: 0 24px;
+table#simple tr td:nth-child(even):not(:nth-child(2)),
+.white_table_graph tr td:nth-child(even):not(:nth-child(2)) {
+  /*margin: 0 24px;*/
 }
 
 table#simple tr td:nth-child(odd),
-table#advanced tr td:nth-child(odd) {
-  font-size: 10pt;
+table#advanced tr td:nth-child(odd),
+.white_table_graph tr td:nth-child(odd) {
+  /*font-size: 10pt;*/
 }
 
 table tr td:first-child {
-  width: 190px;
+  /*width: 190px;*/
 }
 
 #secondary_groups_selected > .select2-container {
@@ -9735,4 +9742,18 @@ tr.bring_next_field {
 
 .svg_ico_border {
   fill: #fff;
+}
+
+/* FLOATING FORM */
+
+.floating_form td {
+  font-size: 11pt;
+}
+
+.floating_form td.subinput {
+  font-size: 10pt;
+}
+
+.floating_form .p-switch {
+  margin-top: -6px;
 }

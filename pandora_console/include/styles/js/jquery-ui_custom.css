@@ -167,7 +167,6 @@
   border-bottom-left-radius: 16px !important;
   border-bottom-right-radius: 16px !important;
   box-shadow: 0 10px 6px 0 rgb(0 0 0 / 13%);
-  border-radius: 8px;
   border: 1px solid #e5e9ed;
   padding: 0;
 }
@@ -195,11 +194,6 @@
 .ui-dialog-title {
   color: #ffffff;
   font-size: 9pt;
-}
-.ui-widget input,
-.ui-widget select,
-.ui-widget textarea,
-.ui-widget button {
 }
 
 a.ui-button:active,

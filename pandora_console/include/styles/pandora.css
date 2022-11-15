@@ -163,11 +163,6 @@ body.body-report {
   display: block;
 }
 
-textarea {
-  min-height: 100px;
-  width: 99%;
-}
-
 input[type="checkbox"] {
   display: inline;
 }
@@ -3870,13 +3865,14 @@ div.simple_value > a > span.text p {
 
 /* update manager online */
 #opacidad {
-  opacity: 0;
+  position: fixed;
+  background: black;
+  opacity: 0.6;
+  z-index: 1;
   transition: opacity 3s;
   -webkit-transition: opacity 3s;
-  z-index: 1;
   width: 100%;
   height: 100%;
-  position: absolute;
   left: 0px;
   top: 0px;
 }
@@ -5403,9 +5399,6 @@ div.label_select_child_left > span {
   background-color: #1d7873;
   box-shadow: none;
   color: #fff !important;
-}
-
-.switch_radio_button label:last-child {
 }
 
 /*
@@ -7064,9 +7057,6 @@ div.graph div.legend table {
 .font_40pt {
   font-size: 40pt;
 }
-.align_center {
-  align: center;
-}
 .aligni_center {
   align-items: center;
 }
@@ -7688,13 +7678,6 @@ div.graph div.legend table {
   height: 300px;
   border: 1px solid black;
   float: left;
-}
-
-#opacidad {
-  position: fixed;
-  background: black;
-  opacity: 0.6;
-  z-index: 1;
 }
 
 .user_list_ul {
@@ -8401,6 +8384,7 @@ div.stat-win-spinner img {
   color: #fff !important;
   font-size: 1.2em;
   margin-right: 5px !important;
+  margin-top: -4px;
 }
 
 .select2-results
@@ -9011,7 +8995,10 @@ select {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
+textarea {
+  padding: 10px;
+  height: auto;
+}
 input[readonly],
 input:disabled,
 textarea:disabled,
@@ -9039,10 +9026,6 @@ select:focus {
   border-color: #8a96a6;
 }
 
-textarea {
-  padding: 10px;
-  height: auto;
-}
 .dataTables_length > label > select {
   min-height: 3em;
 }
@@ -9547,7 +9530,6 @@ table#advanced tr td:nth-child(odd) {
 
 table tr td:first-child {
   width: 190px;
-  align-self: flex-start !important;
 }
 
 #secondary_groups_selected > .select2-container {
@@ -9642,11 +9624,6 @@ tr.bring_next_field {
   overflow: overlay;
 }
 
-.select2-container--default
-  .select2-selection--multiple
-  .select2-selection__choice__remove {
-  margin-top: -4px;
-}
 .select2-hidden-accessible {
   border: 0 !important;
   clip: rect(0 0 0 0) !important;

@@ -181,7 +181,7 @@ final class Container extends Model
             null
         );
 
-        return ($backgroundImage === 'None.png') ? null : $backgroundImage;
+        return ($backgroundImage === 'None.png') ? null : str_replace(' ', '_', $backgroundImage);
     }
 
 

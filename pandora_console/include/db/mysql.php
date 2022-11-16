@@ -81,6 +81,12 @@ function mysql_connect_db(
     if ($config['mysqli']) {
         if (empty($ssl)) {
             $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
+            hd($host);
+            hd($user);
+            hd($pass);
+            hd($db);
+            hd($port);
+            hd(mysqli_connect_errno());
             if (mysqli_connect_errno() > 0) {
                 include 'general/mysqlerr.php';
                 return false;
@@ -104,6 +110,8 @@ function mysql_connect_db(
                 mysqli_real_connect($connect_id, $host, $user, $pass, $db, $port, null, MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT);
             }
 
+            hd(mysqli_connect_errno());
+            exit;
             if (mysqli_connect_errno() > 0) {
                 include 'general/mysqlerr.php';
                 return false;

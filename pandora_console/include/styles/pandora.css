@@ -4540,8 +4540,8 @@ div#dialog_messages table th:last-child {
   -webkit-transition: 0.4s;
   transition: 0.4s;
   border-radius: 50px;
-  height: 12px;
-  width: 26px;
+  height: 14px;
+  width: 33px;
   padding: 0 !important;
 }
 
@@ -4552,10 +4552,10 @@ div#dialog_messages table th:last-child {
 .p-slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 20px;
+  width: 20px;
   left: -1px;
-  bottom: -2px;
+  bottom: -4px;
   -webkit-transition: 0.4s;
   transition: 0.4s;
   border-radius: 50%;
@@ -8988,11 +8988,11 @@ input,
 textarea,
 select {
   background-color: #f6f7fb;
-  height: 32px;
+  height: 42px;
   border: 1px solid #c0ccdc;
   border-radius: 8px;
   padding-left: 12px;
-  font: normal normal normal 12px Pandora-Light;
+  font: normal normal normal 14px Pandora-Light;
   color: #2b3332;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -9461,15 +9461,15 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 .moduleIdBox {
-  height: 30px;
+  height: 40px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
-  margin-left: -6px;
+  margin-left: -59px;
   border: 1px solid #c0ccdc;
   background-color: #f6f7fb;
   padding: 0 16px;
   z-index: 0;
-  line-height: 32px;
+  line-height: 42px;
 }
 
 /* Custom Checkbox Style */
@@ -9600,11 +9600,11 @@ tr.bring_next_field {
 
 .select2-container .select2-selection--single {
   background-color: #f6f7fb !important;
-  height: 32px !important;
+  height: 42px !important;
   border: 1px solid #c0ccdc !important;
   border-radius: 8px !important;
   padding-left: 4px !important;
-  font: normal normal normal 12px Pandora-Light !important;
+  font: normal normal normal 14px Pandora-Light !important;
   color: #2b3332 !important;
   box-sizing: border-box;
   cursor: pointer;
@@ -9651,7 +9651,7 @@ tr.bring_next_field {
   border: 0 !important;
   height: 17px !important;
   margin-left: -4px !important;
-  margin-top: 7px !important;
+  margin-top: 12px !important;
   position: absolute !important;
   width: 17px !important;
   background: url(../../images/svg/down.svg) no-repeat content-box !important;
@@ -9670,7 +9670,7 @@ tr.bring_next_field {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #444 !important;
-  line-height: 32px !important;
+  line-height: 42px !important;
 }
 
 .select2-container--default.select2-container--open.select2-container--below
@@ -9705,6 +9705,9 @@ tr.bring_next_field {
   border-color: #8a96a6 !important;
 }
 
+.select2-container--default > .selection {
+  font-size: 14px;
+}
 /* FINISH SELECT2 */
 
 .max_floating_element_size {
@@ -9755,5 +9758,12 @@ tr.bring_next_field {
 }
 
 .floating_form .p-switch {
-  margin-top: -6px;
+  margin-top: -8px;
+}
+
+.fixed_action_buttons {
+  position: fixed;
+  padding: 0px;
+  bottom: 50px;
+  right: 10px;
 }

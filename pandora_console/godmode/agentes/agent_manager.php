@@ -308,6 +308,8 @@ if (enterprise_installed() === true) {
     $paramsParentAgent['selectbox_id'] = 'cascade_protection_module';
     $paramsParentAgent['javascript_is_function_select'] = true;
     $paramsParentAgent['cascade_protection'] = true;
+    $paramsParentAgent['class'] = 'w540px';
+
     if ($id_agente !== 0) {
         // Deletes the agent's offspring.
         $paramsParentAgent['delete_offspring_agents'] = $id_agente;
@@ -353,7 +355,7 @@ $tableAgent->rowspan = [];
 // Agent name.
 if ($new_agent === false) {
     $tableAgent->data['caption_name'][0] = __('Agent name');
-    $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true);
+    $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true, false, false, '', 'w540px');
     $tableAgent->data['name'][0] .= html_print_div(
         [
             'class'   => 'moduleIdBox',
@@ -367,7 +369,7 @@ if ($new_agent === false) {
 
 // Alias.
 $tableAgent->data['caption_alias'][0] = __('Alias');
-$tableAgent->data['alias'][0] = html_print_input_text('alias', $alias, '', 50, 100, true, false, true);
+$tableAgent->data['alias'][0] = html_print_input_text('alias', $alias, '', 50, 100, true, false, true, '', 'w540px');
 if ($new_agent === true) {
     $tableAgent->rowclass['additional_alias'] = 'subinput';
     $tableAgent->data['additional_alias'][0] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
@@ -392,7 +394,7 @@ if ($new_agent === true) {
 
 // Ip adress.
 $tableAgent->data['caption_ip_address'] = __('IP Address');
-$tableAgent->data['ip_address'][0] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true);
+$tableAgent->data['ip_address'][0] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true, false, false, '', 'w540px');
 
 $tableAgent->rowclass['additional_ip_address'] = 'subinput';
 $tableAgent->data['additional_ip_address'][0] = html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
@@ -412,7 +414,7 @@ $tableAgent->data['additional_ip_address'][3] .= ui_print_help_tip(__('Avoid aut
 // IP Address List.
 if ($new_agent === false) {
     $tableAgent->data['caption_ip_address_list'] = __('IP Address list');
-    $tableAgent->data['ip_address_list'][0] = html_print_select(agents_get_addresses($id_agente), 'address_list', $direccion_agente, '', '', 0, true, false, true, 'w220px');
+    $tableAgent->data['ip_address_list'][0] = html_print_select(agents_get_addresses($id_agente), 'address_list', $direccion_agente, '', '', 0, true, false, true, 'w540px');
     $tableAgent->rowclass['additional_ip_address_list'] = 'subinput';
     $tableAgent->data['additional_ip_address_list'][0] = html_print_checkbox_switch('delete_ip', 1, false, true);
     $tableAgent->data['additional_ip_address_list'][1] = __('Delete selected IPs');
@@ -425,13 +427,14 @@ if (isset($groups[$grupo]) === true || $new_agent === true) {
     $tableAgent->data['primary_group'][0] = html_print_input(
         [
             'type'           => 'select_groups',
-            'class'          => 'w220px',
+            'class'          => 'w540px',
             'returnAllGroup' => false,
             'name'           => 'grupo',
             'selected'       => $grupo,
             'return'         => true,
             'required'       => true,
             'privilege'      => 'AW',
+            'option_style'   => 'width: 540px;',
         ]
     );
 } else {
@@ -478,7 +481,11 @@ $tableAgent->data['os'][0] = html_print_select_from_sql(
     '',
     '',
     '0',
-    true
+    true,
+    false,
+    true,
+    false,
+    'width: 540px;'
 );
 $tableAgent->data['os'][0] .= html_print_div(
     [
@@ -504,7 +511,7 @@ $tableAgent->data['server'][0] = html_print_select(
     true,
     false,
     true,
-    'w220px'
+    'w540px'
 );
 
 // Description.
@@ -516,7 +523,7 @@ $tableAgent->data['description'][0] = html_print_textarea(
     $comentarios,
     '',
     true,
-    'agent_description'
+    'agent_description w540px'
 );
 
 html_print_div(
@@ -663,7 +670,10 @@ $tableAdvancedAgent->data['agent_icon'][0] = html_print_select(
     'changeIcons();',
     __('None'),
     '',
-    true
+    true,
+    false,
+    true,
+    'w540px'
 );
 $tableAdvancedAgent->data['agent_icon'][1] = html_print_image(
     $path_ok,
@@ -700,7 +710,7 @@ if (enterprise_installed() === true) {
         true,
         false,
         false,
-        '',
+        'w540px',
         '',
         '',
         // Autocomplete.

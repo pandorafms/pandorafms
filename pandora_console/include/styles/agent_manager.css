@@ -167,7 +167,7 @@ a#qr_code_agent_view {
 }
 
 .agent_description {
-  min-height: 4.8em;
+  height: 126px;
 }
 .agent_custom_id {
   padding-bottom: 0.7em;

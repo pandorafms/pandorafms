@@ -442,7 +442,7 @@ if ($create_user) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
-    } else if (excludedPassword($password_new) === true) {
+    } else if (enterprise_hook('excludedPassword', $password_new) === true) {
         $is_err = true;
         ui_print_error_message(__('The password provided is not valid. Please set another one.'));
         $user_info = $values;

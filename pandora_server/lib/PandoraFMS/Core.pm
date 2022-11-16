@@ -7253,9 +7253,12 @@ sub pandora_snmptrapd_still_working ($$) {
 		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
 		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
 		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
+
+		$lastTimestampLogFile = '' unless defined ($lastTimestampLogFile);
+
 		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
 		# If time or date not filled in, probably havent caught any snmptraps yet.
-		if ($time ne '' && $date ne '') {
+		if (defined $date && defined $time && $time ne '' && $date ne '') {
 			my ($hour, $min, $sec) = split(/:/, $time, 3);
 			my ($year, $month, $day) = split(/-/, $date, 3);
 			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);

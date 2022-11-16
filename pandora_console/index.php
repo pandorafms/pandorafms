@@ -1491,6 +1491,8 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
+    // Handle the scroll.
+    $(document).ready(scrollFunction());
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
     if (theme === 'pandora') {
@@ -1505,6 +1507,10 @@ require 'include/php_to_js_values.php';
         scrollFunction()
     };
 
+    window.onresize = function() {
+        scrollFunction()
+    };
+
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
             if (document.getElementById("top_btn")) {
@@ -1514,6 +1520,33 @@ require 'include/php_to_js_values.php';
             if (document.getElementById("top_btn")) {
                 document.getElementById("top_btn").style.display = "none";
             }
+        }
+
+        var separationHeight = 10;
+        // Position of the visible part of document.
+        var scrollTop = document.documentElement.scrollTop;
+        // Height of all document.
+        var scrollHeight = document.documentElement.scrollHeight;
+        // Height of visible window (browser).
+        var clientHeight = document.documentElement.clientHeight;
+        // Height of footer (Plus 10px).
+        var footerHeight = document.getElementById('foot').offsetHeight + separationHeight;
+        // Fixed action buttons element.
+        var actionButtons = document.getElementById('principal_action_buttons');
+        // Handle the position of principal_action_buttons.
+        if (actionButtons) {
+            var $bottom = '', $left = '';
+            if ((scrollHeight - clientHeight - scrollTop) < footerHeight) {
+                $bottom = 'bottom:'+(footerHeight - (scrollHeight - clientHeight - window.scrollY))+'px;';
+            } else {
+                $bottom = 'bottom:'+separationHeight+'px;';
+            }
+
+            if (actionButtons.classList.contains('fixed_action_buttons_size') === false) {
+                $left = 'left:'+(document.documentElement.offsetWidth - document.getElementById('principal_action_buttons').offsetWidth - 40)+'px;';
+            }
+            // Set the position of principal action buttons.
+            actionButtons.setAttribute('style', $left+$bottom);
         }
     }
 

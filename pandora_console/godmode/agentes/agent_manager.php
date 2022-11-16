@@ -913,7 +913,7 @@ if ($new_agent === false) {
             __('Delete agent'),
             'deleteAgent',
             false,
-            'onClick=onClick="if (!confirm(\'"'.__('Are you sure?').'"\')) return false;\" href=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=\''.$id_agente,
+            'deleteAgentDialog('.$id_agente.')',
             [
                 'icon' => 'delete',
                 'mode' => 'secondary',
@@ -922,27 +922,23 @@ if ($new_agent === false) {
         );
     }
 } else {
-    $submitButton = html_print_submit_button(
+    $submitButton = html_print_input_hidden('create_agent', 1);
+    $submitButton .= html_print_submit_button(
         __('Create'),
         'crtbutton',
         false,
         [ 'icon' => 'wand'],
         true
     );
-    $submitButton .= html_print_go_back_button(
-        'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
-        ['button_class' => ''],
-        true
-    );
-    $submitButton .= html_print_input_hidden('create_agent', 1);
 }
 
-html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => $submitButton,
-    ]
+$submitButton .= html_print_go_back_button(
+    'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+    ['button_class' => ''],
+    true
 );
+
+html_print_action_buttons($submitButton);
 
 echo '</div></div>';
 echo '</form>';
@@ -965,6 +961,15 @@ ui_require_jquery_file('bgiframe');
         }
     }
 
+    function deleteAgentDialog($idAgente) {
+        confirmDialog({
+            title: "<?php echo __('Delete agent'); ?>",
+            message: "<?php echo __('This action is not reversible. Are you sure'); ?>",
+            onAccept: function() {
+                window.location.assign('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente='+$idAgente);
+            }
+        });
+    }
 
     //Use this function for change 3 icons when change the selectbox
     function changeIcons() {
@@ -1076,8 +1081,8 @@ ui_require_jquery_file('bgiframe');
             paint_qrcode(
                 "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
                 "#qr_code_agent_view",
-                256,
-                256
+                128,
+                128
             );
         }
         $("#text-agente").prop('readonly', true);

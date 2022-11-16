@@ -3322,6 +3322,29 @@ function html_print_input_color($name, $value, $id='', $class=false, $return=fal
 
 
 /**
+ * Action buttons.
+ *
+ * @param string  $buttons   Buttons for add.
+ * @param boolean $return    Return.
+ * @param boolean $principal Principal Action buttons.
+ * @param string  $class     Special classes.
+ *
+ * @return mixed.
+ */
+function html_print_action_buttons(string $buttons, bool $return=false, bool $principal=true, string $class='fixed_action_buttons fixed_action_buttons_size')
+{
+    return html_print_div(
+        [
+            'id'      => ($principal === true) ? 'principal_action_buttons' : 'action_buttons_'.rand(),
+            'class'   => 'action-buttons '.$class,
+            'content' => $buttons,
+        ],
+        $return
+    );
+}
+
+
+/**
  * Render an submit input button element.
  *
  * The element will have an id like: "submit-$name"

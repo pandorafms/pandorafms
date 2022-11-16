@@ -9464,7 +9464,7 @@ button.ui-button.ui-widget.submit-cancel:active {
   height: 40px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
-  margin-left: -59px;
+  margin-left: -56px;
   border: 1px solid #c0ccdc;
   background-color: #f6f7fb;
   padding: 0 16px;
@@ -9764,6 +9764,8 @@ tr.bring_next_field {
 .fixed_action_buttons {
   position: fixed;
   padding: 0px;
-  bottom: 50px;
-  right: 10px;
+}
+
+.fixed_action_buttons_size {
+  width: 1064px;
 }

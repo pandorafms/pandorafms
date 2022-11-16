@@ -872,6 +872,14 @@ foreach ($fields as $field) {
             true,
             true
         );
+    } else if ($field['is_link_enabled']) {
+        $link_text = $field['link_text'];
+
+        if ($field['link_text'] === '') {
+            $link_text = $field['link_url'];
+        }
+
+        $data_field[1] = '<a href="'.$field['link_url'].'">'.$link_text.'</a>';
     } else {
         $data_field[1] = html_print_textarea(
             'customvalue_'.$field['id_field'],

@@ -2103,6 +2103,9 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
   `display_on_front` TINYINT NOT NULL DEFAULT 0,
   `is_password_type` TINYINT NOT NULL DEFAULT 0,
   `combo_values` TEXT ,
+  `is_link_enabled` TINYINT(1) NOT NULL DEFAULT 0,
+  `link_text` VARCHAR(500) NOT NULL DEFAULT '',
+  `link_url` VARCHAR(2048) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

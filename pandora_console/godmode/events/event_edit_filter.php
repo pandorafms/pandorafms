@@ -66,6 +66,7 @@ if ($id) {
     $severity = explode(',', $filter['severity']);
     $status = $filter['status'];
     $search = $filter['search'];
+    $not_search = $filter['not_search'];
     $text_agent = $filter['text_agent'];
     $id_agent = $filter['id_agent'];
     $text_module = $filter['text_module'];
@@ -116,6 +117,7 @@ if ($id) {
     $severity = '';
     $status = '';
     $search = '';
+    $not_search = 0;
     $text_agent = '';
     $pagination = '';
     $event_view_hr = '';
@@ -142,6 +144,7 @@ if ($update || $create) {
     $severity = implode(',', get_parameter('severity', -1));
     $status = get_parameter('status', '');
     $search = get_parameter('search', '');
+    $not_search = get_parameter_switch('not_search', 0);
     $text_agent = get_parameter('text_agent', '');
     $id_agent = (int) get_parameter('id_agent');
     $text_module = get_parameter('text_module', '');
@@ -188,6 +191,7 @@ if ($update || $create) {
         'severity'                => $severity,
         'status'                  => $status,
         'search'                  => $search,
+        'not_search'              => $not_search,
         'text_agent'              => $text_agent,
         'id_agent_module'         => $id_agent_module,
         'id_agent'                => $id_agent,
@@ -378,6 +382,15 @@ $table->data[6][1] = html_print_input_text(
     '',
     15,
     255,
+    true
+);
+$table->data[6][1] .= ' '.html_print_checkbox_switch(
+    'not_search',
+    $not_search,
+    $not_search,
+    true,
+    false,
+    'checked_slide_events(this);',
     true
 );
 
@@ -747,6 +760,14 @@ $(document).ready( function() {
     
 });
 
+function checked_slide_events(element) {
+    var value = $("#checkbox-"+element.name).val();
+    if (value == 0) {
+        $("#checkbox-"+element.name).val(1);
+    } else {
+        $("#checkbox-"+element.name).val(0);
+    }
+}
 
 function click_button_remove_tag(what_button) {
     if (what_button == "with") {

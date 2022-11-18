@@ -640,6 +640,7 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'status'
  *     'agent_alias'
  *     'search'
+ *     'not_search'
  *     'id_extra'
  *     'id_source_event'
  *     'user_comment'
@@ -1059,16 +1060,40 @@ function events_get_all(
             $custom_data_search = 'te.custom_data';
         }
 
-        $sql_filters[] = vsprintf(
-            ' AND (lower(ta.alias) like lower("%%%s%%")
-                OR te.id_evento like "%%%s%%"
-                OR lower(te.evento) like lower("%%%s%%")
-                OR lower(te.user_comment) like lower("%%%s%%")
-                OR lower(te.id_extra) like lower("%%%s%%")
-                OR lower(te.source) like lower("%%%s%%")
-                OR lower('.$custom_data_search.') like lower("%%%s%%") )',
-            array_fill(0, 7, $filter['search'])
-        );
+        $not_search = '';
+        $nexo = 'OR';
+        $array_search = [
+            'te.id_evento',
+            'lower(te.evento)',
+            'lower(te.user_comment)',
+            'lower(te.id_extra)',
+            'lower(te.source)',
+            'lower('.$custom_data_search.')',
+        ];
+        if (isset($filter['not_search']) === true
+            && empty($filter['not_search']) === false
+        ) {
+            $not_search = 'NOT';
+            $nexo = 'AND';
+        } else {
+            $array_search[] = 'lower(ta.alias)';
+        }
+
+        $sql_search = ' AND (';
+        foreach ($array_search as $key => $field) {
+            $sql_search .= sprintf(
+                '%s %s %s like lower("%%%s%%")',
+                ($key === 0) ? '' : $nexo,
+                $field,
+                $not_search,
+                $filter['search']
+            );
+            $sql_search .= ' ';
+        }
+
+        $sql_search .= ' )';
+
+        $sql_filters[] = $sql_search;
     }
 
     // Free search exclude.

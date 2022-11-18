@@ -351,6 +351,7 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
     $values['id_agent_module'] = get_parameter('id_agent_module');
@@ -410,6 +411,7 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
     $values['id_agent_module'] = get_parameter('id_agent_module');
@@ -645,6 +647,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'not_search')
+                    $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
                     $('input[name=text_agent]').val(val);
                 if (i == 'id_agent')
@@ -903,6 +907,7 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
             "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
@@ -981,6 +986,7 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
         "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
@@ -2424,6 +2430,7 @@ if ($get_events_fired) {
             'severity'                => -1,
             'status'                  => -1,
             'search'                  => '',
+            'not_search'              => 0,
             'text_agent'              => '',
             'id_agent'                => 0,
             'id_agent_module'         => 0,

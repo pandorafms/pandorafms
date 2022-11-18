@@ -1238,6 +1238,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `severity` TEXT,
   `status` INT NOT NULL DEFAULT -1,
   `search` TEXT,
+  `not_search` INT NOT NULL DEFAULT 0,
   `text_agent` TEXT,
   `id_agent` INT DEFAULT 0,
   `id_agent_module` INT DEFAULT 0,

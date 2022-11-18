@@ -122,6 +122,10 @@ $search = get_parameter(
     'filter[search]',
     ($filter['search'] ?? '')
 );
+$not_search = get_parameter(
+    'filter[not_search]',
+    0
+);
 $text_agent = get_parameter(
     'filter[text_agent]',
     ($filter['text_agent'] ?? '')
@@ -1080,6 +1084,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $severity = $filter['severity'];
         $status = $filter['status'];
         $search = $filter['search'];
+        $not_search = $filter['not_search'];
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
         $id_agent_module = $filter['id_agent_module'];
@@ -1692,7 +1697,17 @@ $inputs[] = $in;
 
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
-$in = '<div class="filter_input"><label>'.__('Free search').'</label>';
+// Search recursive groups.
+$data .= html_print_checkbox_switch(
+    'not_search',
+    $not_search,
+    $not_search,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+$in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
@@ -1732,7 +1747,7 @@ $data = html_print_checkbox_switch(
     $search_recursive_groups,
     true,
     false,
-    'search_in_secondary_groups(this);',
+    'checked_slide_events(this);',
     true
 );
 
@@ -1754,7 +1769,7 @@ $data = html_print_checkbox_switch(
     $search_secondary_groups,
     true,
     false,
-    'search_in_secondary_groups(this);',
+    'checked_slide_events(this);',
     true
 );
 
@@ -3066,7 +3081,7 @@ $(document).ready( function() {
 
 });
 
-function search_in_secondary_groups(element) {
+function checked_slide_events(element) {
     var value = $("#checkbox-"+element.name).val();
     if (value == 0) {
         $("#checkbox-"+element.name).val(1);

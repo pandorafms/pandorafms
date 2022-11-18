@@ -4325,7 +4325,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 {
     ui_require_css_file('heatmap');
 
-    $all_modules = agents_get_modules($id_agent);
+    $all_modules = agents_get_modules($id_agent, 'id_agente_modulo', ['disabled' => 0]);
     if (empty($all_modules)) {
         return null;
     }

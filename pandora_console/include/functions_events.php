@@ -801,7 +801,7 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['severity']) === true && $filter['severity'] > 0) {
+    if (isset($filter['severity']) === true && $filter['severity'] !== '') {
         if (is_array($filter['severity']) === true) {
             if (in_array(-1, $filter['severity']) === false) {
                 $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
@@ -1034,14 +1034,13 @@ function events_get_all(
     // Prepare agent join sql filters.
     $table = 'tevento';
     $tevento = 'tevento te';
-    $agent_join_filters = [];
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
     $conditionMetaconsole = '';
 
     // Agent alias.
     if (empty($filter['agent_alias']) === false) {
-        $agent_join_filters[] = sprintf(
+        $sql_filters[] = sprintf(
             ' AND ta.alias = "%s" ',
             $filter['agent_alias']
         );
@@ -1320,7 +1319,7 @@ function events_get_all(
             'te.',
             // Alt table tag for id_grupo.
             $user_admin_group_all,
-            (bool) $filter['search_secondary_groups']
+            (bool) (isset($filter['search_secondary_groups']) === true) ? $filter['search_secondary_groups'] : false
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1347,7 +1346,7 @@ function events_get_all(
             'te.',
             // Alt table tag for id_grupo.
             $user_admin_group_all,
-            (bool) $filter['search_secondary_groups']
+            (bool) (isset($filter['search_secondary_groups']) === true) ? $filter['search_secondary_groups'] : false
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1374,7 +1373,7 @@ function events_get_all(
             'te.',
             // Alt table tag for id_grupo.
             $user_admin_group_all,
-            (bool) $filter['search_secondary_groups']
+            (bool) (isset($filter['search_secondary_groups']) === true) ? $filter['search_secondary_groups'] : false
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1570,7 +1569,6 @@ function events_get_all(
                 %s JOIN %s ta
                 ON ta.%s = te.id_agente
                 %s
-                %s
                 %s JOIN tgrupo tg
                 ON %s
                 WHERE 1=1
@@ -1585,7 +1583,6 @@ function events_get_all(
             %s
             %s JOIN %s ta
                 ON ta.%s = te.id_agente
-            %s
             %s
             %s JOIN tgrupo tg
                 ON %s 
@@ -1602,7 +1599,6 @@ function events_get_all(
             $tagente_table,
             $tagente_field,
             $conditionMetaconsole,
-            join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
             join(' ', $sql_filters),
@@ -1616,7 +1612,6 @@ function events_get_all(
             $tagente_table,
             $tagente_field,
             $conditionMetaconsole,
-            join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
             join(' ', $sql_filters),
@@ -1631,7 +1626,6 @@ function events_get_all(
             %s
             %s JOIN %s ta
             ON ta.%s = te.id_agente
-            %s
             %s
             %s JOIN tgrupo tg
             ON %s
@@ -1651,7 +1645,6 @@ function events_get_all(
             $tagente_table,
             $tagente_field,
             $conditionMetaconsole,
-            join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
             join(' ', $sql_filters),
@@ -1666,8 +1659,7 @@ function events_get_all(
         return $sql;
     }
 
-    if (!$user_is_admin) {
-        // XXX: Confirm there's no extra grants unhandled!.
+    if (!$user_is_admin && users_can_manage_group_all('ER') === false) {
         $can_manage = '0 as user_can_manage';
         if (empty($EM_groups) === false) {
             $can_manage = sprintf(
@@ -1879,7 +1871,7 @@ function events_get_all(
 
             return $return;
         } else {
-            return $data;
+            return ['count' => count($data)];
         }
     }
 

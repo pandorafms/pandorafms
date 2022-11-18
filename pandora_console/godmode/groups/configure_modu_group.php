@@ -59,7 +59,7 @@ if ($id_group) {
     }
 }
 
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->style[0] = 'font-weight: bold';

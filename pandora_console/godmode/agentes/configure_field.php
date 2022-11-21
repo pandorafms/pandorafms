@@ -219,9 +219,6 @@ $(document).ready (function () {
         $('#configure_field-3').show();
     }
 
-   // if ( $('input[type=checkbox][name=is_link_enabled]').val() === 1) {
-
-    //}
     $('input[type=checkbox][name=is_link_enabled]').change(function () {
         if( $(this).is(":checked") ){
             $('#configure_field-6').show();
@@ -241,19 +238,23 @@ $(document).ready (function () {
           $('#configure_field-4').show();
           dialog_message("#message_no_set_password");
           $('#configure_field-1').hide();
+          $('#configure_field-5').hide();
         }
         else{
           $('#configure_field-4').hide();
           $('#configure_field-1').show();
+          $('#configure_field-5').show();
         }
     });
     $('input[type=checkbox][name=is_password_type]').change(function () {
         if( $(this).is(":checked")){
             dialog_message("#message_no_set_combo");
             $('#configure_field-3').hide();
+            $('#configure_field-5').hide();
         }
         else{
             $('#configure_field-3').show();
+            $('#configure_field-5').show();
         }
     });
 });

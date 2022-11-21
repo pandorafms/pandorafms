@@ -763,3 +763,68 @@ function getGroupIcon(id_group, img_container) {
     }
   });
 }
+
+/* Prepare download control */
+function getCookie(name) {
+  var parts = document.cookie.split(name + "=");
+  if (parts.length == 2)
+    return parts
+      .pop()
+      .split(";")
+      .shift();
+}
+
+function expireCookie(cName) {
+  document.cookie =
+    encodeURIComponent(cName) +
+    "=deleted; expires=" +
+    new Date(0).toUTCString();
+}
+
+function setCursor(buttonStyle, button) {
+  button.css("cursor", buttonStyle);
+}
+
+function setFormToken(button) {
+  var downloadToken = new Date().getTime();
+  button.append("<input type='hidden' id='downloadToken'");
+  $("#downloadToken").val(downloadToken);
+  return downloadToken;
+}
+
+var downloadTimer;
+var attempts = 30;
+
+// Prevents double-submits by waiting for a cookie from the server.
+function blockResubmit(button) {
+  var downloadToken = setFormToken(button);
+  setCursor("wait", button);
+
+  // Disable butoon to prevent clicking until download is ready.
+  button.disable();
+
+  //Show dialog.
+  confirmDialog({
+    title: get_php_value("prepareDownloadTitle"),
+    message: get_php_value("prepareDownloadMsg"),
+    hideCancelButton: true
+  });
+
+  downloadTimer = window.setInterval(function() {
+    var token = getCookie("downloadToken");
+
+    if (token == downloadToken || attempts == 0) {
+      unblockSubmit();
+    }
+
+    attempts--;
+  }, 1000);
+}
+
+function unblockSubmit(button) {
+  setCursor("pointer", button);
+  button.enable();
+  window.clearInterval(downloadTimer);
+  expireCookie("downloadToken");
+  attempts = 30;
+}

@@ -3549,7 +3549,7 @@ function ui_print_datatable(array $parameters)
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
-            dom: "lfrtiBp",
+            dom: "frtBpl",
             language: {
                 processing:"'.$processing.'",
                 zeroRecords:"'.$zeroRecords.'",
@@ -3580,8 +3580,10 @@ function ui_print_datatable(array $parameters)
                     if($("#button-'.$form_id.'_search_bt") != undefined) {
                         $("#'.$form_id.'_loading").remove();
                     }
-
+                    // Move elements to action_buttons bar.
                     $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > #table_events_length"));
+
                     if (json.error) {
                         console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
@@ -4752,13 +4754,13 @@ function ui_print_page_header(
 
     $buffer .= '</span>';
 
-    if ($modal && !enterprise_installed()) {
+    if ($modal && enterprise_installed() === false) {
         $buffer .= "
 		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
-    if (!is_metaconsole()) {
+    if (is_metaconsole() === false) {
         if ($help != '') {
             $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', 'images/help_g.png').'</div>';
         }
@@ -4766,7 +4768,7 @@ function ui_print_page_header(
 
     $buffer .= '</span>';
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         if ($help != '') {
             $buffer .= "<div class='head_help'>".ui_print_help_icon($help, true, '', 'images/help_30.png').'</div>';
         }

@@ -2178,7 +2178,7 @@ function html_print_extended_select_for_time(
             false,
             $class,
             $readonly,
-            'padding: 7px 3px;height: 32px;margin-top: -2px;width: 100px;'.$select_style,
+            'padding: 0px 5px; height: 42px; margin-top: -6px; width: 140px;'.$select_style,
             false,
             false,
             false,
@@ -3324,20 +3324,63 @@ function html_print_input_color($name, $value, $id='', $class=false, $return=fal
 /**
  * Action buttons.
  *
- * @param string  $buttons   Buttons for add.
- * @param boolean $return    Return.
- * @param boolean $principal Principal Action buttons.
- * @param string  $class     Special classes.
+ * @param string  $content    HTML content. Usually must be buttons.
+ * @param array   $parameters Parameters for create the action buttons.
+ *      $var['type'] => Type of action-buttons:
+ *          'form_action' => Fits into form size (fixed size).
+ *          'data_table'  => Fits into browser window.
+ *      $var['class'] => Added class for action-buttons container.
+ *      $var['id'] => Customize Id. By default `principal_action_buttons` (Handled by JS).
+ *      $var['background_mask'] => Boolean. True by default. Set a background for action buttons.
+ *      $var['background_mask_style'] => String. Empty by default. Set a manual style.
+ * @param boolean $return     Return formed string if is true.
  *
  * @return mixed.
  */
-function html_print_action_buttons(string $buttons, bool $return=false, bool $principal=true, string $class='fixed_action_buttons fixed_action_buttons_size')
+function html_print_action_buttons(string $content, array $parameters=[], bool $return=false)
 {
+    $typeClass = 'fixed_action_buttons ';
+    switch (($parameters['type'] ?? '')) {
+        case 'form_action':
+        case 'fixed_size':
+            $typeClass .= 'fixed_action_buttons_size';
+        break;
+
+        default:
+        case 'data_table':
+            // For fill.
+        break;
+    }
+
+    if (isset($parameters['background_mask']) === false || $parameters['background_mask'] !== false) {
+        $backgroundId = 'backgroundMaskId';
+
+        $content .= html_print_div(
+            [
+                'id'      => $backgroundId,
+                'class'   => 'action_buttons_background_mask',
+                'content' => '',
+                'style'   => ($parameters['background_mask_style'] ?? ''),
+            ],
+            true
+        );
+    }
+
+    // Optional content.
+    $content .= html_print_div(
+        [
+            'class'   => 'action_buttons_right_content',
+            'content' => ($parameters['right_content'] ?? ''),
+        ],
+        true
+    );
+
     return html_print_div(
         [
-            'id'      => ($principal === true) ? 'principal_action_buttons' : 'action_buttons_'.rand(),
-            'class'   => 'action-buttons '.$class,
-            'content' => $buttons,
+            'id'      => ($parameters['id'] ?? 'principal_action_buttons'),
+            'class'   => 'action-buttons '.$typeClass.' '.($parameters['class'] ?? ''),
+            'content' => $content,
+            'style'   => 'z-index: 100',
         ],
         $return
     );
@@ -6353,6 +6396,7 @@ function html_print_go_back_button(string $url, array $options=[], bool $return=
                 ],
                 true
             ),
+            'style'   => ($options['style'] ?? 'z-index: 100'),
         ],
         $return
     );

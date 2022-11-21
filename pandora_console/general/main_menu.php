@@ -142,6 +142,8 @@ $('#button_collapse').on('click', function() {
     $('div#page').toggleClass('page_classic page_collapsed');
     $('#header_table').toggleClass('header_table_classic header_table_collapsed');
     $('li.menu_icon').toggleClass("no_hidden_menu menu_icon_collapsed");
+    // Special feature for action buttons.
+    $('.action_buttons_right_content').attr('style', 'left: '+($('#menu_full').width() + 36)+'px;');
 });
 
 

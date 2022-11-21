@@ -64,8 +64,8 @@ class ExternalTools extends HTML
             }
 
             // Capture needed parameter for agent form.
-            $this->id_agente    = (int) get_parameter('id_agente', 0);
-            $this->operation    = get_parameter('operation', 0);
+            $this->id_agente    = (int) get_parameter('id_agente');
+            $this->operation    = (int) get_parameter('operation');
             $this->community    = (string) get_parameter('community', 'public');
             $this->ip           = (string) get_parameter('select_ips');
             $this->snmp_version = (string) get_parameter('select_version');
@@ -722,7 +722,7 @@ class ExternalTools extends HTML
                 $output .= sprintf('<h3>%s</h3>', $caption);
             }
 
-            $output .= '<pre>';
+            $output .= '<pre class="external_tools_output">';
 
             // Only perform an execution if command is passed. Avoid errors.
             if (empty($command) === false) {

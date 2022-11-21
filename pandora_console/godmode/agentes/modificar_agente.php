@@ -956,6 +956,7 @@ if ($agents !== false) {
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Create agent button.
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+
     html_print_action_buttons(
         html_print_submit_button(
             __('Create agent'),
@@ -964,8 +965,10 @@ if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             [ 'icon' => 'next' ],
             true
         ),
-        false,
-        'fixed_action_buttons'
+        [
+            'type'  => 'data_table',
+            'class' => 'fixed_action_buttons',
+        ]
     );
     echo '</form>';
 }

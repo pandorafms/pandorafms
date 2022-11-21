@@ -3549,7 +3549,7 @@ function ui_print_datatable(array $parameters)
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
-            dom: "plfrtiBp",
+            dom: "lfrtiBp",
             language: {
                 processing:"'.$processing.'",
                 zeroRecords:"'.$zeroRecords.'",
@@ -3577,10 +3577,11 @@ function ui_print_datatable(array $parameters)
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
-                    if($("#'.$form_id.'_search_bt") != undefined) {
+                    if($("#button-'.$form_id.'_search_bt") != undefined) {
                         $("#'.$form_id.'_loading").remove();
                     }
 
+                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
                     if (json.error) {
                         console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
@@ -3627,7 +3628,7 @@ function ui_print_datatable(array $parameters)
                     }
                 },
                 data: function (data) {
-                    if($("#'.$form_id.'_search_bt") != undefined) {
+                    if($("#button-'.$form_id.'_search_bt") != undefined) {
                         var loading = \''.html_print_image(
                         'images/spinner.gif',
                         true,
@@ -3636,7 +3637,7 @@ function ui_print_datatable(array $parameters)
                             'class' => 'loading-search-datatables-button',
                         ]
                     ).'\';
-                        $("#'.$form_id.'_search_bt").parent().append(loading);
+                        $("#button-'.$form_id.'_search_bt").parent().append(loading);
                     }
 
                     inputs = $("#'.$form_id.' :input");
@@ -3682,9 +3683,12 @@ function ui_print_datatable(array $parameters)
 
         dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
-        $("#'.$form_id.'_search_bt").click(function (){
+        $("#button-'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
-        });';
+        });
+
+        //$(".action_buttons_right_content").html($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+        ';
 
     if (isset($parameters['caption']) === true
         && empty($parameters['caption']) === false
@@ -4046,7 +4050,7 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '<div class="max_floating_element_size '.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
+    $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
@@ -5074,6 +5078,8 @@ function ui_print_page_header(
  *   true  - Print the javascript tags.
  *   false - Doesn't print the tags.
  *
+ * - $parameters['input_style'] String, Set additional styles to input.
+ *
  * @return string HTML code if return parameter is true.
  */
 function ui_print_agent_autocomplete_input($parameters)
@@ -5108,7 +5114,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     // Default value.
-    $icon_agent = 'images/search_agent.png';
+    $icon_agent = 'images/svg/agents.svg';
 
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
@@ -5369,6 +5375,8 @@ function ui_print_agent_autocomplete_input($parameters)
         $javascript_name_function_select = $parameters['javascript_name_function_select'];
     }
 
+    $inputStyles = ($parameters['input_style'] ?? '');
+
     if ($from_ux_transaction != '') {
         $javascript_code_function_select = '
 		function function_select_'.$input_name.'(agent_name) {
@@ -5592,7 +5600,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .css({"background-image":"url(\'"+image+"\')", "background-repeat":"no-repeat", "backgound-position": "95% center"});
+            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
         }
 
 		function set_functions_change_autocomplete_'.$input_name.'() {
@@ -5864,7 +5872,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			if (select_item_click) {
                 select_item_click = 0;
                 $("#'.$input_id.'")
-                .css({"background-image":"url(\"'.$icon_image.'\")", "background-repeat":"no-repeat", "backgound-position": "95% center"});
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -5879,7 +5887,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 			//Set loading
 			$("#'.$input_id.'")
-                .css({"background-image":"url(\"'.$spinner_image.'\")", "background-repeat":"no-repeat", "backgound-position": "95% center"});
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
 			var term = input_value; //Word to search
 			
 			'.$javascript_change_ajax_params_text.'
@@ -5896,7 +5904,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				success: function (data) {
 						if (data.length < 2) {
 							//Set icon
-							$("#'.$input_id.'").css({"background-image":"url(\"'.$icon_image.'\")", "background-repeat":"no-repeat", "backgound-position": "95% center"});
+							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
 							return;
 						}
 
@@ -5946,9 +5954,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 						//Set icon
 						$("#'.$input_id.'")
-							.css("background",
-								"url(\"'.$icon_image.'\") 95% center no-repeat");
-						
+                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; '.$inputStyles.'")
 						return;
 					}
 				});
@@ -5967,7 +5973,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 95% center; '.$text_color.'';
+    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; '.$text_color.' '.$inputStyles.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

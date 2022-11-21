@@ -299,7 +299,7 @@ if (enterprise_installed() === true) {
     // Parent agents.
     $paramsParentAgent = [];
     $paramsParentAgent['return'] = true;
-    $paramsParentAgent['show_helptip'] = true;
+    $paramsParentAgent['show_helptip'] = false;
     $paramsParentAgent['input_name'] = 'id_parent';
     $paramsParentAgent['print_hidden_input_idagent'] = true;
     $paramsParentAgent['hidden_input_idagent_name'] = 'id_agent_parent';
@@ -308,7 +308,7 @@ if (enterprise_installed() === true) {
     $paramsParentAgent['selectbox_id'] = 'cascade_protection_module';
     $paramsParentAgent['javascript_is_function_select'] = true;
     $paramsParentAgent['cascade_protection'] = true;
-    $paramsParentAgent['class'] = 'w540px';
+    $paramsParentAgent['input_style'] = 'width: 540px;';
 
     if ($id_agente !== 0) {
         // Deletes the agent's offspring.
@@ -355,6 +355,7 @@ $tableAgent->rowspan = [];
 // Agent name.
 if ($new_agent === false) {
     $tableAgent->data['caption_name'][0] = __('Agent name');
+    $tableAgent->rowclass['name'] = 'w540px';
     $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true, false, false, '', 'w540px');
     $tableAgent->data['name'][0] .= html_print_div(
         [
@@ -369,15 +370,17 @@ if ($new_agent === false) {
 
 // Alias.
 $tableAgent->data['caption_alias'][0] = __('Alias');
+$tableAgent->rowclass['alias'] = 'w540px';
 $tableAgent->data['alias'][0] = html_print_input_text('alias', $alias, '', 50, 100, true, false, true, '', 'w540px');
 if ($new_agent === true) {
     $tableAgent->rowclass['additional_alias'] = 'subinput';
     $tableAgent->data['additional_alias'][0] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
     $tableAgent->data['additional_alias'][1] = __('Use alias as name');
 } else {
-    $tableAgent->data['alias'][1] = html_print_anchor(
+    $tableAgent->data['alias'][0] .= html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5,
+            'class'   => 'mrgn_lft_5px',
             'content' => html_print_image(
                 'images/application_edit.png',
                 true,
@@ -394,6 +397,7 @@ if ($new_agent === true) {
 
 // Ip adress.
 $tableAgent->data['caption_ip_address'] = __('IP Address');
+$tableAgent->rowclass['ip_address'] = 'w540px';
 $tableAgent->data['ip_address'][0] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true, false, false, '', 'w540px');
 
 $tableAgent->rowclass['additional_ip_address'] = 'subinput';
@@ -423,26 +427,37 @@ if ($new_agent === false) {
 // Select primary group.
 $tableAgent->data['caption_primary_group'][0] = __('Primary group');
 if (isset($groups[$grupo]) === true || $new_agent === true) {
+    $tableAgent->rowclass['primary_group'] = 'w540px';
     // Cannot change primary group if user have not permission for that group.
-    $tableAgent->data['primary_group'][0] = html_print_input(
-        [
-            'type'           => 'select_groups',
-            'class'          => 'w540px',
-            'returnAllGroup' => false,
-            'name'           => 'grupo',
-            'selected'       => $grupo,
-            'return'         => true,
-            'required'       => true,
-            'privilege'      => 'AW',
-            'option_style'   => 'width: 540px;',
-        ]
+    $tableAgent->data['primary_group'][0] = html_print_select_groups(
+        false,
+        'AW',
+        false,
+        'grupo',
+        $grupo,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        '',
+        '',
+        false,
+        'id_grupo',
+        false,
+        false,
+        false,
+        '540px',
     );
 } else {
-    $tableAgent->data['primary_group'][1] .= groups_get_name($grupo);
-    $tableAgent->data['primary_group'][1] .= html_print_input_hidden('grupo', $grupo, true);
+    $tableAgent->data['primary_group'][0] .= groups_get_name($grupo);
+    $tableAgent->data['primary_group'][0] .= html_print_input_hidden('grupo', $grupo, true);
 }
 
-$tableAgent->data['primary_group'][1] .= html_print_div(
+$tableAgent->data['primary_group'][0] .= html_print_div(
     [
         'content' => ui_print_group_icon(
             $grupo,
@@ -455,7 +470,8 @@ $tableAgent->data['primary_group'][1] .= html_print_div(
 );
 
 $tableAgent->data['caption_interval'][0] = __('Interval');
-$tableAgent->rowstyle['interval'] = 'width: 260px';
+// $tableAgent->rowstyle['interval'] = 'width: 260px';
+$tableAgent->rowclass['interval'] = 'w540px';
 $tableAgent->data['interval'][0] = html_print_extended_select_for_time(
     'intervalo',
     $intervalo,
@@ -474,6 +490,7 @@ if ($intervalo < SECONDS_5MINUTES) {
 }
 
 $tableAgent->data['caption_os'][0] = __('OS');
+$tableAgent->rowclass['os'] = 'w540px';
 $tableAgent->data['os'][0] = html_print_select_from_sql(
     'SELECT id_os, name FROM tconfig_os',
     'id_os',
@@ -501,6 +518,7 @@ $tableAgent->data['os'][0] .= html_print_div(
 );
 
 $tableAgent->data['caption_server'][0] = __('Server');
+$tableAgent->rowclass['server'] = 'w540px';
 $tableAgent->data['server'][0] = html_print_select(
     $servers,
     'server_name',
@@ -511,11 +529,14 @@ $tableAgent->data['server'][0] = html_print_select(
     true,
     false,
     true,
-    'w540px'
+    'w540px',
+    false,
+    'width: 540px;'
 );
 
 // Description.
 $tableAgent->data['caption_description'][0] = __('Description');
+$tableAgent->rowclass['description'] = 'w540px';
 $tableAgent->data['description'][0] = html_print_textarea(
     'comentarios',
     3,
@@ -586,6 +607,7 @@ $tableAdvancedAgent->data['secondary_groups'][0] = html_print_select_agent_secon
 );
 // Parent agent.
 $tableAdvancedAgent->data['caption_parent_agent'][0] = __('Parent');
+$tableAdvancedAgent->rowclass['parent_agent'] = 'w540px';
 $tableAdvancedAgent->data['parent_agent'][0] = ui_print_agent_autocomplete_input($paramsParentAgent);
 if (enterprise_installed() === true) {
     $tableAdvancedAgent->data['caption_cascade_protection'][0] = __('Cascade protection modules');
@@ -710,8 +732,8 @@ if (enterprise_installed() === true) {
         true,
         false,
         false,
-        'w540px',
         '',
+        'w540px',
         '',
         // Autocomplete.
         'new-password'
@@ -743,18 +765,23 @@ $tableAdvancedAgent->data['agent_quiet'][0] = html_print_checkbox_switch('quiet'
 // Remote configuration.
 if ($new_agent === false && isset($filename) === true && file_exists($filename['md5']) === true) {
     $tableAdvancedAgent->data['caption_remote_configuration'][0] = __('Remote configuration');
+    $tableAdvancedAgent->rowclass['remote_configuration'] = 'w540px';
     $tableAdvancedAgent->data['remote_configuration'][0] = html_print_input_text(
         'remote_file_timestamp',
         date('F d Y H:i:s', fileatime($filename['md5'])),
         '',
-        45,
+        68,
         255,
         true,
-        true
+        true,
+        false,
+        '',
+        ''
     );
     $tableAdvancedAgent->data['remote_configuration'][0] .= html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente,
+            'class'   => 'mrgn_lft_5px',
             'content' => html_print_image(
                 'images/cross.png',
                 true,
@@ -896,34 +923,33 @@ if ($modo == 0) {
 echo clippy_context_help('modules_not_learning_mode');
 echo '</span>';
 
-
 if ($new_agent === false) {
-    $submitButton = html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Update'),
         'updbutton',
         false,
         [ 'icon' => 'update'],
         true
     );
-    $submitButton .= html_print_input_hidden('update_agent', 1);
-    $submitButton .= html_print_input_hidden('id_agente', $id_agente);
+    $actionButtons .= html_print_input_hidden('update_agent', 1);
+    $actionButtons .= html_print_input_hidden('id_agente', $id_agente);
 
     if (is_management_allowed() === true) {
-        $submitButton .= html_print_button(
+        $actionButtons .= html_print_button(
             __('Delete agent'),
             'deleteAgent',
             false,
             'deleteAgentDialog('.$id_agente.')',
             [
                 'icon' => 'delete',
-                'mode' => 'secondary',
+                'mode' => 'secondary dialog_opener',
             ],
             true
         );
     }
 } else {
-    $submitButton = html_print_input_hidden('create_agent', 1);
-    $submitButton .= html_print_submit_button(
+    $actionButtons = html_print_input_hidden('create_agent', 1);
+    $actionButtons .= html_print_submit_button(
         __('Create'),
         'crtbutton',
         false,
@@ -932,13 +958,13 @@ if ($new_agent === false) {
     );
 }
 
-$submitButton .= html_print_go_back_button(
+$actionButtons .= html_print_go_back_button(
     'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
     ['button_class' => ''],
     true
 );
 
-html_print_action_buttons($submitButton);
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 
 echo '</div></div>';
 echo '</form>';

@@ -40,8 +40,7 @@ function configure_modules_form() {
       reset_data_module_form();
       return;
     }
-    $("#component_loading").show();
-    $(".error, #no_component").hide();
+    $(".error, #no_component").css("visibility", "hidden");
     $("option[value!=0]", $select).remove();
     jQuery.post(
       "ajax.php",
@@ -55,8 +54,7 @@ function configure_modules_form() {
       },
       function(data, status) {
         if (data == false) {
-          $("#component_loading").hide();
-          $("#no_component").show();
+          $(".error, #no_component").css("visibility", "visible");
           return;
         }
         jQuery.each(data, function(i, val) {
@@ -1063,8 +1061,7 @@ function network_component_group_change_event() {
     var $select = $("#network_component").hide();
     $("#component").hide();
     if (this.value == 0) return;
-    $("#component_loading").show();
-    $(".error, #no_component").hide();
+    $(".error, #no_component").css("visibility", "hidden");
     $("option[value!=0]", $select).remove();
     jQuery.post(
       "ajax.php",
@@ -1078,8 +1075,7 @@ function network_component_group_change_event() {
       },
       function(data, status) {
         if (data == false) {
-          $("#component_loading").hide();
-          $("#no_component").show();
+          $(".error, #no_component").css("visibility", "visible");
           return;
         }
         jQuery.each(data, function(i, val) {

@@ -1751,7 +1751,6 @@ table.databox {
   border-radius: 4px;
   border: 1px solid #e2e2e2;
   padding: 20px;
-  max-width: 1064px;
   margin-bottom: 20px;
 }
 
@@ -1840,6 +1839,9 @@ table.rounded_cells td {
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
+}
+.action-buttons > * {
+  z-index: 5;
 }
 .action-buttons > button {
   margin-left: 16px;
@@ -5378,7 +5380,7 @@ div.label_select_child_left > span {
   color: rgba(0, 0, 0, 0.6);
   line-height: 1;
   text-align: center;
-  padding: 7px 14px;
+  padding: 14px 10px;
   margin-right: -1px;
   border: 1px solid #cbcbcb;
   transition: all 0.1s ease-in-out;
@@ -9095,6 +9097,7 @@ button.submitButton {
   border-radius: 8px;
   padding: 0 10px;
   cursor: pointer;
+  z-index: 1;
 }
 
 button.buttonButton.mini,
@@ -9627,7 +9630,7 @@ tr.bring_next_field {
 }
 
 .sg_source > .select2-container .select2-selection--multiple {
-  width: 480px !important;
+  width: 540px !important;
   height: 90px !important;
   overflow: overlay;
 }
@@ -9660,7 +9663,7 @@ tr.bring_next_field {
   .select2-selection--single
   .select2-selection__placeholder {
   color: #999;
-  line-height: 30px;
+  line-height: 42px;
 }
 .select2-container .select2-selection--single .select2-selection__rendered {
   display: block;
@@ -9764,8 +9767,47 @@ tr.bring_next_field {
 .fixed_action_buttons {
   position: fixed;
   padding: 0px;
+  z-index: 1;
 }
 
+.action_buttons_right_content {
+  position: fixed;
+  z-index: 1;
+  left: 250px;
+}
 .fixed_action_buttons_size {
   width: 1064px;
+}
+
+.action_buttons_background_mask {
+  width: 3000px;
+  position: absolute;
+  right: -45px;
+  height: 58px;
+  top: -8px;
+  border: 1px solid #e5e9ed;
+  background-color: #fff;
+  z-index: 0;
+}
+
+.fixed_action_buttons_size > .action_buttons_background_mask {
+  left: -95px !important;
+}
+
+pre.external_tools_output {
+  border: 1px solid #e5e9ed;
+  -moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  border-radius: 8px;
+  color: #cacaca;
+  padding: 10px;
+  background-color: #000;
+  background-image: radial-gradient(rgba(0, 150, 0, 0.75), #000 120%);
+  font-size: 11pt;
+  text-shadow: 0 0 5px #000;
+}
+
+.dialog_table_form td:first-child {
+  font-size: 11pt;
 }

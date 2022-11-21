@@ -2380,10 +2380,7 @@ if (check_acl(
         'submit_event_response',
         false,
         'execute_event_response(true);',
-        [
-            'icon' => 'cog',
-            'mode' => 'mini',
-        ],
+        [ 'icon' => 'cog' ],
         true
     );
 
@@ -2399,11 +2396,9 @@ if (check_acl(
         false
     );
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => $elements,
-        ]
+    html_print_action_buttons(
+        $elements,
+        [ 'type' => 'data_table' ]
     );
 
     echo "<span id='response_loading_dialog' class='invisible'>".html_print_image(

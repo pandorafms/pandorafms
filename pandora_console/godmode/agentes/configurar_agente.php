@@ -696,37 +696,32 @@ if ($id_agente) {
     // This add information to the header.
     switch ($tab) {
         case 'main':
-            $tab_description = '- '.__('Setup');
             $help_header = 'main_tab';
-            $tab_name = 'Setup';
+            $tab_name = __('Setup');
         break;
 
         case 'collection':
-            $tab_description = '- '.__('Collection');
-            $tab_name = 'Collection';
+            $tab_name = __('Collection');
         break;
 
         case 'ncm':
-            $tab_description = '- '.__('Network config manager');
-            $tab_name = 'Network config manager';
+            $tab_name = __('Network config manager');
         break;
 
         case 'inventory':
-            $tab_description = '- '.__('Inventory');
             $help_header = 'inventory_tab';
-            $tab_name = 'Inventory';
+            $tab_name = __('Inventory');
         break;
 
         case 'plugins':
-            $tab_description = '- '.__('Agent plugins');
             $help_header = 'plugins_tab';
+            $tab_name = __('Agent plugins');
         break;
 
         case 'module':
             $type_module_t = get_parameter('moduletype', '');
-            $tab_description = '- '.__('Modules');
-            $tab_name = 'Modules';
-            if ($type_module_t == 'webux') {
+            $tab_name = __('Modules');
+            if ($type_module_t === 'webux') {
                 $help_header = 'wux_console';
             } else {
                 $help_header = 'local_module_tab';
@@ -734,47 +729,42 @@ if ($id_agente) {
         break;
 
         case 'alert':
-            $tab_description = '- '.__('Alert');
             $help_header = 'manage_alert_list';
-            $tab_name = 'Alerts';
+            $tab_name = __('Alerts');
         break;
 
         case 'template':
-            $tab_description = '- '.__('Templates');
-            $tab_name = 'Module templates';
+            $tab_name = __('Module templates');
         break;
 
         case 'gis':
-            $tab_description = '- '.__('Gis');
+            $tab_name = __('Gis');
             $help_header = 'gis_tab';
         break;
 
         case 'incident':
-            $tab_description = '- '.__('Incidents');
+            $tab_name = __('Incidents');
         break;
 
         case 'remote_configuration':
-            $tab_description = '- '.__('Remote configuration');
+            $tab_name = __('Remote configuration');
         break;
 
         case 'agent_wizard':
             switch (get_parameter('wizard_section')) {
                 case 'snmp_explorer':
-                    $tab_description = '- '.__('SNMP Wizard');
                     $help_header = 'agent_snmp_explorer_tab';
-                    $tab_name = 'SNMP Wizard';
+                    $tab_name = __('SNMP Wizard');
                 break;
 
                 case 'snmp_interfaces_explorer':
-                    $tab_description = '- '.__('SNMP Interfaces wizard');
+                    $tab_name = __('SNMP Interfaces Wizard');
                     $help_header = 'agent_snmp_interfaces_explorer_tab';
-                    $tab_name = 'SNMP Interfaces wizard';
                 break;
 
                 case 'wmi_explorer':
-                    $tab_description = '- '.__('WMI Wizard');
+                    $tab_name = __('WMI Wizard');
                     $help_header = 'agent_snmp_wmi_explorer_tab';
-                    $tab_name = 'WMI Wizard';
                 break;
 
                 default:
@@ -805,46 +795,47 @@ if ($id_agente) {
     $helper = ($help_header === 'main_tab') ? 'main_tab' : '';
     $pure = get_parameter('pure', 0);
     if (!$pure) {
-        ui_print_page_header(
+        ui_print_standard_header(
             agents_get_alias($id_agente),
-            'images/setup.png',
+            'images/agent.png',
             false,
             $helper,
-            true,
-            $onheader,
             false,
-            '',
-            $config['item_title_size_text'],
-            '',
-            ui_print_breadcrums(
+            $onheader,
+            [
                 [
-                    __('Resources'),
-                    __('Manage agents'),
-                    '<span class="breadcrumb_active">'.$tab_name.'</span>',
-                ]
-            )
+                    'link'  => '',
+                    'label' => __('Resources'),
+                ],
+                [
+                    'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                    'label' => __('Manage agents'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => $tab_name,
+                ],
+            ]
         );
     }
 } else {
-    // Create agent.
-    ui_print_page_header(
-        __('Agent manager'),
+    ui_print_standard_header(
+        __('Create agent'),
         'images/agent.png',
         false,
-        'create_agent',
-        true,
         '',
         false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        ui_print_breadcrums(
+        [],
+        [
             [
-                __('Resources'),
-                __('Manage agents'),
-                '<span class="breadcrumb_active">'.__('Create agent').'</span>',
-            ]
-        )
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                'label' => __('Manage agents'),
+            ],
+        ]
     );
 }
 

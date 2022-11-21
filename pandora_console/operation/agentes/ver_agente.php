@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Agent view.
  *
- * @category   Extensions
+ * @category   Resources
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1732,12 +1731,12 @@ if ($agent['url_address'] != '') {
 }
 
 // If the log viewer tab exists.
-if (isset($log_viewer_tab) && !empty($log_viewer_tab)) {
+if (isset($log_viewer_tab) === true && empty($log_viewer_tab) === false) {
     $onheader['log_viewer'] = $log_viewer_tab;
 }
 
 // If the ehorus id exists.
-if (isset($ehorus_tab) && !empty($ehorus_tab)) {
+if (isset($ehorus_tab) === true && empty($ehorus_tab) === false) {
     $onheader['ehorus'] = $ehorus_tab;
 }
 
@@ -1808,77 +1807,77 @@ foreach ($config['extensions'] as $extension) {
 
 switch ($tab) {
     case 'custom_fields':
-        $tab_name = 'Custom fields';
+        $tab_name = __('Custom fields');
     break;
 
     case 'gis':
-        $tab_name = 'GIS data';
+        $tab_name = __('GIS data');
     break;
 
     case 'manage':
-        $tab_name = 'Manage';
+        $tab_name = __('Manage');
     break;
 
     case 'main':
-        $tab_name = 'Main';
+        $tab_name = __('Main');
         $help_header = 'agent_'.$tab.'_tab';
     break;
 
     case 'data_view':
-        $tab_name = '';
+        $tab_name = __('Data View');
     break;
 
     case 'interface':
-        $tab_name = 'Interfaces';
+        $tab_name = __('Interfaces');
     break;
 
     case 'alert':
-        $tab_name = 'Alerts';
+        $tab_name = __('Alerts');
     break;
 
     case 'inventory':
-        $tab_name = 'Inventory';
+        $tab_name = __('Inventory');
     break;
 
     case 'collection':
-        $tab_name = 'Collection';
+        $tab_name = __('Collection');
     break;
 
     case 'policy':
-        $tab_name = 'Policies';
+        $tab_name = __('Policies');
     break;
 
     case 'ux_console_tab':
-        $tab_name = 'UX Console';
+        $tab_name = __('UX Console');
     break;
 
     case 'wux_console_tab':
-        $tab_name = 'WUX Console';
+        $tab_name = __('WUX Console');
         $help_header = 'wux_console_tab';
     break;
 
     case 'url_route_analyzer_tab':
-        $tab_name = 'URL Route Analyzer';
+        $tab_name = __('URL Route Analyzer');
     break;
 
     case 'graphs';
-        $tab_name = 'Graphs';
+        $tab_name = __('Graphs');
     break;
 
     case 'incident':
-        $tab_name = 'Incidents';
+        $tab_name = __('Incidents');
     break;
 
     case 'url_address':
-        $tab_name = 'Url address';
+        $tab_name = __('Url address');
     break;
 
     case 'log_viewer':
-        $tab_name = 'Log viewer';
+        $tab_name = __('Log viewer');
     break;
 
     case 'ehorus':
-        $tab_name = 'eHorus';
+        $tab_name = __('eHorus');
     break;
 
     case 'extension':
@@ -1886,17 +1885,16 @@ switch ($tab) {
     break;
 
     case 'sap_view':
-            $tab_description = '- '.__('SAP view');
-            $help_header = 'sap_view';
-            $tab_name = 'SAP View';
+        $tab_name = __('SAP view');
+        $help_header = 'sap_view';
     break;
 
     case 'ncm':
-        $tab_name = 'Network configuration';
+        $tab_name = __('Network configuration');
     break;
 
     case 'external_tools':
-        $tab_name = 'External Tools';
+        $tab_name = __('External Tools');
     break;
 
     default:
@@ -1905,25 +1903,28 @@ switch ($tab) {
     break;
 }
 
-if (!$config['pure']) {
-    ui_print_page_header(
+if ((bool) $config['pure'] === false) {
+    ui_print_standard_header(
         agents_get_alias($id_agente),
         $icon,
         false,
-        '',
+        ($help_header ?? ''),
         false,
         $onheader,
-        false,
-        '',
-        $config['item_title_size_text'],
-        '',
-        ui_print_breadcrums(
+        [
             [
-                __('Monitoring'),
-                __('View'),
-                '<span class="breadcrumb_active">'.$tab_name.'</span>',
-            ]
-        )
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                'label' => __('View agents'),
+            ],
+            [
+                'link'  => '',
+                'label' => $tab_name,
+            ],
+        ]
     );
 }
 

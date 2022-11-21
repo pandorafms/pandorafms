@@ -911,7 +911,7 @@ div#page {
   clear: both;
   width: auto;
   padding-top: 5px;
-  padding-right: 6em;
+  /*padding-right: 3em;*/
   display: flex;
   flex-direction: column;
 }
@@ -930,7 +930,7 @@ div#container {
 
 div#main {
   width: 100%;
-  margin-left: 3em;
+  /*margin-left: 3em;*/
   margin-bottom: 3em;
   position: relative;
 }
@@ -989,7 +989,8 @@ p.center {
 
 .img_help {
   cursor: help;
-  margin-left: 10px;
+  /* margin-left: 10px; */
+  margin-bottom: -2px;
 }
 
 /* Legacy spinner */
@@ -1559,7 +1560,7 @@ div.title_line {
 }
 
 .breadcrumbs_container {
-  padding-left: 2em;
+  padding-left: 5em;
   padding-top: 4px;
   text-indent: 0.25em;
   color: #848484;
@@ -1568,7 +1569,7 @@ div.title_line {
 }
 
 .breadcrumb_active {
-  color: #82b92e;
+  color: #14524f;
   font-size: 10pt;
 }
 /* End - Breadcrum */
@@ -1669,7 +1670,7 @@ div#agent_wizard_subtabs {
 }
 
 #menu_tab_left span {
-  padding-left: 0.9em;
+  /*padding-left: 0.9em;*/
 }
 
 #menu_tab_left .mn,
@@ -1690,11 +1691,12 @@ div#agent_wizard_subtabs {
 }
 
 #menu_tab_left li.view {
-  margin-left: 0px;
-  padding-left: 14px;
+  margin-left: 0;
+  /*padding-left: 14px;*/
+  padding-left: 6em;
   padding-bottom: 4px;
   white-space: nowrap;
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
 }
 
 #menu_tab_left li.view img.bottom {
@@ -1705,8 +1707,9 @@ div#agent_wizard_subtabs {
 #menu_tab_left li a,
 #menu_tab_left li span {
   color: #343434;
-  font-size: 13pt;
-  line-height: 18pt;
+  /*font-size: 13pt;*/
+  font-size: 16pt;
+  /*line-height: 18pt;*/
 }
 
 /* New styles for data box */
@@ -9714,7 +9717,8 @@ tr.bring_next_field {
 /* FINISH SELECT2 */
 
 .max_floating_element_size {
-  max-width: 1064px;
+  /*max-width: 1064px;*/
+  max-width: 1136px;
 }
 .dataTables_wrapper {
   overflow: auto;
@@ -9774,9 +9778,16 @@ tr.bring_next_field {
   position: fixed;
   z-index: 1;
   left: 250px;
+  display: flex;
+  align-items: center;
+}
+
+.action_buttons_right_content div {
+  margin-left: 1em;
 }
 .fixed_action_buttons_size {
-  width: 1064px;
+  /*width: 1064px;*/
+  width: 1116px;
 }
 
 .action_buttons_background_mask {

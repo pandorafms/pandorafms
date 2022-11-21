@@ -1493,6 +1493,7 @@ require 'include/php_to_js_values.php';
 <script type="text/javascript" language="javascript">
     // Handle the scroll.
     $(document).ready(scrollFunction());
+    $(document).ready(menuResizing());
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
     if (theme === 'pandora') {
@@ -1501,6 +1502,17 @@ require 'include/php_to_js_values.php';
         }
     }
 
+    //$('.button_collapse').on('click', menuResizing());
+
+    // Cursor change for show a spinner. Experimental.
+    /*
+    $('.buttonButton').not('.dialog_opener').on('click', function(){
+        $('*').css('cursor', 'wait');
+    });
+    $('.submitButton').not('.dialog_opener').on('click', function(){
+        $('*').css('cursor', 'wait');
+    });
+*/
     // When the user scrolls down 400px from the top of the document, show the
     // button.
     window.onscroll = function() {
@@ -1510,6 +1522,10 @@ require 'include/php_to_js_values.php';
     window.onresize = function() {
         scrollFunction()
     };
+
+    function menuResizing() {
+        $('.action_buttons_right_content').attr('style', 'left: '+($('#menu_full').width() + 36)+'px;');
+    }
 
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {

@@ -4001,11 +4001,12 @@ function ui_toggle(
     );
 
     // Options.
+    $style = 'overflow:hidden;';
     if ($hidden_default) {
-        $style = 'display:none';
+        $style .= 'height:0;';
         $original = $img_b;
     } else {
-        $style = '';
+        $style .= 'height:auto;';
         $original = $img_a;
     }
 
@@ -4111,24 +4112,24 @@ function ui_toggle(
     $output .= '            if (is_metaconsole == 0) {';
     $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
     $output .= "			    }\n";
     $output .= "			    else {\n";
     $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
     $output .= "			    }\n";
     $output .= "		    }\n";
     $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";

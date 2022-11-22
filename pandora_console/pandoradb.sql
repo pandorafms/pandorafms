@@ -1256,7 +1256,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_extra` TINYTEXT,
   `user_comment` TEXT,
   `id_source_event` INT  NULL DEFAULT 0,
-  `server_id` INT NOT NULL DEFAULT 0,
+  `server_id` TEXT,
   `time_from` TIME NULL,
   `time_to` TIME NULL,
   `custom_data` VARCHAR(500) DEFAULT '',

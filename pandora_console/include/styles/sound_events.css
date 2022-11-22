@@ -97,7 +97,7 @@
 }
 
 #tabs-sound-modal button.upd,
-input.upd {
+#button-melody_sound {
   background-image: url(../../images/sound_wave.png);
   background-position: 90px 8px;
 }

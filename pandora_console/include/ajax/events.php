@@ -1580,7 +1580,7 @@ if ($get_extended_event) {
     $filter = get_parameter('filter', []);
     $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
-    $event_rep = $group_rep;
+    $event_rep = (empty($group_rep) === true) ? EVENT_GROUP_REP_EVENTS : $group_rep;
     $timestamp_first = $event['timestamp_first'];
     $timestamp_last = $event['timestamp_last'];
     $server_id = $event['server_id'];

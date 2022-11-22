@@ -130,6 +130,8 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
 
 if (is_ajax()) {
     $delete_profile = (bool) get_parameter('delete_profile');
+    $get_user_profile = (bool) get_parameter('get_user_profile');
+
     if ($delete_profile) {
         $id2 = (string) get_parameter('id_user');
         $id_up = (int) get_parameter('id_user_profile');
@@ -211,6 +213,62 @@ if (is_ajax()) {
 
         return;
     }
+
+    if ($get_user_profile === true) {
+        $profile_id = (int) get_parameter('profile_id');
+        $group_id = (int) get_parameter('group_id', -1);
+        $user_id = (string) get_parameter('user_id', '');
+        $no_hierarchy = (int) get_parameter('no_hierarchy', -1);
+        $assigned_by = (string) get_parameter('assigned_by', '');
+        $id_policy = (int) get_parameter('id_policy', -1);
+        $tags = (string) get_parameter('id_policy', '');
+
+        $filter = [];
+
+        if ($group_id > -1) {
+            $filter['id_perfil'] = $profile_id;
+        }
+
+        if ($group_id > -1) {
+            $filter['id_grupo'] = $group_id;
+        }
+
+        if ($user_id !== '') {
+            $filter['id_usuario'] = $user_id;
+        }
+
+        if ($no_hierarchy > -1) {
+            $filter['no_hierarchy'] = $no_hierarchy;
+        }
+
+        if ($assigned_by !== '') {
+            $filter['assigned_by'] = $assigned_by;
+        }
+
+        if ($id_policy > -1) {
+            $filter['id_policy'] = $id_policy;
+        }
+
+        if ($tags !== '') {
+            $filter['tags'] = $tags;
+        }
+
+        $profile = db_get_all_rows_filter(
+            'tusuario_perfil',
+            $filter
+        );
+
+        if ($profile !== false && count($profile) > 0) {
+            hd(json_encode($profile), true);
+            echo json_encode($profile);
+
+            return;
+        } else {
+            echo json_encode('');
+        }
+
+        return;
+    }
 }
 
 
@@ -279,7 +337,7 @@ $add_profile = (bool) get_parameter('add_profile');
 $update_user = (bool) get_parameter('update_user');
 $status = get_parameter('status', -1);
 $json_profile = get_parameter('json_profile', '');
-
+hd($add_profile, true);
 // Reset status var if current action is not update_user
 if ($new_user || $create_user || $add_profile
     || $delete_profile || $update_user
@@ -540,7 +598,7 @@ if ($create_user) {
                             false,
                             'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
                         );
-
+hd("hereeee", true);
                         $result_profile = profile_create_user_profile($id, $profile2, $group2, false, $tags, $no_hierarchy);
 
                         if ($result_profile === false) {
@@ -1648,8 +1706,7 @@ $(document).ready (function () {
         var data = JSON.parse(json_profile.val());
     }
     
-    $('input:image[name="add"]').click(function (e) {
-        e.preventDefault();
+    function addProfile(form) {
         var profile = $('#assign_profile').val();
         var profile_text = $('#assign_profile option:selected').text();
         var group = $('#assign_group').val();
@@ -1666,24 +1723,6 @@ $(document).ready (function () {
 
         if (profile === '0' || group === '-1') {
             alert('<?php echo __('Please select profile and group'); ?>');
-            return;
-        }
-
-        var rows = $("#table_profiles tr");
-        var control_profiles = 0;
-
-        $('#table_profiles tr').each(function() {
-            var profile_user = $(this).find("td:first").text();
-            var group_user = $(this).find("td").eq(1).text();
-
-            if(profile_user === profile_text && group_user === group_text){
-               control_profiles = 1;
-               alert('<?php echo __('This profile is already defined'); ?>');
-               return;
-            }
-        });
-
-        if (control_profiles === 1){
             return;
         }
 
@@ -1709,8 +1748,34 @@ $(document).ready (function () {
             aux++;
 
         } else {
-            this.form.submit();
+            form.submit();
         }
+    }
+
+    $('input:image[name="add"]').click(function (e) {
+        e.preventDefault();
+
+        var params = [];
+        params.push("get_user_profile=1");
+        params.push("profile_id=" + $('#assign_profile').val())
+        params.push("group_id=" + $('#assign_group').val());
+        params.push("user_id=" + id_user);
+        params.push("page=godmode/users/configure_user");
+        jQuery.ajax ({
+            data: params.join("&"),
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            form: this.form,
+            url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            success: function (data) {
+                if (data.length > 0) {
+                    alert('<?php echo __('This profile is already defined'); ?>');
+                } else {
+                    addProfile(this.form);
+                }
+            }
+        });
     });
 
     $('input:image[name="del"]').click(function (e) {

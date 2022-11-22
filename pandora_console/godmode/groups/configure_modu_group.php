@@ -52,7 +52,7 @@ if ($id_group) {
         echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
-        include 'general/footer.php';
+        // include 'general/footer.php';
         echo '</div>';
         echo '</div>';
         exit;

@@ -553,7 +553,7 @@ if ($load_filter_modal) {
     );
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
-    echo '<form method="post" id="form_load_filter">';
+    echo '<form method="post" id="form_load_filter" action="index.php?sec=eventos&sec2=operation/events/events&pure=">';
 
     $table = new StdClass;
     $table->id = 'load_filter_form';

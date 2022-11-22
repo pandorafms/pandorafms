@@ -2880,11 +2880,11 @@ $(document).ready( function() {
     $("#text-event_view_hr").on("keyup",function(){
         hours = $('#text-event_view_hr').val();
         if (hours == '' || hours == 0 ) {
-            $('#summary_hours').html('<?php echo __('Any'); ?>');
+            $('#summary_hours').text('<?php echo __('Any'); ?>');
         } else if (hours == 1) {
-            $('#summary_hours').html('<?php echo __('Last hour.'); ?>');
+            $('#summary_hours').text('<?php echo __('Last hour.'); ?>');
         } else {
-            $('#summary_hours').html(hours + '<?php echo ' '.__('hours.'); ?>');
+            $('#summary_hours').text(hours + '<?php echo ' '.__('hours.'); ?>');
         }
     });
 

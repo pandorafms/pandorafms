@@ -873,13 +873,34 @@ foreach ($fields as $field) {
             true
         );
     } else if ($field['is_link_enabled']) {
-        $link_text = $field['link_text'];
+        list($link_text, $link_url) = json_decode($custom_value, true);
 
-        if ($field['link_text'] === '') {
-            $link_text = $field['link_url'];
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $link_text = '';
+            $link_url = '';
         }
 
-        $data_field[1] = '<a href="'.$field['link_url'].'">'.$link_text.'</a>';
+        $data_field[1] = '<span style="line-height: 3.5;">'.__('Link text:').'</span>';
+        $data_field[1] .= '<br>';
+        $data_field[1] .= html_print_textarea(
+            'customvalue_'.$field['id_field'].'[]',
+            2,
+            65,
+            $link_text,
+            'class="min-height-30px',
+            true
+        );
+        $data_field[1] .= '<br>';
+        $data_field[1] .= '<span style="line-height: 3.5;">'.__('Link URL:').'</span>';
+        $data_field[1] .= '<br>';
+        $data_field[1] .= html_print_textarea(
+            'customvalue_'.$field['id_field'].'[]',
+            2,
+            65,
+            $link_url,
+            'class="min-height-30px',
+            true
+        );
     } else {
         $data_field[1] = html_print_textarea(
             'customvalue_'.$field['id_field'],

@@ -31,8 +31,6 @@ $is_password_type = (bool) get_parameter('is_password_type', 0);
 $is_combo_enable = (bool) get_parameter('is_combo_enable', 0);
 $combo_values = (string) get_parameter('combo_values', '');
 $is_link_enabled = (bool) get_parameter('is_link_enabled', 0);
-$link_text = (string) get_parameter('link_text', '');
-$link_url = (string) get_parameter('link_url', '');
 
 // Header.
 if ($id_field) {
@@ -43,8 +41,6 @@ if ($id_field) {
     $combo_values = $field['combo_values'] ? $field['combo_values'] : '';
     $is_combo_enable = $config['is_combo_enable'];
     $is_link_enabled = $field['is_link_enabled'];
-    $link_text = $field['link_text'];
-    $link_url = $field['link_url'];
     ui_print_page_header(__('Update agent custom field'), 'images/custom_field.png', false, '', true, '');
 } else {
     ui_print_page_header(__('Create agent custom field'), 'images/custom_field.png', false, '', true, '');
@@ -146,28 +142,6 @@ $table->data[5][1] = html_print_checkbox_switch_extended(
     true
 );
 
-$table->rowstyle[6] = 'display: none;';
-$table->data[6][0] = __('Link text');
-$table->data[6][1] = html_print_textarea(
-    'link_text',
-    3,
-    65,
-    io_safe_output($link_text),
-    '',
-    true
-);
-
-$table->rowstyle[7] = 'display: none;';
-$table->data[7][0] = __('Link URL');
-$table->data[7][1] = html_print_textarea(
-    'link_url',
-    3,
-    65,
-    io_safe_output($link_url),
-    '',
-    true
-);
-
 echo '<form name="field" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/fields_manager">';
 html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -208,26 +182,18 @@ $(document).ready (function () {
     }
    
     if ($('input[type=checkbox][name=is_link_enabled]').is(":checked") === true) {
-        $('#configure_field-6').show();
-        $('#configure_field-7').show();
         $('#configure_field-1').hide();
         $('#configure_field-3').hide();
     } else {
-        $('#configure_field-6').hide();
-        $('#configure_field-7').hide();
         $('#configure_field-1').show();
         $('#configure_field-3').show();
     }
 
     $('input[type=checkbox][name=is_link_enabled]').change(function () {
         if( $(this).is(":checked") ){
-            $('#configure_field-6').show();
-            $('#configure_field-7').show();
             $('#configure_field-1').hide();
             $('#configure_field-3').hide();
         } else{
-            $('#configure_field-6').hide();
-            $('#configure_field-7').hide();
             $('#configure_field-1').show();
             $('#configure_field-3').show();
         }

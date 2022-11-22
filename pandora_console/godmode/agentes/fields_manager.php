@@ -39,15 +39,6 @@ $is_password_type = (int) get_parameter('is_password_type', 0);
 $combo_values = (string) get_parameter('combo_values', '');
 $combo_value_selected = (string) get_parameter('combo_value_selected', '');
 $is_link_enabled = (bool) get_parameter('is_link_enabled', 0);
-$link_text = (string) get_parameter('link_text', '');
-$link_url = (string) get_parameter('link_url', '');
-
-if ($is_link_enabled === true && $link_url !== '') {
-    $parsed_url = parse_url($link_url);
-    if (empty($parsed_url['scheme']) === true) {
-        $link_url = 'http://'.ltrim($link_url, '/');
-    }
-}
 
 // Create field.
 if ($create_field) {
@@ -56,8 +47,6 @@ if ($create_field) {
         ui_print_error_message(__('The name must not be empty'));
     } else if ($name == db_get_value('name', 'tagent_custom_fields', 'name', $name)) {
         ui_print_error_message(__('The name must be unique'));
-    } else if ($is_link_enabled === true && $link_url === '') {
-        ui_print_error_message(__('The link URL must not be empty'));
     } else {
         $result = db_process_sql_insert(
             'tagent_custom_fields',
@@ -67,8 +56,6 @@ if ($create_field) {
                 'is_password_type' => $is_password_type,
                 'combo_values'     => $combo_values,
                 'is_link_enabled'  => $is_link_enabled,
-                'link_text'        => $link_text,
-                'link_url'         => $link_url,
             ]
         );
         ui_print_success_message(__('Field successfully created'));
@@ -78,17 +65,13 @@ if ($create_field) {
 // Update field.
 if ($update_field) {
     // Check if name field is empty.
-    if ($name !== ''
-        && ($is_link_enabled === false || ($is_link_enabled === true && $link_url !== ''))
-    ) {
+    if ($name !== '') {
         $values = [
             'name'             => $name,
             'display_on_front' => $display_on_front,
             'is_password_type' => $is_password_type,
             'combo_values'     => $combo_values,
             'is_link_enabled'  => $is_link_enabled,
-            'link_text'        => $link_text,
-            'link_url'         => $link_url,
         ];
 
         $result = db_process_sql_update('tagent_custom_fields', $values, ['id_field' => $id_field]);

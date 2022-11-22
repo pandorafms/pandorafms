@@ -800,7 +800,7 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['severity']) === true && $filter['severity'] !== '') {
+    if (isset($filter['severity']) === true && $filter['severity'] !== '' && (int) $filter['severity'] > -1) {
         if (is_array($filter['severity']) === true) {
             if (in_array(-1, $filter['severity']) === false) {
                 $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);

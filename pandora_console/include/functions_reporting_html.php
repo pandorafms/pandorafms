@@ -4007,7 +4007,7 @@ function reporting_html_text(&$table, $item)
  */
 function reporting_html_availability($table, $item, $pdf=0)
 {
-    $retun_pdf = '';
+    $return_pdf = '';
 
     $style = db_get_value(
         'style',
@@ -4234,7 +4234,7 @@ function reporting_html_availability($table, $item, $pdf=0)
             } else {
                 $table_row[] = $row['agent'];
                 $item_name = $row['availability_item'];
-                if ((bool) $row['compare'] === false) {
+                if ((bool) $row['compare'] === true) {
                     $item_name .= ' ('.__('24 x 7').')';
                 }
 
@@ -4422,6 +4422,7 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table2->data[] = $table_row2;
         }
     } else {
+        $table = new stdClass();
         $table->colspan['error']['cell'] = 3;
         $table->data['error']['cell'] = __(
             'There are no Agent/Modules defined'

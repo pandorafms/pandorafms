@@ -6535,7 +6535,7 @@ function ui_print_breadcrums($tab_name)
 /**
  * Show last comment
  *
- * @param array $comments array with comments
+ * @param string $comments String with comments.
  *
  * @return string  HTML string with the last comment of the events.
  */
@@ -6559,31 +6559,45 @@ function ui_print_comments($comments)
     foreach ($comments_array as $comm) {
         // Show the comments more recent first.
         if (is_array($comm)) {
-            $last_comment[] = array_reverse($comm);
+            $order_utimestamp = array_reduce(
+                $comm,
+                function ($carry, $item) {
+                    $carry[$item['utimestamp']] = $item;
+                    return $carry;
+                }
+            );
+
+            $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+            $last_comment = $order_utimestamp[$key_max_utimestamp];
         }
+    }
+
+    if (empty($last_comment) === true) {
+        return '';
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
     // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
     // Else show comments hours ago
-    if ($last_comment[0][0]['action'] != 'Added comment') {
-        $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
+    if ($last_comment['action'] != 'Added comment') {
+        $last_comment['comment'] = $last_comment['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
+    $short_comment = substr($last_comment['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+        $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     } else {
-        $rest_time = (time() - $last_comment[0][0]['utimestamp']);
+        $rest_time = (time() - $last_comment['utimestamp']);
         $time_last = (($rest_time / 60) / 60);
-        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     }
 

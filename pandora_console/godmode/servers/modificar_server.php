@@ -150,7 +150,13 @@ if (isset($_GET['server'])) {
     if ($server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
         $buttons['agent_editor'] = [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=agent_editor&pure='.$pure.'">'.html_print_image('images/agent.png', true, ['title' => __('Advanced editor')]).'</a>',
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=agent_editor&pure='.$pure.'">'.html_print_image('images/agent.png', true, ['title' => __('Manage agents')]).'</a>',
+
+        ];
+
+        $buttons['collections'] = [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=collections&pure='.$pure.'">'.html_print_image('images/collection.png', true, ['title' => __('Collections')]).'</a>',
 
         ];
     }
@@ -173,6 +179,8 @@ if (isset($_GET['server'])) {
         }
     } else if ($tab === 'agent_editor' && $server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
         $advanced_editor = 'agent_editor';
+    } else if ($tab === 'collections' && $server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+        $advanced_editor = 'collections';
     }
 
     enterprise_include('godmode/servers/server_disk_conf_editor.php');

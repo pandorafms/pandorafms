@@ -1,22 +1,38 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * MySQL Authentication functions.
+ *
+ * @category   Functions.
+ * @package    Pandora FMS
+ * @subpackage Login.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
+// Begin.
 /**
  * @package Include/auth
  */
 
-if (!isset($config)) {
+if (isset($config) === false) {
     die(
         '
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -63,7 +79,7 @@ $config['user_can_update_password'] = true;
 $config['admin_can_add_user'] = true;
 $config['admin_can_delete_user'] = true;
 $config['admin_can_disable_user'] = false;
-// currently not implemented
+// Currently not implemented.
 $config['admin_can_make_admin'] = true;
 
 
@@ -289,7 +305,7 @@ function process_user_login_remote($login, $pass, $api=false)
 
     // Authentication ok, check if the user exists in the local database
     if (is_user($login)) {
-        if (!user_can_login($login)) {
+        if (!user_can_login($login) && $api === false) {
             return false;
         }
 
@@ -544,7 +560,7 @@ function get_user_fullname($user)
 /**
  * Gets the users email
  *
- * @param mixed User id.
+ * @param mixed $user User id.
  *
  * @return string The users email address
  */
@@ -557,14 +573,14 @@ function get_user_email($user)
 /**
  * Gets a Users info
  *
- * @param mixed User id
+ * @param mixed $user User id.
  *
  * @return mixed An array of users
  */
 function get_user_info($user)
 {
     static $cache_user_info = [];
-    if (array_key_exists($user, $cache_user_info)) {
+    if (array_key_exists($user, $cache_user_info) === true) {
         return $cache_user_info[$user];
     } else {
         $return = db_get_row('tusuario', 'id_user', get_user_id($user));
@@ -579,24 +595,19 @@ function get_user_info($user)
  * We can't simplify this because some auth schemes (like LDAP) automatically (or it's at least cheaper to) return all the information
  * Functions like get_user_info allow selection of specifics (in functions_db)
  *
- * @param string Field to order by (id_user, fullname or registered)
+ * @param mixed  $order  Field to order by (id_user, fullname or registered).
+ * @param string $filter Filter.
+ * @param string $fields Fields.
  *
  * @return array An array of user information
  */
 function get_users($order='fullname', $filter=false, $fields=false)
 {
-    if (is_array($order)) {
+    if (is_array($order) === true) {
         $filter['order'] = $order['field'].' '.$order['order'];
     } else {
-        switch ($order) {
-            case 'registered':
-            case 'last_connect':
-            case 'fullname':
-            break;
-
-            default:
-                $order = 'fullname';
-            break;
+        if ($order !== 'registered' || $order !== 'last_connect' || $order !== 'fullname') {
+            $order = 'fullname';
         }
 
         $filter['order'] = $order.' ASC';
@@ -618,9 +629,11 @@ function get_users($order='fullname', $filter=false, $fields=false)
 /**
  * Sets the last login for a user
  *
- * @param string User id
+ * @param string $id_user User id.
+ *
+ * @return mixed.
  */
-function process_user_contact($id_user)
+function process_user_contact(string $id_user)
 {
     return db_process_sql_update(
         'tusuario',
@@ -633,6 +646,10 @@ function process_user_contact($id_user)
 /**
  * Create a new user
  *
+ * @param string $id_user   Id User.
+ * @param string $password  Password for this user.
+ * @param array  $user_info Array with information of the user.
+ *
  * @return boolean false
  */
 function create_user($id_user, $password, $user_info)
@@ -643,16 +660,48 @@ function create_user($id_user, $password, $user_info)
     $values['last_connect'] = 0;
     $values['registered'] = get_system_time();
 
-    return (@db_process_sql_insert('tusuario', $values)) !== false;
+    $output = (@db_process_sql_insert('tusuario', $values)) !== false;
+
+    // Add user to notification system.
+    if ($output !== false) {
+        if (isset($values['is_admin']) === true && (bool) $values['is_admin'] === true) {
+            // Administrator user must be activated in all notifications sections.
+            $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+            foreach ($notificationSources as $notification) {
+                @db_process_sql_insert(
+                    'tnotification_source_user',
+                    [
+                        'id_source' => $notification['id'],
+                        'id_user'   => $id_user,
+                    ]
+                );
+            }
+        } else {
+            // Other users only will be activated in `Message` notifications.
+            $notificationSource = db_get_value('id', 'tnotification_source', 'description', 'Message');
+            @db_process_sql_insert(
+                'tnotification_source_user',
+                [
+                    'id_source' => $notificationSource,
+                    'id_user'   => $id_user,
+                ]
+            );
+        }
+    }
+
+    return $output;
 }
 
 
 /**
  * Save password history
  *
+ * @param string $id_user  Id User.
+ * @param string $password Password of user.
+ *
  * @return boolean false
  */
-function save_pass_history($id_user, $password)
+function save_pass_history(string $id_user, string $password)
 {
     $values['id_user'] = $id_user;
     $values['password'] = md5($password);
@@ -665,9 +714,11 @@ function save_pass_history($id_user, $password)
 /**
  * Deletes the user
  *
- * @param string User id
+ * @param string $id_user User id.
+ *
+ * @return boolean.
  */
-function delete_user($id_user)
+function delete_user(string $id_user)
 {
     $result = db_process_sql_delete(
         'tusuario_perfil',
@@ -685,6 +736,12 @@ function delete_user($id_user)
         return false;
     }
 
+    // Remove from notification list as well.
+    $result = db_process_sql_delete(
+        'tnotification_source_user',
+        ['id_user' => $id_user]
+    );
+
     return true;
 }
 
@@ -693,15 +750,21 @@ function delete_user($id_user)
  * Update the password in MD5 for user pass as id_user with
  * password in plain text.
  *
- * @param string user User ID
- * @param string password Password in plain text.
+ * @param string $user         User ID.
+ * @param string $password_new Password in plain text.
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function update_user_password($user, $password_new)
+function update_user_password(string $user, string $password_new)
 {
     global $config;
-    if (isset($config['auth']) && $config['auth'] == 'pandora') {
+
+    if (excludedPassword($password_new) === true) {
+        $config['auth_error'] = __('The password provided is not valid. Please, set another one.');
+        return false;
+    }
+
+    if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
             "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
         );
@@ -714,7 +777,7 @@ function update_user_password($user, $password_new)
         );
         $remote_pass_update = db_process_sql($sql, 'affected_rows', $connection);
 
-        if (!$remote_pass_update) {
+        if ((bool) $remote_pass_update === false) {
             $config['auth_error'] = __('Could not changes password on remote pandora');
             return false;
         }
@@ -735,14 +798,14 @@ function update_user_password($user, $password_new)
  * Update the data of a user that user is choose with
  * id_user.
  *
- * @param string user User ID
- * @param array values Associative array with index as name of field and content.
+ * @param string $id_user User ID.
+ * @param array  $values  Associative array with index as name of field and content.
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function update_user($id_user, $values)
+function update_user(string $id_user, array $values)
 {
-    if (! is_array($values)) {
+    if (is_array($values) === false) {
         return false;
     }
 
@@ -783,6 +846,9 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
         $ldap[$token] = $secondary_server === true ? $config[$token.'_secondary'] : $config[$token];
     }
 
+    // Remove entities ldap admin pass.
+    $ldap['ldap_admin_pass'] = io_safe_output($ldap['ldap_admin_pass']);
+
     // Connect to the LDAP server
     if (stripos($ldap['ldap_server'], 'ldap://') !== false
         || stripos($ldap['ldap_server'], 'ldaps://') !== false
@@ -799,8 +865,16 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
         return false;
     }
 
-    // Set the LDAP version
+    // Set the LDAP version.
     ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, $ldap['ldap_version']);
+    ldap_set_option($ds, LDAP_OPT_NETWORK_TIMEOUT, 1);
+
+    // Set ldap search timeout.
+    ldap_set_option(
+        $ds,
+        LDAP_OPT_TIMELIMIT,
+        (empty($config['ldap_search_timeout']) === true) ? 5 : ((int) $config['ldap_search_timeout'])
+    );
 
     if ($ldap['ldap_start_tls']) {
         if (!@ldap_start_tls($ds)) {
@@ -821,7 +895,8 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
             io_safe_output($ldap['ldap_admin_login']),
             io_output_password($ldap['ldap_admin_pass']),
             io_safe_output($login),
-            $ldap['ldap_start_tls']
+            $ldap['ldap_start_tls'],
+            $config['ldap_search_timeout']
         );
 
         if ($sr) {
@@ -1430,7 +1505,8 @@ function local_ldap_search(
     $ldap_admin_user=null,
     $ldap_admin_pass=null,
     $user=null,
-    $ldap_start_tls=null
+    $ldap_start_tls=null,
+    $ldap_search_time=5
 ) {
     global $config;
 
@@ -1463,8 +1539,8 @@ function local_ldap_search(
     }
 
     $dn = " -b '".$dn."'";
-
-    $shell_ldap_search = explode("\n", shell_exec('ldapsearch -LLL -o ldif-wrap=no -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"'));
+    $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
+    $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {
         $values = explode('=>', $line);
         if (!empty($values[0]) && !empty($values[1])) {

@@ -359,10 +359,12 @@ function mysql_db_get_all_rows_in_table($table, $order_field='', $order='ASC')
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function mysql_db_process_sql_insert($table, $values)
+function mysql_db_process_sql_insert($table, $values, $sqltostring=false)
 {
-    // Empty rows or values not processed
-    if (empty($values)) {
+    global $config;
+
+    // Empty rows or values not processed.
+    if (empty($values) === true) {
         return false;
     }
 
@@ -374,7 +376,7 @@ function mysql_db_process_sql_insert($table, $values)
     $i = 1;
     $max = count($values);
     foreach ($values as $field => $value) {
-        // Add the correct escaping to values
+        // Add the correct escaping to values.
         if ($field[0] != '`') {
             $field = '`'.$field.'`';
         }
@@ -402,7 +404,30 @@ function mysql_db_process_sql_insert($table, $values)
 
     $query .= ' VALUES ('.$values_str.')';
 
-    return db_process_sql($query, 'insert_id');
+    $values_insert = [];
+    if (enterprise_hook('is_metaconsole') === true
+        && isset($config['centralized_management']) === true
+        && (bool) $config['centralized_management'] === true
+    ) {
+        $values_insert = [
+            'table'  => $table,
+            'values' => $values,
+        ];
+    }
+
+    if ($sqltostring === true) {
+        return $query;
+    }
+
+    return db_process_sql(
+        $query,
+        'insert_id',
+        '',
+        true,
+        $status,
+        true,
+        $values_insert
+    );
 }
 
 

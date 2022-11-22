@@ -97,7 +97,7 @@ if ($edit_networkmap) {
             return;
         }
 
-        $name = io_safe_output($values['name']);
+        $name = io_safe_output_html($values['name']);
 
         // Id group of the map itself, not data source.
         $id_group_map = $values['id_group_map'];

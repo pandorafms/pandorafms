@@ -485,6 +485,10 @@ class HTML
             $class = '';
         }
 
+        if (empty($input['style']) === false) {
+            $style_li = $input['style'];
+        }
+
         if (isset($input['class']) === true) {
             $class = $input['class'].$class;
         }
@@ -498,7 +502,7 @@ class HTML
             }
 
             // Print independent block of inputs.
-            $output .= '<li id="li-'.($input['block_id'] ?? '').'" class="'.$class.'">';
+            $output .= '<li id="li-'.($input['block_id'] ?? '').'" class="'.$class.'" style="'.$style_li.'">';
 
             if (isset($input['wrapper']) === true) {
                 $output .= '<'.$input['wrapper'].' id="'.($input['block_id'] ?? '').'" class="'.$class.'">';
@@ -562,7 +566,7 @@ class HTML
                 }
 
                 if (!$direct) {
-                    $output .= '<li id="'.($input['id'] ?? '').'" class="'.$class.'">';
+                    $output .= '<li id="'.($input['id'] ?? '').'" class="'.$class.'" style="'.$style_li.'">';
                 }
 
                 if (isset($input['label']) === true) {
@@ -933,7 +937,13 @@ class HTML
         $cb_args = $data['cb_args'];
 
         $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output_head .= '" '.$form['extra'].'>';
+        $output_head .= '" id="'.$form['id'].'" '.$form['extra'].'>';
+
+        if (isset($form['title']) === true && empty($form['title']) === false) {
+            $output_head .= '<div class="form_title"">';
+            $output_head .= '<span>'.$form['title'].'</span>';
+            $output_head .= '</div>';
+        }
 
         if ($return === false) {
             echo $output_head;

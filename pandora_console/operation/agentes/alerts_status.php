@@ -122,7 +122,7 @@ if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, 'AW')) {
 
 $idAgent = get_parameter_get('id_agente', 0);
 
-// Show alerts for specific agent
+// Show alerts for specific agent.
 if ($idAgent != 0) {
     $url = $url.'&id_agente='.$idAgent;
 
@@ -179,7 +179,7 @@ if ($idAgent != 0) {
     );
 
     $idGroup = $id_group;
-    // If there is no agent defined, it means that it cannot search for the secondary groups
+    // If there is no agent defined, it means that it cannot search for the secondary groups.
     $all_groups = [$id_group];
 
     $print_agent = true;
@@ -335,7 +335,9 @@ if ($free_search != '') {
         }
 
 
-        $alert_action = empty(alerts_get_alert_actions_filter()) === false ? alerts_get_alert_actions_filter() : ['' => __('No actions')];
+        $alert_action = empty(alerts_get_alert_actions_filter()) === false
+            ? alerts_get_alert_actions_filter()
+            : ['' => __('No actions')];
 
 
         ob_start();
@@ -352,7 +354,7 @@ if ($free_search != '') {
                     'ajax_url'            => 'include/ajax/alert_list.ajax',
                     'ajax_data'           => [
                         'get_agent_alerts_datatable' => 1,
-                        'id_agent'                   => $id_agent,
+                        'id_agent'                   => $idAgent,
                         'url'                        => $url,
                         'agent_view_page'            => true,
                         'all_groups'                 => $all_groups,
@@ -395,7 +397,7 @@ if ($free_search != '') {
                     'ajax_url'            => 'include/ajax/alert_list.ajax',
                     'ajax_data'           => [
                         'get_agent_alerts_datatable' => 1,
-                        'id_agent'                   => $id_agent,
+                        'id_agent'                   => $idAgent,
                         'url'                        => $url,
                     ],
                     'drawCallback'        => 'alerts_table_controls()',

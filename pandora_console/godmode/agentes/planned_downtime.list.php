@@ -137,12 +137,49 @@ if (is_ajax() === true) {
             'filters' => get_parameter('filter', []),
         ];
 
-        $modules = get_agents_modules_planned_dowtime($id, $options);
+        $type_downtime = db_get_value_filter(
+            'type_downtime',
+            'tplanned_downtime',
+            ['id' => $id]
+        );
+
+        if ($type_downtime === 'disable_agents') {
+            $sql = sprintf(
+                'SELECT ta.alias as agent_name
+                    FROM tplanned_downtime_agents tpa JOIN tagente ta
+                    ON tpa.id_agent = ta.id_agente
+                    WHERE tpa.id_downtime = %d',
+                $id
+            );
+            $data = db_get_all_rows_sql($sql);
+
+            if (empty($data) === false) {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        global $config;
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+
+                        $tmp->agent_name  = io_safe_output($item['agent_name']);
+                        $tmp->module_name   = __('All modules');
+
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            }
+        } else {
+            $data = get_agents_modules_planned_dowtime($id, $options);
+        }
+
+
         $count = get_agents_modules_planned_dowtime($id, $options, $count);
 
         echo json_encode(
             [
-                'data'            => $modules,
+                'data'            => $data,
                 'recordsTotal'    => $count[0]['total'],
                 'recordsFiltered' => $count[0]['total'],
             ]

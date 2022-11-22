@@ -211,7 +211,7 @@ if (isset($_GET['modified']) && !$view_mode) {
         $user_info = $upd_info;
     } else {
         if (!$error_msg) {
-            $error_msg = __('Error updating passwords: ');
+            $error_msg = __('Error updating passwords: ').($config['auth_error'] ?? '');
         }
 
         $user_auth_error = $config['auth_error'];
@@ -425,7 +425,7 @@ $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</d
 // Double auth.
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 
-if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $double_auth_enabled)) {
+if ((bool) $config['double_auth_enabled'] === true) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
     if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
         || ($config['2FA_all_users'] != '' && !$double_auth_enabled)
@@ -1198,7 +1198,7 @@ function show_double_auth_activation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -1274,7 +1274,7 @@ function show_double_auth_deactivation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"

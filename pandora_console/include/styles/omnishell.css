@@ -138,6 +138,7 @@ ul.wizard li > textarea {
 .middle {
   align-self: center;
 }
+
 .edit_discovery_info {
   padding-top: 0;
 }
@@ -164,6 +165,7 @@ ul.wizard {
   align-content: baseline;
   margin-left: 2em;
 }
+
 .filter_column .edit_discovery_input .label_select {
   display: inline;
   margin: 0;
@@ -204,6 +206,7 @@ li.discovery > a {
   text-decoration: none;
   color: #333;
 }
+
 li.discovery > a:hover {
   color: #000;
 }
@@ -239,21 +242,26 @@ div.data_container:hover {
   height: auto;
   text-align: center;
 }
+
 h1.wizard {
   padding: 0;
   margin: 0;
 }
+
 h1.wizard a {
   margin-left: -20px;
 }
+
 h1.wizard a:hover {
   color: #fff;
 }
+
 #text_wizard {
   font-weight: bolder;
   text-decoration: none;
   font-size: 24px;
 }
+
 div.arrow_box {
   display: inline-block;
   position: relative;
@@ -282,6 +290,7 @@ div.arrow_box:before {
   border-width: 20px;
   margin-top: -20px;
 }
+
 .arrow_box.selected:before {
   border-left-color: #424242;
 }
@@ -289,6 +298,7 @@ div.arrow_box:before {
 .arrow_box.selected:hover {
   color: #fff;
 }
+
 .arrow_box:hover {
   color: #000;
 }
@@ -343,6 +353,7 @@ span.breadcrumb_link {
 .breadcrumb_link.selected:hover {
   color: #95b750;
 }
+
 .breadcrumb_link:hover {
   color: #95b750;
 }
@@ -385,6 +396,22 @@ label {
 
 .discovery_full_width_input {
   width: 100%;
+}
+
+li > input[type="text"],
+li > input[type="email"],
+li > input[type="password"],
+li > input[type="email"],
+.discovery_text_input > input[type="password"],
+.discovery_text_input > input[type="text"],
+#interval_manual > input[type="text"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
 }
 
 #interval_manual > input[type="text"] {
@@ -463,13 +490,16 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   margin-left: -35px;
   bottom: -16px;
 }
+
 .arrow.top {
   top: -16px;
   bottom: auto;
 }
+
 .arrow.left {
   left: 50%;
 }
+
 .arrow:after {
   background: grey;
   content: "";
@@ -483,6 +513,7 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
 .arrow.top:after {
   bottom: -20px;
   top: auto;

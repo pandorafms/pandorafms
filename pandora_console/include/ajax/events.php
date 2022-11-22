@@ -90,7 +90,7 @@ $node_id = (int) get_parameter('node_id', 0);
 
 if ($get_comments === true) {
     $event = get_parameter('event', false);
-    $event_rep = get_parameter('event_rep', false);
+    $event_rep = (int) get_parameter('event_rep', 0);
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
@@ -98,7 +98,7 @@ if ($get_comments === true) {
     $eventsGrouped = [];
     // Consider if the event is grouped.
     $whereGrouped = '1=1';
-    if (isset($event_rep) === true && $event_rep > 0) {
+    if ($event_rep === EVENT_GROUP_REP_EVENTS) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
             '`evento` = "%s"',
@@ -119,6 +119,11 @@ if ($get_comments === true) {
                 (int) $event['id_agentmodule']
             );
         }
+    } else if ($event_rep === EVENT_GROUP_REP_EXTRAIDS) {
+        $whereGrouped = sprintf(
+            '`id_extra` = "%s"',
+            $event['id_extra']
+        );
     } else {
         $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
     }
@@ -175,7 +180,7 @@ if ($delete_event === true) {
     $filter = get_parameter('filter', []);
     $id_evento = (int) get_parameter('id_evento', 0);
     $server_id = (int) get_parameter('server_id', 0);
-    $event_rep = get_parameter('event_rep', 0);
+    $event_rep = (int) get_parameter('event_rep', 0);
 
     try {
         if (is_metaconsole() === true
@@ -228,7 +233,7 @@ if ($validate_event === true) {
     $filter = get_parameter('filter', []);
     $id_evento = (int) get_parameter('id_evento', 0);
     $server_id = (int) get_parameter('server_id', 0);
-    $event_rep = get_parameter('event_rep', 0);
+    $event_rep = (int) get_parameter('event_rep', 0);
 
     try {
         if (is_metaconsole() === true
@@ -240,7 +245,7 @@ if ($validate_event === true) {
 
         if ($event_rep === 0) {
             // Disable group by when there're result is unique.
-            $filter['group_rep'] = 0;
+            $filter['group_rep'] = EVENT_GROUP_REP_ALL;
         }
 
         // Check acl.
@@ -285,7 +290,7 @@ if ($in_process_event === true) {
     $filter = get_parameter('filter', []);
     $id_evento = (int) get_parameter('id_evento', 0);
     $server_id = (int) get_parameter('server_id', 0);
-    $event_rep = get_parameter('event_rep', 0);
+    $event_rep = (int) get_parameter('event_rep', 0);
 
     try {
         if (is_metaconsole() === true
@@ -297,7 +302,7 @@ if ($in_process_event === true) {
 
         if ($event_rep === 0) {
             // Disable group by when there're result is unique.
-            $filter['group_rep'] = 0;
+            $filter['group_rep'] = EVENT_GROUP_REP_ALL;
         }
 
         // Check acl.
@@ -360,10 +365,11 @@ if ($save_event_filter) {
     );
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
     $values['search_secondary_groups'] = get_parameter('search_secondary_groups');
+    $values['search_recursive_groups'] = get_parameter('search_recursive_groups');
     $values['id_group_filter'] = get_parameter('id_group_filter');
-    $values['date_from'] = get_parameter('date_from');
+    $values['date_from'] = get_parameter('date_from', null);
     $values['time_from'] = get_parameter('time_from');
-    $values['date_to'] = get_parameter('date_to');
+    $values['date_to'] = get_parameter('date_to', null);
     $values['time_to'] = get_parameter('time_to');
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
@@ -417,6 +423,7 @@ if ($update_event_filter) {
     );
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
     $values['search_secondary_groups'] = get_parameter('search_secondary_groups');
+    $values['search_recursive_groups'] = get_parameter('search_recursive_groups');
     $values['id_group_filter'] = get_parameter('id_group_filter');
     $values['date_from'] = get_parameter('date_from');
     $values['time_from'] = get_parameter('time_from');
@@ -464,13 +471,13 @@ if ($get_filter_values) {
         $event_filter = [
             'status'                  => EVENT_NO_VALIDATED,
             'event_view_hr'           => $config['event_view_hr'],
-            'group_rep'               => 1,
             'tag_with'                => [],
             'tag_without'             => [],
             'history'                 => false,
             'module_search'           => '',
             'filter_only_alert'       => '-1',
             'search_secondary_groups' => 0,
+            'search_recursive_groups' => 0,
             'user_comment'            => '',
             'id_extra'                => '',
             'id_user_ack'             => '',
@@ -480,7 +487,7 @@ if ($get_filter_values) {
             'time_to'                 => '',
             'severity'                => '',
             'event_type'              => '',
-            'group_rep'               => 0,
+            'group_rep'               => EVENT_GROUP_REP_ALL,
             'id_group'                => 0,
             'id_group_filter'         => 0,
             'group_name'              => 'All',
@@ -657,6 +664,8 @@ function load_form_filter() {
                     $("#filter_only_alert").val(val);
                 if (i == 'search_secondary_groups')
                     $("#checkbox-search_secondary_groups").val(val);
+                if (i == 'search_recursive_groups')
+                    $("#checkbox-search_recursive_groups").val(val);
                 if (i == 'id_group_filter')
                     $("#id_group_filter").val(val);
                 if (i == 'source')
@@ -908,6 +917,7 @@ function save_new_filter() {
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
             "filter_only_alert" : $("#filter_only_alert").val(),
             "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
+            "search_recursive_groups" : $("#checkbox-search_recursive_groups").val(),
             "id_group_filter": $("#id_group_filter_dialog").val(),
             "date_from": $("#text-date_from").val(),
             "time_from": $("#text-time_from").val(),
@@ -984,6 +994,7 @@ function save_update_filter() {
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),
         "filter_only_alert" : $("#filter_only_alert").val(),
         "search_secondary_groups" : $("#checkbox-search_secondary_groups").val(),
+        "search_recursive_groups" : $("#checkbox-search_recursive_groups").val(),
         "id_group_filter": $("#id_group_filter_dialog").val(),
         "date_from": $("#text-date_from").val(),
         "time_from": $("#text-time_from").val(),
@@ -2419,11 +2430,12 @@ if ($get_events_fired) {
             'id_agent_module'         => 0,
             'pagination'              => 0,
             'id_user_ack'             => 0,
-            'group_rep'               => 0,
+            'group_rep'               => EVENT_GROUP_REP_ALL,
             'tag_with'                => [],
             'tag_without'             => [],
             'filter_only_alert'       => -1,
             'search_secondary_groups' => 0,
+            'search_recursive_groups' => 0,
             'source'                  => '',
             'id_extra'                => '',
             'user_comment'            => '',

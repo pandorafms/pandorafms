@@ -7673,8 +7673,7 @@ function api_set_planned_downtimes_delete_agents($id, $thrash1, $other, $thrash3
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents WHERE id_agent = %d AND id_downtime = %d', $agent, $id)) !== false) {
@@ -7750,8 +7749,7 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
@@ -10137,7 +10135,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
     }
 
     if ($other['type'] == 'array') {
-        if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string', 'AW')) {
+        if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string')) {
             return;
         }
 
@@ -11248,7 +11246,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $id_user_ack = 0;
     $event_view_hr = 0;
     $tag = '';
-    $group_rep = 0;
+    $group_rep = EVENT_GROUP_REP_ALL;
     $utimestamp_upper = 0;
     $utimestamp_bottom = 0;
     $id_alert_template = -1;
@@ -11451,7 +11449,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
         $alert_join = ' INNER JOIN talert_template_modules ON '.$table_events.'.id_alert_am=talert_template_modules.id';
     }
 
-    if ($group_rep == 0) {
+    if ($group_rep == EVENT_GROUP_REP_ALL) {
         if ($filter['total']) {
             $sql = 'SELECT COUNT(*)
                         FROM '.$table_events.'
@@ -13173,7 +13171,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         if ($other['data'][7] != '') {
             $values['id_agentmodule'] = $other['data'][7];
         } else {
-            $value['id_agentmodule'] = 0;
+            $values['id_agentmodule'] = 0;
         }
 
         if ($other['data'][8] != '') {
@@ -15924,7 +15922,7 @@ function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 
     $id_user_ack = (in_array($other['data'][9], $users)) ? $other['data'][9] : 0;
 
-    $group_rep = ($other['data'][10] == 0 || $other['data'][10] == 1) ? $other['data'][10] : 0;
+    $group_rep = ($other['data'][10] == EVENT_GROUP_REP_ALL || $other['data'][10] == EVENT_GROUP_REP_EVENTS) ? $other['data'][10] : EVENT_GROUP_REP_ALL;
 
     $date_from = (preg_match('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $other['data'][11])) ? $other['data'][11] : '0000-00-00';
 
@@ -16151,7 +16149,7 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                 break;
 
                 case 11:
-                    $values['group_rep'] = ($other['data'][11] == 0 || $other['data'][11] == 1) ? $other['data'][11] : 0;
+                    $values['group_rep'] = ($other['data'][11] == EVENT_GROUP_REP_ALL || $other['data'][11] == EVENT_GROUP_REP_EVENTS) ? $other['data'][11] : EVENT_GROUP_REP_ALL;
                 break;
 
                 case 12:

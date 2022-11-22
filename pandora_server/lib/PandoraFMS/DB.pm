@@ -113,6 +113,10 @@ our @EXPORT = qw(
 		get_agentmodule_status_str
 		get_agentmodule_data
 		set_ssl_opts
+		db_synch_insert
+		db_synch_update
+		db_synch_delete
+		db_synch
 		$RDBMS
 		$RDBMS_QUOTE
 		$RDBMS_QUOTE_STRING
@@ -1661,14 +1665,89 @@ sub set_ssl_opts($) {
 	}
 
 	# Enable SSL.
-	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=1;mysql_ssl_verify_server_cert=1";
+	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=1";
 
 	# Set additional SSL options.
+	if (defined($pa_config->{'verify_mysql_ssl_cert'}) && $pa_config->{'verify_mysql_ssl_cert'} ne "") {
+		$SSL_OPTS .= ";mysql_ssl_verify_server_cert=" . $pa_config->{'verify_mysql_ssl_cert'};
+	}
 	if (defined($pa_config->{'dbsslcapath'}) && $pa_config->{'dbsslcapath'} ne "") {
 		$SSL_OPTS .= ";mysql_ssl_ca_path=" . $pa_config->{'dbsslcapath'};
 	}
 	if (defined($pa_config->{'dbsslcafile'}) && $pa_config->{'dbsslcafile'} ne "") {
 		$SSL_OPTS .= ";mysql_ssl_ca_file=" . $pa_config->{'dbsslcafile'};
+	}
+}
+
+########################################################################
+## Synch insert query with nodes.
+########################################################################
+sub db_synch_insert ($$$$$@) {
+	my ($dbh, $pa_config, $table, $query, $result, @values) = @_;
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+	my $query_string = sprintf($query, @values);
+
+	db_synch($dbh, $pa_config, 'INSERT INTO', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch update query with nodes.
+########################################################################
+sub db_synch_update ($$$$$@) {
+	my ($dbh, $pa_config, $table, $query, $result, @values) = @_;
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+	my $query_string = sprintf($query, @values);
+
+	db_synch($dbh, $pa_config, 'UPDATE', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch delete query with nodes.
+########################################################################
+sub db_synch_delete ($$$$@) {
+	my ($dbh, $pa_config, $table, $result, @parameters) = @_;
+
+	#Build query string.
+	my $query = $dbh->{Statement};
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+
+	my $query_string = sprintf($query, @parameters);
+
+	db_synch($dbh, $pa_config, 'DELETE FROM', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch queries with nodes.
+########################################################################
+sub db_synch ($$$$$$) {
+	my ($dbh, $pa_config, $type, $table, $query, $result) = @_;
+	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup');
+	foreach my $node (@nodes) {
+		eval {
+			local $SIG{__DIE__};
+			my @values_queue = (
+				safe_input($query),
+				$node->{'id'},
+				time(),
+				$type,
+				$table,
+				'',
+				$result
+			);
+			
+			my $query_queue = 'INSERT INTO tsync_queue (`sql`, `target`, `utimestamp`, `operation`, `table`, `error`, `result`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+			db_insert ($dbh, 'id', $query_queue, @values_queue);
+		};
+		if ($@) {
+			logger($pa_config, "Error add sync_queue: $@", 10);
+			return;
+		}
 	}
 }
 

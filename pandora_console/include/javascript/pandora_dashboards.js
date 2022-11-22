@@ -1386,6 +1386,12 @@ function dashboardLoadVC(settings) {
       : "dashboard"
   );
 
+  if (settings.props.maintenanceMode != null) {
+    if (settings.props.maintenanceMode.user !== settings.id_user) {
+      visualConsoleManager.visualConsole.enableMaintenanceMode();
+    }
+  }
+
   if (settings.mobile_view_orientation_vc === true) {
     $(window).on("orientationchange", function() {
       $(container).width($(window).height());
@@ -1535,4 +1541,19 @@ function loadSliceWidget(settings) {
       console.error(error);
     }
   });
+}
+
+// eslint-disable-next-line no-unused-vars
+function showManualThresholds(element) {
+  $("#min_warning").val(null);
+  $("#max_warning").val(null);
+  $("#min_critical").val(null);
+  $("#max_critical").val(null);
+  if ($(element).is(":checked") === true) {
+    $(".dashboard-input-threshold-warning").removeClass("invisible_important");
+    $(".dashboard-input-threshold-critical").removeClass("invisible_important");
+  } else {
+    $(".dashboard-input-threshold-warning").addClass("invisible_important");
+    $(".dashboard-input-threshold-critical").addClass("invisible_important");
+  }
 }

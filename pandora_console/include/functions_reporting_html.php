@@ -1944,7 +1944,16 @@ function reporting_html_inventory($table, $item, $pdf=0)
                                         $table1->head[$k] = $k;
                                         $table1->headstyle[$k] = 'text-align: left';
                                         $table1->cellstyle[$str_key][$k] = 'text-align: left;';
-                                        $table1->data[$str_key][$k] = $v;
+                                        if ($pdf === 0) {
+                                            $table1->data[$str_key][$k] = $v;
+                                        } else {
+                                            // Workaround to prevent table columns from growing indefinitely in PDFs.
+                                            $table1->data[$str_key][$k] = preg_replace(
+                                                '/([^\s]{30})(?=[^\s])/',
+                                                '$1'.'<br>',
+                                                $v
+                                            );
+                                        }
                                     }
                                 }
                             }

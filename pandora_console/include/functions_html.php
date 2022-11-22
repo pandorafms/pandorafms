@@ -4883,12 +4883,12 @@ function html_print_autocomplete_modules(
  *
  * @return string HTML code
  */
-function html_print_timezone_select($name, $selected='')
+function html_print_timezone_select($name, $selected='', $nothing='', $nothing_value='')
 {
-    $timezones_index = timezone_identifiers_list();
     $timezones = timezone_identifiers_list();
-    $timezones = array_combine($timezones_index, $timezones);
-    return html_print_select($timezones, $name, $selected, '', __('None'), '', true, false, false);
+    $timezones = array_combine($timezones, $timezones);
+    $timezones = (['' => __('none')] + $timezones);
+    return html_print_select($timezones, $name, $selected, '', $nothing, $nothing_value, true, false, false);
 }
 
 
@@ -5749,7 +5749,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0,
                     $data['agent_ids'],
                     $data['selectionModules'],
-                    true
+                    true,
+                    false,
+                    (isset($data['notStringModules']) === true && $data['notStringModules'] === true) ? true : false
                 );
             }
 

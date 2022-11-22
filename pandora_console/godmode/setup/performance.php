@@ -701,6 +701,28 @@ if (enterprise_installed() === true) {
     );
 }
 
+// Agent Wizard defaults.
+$defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
+$tableSnmpWizard = new stdClass();
+$tableSnmpWizard->width = '100%';
+$tableSnmpWizard->class = 'databox filters';
+$tableSnmpWizard->data = [];
+$tableSnmpWizard->style[0] = 'font-weight: bold';
+$tableSnmpWizard->style[2] = 'font-weight: bold';
+$tableSnmpWizard->size[0] = '30%';
+$tableSnmpWizard->size[2] = '30%';
+
+$i = 0;
+$j = 0;
+foreach ($defaultAgentWizardOptions as $key => $value) {
+    $tableSnmpWizard->data[$i][$j++] = $key;
+    $tableSnmpWizard->data[$i][$j++] = html_print_checkbox_switch('agent_wizard_defaults_'.$key, 1, $value, true);
+    if ($j >= 3) {
+        $j = 0;
+        $i++;
+    }
+}
+
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset class="full-column">';
@@ -725,6 +747,12 @@ echo '<fieldset>';
     html_print_table($table_other);
 echo '</fieldset>';
 
+echo '<fieldset>';
+    echo '<legend>'.__('Agent SNMP Interface Wizard defaults').' '.ui_print_help_icon('agent_snmp_wizard_options_tab', true).'</legend>';
+    html_print_table($tableSnmpWizard);
+echo '</fieldset>';
+
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden('update_config', 1);
 html_print_div(
     [

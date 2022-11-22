@@ -797,11 +797,7 @@ foreach ($commands as $command) {
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if ($is_management_allowed === true && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
-        if (check_acl($config['id_user'], 0, 'PM') || is_user_admin(
-            $config['id_user
-            ']
-        )
-        ) {
+        if (is_user_admin($config['id_user']) === true) {
                     $data['action'] = '<span class="inline_flex">';
             $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
             onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
@@ -828,7 +824,8 @@ if (isset($data) === true && count($table->data) > 0) {
     );
 }
 
-if ($is_management_allowed === true && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
+// Commands can only be created by the super administrator.
+if (users_is_admin() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');

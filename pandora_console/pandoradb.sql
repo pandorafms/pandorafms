@@ -764,7 +764,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
   `identifier` VARCHAR(100) NOT NULL,
   `id_group` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') DEFAULT 'CUSTOM',
+  `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP', 'WMI', 'SNMP') DEFAULT 'CUSTOM',
   `username` TEXT,
   `password` TEXT,
   `extra_1` TEXT,
@@ -874,6 +874,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `summary` TEXT,
   `type` INT NOT NULL DEFAULT 0,
   `subnet_csv` TINYINT UNSIGNED DEFAULT 0,
+  `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1,
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
@@ -1245,6 +1246,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `tag_without` TEXT,
   `filter_only_alert` INT NOT NULL DEFAULT -1,
   `search_secondary_groups` INT NOT NULL DEFAULT 0,
+  `search_recursive_groups` INT NOT NULL DEFAULT 0,
   `date_from` date DEFAULT NULL,
   `date_to` date DEFAULT NULL,
   `source` TINYTEXT,
@@ -1308,6 +1310,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `integria_user_level_pass` VARCHAR(45),
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,
+  `auth_token_secret` VARCHAR(45) DEFAULT NULL,
   CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1676,6 +1679,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
   `background_color` VARCHAR(50) NOT NULL DEFAULT '#FFF',
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
+  `maintenance_mode` TEXT,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

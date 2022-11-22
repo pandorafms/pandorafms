@@ -90,6 +90,7 @@ if ($id) {
 
     $filter_only_alert = $filter['filter_only_alert'];
     $search_secondary_groups = $filter['search_secondary_groups'];
+    $search_recursive_groups = $filter['search_recursive_groups'];
     $custom_data = $filter['custom_data'];
     $custom_data_filter_type = $filter['custom_data_filter_type'];
 
@@ -128,6 +129,7 @@ if ($id) {
     $tag_without_base64 = base64_encode($tag_without_json);
     $filter_only_alert = '';
     $search_secondary_groups = 0;
+    $search_recursive_groups = 0;
 }
 
 if ($update || $create) {
@@ -170,6 +172,7 @@ if ($update || $create) {
 
     $filter_only_alert = get_parameter('filter_only_alert', '');
     $search_secondary_groups = get_parameter('search_secondary_groups', 0);
+    $search_recursive_groups = get_parameter('search_recursive_groups', 0);
 
     $custom_data = get_parameter('custom_data', '');
     $custom_data_filter_type = get_parameter('custom_data_filter_type', '');
@@ -198,6 +201,7 @@ if ($update || $create) {
         'user_comment'            => $user_comment,
         'filter_only_alert'       => $filter_only_alert,
         'search_secondary_groups' => $search_secondary_groups,
+        'search_recursive_groups' => $search_recursive_groups,
         'custom_data'             => $custom_data,
         'custom_data_filter_type' => $custom_data_filter_type,
     ];
@@ -438,8 +442,12 @@ $table->data[10][1] = html_print_select(
     true
 );
 
-$repeated_sel[0] = __('All events');
-$repeated_sel[1] = __('Group events');
+$repeated_sel = [
+    EVENT_GROUP_REP_ALL      => __('All events'),
+    EVENT_GROUP_REP_EVENTS   => __('Group events'),
+    EVENT_GROUP_REP_AGENTS   => __('Group agents'),
+    EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
+];
 $table->data[11][0] = '<b>'.__('Repeated').'</b>';
 $table->data[11][1] = html_print_select(
     $repeated_sel,

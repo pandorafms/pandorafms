@@ -7,6 +7,14 @@
   margin-top: 5px;
 }
 
+.is-maintenance {
+  background-image: url(./lib/maintenanceMode.png) !important;
+}
+
+.is-maintenance :nth-child(1) {
+  display: none;
+}
+
 .visual-console-item {
   position: absolute;
   display: flex;

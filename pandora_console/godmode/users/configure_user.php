@@ -259,7 +259,6 @@ if (is_ajax()) {
         );
 
         if ($profile !== false && count($profile) > 0) {
-            hd(json_encode($profile), true);
             echo json_encode($profile);
 
             return;
@@ -337,7 +336,7 @@ $add_profile = (bool) get_parameter('add_profile');
 $update_user = (bool) get_parameter('update_user');
 $status = get_parameter('status', -1);
 $json_profile = get_parameter('json_profile', '');
-hd($add_profile, true);
+
 // Reset status var if current action is not update_user
 if ($new_user || $create_user || $add_profile
     || $delete_profile || $update_user
@@ -598,7 +597,7 @@ if ($create_user) {
                             false,
                             'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
                         );
-hd("hereeee", true);
+
                         $result_profile = profile_create_user_profile($id, $profile2, $group2, false, $tags, $no_hierarchy);
 
                         if ($result_profile === false) {
@@ -1701,12 +1700,14 @@ $(document).ready (function () {
     var is_err = '<?php echo $is_err; ?>';
     var data = [];
     var aux = 0;
-
-    if(json_profile.val() != '') {
-        var data = JSON.parse(json_profile.val());
-    }
     
     function addProfile(form) {
+        try {
+            var data = JSON.parse(json_profile.val());
+        } catch {
+            var data = [];
+        }
+
         var profile = $('#assign_profile').val();
         var profile_text = $('#assign_profile option:selected').text();
         var group = $('#assign_group').val();
@@ -1728,8 +1729,20 @@ $(document).ready (function () {
 
         if (id_user == '' || is_err == 1) {
             let new_json = `{"profile":${profile},"group":${group},"tags":[${tags}],"hierarchy":${hierarchy}}`;
-            data.push(new_json);
+
+            var profile_is_added = Object.entries(data).find(function(_data) {
+                return _data[1] === new_json;
+            });
+
+            if (typeof profile_is_added === 'undefined') {
+                data.push(new_json);
+            } else {
+                alert('<?php echo __('Please select profile and group'); ?>');
+                return;
+            }
+
             json_profile.val(JSON.stringify(data));
+
             profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
             group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="bot forced_title" alt="${group_text}"/>`;
             group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
@@ -1754,6 +1767,11 @@ $(document).ready (function () {
 
     $('input:image[name="add"]').click(function (e) {
         e.preventDefault();
+
+        if (id_user.length === 0) {
+            addProfile(this.form);
+            return;
+        }
 
         var params = [];
         params.push("get_user_profile=1");
@@ -1850,9 +1868,8 @@ function delete_profile(event, btn) {
 
     var json = json_profile.val();
     var test = JSON.parse(json);
-    delete test[position-1];
+    test.splice(position-1, 1);
     json_profile.val(JSON.stringify(test));
-
 }
 
 function show_data_section () {

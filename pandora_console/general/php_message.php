@@ -19,15 +19,15 @@
 global $config;
 
 if ($config['language'] == 'es') {
-    $url_help = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
+    $url_help = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_8';
 } else {
-    $url_help = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
+    $url_help = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_8';
 }
 
 // Prints help dialog information
 echo '<div id="login_help_dialog" title="PHP UPDATE REQUIRED" class="invisible">';
     echo '<div class="login_help_dialog">';
-        echo "<p><b class='font_10'>".__('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'</b></p>';
+        echo "<p><b class='font_10'>".__('For a correct operation of PandoraFMS, PHP must be updated to version 8.0 or higher.').'</b></p>';
         echo "<p class='font_10'><b>".__('Otherwise, functionalities will be lost.').'</b></p>';
         echo '<ul>';
             echo "<li class='pdd_5px'>".__('Report download in PDF format').'</li>';

@@ -1102,27 +1102,27 @@ function events_get_all(
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
-                    $filter['custom_data']
+                    io_safe_output($filter['custom_data'])
                 );
             } else {
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
-                    $filter['custom_data']
+                    io_safe_output($filter['custom_data'])
                 );
             }
         } else {
             if ($filter['custom_data_filter_type'] === '1') {
                 $sql_filters[] = sprintf(
-                    ' AND JSON_VALID(custom_data) = 1 AND JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") ',
-                    $filter['custom_data'],
-                    $filter['custom_data']
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND cast(JSON_EXTRACT(custom_data, "$.*") as CHAR) LIKE lower("%%%s%%") ',
+                    io_safe_output($filter['custom_data'])
                 );
             } else {
                 $sql_filters[] = sprintf(
-                    ' AND JSON_VALID(custom_data) = 1 AND JSON_KEYS(custom_data) REGEXP "%s" ',
-                    $filter['custom_data'],
-                    $filter['custom_data']
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND cast(JSON_KEYS(custom_data) as CHAR) REGEXP "%s" ',
+                    io_safe_output($filter['custom_data'])
                 );
             }
         }

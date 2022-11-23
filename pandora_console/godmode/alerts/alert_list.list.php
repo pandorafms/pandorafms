@@ -451,7 +451,7 @@ $simple_alerts = agents_get_alerts_simple(
 if (!$id_agente) {
     $url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'&offset='.$offset.$form_params;
 } else {
-    $url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente='.$id_agente.'&offset='.$offset.$form_params;
+    $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente='.$id_agente.'&offset='.$offset.$form_params;
 }
 
 // Urls to sort the table.

@@ -89,22 +89,33 @@ function cron_next_execution($cron, $module_interval, $module_id)
         'id_agente_modulo',
         $module_id
     );
+
+    $cron_elems = explode(' ', $cron);
+
+    if (isset($cron_elems[4]) === true) {
+        $cron_elems[4] = '*';
+    }
+
+    $cron = implode(' ', $cron_elems);
+
     $cur_time = ($last_execution !== false) ? $last_execution : time();
     $nex_time = cron_next_execution_date($cron, $cur_time, $module_interval);
     $nex_wday = (int) date('w', $nex_time);
+
     // Check the wday values to avoid infinite loop.
     $wday_int = cron_get_interval($wday);
     if ($wday_int['down'] !== '*' && ($wday_int['down'] > 6 || ($wday_int['up'] !== false && $wday_int['up'] > 6))) {
         $wday = '*';
     }
 
-    // Check day of the way.
+    // Check week day.
     while (!cron_check_interval($nex_wday, $wday)) {
         // If it does not acomplish the day of the week, go to the next day.
         $nex_time += SECONDS_1DAY;
-        $nex_time = cron_next_execution_date($cron, $nex_time, 0);
         $nex_wday = (int) date('w', $nex_time);
     }
+
+    $nex_time = cron_next_execution_date($cron, $nex_time, 0);
 
     return ($nex_time - $cur_time);
 }

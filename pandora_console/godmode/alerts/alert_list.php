@@ -102,13 +102,20 @@ if ($create_alert) {
     $id_alert_template = (int) get_parameter('template');
     $id_agent_module = (int) get_parameter('id_agent_module');
 
-    if (db_get_value_sql(
-        'SELECT COUNT(id)
-		FROM talert_template_modules
-		WHERE id_agent_module = '.$id_agent_module.'
-			AND id_alert_template = '.$id_alert_template
-    ) > 0
-    ) {
+    $exist = db_get_value_sql(
+        sprintf(
+            'SELECT COUNT(id)
+            FROM talert_template_modules
+            WHERE id_agent_module = %d
+                AND id_alert_template = %d
+                AND id_policy_alerts = 0
+            ',
+            $id_agent_module,
+            $id_alert_template
+        )
+    );
+
+    if ($exist > 0) {
         $messageAction = ui_print_result_message(
             false,
             '',

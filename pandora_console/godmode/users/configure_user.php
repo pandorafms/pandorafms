@@ -499,7 +499,7 @@ if ($create_user) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
-    } else if (excludedPassword($password_new) === true) {
+    } else if (enterprise_hook('excludedPassword', [$password_new]) === true) {
         $is_err = true;
         ui_print_error_message(__('The password provided is not valid. Please set another one.'));
         $user_info = $values;
@@ -606,6 +606,43 @@ if ($create_user) {
                             $password_new = '';
                             $password_confirm = '';
                             $new_user = true;
+                        } else {
+                            $pm = db_get_value_filter('pandora_management', 'tperfil', ['id_perfil' => $profile2]);
+
+                            if ((int) $pm === 1) {
+                                $user_source = db_get_value_filter(
+                                    'id_source',
+                                    'tnotification_source_user',
+                                    [
+                                        'id_source' => $notification['id'],
+                                        'id_user'   => $id,
+                                    ]
+                                );
+                                if ($user_source === false) {
+                                    $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+                                    foreach ($notificationSources as $notification) {
+                                        if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
+                                            $notification_user = db_get_value_filter(
+                                                'id_source',
+                                                'tnotification_source_user',
+                                                [
+                                                    'id_source' => $notification['id'],
+                                                    'id_user'   => $id,
+                                                ]
+                                            );
+                                            if ($notification_user === false) {
+                                                @db_process_sql_insert(
+                                                    'tnotification_source_user',
+                                                    [
+                                                        'id_source' => $notification['id'],
+                                                        'id_user'   => $id,
+                                                    ]
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         ui_print_result_message(
@@ -902,6 +939,43 @@ if ($add_profile && empty($json_profile)) {
     $return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
     if ($return === false) {
         $is_err = true;
+    } else {
+        $pm = db_get_value_filter('pandora_management', 'tperfil', ['id_perfil' => $profile2]);
+
+        if ((int) $pm === 1) {
+            $user_source = db_get_value_filter(
+                'id_source',
+                'tnotification_source_user',
+                [
+                    'id_source' => $notification['id'],
+                    'id_user'   => $id,
+                ]
+            );
+            if ($user_source === false) {
+                $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+                foreach ($notificationSources as $notification) {
+                    if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
+                        $notification_user = db_get_value_filter(
+                            'id_source',
+                            'tnotification_source_user',
+                            [
+                                'id_source' => $notification['id'],
+                                'id_user'   => $id,
+                            ]
+                        );
+                        if ($notification_user === false) {
+                            @db_process_sql_insert(
+                                'tnotification_source_user',
+                                [
+                                    'id_source' => $notification['id'],
+                                    'id_user'   => $id,
+                                ]
+                            );
+                        }
+                    }
+                }
+            }
+        }
     }
 
     ui_print_result_message(
@@ -2071,7 +2145,7 @@ function show_double_auth_activation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -2149,7 +2223,7 @@ function show_double_auth_deactivation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"

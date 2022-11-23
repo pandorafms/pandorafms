@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.765";
-my $pandora_build = "221026";
+my $pandora_version = "7.0NG.766";
+my $pandora_build = "221123";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -229,6 +229,7 @@ sub pandora_load_config {
 	$pa_config->{"dbssl"} = 0;
 	$pa_config->{"dbsslcapath"} = "";
 	$pa_config->{"dbsslcafile"} = "";
+	$pa_config->{"verify_mysql_ssl_cert"} = "0";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
 	$pa_config->{"user"}  = "pandora"; # environment settings default user owner for files generated
@@ -723,6 +724,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dbsslcafile\s(.*)/i) { 
 			$pa_config->{'dbsslcafile'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^verify_mysql_ssl_cert\s(.*)/i) { 
+			$pa_config->{'verify_mysql_ssl_cert'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^dbuser\s(.*)/i) { 
 			$pa_config->{'dbuser'}= clean_blank($1); 

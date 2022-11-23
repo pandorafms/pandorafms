@@ -591,6 +591,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     });
 
     // Metadata state.
+    if (this.meta.maintenanceMode) {
+      box.classList.add("is-maintenance");
+    }
     if (this.meta.editMode) {
       box.classList.add("is-editing");
     }
@@ -877,8 +880,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
 
     // Change metadata related things.
-    if (!prevMeta || prevMeta.editMode !== this.meta.editMode) {
-      if (this.meta.editMode) {
+    if (
+      !prevMeta ||
+      prevMeta.editMode !== this.meta.editMode ||
+      prevMeta.maintenanceMode !== this.meta.maintenanceMode
+    ) {
+      if (this.meta.editMode && this.meta.maintenanceMode === false) {
         this.elementRef.classList.add("is-editing");
       } else {
         this.elementRef.classList.remove("is-editing");

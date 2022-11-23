@@ -21,7 +21,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
-[ "$PHPVER" ] || PHPVER=7.4
+[ "$PHPVER" ] || PHPVER=8.0
 [ "$DBHOST" ] || DBHOST=127.0.0.1
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
@@ -138,6 +138,9 @@ check_root_permissions
 # Connectivity
 check_repo_connection
 
+#Install awk, sed, grep  if not present
+execute_cmd "apt install -y gawk sed grep" 'Installing needed tools'
+
 # Systemd
 execute_cmd "systemctl --version" "Checking SystemD" 'This is not a SystemD enable system, if tryng to use in a docker env please check: https://github.com/pandorafms/pandorafms/tree/develop/extras/docker/centos8'
 
@@ -155,7 +158,7 @@ execute_cmd "timedatectl set-timezone $TZ" "Setting Timezone $TZ"
 execute_cmd "awk --version" 'Checking needed tools: awk'
 execute_cmd "grep --version" 'Checking needed tools: grep'
 execute_cmd "sed --version" 'Checking needed tools: sed'
-execute_cmd "apt --version" 'Checking needed tools: dnf'
+execute_cmd "apt --version" 'Checking needed tools: apt'
 
 # Creating working directory
 rm -rf "$WORKDIR" &>> "$LOGFILE"

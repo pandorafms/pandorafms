@@ -1771,6 +1771,9 @@ div.title_line {
 
 /* End - Breadcrum */
 
+#menu_tab {
+  margin-right: 20px;
+}
 #menu_tab .mn,
 #menu_tab ul,
 #menu_tab .mn ul {
@@ -2539,6 +2542,7 @@ div#pandora_logo_header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-right: 20px;
 }
 
 .header_right > div {
@@ -10628,6 +10632,32 @@ pre.external_tools_output {
 }
 
 .fixed_filter_bar {
+  position: fixed;
+  height: 60px;
+  top: 114px;
+  border: 1px solid #e5e9ed;
+  background-color: #fff;
+  z-index: 0;
+  width: -webkit-fill-available;
+  width: -moz-fill-available;
+}
+
+.fixed_filter_bar tr {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: flex-start;
+}
+
+.fixed_filter_bar td {
+  display: flex;
+  align-self: center;
+  justify-content: flex-start;
+}
+
+.fixed_filter_bar span {
+  margin-right: 15px;
 }
 
 .fixed_filter_content {

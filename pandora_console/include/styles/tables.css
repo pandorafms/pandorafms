@@ -90,7 +90,8 @@
 
 .info_table {
   background-color: #fff;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
+  margin: 64px auto 0;
   border-spacing: 0;
   border-collapse: collapse;
   overflow: hidden;

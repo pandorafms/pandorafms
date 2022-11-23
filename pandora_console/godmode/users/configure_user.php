@@ -1737,7 +1737,7 @@ $(document).ready (function () {
             if (typeof profile_is_added === 'undefined') {
                 data.push(new_json);
             } else {
-                alert('<?php echo __('Please select profile and group'); ?>');
+                alert('<?php echo __('This profile is already defined'); ?>');
                 return;
             }
 

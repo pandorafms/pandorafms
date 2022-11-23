@@ -370,7 +370,7 @@ $table->data[5][1] = html_print_select(
 $table->data[6][0] = '<b>'.__('Free search').'</b>';
 $table->data[6][1] = html_print_input_text(
     'search',
-    io_safe_output($search),
+    $search,
     '',
     15,
     255,

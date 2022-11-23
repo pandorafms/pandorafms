@@ -1561,7 +1561,7 @@ require 'include/php_to_js_values.php';
             }
             */
             if (actionButtons.classList.contains('fixed_action_buttons_size') === false) {
-                $left = 'left:'+(document.documentElement.offsetWidth - document.getElementById('principal_action_buttons').offsetWidth - 40)+'px;';
+                $left = 'left:'+(document.documentElement.offsetWidth - document.getElementById('principal_action_buttons').offsetWidth - 20)+'px;';
                 actionButtons.setAttribute('style', $left);
             }
             // Set the position of principal action buttons.

@@ -44,16 +44,20 @@ $search_string = get_parameter('search_string');
 
 global $policy_page;
 
-if (!isset($policy_page)) {
+if (isset($policy_page) === false) {
     $policy_page = false;
 }
 
+$checked = (bool) get_parameter('checked');
+$sec2 = (string) get_parameter('sec2');
 
-echo '<form id="create_module_type" method="post" action="'.$url.'">';
-
-echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos bolder w20p'>";
-echo __('Search').' '.html_print_input_text(
+// Table for filter bar.
+$filterTable = new stdClass();
+$filterTable->class = 'fixed_filter_bar';
+$filterTable->data = [];
+$filterTable->cellstyle[0][0] = 'flex: 0 1 20%;';
+$filterTable->data[0][0] = '<span>'.__('Search').'</span>';
+$filterTable->data[0][0] .= html_print_input_text(
     'search_string',
     $search_string,
     '',
@@ -61,28 +65,36 @@ echo __('Search').' '.html_print_input_text(
     255,
     true
 );
-html_print_input_hidden('search', 1);
-// Search string filter form.
-if (($policy_page !== false) || (isset($agent) === true)) {
-    echo '<form id="" method="post" action="">';
-} else {
-    echo '<form id="create_module_type" method="post" action="'.$url.'">';
+$filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
+
+if ((bool) $policy_page === false) {
+    $filterTable->cellstyle[0][1] = 'flex: 0 1 20%';
+    $filterTable->data[0][1] = '<span>'.__('Show in hierachy mode').'</span>';
+    $filterTable->data[0][1] .= html_print_checkbox_switch(
+        'status_hierachy_mode',
+        '',
+        ((string) $checked === 'true'),
+        true,
+        false,
+        'onChange=change_mod_filter();'
+    );
 }
 
-echo '</td>';
-echo "<td class='datos w10p'>";
-html_print_submit_button(
+$filterTable->cellstyle[0][2] = 'flex: 0 1 60%; justify-content: flex-end;';
+$filterTable->data[0][2] .= html_print_submit_button(
     __('Filter'),
     'filter',
     false,
     [
-        'icon' => 'search',
-        'mode' => 'secondary mini',
-    ]
+        'icon'  => 'search',
+        'class' => 'float-right',
+        'mode'  => 'secondary mini',
+    ],
+    true
 );
-echo '</td>';
-echo "<td class='datos w10p'></td>";
-echo '</form>';
+
+// Print filter table.
+html_print_table($filterTable);
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo.
 $network_available = db_get_sql(
@@ -122,7 +134,7 @@ if ($develop_bypass || is_metaconsole()) {
     $plugin_available = 1;
     // FIXME when prediction predictions server modules can be configured.
     // on metaconsole.
-    $prediction_available = is_metaconsole() ? 0 : 1;
+    $prediction_available = (is_metaconsole() === true) ? 0 : 1;
 }
 
 $modules = [];
@@ -147,11 +159,10 @@ if (is_metaconsole() === true || $web_available >= '1') {
     $modules['webserver'] = __('Create a new web Server module');
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     set_enterprise_module_types($modules);
 }
 
-$sec2 = get_parameter('sec2', '');
 if (strstr($sec2, 'enterprise/godmode/policies/policies') !== false) {
     // It is unset because the policies haven't a table tmodule_synth and the
     // some part of code to apply this kind of modules in policy agents.
@@ -159,16 +170,13 @@ if (strstr($sec2, 'enterprise/godmode/policies/policies') !== false) {
     // the modules to show in syntetic module policy form must be the policy
     // modules from the same policy.
     unset($modules['predictionserver']);
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         unset($modules['webux']);
     }
 }
 
-$show_creation = false;
-$checked = get_parameter('checked');
-
-if (($policy_page) || (isset($agent))) {
-    if ($policy_page) {
+if (($policy_page === true) || (isset($agent) === true)) {
+    if ($policy_page === true) {
         $show_creation = is_management_allowed();
     } else {
         if (isset($all_groups) === false) {
@@ -178,79 +186,64 @@ if (($policy_page) || (isset($agent))) {
             );
         }
 
-        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-            $show_creation = true;
-        }
+        $show_creation = check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true;
     }
-
-    if ($show_creation === true) {
-        // Create module/type combo.
-        echo '<form id="create_module_type" method="post" action="'.$url.'">';
-        if (!$policy_page) {
-            echo '<td class="datos w20p bolder">';
-            echo __('Show in hierachy mode');
-            if ($checked == 'true') {
-                $checked = true;
-            } else {
-                $checked = false;
-            }
-
-            html_print_checkbox(
-                'status_hierachy_mode',
-                '',
-                $checked,
-                false,
-                false,
-                'onChange=change_mod_filter();'
-            );
-            echo '</td>';
-        }
-
-        echo '<td class="datos w20p bolder">';
-        echo __('<p>Type</p>');
-        html_print_select(
-            $modules,
-            'moduletype',
-            '',
-            '',
-            '',
-            '',
-            false,
-            false,
-            false,
-            '',
-            false,
-            'max-width:300px;'
-        );
-        html_print_input_hidden('edit_module', 1);
-        echo '</td>';
-        echo '<td class="datos w10p">';
-        html_print_submit_button(
-            __('Create'),
-            'updbutton',
-            false,
-            [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
-            ]
-        );
-        echo '</td>';
-        echo '</tr>';
-        echo '</form>';
-    }
+} else {
+    $show_creation = false;
 }
 
-echo '</table>';
+if ($show_creation === true) {
+    // Create module/type combo.
+    $tableCreateModule = new stdClass();
+    $tableCreateModule->id = 'create';
+    $tableCreateModule->width = '100%';
+    $tableCreateModule->data = [];
+    $tableCreateModule->style = [];
 
-if (!$config['disable_help']) {
+    $tableCreateModule->data['caption_type'] = '<form id="create_module_type" method="post" action="'.$url.'">';
+    $tableCreateModule->data['caption_type'] .= html_print_input_hidden('edit_module', 1);
+    $tableCreateModule->data['caption_type'] .= __('Type');
+    $tableCreateModule->data['type'] = html_print_select(
+        $modules,
+        'moduletype',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'max-width:400px;'
+    );
+
+    $tableCreateModule->data['submitButton'] = html_print_submit_button(
+        __('Create'),
+        'updbutton',
+        false,
+        [
+            'icon' => 'next',
+            'mode' => 'mini secondary',
+        ],
+        true
+    );
+
+    $tableCreateModule->data['submitButton'] .= '</form>';
+}
+
+// echo '</table>';
+/*
+    if (!$config['disable_help']) {
     echo '<div class="disable_help">';
     echo '<strong>';
     echo "<a class='color-black-grey invert_filter' target='_blank' href='https://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
     echo '</strong>';
     echo '</div>';
-}
+    }
+*/
 
-if (! isset($id_agente)) {
+if (isset($id_agente) === false) {
     return;
 }
 
@@ -1285,59 +1278,120 @@ html_print_table($table);
 if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
     html_print_input_hidden('submit_modules_action', 1);
 
-    html_print_div(
+    $actionButtons = html_print_button(
+        __('Create module'),
+        'create_module',
+        false,
+        'create_module_dialog()',
+        [ 'icon' => 'wand' ],
+        true
+    );
+
+    $actionButtons .= html_print_submit_button(
+        __('Execute action'),
+        'submit_modules_action',
+        false,
+        [
+            'icon' => 'next',
+            'mode' => 'link',
+        ],
+        true
+    );
+
+    $actionButtons .= html_print_select(
+        [
+            'disable' => 'Disable selected modules',
+            'delete'  => 'Delete selected modules',
+        ],
+        'module_action',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        300
+    );
+
+    html_print_action_buttons(
+        $actionButtons,
+        [ 'type' => 'data_table' ]
+    );
+    echo '</form>';
+
+
+    $modalCreateModule = '<form name="create_module_form" method="post">';
+    $modalCreateModule .= html_print_table($tableCreateModule, true);
+    $modalCreateModule .= html_print_div(
         [
             'class'   => 'action-buttons',
             'content' => html_print_submit_button(
-                __('Execute action'),
-                'submit_modules_action',
+                __('Add'),
+                'create_module_dialog',
                 false,
                 [
-                    'icon' => 'next',
-                    'mode' => 'link',
+                    'icon' => 'add',
+                    'mode' => 'secondary mini',
                 ],
                 true
-            ).html_print_select(
-                [
-                    'disable' => 'Disable selected modules',
-                    'delete'  => 'Delete selected modules',
-                ],
-                'module_action',
-                '',
-                '',
-                '',
-                0,
-                true,
-                false,
-                false,
-                '',
-                false,
-                false,
-                false,
-                300
             ),
+        ],
+        true
+    );
+    $modalCreateModule .= '</form>';
+
+    html_print_div(
+        [
+            'id'      => 'modal',
+            'style'   => 'display: none',
+            'content' => $modalCreateModule,
         ]
     );
-
-    echo '</form>';
 }
 ?>
 
 <script type="text/javascript">
 
+    function create_module_dialog(){
+        console.log('holaaa');
+        $('#modal')
+        .dialog({
+            title: '<?php echo __('Create Module'); ?>',
+            resizable: true,
+            draggable: true,
+            modal: true,
+            close: false,
+            height: 245,
+            width: 480,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        })
+        .show();
+    }
+
     $(document).ready (function () {
+        $('#button-create_module_dialog').click(function(){
+            $('#modal').dialog("close");
+        });
 
         $('[id^=checkbox-id_delete]').change(function(){
             if($(this).parent().parent().hasClass('checkselected')){
                 $(this).parent().parent().removeClass('checkselected');
             }
             else{
-                $(this).parent().parent().addClass('checkselected');                            
+                $(this).parent().parent().addClass('checkselected');
             }
-        });        
+        });
 
 
-        $('[id^=checkbox-all_delete]').change(function(){    
+        $('[id^=checkbox-all_delete]').change(function(){
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-id_delete]').parent().parent().addClass('checkselected');
                 $("[name^=id_delete").prop("checked", true);
@@ -1345,7 +1399,7 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
             else{
                 $('[id^=checkbox-id_delete]').parent().parent().removeClass('checkselected');
                 $("[name^=id_delete").prop("checked", false);
-            }    
+            }
         });
 
 

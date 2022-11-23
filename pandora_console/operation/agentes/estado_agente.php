@@ -912,7 +912,7 @@ foreach ($agents as $agent) {
     array_push($table->data, $data);
 }
 
-if (!empty($table->data)) {
+if (empty($table->data) === false) {
     html_print_table($table);
 
     ui_pagination(
@@ -934,33 +934,29 @@ if (!empty($table->data)) {
         'pagination-bottom'
     );
 
-    if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
-        echo '<div class="right float-right">';
-        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_submit_button(
-                __('Create agent'),
-                'crt',
-                false,
-                [ 'icon' => 'next']
-            );
-        echo '</form>';
-        echo '</div>';
-    }
-
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
-    echo '<div class="right float-right">';
+}
+
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($config['id_user'], 0, 'AM') === true) {
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-    html_print_submit_button(
-        __('Create agent'),
-        'crt',
-        false,
-        [ 'icon' => 'next']
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create agent'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'  => 'data_table',
+            'class' => 'fixed_action_buttons',
+        ]
     );
     echo '</form>';
-    echo '</div>';
 }
+
 ?>
 
 <script type="text/javascript">

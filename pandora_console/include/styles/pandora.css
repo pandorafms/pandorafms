@@ -1068,10 +1068,11 @@ div#container {
 }
 
 div#main {
-  width: 100%;
+  /*width: 100%;*/
   /*margin-left: 3em;*/
   margin-bottom: 3em;
   position: relative;
+  margin-top: 8.8em;
 }
 
 textarea.conf_editor {
@@ -1349,6 +1350,7 @@ div#menu {
 }
 
 div#head {
+  position: fixed;
   font-size: 8pt;
   width: 100%;
   height: 60px;
@@ -1709,21 +1711,23 @@ div.title_line {
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
+  position: fixed;
+  top: 59px;
+  z-index: 10;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
-  min-height: 50px;
-  width: calc(100% + 3em);
+  border-bottom: 4px solid #14524f;
+  /*width: calc(100% + 3em);*/
+  width: -webkit-fill-available;
+  width: -moz-fill-available;
   padding-right: 0px;
   margin-bottom: 20px;
-  height: 50px;
+  height: 56px;
   box-sizing: border-box;
-  background-color: #fafafa;
-  border-top-right-radius: 7px;
-  border-top-left-radius: 7px;
+  background-color: #fff;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
-  margin-left: -3em;
+  /*margin-left: -3em;*/
 }
 
 /* Breadcrum */
@@ -1740,14 +1744,21 @@ div.title_line {
   flex-direction: column;
   display: flex;
   justify-content: space-between;
-  margin-right: 20px;
   overflow: hidden;
+  margin-left: 20px;
 }
 
 .breadcrumbs_container {
+  /*
   padding-left: 5em;
   padding-top: 4px;
   text-indent: 0.25em;
+  color: #848484;
+  font-size: 10pt;
+  font-weight: 500;
+  */
+  padding-left: 0;
+  text-indent: 0;
   color: #848484;
   font-size: 10pt;
   font-weight: 500;
@@ -1855,8 +1866,10 @@ div#agent_wizard_subtabs {
  */
 /* TAB TITLE */
 #menu_tab_left {
+  /*
   max-width: 60%;
   margin-right: 20px;
+  */
 }
 
 #menu_tab_left span {
@@ -1884,8 +1897,8 @@ div#agent_wizard_subtabs {
 #menu_tab_left li.view {
   margin-left: 0;
   /*padding-left: 14px;*/
-  padding-left: 6em;
-  padding-bottom: 4px;
+  /*padding-left: 6em;*/
+  padding-bottom: 2px;
   white-space: nowrap;
   /*text-transform: uppercase;*/
 }
@@ -2486,7 +2499,8 @@ div#pandora_logo_header {
  * ---------------------------------------------------------------------
  */
 #header_table {
-  padding-right: 35px;
+  /*padding-right: 35px;*/
+  padding-right: 15px;
 }
 
 #header_table_inner {
@@ -3735,13 +3749,13 @@ div.div_groups_status {
 }
 
 #menu_tab li:hover {
-  box-shadow: inset 0px 4px #82b92e;
+  box-shadow: inset 0px 4px #14524f;
 }
 
 #menu_tab li.nomn_high,
 #menu_tab li.nomn_high span {
   color: #fff;
-  box-shadow: inset 0px 4px #82b92e;
+  box-shadow: inset 0px 4px #14524f;
   background-color: #fff;
 }
 
@@ -5998,7 +6012,6 @@ div#status_pie {
 /* White tables to show graphs */
 .white_table_graph {
   margin-bottom: 20px;
-  max-width: 1064px;
 }
 
 .white_table_graph_header {
@@ -10526,6 +10539,7 @@ tr.bring_next_field {
 .fixed_action_buttons {
   position: fixed;
   padding: 0px;
+  bottom: 8px;
   z-index: 1;
 }
 
@@ -10611,4 +10625,13 @@ pre.external_tools_output {
 
 .tag-editor .tag-editor-delete:hover i:before {
   color: #ccc !important;
+}
+
+.fixed_filter_bar {
+}
+
+.fixed_filter_content {
+}
+
+.fixed_filter_bar.fixed_size {
 }

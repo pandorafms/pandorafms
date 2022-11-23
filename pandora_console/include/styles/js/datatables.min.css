@@ -1847,7 +1847,7 @@ table.dataTable td {
   position: relative;
   clear: both;
   zoom: 1;
-  margin-left: -3em;
+  /*margin-left: -3em;*/
 }
 .dataTables_wrapper .dataTables_length {
   float: left;

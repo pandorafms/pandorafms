@@ -3432,7 +3432,7 @@ function ui_print_datatable(array $parameters)
                 '',
                 true,
                 false,
-                'white_box white_box_opened',
+                'white_box white_box_opened fixed_filter_content',
                 'no-border'
             );
         }
@@ -3444,7 +3444,7 @@ function ui_print_datatable(array $parameters)
             '',
             true,
             false,
-            'white_box white_box_opened',
+            'white_box white_box_opened fixed_filter_bar',
             'no-border'
         );
     }

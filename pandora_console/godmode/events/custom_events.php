@@ -81,9 +81,7 @@ $table->width = '100%';
 $table->class = 'databox filters';
 
 $table->size = [];
-// ~ $table->size[0] = '20%';
 $table->size[1] = '10px';
-// ~ $table->size[2] = '20%';
 $table->style[0] = 'text-align:center;';
 $table->style[2] = 'text-align:center;';
 
@@ -184,10 +182,17 @@ $table->data[1][2] .= '</div></div>';
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(__('Update'), 'upd_button', false, 'class="sub upd"');
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Update'),
+        'upd_button',
+        false,
+        [ 'icon' => 'update' ],
+        true
+    ),
+    [ 'type' => 'form_action' ]
+);
 echo '</form>';
-echo '</div>';
 ?>
 
 <script type="text/javascript">
@@ -234,7 +239,7 @@ $(document).ready (function () {
         }
     });
 
-    $("#submit-upd_button").click(function () {
+    $("#button-upd_button").click(function () {
         $("#fields_selected").find("option[value='0']").remove();
         $('#fields_selected option').map(function() {
             $(this).prop('selected', true);

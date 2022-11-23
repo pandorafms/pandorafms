@@ -1132,7 +1132,7 @@ if (get_parameter('login', 0) !== 0) {
     $php_version = phpversion();
     $php_version_array = explode('.', $php_version);
     if ($php_version_array[0] < 7) {
-        include_once 'general/php7_message.php';
+        include_once 'general/php_message.php';
     }
 }
 

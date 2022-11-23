@@ -309,7 +309,7 @@ $table_ip .= '<div class="label_select_child_right">'.html_print_input(
         'name'  => 'fixed_ip',
         'value' => $fixed_ip,
     ]
-).__('Fix IP address').ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</div>';
+).__('Fix IP address').'<p style="margin-right: 15px">'.ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</p></div>';
 
 $table_ip .= '</div></div>';
 

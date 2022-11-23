@@ -759,7 +759,7 @@ function update_user_password(string $user, string $password_new)
 {
     global $config;
 
-    if (excludedPassword($password_new) === true) {
+    if (enterprise_hook('excludedPassword', [$password_new]) === true) {
         $config['auth_error'] = __('The password provided is not valid. Please, set another one.');
         return false;
     }

@@ -19,9 +19,9 @@
 global $config;
 
 if ($config['language'] == 'es') {
-    $url_help = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_8';
+    $url_help = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
 } else {
-    $url_help = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_8';
+    $url_help = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
 }
 
 // Prints help dialog information

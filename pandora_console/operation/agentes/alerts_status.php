@@ -53,7 +53,7 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$filter = get_parameter('disabled', 'all_enabled');
+$filter = get_parameter('filter', 'all_enabled');
 $filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)

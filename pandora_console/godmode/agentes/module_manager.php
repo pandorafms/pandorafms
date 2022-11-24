@@ -329,46 +329,20 @@ if ($module_action === 'delete') {
             }
         }
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-            default:
-                $result = db_process_sql_delete(
-                    'tagente_estado',
-                    ['id_agente_modulo' => $id_agent_module_del]
-                );
-                if ($result === false) {
-                    $error++;
-                }
+        $result = db_process_sql_delete(
+            'tagente_estado',
+            ['id_agente_modulo' => $id_agent_module_del]
+        );
+        if ($result === false) {
+            $error++;
+        }
 
-                $result = db_process_sql_delete(
-                    'tagente_datos_inc',
-                    ['id_agente_modulo' => $id_agent_module_del]
-                );
-                if ($result === false) {
-                    $error++;
-                }
-            break;
-
-            case 'oracle':
-                $result = db_process_delete_temp(
-                    'tagente_estado',
-                    'id_agente_modulo',
-                    $id_agent_module_del
-                );
-                if ($result === false) {
-                    $error++;
-                }
-
-                $result = db_process_delete_temp(
-                    'tagente_datos_inc',
-                    'id_agente_modulo',
-                    $id_agent_module_del
-                );
-                if ($result === false) {
-                    $error++;
-                }
-            break;
+        $result = db_process_sql_delete(
+            'tagente_datos_inc',
+            ['id_agente_modulo' => $id_agent_module_del]
+        );
+        if ($result === false) {
+            $error++;
         }
 
         // Trick to detect if we are deleting a synthetic module (avg or arithmetic).
@@ -378,7 +352,7 @@ if ($module_action === 'delete') {
             [$id_agent_module_del]
         );
         $result_ops_synthetic = json_decode($ops_json);
-        if (!empty($result_ops_synthetic)) {
+        if (empty($result_ops_synthetic) === false) {
             $result = enterprise_hook(
                 'modules_delete_synthetic_operations',
                 [$id_agent_module_del]
@@ -392,13 +366,13 @@ if ($module_action === 'delete') {
                 [$id_agent_module_del]
             );
             $count_components = 1;
-            if (!empty($result_components)) {
+            if (empty($result_components) === false) {
                 // Get number of components pending to delete to know when it's needed to update orders.
                 $num_components = count($result_components);
                 $last_target_module = 0;
                 foreach ($result_components as $id_target_module) {
                     // Detects change of component or last component to update orders.
-                    if (($count_components == $num_components) || ($last_target_module != $id_target_module)
+                    if (($count_components === $num_components) || ($last_target_module !== $id_target_module)
                     ) {
                         $update_orders = true;
                     } else {
@@ -424,14 +398,14 @@ if ($module_action === 'delete') {
         }
 
         // Check for errors.
-        if ((int) $error == 0) {
+        if ((int) $error === 0) {
             $count_correct_delete_modules++;
         }
     }
 
     if ($print_result_msg === true) {
         $count_modules_to_delete = count($id_agent_modules_delete);
-        if ($count_correct_delete_modules == 0) {
+        if ($count_correct_delete_modules === 0) {
             ui_print_error_message(
                 sprintf(
                     __('There was a problem completing the operation. Applied to 0/%d modules.'),
@@ -439,7 +413,7 @@ if ($module_action === 'delete') {
                 )
             );
         } else {
-            if ($count_correct_delete_modules == $count_modules_to_delete) {
+            if ($count_correct_delete_modules === $count_modules_to_delete) {
                 ui_print_success_message(__('Operation finished successfully.'));
             } else {
                 ui_print_error_message(
@@ -487,7 +461,7 @@ if ($module_action === 'delete') {
             )
         );
     } else {
-        if ($updated_count == $count_modules_to_disable) {
+        if ($updated_count === $count_modules_to_disable) {
             ui_print_success_message(__('Operation finished successfully.'));
         } else {
             ui_print_error_message(
@@ -527,49 +501,20 @@ switch ($sortField) {
     case 'name':
         switch ($sort) {
             case 'up':
+            default:
                 $selectNameUp = $selected;
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                    case 'postgresql':
-                    default:
-                        $order[] = [
-                            'field' => 'tagente_modulo.nombre',
-                            'order' => 'ASC',
-                        ];
-                    break;
-
-                    case 'oracle':
-                        $order[] = [
-                            'field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)',
-                            'order' => 'ASC',
-                        ];
-                    break;
-                }
+                $order[] = [
+                    'field' => 'tagente_modulo.nombre',
+                    'order' => 'ASC',
+                ];
             break;
 
             case 'down':
                 $selectNameDown = $selected;
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                    case 'postgresql':
-                    default:
-                        $order[] = [
-                            'field' => 'tagente_modulo.nombre',
-                            'order' => 'DESC',
-                        ];
-                    break;
-
-                    case 'oracle':
-                        $order[] = [
-                            'field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)',
-                            'order' => 'DESC',
-                        ];
-                    break;
-                }
-            break;
-
-            default:
-                // Do none.
+                $order[] = [
+                    'field' => 'tagente_modulo.nombre',
+                    'order' => 'DESC',
+                ];
             break;
         }
     break;
@@ -577,6 +522,7 @@ switch ($sortField) {
     case 'server':
         switch ($sort) {
             case 'up':
+            default:
                 $selectServerUp = $selected;
                 $order[] = [
                     'field' => 'id_modulo',
@@ -591,16 +537,13 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
-
-            default:
-                // Do none.
-            break;
         }
     break;
 
     case 'type':
         switch ($sort) {
             case 'up':
+            default:
                 $selectTypeUp = $selected;
                 $order[] = [
                     'field' => 'id_tipo_modulo',
@@ -615,16 +558,13 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
-
-            default:
-                // Do none.
-            break;
         }
     break;
 
     case 'interval':
         switch ($sort) {
             case 'up':
+            default:
                 $selectIntervalUp = $selected;
                 $order[] = [
                     'field' => 'module_interval',
@@ -639,10 +579,6 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
-
-            default:
-                // Do none.
-            break;
         }
     break;
 
@@ -655,29 +591,16 @@ switch ($sortField) {
         $selectTypeDown = false;
         $selectIntervalUp = false;
         $selectIntervalDown = false;
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-            default:
-                $order[] = [
-                    'field' => 'nombre',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'oracle':
-                $order[] = [
-                    'field' => 'dbms_lob.substr(nombre,4000,1)',
-                    'order' => 'ASC',
-                ];
-            break;
-        }
+        $order[] = [
+            'field' => 'nombre',
+            'order' => 'ASC',
+        ];
     break;
 }
 
 
 // Build the order sql.
-if (!empty($order)) {
+if (empty($order) === false) {
     $order_sql = ' ORDER BY ';
 }
 
@@ -747,12 +670,12 @@ if ($agent_tags !== true) {
 }
 
 $paginate_module = false;
-if (isset($config['paginate_module'])) {
-    $paginate_module = $config['paginate_module'];
+if (isset($config['paginate_module']) === true) {
+    $paginate_module = (bool) $config['paginate_module'];
 }
 
-if ($paginate_module) {
-    if (!isset($limit_sql)) {
+if ($paginate_module === true) {
+    if (isset($limit_sql) === false) {
         $limit_sql = sprintf(
             'LIMIT %s, %s',
             $offset,
@@ -795,7 +718,7 @@ $sql_total_modules = sprintf(
 
 $total_modules = db_get_value_sql($sql_total_modules);
 
-$total_modules = isset($total_modules) ? $total_modules : 0;
+$total_modules = (isset($total_modules) === true) ? $total_modules : 0;
 
 if ($modules === false) {
     ui_print_empty_data(__('No available data to show'));
@@ -811,7 +734,7 @@ $url = sprintf(
     urlencode($search_string)
 );
 
-if ($paginate_module) {
+if ($paginate_module === true) {
     ui_pagination($total_modules, $url);
 }
 

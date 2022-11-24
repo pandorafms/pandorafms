@@ -1838,7 +1838,8 @@ function ui_process_page_head($string, $bitfield)
         $config['css'] = array_merge(
             [
                 'common'  => 'include/styles/common.css',
-                'menu'    => 'include/styles/menu.css',
+                // 'menu'    => 'include/styles/menu.css',
+                'menu'    => 'include/styles/menu2.css',
                 'tables'  => 'include/styles/tables.css',
                 'general' => 'include/styles/pandora.css',
             ],

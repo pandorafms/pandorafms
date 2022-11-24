@@ -562,6 +562,9 @@ select:-internal-list-box {
 .w25p {
   width: 25%;
 }
+.w29p {
+  width: 29%;
+}
 .w30p {
   width: 30%;
 }
@@ -580,11 +583,17 @@ select:-internal-list-box {
 .w54p {
   width: 54%;
 }
+.w55p {
+  width: 55%;
+}
 .w60p {
   width: 60%;
 }
 .w70p {
   width: 70%;
+}
+.w71p {
+  width: 71%;
 }
 .w75p {
   width: 75%;
@@ -3504,13 +3513,13 @@ div.div_groups_status {
 }
 
 #title_menu {
-  color: #b9b9b9;
-  float: right;
-  width: 72%;
-  letter-spacing: 0pt;
-  font-size: 10pt;
-  white-space: pre-wrap;
-  padding-top: 0;
+  color: #161628;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  line-height: 24px;
+  width: 200px;
+  text-align: left;
+  width: 100%;
 }
 
 .no_hidden_menu {

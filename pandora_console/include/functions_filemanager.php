@@ -571,6 +571,40 @@ function filemanager_file_explorer(
                 }
             }).show();
         }
+
+        function show_modal_real_path (path) {
+            $('#modal_real_path').addClass('file_table_modal_active');
+            $('#real_path').empty();
+            $('#real_path').html(path);
+            title_action = "<?php echo __('Real path'); ?>";
+            $('#modal_real_path')
+            .dialog({
+                title: title_action,
+                resizable: true,
+                draggable: true,
+                modal: true,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                },
+                width: 448,
+                minWidth: 448,
+                minHeight: 213,
+                maxWidth: 800,
+                maxHeight: 300,
+                close: function () {
+                    $('#modal_real_path').removeClass('file_table_modal_active');
+                }
+            }).show();
+
+            $("#submit-submit").on("click",copyToClipboard);
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText($("#real_path").text()).then(function (){
+                $('#modal_real_path').dialog('close');
+            });
+        }
     </script>
     <?php
     // List files.
@@ -745,6 +779,13 @@ function filemanager_file_explorer(
                 $data[4] .= '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
                 $data[4] .= html_print_image('images/file.png', true, ['class' => 'invert_filter']);
                 $data[4] .= '</a>';
+            }
+
+            if (is_writable($fileinfo['realpath']) === true
+                && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
+                && ($readOnly === false)
+            ) {
+                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/book_edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter']).'</a>';
             }
 
                     $data[4] .= '</span>';
@@ -924,6 +965,18 @@ function filemanager_file_explorer(
                 ]
             );
             echo '</a>';
+
+            // Show Modal Real Path
+            $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
+                                <div id='real_path'></div>
+                                <div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, 'class="sub next"', true).'</div>';
+            html_print_div(
+                [
+                    'id'      => 'modal_real_path',
+                    'class'   => 'invisible',
+                    'content' => $modal_real_path,
+                ]
+            );
 
             echo '</div>';
         } else {

@@ -2313,7 +2313,13 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
         }
 
         if ($lock_status === false) {
-            return null;
+            db_pandora_audit(
+                AUDIT_LOG_SYSTEM,
+                'Issue in Database Lock',
+                'system'
+            );
+
+            return (int) null;
         }
 
         return (int) $lock_status;

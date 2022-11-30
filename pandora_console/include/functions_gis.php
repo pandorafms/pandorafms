@@ -1100,7 +1100,7 @@ function gis_update_map(
         }
 
         if (array_key_exists('layer_agent_list', $layer)) {
-            if (count($layer['layer_agent_list']) > 0) {
+            if (empty($layer['layer_agent_list']) === false && count($layer['layer_agent_list']) > 0) {
                 foreach ($layer['layer_agent_list'] as $agent) {
                     $id = db_process_sql_insert(
                         'tgis_map_layer_has_tagente',
@@ -1114,7 +1114,7 @@ function gis_update_map(
         }
 
         if (array_key_exists('layer_group_list', $layer)) {
-            if (count($layer['layer_group_list']) > 0) {
+            if (empty($layer['layer_group_list']) === false && count($layer['layer_group_list']) > 0) {
                 foreach ($layer['layer_group_list'] as $group) {
                     $id = db_process_sql_insert(
                         'tgis_map_layer_groups',

@@ -84,7 +84,7 @@ try {
         'description',
         [
             'text'  => 'options',
-            'class' => 'w150px action_buttons',
+            'class' => 'w150px table_action_buttons',
         ],
     ];
 

@@ -106,7 +106,7 @@ foreach ($servers as $server) {
 
     $table->cellclass[] = [
         3 => 'progress_bar',
-        8 => 'action_buttons',
+        8 => 'table_action_buttons',
     ];
     $data[0] = '<span title="'.$server['version'].'">'.strip_tags($server['name']).'</span>';
 

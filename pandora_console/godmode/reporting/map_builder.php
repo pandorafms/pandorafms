@@ -509,8 +509,8 @@ if (!$maps && is_metaconsole() === false) {
         if ($vconsoles_write_action_btn || $vconsoles_manage_action_btn) {
             if (is_metaconsole() === false) {
                 $table->cellclass[] = [
-                    3 => 'action_buttons',
-                    4 => 'action_buttons',
+                    3 => 'table_action_buttons',
+                    4 => 'table_action_buttons',
                 ];
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image(
                     'images/copy.png',

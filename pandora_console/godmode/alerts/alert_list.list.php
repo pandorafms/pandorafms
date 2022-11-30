@@ -834,8 +834,8 @@ foreach ($simple_alerts as $alert) {
     }
 
     $table_alert_list->cellclass[] = [
-        1 => 'action_buttons',
-        4 => 'action_buttons',
+        1 => 'table_action_buttons',
+        4 => 'table_action_buttons',
     ];
     $data[4] = '<form class="disable_alert_form display_in" action="'.$url.'" method="post" >';
     if ($alert['disabled']) {

@@ -116,11 +116,11 @@ class AuditLog extends HTML
                     $columns,
                     [
                         'text'  => 'security',
-                        'class' => 'w80px action_buttons show_security_info',
+                        'class' => 'w80px table_action_buttons show_security_info',
                     ],
                     [
                         'text'  => 'action',
-                        'class' => 'w80px action_buttons show_extended_info',
+                        'class' => 'w80px table_action_buttons show_extended_info',
                     ]
                 );
 

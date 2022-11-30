@@ -909,7 +909,7 @@ if ($tab == 'tree') {
             $table->data[$key][4] = $group['parent_name'];
             $table->data[$key][5] = $group['description'];
             if ($is_management_allowed === true) {
-                $table->cellclass[$key][6] = 'action_buttons';
+                $table->cellclass[$key][6] = 'table_action_buttons';
                 $table->data[$key][6] = '<a href="'.$url.'">'.html_print_image(
                     'images/config.png',
                     true,

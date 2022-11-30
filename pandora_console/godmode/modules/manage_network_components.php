@@ -851,7 +851,7 @@ foreach ($components as $component) {
     $data[5] = $component['max'].' / '.$component['min'];
 
     if ($is_management_allowed === true) {
-        $table->cellclass[][6] = 'action_buttons';
+        $table->cellclass[][6] = 'table_action_buttons';
         $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image(
             'images/copy.png',
             true,

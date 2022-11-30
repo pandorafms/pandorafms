@@ -320,7 +320,7 @@ if ($edit_filter > -2) {
             $data[0] = $compose_id;
             $data[1] = implode(' AND ', $compose_filter);
             $data[2] = $compose_action;
-            $table->cellclass[][2] = 'action_buttons';
+            $table->cellclass[][2] = 'table_action_buttons';
             array_push($table->data, $data);
         }
     }

@@ -202,7 +202,7 @@ if (empty($result) === false) {
             }
 
             if ($is_management_allowed === true) {
-                $table->cellclass[][1] = 'action_buttons';
+                $table->cellclass[][1] = 'table_action_buttons';
                 $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
                     'images/config.png',
                     true,

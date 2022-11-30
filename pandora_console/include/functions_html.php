@@ -4054,6 +4054,28 @@ function html_print_radio_button($name, $value, $label='', $checkedvalue='', $re
 
 
 /**
+ * Render a Switch-Radio selector buttons.
+ *
+ * @param array   $switches   Switches for add (html_print_radio_button).
+ * @param array   $attributes Special attributes.
+ * @param boolean $return     Return. False by default.
+ *
+ * @return mixed.
+ */
+function html_print_switch_radio_button(array $switches, array $attributes=[], bool $return=false)
+{
+    return html_print_div(
+        [
+            'id'      => ($attributes['id'] ?? ''),
+            'class'   => 'switch_radio_button '.($attributes['class'] ?? ''),
+            'content' => implode('', $switches),
+        ],
+        $return
+    );
+}
+
+
+/**
  * Render a checkbox button input. Extended version, use html_print_checkbox() to simplify.
  *
  * @param string  $name             Input name.
@@ -4065,6 +4087,7 @@ function html_print_radio_button($name, $value, $label='', $checkedvalue='', $re
  * @param boolean $return           Whether to return an output string or echo now (optional, echo by default).
  * @param string  $id               Custom id.
  * @param string  $customAttributes Custom Attribute for customized checkbox.
+ * @param string  $customHTML       Custom HTML for customized checkbox.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -4077,7 +4100,8 @@ function html_print_checkbox_extended(
     $attributes,
     $return=false,
     $id='',
-    $customAttributes=''
+    $customAttributes='',
+    $customHTML=''
 ) {
     static $idcounter = [];
 
@@ -4097,6 +4121,7 @@ function html_print_checkbox_extended(
     $output .= ((bool) $disabled === true) ? ' disabled="disabled"' : '';
     $output .= ' '.$attributes;
     $output .= ' />';
+    $output .= $customHTML;
     $output .= '<span class="custom_checkbox_show custom_checkbox_image" '.$customAttributes.'></span>';
     $output .= '</label>';
     $output .= "\n";
@@ -4122,6 +4147,7 @@ function html_print_checkbox_extended(
  * @param string  $attributes       Extra attributes.
  * @param string  $id               Custom ID.
  * @param string  $customAttributes Custom Attribute for customized checkbox.
+ * @param string  $customHTML       Custom HTML for customized checkbox.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -4135,7 +4161,8 @@ function html_print_checkbox(
     $disabled_hidden=false,
     $attributes='',
     $id='',
-    $customAttributes=''
+    $customAttributes='',
+    $customHTML=''
 ) {
     $output = html_print_checkbox_extended(
         $name,
@@ -4146,7 +4173,8 @@ function html_print_checkbox(
         $attributes,
         true,
         $id,
-        $customAttributes
+        $customAttributes,
+        $customHTML
     );
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);

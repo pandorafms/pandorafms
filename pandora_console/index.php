@@ -1566,7 +1566,6 @@ require 'include/php_to_js_values.php';
             }
             // Set the position of principal action buttons.
             //actionButtons.setAttribute('style', $left+$bottom);
-            
         }
 
     }

@@ -91,7 +91,6 @@
 .info_table {
   background-color: #fff;
   /* margin-bottom: 10px; */
-  margin: 64px auto 0;
   border-spacing: 0;
   border-collapse: collapse;
   overflow: hidden;
@@ -99,7 +98,8 @@
 }
 
 .info_table > tbody > tr:nth-child(even) {
-  background-color: #f5f5f5;
+  /*background-color: #f5f5f5;*/
+  background-color: #f6f7fb;
 }
 
 .info_table tr > td:first-child,
@@ -164,7 +164,7 @@
 }
 
 .info_table > tbody > tr {
-  border-bottom: 1px solid #e2e2e2;
+  /*border-bottom: 1px solid #e2e2e2;*/
 }
 
 .info_table > tbody > tr > td {
@@ -193,9 +193,19 @@
   vertical-align: middle;
 }
 
+.table_action_buttons > a,
+.table_action_buttons > img {
+  visibility: hidden;
+}
 .info_table > tbody > tr:hover {
   /* This !important is necessary to overwrite the white background of tables with less than 5 rows. */
-  background-color: #eee !important;
+  /*background-color: #eee !important;*/
+  background-color: #d9efee !important;
+}
+
+.info_table > tbody > tr:hover .table_action_buttons > a,
+.info_table > tbody > tr:hover .table_action_buttons > img {
+  visibility: visible;
 }
 
 .info_.profile_list > thead > tr > th > a.tip {
@@ -233,9 +243,8 @@
 .datos4 *,
 .info_table .datos3 *,
 .info_table .datos4 * {
-  font-size: 8.6pt;
-  font-weight: 600;
-  padding: 1.3em 0;
+  font-size: 11pt;
+  padding: 1.5em 0 0.5em;
 }
 
 .datos5 * {
@@ -263,7 +272,6 @@ table.dataTable.info_table.no-footer {
 
 a.pandora_pagination {
   background-color: #f6f7fb;
-  border: 1px solid #c0ccdc;
   padding: 11px;
   color: #000;
   border: 1px solid #cacaca;
@@ -366,4 +374,46 @@ a.pandora_pagination.current:hover {
 .info_table tr th.sorting_asc,
 .info_table tr th.sorting_desc {
   padding-left: 15px;
+}
+
+/* This class is for the icons of actions and operations in the tables. */
+.table_action_buttons a[href] img,
+.table_action_buttons input[type="image"],
+.action_button_img {
+  border-radius: 4px;
+  /*border: 1px solid #dcdcdc !important;*/
+  padding: 1px !important;
+  /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);*/
+  width: 24px;
+  height: 24px;
+}
+
+/* This class is for only one icon to be a button type. */
+.action_button_img {
+  cursor: pointer;
+}
+
+.table_action_buttons a,
+.table_action_buttons input[type="image"] {
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.table_action_buttons a:last-child,
+.table_action_buttons input[type="image"]:last-child {
+  margin-right: 0px;
+}
+
+.table_action_buttons a:hover {
+  background-color: #fff;
+  border-radius: 4px;
+}
+
+.table_action_buttons input[type="image"]:hover {
+  background-color: #fff;
+}
+
+.table_action_buttons_image {
+  width: 24px;
+  height: 24px;
 }

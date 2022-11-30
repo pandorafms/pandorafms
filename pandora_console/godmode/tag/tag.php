@@ -381,7 +381,7 @@ if (empty($result) === false) {
         $data[5] = $output;
 
         if ($is_management_allowed === true) {
-            $table->cellclass[][6] = 'action_buttons';
+            $table->cellclass[][6] = 'table_action_buttons';
             $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>";
             $data[6] .= html_print_image(
                 'images/config.png',

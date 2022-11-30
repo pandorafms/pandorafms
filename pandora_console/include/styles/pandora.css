@@ -1047,12 +1047,13 @@ select:-internal-list-box {
 div#page {
   background: #fbfbfb;
   background-image: none;
-  clear: both;
+  /* clear: both; */
   width: auto;
-  padding-top: 5px;
-  /*padding-right: 3em;*/
+  /* padding-top: 5px; */
+  /* padding-right: 3em; */
   display: flex;
   flex-direction: column;
+  margin-top: 58px;
 }
 
 body.pure {
@@ -1068,11 +1069,13 @@ div#container {
 }
 
 div#main {
-  /*width: 100%;*/
-  /*margin-left: 3em;*/
+  display: flex;
+  /* width: 100%; */
+  /* margin-left: 3em; */
   margin-bottom: 3em;
   position: relative;
-  margin-top: 8.8em;
+  /* margin-top: 8.8em; */
+  flex-direction: column;
 }
 
 textarea.conf_editor {
@@ -1711,23 +1714,23 @@ div.title_line {
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
-  position: fixed;
+  position: sticky;
   top: 59px;
   z-index: 10;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   border-bottom: 4px solid #14524f;
-  /*width: calc(100% + 3em);*/
+  /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
   width: -moz-fill-available;
   padding-right: 0px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   height: 56px;
   box-sizing: border-box;
   background-color: #fff;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
-  /*margin-left: -3em;*/
+  box-shadow: 1px 1px 4px rgb(0 0 0 / 10%);
+  /* margin-left: -3em;*/
 }
 
 /* Breadcrum */
@@ -2257,8 +2260,8 @@ table#simple span#component {
 
 table#simple label {
   display: inline;
-  font-weight: normal;
-  font-style: italic;
+  /*font-weight: normal;*/
+  /*font-style: italic;*/
 }
 
 .clickable {
@@ -5280,42 +5283,6 @@ input:checked + .p-slider:before {
   color: #4d4d4d;
 }
 
-/* This class is for the icons of actions and operations in the tables. */
-.action_buttons a[href] img,
-.action_buttons input[type="image"],
-.action_button_img {
-  border-radius: 4px;
-  border: 1px solid #dcdcdc !important;
-  padding: 1px !important;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
-  max-width: 21px;
-}
-
-/* This class is for only one icon to be a button type. */
-.action_button_img {
-  cursor: pointer;
-}
-
-.action_buttons a,
-.action_buttons input[type="image"] {
-  margin-right: 5px;
-  display: inline-block;
-}
-
-.action_buttons a:last-child,
-.action_buttons input[type="image"]:last-child {
-  margin-right: 0px;
-}
-
-.action_buttons a:hover {
-  background-color: #fff;
-  border-radius: 4px;
-}
-
-.action_buttons input[type="image"]:hover {
-  background-color: #fff;
-}
-
 /* Tables to upload files */
 #table_filemanager tr:first-child th span {
   font-weight: bold;
@@ -5706,6 +5673,7 @@ div.label_select_child_left > span {
 .switch_radio_button {
   display: flex;
   overflow: hidden;
+  height: 32px;
 }
 
 .switch_radio_button input {
@@ -5720,7 +5688,7 @@ div.label_select_child_left > span {
 .switch_radio_button label {
   background-color: #fff;
   color: rgba(0, 0, 0, 0.6);
-  line-height: 1;
+  line-height: 0;
   text-align: center;
   padding: 14px 10px;
   margin-right: -1px;
@@ -5728,7 +5696,7 @@ div.label_select_child_left > span {
   transition: all 0.1s ease-in-out;
 }
 
-.switch_radio_button label:first-child {
+.switch_radio_button label:first {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
@@ -5743,12 +5711,22 @@ div.label_select_child_left > span {
   cursor: pointer;
 }
 
-.switch_radio_button input:checked + label {
+.switch_radio_button input:checked + label,
+.switch_radio_button input:checked:has(.custom_checkbox) {
   background-color: #1d7873;
   box-shadow: none;
   color: #fff !important;
 }
+/*
+.switch_radio_button .custom_checkbox_show {
+  display: none;
+}
 
+.switch_radio_button .custom_checkbox_caption {
+  line-height: 0;
+}
+
+*/
 /*
  * ---------------------------------------------------------------------
  * - MODULE GRAPHS
@@ -10632,12 +10610,12 @@ pre.external_tools_output {
 }
 
 .fixed_filter_bar {
-  position: fixed;
+  position: sticky;
   height: 60px;
   top: 114px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
-  z-index: 0;
+  z-index: 1;
   width: -webkit-fill-available;
   width: -moz-fill-available;
 }

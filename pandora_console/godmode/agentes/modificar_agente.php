@@ -905,7 +905,7 @@ if ($agents !== false) {
             $offsetArg = $offset;
         }
 
-        echo "<td class='$tdcolor action_buttons' align='left' width=7% valign='middle'>";
+        echo "<td class='$tdcolor table_action_buttons' align='left' width=7% valign='middle'>";
 
         if ($agent['disabled']) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&

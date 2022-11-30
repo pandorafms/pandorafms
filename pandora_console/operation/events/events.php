@@ -2177,7 +2177,7 @@ try {
         'event_type',
         [
             'text'  => 'options',
-            'class' => 'action_buttons w120px',
+            'class' => 'table_action_buttons w120px',
         ],
         [
             'text'  => 'm',
@@ -2221,7 +2221,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'action_buttons mw120px',
+                'class' => 'table_action_buttons mw120px',
             ],
             [
                 'text'  => 'm',

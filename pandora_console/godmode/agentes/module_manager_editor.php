@@ -395,9 +395,9 @@ if ($id_agent_module) {
         );
     }
 } else {
-    if (isset($moduletype) === false) {
+    if (isset($moduletype) === false || $moduletype === 0) {
         $moduletype = (string) get_parameter('moduletype');
-        if ($_SESSION['create_module'] && $config['welcome_state'] == 1) {
+        if ((bool) $_SESSION['create_module'] === true && (bool) $config['welcome_state'] === true) {
             $moduletype = 'networkserver';
         }
 
@@ -579,11 +579,11 @@ if ($__code_from !== 'policies') {
     $tag_acl = true;
 
     // If edit a existing module.
-    if (!empty($id_agent_module)) {
+    if (empty($id_agent_module) === false) {
         $tag_acl = tags_check_acl_by_module($id_agent_module);
     }
 
-    if (!$tag_acl) {
+    if ($tag_acl !== true) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access agent manager'
@@ -593,16 +593,15 @@ if ($__code_from !== 'policies') {
     }
 }
 
-
 switch ($moduletype) {
     case 'dataserver':
     case MODULE_DATA:
         $moduletype = MODULE_DATA;
         // Has remote configuration ?
         $remote_conf = false;
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             enterprise_include_once('include/functions_config_agents.php');
-            $remote_conf = enterprise_hook(
+            $remote_conf = (bool) enterprise_hook(
                 'config_agents_has_remote_configuration',
                 [$id_agente]
             );
@@ -619,7 +618,7 @@ switch ($moduletype) {
         ];
         include 'module_manager_editor_common.php';
         include 'module_manager_editor_data.php';
-        if ($config['enterprise_installed'] && $remote_conf) {
+        if ((bool) $config['enterprise_installed'] === true && $remote_conf === true) {
             if ($id_agent_module) {
                 enterprise_include_once('include/functions_config_agents.php');
                 $configuration_data = enterprise_hook(
@@ -647,7 +646,7 @@ switch ($moduletype) {
             4,
             5,
         ];
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             $categories[] = 10;
         }
 
@@ -698,7 +697,7 @@ switch ($moduletype) {
         $moduletype = MODULE_WEB;
         // Remove content of $ip_target when it is ip_agent because
         // it is used as HTTP auth (server) ....ONLY IN NEW MODULE!!!
-        if (empty($id_agent_module)
+        if (empty($id_agent_module) === true
             && ($ip_target === agents_get_address($id_agente))
         ) {
             $ip_target = '';
@@ -722,8 +721,8 @@ switch ($moduletype) {
 }
 
 
-if ($config['enterprise_installed'] && $id_agent_module) {
-    if (policies_is_module_in_policy($id_agent_module)) {
+if ((bool) $config['enterprise_installed'] === true && $id_agent_module) {
+    if (policies_is_module_in_policy($id_agent_module) === true) {
         policies_add_policy_linkation($id_agent_module);
     }
 }
@@ -764,7 +763,6 @@ if ($moduletype != 13) {
 }
 
 // Submit.
-echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
 if ($id_agent_module) {
     $actionButtons = html_print_submit_button(
         __('Update'),
@@ -785,50 +783,40 @@ if ($id_agent_module) {
         true
     );
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => $actionButtons,
-        ]
+    $actionButtons .= html_print_input_hidden('update_module', 1);
+    $actionButtons .= html_print_input_hidden('id_agent_module', $id_agent_module);
+    $actionButtons .= html_print_input_hidden('id_module_type', $id_module_type);
+
+    html_print_action_buttons(
+        $actionButtons,
+        [ 'type' => 'form_action' ]
     );
-
-    html_print_input_hidden('update_module', 1);
-    html_print_input_hidden('id_agent_module', $id_agent_module);
-    html_print_input_hidden('id_module_type', $id_module_type);
-
-    if ($config['enterprise_installed'] && $remote_conf) {
-        ?>
-        <script type="text/javascript">
-        var check_remote_conf = true;
-        </script>
-        <?php
-    }
 } else {
-    html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => html_print_submit_button(
-                __('Create'),
-                'crtbutton',
-                false,
-                [ 'icon' => 'wand' ],
-                true
-            ),
-        ]
+    $actionButtons = html_print_submit_button(
+        __('Create'),
+        'crtbutton',
+        false,
+        [ 'icon' => 'wand' ],
+        true
     );
-    html_print_input_hidden('id_module', $moduletype);
-    html_print_input_hidden('create_module', 1);
 
-    if ($config['enterprise_installed'] && $remote_conf) {
-        ?>
-        <script type="text/javascript">
-        var check_remote_conf = true;
-        </script>
-        <?php
-    }
+    $actionButtons .= html_print_input_hidden('id_module', $moduletype);
+    $actionButtons .= html_print_input_hidden('create_module', 1);
+
+    html_print_action_buttons(
+        $actionButtons,
+        ['type' => 'form_action']
+    );
 }
 
-echo '</div>';
+if ((bool) $config['enterprise_installed'] === true && $remote_conf === true) {
+    ?>
+    <script type="text/javascript">
+    var check_remote_conf = true;
+    </script>
+    <?php
+}
+
 echo '</form>';
 
 ui_require_jquery_file('ui');

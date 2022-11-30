@@ -192,9 +192,9 @@ if (empty($dashboards) === true) {
         }
 
         $table->cellclass[] = [
-            'full_screen' => 'action_buttons',
-            'copy'        => 'action_buttons',
-            'delete'      => 'action_buttons',
+            'full_screen' => 'table_action_buttons',
+            'copy'        => 'table_action_buttons',
+            'delete'      => 'table_action_buttons',
         ];
 
         $table->data[] = $data;

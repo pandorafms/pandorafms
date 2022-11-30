@@ -802,9 +802,9 @@ switch ($tab) {
 
                 if ($networkmap_write || $networkmap_manage) {
                     $table->cellclass[] = [
-                        'copy'   => 'action_buttons',
-                        'edit'   => 'action_buttons',
-                        'delete' => 'action_buttons',
+                        'copy'   => 'table_action_buttons',
+                        'edit'   => 'table_action_buttons',
+                        'delete' => 'table_action_buttons',
                     ];
                     $data['copy'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&amp;'.'copy_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Copy').'">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
                     $data['edit'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'tab=edit&'.'edit_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Config').'">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a>';

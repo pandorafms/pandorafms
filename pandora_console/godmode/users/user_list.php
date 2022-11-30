@@ -769,7 +769,7 @@ foreach ($info as $user_id => $user_info) {
     $data[5] = ui_print_string_substr($user_info['comments'], 24, true);
 
     if ($is_management_allowed === true) {
-        $table->cellclass[][6] = 'action_buttons';
+        $table->cellclass[][6] = 'table_action_buttons';
         $data[6] = '';
         if ($user_is_admin
             || $config['id_user'] == $user_info['id_user']

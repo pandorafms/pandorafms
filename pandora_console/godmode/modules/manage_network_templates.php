@@ -261,7 +261,7 @@ foreach ($result as $row) {
     $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
     $data[1] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
     $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
-    $table->cellclass[][3] = 'action_buttons';
+    $table->cellclass[][3] = 'table_action_buttons';
     $data[3] = html_print_input_image(
         'delete_profile',
         'images/cross.png',

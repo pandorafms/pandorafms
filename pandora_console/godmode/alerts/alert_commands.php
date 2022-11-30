@@ -793,7 +793,7 @@ foreach ($commands as $command) {
         io_safe_output($command['description'])
     );
     $data['action'] = '';
-    $table->cellclass[]['action'] = 'action_buttons';
+    $table->cellclass[]['action'] = 'table_action_buttons';
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if ($is_management_allowed === true && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {

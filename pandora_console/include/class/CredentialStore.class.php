@@ -843,7 +843,7 @@ class CredentialStore extends Wizard
                 __('User'),
                 [
                     'text'  => __('Options'),
-                    'class' => 'action_buttons',
+                    'class' => 'table_action_buttons',
                 ],
             ];
 

@@ -3580,7 +3580,7 @@ function ui_print_datatable(array $parameters)
                     if($("#button-'.$form_id.'_search_bt") != undefined) {
                         $("#'.$form_id.'_loading").remove();
                     }
-                    // Move elements to action_buttons bar.
+                    // Move elements to table_action_buttons bar.
                     $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
                     $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > #table_events_length"));
 

@@ -63,7 +63,7 @@ foreach ($event_responses as $response) {
     $data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.$response['name'].'</a>';
     $data[1] = $response['description'];
     $data[2] = ui_print_group_icon($response['id_group'], true);
-    $table->cellclass[][3] = 'action_buttons';
+    $table->cellclass[][3] = 'table_action_buttons';
     $data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image(
         'images/cross.png',
         true,

@@ -416,8 +416,8 @@ foreach ($actions as $action) {
         && check_acl($config['id_user'], $action['id_group'], 'LM')
     ) {
         $table->cellclass[] = [
-            3 => 'action_buttons',
-            4 => 'action_buttons',
+            3 => 'table_action_buttons',
+            4 => 'table_action_buttons',
         ];
 
         $id_action = $action['id'];

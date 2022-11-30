@@ -419,7 +419,7 @@ foreach ($templates as $template) {
     if (is_management_allowed() === true
         && check_acl($config['id_user'], $template['id_group'], 'LM')
     ) {
-        $table->cellclass[][4] = 'action_buttons';
+        $table->cellclass[][4] = 'table_action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" class="float-left inline_line">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);

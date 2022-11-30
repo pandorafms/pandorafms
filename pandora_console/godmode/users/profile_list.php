@@ -425,7 +425,7 @@ foreach ($profiles as $profile) {
     $data['NW'] = (empty($profile['network_config_edit']) === false) ? $img : '';
     $data['NM'] = (empty($profile['network_config_management']) === false) ? $img : '';
     $data['PM'] = (empty($profile['pandora_management']) === false) ? $img : '';
-    $table->cellclass[]['operations'] = 'action_buttons';
+    $table->cellclass[]['operations'] = 'table_action_buttons';
     if ($is_management_allowed === true) {
         $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
             'images/config.png',

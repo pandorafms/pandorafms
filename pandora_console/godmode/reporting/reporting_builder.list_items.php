@@ -616,7 +616,7 @@ foreach ($items as $item) {
     $row[6] = '';
 
     if (check_acl($config['id_user'], $item['id_group'], 'RM')) {
-        $table->cellclass[][6] = 'action_buttons';
+        $table->cellclass[][6] = 'table_action_buttons';
         $row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report='.$idReport.'&id_item='.$item['id_rc'].'">'.html_print_image(
             'images/config.png',
             true,

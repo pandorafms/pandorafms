@@ -266,7 +266,7 @@ if (empty($messages) === true) {
             ['prominent' => 'timestamp']
         );
 
-        $table->cellclass[][4] = 'action_buttons';
+        $table->cellclass[][4] = 'table_action_buttons';
         if ($show_sent === true) {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
                 onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';

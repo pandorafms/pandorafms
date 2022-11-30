@@ -1033,7 +1033,7 @@ class DiscoveryTaskList extends HTML
                     $data[9] = '-';
                 }
 
-                $table->cellclass[][9] = 'action_buttons';
+                $table->cellclass[][9] = 'table_action_buttons';
 
                 // Div neccesary for modal progress task.
                 echo '<div id="progress_task_'.$task['id_rt'].'" class="invisible"></div>';

@@ -348,7 +348,7 @@ $table_aux = new stdClass();
                 $data[3] = ui_print_group_icon($graph['id_group'], true);
 
                 $data[4] = '';
-                $table->cellclass[][4] = 'action_buttons';
+                $table->cellclass[][4] = 'table_action_buttons';
                 if (($report_w || $report_m)) {
                     $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image(
                         'images/config.png',

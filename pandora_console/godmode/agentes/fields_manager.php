@@ -150,7 +150,7 @@ foreach ($fields as $field) {
         );
     }
 
-    $table->cellclass[][3] = 'action_buttons';
+    $table->cellclass[][3] = 'table_action_buttons';
     $data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">'.html_print_image('images/config.png', true, ['alt' => __('Edit'), 'title' => __('Edit'), 'border' => '0', 'class' => 'invert_filter']).'</a>';
     $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0', 'class' => 'invert_filter']).'</a>';
 

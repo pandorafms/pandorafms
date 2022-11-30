@@ -599,7 +599,7 @@ class ConfigPEN extends HTML
                 __('Description'),
                 [
                     'text'  => __('Options'),
-                    'class' => 'action_buttons',
+                    'class' => 'table_action_buttons',
                 ],
             ];
 

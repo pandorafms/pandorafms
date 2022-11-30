@@ -272,7 +272,7 @@ if (empty($groups) === false) {
             if (is_metaconsole() === true) {
                 $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
             } else {
-                $table->cellclass[][2] = 'action_buttons';
+                $table->cellclass[][2] = 'table_action_buttons';
                 $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
             }
         } else {

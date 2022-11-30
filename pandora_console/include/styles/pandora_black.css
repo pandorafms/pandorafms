@@ -330,8 +330,8 @@ table.black_table_modal_alternate tr:nth-child(even) td {
   color: #fff;
 }
 
-.action_buttons a[href] img,
-.action_buttons input[type="image"],
+.table_action_buttons a[href] img,
+.table_action_buttons input[type="image"],
 .action_button_img {
   filter: brightness(4.5) contrast(50%);
   background-color: transparent !important;

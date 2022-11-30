@@ -196,12 +196,12 @@ if ($show_creation === true) {
     // Create module/type combo.
     $tableCreateModule = new stdClass();
     $tableCreateModule->id = 'create';
+    $tableCreateModule->class = 'pacullos';
     $tableCreateModule->width = '100%';
     $tableCreateModule->data = [];
     $tableCreateModule->style = [];
 
-    $tableCreateModule->data['caption_type'] = '<form id="create_module_type" method="post" action="'.$url.'">';
-    $tableCreateModule->data['caption_type'] .= html_print_input_hidden('edit_module', 1);
+    $tableCreateModule->data['caption_type'] = html_print_input_hidden('edit_module', 1);
     $tableCreateModule->data['caption_type'] .= __('Type');
     $tableCreateModule->data['type'] = html_print_select(
         $modules,
@@ -215,33 +215,22 @@ if ($show_creation === true) {
         false,
         '',
         false,
-        'max-width:400px;'
+        'width:380px;'
     );
 
-    $tableCreateModule->data['submitButton'] = html_print_submit_button(
-        __('Create'),
-        'updbutton',
-        false,
-        [
-            'icon' => 'next',
-            'mode' => 'mini secondary',
-        ],
-        true
-    );
-
-    $tableCreateModule->data['submitButton'] .= '</form>';
-}
-
-// echo '</table>';
-/*
-    if (!$config['disable_help']) {
-    echo '<div class="disable_help">';
-    echo '<strong>';
-    echo "<a class='color-black-grey invert_filter' target='_blank' href='https://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
-    echo '</strong>';
-    echo '</div>';
+    // Link for get more modules.
+    if ((bool) $config['disable_help'] === false) {
+        $tableCreateModule->data['get_more_modules'] = html_print_anchor(
+            [
+                'href'    => 'https://pandorafms.com/Library/Library/',
+                'target'  => '_blank',
+                'class'   => 'color-black-grey',
+                'content' => __('Get more modules on Monitoring Library'),
+            ],
+            true
+        );
     }
-*/
+}
 
 if (isset($id_agente) === false) {
     return;
@@ -1083,9 +1072,9 @@ foreach ($modules as $module) {
         $data[7] = '';
     }
 
-    if ($module['disabled']) {
+    if ((bool) $module['disabled'] === true) {
         $data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente.'&enable_module='.$module['id_agente_modulo']."'>".html_print_image(
-            'images/lightbulb_off.png',
+            'images/svg/change-active.svg',
             true,
             [
                 'alt'   => __('Enable module'),
@@ -1095,7 +1084,7 @@ foreach ($modules as $module) {
         ).'</a>';
     } else {
         $data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente.'&disable_module='.$module['id_agente_modulo']."'>".html_print_image(
-            'images/lightbulb.png',
+            'images/svg/change-pause.svg',
             true,
             [
                 'alt'   => __('Disable module'),
@@ -1108,7 +1097,7 @@ foreach ($modules as $module) {
         $data[8] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
         $data[8] .= html_print_image(
-            'images/copy.png',
+            'images/svg/duplicate.svg',
             true,
             [
                 'title' => __('Duplicate'),
@@ -1118,11 +1107,11 @@ foreach ($modules as $module) {
         $data[8] .= '</a> ';
 
         // Make a data normalization.
-        if (isset($numericModules[$type])) {
+        if (isset($numericModules[$type]) === true) {
             if ($numericModules[$type] === true) {
                 $data[8] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[8] .= html_print_image(
-                    'images/chart.png',
+                    'images/svg/module-graph.svg',
                     true,
                     [
                         'title' => __('Normalize'),
@@ -1133,16 +1122,19 @@ foreach ($modules as $module) {
             }
         } else {
             $data[8] .= html_print_image(
-                'images/chart_curve.disabled.png',
+                'images/svg/module-graph.svg',
                 true,
-                ['title' => __('Normalize (Disabled)')]
+                [
+                    'title' => __('Normalize (Disabled)'),
+                    'style' => 'opacity: 0.5;',
+                ]
             );
             $data[8] .= '&nbsp;&nbsp;';
         }
 
         // Create network component action.
-        if ((is_user_admin($config['id_user']))
-            && ($module['id_modulo'] == MODULE_NETWORK)
+        if ((is_user_admin($config['id_user']) === true)
+            && ((int) $module['id_modulo'] === MODULE_NETWORK)
         ) {
             $data[8] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
 				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
@@ -1170,7 +1162,7 @@ foreach ($modules as $module) {
         $data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
         $data[9] .= html_print_image(
-            'images/cross.png',
+            'images/svg/delete.svg',
             true,
             [
                 'title' => __('Delete'),
@@ -1181,13 +1173,13 @@ foreach ($modules as $module) {
     }
 
     $table->cellclass[] = [
-        8 => 'action_buttons',
-        9 => 'action_buttons',
+        8 => 'table_action_buttons',
+        9 => 'table_action_buttons',
     ];
     array_push($table->data, $data);
     $table->cellclass[] = [
-        8 => 'action_buttons',
-        9 => 'action_buttons',
+        8 => 'table_action_buttons',
+        9 => 'table_action_buttons',
     ];
 }
 
@@ -1254,12 +1246,12 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
         [
             'class'   => 'action-buttons',
             'content' => html_print_submit_button(
-                __('Add'),
-                'create_module_dialog',
+                __('Create'),
+                'create_module',
                 false,
                 [
-                    'icon' => 'add',
-                    'mode' => 'secondary mini',
+                    'icon' => 'next',
+                    'mode' => 'mini secondary',
                 ],
                 true
             ),
@@ -1281,7 +1273,6 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
 <script type="text/javascript">
 
     function create_module_dialog(){
-        console.log('holaaa');
         $('#modal')
         .dialog({
             title: '<?php echo __('Create Module'); ?>',

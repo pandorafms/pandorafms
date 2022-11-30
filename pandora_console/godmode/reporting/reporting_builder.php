@@ -1148,7 +1148,7 @@ switch ($action) {
 
                 if ($edit || $delete) {
                     $columnview = true;
-                    $table->cellclass[][$next] = 'action_buttons';
+                    $table->cellclass[][$next] = 'table_action_buttons';
 
                     if (!isset($table->head[$next])) {
                         $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);

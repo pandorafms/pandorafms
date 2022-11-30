@@ -171,7 +171,7 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
             }
 
             echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row['id_link']."'>".$row['name'].'</a></b></td>';
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+            echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                 'images/cross.png',
                 true,
                 ['class' => 'invert_filter']

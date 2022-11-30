@@ -4456,3 +4456,17 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     return $html;
 }
+
+
+/**
+ * Defines a hash for agent name.
+ *
+ * @param string $alias         Alias.
+ * @param string $nombre_agente Agent name.
+ *
+ * @return string.
+ */
+function hash_agent_name(string $alias, string $nombre_agente)
+{
+    return hash('sha256', $alias.'|'.$nombre_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
+}

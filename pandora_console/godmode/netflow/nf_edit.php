@@ -191,7 +191,7 @@ foreach ($filters as $filter) {
     $data[3] = '';
 
     if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {
-        $table->cellclass[][3] = 'action_buttons';
+        $table->cellclass[][3] = 'table_action_buttons';
         $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
             href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
     }

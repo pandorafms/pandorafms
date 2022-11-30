@@ -270,7 +270,7 @@ foreach ($groups as $group) {
         $data[0] = $tabulation.'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
     }
 
-    $table->cellclass[][1] = 'action_buttons';
+    $table->cellclass[][1] = 'table_action_buttons';
     if (is_management_allowed() === true || is_metaconsole()) {
         $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
         href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';

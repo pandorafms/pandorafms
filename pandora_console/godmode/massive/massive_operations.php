@@ -100,16 +100,15 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 $options_policies = [];
 $policies_options = enterprise_hook('massive_policies_options');
-$policies_options = array_unique($policies_options);
-
 if ($policies_options != ENTERPRISE_NOT_HOOK) {
+    $policies_options = array_unique($policies_options);
     $options_policies = array_merge($options_policies, $policies_options);
 }
 
 $options_snmp = [];
 $snmp_options = enterprise_hook('massive_snmp_options');
-$snmp_options = array_reverse($snmp_options);
 if ($snmp_options != ENTERPRISE_NOT_HOOK) {
+    $snmp_options = array_reverse($snmp_options);
     $options_snmp = array_merge($options_snmp, $snmp_options);
 }
 

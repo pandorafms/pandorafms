@@ -264,8 +264,9 @@
   border-radius: 4px;
   cursor: default;
   float: left;
-  margin-right: 5px;
-  margin-top: 5px;
+  margin-right: 3px;
+    margin-top: 2px;
+    height: 17px;
   padding: 0 5px;
 }
 .select2-container--default

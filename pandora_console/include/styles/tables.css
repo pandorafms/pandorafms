@@ -417,3 +417,16 @@ a.pandora_pagination.current:hover {
   width: 24px;
   height: 24px;
 }
+
+.section_table_title {
+  font-size: 11pt;
+  color: #14524f;
+  font-family: "Pandora-Bold";
+  margin: 4px 0 7px;
+}
+
+.section_table_title_line {
+  width: 80%;
+  height: 10px;
+  background-color: aqua;
+}

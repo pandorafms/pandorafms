@@ -2716,6 +2716,7 @@ function pandoraFlotArea(
 
     $("#menu_export_csv_" + graph_id).click(function(e) {
       e.preventDefault();
+      blockResubmit($(this));
       plot.exportDataCSV();
       var es_firefox =
         navigator.userAgent.toLowerCase().indexOf("firefox") > -1;

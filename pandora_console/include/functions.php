@@ -6271,31 +6271,22 @@ function arrayOutputSorting($sort, $sortField)
 }
 
 
-function setCookieToken($cookieName, $cookieValue, $httpOnly=true, $secure=false)
-{
-    // See: http://stackoverflow.com/a/1459794/59087
-    // See: http://shiflett.org/blog/2006/mar/server-name-versus-http-host
-    // See: http://stackoverflow.com/a/3290474/59087
-    setcookie(
-        $cookieName,
-        $cookieValue,
-        2147483647,
-        // expires January 1, 2038
-        '/',
-        // your path
-        $_SERVER['HTTP_HOST'],
-        // your domain
-        $secure,
-        // Use true over HTTPS
-        $httpOnly
-        // Set true for $AUTH_COOKIE_NAME
-    );
-}
-
-
+/**
+ * Get dowload started cookie from js and set ready cokkie for download ready comntrol.
+ *
+ * @return
+ */
 function setDownloadCookieToken()
 {
-    $token = 'downloadToken';
-
-    setCookieToken($token, $_GET[$token], false, false);
+    $download_cookie = get_cookie('downloadToken', false);
+    if ($download_cookie === false) {
+        return;
+    } else {
+        setcookie(
+            'downloadReady',
+            $download_cookie,
+            (time() + 15),
+            '/'
+        );
+    }
 }

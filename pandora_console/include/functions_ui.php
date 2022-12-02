@@ -3540,6 +3540,9 @@ function ui_print_datatable(array $parameters)
                     titleAttr: "'.__('Export current page to CSV').'",
                     title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
                     fieldSeparator: "'.$config['csv_divider'].'",
+                    action: function ( e, dt, node, config ) {
+                        blockResubmit(node);
+                    },
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3547,7 +3550,7 @@ function ui_print_datatable(array $parameters)
                             page : "All",
                             search : "applied"
                         }'.$export_columns.'
-                    }
+                    },
                 }
             ] : [],
             lengthMenu: '.json_encode($pagination_options).',

@@ -6542,3 +6542,37 @@ function html_print_extended_select_for_downtime_cron(
         echo $returnString;
     }
 }
+
+
+/**
+ * Prints a subtitle for a form or table.
+ *
+ * @param string  $caption Caption of title.
+ * @param array   $options Available options.
+ *      - `id`: string
+ *      - `style`: string
+ *      - `class`: string. `section_table_title` by default.
+ *      - `wrapper`: string. Must be a valid tag.
+ *      - `wrapper_attributes`: string. Valid attributes for a wrapper.
+ * @param boolean $return  If true, returns a string with formed subtitle.
+ *
+ * @return string.
+ */
+function html_print_subtitle_table(string $caption, array $options=[], bool $return=false)
+{
+    if (isset($options['wrapper']) === true) {
+        $startWrapper = '<'.$options['wrapper'].' '.($options['wrapper_attributes'] ?? '').'>';
+        $endWrapper = '</'.$options['wrapper'].'>';
+        $caption = $startWrapper.$caption.$endWrapper;
+    }
+
+    return html_print_div(
+        [
+            'id'      => ($options['id'] ?? ''),
+            'class'   => ($options['class'] ?? 'section_table_title'),
+            'style'   => ($options['style'] ?? ''),
+            'content' => $caption,
+        ],
+        $return
+    );
+}

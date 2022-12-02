@@ -31,6 +31,8 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_categories.php';
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
 
+use PandoraFMS\Agent;
+
 include_javascript_d3();
 
 
@@ -98,10 +100,10 @@ function add_component_selection($id_network_component_type)
     global $table_simple;
     global $config;
 
-    if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+    if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $background_row = 'background-color: #444';
     } else {
-        $background_row = 'background-color: #cfcfcf';
+        $background_row = 'background-color: #FFF';
     }
 
     $data = [];
@@ -163,8 +165,9 @@ $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 $largeClassDisabledBecauseInPolicy = '';
 
-$page = get_parameter('page', '');
-
+$update_module_id = (int) get_parameter_get('update_module');
+$edit_module      = (bool) get_parameter_get('edit_module');
+$page             = get_parameter('page', '');
 $in_policies_page = strstr($page, 'policy_modules');
 
 if ($in_policies_page === false && $id_agent_module) {
@@ -190,24 +193,6 @@ if ($disabledBecauseInPolicy) {
     $classdisabledBecauseInPolicy = '';
 }
 
-$update_module_id = (int) get_parameter_get('update_module');
-$edit_module = (bool) get_parameter_get('edit_module');
-$table_simple = new stdClass();
-$table_simple->id = 'simple';
-$table_simple->class = 'w100p mrgn_10px floating_form';
-$table_simple->data = [];
-$table_simple->style = [];
-$table_simple->cellclass = [];
-$table_simple->colspan = [];
-$table_simple->rowspan = [];
-$table_simple->cellpadding = 2;
-$table_simple->cellspacing = 0;
-$table_simple->rowspan[3][2] = 3;
-$table_simple->rowspan[4][2] = 3;
-
-$dataRow = 0;
-$dataCol = 0;
-
 if (empty($id_agent_module) === false && isset($id_agente) === true) {
     $moduleIdContent = html_print_div(
         [
@@ -220,7 +205,51 @@ if (empty($id_agent_module) === false && isset($id_agente) === true) {
     $moduleIdContent = '';
 }
 
+$policy_link = db_get_value(
+    'policy_linked',
+    'tagente_modulo',
+    'id_agente_modulo',
+    $id_agent_module
+);
+
+if ((int) $policy_link !== 0) {
+    $disabled_enable = 1;
+} else {
+    $disabled_enable = 0;
+}
+
+if ((isset($id_agent_module) === true && $id_agent_module > 0) || (int) $id_policy_module !== 0) {
+    $edit = false;
+} else {
+    $edit = true;
+}
+
+$table_simple = new stdClass();
+$table_simple->id = 'simple';
+$table_simple->class = 'w100p floating_form';
+$table_simple->data = [];
+$table_simple->style = [];
+$table_simple->cellclass = [];
+$table_simple->colspan = [];
+$table_simple->rowspan = [];
+$table_simple->cellpadding = 2;
+$table_simple->cellspacing = 0;
+$table_simple->rowspan[3][2] = 3;
+$table_simple->rowspan[4][2] = 3;
+// Special configuration for some rows.
+$table_simple->rowclass['caption_target_ip'] = 'field_half_width pdd_t_10px';
+$table_simple->rowclass['target_ip'] = 'field_half_width';
+$table_simple->rowclass['caption_tcp_send_receive'] = 'field_half_width pdd_t_10px';
+$table_simple->rowclass['tcp_send_receive'] = 'field_half_width';
+$table_simple->rowclass['caption_configuration_data'] = 'field_half_width pdd_t_10px';
+$table_simple->rowclass['textarea_configuration_data'] = 'field_half_width';
+$table_simple->rowclass['configuration_data'] = 'field_half_width';
+$table_simple->cellstyle['configuration_data'][0] = 'justify-content: flex-end;';
+
+$table_simple->rowclass['caption_module_name'] = 'field_half_width pdd_t_10px';
+$table_simple->rowclass['module_name'] = 'field_half_width';
 $table_simple->data['caption_module_name'][0] = __('Name');
+$table_simple->data['caption_module_name'][1] = __('Disabled');
 $table_simple->data['module_name'][0] = html_print_input_text_extended(
     'name',
     $name,
@@ -234,21 +263,7 @@ $table_simple->data['module_name'][0] = html_print_input_text_extended(
     true
 ).$moduleIdContent;
 
-$disabled_enable = 0;
-$policy_link = db_get_value(
-    'policy_linked',
-    'tagente_modulo',
-    'id_agente_modulo',
-    $id_agent_module
-);
-
-if ($policy_link != 0) {
-    $disabled_enable = 1;
-}
-
-$table_simple->rowclass['disable_module'] = 'flex_center ';
-$table_simple->data['disable_module'][0] = __('Disabled');
-$table_simple->data['disable_module'][1] .= html_print_checkbox_switch(
+$table_simple->data['module_name'][1] = html_print_checkbox_switch(
     'disabled',
     1,
     $disabled,
@@ -270,14 +285,13 @@ $table_simple->data['disable_module'][1] .= html_print_checkbox_switch(
     );
 */
 // Caption for Module group and Type.
-$table_simple->cellstyle['captions_module_n_type'][0] = 'width: 50%;';
-$table_simple->cellstyle['captions_module_n_type'][1] = 'width: 50%;';
+$table_simple->rowclass['captions_module_n_type'] = 'field_half_width pdd_t_10px';
+$table_simple->rowclass['module_n_type'] = 'field_half_width';
 $table_simple->data['captions_module_n_type'][0] = html_print_input_hidden('id_module_type_hidden', $id_module_type, true);
 $table_simple->data['captions_module_n_type'][0] .= __('Module group');
 $table_simple->data['captions_module_n_type'][1] = __('Type').ui_print_help_icon($help_type, true, '', 'images/help_green.png', '', 'module_type_help');
 // Module group and Type.
-$table_simple->cellstyle['module_n_type'][0] = 'width: 50%;';
-$table_simple->cellstyle['module_n_type'][1] = 'width: 50%;';
+$table_simple->rowclass['module_n_type'] = 'field_half_width';
 $table_simple->data['module_n_type'][0] .= html_print_select_from_sql(
     'SELECT id_mg, name FROM tmodule_group ORDER BY name',
     'id_module_group',
@@ -291,14 +305,6 @@ $table_simple->data['module_n_type'][0] .= html_print_select_from_sql(
     $disabledBecauseInPolicy,
     'width: 480px'
 );
-
-if ((isset($id_agent_module) === true && $id_agent_module > 0) || (int) $id_policy_module !== 0) {
-    $edit = false;
-} else {
-    $edit = true;
-}
-
-$in_policy = strstr($page, 'policy_modules');
 
 if ($edit === false) {
     $sql = sprintf(
@@ -418,10 +424,13 @@ $tableBasicThresholds = new stdClass();
 $tableBasicThresholds->class = 'w100p table_section';
 $tableBasicThresholds->id = 'basic_thresholds';
 $tableBasicThresholds->style = [];
+$tableBasicThresholds->rowclass = [];
 $tableBasicThresholds->data = [];
 
 // WARNING THRESHOLD.
 if (modules_is_string_type($id_module_type) === false) {
+    $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
+    $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
     $tableBasicThresholds->cellclass['caption_warning_threshold'] = 'show_hide_thresholds_minmax';
     $tableBasicThresholds->cellclass['warning_threshold'] = 'show_hide_thresholds_minmax';
     $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').' ('.__('Min / Max').')';
@@ -462,6 +471,8 @@ if (modules_is_string_type($id_module_type) === false) {
 }
 
 if (modules_is_string_type($id_module_type) === true) {
+    $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
+    $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
     $tableBasicThresholds->cellclass['caption_warning_threshold'] = 'show_hide_thresholds_string';
     $tableBasicThresholds->cellclass['warning_threshold'] = 'show_hide_thresholds_string';
     $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').' ('.__('Str.').')';
@@ -491,8 +502,9 @@ if (modules_is_string_type($id_module_type) === true) {
     );
 }
 
-
 // CRITICAL THRESHOLD.
+$tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
+$tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
 $tableBasicThresholds->cellclass['caption_critical_threshold'] = 'show_hide_thresholds_minmax';
 $tableBasicThresholds->cellclass['critical_threshold'] = 'show_hide_thresholds_minmax';
 $tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').' ('.__('Min / Max').')';
@@ -589,65 +601,8 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
-// Advanced form part.
-$table_advanced = new stdClass();
-$table_advanced->id = 'advanced';
-$table_advanced->width = '100%';
-$table_advanced->class = 'no-class';
-$table_advanced->data = [];
-$table_advanced->style = [];
-$table_advanced->style[0] = $table_advanced->style[3] = $table_advanced->style[5] = 'font-weight: bold;';
-$table_advanced->colspan = [];
-
-$table_advanced->colspan[5][1] = 3;
-
-$table_advanced->data['captions_custom_id_unit'][0] = __('Custom ID');
-$table_advanced->data['captions_custom_id_unit'][1] = __('Unit');
-// $table_advanced->colspan[0][1] = 2;
-$table_advanced->data['custom_id_unit'][0] = html_print_input_text(
-    'custom_id',
-    $custom_id,
-    '',
-    20,
-    65,
-    true,
-    (($config['module_custom_id_ro'] && $__code_from != 'policies') ? true : $disabledBecauseInPolicy),
-    false,
-    '',
-    (($config['module_custom_id_ro'] && $__code_from != 'policies') ? 'readonly' : $classdisabledBecauseInPolicy)
-);
-
-$table_advanced->data['custom_id_unit'][1] = html_print_input_text(
-    'unit',
-    $unit,
-    '',
-    20,
-    65,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
-);
-// $table_advanced->colspan[1][4] = 3;
-$table_advanced->data['custom_id_unit'][1] = html_print_extended_select_for_unit(
-    'unit',
-    $unit,
-    '',
-    'none',
-    '0',
-    false,
-    true,
-    false,
-    false
-);
-$table_advanced->colspan[0][4] = 3;
-
-// Tags
+// Business Logic for Advanced Part.
 global $__code_from;
-$table_advanced->data['caption_tags_module_parent'][0] = __('Tags available');
-$table_advanced->data['caption_tags_module_parent'][1] = __('Tags selected');
-$table_advanced->data['caption_tags_module_parent'][2] = __('Tags from policy');
 // Code comes from module_editor.
 if ($__code_from === 'modules') {
     $__table_modules = 'ttag_module';
@@ -666,8 +621,86 @@ if ($__code_from === 'modules') {
     $__sql = '';
 }
 
+$module_id_policy_module = 0;
+if (isset($module['id_policy_module']) === true) {
+    $module_id_policy_module = $module['id_policy_module'];
+}
+
+$cps_array[-1] = __('Disabled');
+if ($cps_module > 0) {
+    $cps_array[$cps_module] = __('Enabled');
+} else {
+    $cps_inc = 0;
+    if ($id_agent_module) {
+        $cps_inc = enterprise_hook('service_modules_cps', [$id_agent_module]);
+        if ($cps_inc === ENTERPRISE_NOT_HOOK) {
+            $cps_inc = 0;
+        }
+    }
+
+    $cps_array[$cps_inc] = __('Enabled');
+}
+
+
+// Advanced form part.
+$table_advanced = new stdClass();
+$table_advanced->id = 'advanced';
+$table_advanced->width = '100%';
+$table_advanced->class = 'w100p floating_form';
+$table_advanced->data = [];
+$table_advanced->style = [];
+$table_advanced->rowclass = [];
+$table_advanced->cellclass = [];
+$table_advanced->colspan = [];
+$table_advanced->rowspan = [];
+
+$table_advanced->data['title_1'] = html_print_subtitle_table(__('Identification and Categorization'), [], true);
+$table_advanced->rowclass['captions_custom_category'] = 'field_half_width pdd_t_10px';
+$table_advanced->rowclass['custom_id_category'] = 'field_half_width';
+$table_advanced->data['captions_custom_category'][0] = __('Custom ID');
+$table_advanced->data['captions_custom_category'][1] = __('Category');
+
+$table_advanced->data['custom_id_category'][0] = html_print_input_text(
+    'custom_id',
+    $custom_id,
+    '',
+    20,
+    65,
+    true,
+    (($config['module_custom_id_ro'] && $__code_from !== 'policies') ? true : $disabledBecauseInPolicy),
+    false,
+    '',
+    (($config['module_custom_id_ro'] && $__code_from !== 'policies') ? 'readonly' : $classdisabledBecauseInPolicy)
+);
+
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    $table_advanced->data['custom_id_category'][1] = html_print_select(
+        categories_get_all_categories('forselect'),
+        'id_category',
+        $id_category,
+        '',
+        __('None'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        $disabledBecauseInPolicy
+    );
+} else {
+    // Store in a hidden field if is not visible to avoid delete the value.
+    $table_advanced->data['custom_id_category'][1] .= html_print_input_hidden('id_category', $id_category, true);
+}
+
+// Tags.
+$table_advanced->rowclass['caption_tags_module_parent'] = 'field_half_width pdd_t_10px';
+$table_advanced->rowclass['tags_module_parent'] = 'field_half_width';
+$table_advanced->data['caption_tags_module_parent'][0] = __('Tags available');
+
+$tagsAvailableData = '';
+$tagsCompleteData = '';
 if (tags_has_user_acl_tags($config['id_user']) === false) {
-    $table_advanced->data['tags_module_parent'][0] = html_print_select_from_sql(
+    $tagsAvailableData .= html_print_select_from_sql(
         "SELECT id_tag, name
 		FROM ttag 
 		WHERE id_tag NOT IN (
@@ -692,7 +725,7 @@ if (tags_has_user_acl_tags($config['id_user']) === false) {
     if (empty($user_tags) === false) {
         $id_user_tags = array_keys($user_tags);
 
-        $table_advanced->data['tags_module_parent'][0] = html_print_select_from_sql(
+        $tagsAvailableData .= html_print_select_from_sql(
             'SELECT id_tag, name
 			FROM ttag 
 			WHERE id_tag IN ('.implode(',', $id_user_tags).") AND
@@ -714,7 +747,7 @@ if (tags_has_user_acl_tags($config['id_user']) === false) {
             '5'
         );
     } else {
-        $table_advanced->data['tags_module_parent'][0] = html_print_select_from_sql(
+        $tagsAvailableData .= html_print_select_from_sql(
             "SELECT id_tag, name
 			FROM ttag
 			WHERE id_tag NOT IN (
@@ -737,48 +770,113 @@ if (tags_has_user_acl_tags($config['id_user']) === false) {
     }
 }
 
-$table_advanced->data['tags_module_parent'][2] = html_print_image(
-    'images/darrowright.png',
+$tagsAvailableData .= html_print_image(
+    'images/svg/plus.svg',
     true,
     [
         'id'    => 'right',
         'title' => __('Add tags to module'),
-        'class' => 'invert_filter',
+        'class' => 'invert_filter clickable',
+        'style' => 'width: 32px;',
     ]
-);
-$table_advanced->data['tags_module_parent'][2] .= '<br><br><br><br>'.html_print_image(
-    'images/darrowleft.png',
-    true,
-    [
-        'id'    => 'left',
-        'title' => __('Delete tags to module'),
-        'class' => 'invert_filter',
-    ]
-);
-$table_advanced->data['tags_module_parent'][3] = '';
-// .__('Tags selected')
-$table_advanced->data['tags_module_parent'][4] = html_print_select_from_sql(
-    "SELECT a.id_tag, name 
-	FROM ttag a, $__table_modules b
-	WHERE a.id_tag = b.id_tag AND $__id_where = $__id
-		$__sql
-	ORDER BY name",
-    'id_tag_selected[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    true,
-    false,
-    $disabledBecauseInPolicy,
-    'width: 200px',
-    '5'
 );
 
+$tagsCompleteData = html_print_div(
+    [
+        'class'   => 'tags_available_container',
+        'content' => $tagsAvailableData,
+    ],
+    true
+);
+
+$tagsCompleteData .= html_print_div(
+    [
+        'class'   => 'tags_selected_container',
+        'content' => html_print_select_from_sql(
+            "SELECT a.id_tag, name 
+            FROM ttag a, $__table_modules b
+            WHERE a.id_tag = b.id_tag AND $__id_where = $__id
+                $__sql
+            ORDER BY name",
+            'id_tag_selected[]',
+            '',
+            '',
+            '',
+            '',
+            true,
+            true,
+            false,
+            $disabledBecauseInPolicy,
+            'width: 200px;',
+            '5'
+        ),
+    ],
+    true
+);
+
+$table_advanced->data['tags_module_parent'][0] .= html_print_div(
+    [
+        'class'   => 'tags_complete_container',
+        'content' => $tagsCompleteData,
+    ],
+    true
+);
+
+if ((bool) $in_policies_page === false) {
+    // Cannot select the current module to be itself parent.
+    $module_parent_filter = ($id_agent_module) ? ['tagente_modulo.id_agente_modulo' => '<>'.$id_agent_module] : [];
+    $table_advanced->data['caption_tags_module_parent'][1] = __('Module parent');
+    // TODO. Review cause dont know not works.
+    /*
+        $agent = new Agent($id_agente);
+        $modules_can_be_parent = $agent->searchModules(
+        $module_parent_filter,
+        0
+        );
+    */
+    $modules_can_be_parent = agents_get_modules(
+        $id_agente,
+        false,
+        $module_parent_filter
+    );
+    // If the user cannot have access to parent module, only print the name.
+    if ((int) $parent_module_id !== 0
+        && in_array($parent_module_id, array_keys($modules_can_be_parent)) === true
+    ) {
+        $parentModuleOutput = db_get_value(
+            'nombre',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $parent_module_id
+        );
+    } else {
+        $parentModuleOutput = html_print_select(
+            $modules_can_be_parent,
+            'parent_module_id',
+            $parent_module_id,
+            '',
+            __('Not assigned'),
+            '0',
+            true
+        );
+    }
+
+    $table_advanced->cellstyle['tags_module_parent'][1] = 'align-self: flex-start;';
+    $table_advanced->data['tags_module_parent'][1] = html_print_div(
+        [
+            'class'   => 'parent_module_container w100p',
+            'content' => $parentModuleOutput,
+        ],
+        true,
+    );
+}
+
+$table_advanced->rowclass['caption_tags_from_policy_module_parent'] = 'field_half_width pdd_t_10px';
+$table_advanced->rowclass['tags_from_policy_module_parent'] = 'field_half_width';
+
 if ($__code_from === 'modules') {
-    $table_advanced->data['tags_module_parent'][5] = '<b>'.''.'</b>';
-    $table_advanced->data['tags_module_parent'][6] = html_print_select_from_sql(
+    $table_advanced->data['caption_tags_from_policy_module_parent'][0] = __('Tags from policy');
+    $table_advanced->data['tags_from_policy_module_parent'][0] = html_print_select_from_sql(
         "SELECT a.id_tag, name 
 		FROM ttag a, $__table_modules b
 		WHERE a.id_tag = b.id_tag AND $__id_where = $__id
@@ -796,73 +894,123 @@ if ($__code_from === 'modules') {
         'width: 200px',
         '5'
     );
+
+    $table_advanced->data['tags_from_policy_module_parent'][1] = '';
 }
 
-$module_id_policy_module = 0;
-if (isset($module['id_policy_module']) === true) {
-    $module_id_policy_module = $module['id_policy_module'];
-}
+$table_advanced->rowclass['caption_textarea_description_instructions'] = 'field_half_width pdd_t_10px';
+$table_advanced->rowclass['textarea_description_instructions'] = 'field_half_width';
+$table_advanced->data['caption_textarea_description_instructions'][0] = __('Description');
+$table_advanced->data['caption_textarea_description_instructions'][1] = __('Unknown instructions');
+$table_advanced->data['textarea_description_instructions'][0] = html_print_textarea(
+    'unknown_instructions',
+    5,
+    35,
+    $unknown_instructions,
+    $disabledTextBecauseInPolicy,
+    true,
+    $largeClassDisabledBecauseInPolicy
+);
+$table_advanced->data['textarea_description_instructions'][1] = html_print_textarea(
+    'description',
+    5,
+    35,
+    $description,
+    $disabledTextBecauseInPolicy,
+    true,
+    $largeClassDisabledBecauseInPolicy
+);
 
+$table_advanced->rowclass['caption_textarea_crit_warn_instructions'] = 'field_half_width pdd_t_10px';
+$table_advanced->rowclass['textarea_crit_warn_instructions'] = 'field_half_width';
+$table_advanced->data['caption_textarea_crit_warn_instructions'][1] = __('Warning instructions');
+$table_advanced->data['caption_textarea_crit_warn_instructions'][0] = __('Critical instructions');
+$table_advanced->data['textarea_crit_warn_instructions'][0] = html_print_textarea(
+    'critical_instructions',
+    5,
+    35,
+    $critical_instructions,
+    $disabledTextBecauseInPolicy,
+    true,
+    $largeClassDisabledBecauseInPolicy
+);
+
+$table_advanced->data['textarea_crit_warn_instructions'][1] = html_print_textarea(
+    'warning_instructions',
+    5,
+    35,
+    $warning_instructions,
+    $disabledTextBecauseInPolicy,
+    true,
+    $largeClassDisabledBecauseInPolicy
+);
+
+$table_advanced->data['title_2'] = html_print_subtitle_table(__('Execution interval'), [], true);
+$table_advanced->data['caption_execution_interval'][0] = __('Interval');
 // In the data modules, the interval is not in seconds. It is a factor
-// to be multiplied for the agent interval
-if ($moduletype == MODULE_DATA) {
-    $table_advanced->data[1][0] = __('Interval');
-    $table_advanced->colspan[1][1] = 2;
+// to be multiplied for the agent interval.
+if ((int) $moduletype === MODULE_DATA) {
     $interval_factor = 1;
-    if (isset($id_agente)) {
+    if (isset($id_agente) === true) {
         $agent_interval = (float) agents_get_interval($id_agente);
         if ($agent_interval > 0) {
             $interval = (float) $interval;
             $interval_factor = ($interval / $agent_interval);
         }
 
-        $table_advanced->data[1][1] = human_time_description_raw($interval).' ('.sprintf(__('Agent interval x %s'), $interval_factor).') ';
+        $table_advanced->data['execution_interval'][0] = human_time_description_raw($interval).' ('.sprintf(__('Agent interval x %s'), $interval_factor).') ';
     } else {
-        $table_advanced->data[1][1] = sprintf(__('Agent interval x %s'), $interval_factor);
+        $table_advanced->data['execution_interval'][0] = sprintf(__('Agent interval x %s'), $interval_factor);
     }
 
-    if ($__code_from == 'policies') {
+    if ($__code_from === 'policies') {
         // If is the policy form, module_interval will store the factor (not the seconds).
         // So server will transform it to interval in seconds.
-        $table_advanced->data[1][1] = sprintf(__('Default').': 1', $interval_factor);
-        $table_advanced->data[1][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
+        $table_advanced->data['execution_interval'][0] = sprintf(__('Default').': 1', $interval_factor);
+        $table_advanced->data['execution_interval'][0] .= html_print_input_hidden('module_interval', $interval_factor, true);
     }
 
     // If it is a non policy form, the module_interval will not provided and will.
     // be taken the agent interval (this code is at configurar_agente.php).
 } else {
-    $table_advanced->data[1][0] = __('Interval');
-    $table_advanced->colspan[1][1] = 2;
-    $table_advanced->data[1][1] = html_print_extended_select_for_time('module_interval', $interval, '', '', '0', false, true, false, false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
+    $table_advanced->data['execution_interval'][0] = html_print_extended_select_for_time('module_interval', $interval, '', '', '0', false, true, false, false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 }
 
-$table_advanced->data[1][1] .= html_print_input_hidden('moduletype', $moduletype, true);
+$table_advanced->data['execution_interval'][0] .= html_print_input_hidden('moduletype', $moduletype, true);
 
-$table_advanced->data[1][3] = __('Post process');
-$table_advanced->data[1][4] = html_print_extended_select_for_post_process(
-    'post_process',
-    $post_process,
-    '',
-    '',
-    '0',
-    false,
-    true,
-    'width:10em',
-    false,
-    $disabledBecauseInPolicy
-);
-$table_advanced->colspan[1][4] = 3;
+if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
+    $has_remote_conf = enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]);
+    $table_advanced->data['caption_cron_from_select'][0] = __('Cron from');
+    $table_advanced->data['cron_from_select'][0] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true);
 
-$table_advanced->data[2][0] = __('Min. Value');
-$table_advanced->colspan[2][1] = 2;
+    $table_advanced->data['caption_cron_to_select'][0] = __('Cron to');
+    $table_advanced->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true, true);
+} else {
+    $table_advanced->data['caption_cron_from_select'][0] = __('Cron from');
+    $table_advanced->data['cron_from_select'][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 
-$table_advanced->data[2][1] = html_print_input_text('min', $min, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
-$table_advanced->data[2][3] = __('Max. Value');
-$table_advanced->data[2][4] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
-$table_advanced->colspan[2][4] = 3;
+    $table_advanced->data['caption_cron_to_select'][0] = __('Cron to');
+    $table_advanced->data['cron_to_select'][1] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+}
 
-$table_advanced->data[3][0] = __('Dynamic Threshold Interval');
-$table_advanced->data[3][1] = html_print_extended_select_for_time(
+$table_advanced->data['title_3'] = html_print_subtitle_table(__('Thresholds and state changes'), [], true);
+
+
+$table_advanced->rowclass['caption_textarea_crit_warn_instructions'] = 'field_half_width pdd_t_10px';
+$table_advanced->rowclass['textarea_crit_warn_instructions'] = 'field_half_width';
+$table_advanced->cellclass['caption_min_max_values'][0] = 'field_quarter_width';
+$table_advanced->cellclass['caption_min_max_values'][1] = 'field_quarter_width';
+$table_advanced->cellclass['min_max_values'][0] = 'field_quarter_width';
+$table_advanced->cellclass['min_max_values'][1] = 'field_quarter_width';
+
+$table_advanced->data['caption_min_max_values'][0] = __('Min. Value');
+$table_advanced->data['caption_min_max_values'][1] = __('Max. Value');
+
+$table_advanced->data['min_max_values'][0] = html_print_input_text('min', $min, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+$table_advanced->data['min_max_values'][1] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+
+$table_advanced->data['caption_dynamic_threshold_interval'][0] = __('Dynamic Threshold Interval');
+$table_advanced->data['dynamic_threshold_interval'][0] = html_print_extended_select_for_time(
     'dynamic_interval',
     $dynamic_interval,
     '',
@@ -875,7 +1023,7 @@ $table_advanced->data[3][1] = html_print_extended_select_for_time(
     $classdisabledBecauseInPolicy,
     $disabledBecauseInPolicy
 );
-$table_advanced->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
+$table_advanced->data['dynamic_threshold_interval'][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
     'images/cog.png',
     true,
     [
@@ -884,12 +1032,14 @@ $table_advanced->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_prin
     ]
 ).'</a>';
 
-$table_advanced->cellclass[3][2] = 'hide_dinamic';
-$table_advanced->cellclass[3][3] = 'hide_dinamic';
+$table_advanced->rowclass['caption_adv_dynamic_threshold_interval'] = 'hide_dinamic pdd_t_10px';
+$table_advanced->rowclass['adv_dynamic_threshold_interval'] = 'hide_dinamic';
 
+$table_advanced->data['caption_adv_dynamic_threshold_interval'][0] = __('Dynamic Threshold Min.');
+$table_advanced->data['caption_adv_dynamic_threshold_interval'][1] = __('Dynamic Threshold Max.');
+$table_advanced->data['caption_adv_dynamic_threshold_interval'][2] = __('Dynamic Threshold Two Tailed');
 
-$table_advanced->data[3][2] = '<span><em>'.__('Dynamic Threshold Min. ').'</em>';
-$table_advanced->data[3][2] .= html_print_input_text(
+$table_advanced->data['adv_dynamic_threshold_interval'][0] = html_print_input_text(
     'dynamic_min',
     $dynamic_min,
     '',
@@ -901,8 +1051,7 @@ $table_advanced->data[3][2] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$table_advanced->data[3][2] .= '<br /><em>'.__('Dynamic Threshold Max. ').'</em>';
-$table_advanced->data[3][2] .= html_print_input_text(
+$table_advanced->data['adv_dynamic_threshold_interval'][1] = html_print_input_text(
     'dynamic_max',
     $dynamic_max,
     '',
@@ -914,81 +1063,28 @@ $table_advanced->data[3][2] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$table_advanced->data[3][3] = '<span><em>'.__('Dynamic Threshold Two Tailed: ').'</em>';
-$table_advanced->data[3][3] .= html_print_checkbox('dynamic_two_tailed', 1, $dynamic_two_tailed, true, $disabledBecauseInPolicy);
-
-
-
-$table_advanced->data[4][0] = __('Export target');
-// Default text message for export target select and disabled option
-$none_text = __('None');
-$disabled_export = false;
-
-if ($__code_from == 'policies') {
-    $none_text = __('Not needed');
-    $disabled_export = true;
-}
-
-$table_advanced->data[4][1] = html_print_select_from_sql(
-    'SELECT id, name FROM tserver_export ORDER BY name',
-    'id_export',
-    $id_export,
-    '',
-    $none_text,
-    '0',
-    true,
-    false,
-    false,
-    $disabled_export
-);
-$table_advanced->colspan[4][1] = 2;
-
-// Code comes from module_editor.
-if ($__code_from == 'modules') {
-    $throw_unknown_events_check = modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
-} else {
-    global $__id_pol_mod;
-
-    $throw_unknown_events_check = policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
-}
-
-$table_advanced->data[4][3] = __('Discard unknown events');
-$table_advanced->data[4][4] = html_print_checkbox(
-    'throw_unknown_events',
+$table_advanced->data['adv_dynamic_threshold_interval'][2] = html_print_checkbox(
+    'dynamic_two_tailed',
     1,
-    $throw_unknown_events_check,
+    $dynamic_two_tailed,
     true,
     $disabledBecauseInPolicy
 );
-$table_advanced->colspan[4][4] = 3;
-
 
 // FF stands for Flip-flop.
-$table_advanced->colspan[5][1] = 5;
-$table_advanced->cellclass[5][1] = 'font_bold';
-
-
-$table_advanced->data[5][0] = __('FF threshold').' ';
-
-$table_advanced->data[5][1] .= __('Keep counters');
-$table_advanced->data[5][1] .= html_print_checkbox(
-    'ff_type',
-    1,
-    $ff_type,
-    true,
-    $disabledBecauseInPolicy
-).'<br />';
-
-$table_advanced->data[5][1] .= html_print_radio_button(
-    'each_ff',
-    0,
-    '',
-    $each_ff,
-    true,
-    $disabledBecauseInPolicy
+$table_advanced->data['caption_ff_thresholds'][0] = __('FF threshold').' ';
+$table_advanced->data['ff_thresholds'][0] .= html_print_switch_radio_button(
+    [
+        html_print_radio_button_extended('each_ff', 0, __('All state changing'), $each_ff, false, '', '', true, false, '', 'ff_all_state'),
+        html_print_radio_button_extended('each_ff', 1, __('Each state changing'), $each_ff, false, '', '', true, false, '', 'ff_each_state'),
+    ],
+    [],
+    true
 );
-$table_advanced->data[5][1] .= ' '.__('All state changing').' : ';
-$table_advanced->data[5][1] .= html_print_input_text(
+$table_advanced->rowclass['caption_all_ff_thresholds'] = 'all_ff_thresholds_visibility pdd_t_10px';
+$table_advanced->rowclass['all_ff_thresholds'] = 'all_ff_thresholds_visibility';
+$table_advanced->data['caption_all_ff_thresholds'][0] = __('Change all states');
+$table_advanced->data['all_ff_thresholds'][0] = html_print_input_text(
     'ff_event',
     $ff_event,
     '',
@@ -999,19 +1095,15 @@ $table_advanced->data[5][1] .= html_print_input_text(
     false,
     '',
     $classdisabledBecauseInPolicy
-).'<br />';
-$table_advanced->data[5][1] .= html_print_radio_button(
-    'each_ff',
-    1,
-    '',
-    $each_ff,
-    true,
-    $disabledBecauseInPolicy
 );
 
-$table_advanced->data[5][1] .= ' '.__('Each state changing').' : ';
-$table_advanced->data[5][1] .= __('To normal');
-$table_advanced->data[5][1] .= html_print_input_text(
+$table_advanced->rowclass['caption_each_ff_thresholds'] = 'each_ff_thresholds_visibility pdd_t_10px';
+$table_advanced->data['caption_each_ff_thresholds'][0] = __('To normal');
+$table_advanced->data['caption_each_ff_thresholds'][1] = __('To warning');
+$table_advanced->data['caption_each_ff_thresholds'][2] = __('To critical');
+
+$table_advanced->rowclass['each_ff_thresholds'] = 'each_ff_thresholds_visibility';
+$table_advanced->data['each_ff_thresholds'][0] = html_print_input_text(
     'ff_event_normal',
     $ff_event_normal,
     '',
@@ -1022,10 +1114,9 @@ $table_advanced->data[5][1] .= html_print_input_text(
     false,
     '',
     $classdisabledBecauseInPolicy
-).' ';
+);
 
-$table_advanced->data[5][1] .= __('To warning');
-$table_advanced->data[5][1] .= html_print_input_text(
+$table_advanced->data['each_ff_thresholds'][1] = html_print_input_text(
     'ff_event_warning',
     $ff_event_warning,
     '',
@@ -1036,10 +1127,9 @@ $table_advanced->data[5][1] .= html_print_input_text(
     false,
     '',
     $classdisabledBecauseInPolicy
-).' ';
+);
 
-$table_advanced->data[5][1] .= __('To critical');
-$table_advanced->data[5][1] .= html_print_input_text(
+$table_advanced->data['each_ff_thresholds'][2] = html_print_input_text(
     'ff_event_critical',
     $ff_event_critical,
     '',
@@ -1052,9 +1142,18 @@ $table_advanced->data[5][1] .= html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
+$table_advanced->data['caption_ff_keep_counters'][0] = __('Keep counters');
+$table_advanced->data['ff_keep_counters'][0] = html_print_checkbox_switch(
+    'ff_type',
+    1,
+    $ff_type,
+    true,
+    $disabledBecauseInPolicy
+);
 
-$table_advanced->data[6][0] = __('FF interval');
-$table_advanced->data[6][1] = html_print_input_text(
+$table_advanced->data['caption_ff_interval_timeout'][0] = __('FF interval');
+$table_advanced->data['caption_ff_interval_timeout'][1] = __('FF timeout');
+$table_advanced->data['ff_interval_timeout'][0] = html_print_input_text(
     'module_ff_interval',
     $ff_interval,
     '',
@@ -1066,14 +1165,11 @@ $table_advanced->data[6][1] = html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$table_advanced->colspan[6][1] = 2;
-
-$table_advanced->data[6][3] = __('FF timeout');
 
 $module_type_name = modules_get_type_name($id_module_type);
-$table_advanced->data[6][4] = '';
-if (preg_match('/async/', $module_type_name) || $edit) {
-    $table_advanced->data[6][4] .= '<span id="ff_timeout">'.html_print_input_text(
+$table_advanced->data['ff_interval_timeout'][1] = '';
+if ((bool) preg_match('/async/', $module_type_name) === true || $edit === true) {
+    $table_advanced->data['ff_interval_timeout'][1] .= '<span id="ff_timeout">'.html_print_input_text(
         'ff_timeout',
         $ff_timeout,
         '',
@@ -1084,151 +1180,117 @@ if (preg_match('/async/', $module_type_name) || $edit) {
     ).'</span>';
 }
 
-if (!preg_match('/async/', $module_type_name) || $edit) {
-    $table_advanced->data[6][4] .= '<span id="ff_timeout_disable">'.__('Disabled').'</span>';
+if ((bool) preg_match('/async/', $module_type_name) === false || $edit === true) {
+    $table_advanced->data['ff_interval_timeout'][1] .= '<span id="ff_timeout_disable">'.__('Disabled').'</span>';
 }
 
-$table_advanced->colspan[6][4] = 3;
 
-$table_advanced->data[8][0] = __('Quiet');
-$table_advanced->data[8][1] = html_print_checkbox('quiet_module', 1, $quiet_module, true, $disabledBecauseInPolicy);
 
-$cps_array[-1] = __('Disabled');
-if ($cps_module > 0) {
-    $cps_array[$cps_module] = __('Enabled');
-} else {
-    $cps_inc = 0;
-    if ($id_agent_module) {
-        $cps_inc = enterprise_hook('service_modules_cps', [$id_agent_module]);
-        if ($cps_inc === ENTERPRISE_NOT_HOOK) {
-            $cps_inc = 0;
-        }
-    }
 
-    $cps_array[$cps_inc] = __('Enabled');
-}
 
-$table_advanced->data[8][2] = '';
-$table_advanced->data[8][3] = __('Cascade Protection Services');
-$table_advanced->colspan[8][4] = 3;
-$table_advanced->data[8][4] = html_print_select($cps_array, 'cps_module', $cps_module, '', '', 0, true, false, true, '', $disabledBecauseInPolicy);
 
-$textarea_custom_style = ' class="min-height-0px"';
 
-$table_advanced->data[9][0] = __('Description');
-$table_advanced->colspan[9][1] = 6;
-$table_advanced->data[9][1] = html_print_textarea(
-    'description',
-    3,
-    65,
-    $description,
-    $disabledTextBecauseInPolicy.$textarea_custom_style,
+
+
+
+$table_advanced->data['title_4'] = html_print_subtitle_table(__('Data and their processing'), [], true);
+
+$table_advanced->data['caption_process_unit'][0] = __('Unit');
+$table_advanced->data['caption_process_unit'][1] = __('Post process');
+$table_advanced->data['process_unit'][0] = html_print_extended_select_for_unit(
+    'unit',
+    $unit,
+    '',
+    'none',
+    '0',
+    false,
     true,
-    $largeClassDisabledBecauseInPolicy
+    false,
+    false
+);
+$table_advanced->data['process_unit'][1] = html_print_extended_select_for_post_process(
+    'post_process',
+    $post_process,
+    '',
+    '',
+    '0',
+    false,
+    true,
+    'width:10em',
+    false,
+    $disabledBecauseInPolicy
 );
 
-$table_advanced->data[10][0] = __('Critical instructions');
-$table_advanced->data[10][1] = html_print_textarea('critical_instructions', 3, 65, $critical_instructions, $disabledTextBecauseInPolicy.$textarea_custom_style, true, $largeClassDisabledBecauseInPolicy);
+$table_advanced->rowstyle['title_5'] = 'width: 100%;';
+$table_advanced->cellstyle['title_5'][0] = 'width: 100%;';
+$table_advanced->data['title_5'][0] = html_print_subtitle_table(
+    __('Notifications and alerts'),
+    [],
+    true
+);
+$table_advanced->data['title_5'][0] .= html_print_div(
+    [
+        'class'   => 'section_table_title_line',
+        'content' => '',
+    ],
+    true
+);
 
-$table_advanced->colspan[10][1] = 6;
-
-$table_advanced->data[11][0] = __('Warning instructions');
-$table_advanced->data[11][1] = html_print_textarea('warning_instructions', 3, 65, $warning_instructions, $disabledTextBecauseInPolicy.$textarea_custom_style, true, $largeClassDisabledBecauseInPolicy);
-$table_advanced->colspan[11][1] = 6;
-
-$table_advanced->data[12][0] = __('Unknown instructions');
-$table_advanced->data[12][1] = html_print_textarea('unknown_instructions', 3, 65, $unknown_instructions, $disabledTextBecauseInPolicy.$textarea_custom_style, true, $largeClassDisabledBecauseInPolicy);
-$table_advanced->colspan[12][1] = 6;
-
-if (isset($id_agente) && $moduletype == MODULE_DATA) {
-    $has_remote_conf = enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]);
-    if ($has_remote_conf) {
-        $table_advanced->data[13][0] = __('Cron from');
-        $table_advanced->data[13][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
-        $table_advanced->colspan[13][1] = 6;
-
-        $table_advanced->data[14][0] = __('Cron to');
-        $table_advanced->data[14][1] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
-        $table_advanced->colspan[14][1] = 6;
-    } else {
-        $table_advanced->data[13][0] = __('Cron from');
-        $table_advanced->data[13][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, true);
-        $table_advanced->colspan[13][1] = 6;
-
-        $table_advanced->data[14][0] = __('Cron to');
-        $table_advanced->data[14][1] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, true, true);
-        $table_advanced->colspan[14][1] = 6;
-    }
+$table_advanced->data['caption_export_target'][0] = __('Export target');
+if ($__code_from === 'policies') {
+    $none_text = __('Not needed');
+    $disabled_export = true;
 } else {
-    $table_advanced->data[13][0] = __('Cron from');
-    $table_advanced->data[13][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
-    $table_advanced->colspan[13][1] = 6;
-
-    $table_advanced->data[14][0] = __('Cron to');
-    $table_advanced->data[14][1] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
-    $table_advanced->colspan[14][1] = 6;
+    $none_text = __('None');
+    $disabled_export = false;
 }
 
-$table_advanced->data[15][0] = __('Timeout');
-$table_advanced->data[15][1] = html_print_input_text('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
-$table_advanced->data[15][2] = '';
-$table_advanced->data[15][3] = __('Retries');
-$table_advanced->data[15][4] = html_print_input_text('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
-$table_advanced->colspan[15][4] = 3;
-
-if (check_acl($config['id_user'], 0, 'PM')) {
-    $table_advanced->data[16][0] = __('Category');
-    $table_advanced->data[16][1] = html_print_select(
-        categories_get_all_categories('forselect'),
-        'id_category',
-        $id_category,
-        '',
-        __('None'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        $disabledBecauseInPolicy
-    );
-    $table_advanced->colspan[16][1] = 6;
+$table_advanced->data['export_target'][0] = html_print_select_from_sql(
+    'SELECT id, name FROM tserver_export ORDER BY name',
+    'id_export',
+    $id_export,
+    '',
+    $none_text,
+    '0',
+    true,
+    false,
+    false,
+    $disabled_export
+);
+// Code comes from module_editor.
+if ($__code_from === 'modules') {
+    $throw_unknown_events_check = modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
 } else {
-    // Store in a hidden field if is not visible to avoid delete the value.
-    $table_advanced->data[15][4] .= html_print_input_hidden('id_category', $id_category, true);
+    global $__id_pol_mod;
+
+    $throw_unknown_events_check = policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
 
-if (!$in_policy) {
-    // Cannot select the current module to be itself parent.
-    $module_parent_filter = ($id_agent_module) ? ['tagente_modulo.id_agente_modulo' => "<>$id_agent_module"] : '';
-    $table_advanced->data[17][0] = __('Module parent');
-    $modules_can_be_parent = agents_get_modules(
-        $id_agente,
-        false,
-        $module_parent_filter
-    );
-    // If the user cannot have access to parent module, only print the name.
-    if ($parent_module_id != 0
-        && !in_array($parent_module_id, array_keys($modules_can_be_parent))
-    ) {
-        $table_advanced->data[17][1] = db_get_value(
-            'nombre',
-            'tagente_modulo',
-            'id_agente_modulo',
-            $parent_module_id
-        );
-    } else {
-        $table_advanced->data[17][1] = html_print_select(
-            $modules_can_be_parent,
-            'parent_module_id',
-            $parent_module_id,
-            '',
-            __('Not assigned'),
-            '0',
-            true
-        );
-    }
-}
+$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events');
+$table_advanced->data['discard_unknown'][0] = html_print_checkbox_switch(
+    'throw_unknown_events',
+    1,
+    $throw_unknown_events_check,
+    true,
+    $disabledBecauseInPolicy
+);
 
+$table_advanced->data['caption_quiet'][0] = __('Quiet');
+$table_advanced->data['quiet'][0] = html_print_checkbox_switch(
+    'quiet_module',
+    1,
+    $quiet_module,
+    true,
+    $disabledBecauseInPolicy
+);
+
+$table_advanced->data['caption_cascade_protection'][0] = __('Cascade Protection Services');
+$table_advanced->data['cascade_protection'][0] = html_print_select($cps_array, 'cps_module', $cps_module, '', '', 0, true, false, true, '', $disabledBecauseInPolicy);
+
+$table_advanced->data['caption_max_timeout_retries'][0] = __('Timeout');
+$table_advanced->data['caption_max_timeout_retries'][1] = __('Retries');
+$table_advanced->data['max_timeout_retries'][0] = html_print_input_text('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+$table_advanced->data['max_timeout_retries'][1] = html_print_input_text('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 
 // Advanced form part.
 $table_macros = new stdClass();

@@ -78,12 +78,19 @@ $extra_title = __('Network server module');
 
 $data = [];
 $data[0] = __('Target IP');
+if ((int) $id_module_type !== 6 && $id_module_type !== 7) {
+    $data[1] = __('Port');
+}
+
+push_table_simple($data, 'caption_target_ip');
+
+$data = [];
 // Show agent_for defect.
-if ($page == 'enterprise/godmode/policies/policy_modules') {
-    if ($ip_target != 'auto' && $ip_target != '') {
+if ($page === 'enterprise/godmode/policies/policy_modules') {
+    if (empty($ip_target) === false && $ip_target !== 'auto') {
         $custom_ip_target = $ip_target;
         $ip_target = 'custom';
-    } else if ($ip_target == '') {
+    } else if (empty($ip_target) === true) {
         $ip_target = 'force_pri';
         $custom_ip_target = '';
     } else {
@@ -95,7 +102,7 @@ if ($page == 'enterprise/godmode/policies/policy_modules') {
     $target_ip_values['force_pri'] = __('Force primary key');
     $target_ip_values['custom']    = __('Custom');
 
-    $data[1] = html_print_select(
+    $data[0] = html_print_select(
         $target_ip_values,
         'ip_target',
         $ip_target,
@@ -109,22 +116,18 @@ if ($page == 'enterprise/godmode/policies/policy_modules') {
         false,
         'width:200px;'
     );
-    $data[1] .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 15, 60, true);
+    $data[0] .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 15, 60, true);
 } else {
-    if ($ip_target == 'auto') {
+    if ($ip_target === 'auto') {
         $ip_target = agents_get_address($id_agente);
     }
 
-    $data[1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
+    $data[0] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
 }
 
 // In ICMP modules, port is not configurable.
-if ($id_module_type >= 6 && $id_module_type <= 7) {
-    $data[2] = '';
-    $data[3] = '';
-} else {
-    $data[2] = __('Port');
-    $data[3] = html_print_input_text(
+if ($id_module_type !== 6 && $id_module_type !== 7) {
+    $data[1] = html_print_input_text(
         'tcp_port',
         $tcp_port,
         '',
@@ -136,6 +139,8 @@ if ($id_module_type >= 6 && $id_module_type <= 7) {
         '',
         $classdisabledBecauseInPolicy
     );
+} else {
+    $data[1] = '';
 }
 
 push_table_simple($data, 'target_ip');
@@ -190,12 +195,13 @@ $snmp_versions['3'] = 'v. 3';
 
 $data = [];
 $data[0] = __('SNMP community');
-$adopt = false;
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module) === true) {
     $adopt = policies_is_module_adopt($id_agent_module);
+} else {
+    $adopt = false;
 }
 
-if (!$adopt) {
+if ($adopt === false) {
     $data[1] = html_print_input_text(
         'snmp_community',
         $snmp_community,
@@ -221,42 +227,22 @@ if (!$adopt) {
 }
 
 $data[2] = _('SNMP version');
-
-if ($id_module_type >= 15 && $id_module_type <= 18) {
-    $data[3] = html_print_select(
-        $snmp_versions,
-        'snmp_version',
-        $snmp_version,
-        '',
-        '',
-        '',
-        true,
-        false,
-        false,
-        '',
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-} else {
-    $data[3] = html_print_select(
-        $snmp_versions,
-        'snmp_version',
-        0,
-        '',
-        '',
-        '',
-        true,
-        false,
-        false,
-        '',
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-}
+$data[3] = html_print_select(
+    $snmp_versions,
+    'snmp_version',
+    ($id_module_type >= 15 && $id_module_type <= 18) ? $snmp_version : 0,
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    $disabledBecauseInPolicy,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
 
 if ($disabledBecauseInPolicy) {
     if ($id_module_type >= 15 && $id_module_type <= 18) {
@@ -322,7 +308,12 @@ push_table_simple($data, 'snmp_2');
 // Advanced stuff.
 $data = [];
 $data[0] = __('TCP send');
-$data[1] = html_print_textarea(
+$data[1] = __('TCP receive');
+
+push_table_simple($data, 'caption_tcp_send_receive');
+
+$data = [];
+$data[0] = html_print_textarea(
     'tcp_send',
     2,
     65,
@@ -331,11 +322,6 @@ $data[1] = html_print_textarea(
     true,
     $largeclassdisabledBecauseInPolicy
 );
-$table_simple->colspan['tcp_send'][1] = 3;
-
-push_table_simple($data, 'tcp_send');
-
-$data[0] = __('TCP receive');
 $data[1] = html_print_textarea(
     'tcp_rcv',
     2,
@@ -345,9 +331,8 @@ $data[1] = html_print_textarea(
     true,
     $largeclassdisabledBecauseInPolicy
 );
-$table_simple->colspan['tcp_receive'][1] = 3;
 
-push_table_simple($data, 'tcp_receive');
+push_table_simple($data, 'tcp_send_receive');
 
 if ($id_module_type < 8 || $id_module_type > 11) {
     // NOT TCP.

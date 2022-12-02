@@ -784,12 +784,11 @@ function setCursor(buttonStyle, button) {
   button.css("cursor", buttonStyle);
 }
 
-function setToken() {
-  var downloadToken = new Date().getTime();
-  document.cookie =
-    "downloadToken" + "=" + downloadToken + ";" + "-1" + ";path=/";
+function setToken(tokenName, token) {
+  token = typeof token !== "undefined" ? token : new Date().getTime();
+  document.cookie = tokenName + "=" + token + ";" + "-1" + ";path=/";
 
-  return downloadToken;
+  return token;
 }
 
 var downloadTimer;
@@ -797,7 +796,7 @@ var attempts = 30;
 
 // Prevents double-submits by waiting for a cookie from the server.
 function blockResubmit(button) {
-  var downloadToken = setToken();
+  var downloadToken = setToken("downloadToken");
   setCursor("wait", button);
 
   // Disable butoon to prevent clicking until download is ready.

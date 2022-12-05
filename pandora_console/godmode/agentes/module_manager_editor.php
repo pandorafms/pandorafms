@@ -809,10 +809,9 @@ if ($id_agent_module) {
         ],
         true
     );
-
-    $actionButtons .= html_print_input_hidden('update_module', 1);
-    $actionButtons .= html_print_input_hidden('id_agent_module', $id_agent_module);
-    $actionButtons .= html_print_input_hidden('id_module_type', $id_module_type);
+    $actionButtons .= html_print_input_hidden('update_module', 1, true);
+    $actionButtons .= html_print_input_hidden('id_agent_module', $id_agent_module, true);
+    $actionButtons .= html_print_input_hidden('id_module_type', $id_module_type, true);
 } else {
     $actionButtons = html_print_submit_button(
         __('Create'),
@@ -822,8 +821,8 @@ if ($id_agent_module) {
         true
     );
 
-    $actionButtons .= html_print_input_hidden('id_module', $moduletype);
-    $actionButtons .= html_print_input_hidden('create_module', 1);
+    $actionButtons .= html_print_input_hidden('id_module', $moduletype, true);
+    $actionButtons .= html_print_input_hidden('create_module', 1, true);
 }
 
 $actionButtons .= html_print_go_back_button(

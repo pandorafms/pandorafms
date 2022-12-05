@@ -5674,9 +5674,10 @@ div.label_select_child_left > span {
  * ---------------------------------------------------------------------
  */
 .switch_radio_button {
+  width: 100%;
   display: flex;
   overflow: hidden;
-  height: 32px;
+  height: 42px;
 }
 
 .switch_radio_button input {
@@ -5691,7 +5692,7 @@ div.label_select_child_left > span {
 .switch_radio_button label {
   background-color: #fff;
   color: rgba(0, 0, 0, 0.6);
-  line-height: 0;
+  line-height: 9pt;
   text-align: center;
   padding: 14px 10px;
   margin-right: -1px;
@@ -10531,6 +10532,10 @@ tr.bring_next_field {
   margin-top: -8px;
 }
 
+.floating form td .p-switch {
+  height: 32px;
+  margin: 0;
+}
 .floating_form .field_half_width td {
   width: 50%;
 }
@@ -10698,4 +10703,10 @@ pre.external_tools_output {
   span.select2-selection--multiple
   ul.select2-selection__rendered {
   padding: 5px 0 !important;
+}
+
+.floating_form .result_info_text {
+  font-size: 11pt;
+  font-style: italic;
+  color: #8a96a6;
 }

@@ -1203,9 +1203,9 @@ if ($id_agente) {
     $intervalo = $agent['intervalo'];
     // Define interval in seconds.
     $nombre_agente = $agent['nombre'];
-    if (empty($alias)) {
+    if (empty($alias) === true) {
         $alias = $agent['alias'];
-        if (empty($alias)) {
+        if (empty($alias) === true) {
             $alias = $nombre_agente;
         }
     }
@@ -1244,7 +1244,7 @@ $duplicate_module = (int) get_parameter('duplicate_module');
 $edit_module = (bool) get_parameter('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT.
-if ($update_module || $create_module) {
+if ($update_module === true || $create_module === true) {
     $id_grupo = agents_get_agent_group($id_agente);
     $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
@@ -1271,12 +1271,7 @@ if ($update_module || $create_module) {
      */
 
     $post_process = (string) get_parameter('post_process', 0.0);
-    if (get_parameter('prediction_module')) {
-        $prediction_module = 1;
-    } else {
-        $prediction_module = 0;
-    }
-
+    $prediction_module = (int) get_parameter('prediction_module');
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
     $min = (int) get_parameter('min');

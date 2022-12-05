@@ -430,3 +430,16 @@ a.pandora_pagination.current:hover {
   height: 10px;
   background-color: aqua;
 }
+
+.cron_section {
+  padding: 0 !important;
+}
+
+.cron_section td {
+  font-size: 10pt !important;
+  color: #8a96a6;
+}
+
+.ff_thresholds_line input {
+  width: 100%;
+}

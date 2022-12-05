@@ -6005,7 +6005,7 @@ div#status_pie {
 
 .white_table_graph_fixed table {
   background-color: #fff;
-  padding: 20px;
+  padding: 0 20px 20px;
 }
 
 .white_table_graph_fixed table td {
@@ -10535,7 +10535,7 @@ tr.bring_next_field {
   width: 50%;
 }
 
-.field_quarter_width td {
+.field_quarter_width {
   width: 25%;
 }
 

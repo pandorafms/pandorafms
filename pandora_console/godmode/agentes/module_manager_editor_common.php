@@ -244,7 +244,7 @@ $table_simple->rowclass['tcp_send_receive'] = 'field_half_width';
 $table_simple->rowclass['caption_configuration_data'] = 'field_half_width pdd_t_10px';
 $table_simple->rowclass['textarea_configuration_data'] = 'field_half_width';
 $table_simple->rowclass['configuration_data'] = 'field_half_width';
-$table_simple->cellstyle['configuration_data'][0] = 'justify-content: flex-end;';
+$table_simple->cellstyle['configuration_data'][0] = 'justify-content: flex-end;padding-top: 10px;';
 
 $table_simple->rowclass['caption_module_name'] = 'field_half_width pdd_t_10px';
 $table_simple->rowclass['module_name'] = 'field_half_width';
@@ -641,6 +641,22 @@ if ($cps_module > 0) {
     $cps_array[$cps_inc] = __('Enabled');
 }
 
+// JS Scripts for ff thresholds.
+ob_start();
+?>
+<script>
+    $(document).ready(function(){
+        ffStateChange('<?php echo (int) $each_ff; ?>');
+    });
+
+    function ffStateChange(state) {
+        var type = (parseInt(state) === 0) ? 'all' : 'each';
+        $('tr[id*="ff_thresholds"]').css('display', 'none');
+        $('tr[id*="ff_thresholds_'+type+'"]').css('display', 'flex');
+    }
+</script>
+<?php
+$ffThresholdsScript = ob_get_clean();
 
 // Advanced form part.
 $table_advanced = new stdClass();
@@ -977,6 +993,9 @@ if ((int) $moduletype === MODULE_DATA) {
 }
 
 $table_advanced->data['execution_interval'][0] .= html_print_input_hidden('moduletype', $moduletype, true);
+// Cron table styles.
+$table_advanced->cellstyle['cron_from_select'][0] = 'padding: 0; margin: 0 -4px; width: 100%;';
+$table_advanced->cellstyle['cron_to_select'][0] = 'padding: 0; margin: 0 -4px; width: 100%;';
 
 if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
     $has_remote_conf = enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]);
@@ -1018,19 +1037,25 @@ $table_advanced->data['dynamic_threshold_interval'][0] = html_print_extended_sel
     '0',
     10,
     true,
-    'width:150px',
+    'width:100%',
     false,
     $classdisabledBecauseInPolicy,
     $disabledBecauseInPolicy
 );
-$table_advanced->data['dynamic_threshold_interval'][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
-    'images/cog.png',
-    true,
+$table_advanced->data['dynamic_threshold_interval'][1] = html_print_anchor(
     [
-        'title' => __('Advanced options Dynamic Threshold'),
-        'class' => 'invert_filter',
-    ]
-).'</a>';
+        'onClick' => 'advanced_option_dynamic()',
+        'content' => html_print_image(
+            'images/cog.png',
+            true,
+            [
+                'title' => __('Advanced options Dynamic Threshold'),
+                'class' => 'invert_filter',
+            ]
+        ),
+    ],
+    true
+);
 
 $table_advanced->rowclass['caption_adv_dynamic_threshold_interval'] = 'hide_dinamic pdd_t_10px';
 $table_advanced->rowclass['adv_dynamic_threshold_interval'] = 'hide_dinamic';
@@ -1072,19 +1097,22 @@ $table_advanced->data['adv_dynamic_threshold_interval'][2] = html_print_checkbox
 );
 
 // FF stands for Flip-flop.
-$table_advanced->data['caption_ff_thresholds'][0] = __('FF threshold').' ';
-$table_advanced->data['ff_thresholds'][0] .= html_print_switch_radio_button(
+$table_advanced->data['caption_ff_main_thresholds'][0] = __('FF threshold').' ';
+$table_advanced->data['ff_main_thresholds'][0] .= html_print_switch_radio_button(
     [
-        html_print_radio_button_extended('each_ff', 0, __('All state changing'), $each_ff, false, '', '', true, false, '', 'ff_all_state'),
-        html_print_radio_button_extended('each_ff', 1, __('Each state changing'), $each_ff, false, '', '', true, false, '', 'ff_each_state'),
+        html_print_radio_button_extended('each_ff', 0, __('All state changing'), $each_ff, false, 'ffStateChange(0)', '', true, false, '', 'ff_all_state'),
+        html_print_radio_button_extended('each_ff', 1, __('Each state changing'), $each_ff, false, 'ffStateChange(1)', '', true, false, '', 'ff_each_state'),
     ],
-    [],
+    [ 'add_content' => $ffThresholdsScript ],
     true
 );
-$table_advanced->rowclass['caption_all_ff_thresholds'] = 'all_ff_thresholds_visibility pdd_t_10px';
-$table_advanced->rowclass['all_ff_thresholds'] = 'all_ff_thresholds_visibility';
-$table_advanced->data['caption_all_ff_thresholds'][0] = __('Change all states');
-$table_advanced->data['all_ff_thresholds'][0] = html_print_input_text(
+
+$table_advanced->rowclass['caption_ff_thresholds_all'] = 'w50p ff_thresholds_line pdd_t_10px';
+$table_advanced->rowclass['ff_thresholds_all'] = 'w50p ff_thresholds_line';
+$table_advanced->cellclass['caption_ff_thresholds_all'][0] = 'w50p';
+$table_advanced->cellclass['ff_thresholds_all'][0] = 'w50p';
+$table_advanced->data['caption_ff_thresholds_all'][0] = __('Change all states');
+$table_advanced->data['ff_thresholds_all'][0] = html_print_input_text(
     'ff_event',
     $ff_event,
     '',
@@ -1097,13 +1125,19 @@ $table_advanced->data['all_ff_thresholds'][0] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->rowclass['caption_each_ff_thresholds'] = 'each_ff_thresholds_visibility pdd_t_10px';
-$table_advanced->data['caption_each_ff_thresholds'][0] = __('To normal');
-$table_advanced->data['caption_each_ff_thresholds'][1] = __('To warning');
-$table_advanced->data['caption_each_ff_thresholds'][2] = __('To critical');
+$table_advanced->rowclass['caption_ff_thresholds_each'] = 'w50p ff_thresholds_line pdd_t_10px';
+$table_advanced->rowclass['ff_thresholds_each'] = 'w50p ff_thresholds_line';
+$table_advanced->cellclass['caption_ff_thresholds_each'][0] = 'w33p';
+$table_advanced->cellclass['caption_ff_thresholds_each'][1] = 'w33p';
+$table_advanced->cellclass['caption_ff_thresholds_each'][2] = 'w33p';
+$table_advanced->cellclass['ff_thresholds_each'][0] = 'w33p';
+$table_advanced->cellclass['ff_thresholds_each'][1] = 'w33p';
+$table_advanced->cellclass['ff_thresholds_each'][2] = 'w33p';
+$table_advanced->data['caption_ff_thresholds_each'][0] = __('To normal');
+$table_advanced->data['caption_ff_thresholds_each'][1] = __('To warning');
+$table_advanced->data['caption_ff_thresholds_each'][2] = __('To critical');
 
-$table_advanced->rowclass['each_ff_thresholds'] = 'each_ff_thresholds_visibility';
-$table_advanced->data['each_ff_thresholds'][0] = html_print_input_text(
+$table_advanced->data['ff_thresholds_each'][0] = html_print_input_text(
     'ff_event_normal',
     $ff_event_normal,
     '',
@@ -1116,7 +1150,7 @@ $table_advanced->data['each_ff_thresholds'][0] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->data['each_ff_thresholds'][1] = html_print_input_text(
+$table_advanced->data['ff_thresholds_each'][1] = html_print_input_text(
     'ff_event_warning',
     $ff_event_warning,
     '',
@@ -1129,7 +1163,7 @@ $table_advanced->data['each_ff_thresholds'][1] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->data['each_ff_thresholds'][2] = html_print_input_text(
+$table_advanced->data['ff_thresholds_each'][2] = html_print_input_text(
     'ff_event_critical',
     $ff_event_critical,
     '',
@@ -1491,7 +1525,6 @@ if ($id_agent_module) {
 html_print_input_hidden('module_relations_count', $relations_count);
 
 ui_require_jquery_file('json');
-
 ?>
 
 <script type="text/javascript">

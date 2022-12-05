@@ -2239,32 +2239,32 @@ function html_print_extended_select_for_time(
  */
 function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', $month='*', $wday='*', $return=false, $disabled=false, $to=false, $advanced=false, $adv_mode_name='')
 {
-    // Hours
+    // Hours.
     for ($i = 0; $i < 24; $i++) {
         $hours[$i] = $i;
     }
 
-    // Minutes
+    // Minutes.
     for ($i = 0; $i < 60; $i++) {
         $minutes[$i] = $i;
 
         // If minute is not a multiple of 5, then add style to option in order to hide it from minute select but still is a valid value that input can adopt. We want this in case a value that is not a multiple of 5 is entered in module's data configuration.
-        if (($i % 5) != 0) {
+        if (($i % 5) !== 0) {
             $minutes_hidden_options[$i] = 'display: none;';
         }
     }
 
-    // Month days
+    // Month days.
     for ($i = 1; $i <= 31; $i++) {
         $mdays[$i] = $i;
     }
 
-    // Months
+    // Months.
     for ($i = 1; $i <= 12; $i++) {
         $months[$i] = date('F', mktime(0, 0, 0, $i, 1));
     }
 
-    // Days of the week
+    // Days of the week.
     $wdays = [
         __('Sunday'),
         __('Monday'),
@@ -2275,30 +2275,36 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
         __('Saturday'),
     ];
 
-    // Print selectors
+    // Print selectors.
     $table = new stdClass();
     $table->id = 'cron';
     $table->width = '100%';
-    $table->class = 'databox data';
-    $table->head[0] = __('Hour');
-    $table->head[1] = __('Minute');
-    $table->head[2] = __('Month day');
-    $table->head[3] = __('Month');
-    $table->head[4] = __('Week day');
+    $table->class = 'table_section cron_section';
+    $table->style = [];
+    $table->style[0] = 'width: 20%;';
+    $table->style[1] = 'width: 20%;';
+    $table->style[2] = 'width: 20%;';
+    $table->style[3] = 'width: 20%;';
+    $table->style[4] = 'width: 20%;';
+    $table->data[0][0] = __('Hour');
+    $table->data[0][1] = __('Minute');
+    $table->data[0][2] = __('Month day');
+    $table->data[0][3] = __('Month');
+    $table->data[0][4] = __('Week day');
 
     if ($advanced === false) {
-        if ($to) {
-            $table->data[0][0] = html_print_select($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-            $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
-            $table->data[0][2] = html_print_select($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
-            $table->data[0][3] = html_print_select($months, 'month_to', $month, '', __('Any'), '*', true, false, false, '', $disabled);
-            $table->data[0][4] = html_print_select($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
+        if ($to === true) {
+            $table->data[1][0] = html_print_select($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
+            $table->data[1][2] = html_print_select($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][3] = html_print_select($months, 'month_to', $month, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][4] = html_print_select($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
         } else {
-            $table->data[0][0] = html_print_select($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-            $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
-            $table->data[0][2] = html_print_select($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
-            $table->data[0][3] = html_print_select($months, 'month_from', $month, '', __('Any'), '*', true, false, false, '', $disabled);
-            $table->data[0][4] = html_print_select($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][0] = html_print_select($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
+            $table->data[1][2] = html_print_select($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][3] = html_print_select($months, 'month_from', $month, '', __('Any'), '*', true, false, false, '', $disabled);
+            $table->data[1][4] = html_print_select($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
         }
     } else {
         if ($adv_mode_name !== '') {
@@ -2321,7 +2327,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             'Valid values: [0-23], [0-23]-[0-23], *, or step value (example: */3, 10/5)'
         );
 
-        $table->data[0][1] = html_print_extended_select_for_downtime_cron(
+        $table->data[1][1] = html_print_extended_select_for_downtime_cron(
             'cron_minute'.$adv_mode_name,
             $minutes,
             $minute,
@@ -2337,7 +2343,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             'Valid values: [0-59], [0-59]-[0-59], *, or step value (example: */5, 10/1)'
         );
 
-        $table->data[0][2] = html_print_extended_select_for_downtime_cron(
+        $table->data[1][2] = html_print_extended_select_for_downtime_cron(
             'cron_mday'.$adv_mode_name,
             $mdays,
             $mday,
@@ -2353,7 +2359,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             'Valid values: [1-31], [1-31]-[1-31], *, or step value (example: */5, 7/2)'
         );
 
-        $table->data[0][3] = html_print_extended_select_for_downtime_cron(
+        $table->data[1][3] = html_print_extended_select_for_downtime_cron(
             'cron_month'.$adv_mode_name,
             $months,
             $month,
@@ -2369,7 +2375,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             'Valid values: [1-12], [1-12]-[1-12], *, or step value (example: */3, 9/1)'
         );
 
-        $table->data[0][4] = html_print_extended_select_for_downtime_cron(
+        $table->data[1][4] = html_print_extended_select_for_downtime_cron(
             'cron_wday'.$adv_mode_name,
             $wdays,
             $wday,
@@ -4007,22 +4013,22 @@ function html_print_radio_button_extended(
     $output .= ' />';
 
     if (is_array($label)) {
-        if (!empty($label)) {
-            $output .= '<label for="'.$htmlid.'" title="'.$label['help_tip'].'">'.$label['label'].'</label>'."\n";
+        if (empty($label) === false) {
+            $output .= '<label id="label-'.$htmlid.'" for="'.$htmlid.'" title="'.$label['help_tip'].'">'.$label['label'].'</label>'."\n";
         }
     } else {
         if ($label != '') {
-            $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+            $output .= '<label id="label-'.$htmlid.'" for="'.$htmlid.'">'.$label.'</label>'."\n";
         }
     }
 
-    if ($modal && !enterprise_installed()) {
+    if ($modal === true && enterprise_installed() === false) {
         $output .= "
 		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
-    if ($return) {
+    if ($return === true) {
         return $output;
     }
 
@@ -4064,11 +4070,18 @@ function html_print_radio_button($name, $value, $label='', $checkedvalue='', $re
  */
 function html_print_switch_radio_button(array $switches, array $attributes=[], bool $return=false)
 {
+    // By default, the content are only the switches added.
+    $content = implode('', $switches);
+    // If you want add more content, you can attach in attributes.
+    if (isset($attributes['add_content']) === true) {
+        $content .= $attributes['add_content'];
+    }
+
     return html_print_div(
         [
             'id'      => ($attributes['id'] ?? ''),
             'class'   => 'switch_radio_button '.($attributes['class'] ?? ''),
-            'content' => implode('', $switches),
+            'content' => $content,
         ],
         $return
     );

@@ -12,32 +12,34 @@
 #
 ###################################################
 
-from sys import argv
-from sys import path
-from sys import stderr
-from sys import exit
-from subprocess import Popen
-from subprocess import PIPE
-from subprocess import DEVNULL
-from subprocess import getstatusoutput
-import psutil
+try:
+    from sys import argv
+    from sys import stderr
+    from sys import exit
+    from subprocess import Popen
+    from subprocess import PIPE
+    from subprocess import DEVNULL
+    from subprocess import getstatusoutput
+    import psutil
+except ModuleNotFoundError as err:
+    print("{} error: {}. Exiting...".format(argv[0], err), file=stderr)
+    exit(1)
 
-global module_list
 module_list = []
-version = "1.1"
+VERSION = "1.2"
 
 
 #########################################################################################
 # Powershell class
 #########################################################################################
 class PSCheck:
-    @staticmethod 
+    @staticmethod
     def check_service(servicename, option=False, memcpu=False):
         """Check services with powershell by parsing their DisplayName. Returns a dict\
-        list with the name of the service and a boolean with its status.\n 
+        list with the name of the service and a boolean with its status.\n
         Requires service name (case insensitive)."""
         pscall = Popen(["powershell", "Get-Service", "-Name", "'*"+ str(servicename) + "*'",
-                        "|", "Select-Object", "-ExpandProperty", "Name"], 
+                        "|", "Select-Object", "-ExpandProperty", "Name"],
                         stdout=PIPE, stdin=DEVNULL, stderr=DEVNULL, universal_newlines=True)
         result = pscall.communicate()
         result = str(result[0]).strip().split("\n")
@@ -50,15 +52,15 @@ class PSCheck:
                     procname = PSCheck.get_serviceprocess(element)
                     # Get process status
                     parstatus = PSCheck.getstatus(element)
-                    if memcpu == True and parstatus == 1:
+                    if memcpu and parstatus == 1:
                         usage = get_memcpu(str(procname), str(element))
                         output += usage
                     # Generate module with name and status
                     parent = service_module(str(element), parstatus)
                     output += parent
-                    if option == True:
+                    if option:
                         children = PSCheck.getchildren(element, memcpu)
-                        if type(children) == list and len(children) > 1:
+                        if isinstance(children, list) and len(children) > 1:
                             for child in children:
                                 output += child
                         else:
@@ -66,7 +68,6 @@ class PSCheck:
                 else:
                     next
 
-            #if output != '':
             if output and element and procname:
                 return ({"name" : element, "process" : procname, "modules": output})
             else:
@@ -84,22 +85,22 @@ class PSCheck:
             status = PSCheck.getstatus(child)
             kids += service_module(str(child), status, "Service " + str(servicename) + " - Status")
             if status:
-                if memcpu == True:
+                if memcpu:
                     kidsusage = get_memcpu(str(child))
                     for usage in kidsusage:
                         kids += usage
             else:
                 next
-        return (kids)
+        return kids
 
     @staticmethod
     def getstatus(servicename):
         """Gets the status of a given Windows service"""
         running = Popen(["powershell", "Get-Service", "-Name '" + str(servicename) +
-                    "' |", "Select-Object", "-ExpandProperty", "Status"],
-                    stdout=PIPE, stdin=DEVNULL, stderr=DEVNULL, universal_newlines=True)
+                "' |", "Select-Object", "-ExpandProperty", "Status"],
+                stdout=PIPE, stdin=DEVNULL, stderr=DEVNULL, universal_newlines=True)
         status = running.communicate()[0].strip()
-        return (int(status == "Running"))
+        return int(status == "Running")
 
     @staticmethod
     def get_serviceprocess(servicename):
@@ -108,7 +109,7 @@ class PSCheck:
         srv_pid = service.pid()
         process = psutil.Process(srv_pid)
         proc_name = process.name()
-        return (proc_name)
+        return proc_name
 
 
 #########################################################################################
@@ -124,13 +125,13 @@ def service_module(name, value, parent=None):
             "module_parent"     :   parent,
         }]
     #print ("service_module END "+str(now(0,1)))
-    return (module)
+    return module
 
-def get_memcpu (process, servicename):
+def get_memcpu (process, servicename=None):
     """Creates a module for Memory and CPU for a given process. Returns a list of dictionaries."""
     modules = []
     if process:
-        if servicename != None:
+        if servicename is not None:
             parentname = servicename
         else:
             parentname = process
@@ -147,7 +148,7 @@ def get_memcpu (process, servicename):
                 "unit"          :     "%",
                 "module_parent" :    "Service "+ parentname + " - Status",
                 }]
-    return (modules)
+    return modules
 
 def proc_percentbyname(procname): ############# 03/03/2020
     """Gets Memory and CPU usage for a given process. Returns a list."""
@@ -165,7 +166,7 @@ def proc_percentbyname(procname): ############# 03/03/2020
     except psutil.NoSuchProcess:
         next
     #print ("proc_percentbyname END "+str(now(0,1)))
-    return ([sum(memory),sum(cpu)])
+    return [sum(memory),sum(cpu)]
 
 def win_service(servicelist, option=False, memcpu=False):
     """Creates modules for Windows servers."""
@@ -173,7 +174,7 @@ def win_service(servicelist, option=False, memcpu=False):
     for srvc in servicelist:
         if srvc and len(srvc) > 2:
             output = PSCheck.check_service(srvc, option, memcpu)
-            if output != None and output["modules"]:
+            if output is not None and output["modules"]:
                 modules += PSCheck.check_service(srvc.strip(), option, memcpu)["modules"]
                 module_list.append(srvc)
                 #winprocess = output["name"]
@@ -197,9 +198,9 @@ def lnx_service(services_list, memcpu=False):
         if sysctl == 0: 
             ### Systemd available
             syscall = Popen(["systemctl", "show", "-pLoadState", "-pActiveState", srvc], stdout=PIPE,
-                                stdin=DEVNULL, universal_newlines=True)
+                            stdin=DEVNULL, universal_newlines=True)
             result = syscall.communicate()
-            srvstatus= result[0].strip().lower().split("\n")
+            srvstatus = result[0].strip().lower().split("\n")
             if srvstatus[0] == "loadstate=not-found":
                 next
             else:
@@ -212,7 +213,7 @@ def lnx_service(services_list, memcpu=False):
         elif sysctl != 0 and servic == 0: 
             ### Systemd not available, switch to service command
             syscall = Popen(["service", srvc, "status"], stdout=PIPE,
-                                stdin=DEVNULL, stderr=DEVNULL, universal_newlines=True)
+                            stdin=DEVNULL, stderr=DEVNULL, universal_newlines=True)
             result = syscall.communicate()[0].lower()
             if "is running" in result:
                 modules += service_module(srvc, 1)
@@ -223,15 +224,15 @@ def lnx_service(services_list, memcpu=False):
             else:
                 next
         else:
-            print ("No systemd or service commands available. Exiting...", file=stderr)
+            print("No systemd or service commands available. Exiting...", file=stderr)
             exit()
         if status:
             module_list.append(srvc)
-            if memcpu == True:
+            if memcpu:
                 modules += get_memcpu(srvc, None)
     
     for m in modules:
-        print_module (m, 1)
+        print_module(m, 1)
 
 
 #########################################################################################
@@ -339,7 +340,7 @@ def print_module(module, str_flag=False):
 
     #### Print flag
     if str_flag is not False:
-        print (module_xml)
+        print(module_xml)
 
     return (module_xml)
 
@@ -362,7 +363,7 @@ def main():
                         "postfix", "mysqld", "postgres", "oracle", "mongod"]
         discover(OS, service_list)
     else:
-        print ("OS not recognized. Exiting...", file=stderr)
+        print("OS not recognized. Exiting...", file=stderr)
         exit()
 
 def discover(osyst, servicelist):
@@ -383,23 +384,23 @@ def discover(osyst, servicelist):
         elif osyst == "Linux":
             lnx_service(servicelist, memcpu)
     else:
-        print ("\nPandora FMS Autodiscovery plugin v{}".format(version))
-        print ("Checks the status of the services in list and monitors CPU and Memory for each of them.\n")
-        print ("Usage:")
-        print ("{} [options] [--usage]".format(argv[0]))
-        print ("--help")
-        print ("\tPrints this help screen")
-        print ("--default")
-        print ("\tRuns this tool with default monitoring.")
-        print ("\tServices monitored by default for {}:".format(osyst))
-        print ("\t",", ".join(servicelist))
-        print ("--list \"<srvc1,srvc2,srvc3>\"")
-        print ("\tReplaces default services for a given list (comma-separated)")
+        print("\nPandora FMS Autodiscovery plugin v{}".format(VERSION))
+        print("Checks the status of the services in list and monitors CPU and Memory for each of them.\n")
+        print("Usage:")
+        print("{} [options] [--usage]".format(argv[0]))
+        print("--help")
+        print("\tPrints this help screen")
+        print("--default")
+        print("\tRuns this tool with default monitoring.")
+        print("\tServices monitored by default for {}:".format(osyst))
+        print("\t", ", ".join(servicelist))
+        print("--list \"<srvc1,srvc2,srvc3>\"")
+        print("\tReplaces default services for a given list (comma-separated)")
         if osyst == "Windows":
-            print ("\tEach element of the list will be treated as a regexp, but they must be over 2 characters.")
-            print ("\tElements under 2 characters will be discarded.")
-        print ("--usage")
-        print ("\tAdds modules for CPU and Memory usage per service/process (optional, can take some time).\n")
+            print("\tEach element of the list will be treated as a regexp, but they must be over 2 characters.")
+            print("\tElements under 2 characters will be discarded.")
+        print("--usage")
+        print("\tAdds modules for CPU and Memory usage per service/process (optional, can take some time).\n")
 
 
 ##### RUN ####

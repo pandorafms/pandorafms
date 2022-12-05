@@ -1470,6 +1470,7 @@ if ($update_module || $create_module) {
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
+    $warning_time = (float) get_parameter('warning_time');
     if ($unit === '0') {
         $unit = '';
     }
@@ -1651,6 +1652,7 @@ if ($update_module) {
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
         'module_macros'         => $module_macros,
+        'warning_time'          => $warning_time,
     ];
 
 
@@ -1859,6 +1861,7 @@ if ($create_module) {
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
         'module_macros'         => $module_macros,
+        'warning_time'          => $warning_time,
     ];
 
     if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {

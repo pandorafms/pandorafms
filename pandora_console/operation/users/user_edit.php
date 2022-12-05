@@ -512,7 +512,8 @@ if (!isset($autorefresh_list)) {
         $autorefresh_list = $aux;
     }
 } else {
-    if (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) {
+    if (is_array($autorefresh_list) === false || empty($autorefresh_list[0]) === true || $autorefresh_list[0] === '0') {
+        $autorefresh_list = [];
         $autorefresh_list[0] = __('None');
     } else {
         $aux = [];

@@ -411,6 +411,32 @@ $tableAgent->data['additional_ip_address'][2] = html_print_input(
         'name'  => 'fixed_ip',
         'value' => $fixed_ip,
     ]
+).__('Fix IP address').'<p style="margin-right: 15px">'.ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</p></div>';
+
+$table_ip .= '</div></div>';
+
+if ($id_agente) {
+    $ip_all = agents_get_addresses($id_agente);
+
+    $table_ip .= '<div class="label_select">';
+    $table_ip .= '<div class="label_select_parent">';
+    $table_ip .= '<div class="label_select_child_left">'.html_print_select($ip_all, 'address_list', $direccion_agente, '', '', 0, true).'</div>';
+    $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('delete_ip', 1, false, true).__('Delete selected IPs').'</div>';
+    $table_ip .= '</div></div>';
+}
+
+?>
+<style type="text/css">
+    #qr_code_agent_view img {
+        display: inline !important;
+    }
+</style>
+<?php
+$groups = users_get_groups($config['id_user'], 'AR', false);
+
+$modules = db_get_all_rows_sql(
+    'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
+								WHERE id_agente = '.$id_parent
 );
 $tableAgent->data['additional_ip_address'][3] = __('Fix IP address');
 $tableAgent->data['additional_ip_address'][3] .= ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true);

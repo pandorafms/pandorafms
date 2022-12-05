@@ -846,7 +846,56 @@ function check_execute_response_massive(response_id, response_parameters) {
 
 function event_widget_options() {
   if ($("#customFilter").val() != "-1") {
-    $(".event-widget-input").disable();
+    $.ajax({
+      type: "POST",
+      url: "ajax.php",
+      dataType: "json",
+      data: {
+        page: "include/ajax/events",
+        get_filter_values: 1,
+        id: $("#customFilter").val()
+      },
+      success: function(data) {
+        if (data["event_type"] === "") {
+          $("#eventType").val("0");
+          $("#eventType").trigger("change");
+        } else {
+          $("#eventType").val(data["event_type"]);
+          $("#eventType").trigger("change");
+        }
+
+        $("#limit").val(data["pagination"]);
+        $("#limit").trigger("change");
+
+        $("input[name='maxHours']").val(data["event_view_hr"]);
+
+        $("#eventStatus").val(data["status"]);
+        $("#eventStatus").trigger("change");
+
+        let posicion = data["severity"].indexOf(-1);
+        if (posicion !== -1) {
+          $("#severity").val(-1);
+          $("#severity").trigger("change");
+        } else {
+          const severity_array = data["severity"].split(",");
+          $("#severity").val(severity_array[0]);
+          $("#severity").trigger("change");
+        }
+
+        $("#tagsId option").attr("selected", false);
+        $.each(
+          atob(data["tag_with"])
+            .slice(0, -1)
+            .slice(1)
+            .split(","),
+          function(i, e) {
+            $(`#tagsId option[value=${e}]`).prop("selected", true);
+          }
+        );
+
+        $(".event-widget-input").disable();
+      }
+    });
   } else {
     $(".event-widget-input").enable();
   }

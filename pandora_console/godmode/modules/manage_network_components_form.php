@@ -101,6 +101,7 @@ if ($create_network_from_module) {
     $ff_event_critical = $data_module['min_ff_event_critical'];
     $ff_type = $data_module['ff_type'];
     $each_ff = $data_module['each_ff'];
+    $warning_time = $data_module['warning_time'];
 }
 
 $id_component_type = (int) get_parameter('id_component_type');
@@ -175,6 +176,7 @@ if (isset($id)) {
         $query_filter            = $component['query_filters'];
         $module_enabled          = $component['module_enabled'];
         $enabled                 = $component['enabled'];
+        $warning_time             = $component['warning_time'];
 
         if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
             // New support for snmp v3.
@@ -246,6 +248,7 @@ if (isset($id)) {
         $ff_event_critical = 0;
         $ff_type = 0;
         $each_ff = 0;
+        $warning_time = 0;
 
         $snmp_version = 1;
         $snmp3_auth_user = '';

@@ -681,9 +681,8 @@ if (!empty($network_interfaces)) {
     $table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_event_graph'] = 'width: 35%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_event_graph'] = 'right';
-    // $table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->align['interface_event_graph_text'] = 'left';
-    $table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_event_graph'] = 'width: 3%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_name'] = 'width: 30%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_name'] = 'left';
     $table_interface->align['interface_ip'] = 'left';
     $table_interface->align['last_contact'] = 'left';
@@ -819,12 +818,6 @@ if (!empty($network_interfaces)) {
         $data['interface_mac'] = $interface['mac'];
         $data['last_contact'] = __('Last contact: ').$last_contact;
         $data['interface_event_graph'] = $e_graph;
-        if ($event_text_cont == 0) {
-            $data['interface_event_graph_text'] = ui_print_help_tip('Module events graph', true);
-            $event_text_cont++;
-        } else {
-            $data['interface_event_graph_text'] = '';
-        }
 
         $table_interface->data[] = $data;
     }
@@ -939,7 +932,7 @@ if ($table_access_rate) {
 
 echo $agent_incidents;
 
-if (isset($table_interface)) {
+if (isset($table_interface) === true) {
     ui_toggle(
         html_print_table($table_interface, true),
         '<b>'.__('Interface information (SNMP)').'</b>',

@@ -21,7 +21,7 @@
 
 .agent_options_column_left,
 .agent_options_column_right {
-  width: 50%;
+  width: calc(50% - 40px);
   box-sizing: border-box;
 }
 

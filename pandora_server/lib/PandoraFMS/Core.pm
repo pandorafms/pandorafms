@@ -114,6 +114,7 @@ use Encode;
 use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
+use Tie::File;
 use Time::Local;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
@@ -215,6 +216,7 @@ our @EXPORT = qw(
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
 	pandora_output_password
+	pandora_snmptrapd_still_working
 	pandora_planned_downtime
 	pandora_planned_downtime_set_quiet_elements
 	pandora_planned_downtime_unset_quiet_elements
@@ -1299,12 +1301,16 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
 	}
 
-	my $agent_status;
-	if(ref ($module) eq "HASH") {
-		$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+	my $time_down;
+	if ($alert_mode == RECOVERED_ALERT && defined($extra_macros->{'_modulelaststatuschange_'})) {
+		$time_down = (time() - $extra_macros->{'_modulelaststatuschange_'});
+	} else {
+		my $agent_status;
+		if(ref ($module) eq "HASH") {
+			$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+		}
+		$time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 	}
-
-	my $time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 
 	if (is_numeric($data)) {
 		my $data_precision = $pa_config->{'graph_precision'};
@@ -2094,6 +2100,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $new_status = get_module_status ($processed_data, $module, $module_type, $last_data_value);
 	my $last_status_change = $agent_status->{'last_status_change'};
 
+
+	# Escalate warning to critical if needed.
+	$new_status = escalate_warning($pa_config, $agent, $module, $agent_status, $new_status, $known_status);
+
 	# Set the last status change macro. Even if its value changes later, whe want the original value.
 	$extra_macros->{'_modulelaststatuschange_'} = $last_status_change;
 	
@@ -2269,11 +2279,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
 				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?,
-				last_status_change = ?
+				last_status_change = ?, warning_count = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
-			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $module->{'id_agente_modulo'});
+			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $agent_status->{'warning_count'}, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.
@@ -7191,6 +7201,80 @@ sub notification_get_groups {
 	return @results;
 }
 
+##########################################################################
+=head2 C<< escalate_warning (I<$pa_config>, I<$agent>, I<$module>, I<$agent_status>, I<$new_status>, I<$known_status>) >>
+
+Return the new module status after taking warning escalation into
+consideration. Updates counters in $agent_status.
+
+=cut
+##########################################################################
+sub escalate_warning {
+	my ($pa_config, $agent, $module, $agent_status, $new_status, $known_status) = @_;
+
+	# Warning escalation disabled. Return the new status.
+	if ($module->{'warning_time'} == 0) {
+		return $new_status;
+	}
+
+	# Updating or reset warning counts.
+	if ($new_status != MODULE_WARNING) {
+		$agent_status->{'warning_count'} = 0;
+		return $new_status;
+	}
+
+	if ($known_status == MODULE_WARNING) {
+		$agent_status->{'warning_count'} += 1;
+	}
+
+	if ($agent_status->{'warning_count'} > $module->{'warning_time'}) {
+		logger($pa_config, "Escalating warning status to critical status for agent ID " . $agent->{'id_agente'} . " module '" . $module->{'nombre'} . "'.", 10);
+		$agent_status->{'warning_count'} = $module->{'warning_time'} + 1; # Prevent overflows.
+		return MODULE_CRITICAL;
+	}
+
+	return MODULE_WARNING;
+}
+########################################################################
+
+=head2 C<< pandora_snmptrapd_still_working (I<$pa_config>, I<$dbh>) >> 
+snmptrapd sometimes freezes and eventually its status needs to be checked.
+=cut
+
+########################################################################
+sub pandora_snmptrapd_still_working ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	if ($pa_config->{'snmpserver'} eq '1') {
+		# Variable that defines the maximum time of delay between kksks.
+		my $timeMaxLapse = 3600;
+		# Check last snmptrapd saved in DB.
+		my $lastTimestampSaved = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(timestamp)
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT 1');
+		# Read the last log file line.
+		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
+		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
+		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
+
+		$lastTimestampLogFile = '' unless defined ($lastTimestampLogFile);
+
+		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
+		# If time or date not filled in, probably havent caught any snmptraps yet.
+		if (defined $date && defined $time && $time ne '' && $date ne '') {
+			my ($hour, $min, $sec) = split(/:/, $time, 3);
+			my ($year, $month, $day) = split(/-/, $date, 3);
+			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);
+			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampLogFile gt ($lastTimestampSaved + $timeMaxLapse)) {
+				my $lapseMessage = "snmptrapd service probably is stuck.";
+				logger($pa_config, $lapseMessage, 1);
+				pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+			}
+		}
+
+	}
+}
 
 # End of function declaration
 # End of defined Code

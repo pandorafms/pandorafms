@@ -322,6 +322,7 @@ if ($id_agent_module) {
     $ff_type = $module['ff_type'];
     $each_ff = $module['each_ff'];
     $ff_timeout = $module['ff_timeout'];
+    $warning_time = $module['warning_time'];
     // Select tag info.
     $id_tag = tags_get_module_tags($id_agent_module);
 
@@ -452,6 +453,7 @@ if ($id_agent_module) {
         $max_critical = 0;
         $str_critical = '';
         $ff_event = 0;
+        $warning_time = 0;
 
         // New support for snmp v3.
         $snmp_version = 1;

@@ -915,6 +915,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
     }
 
     function submit_delete_multiple_items() {
+        event.preventDefault();
         delete_items = [];
         jQuery.each($("input[name='multiple_delete_items']:checked"),
             function(i, item) {
@@ -922,7 +923,22 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
             }
         );
 
-        $("input[name='id_item_json']").val(JSON.stringify(delete_items));
-        $("#form_multiple_delete").submit();
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: {
+                page: "godmode/reporting/visual_console_builder",
+                action: "multiple_delete",
+                tab: "list_elements",
+                id_item_json: JSON.stringify(delete_items),
+                id_visual_console: "<?php echo (is_metaconsole() === true) ? $idVisualConsole : $visualConsole['id']; ?>",
+            },
+            dataType: "json",
+            complete: function (data) {
+                location.reload();
+            }
+        });
+
+        return false;
     }
 </script>

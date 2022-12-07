@@ -2480,13 +2480,13 @@ function html_print_input_text_extended(
 ) {
     static $idcounter = 0;
 
-    if ($maxlength == 0) {
+    if ($maxlength === 0) {
         $maxlength = 255;
     }
 
     if ($size === false) {
         $size = '';
-    } else if ($size == 0) {
+    } else if ($size === -1) {
         $size = 10;
     }
 

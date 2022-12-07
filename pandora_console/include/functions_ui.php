@@ -1425,15 +1425,15 @@ function ui_print_help_icon(
     global $config;
 
     // Do not display the help icon if help is disabled.
-    if ($config['disable_help']) {
+    if ((bool) $config['disable_help'] === true) {
         return '';
     }
 
-    if (empty($home_url)) {
+    if (empty($home_url) === true) {
         $home_url = '';
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $home_url = '../../'.$home_url;
     }
 

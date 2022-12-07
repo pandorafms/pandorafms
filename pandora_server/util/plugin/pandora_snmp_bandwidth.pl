@@ -66,7 +66,7 @@ e.g. -v is equal to -version, -c to -community, etc.
 EO_HELP
 
 use constant {
-  UNKNOWN_DUPLEX => 1,
+  UNKNOWN_DUPLEX => 0,
   HALF_DUPLEX => 2,
   FULL_DUPLEX => 3,
 };
@@ -133,9 +133,9 @@ sub update_config_key ($) {
   if ($arg eq 'inUsage') {
     return "inUsage";
   }
-  if ($arg eq 'outUsage') {
-    return "outUsage";
-  }
+	if ($arg eq 'outUsage') {
+		return "outUsage";
+	}
 }
 
 ################################################################################
@@ -188,7 +188,7 @@ sub prepare_tree {
 
     my $inOctets = snmp_get(\%inOctets_call);
     if (ref($inOctets) eq "HASH") {
-      if (! exists($inOctets->{'data'}) || $inOctets->{'data'} eq '') {
+      if ($inOctets->{'data'} eq '') {
         $inOctets = 0;
       } else {
         $inOctets = int $inOctets->{'data'};
@@ -198,18 +198,18 @@ sub prepare_tree {
       next;
     }
 
-    my %outOctets_call = %{$config};
-    if (is_enabled($config->{'use_x64'})) {
-      $outOctets_call{'oid'} = $config->{'oid_base'};
-      $outOctets_call{'oid'} .= $config->{'x64_indexes'}{'outOctets'}.$ifIndex;
-    } else {
-      $outOctets_call{'oid'} = $config->{'oid_base'};
-      $outOctets_call{'oid'} .= $config->{'x86_indexes'}{'outOctets'}.$ifIndex;
-    }
+		my %outOctets_call = %{$config};
+		if (is_enabled($config->{'use_x64'})) {
+			$outOctets_call{'oid'} = $config->{'oid_base'};
+			$outOctets_call{'oid'} .= $config->{'x64_indexes'}{'outOctets'}.$ifIndex;
+		} else {
+			$outOctets_call{'oid'} = $config->{'oid_base'};
+			$outOctets_call{'oid'} .= $config->{'x86_indexes'}{'outOctets'}.$ifIndex;
+		}
 
     my $outOctets = snmp_get(\%outOctets_call);
     if (ref($outOctets) eq "HASH") {
-      if (! exists($outOctets->{'data'}) || $outOctets->{'data'} eq '') {
+      if ($outOctets->{'data'} eq '') {
         $outOctets = 0;
       } else {
         $outOctets = int $outOctets->{'data'};
@@ -220,27 +220,28 @@ sub prepare_tree {
     }
 
     my %duplex_call = %{$config};
-    if (is_enabled($config->{'use_x64'})) {
-      $duplex_call{'oid'} = $config->{'oid_base'};
-      $duplex_call{'oid'} .= $config->{'x64_indexes'}{'duplex'}.$ifIndex;
-    } else {
-      $duplex_call{'oid'} = $config->{'oid_base'};
-      $duplex_call{'oid'} .= $config->{'x86_indexes'}{'duplex'}.$ifIndex;
-    }
+		if (is_enabled($config->{'use_x64'})) {
+			$duplex_call{'oid'} = $config->{'oid_base'};
+			$duplex_call{'oid'} .= $config->{'x64_indexes'}{'duplex'}.$ifIndex;
+		} else {
+			$duplex_call{'oid'} = $config->{'oid_base'};
+			$duplex_call{'oid'} .= $config->{'x86_indexes'}{'duplex'}.$ifIndex;
+		}
 
     my $duplex = snmp_get(\%duplex_call);
     if (ref($duplex) eq "HASH") {
-      if (! exists($duplex->{'data'}) || $duplex->{'data'} eq '') {
+      if ($duplex->{'data'} eq '') {
         $duplex = 0;
       } else {
         $duplex = int $duplex->{'data'};
       }
+
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
     }
 
-    my %speed = %{$config};
+     my %speed = %{$config};
     if (is_enabled($config->{'use_x64'})) {
       $speed{'oid'} = $config->{'oid_base'};
       $speed{'oid'} .= $config->{'x64_indexes'}{'ifSpeed'}.$ifIndex;
@@ -510,7 +511,7 @@ if ( defined($sysobjectid->{'error'})  || $sysobjectid->{'data'} eq '' ) {
 
 # Check SNMP x64 interfaces
 my $walk64 = snmp_walk({%{$config}, 'oid' => '.1.3.6.1.2.1.31.1.1.1.6'});
-if ( $walk64 !~ /.*\.[0-9]+ = Counter64: [0-9]+/ ) {
+if ( $walk64 =~ 'No Such Instance currently exists at this OID' || $walk64 =~ 'No more variables left in this MIB View' || $walk64 =~ 'No Such Object available on this agent at this OID') {
   $config->{'use_x64'} = 0;
 } else {
   $config->{'use_x64'} = 1;
@@ -556,34 +557,34 @@ my $k = 0;
 foreach my $iface (keys %{$analysis_tree}) {
   # Calculate summary;
   if (is_enabled($analysis_tree->{$iface}{'bandwidth'}) || $analysis_tree->{$iface}{'bandwidth'} == 0) {
-    $bandwidth += $analysis_tree->{$iface}{'bandwidth'};
+    $bandwidth = $analysis_tree->{$iface}{'bandwidth'};
     $i++;
   }
   if (is_enabled($analysis_tree->{$iface}{'inUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
-    $inUsage += $analysis_tree->{$iface}{'inUsage'};
+    $inUsage = $analysis_tree->{$iface}{'inUsage'};
     $j++;
   }
   if (is_enabled($analysis_tree->{$iface}{'outUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
-    $outUsage += $analysis_tree->{$iface}{'outUsage'};
+    $outUsage = $analysis_tree->{$iface}{'outUsage'};
     $k++;
   }
 
 }
 
 if ($j > 0 && is_enabled($config->{'inUsage'})) {
-  $inUsage /= $j;
-  print sprintf("%.9f\n", $inUsage);
+	$inUsage /= $j;
+	print sprintf("%.9f\n", $inUsage);
 } elsif ($k > 0 && is_enabled($config->{'outUsage'})) {
-  $outUsage /= $k;
-  print sprintf("%.9f\n", $outUsage);
+	$outUsage /= $k;
+	print sprintf("%.9f\n", $outUsage);
 }
 
 if ($i > 0
   && !is_enabled($config->{'inUsage'})
   && !is_enabled($config->{'outUsage'})
 ) {
-  $bandwidth /= $i;
-  print sprintf("%.9f\n", $bandwidth);
+	$bandwidth /= $i;
+	print sprintf("%.9f\n", $bandwidth);
 }
 
 logger($config, 'info', "Plugin ends") if (is_enabled($config->{'debug'}));

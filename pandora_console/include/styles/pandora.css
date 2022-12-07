@@ -1133,8 +1133,7 @@ p.center {
 
 .img_help {
   cursor: help;
-  /* margin-left: 10px; */
-  margin-bottom: -2px;
+  margin: 0 5px;
 }
 
 /* Legacy spinner */
@@ -6010,7 +6009,8 @@ div#status_pie {
 }
 
 .white_table_graph_fixed table td {
-  margin: 0 10px;
+  margin: 0;
+  padding: 0 5px;
 }
 .white_table_graph_header {
   padding: 10px 20px;
@@ -10277,6 +10277,7 @@ table#advanced tr td,
   flex-direction: row;
   align-items: center;
   align-self: center;
+  box-sizing: border-box;
 }
 
 table#simple > tbody > tr,
@@ -10519,9 +10520,9 @@ tr.bring_next_field {
 }
 
 /* FLOATING FORM */
-
 .floating_form td {
   font-size: 11pt;
+  min-height: 32px;
 }
 
 .floating_form td.subinput {
@@ -10709,4 +10710,25 @@ pre.external_tools_output {
   font-size: 11pt;
   font-style: italic;
   color: #8a96a6;
+}
+
+#basic_thresholds {
+  padding: 0;
+}
+
+.basic_thresholds_table {
+  border: 1px solid #e5e9ed;
+  height: 100%;
+}
+
+.basic_thresholds_table.basic_thresholds_inputs {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-right: 0;
+}
+
+.basic_thresholds_table.basic_thresholds_image {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-left: 0;
 }

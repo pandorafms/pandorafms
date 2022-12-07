@@ -1,16 +1,31 @@
 <?php
+/**
+ * Prediction module manager editor.
+ *
+ * @category   Modules
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
 require_once 'include/functions_agents.php';
@@ -31,7 +46,7 @@ $is_service = false;
 $is_synthetic = false;
 $is_synthetic_avg = false;
 $ops = false;
-if ($row !== false && is_array($row)) {
+if ($row !== false && is_array($row) === true) {
     $prediction_module = $row['prediction_module'];
     $custom_integer_2 = $row['custom_integer_2'];
     // Services are an Enterprise feature.
@@ -49,19 +64,14 @@ if ($row !== false && is_array($row)) {
                 [$id_agente_modulo]
             );
 
-
             $ops = json_decode($ops_json, true);
 
-
-
-            // Erase the key of array serialize as <num>**
+            // Erase the key of array serialize as <num>**.
             $chunks = explode('**', reset(array_keys($ops)));
 
             $first_op = explode('_', $chunks[1]);
 
-
-
-            if (isset($first_op[1]) && $first_op[1] == 'avg') {
+            if (isset($first_op[1]) === true && $first_op[1] === 'avg') {
                 $selected = 'synthetic_avg_selected';
             } else {
                 $selected = 'synthetic_selected';
@@ -109,23 +119,28 @@ $extra_title = __('Prediction server module');
 $data = [];
 $data[0] = __('Source module');
 $data[0] .= ui_print_help_icon('prediction_source_module', true);
-$data[1] = '';
+push_table_simple($data, 'caption_module_service_synthetic_selector');
 // Services and Synthetic are an Enterprise feature.
 $module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', [$selected]);
 if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
-    $data[1] = $module_service_synthetic_selector;
+    $data = [];
+    $data[0] = $module_service_synthetic_selector;
 
     $table_simple->colspan['module_service_synthetic_selector'][1] = 3;
     push_table_simple($data, 'module_service_synthetic_selector');
-
-    $data = [];
-    $data[0] = '';
 }
 
-$data[1] = '<div id="module_data" class="w50p float-left top-1em">';
-$data[1] .= html_print_label(__('Agent'), 'agent_name', true).'<br/>';
+$data = [];
+$data[0] = __('Agent');
+$data[1] = __('Module');
+$data[2] = __('Period');
+$table_simple->cellclass['caption_prediction_module'][0] = 'w33p';
+$table_simple->cellclass['caption_prediction_module'][1] = 'w33p';
+$table_simple->cellclass['caption_prediction_module'][2] = 'w33p';
+push_table_simple($data, 'caption_prediction_module');
 
-// Get module and agent of the target prediction module
+$data = [];
+// Get module and agent of the target prediction module.
 if (empty($prediction_module) === false) {
     $id_agente_clean = modules_get_agentmodule_agent($prediction_module);
     $prediction_module_agent = modules_get_agentmodule_agent_name($prediction_module);
@@ -137,7 +152,6 @@ if (empty($prediction_module) === false) {
     $agent_alias = '';
 }
 
-
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -148,57 +162,52 @@ $params['selectbox_id'] = 'prediction_module';
 $params['none_module_text'] = __('Select Module');
 $params['use_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
-$data[1] .= ui_print_agent_autocomplete_input($params);
+$data[0] = ui_print_agent_autocomplete_input($params);
 
-$data[1] .= '<br />';
-$data[1] .= html_print_label(__('Module'), 'prediction_module', true).'<br />';
-if ($id_agente) {
-    $sql = 'SELECT id_agente_modulo, nombre
-		FROM tagente_modulo
-		WHERE delete_pending = 0
-			AND history_data = 1
-			AND id_agente =  '.$id_agente_clean.'
-			AND id_agente_modulo  <> '.$id_agente_modulo;
-
-    $data[1] .= html_print_input(
-        [
-            'type'          => 'select_from_sql',
-            'sql'           => $sql,
-            'name'          => 'prediction_module',
-            'selected'      => $prediction_module,
-            'nothing'       => __('Select Module'),
-            'nothing_value' => 0,
-            'return'        => true,
-        ]
+if ($id_agente > 0) {
+    $predictionModuleInput = html_print_select_from_sql(
+        'SELECT id_agente_modulo, nombre
+            FROM tagente_modulo
+            WHERE delete_pending = 0
+                AND history_data = 1
+                AND id_agente =  '.$id_agente_clean.'
+                AND id_agente_modulo  <> '.$id_agente_modulo,
+        'prediction_module',
+        $prediction_module,
+        '',
+        __('Select Module'),
+        0,
+        true
     );
 } else {
-    $data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
+    $predictionModuleInput = '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
 
-$data[1] .= '<br />';
-$data[1] .= html_print_label(__('Period'), 'custom_integer_2', true).'<br/>';
-
-$periods[0] = __('Weekly');
-$periods[1] = __('Monthly');
-$periods[2] = __('Daily');
-$data[1] .= html_print_select($periods, 'custom_integer_2', $custom_integer_2, '', '', 0, true);
-
-$data[1] .= html_print_input_hidden('id_agente_module_prediction', $id_agente, true);
-$data[1] .= '</div>';
-
-$table_simple->colspan['prediction_module'][1] = 3;
+$data[1] = $predictionModuleInput;
+$data[2] = html_print_select([__('Weekly'), __('Monthly'), __('Daily')], 'custom_integer_2', $custom_integer_2, '', '', 0, true);
+$data[2] .= html_print_input_hidden('id_agente_module_prediction', $id_agente, true);
+$table_simple->cellclass['prediction_module'][0] = 'w33p';
+$table_simple->cellclass['prediction_module'][1] = 'w33p';
+$table_simple->cellclass['prediction_module'][2] = 'w33p';
 push_table_simple($data, 'prediction_module');
 
 $data = [];
-$data[0] = '';
+$data[0] = __('Calculation type');
+$data[1] = __('Future estimation');
+$data[2] = __('Limit value');
+$table_simple->cellclass['caption_capacity_planning'][0] = 'w33p';
+$table_simple->cellclass['caption_capacity_planning'][1] = 'w33p';
+$table_simple->cellclass['caption_capacity_planning'][2] = 'w33p';
+push_table_simple($data, 'caption_capacity_planning');
 
-$data[1] .= html_print_label(__('Calculation type'), 'estimation_type', true).'<br/>';
-$data[1] .= html_print_input(
+$data = [];
+$data[0] = html_print_input(
     [
         'type'     => 'select',
         'return'   => 'true',
         'name'     => 'estimation_type',
-        'class'    => 'w250px',
+        'class'    => 'w100p',
+        'style'    => 'width: 100px;',
         'fields'   => [
             'estimation_absolute'    => __('Estimated absolute value'),
             'estimation_calculation' => __('Calculation of days to reach limit'),
@@ -209,44 +218,42 @@ $data[1] .= html_print_input(
     false
 );
 
-$data[1] .= '<div id="estimation_interval_row">';
-$data[1] .= html_print_label(__('Future estimation'), 'estimation_interval', true).'<br/>';
-$data[1] .= html_print_input(
+$data[1] = html_print_input(
     [
         'type'   => 'interval',
         'return' => 'true',
         'name'   => 'estimation_interval',
         'value'  => $estimation_interval,
+        'class'  => 'w100p',
     ],
     'div',
     false
 );
-$data[1] .= '</div>';
 
-
-$data[1] .= '<div id="estimation_days_row">';
-$data[1] .= html_print_label(__('Limit value'), 'estimation_days', true).'<br/>';
-$data[1] .= html_print_input(
+$data[2] = html_print_input(
     [
         'type'   => 'number',
         'return' => 'true',
         'id'     => 'estimation_days',
         'name'   => 'estimation_days',
         'value'  => $estimation_interval,
+        'class'  => 'w100p',
     ]
 );
-$data[1] .= '</div>';
-
+$table_simple->cellclass['capacity_planning'][0] = 'w33p';
+$table_simple->cellclass['capacity_planning'][1] = 'w33p';
+$table_simple->cellclass['capacity_planning'][2] = 'w33p';
 push_table_simple($data, 'capacity_planning');
 
 // Services are an Enterprise feature.
 $selector_form = enterprise_hook('get_selector_form', [$custom_integer_1]);
 if ($selector_form !== ENTERPRISE_NOT_HOOK) {
     $data = [];
-    $data[0] = '';
-    $data[1] = $selector_form;
+    $data[0] = $selector_form['caption'];
+    push_table_simple($data, 'caption_service_module');
 
-    $table_simple->colspan['service_module'][1] = 3;
+    $data = [];
+    $data[0] = $selector_form['input'];
     push_table_simple($data, 'service_module');
 }
 
@@ -254,22 +261,20 @@ if ($selector_form !== ENTERPRISE_NOT_HOOK) {
 $synthetic_module_form = enterprise_hook('get_synthetic_module_form');
 if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
     $data = [];
-    $data[0] = '';
-    $data[1] = $synthetic_module_form;
-
+    $data[0] = $synthetic_module_form;
     push_table_simple($data, 'synthetic_module');
 }
 
 $trending_module_form = enterprise_hook('get_trending_module_form', [$custom_string_1]);
 if ($trending_module_form !== ENTERPRISE_NOT_HOOK) {
     $data = [];
-    $data[0] = '';
-    $data[1] .= $trending_module_form;
+    $data[0] = $trending_module_form['caption'];
+    push_table_simple($data, 'caption_trending_module');
 
+    $data = [];
+    $data[0] = $trending_module_form['input'];
     push_table_simple($data, 'trending_module');
 }
-
-
 
 // Netflow modules are an Enterprise feature.
 $netflow_module_form = enterprise_hook('get_netflow_module_form', [$custom_integer_1]);
@@ -277,15 +282,10 @@ if ($netflow_module_form !== ENTERPRISE_NOT_HOOK) {
     $data = [];
     $data[0] = '';
     $data[1] = $netflow_module_form;
-
-    $table_simple->colspan['netflow_module_form'][1] = 3;
     push_table_simple($data, 'netflow_module');
 }
 
-
-
-
-// Removed common useless parameter
+// Removed common useless parameter.
 unset($table_advanced->data[3]);
 ?>
 <script type="text/javascript">

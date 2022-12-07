@@ -1,8 +1,8 @@
 <?php
 /**
- * Common editor fields.
+ * Common module editor.
  *
- * @category   Module manager
+ * @category   Modules
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -242,6 +242,9 @@ $table_simple->rowclass['caption_configuration_data'] = 'field_half_width pdd_t_
 $table_simple->rowclass['textarea_configuration_data'] = 'field_half_width';
 $table_simple->rowclass['configuration_data'] = 'field_half_width';
 $table_simple->cellstyle['configuration_data'][0] = 'justify-content: flex-end;padding-top: 10px;';
+$table_simple->rowclass['textarea_web_checks'] = 'field_half_width';
+$table_simple->rowclass['buttons_web_checks'] = 'field_half_width';
+$table_simple->cellstyle['buttons_web_checks'][0] = 'justify-content: flex-end;padding-top: 10px;';
 
 $table_simple->rowclass['caption_module_name'] = 'field_half_width pdd_t_10px';
 $table_simple->rowclass['module_name'] = 'field_half_width';
@@ -568,28 +571,29 @@ $tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_simple->cellstyle['thresholds_table'][0] = 'width: 50%;';
+$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 320px;width: 100%';
+$table_simple->cellclass['thresholds_table'][0] = 'basic_thresholds_table basic_thresholds_inputs';
 $table_simple->data['thresholds_table'][0] = html_print_table($tableBasicThresholds, true);
 if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) {
-    $table_simple->cellstyle['thresholds_table'][1] = 'width: 50%;';
+    $table_simple->cellclass['thresholds_table'][1] = 'basic_thresholds_table basic_thresholds_image';
     $table_simple->data['thresholds_table'][1] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
-$table_simple->data['historical_data'][0] = __('Historical data');
+$table_simple->data['caption_historical_data'][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
     // checkbox because HTML dont send disabled fields
     // and could be disabled by error.
-    $table_simple->data['historical_data'][1] = html_print_checkbox_switch(
+    $table_simple->data['historical_data'][0] = html_print_checkbox_switch(
         'history_data_fake',
         1,
         $history_data,
         true,
         $disabledBecauseInPolicy
     );
-    $table_simple->data['historical_data'][1] .= html_print_input_hidden('history_data', (int) $history_data, true);
+    $table_simple->data['historical_data'][0] .= html_print_input_hidden('history_data', (int) $history_data, true);
 } else {
-    $table_simple->data['historical_data'][1] = html_print_checkbox_switch(
+    $table_simple->data['historical_data'][0] = html_print_checkbox_switch(
         'history_data',
         1,
         $history_data,

@@ -1,10 +1,10 @@
 <?php
 /**
- * Web Module Editor for Module Manager.
+ * Web module manager editor.
  *
- * @category   Module manager
+ * @category   Modules
  * @package    Pandora FMS
- * @subpackage Module manager
+ * @subpackage Community
  * @version    1.0.0
  * @license    See below
  *
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,9 +32,11 @@ enterprise_include_once('include/functions_policies.php');
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 $classdisabledBecauseInPolicy = '';
-$page = get_parameter('page', '');
+$page             = get_parameter('page', '');
+$id_policy_module = (int) get_parameter('id_policy_module');
+
 if (strstr($page, 'policy_modules') === false) {
-    if ($config['enterprise_installed']) {
+    if ((bool) $config['enterprise_installed'] === true) {
         if (policies_is_module_linked($id_agent_module) == 1) {
             $disabledBecauseInPolicy = 1;
         } else {
@@ -44,7 +46,7 @@ if (strstr($page, 'policy_modules') === false) {
         $disabledBecauseInPolicy = false;
     }
 
-    if ($disabledBecauseInPolicy) {
+    if ((bool) $disabledBecauseInPolicy === true) {
         $disabledTextBecauseInPolicy = 'disabled = "disabled"';
         $classdisabledBecauseInPolicy = 'readonly';
     }
@@ -62,45 +64,47 @@ html_print_div(
     ]
 );
 
-if (is_int($id_agent_module) && $id_agent_module !== 0) {
+if (is_int($id_agent_module) === true && $id_agent_module !== 0) {
     include_once $config['homedir'].'/include/ajax/web_server_module_debug.php';
 }
 
 define('ID_NETWORK_COMPONENT_TYPE', 7);
 
-if (!$tcp_port && !$id_agent_module) {
+if (empty($tcp_port) === true && $id_agent_module !== 0) {
     $tcp_port = 80;
 }
 
-// plugin_server is the browser id
-if ($plugin_user == '' && !$id_agent_module) {
+// Plugin_server is the browser id.
+if (empty($plugin_user) === true && $id_agent_module !== 0) {
     $plugin_user = get_product_name().' / Webcheck';
 }
 
-// plugin_server is the referer
-if ($plugin_pass == '' && !$id_agent_module) {
+// Plugin_server is the referer.
+if (empty($plugin_pass) === true && $id_agent_module !== 0) {
     $plugin_pass = 1;
 }
 
-if (empty($update_module_id)) {
-    // Function in module_manager_editor_common.php
+if (empty($update_module_id) === true) {
     add_component_selection(ID_NETWORK_COMPONENT_TYPE);
-} else {
-    // TODO: Print network component if available
 }
 
 $data = [];
 $data[0] = __('Web checks');
+$suc_err_check = ' <span id="check_conf_suc" class="checks invisible">'.html_print_image('/images/ok.png', true).'</span>';
+$suc_err_check .= ' <span id="check_conf_err" class="checks invisible">'.html_print_image('/images/error_red.png', true).'</span>';
+$data[1] = $suc_err_check;
+push_table_simple($data, 'header_web_checks');
 
 $adopt = false;
-if (isset($id_agent_module)) {
+if (isset($id_agent_module) === true && $id_agent_module !== 0) {
     $adopt = enterprise_hook('policies_is_module_adopt', [$id_agent_module]);
 }
 
-$id_policy_module = (int) get_parameter('id_policy_module', '');
-if ($id_policy_module) {
+if ($id_policy_module > 0) {
     $module = enterprise_hook('policies_get_module', [$id_policy_module]);
     $plugin_parameter = $module['plugin_parameter'];
+} else {
+    $plugin_parameter = '';
 }
 
 $plugin_parameter_split = explode('&#x0a;', $plugin_parameter);
@@ -121,7 +125,7 @@ foreach ($plugin_parameter_split as $key => $value) {
 }
 
 if ((bool) $adopt === false) {
-    $data[1] = html_print_textarea(
+    $textareaPluginParameter = html_print_textarea(
         'plugin_parameter',
         15,
         65,
@@ -131,7 +135,7 @@ if ((bool) $adopt === false) {
         'resizev'
     );
 } else {
-    $data[1] = html_print_textarea(
+    $textareaPluginParameter = html_print_textarea(
         'plugin_parameter',
         15,
         65,
@@ -141,7 +145,9 @@ if ((bool) $adopt === false) {
     );
 }
 
-$table_simple->colspan['web_checks'][1] = 2;
+$data = [];
+$data[0] = $textareaPluginParameter;
+push_table_simple($data, 'textarea_web_checks');
 
 // Disable debug button if module has not started.
 if ($id_agent_module > 0
@@ -158,35 +164,43 @@ if ($id_agent_module > 0
     $hintDebug = __('Debug this module once it has been initialized');
 }
 
-$suc_err_check = ' <span id="check_conf_suc" class="checks invisible">'.html_print_image('/images/ok.png', true).'</span>';
-$suc_err_check .= ' <span id="check_conf_err" class="checks invisible">'.html_print_image('/images/error_red.png', true).'</span>';
-$data[2] = html_print_button(
+$actionButtons = html_print_button(
     __('Load basic'),
     'btn_loadbasic',
     false,
     '',
-    'class="sub config"',
+    [
+        'icon' => 'cog',
+        'mode' => 'mini secondary',
+    ],
     true
 ).ui_print_help_tip(__('Load a basic structure on Web Checks'), true);
-$data[2] .= '<br><br>'.html_print_button(
+$actionButtons .= html_print_button(
     __('Check'),
     'btn_checkconf',
     false,
     '',
-    'class="sub upd"',
+    [
+        'icon' => 'update',
+        'mode' => 'mini secondary',
+    ],
     true
-).ui_print_help_tip(__('Check the correct structure of the WebCheck'), true).$suc_err_check;
-$data[2] .= '<br><br>'.html_print_button(
+).ui_print_help_tip(__('Check the correct structure of the WebCheck'), true);
+$actionButtons .= html_print_button(
     __('Debug'),
     'btn_debugModule',
     $disableDebug,
-    '',
-    'class="sub config" onClick="loadDebugWindow()"',
+    'loadDebugWindow()',
+    [
+        'icon' => 'cog',
+        'mode' => 'mini secondary ',
+    ],
     true
 ).ui_print_help_tip($hintDebug, true);
 
-
-push_table_simple($data, 'web_checks');
+$data = [];
+$data[0] = $actionButtons;
+push_table_simple($data, 'buttons_web_checks');
 
 $http_checks_type = [
     0 => 'Anyauth',

@@ -2,7 +2,7 @@
 #
 ################################################################################
 #
-# Bandwidth usage plugin
+# Bandwith usage plugin
 #
 # Requirements:
 #   snmpget
@@ -55,7 +55,7 @@ Where OPTIONS could be:
 
 [EXTRA]
     -ifIndex         Target interface to retrieve, if not specified, total
-                     bandwidth will be reported.
+                     bandwith will be reported.
     -uniqid          Use custom temporary file name.
     -inUsage         Show only input usage (in percentage) - 1, or not 0.
     -outUsage        Show only output usage (in percentage) - 1, or not 0.
@@ -492,9 +492,9 @@ $config->{'tmp_separator'} = ';'  if empty($config->{'tmp_separator'});
 $config->{'tmp'}           = (($^O =~ /win/)?$ENV{'TMP'}:'/tmp')  if empty($config->{'tmp'});
 
 # Create unique name for tmp and log file for host
-my $filename = $config->{'tmp'}.'/pandora_bandwidth_'.$config->{'host'};
+my $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'host'};
 if (!empty($config->{'uniqid'})) {
-  $filename = $config->{'tmp'}.'/pandora_bandwidth_'.$config->{'uniqid'};
+  $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'uniqid'};
 }
 # Replace every dot for underscore
 $filename =~ tr/./_/;
@@ -511,7 +511,7 @@ if ( defined($sysobjectid->{'error'})  || $sysobjectid->{'data'} eq '' ) {
 
 # Check SNMP x64 interfaces
 my $walk64 = snmp_walk({%{$config}, 'oid' => '.1.3.6.1.2.1.31.1.1.1.6'});
-if ( $walk64 =~ 'No Such Instance currently exists at this OID' || $walk64 =~ 'No more variables left in this MIB View' || $walk64 =~ 'No Such Object available on this agent at this OID') {
+if ( $walk64 =~ 'No Such Instance currently exists at this OID' || $walk64 =~ 'No more variables left in this MIB View') {
   $config->{'use_x64'} = 0;
 } else {
   $config->{'use_x64'} = 1;
@@ -556,15 +556,15 @@ my $j = 0;
 my $k = 0;
 foreach my $iface (keys %{$analysis_tree}) {
   # Calculate summary;
-  if (is_enabled($analysis_tree->{$iface}{'bandwidth'}) || $analysis_tree->{$iface}{'bandwidth'} == 0) {
+  if (is_enabled($analysis_tree->{$iface}{'bandwidth'})) {
     $bandwidth = $analysis_tree->{$iface}{'bandwidth'};
     $i++;
   }
-  if (is_enabled($analysis_tree->{$iface}{'inUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
+  if (is_enabled($analysis_tree->{$iface}{'inUsage'})) {
     $inUsage = $analysis_tree->{$iface}{'inUsage'};
     $j++;
   }
-  if (is_enabled($analysis_tree->{$iface}{'outUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
+  if (is_enabled($analysis_tree->{$iface}{'outUsage'})) {
     $outUsage = $analysis_tree->{$iface}{'outUsage'};
     $k++;
   }

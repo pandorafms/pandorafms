@@ -583,8 +583,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
       status_module: status_module,
       "module_name[]": idModules,
       selection_mode: selection_mode,
-      tags: tags_selected,
-      id_group: id_group
+      tags: tags_selected
     },
     function(data) {
       $("#agents").append(

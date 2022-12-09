@@ -1041,6 +1041,7 @@ sub get_db_rows_parallel ($$;@) {
 		no warnings 'redefine';
 		local *PandoraFMS::ProducerConsumerServer::DESTROY = sub {};
 		local *PandoraFMS::BlockProducerConsumerServer::DESTROY = sub {};
+		local *PandoraFMS::SNMPServer::DESTROY = sub {};
 
 		# Query the nodes.
 		foreach my $node (@{$nodes}) {

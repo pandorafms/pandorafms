@@ -35,8 +35,6 @@ require_once $config['homedir'].'/vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
@@ -270,7 +268,7 @@ if (is_ajax()) {
     }
 }
 
-
+enterprise_hook('open_meta_frame');
 
 $tab = get_parameter('tab', 'user');
 
@@ -1942,7 +1940,10 @@ function delete_profile(event, btn) {
 
     var json = json_profile.val();
     var test = JSON.parse(json);
-    test.splice(position-1, 1);
+
+    var position_offset = <?php echo (is_metaconsole() === true) ? 2 : 1; ?>;
+
+    test.splice(position-position_offset, 1);
     json_profile.val(JSON.stringify(test));
 }
 

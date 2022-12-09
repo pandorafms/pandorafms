@@ -404,6 +404,7 @@ if ($id_profile || $new_profile) {
         html_print_input_hidden('create_profile', 1);
     } else {
         html_print_input_hidden('id', $id_profile);
+        html_print_input_hidden('old_name_profile', $name);
         html_print_input_hidden('update_profile', 1);
         html_print_submit_button(__('Update'), 'upd', false, 'class="sub upd"');
     }
@@ -415,15 +416,45 @@ enterprise_hook('close_meta_frame');
 
 ?>
 
-<script type="text/javascript" language="javascript">   
+<script type="text/javascript" language="javascript">
     $(document).ready (function () {
         var disable_option = '<?php echo $disable_option; ?>';
 
-        if (disable_option != '') {  
-            var ids = ['#checkbox-db_management', '#checkbox-user_management', '#checkbox-pandora_management']; 
+        if (disable_option != '') {
+            var ids = ['#checkbox-db_management', '#checkbox-user_management', '#checkbox-pandora_management'];
             ids.forEach(id => {
                 $(id).css({'cursor':'not-allowed', 'opacity':'0.5'});
             });
-        } 
+        }
+    });
+
+    $('#text-name').on('blur',function(){
+        /* Check if the name is already on use for new profiles or check if the
+        name is already on use for update checking if the name is distinct of the original*/
+        if($('#hidden-create_profile').val()==1 || ($('#hidden-update_profile').val()==1 && $('#hidden-old_name_profile').val()!=$('#text-name').val())){
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "html",
+                data: {
+                    page: 'include/ajax/profile',
+                    search_profile_nanme: true,
+                    profile_name: $('#text-name').val(),
+                },
+                success: function (data) {
+                    if(data === 'true'){
+                        alert( <?php echo "'".__('Profile name already on use, please, change the name before safe')."'"; ?> );
+                        if($('#hidden-old_name_profile').val()){
+                            $('#text-name').val($('#hidden-old_name_profile').val());
+                        }else{
+                            $('#text-name').val("");
+                        }
+                    }
+                },
+                error: function (data) {
+                    console.error("Fatal error in AJAX call to interpreter order", data)
+                }
+            });
+        }
     });
 </script>

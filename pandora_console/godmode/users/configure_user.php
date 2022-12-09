@@ -1313,7 +1313,14 @@ $home_screen .= html_print_select(
 ).'</div>';
 
 
-$dashboards = Manager::getDashboards(-1, -1);
+$dashboards = Manager::getDashboards(
+    -1,
+    -1,
+    false,
+    false,
+    $id_usr
+);
+
 $dashboards_aux = [];
 if ($dashboards === false) {
     $dashboards = ['None' => 'None'];

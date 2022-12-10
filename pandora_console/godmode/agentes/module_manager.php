@@ -196,7 +196,7 @@ if ($show_creation === true) {
     // Create module/type combo.
     $tableCreateModule = new stdClass();
     $tableCreateModule->id = 'create';
-    $tableCreateModule->class = 'pacullos';
+    $tableCreateModule->class = 'create_module_dialog';
     $tableCreateModule->width = '100%';
     $tableCreateModule->data = [];
     $tableCreateModule->style = [];

@@ -10725,6 +10725,7 @@ pre.external_tools_output {
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   border-right: 0;
+  width: 100%;
 }
 
 .basic_thresholds_table.basic_thresholds_image {

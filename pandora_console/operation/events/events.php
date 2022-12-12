@@ -1448,7 +1448,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
         'images/csv.png',
         true,
         [

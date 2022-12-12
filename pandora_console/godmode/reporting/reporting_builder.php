@@ -1055,7 +1055,7 @@ switch ($action) {
                         ]
                     );
                     $data[2] .= '</a>';
-                    $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
+                    $data[3] = '<a onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
                     $data[3] .= html_print_image(
                         'images/xml.png',
                         true,

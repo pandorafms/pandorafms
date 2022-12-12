@@ -6269,3 +6269,24 @@ function arrayOutputSorting($sort, $sortField)
         }
     };
 }
+
+
+/**
+ * Get dowload started cookie from js and set ready cokkie for download ready comntrol.
+ *
+ * @return
+ */
+function setDownloadCookieToken()
+{
+    $download_cookie = get_cookie('downloadToken', false);
+    if ($download_cookie === false) {
+        return;
+    } else {
+        setcookie(
+            'downloadReady',
+            $download_cookie,
+            (time() + 15),
+            '/'
+        );
+    }
+}

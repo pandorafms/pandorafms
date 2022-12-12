@@ -52,13 +52,13 @@ if (!isset($policy_page)) {
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 
 echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos bolder w20p'>";
-echo __('Search').' '.html_print_input_text(
+echo "<tr><td class='datos bolder w12p'><span class='mrgn_right_7px'>";
+echo __('Search').'</span>'.html_print_input_text(
     'search_string',
     $search_string,
     '',
-    15,
-    255,
+    5,
+    5,
     true
 );
 html_print_input_hidden('search', 1);
@@ -73,7 +73,6 @@ echo '</td>';
 echo "<td class='datos w10p'>";
 html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"');
 echo '</td>';
-echo "<td class='datos w10p'></td>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo.
@@ -179,7 +178,7 @@ if (($policy_page) || (isset($agent))) {
         // Create module/type combo.
         echo '<form id="create_module_type" method="post" action="'.$url.'">';
         if (!$policy_page) {
-            echo '<td class="datos w20p bolder">';
+            echo '<td class="datos w15p bolder">';
             echo __('Show in hierachy mode');
             if ($checked == 'true') {
                 $checked = true;
@@ -198,8 +197,8 @@ if (($policy_page) || (isset($agent))) {
             echo '</td>';
         }
 
-        echo '<td class="datos w20p bolder">';
-        echo __('<p>Type</p>');
+        echo '<td class="datos w20p bolder lign_right"><span class="mrgn_right_7px">';
+        echo __('Type').'</span>';
         html_print_select(
             $modules,
             'moduletype',
@@ -216,7 +215,7 @@ if (($policy_page) || (isset($agent))) {
         );
         html_print_input_hidden('edit_module', 1);
         echo '</td>';
-        echo '<td class="datos w10p">';
+        echo '<td class="datos w5p">';
         echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
         echo '</td>';
         echo '</tr>';

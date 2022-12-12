@@ -3713,6 +3713,15 @@ function events_get_response_target(
         );
     }
 
+    if (strpos($target, '_group_contact_') !== false) {
+        $info_groups = groups_get_group_by_id($event['id_grupo']);
+        $target = str_replace(
+            '_group_contact_',
+            (isset($info_groups['contact']) === true) ? $info_groups['contact'] : 'N/A',
+            $target
+        );
+    }
+
     if (strpos($target, '_event_utimestamp_') !== false) {
         $target = str_replace(
             '_event_utimestamp_',

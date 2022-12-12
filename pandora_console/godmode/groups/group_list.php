@@ -782,18 +782,18 @@ if ($tab == 'tree') {
 
     $form = "<form method='post' action=''>";
         $form .= "<table class='databox filters bolder' width='100%'>";
-            $form .= '<tr><td>'.__('Search').'&nbsp;';
+            $form .= '<tr><td>'.__('Search').'&nbsp;&nbsp;&nbsp;';
                 $form .= html_print_input_text(
                     'search',
                     $search,
                     '',
-                    100,
-                    100,
+                    30,
+                    30,
                     true
                 );
-            $form .= '</td><td>';
+            $form .= '</td><td style="text-align: right">';
                 $form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
-            $form .= '<td></tr>';
+            $form .= '</tr>';
         $form .= '</table>';
     $form .= '</form>';
 

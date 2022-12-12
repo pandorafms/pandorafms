@@ -3588,6 +3588,19 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         // Column 'module_macros' cannot be null.
     }
 
+    $type_exist = db_get_value_filter(
+        'id_tipo',
+        'ttipo_modulo',
+        [
+            'id_tipo' => $values['id_tipo_modulo'],
+        ]
+    );
+
+    if ((bool) $type_exist === false) {
+        returnError('Module type does not exist');
+        return;
+    }
+
     if ($agent_by_alias) {
         $agents_affected = 0;
         $idModule = false;

@@ -969,7 +969,7 @@ function openSoundEventModal(settings) {
                 sound = true;
               }
 
-              test_sound_button(sound);
+              test_sound_button(sound, settings.urlSound);
             });
 
             // Play Stop.
@@ -1026,9 +1026,9 @@ function openSoundEventModal(settings) {
     .show();
 }
 
-function test_sound_button(test_sound) {
+function test_sound_button(test_sound, urlSound) {
   if (test_sound === true) {
-    add_audio();
+    add_audio(urlSound);
   } else {
     remove_audio();
   }
@@ -1084,8 +1084,8 @@ function action_events_sound(mode, settings) {
   }
 }
 
-function add_audio() {
-  var sound = "./include/sounds/" + $("#tabs-sound-modal #sound_id").val();
+function add_audio(urlSound) {
+  var sound = urlSound + $("#tabs-sound-modal #sound_id").val();
   $(".actions-sound-modal").append(
     "<audio id='id_sound_event' src='" +
       sound +
@@ -1111,7 +1111,7 @@ function listen_event_sound(settings) {
 
 function check_event_sound(settings) {
   jQuery.post(
-    "./ajax.php",
+    settings.url,
     {
       page: "include/ajax/events",
       get_events_fired: 1,
@@ -1140,7 +1140,7 @@ function check_event_sound(settings) {
         remove_audio();
 
         // Apend audio.
-        add_audio();
+        add_audio(settings.urlSound);
 
         // Add elements.
         data.forEach(function(element) {

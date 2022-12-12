@@ -2270,7 +2270,7 @@ if ($drawConsoleSound === true) {
                         ],
                     ],
                     [
-                        'label'     => __('Time Sound'),
+                        'label'     => __('Sound duration'),
                         'arguments' => [
                             'type'     => 'select',
                             'fields'   => $times_sound,

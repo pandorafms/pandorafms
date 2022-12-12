@@ -443,7 +443,7 @@ enterprise_hook('close_meta_frame');
                 },
                 success: function (data) {
                     if(data === 'true'){
-                        alert( <?php echo "'".__('Profile name already on use, please, change the name before safe')."'"; ?> );
+                        alert( <?php echo "'".__('Profile name already on use, please, change the name before save')."'"; ?> );
                         if($('#hidden-old_name_profile').val()){
                             $('#text-name').val($('#hidden-old_name_profile').val());
                         }else{

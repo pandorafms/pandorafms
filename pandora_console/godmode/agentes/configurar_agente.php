@@ -1528,11 +1528,11 @@ if ($update_module === true || $create_module === true) {
     }
 
     $cron_interval = $minute_from.$minute_to.' '.$hour_from.$hour_to.' '.$mday_from.$mday_to.' '.$month_from.$month_to.' '.$wday_from.$wday_to;
-    if (!cron_check_syntax($cron_interval)) {
+    if (cron_check_syntax($cron_interval) === false) {
         $cron_interval = '';
     }
 
-    if ($prediction_module != MODULE_PREDICTION_SYNTHETIC) {
+    if ($prediction_module !== MODULE_PREDICTION_SYNTHETIC) {
         unset($serialize_ops);
         enterprise_hook(
             'modules_delete_synthetic_operations',
@@ -1657,7 +1657,7 @@ if ($update_module) {
         $values['plugin_parameter'] = '';
 
         foreach ($plugin_parameter_split as $key => $value) {
-            if ($key == 1) {
+            if ((int) $key === 1) {
                 if ($http_user) {
                     $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
                 }
@@ -1676,12 +1676,12 @@ if ($update_module) {
 
     // In local modules, the interval is updated by agent.
     $module_kind = (int) get_parameter('moduletype');
-    if ($module_kind == MODULE_DATA) {
+    if ($module_kind === MODULE_DATA) {
         unset($values['module_interval']);
     }
 
-    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC
-        && $serialize_ops == ''
+    if ($prediction_module === MODULE_PREDICTION_SYNTHETIC
+        && empty($serialize_ops) === true
     ) {
         $result = false;
     } else {
@@ -1702,7 +1702,7 @@ if ($update_module) {
         }
     }
 
-    if (is_error($result)) {
+    if (is_error($result) === true) {
         switch ($result) {
             case ERR_EXIST:
                 $msg = __('There was a problem updating module. Another module already exists with the same name.');
@@ -1735,7 +1735,7 @@ if ($update_module) {
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
+        if ($prediction_module === MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1769,27 +1769,15 @@ if ($create_module) {
     // Old configuration data must always be empty in case of creation.
     $old_configuration_data = '';
 
-    if (isset($_POST['combo_snmp_oid'])) {
+    if (isset($_POST['combo_snmp_oid']) === true) {
         $combo_snmp_oid = get_parameter_post('combo_snmp_oid');
     }
 
-    if ($snmp_oid == '') {
+    if (empty($snmp_oid) === true) {
         $snmp_oid = $combo_snmp_oid;
     }
 
     $id_module = (int) get_parameter('id_module');
-
-    switch ($config['dbtype']) {
-        case 'oracle':
-            if (empty($description) || !isset($description)) {
-                $description = ' ';
-            }
-        break;
-
-        default:
-            // Default.
-        break;
-    }
 
     $values = [
         'id_tipo_modulo'        => $id_module_type,
@@ -1859,13 +1847,13 @@ if ($create_module) {
         'warning_time'          => $warning_time,
     ];
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+    if ($id_module_type === 30 || $id_module_type === 31 || $id_module_type === 32 || $id_module_type === 33) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';
 
         foreach ($plugin_parameter_split as $key => $value) {
-            if ($key == 1) {
+            if ((int) $key === 1) {
                 if ($http_user) {
                     $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
                 }
@@ -1873,15 +1861,13 @@ if ($create_module) {
                 if ($http_pass) {
                     $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
                 }
-
-                $values['plugin_parameter'] .= $value.'&#x0a;';
-            } else {
-                $values['plugin_parameter'] .= $value.'&#x0a;';
             }
+
+            $values['plugin_parameter'] .= $value.'&#x0a;';
         }
     }
 
-    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC && $serialize_ops == '') {
+    if ((int) $prediction_module === MODULE_PREDICTION_SYNTHETIC && empty($serialize_ops) === true) {
         $id_agent_module = false;
     } else {
         $id_agent_module = modules_create_agent_module(
@@ -1893,7 +1879,7 @@ if ($create_module) {
         );
     }
 
-    if (is_error($id_agent_module)) {
+    if (is_error($id_agent_module) === true) {
         switch ($id_agent_module) {
             case ERR_EXIST:
                 $msg = __('There was a problem adding module. Another module already exists with the same name.');
@@ -1922,7 +1908,7 @@ if ($create_module) {
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
+        if ($prediction_module === MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [

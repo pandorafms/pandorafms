@@ -4671,7 +4671,7 @@ sub cli_add_event_comment() {
 		$id_user = 'admin';
 	}
 	else {
-		$id_user = pandora_get_user_id($dbh,$user_name);
+		$id_user = pandora_get_user_id($dbh,safe_input($user_name));
 		exist_check($id_user,'user',$user_name);
 	}
 	
@@ -4680,7 +4680,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp, event_id => $id_event});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	

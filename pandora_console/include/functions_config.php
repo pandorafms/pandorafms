@@ -3446,7 +3446,7 @@ function config_process_config()
     }
 
     if (!isset($config['ehorus_port'])) {
-        config_update_value('ehorus_port', 18080);
+        config_update_value('ehorus_port', 443);
     }
 
     if (!isset($config['ehorus_req_timeout'])) {

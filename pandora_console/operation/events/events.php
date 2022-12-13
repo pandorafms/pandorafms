@@ -1718,6 +1718,10 @@ $inputs[] = $in;
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
 // Search recursive groups.
+$data .= ui_print_help_tip(
+    __('Search for elements NOT containing given text.'),
+    true
+);
 $data .= html_print_checkbox_switch(
     'not_search',
     $not_search,
@@ -1728,7 +1732,8 @@ $data .= html_print_checkbox_switch(
     true
 );
 $in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
-$in .= $data.'</div>';
+$in .= $data;
+$in .= '</div>';
 $inputs[] = $in;
 
 if (is_array($severity) === false) {

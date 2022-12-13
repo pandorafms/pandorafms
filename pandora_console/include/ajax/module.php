@@ -1461,7 +1461,10 @@ if (check_login()) {
 
         $order = get_datatable_order(true);
 
+        // Total time per page.
         $time_all_box = ($length * $slice);
+
+        // Total number of boxes.
         $total_box = ceil($period / $slice);
 
         if ($start > 0) {
@@ -1471,8 +1474,16 @@ if (check_login()) {
         // Uncompress.
         try {
             ob_start();
-            $date = (get_system_time() - ($time_all_box * $start));
-            $datelimit = ($date - $time_all_box);
+            $dateNow = get_system_time();
+            $final = ($dateNow - $period);
+            $date = ($dateNow - ($time_all_box * $start));
+
+            if (($date - $time_all_box) > $final) {
+                $datelimit = ($date - $time_all_box);
+            } else {
+                $datelimit = $final;
+            }
+
             foreach ($modules as $key => $value) {
                 if (is_metaconsole() === true) {
                     try {

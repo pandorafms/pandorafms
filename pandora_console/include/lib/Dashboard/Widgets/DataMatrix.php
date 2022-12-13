@@ -432,7 +432,8 @@ class DataMatrix extends Widget
             $agModule
         );
 
-        $values['formatData'] = \get_parameter_switch('formatData', 1);
+        $values['formatData'] = \get_parameter_switch('formatData');
+
         $values['fontColor'] = \get_parameter('fontColor', '#2c3e50');
         $values['label'] = \get_parameter('label', 'module');
 

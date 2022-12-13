@@ -893,8 +893,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     ) {
       if (this.meta.editMode && this.meta.maintenanceMode === false) {
         this.elementRef.classList.add("is-editing");
+        this.elementRef.classList.remove("is-alert-triggered");
       } else {
         this.elementRef.classList.remove("is-editing");
+
+        if (this.props.alertOutline) {
+          this.elementRef.classList.add("is-alert-triggered");
+        }
       }
     }
 

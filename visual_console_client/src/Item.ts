@@ -66,6 +66,7 @@ export interface ItemProps extends Position, Size {
   cacheExpiration: number | null;
   colorStatus: string;
   cellId: number | null;
+  alertOutline: boolean;
 }
 
 export interface ItemClickEvent {
@@ -143,6 +144,7 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     cacheExpiration: parseIntOr(data.cacheExpiration, null),
     colorStatus: notEmptyStringOr(data.colorStatus, "#CCC"),
     cellId: parseIntOr(data.cellId, null),
+    alertOutline: parseBoolean(data.alertOutline),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -533,6 +535,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
+
+    if (this.props.alertOutline) {
+      box.classList.add("is-alert-triggered");
+    }
 
     // Init the click listeners.
     box.addEventListener("dblclick", e => {

@@ -121,7 +121,7 @@ final class BarsGraph extends Item
      *
      * @return mixed String representing the grid color (not empty) or null.
      */
-    private function extractGridColor(array $data): string
+    private static function extractGridColor(array $data): string
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['gridColor', 'border_color']),
@@ -138,7 +138,7 @@ final class BarsGraph extends Item
      * @return string One of 'white', 'black' or 'transparent'.
      * 'white' by default.
      */
-    private function extractBackgroundColor(array $data): string
+    private static function extractBackgroundColor(array $data): string
     {
         $backgroundColor = static::notEmptyStringOr(
             static::issetInArray($data, ['backgroundColor', 'image']),
@@ -163,7 +163,7 @@ final class BarsGraph extends Item
      *
      * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
      */
-    private function extractTypeGraph(array $data): string
+    private static function extractTypeGraph(array $data): string
     {
         $typeGraph = static::notEmptyStringOr(
             static::issetInArray($data, ['typeGraph', 'type_graph']),

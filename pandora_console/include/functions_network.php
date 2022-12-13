@@ -124,8 +124,9 @@ function network_general_map_configuration($nodes, $relations)
         'map_options'     => [
             'generation_method' => LAYOUT_SPRING1,
             'map_filter'        => [
-                'node_radius' => 40,
-                'node_sep'    => 7,
+                'node_radius'     => 40,
+                'node_sep'        => 7,
+                'node_separation' => 5,
             ],
         ],
     ];
@@ -171,8 +172,8 @@ function network_init_node_map($name)
     return [
         'name'   => $name,
         'type'   => NODE_GENERIC,
-        'width'  => 20,
-        'height' => 20,
-        'status' => '#82B92E',
+        'width'  => 40,
+        'height' => 40,
+        'status' => 0,
     ];
 }

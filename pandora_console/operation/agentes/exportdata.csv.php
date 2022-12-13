@@ -86,6 +86,9 @@ if (!empty($module)) {
     while (@ob_end_clean()) {
     }
 
+    // Set cookie for download control.
+    setDownloadCookieToken();
+
     header('Content-type: application/octet-stream');
     header('Content-Disposition: attachment; filename=export_'.date('Ymd', $start).'_'.date('Ymd', $end).'.'.$extension);
     header('Pragma: no-cache');

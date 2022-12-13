@@ -3588,6 +3588,19 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         // Column 'module_macros' cannot be null.
     }
 
+    $type_exist = db_get_value_filter(
+        'id_tipo',
+        'ttipo_modulo',
+        [
+            'id_tipo' => $values['id_tipo_modulo'],
+        ]
+    );
+
+    if ((bool) $type_exist === false) {
+        returnError('Module type does not exist');
+        return;
+    }
+
     if ($agent_by_alias) {
         $agents_affected = 0;
         $idModule = false;
@@ -11334,7 +11347,7 @@ function api_get_events($node_id, $trash2, $other, $returnType)
         'status'            => (isset($other['data'][8]) === true) ? $other['data'][8] : null,
         'search'            => (isset($other['data'][9]) === true) ? $other['data'][9] : null,
         'id_group_filter'   => (isset($other['data'][13]) === true) ? $other['data'][13] : null,
-        'tag_with'          => (isset($other['data'][14]) === true) ? $other['data'][14] : null,
+        'tag_with'          => (isset($other['data'][14]) === true) ? base64_encode(io_safe_output($other['data'][14])) : null,
         'event_type'        => (isset($other['data'][15]) === true) ? $other['data'][15] : null,
         'id_server'         => $node_id,
     ];

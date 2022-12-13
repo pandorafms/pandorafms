@@ -111,6 +111,9 @@ $filename = 'tickets_export-'.date('Ymd').'-'.date('His').'.csv';
 
 ob_clean();
 
+// Set cookie for download control.
+setDownloadCookieToken();
+
 header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename='.$filename);
 

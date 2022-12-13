@@ -1416,7 +1416,7 @@ function graphic_combined_module(
         }
     }
 
-    if (isset($sources) && is_array($sources)) {
+    if (isset($sources) === true && is_array($sources) === true) {
         $weights = [];
         $labels  = [];
         $modules = [];
@@ -1496,6 +1496,10 @@ function graphic_combined_module(
                 metaconsole_restore_db();
             }
         }
+    }
+
+    if ((bool) $params_combined['from_interface'] === true) {
+        $labels  = [];
     }
 
     if ($module_list) {

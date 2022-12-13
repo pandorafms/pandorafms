@@ -2461,14 +2461,14 @@ function pandoraFlotArea(
             );
         } else {
           $.each(update_legend, function(index, value) {
-            if (typeof value[x] !== "undefined") {
+            if (typeof value[x - 1] !== "undefined") {
               data_legend[index] =
                 " Min: " +
-                number_format(value[x].min, 0, unit, short_data, divisor) +
+                number_format(value[x - 1].min, 0, unit, short_data, divisor) +
                 " Max: " +
-                number_format(value[x].max, 0, unit, short_data, divisor) +
+                number_format(value[x - 1].max, 0, unit, short_data, divisor) +
                 " Avg: " +
-                number_format(value[x].avg, 0, unit, short_data, divisor);
+                number_format(value[x - 1].avg, 0, unit, short_data, divisor);
             } else {
               data_legend[index] = " Min: " + 0 + " Max: " + 0 + " Avg: " + 0;
             }
@@ -2716,6 +2716,7 @@ function pandoraFlotArea(
 
     $("#menu_export_csv_" + graph_id).click(function(e) {
       e.preventDefault();
+      blockResubmit($(this));
       plot.exportDataCSV();
       var es_firefox =
         navigator.userAgent.toLowerCase().indexOf("firefox") > -1;

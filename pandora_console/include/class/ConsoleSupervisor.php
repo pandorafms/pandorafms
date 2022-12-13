@@ -1594,17 +1594,21 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.PHANTOMJS');
         }
 
-        if ($php_version_array[0] < 7) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
+        if ($php_version_array[0] < 8) {
+            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
+                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
+            }
+
+            if ($config['language'] == 'ja') {
+                $url = 'https://pandorafms.com/manual/ja/documentation/07_technical_annexes/18_php_8';
             }
 
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
+                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 8.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );

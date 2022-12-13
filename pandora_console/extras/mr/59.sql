@@ -1,6 +1,9 @@
 START TRANSACTION;
 
-ALTER TABLE `tevent_filter` ADD COLUMN `owner_user` TEXT;
-ALTER TABLE `tevent_filter` ADD COLUMN `not_search` INT NOT NULL DEFAULT 0;
+ALTER TABLE `tevent_filter` MODIFY COLUMN `server_id` TEXT;
+
+UPDATE tconfig SET value = 'Hope' WHERE token LIKE 'lts_name';
+
+ALTER TABLE `tlayout_template` ADD COLUMN `maintenance_mode` TEXT;
 
 COMMIT;

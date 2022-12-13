@@ -45,7 +45,7 @@ require_once $config['homedir'].'/vendor/autoload.php';
 $php_version = phpversion();
 $php_version_array = explode('.', $php_version);
 if ($php_version_array[0] < 7) {
-    include_once 'general/php7_message.php';
+    include_once 'general/php_message.php';
 }
 
 $tab = get_parameter('tab', 'online');

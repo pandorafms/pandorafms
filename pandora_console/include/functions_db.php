@@ -795,6 +795,10 @@ function db_uncompress_module_data(
         $flag_async = true;
     }
 
+    if (strstr($module_type_str, 'async_string') !== false) {
+        $flag_async = true;
+    }
+
     if (strstr($module_type_str, 'async_proc') !== false) {
         $flag_async = true;
     }

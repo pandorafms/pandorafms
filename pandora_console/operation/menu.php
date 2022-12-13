@@ -426,10 +426,6 @@ if ($access_console_node === true) {
         }
 
         // Sound Events.
-        // $javascript = 'javascript: openSoundEventWindow();';
-        // $sub[$javascript]['text'] = __('Sound Events');
-        // $sub[$javascript]['id'] = 'Sound Events';
-        // $sub[$javascript]['type'] = 'direct';
         $data_sound = base64_encode(
             json_encode(
                 [
@@ -440,6 +436,7 @@ if ($access_console_node === true) {
                     'silenceAlarm' => __('Silence alarm'),
                     'url'          => ui_get_full_url('ajax.php'),
                     'page'         => 'include/ajax/events',
+                    'urlSound'     => 'include/sounds/',
                 ]
             )
         );

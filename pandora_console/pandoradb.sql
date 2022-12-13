@@ -3413,37 +3413,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
--- Table `ttransaction`
+-- Table `treset_pass`
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ttransaction` (
-  `transaction_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `agent_id` INT UNSIGNED NOT NULL,
-  `group_id` INT UNSIGNED NOT NULL DEFAULT 0,
-  `description` TEXT,
-  `name` VARCHAR(250) NOT NULL,
-  `loop_interval` INT UNSIGNED NOT NULL DEFAULT 40,
-  `ready` INT UNSIGNED NOT NULL DEFAULT 0,
-  `running` INT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`transaction_id`)
-) engine=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- ---------------------------------------------------------------------
--- Table `tphase`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tphase`(
-  `phase_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `transaction_id` INT UNSIGNED NOT NULL,
-  `agent_id` INT UNSIGNED NOT NULL,
-  `name` VARCHAR(250) NOT NULL,
-  `idx` INT UNSIGNED NOT NULL,
-  `dependencies` TEXT,
-  `enables` TEXT,
-  `launch` TEXT,
-  `retries` INT UNSIGNED DEFAULT null,
-  `timeout` INT UNSIGNED DEFAULT null,
-  PRIMARY KEY (`phase_id`,`transaction_id`)
-) engine=InnoDB DEFAULT CHARSET=UTF8MB4;
-
 CREATE TABLE IF NOT EXISTS `treset_pass` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` VARCHAR(255) NOT NULL DEFAULT '',

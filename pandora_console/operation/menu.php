@@ -166,8 +166,6 @@ if ($access_console_node === true) {
         $sub['operation/agentes/pandora_networkmap']['text'] = __('Network map');
         $sub['operation/agentes/pandora_networkmap']['id'] = 'Network map';
         $sub['operation/agentes/pandora_networkmap']['refr'] = 0;
-
-        enterprise_hook('transmap_console');
     }
 
     enterprise_hook('services_menu');

@@ -52,6 +52,10 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.exportdata.pandora.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.axislabels.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/pandora.flot.js').'"></script>';
+
+        // Chartjs.
+        $output .= '<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/chartjs/chart.js').'"></script>';
+
         $output .= "
 			<script type='text/javascript'>
 			var precision_graph = ".$config['graph_precision'].";

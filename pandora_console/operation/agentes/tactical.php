@@ -222,6 +222,7 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         $event_filter .= ' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
     }
 
+    hd('aaaaaaaaaaaaaaa');
     $events = events_print_event_table($event_filter, 10, '100%', true, false, true);
     ui_toggle(
         $events,
@@ -240,13 +241,15 @@ if ($is_admin) {
     include $config['homedir'].'/godmode/servers/servers.build_table.php';
 }
 
-$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td>';
-    $out .= '<fieldset class="padding-0 databox tactical_set" id="total_event_graph">
-			<legend>'.__('Event graph').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']).'</fieldset>';
-    $out .= '</td><td>';
-    $out .= '<fieldset class="padding-0 databox tactical_set" id="graphic_event_group">
-			<legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
-    $out .= '</td></tr></table>';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td style="width:50%;">';
+$out .= '<fieldset class="padding-0 databox tactical_set" id="total_event_graph">';
+$out .= '<legend>'.__('Event graph').'</legend>';
+$out .= html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']);
+$out .= '</fieldset>';
+$out .= '</td><td style="width:50%;">';
+$out .= '<fieldset class="padding-0 databox tactical_set" id="graphic_event_group">
+        <legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
+$out .= '</td></tr></table>';
 
 
 ui_toggle(

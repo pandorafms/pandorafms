@@ -814,14 +814,7 @@ function grafico_modulo_sparse($params)
     }
 
     if (isset($params['agent_module_id']) === false) {
-        return graph_nodata_image(
-            $params['width'],
-            $params['height'],
-            'area',
-            '',
-            false,
-            $params['pdf']
-        );
+        return graph_nodata_image($params);
     } else {
         $agent_module_id = $params['agent_module_id'];
     }
@@ -1024,14 +1017,7 @@ function grafico_modulo_sparse($params)
                 $array_events_alerts
             );
         } else {
-            $return = graph_nodata_image(
-                $params['width'],
-                $params['height'],
-                'area',
-                '',
-                false,
-                $params['pdf']
-            );
+            $return = graph_nodata_image($params);
         }
 
         $return .= '<br>';
@@ -1058,14 +1044,7 @@ function grafico_modulo_sparse($params)
                 $array_events_alerts
             );
         } else {
-            $return = graph_nodata_image(
-                $params['width'],
-                $params['height'],
-                'area',
-                '',
-                false,
-                $params['pdf']
-            );
+            $return = graph_nodata_image($params);
         }
     } else {
         if (empty($array_data) === false) {
@@ -1082,14 +1061,7 @@ function grafico_modulo_sparse($params)
                 $array_events_alerts
             );
         } else {
-            $return = graph_nodata_image(
-                $params['width'],
-                $params['height'],
-                'area',
-                __('No data to display within the selected interval'),
-                false,
-                $params['pdf']
-            );
+            $return = graph_nodata_image($params);
         }
     }
 
@@ -1550,6 +1522,12 @@ function graphic_combined_module(
     $height = $params['height'];
     $homeurl = $params['homeurl'];
     $ttl = $params['ttl'];
+
+    $date_array = [];
+    $date_array['period']     = $params['period'];
+    $date_array['final_date'] = $params['date'];
+    $date_array['start_date'] = ($params['date'] - $params['period']);
+
     $background_color = $params['backgroundColor'];
     $datelimit = $date_array['start_date'];
     $fixed_font_size = $config['font_size'];
@@ -1733,10 +1711,10 @@ function graphic_combined_module(
 
             if (empty($array_data) === true) {
                 if ($params_combined['return']) {
-                    return graph_nodata_image($width, $height);
+                    return graph_nodata_image($params);
                 }
 
-                echo graph_nodata_image($width, $height);
+                echo graph_nodata_image($params);
                 return false;
             }
 
@@ -2409,8 +2387,7 @@ function graphic_combined_module(
                 }
             }
 
-            $temp['total_modules'] = $total_modules;
-
+            // $temp['total_modules'] = ['value' => $total_modules];
             $graph_values = $temp;
 
             if ($params['vconsole'] === false) {
@@ -2420,24 +2397,25 @@ function graphic_combined_module(
                 $water_mark = false;
             }
 
+            // TODO: XXX chartjs.
             $color = color_graph_array();
+            $width = null;
+            $height = null;
 
-            $output = ring_graph(
-                $graph_values,
-                $width,
-                $height,
-                $others_str,
-                $homeurl,
-                $water_mark,
-                $config['fontpath'],
-                ($config['font_size'] + 1),
-                $ttl,
-                false,
-                $color,
-                false,
-                $background_color,
-                $params['pdf']
-            );
+            $options = [
+                'width'      => $width,
+                'height'     => $height,
+                'waterMark'  => $water_mark,
+                'ttl'        => $ttl,
+                'background' => $background_color,
+                'pdf'        => $params['pdf'],
+            ];
+
+            $output = '<div style="display: flex; flex-direction:row; justify-content: center; align-items: center; align-content: center; width:100%; height:100%;">';
+            $output .= '<div style="flex: 0 0 auto; width:99%; height:100%;">';
+            $output .= ring_graph($graph_values, $options);
+            $output .= '</div>';
+            $output .= '</div>';
         break;
     }
 
@@ -2651,19 +2629,16 @@ function graph_alert_status($defined_alerts, $fired_alerts, $width=300, $height=
         ];
     }
 
+    $options = [
+        'width'  => $width,
+        'height' => $height,
+        'colors' => $colors,
+        'legend' => ['display' => false],
+    ];
+
     $out = pie_graph(
         $data,
-        $width,
-        $height,
-        __('other'),
-        '',
-        '',
-        $config['fontpath'],
-        $config['font_size'],
-        1,
-        'hidden',
-        $colors,
-        false
+        $options
     );
 
     if ($return) {
@@ -2776,30 +2751,23 @@ function graph_agent_status(
         $data = [];
     }
 
+    $options = [
+        'width'  => $width,
+        'height' => $height,
+        'colors' => array_values($colors),
+        'legend' => ['display' => false],
+    ];
+
     if ($donut_narrow_graph == true) {
-        $data_total = array_sum($data);
-        $out = print_donut_narrow_graph(
-            $colors,
-            $width,
-            $height,
+        $out = ring_graph(
             $data,
-            $data_total
+            $options
         );
         return $out;
     } else {
         $out = pie_graph(
             $data,
-            $width,
-            $height,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            '',
-            $config['fontpath'],
-            $config['font_size'],
-            1,
-            'hidden',
-            $colors,
-            0
+            $options
         );
 
         if ($return) {
@@ -2884,6 +2852,8 @@ function graph_event_module($width=300, $height=200, $id_agent=null)
             'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
         ];
     }
+
+    hd('aaaaaaaaaaa');
 
     return pie_graph(
         $data,
@@ -3411,17 +3381,20 @@ function grafico_eventos_grupo($width=300, $height=200, $url='', $noWaterMark=tr
         $water_mark = [];
     }
 
+    $options = [
+        'width'      => $width,
+        'height'     => $height,
+        'water_mark' => $water_mark,
+        'legend'     => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+    ];
+
     return pie_graph(
         $data,
-        $width,
-        $height,
-        __('Other'),
-        '',
-        $water_mark,
-        $config['fontpath'],
-        $config['font_size'],
-        1,
-        'bottom'
+        $options
     );
 }
 
@@ -3438,7 +3411,7 @@ function grafico_eventos_total($filter='', $width=320, $height=200, $noWaterMark
 
     $filter = str_replace('\\', '', $filter);
 
-    // Add tags condition to filter
+    // Add tags condition to filter.
     $tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
     $filter .= $tags_condition;
     if ($time_limit && $config['event_view_hr']) {
@@ -3519,82 +3492,21 @@ function grafico_eventos_total($filter='', $width=320, $height=200, $noWaterMark
         $water_mark = [];
     }
 
-    return pie_graph(
-        $data,
-        $width,
-        $height,
-        __('Other'),
-        '',
-        $water_mark,
-        $config['fontpath'],
-        $config['font_size'],
-        1,
-        'bottom',
-        $colors
-    );
-}
-
-
-/**
- * Print a pie graph with events data of users
- *
- * @param integer height pie graph height
- * @param integer period time period
- */
-function grafico_eventos_usuario($width, $height)
-{
-    global $config;
-    global $graphic_type;
-
-    $data = [];
-    $max_items = 5;
-
-    $where = '';
-    if (!users_is_admin()) {
-        $where = 'WHERE event_type NOT IN (\'recon_host_detected\', \'system\',\'error\', \'new_agent\', \'configuration_change\')';
-    }
-
-    $sql = sprintf(
-        'SELECT COUNT(id_evento) events, id_usuario
-                FROM tevento %s
-                GROUP BY id_usuario
-                ORDER BY 1 DESC LIMIT %d',
-        $where,
-        $max_items
-    );
-
-    $events = db_get_all_rows_sql($sql);
-
-    if ($events === false) {
-        $events = [];
-    }
-
-    foreach ($events as $event) {
-        if ($event['id_usuario'] == '0') {
-            $data[__('System')] = $event['events'];
-        } else if ($event['id_usuario'] == '') {
-            $data[__('System')] = $event['events'];
-        } else {
-            $data[$event['id_usuario']] = $event['events'];
-        }
-    }
-
-    $water_mark = [
-        'file' => $config['homedir'].'/images/logo_vertical_water.png',
-        'url'  => ui_get_full_url('/images/logo_vertical_water.png', false, false, false),
+    $options = [
+        'width'      => $width,
+        'height'     => $height,
+        'water_mark' => $water_mark,
+        'colors'     => array_values($colors),
+        'legend'     => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
     ];
 
     return pie_graph(
         $data,
-        $width,
-        $height,
-        __('Other'),
-        '',
-        $water_mark,
-        $config['fontpath'],
-        $config['font_size'],
-        1,
-        'bottom'
+        $options
     );
 }
 
@@ -3854,18 +3766,30 @@ function graph_custom_sql_graph(
         break;
 
         case 'sql_graph_pie':
+            $options = [
+                'width'     => $width,
+                'height'    => $height,
+                'waterMark' => $water_mark,
+                'ttl'       => $ttl,
+            ];
+
+            if ((int) $ttl === 2) {
+                 $output .= '<img src="data:image/png;base64,';
+            } else {
+                 $output .= '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+            }
+
             // Pie.
             $output .= pie_graph(
                 $data,
-                $width,
-                $height,
-                __('other'),
-                $homeurl,
-                $water_mark,
-                $config['fontpath'],
-                $config['font_size'],
-                $ttl
+                $options
             );
+
+            if ((int) $ttl === 2) {
+                 $output .= '" />';
+            } else {
+                 $output .= '</div>';
+            }
         break;
     }
 
@@ -4129,8 +4053,7 @@ function graph_graphic_moduleevents(
  */
 function fs_error_image($width=300, $height=110)
 {
-    global $config;
-    return graph_nodata_image($width, $height, 'area');
+    return graph_nodata_image(['height' => $height]);
 }
 
 
@@ -5003,40 +4926,52 @@ function graphic_module_events($id_module, $width, $height, $period=0, $homeurl=
 }
 
 
-function graph_nodata_image(
-    $width=300,
-    $height=110,
-    $type='area',
-    $text='',
-    $percent=false,
-    $base64=false
-) {
+function graph_nodata_image($options)
+{
     global $config;
-    if ($base64 === true) {
+
+    $height = 200;
+    if (isset($options['height']) === true
+        && empty($options['height']) === false
+    ) {
+        $height = $options['height'];
+    }
+
+    return html_print_image(
+        'images/image_problem_area.png',
+        true,
+        [
+            'title' => __('No data'),
+            'style' => 'height:'.$height.'px;',
+        ]
+    );
+
+    /*
+        if ($base64 === true) {
         $dataImg = file_get_contents(
             $config['homedir'].'/images/image_problem_area_150.png'
         );
         return base64_encode($dataImg);
-    }
+        }
 
-    $image = ui_get_full_url(
+        $image = ui_get_full_url(
         'images/image_problem_area.png',
         false,
         false,
         false
-    );
+        );
 
-    $style = 'text-align:center; padding: 30px 0; display:block; font-size:9.5pt;';
-    $text_div = '<div class="nodata_text" style="'.$style.'">';
-    $text_div .= $text;
-    $text_div .= '</div>';
+        $style = 'text-align:center; padding: 30px 0; display:block; font-size:9.5pt;';
+        $text_div = '<div class="nodata_text" style="'.$style.'">';
+        $text_div .= $text;
+        $text_div .= '</div>';
 
-    $style = 'background-size: contain;background-image: url(\''.$image.'\');';
-    $image_div = '<div class="nodata_container" style="'.$style.'"></div>';
+        $style = 'background-size: contain;background-image: url(\''.$image.'\');';
+        $image_div = '<div class="nodata_container" style="'.$style.'"></div>';
 
-    if ($percent === true) {
+        if ($percent === true) {
         $div = $image_div;
-    } else {
+        } else {
         if (strpos($width, '%') === false) {
             $width = 'width: '.$width.'px;';
         } else {
@@ -5046,9 +4981,10 @@ function graph_nodata_image(
         $style = $width.' height:'.$height.'px;';
         $style .= 'margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
-    }
+        }
 
-    return $div;
+        return $div;
+    */
 }
 
 

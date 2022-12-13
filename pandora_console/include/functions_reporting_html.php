@@ -5131,7 +5131,17 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         // Fixed width non interactive charts.
         $status_chart_width = $graph_width;
 
-        $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;"><div id="status_pie" style="margin: auto; width: '.$graph_width.'">'.graph_agent_status(false, $graph_width, $graph_height, true, true).'</div></div>';
+        $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;">';
+        $tdata[0] .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'">';
+        $tdata[0] .= graph_agent_status(
+            false,
+            $graph_width,
+            $graph_height,
+            true,
+            true
+        );
+        $tdata[0] .= '</div>';
+        $tdata[0] .= '</div>';
     } else {
         $tdata[2] = html_print_image(
             'images/image_problem_area_small.png',
@@ -5141,7 +5151,16 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
     }
 
     if ($data['monitor_alerts'] > 0) {
-        $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">'.graph_alert_status($data['monitor_alerts'], $data['monitor_alerts_fired'], $graph_width, $graph_height, true, true).'</div>';
+        $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">';
+        $tdata[2] .= graph_alert_status(
+            $data['monitor_alerts'],
+            $data['monitor_alerts_fired'],
+            $graph_width,
+            $graph_height,
+            true,
+            true
+        );
+        $tdata[2] .= '</div>';
     } else {
         $tdata[2] = html_print_image(
             'images/image_problem_area_small.png',
@@ -5150,8 +5169,8 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         );
     }
 
-        $table_sum->rowclass[] = '';
-        $table_sum->data[] = $tdata;
+    $table_sum->rowclass[] = '';
+    $table_sum->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
                 <legend>'.__('Summary').'</legend>'.html_print_table($table_sum, true).'</fieldset>';

@@ -42,39 +42,14 @@ require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 
 $data_raw = get_parameter('data');
-$data_decoded = json_decode(base64_decode($data_raw), true);
+$data_decoded = json_decode(io_safe_output($data_raw), true);
 if (json_last_error() === JSON_ERROR_NONE) {
-    $data = urldecode($data_decoded['data']);
-    $session_id = urldecode($data_decoded['session_id']);
-    $data_combined = urldecode($data_decoded['data_combined']);
-    $data_module_list = urldecode($data_decoded['data_module_list']);
-    $type_graph_pdf = urldecode($data_decoded['type_graph_pdf']);
-    $viewport_width = urldecode($data_decoded['viewport_width']);
+    $data = $data_decoded['data'];
+    $session_id = $data_decoded['session_id'];
+    $data_combined = $data_decoded['data_combined'];
+    $data_module_list = $data_decoded['data_module_list'];
+    $type_graph_pdf = $data_decoded['type_graph_pdf'];
 }
-
-
-/**
- * Echo to stdout a PhantomJS callback call.
- *
- * @return void
- */
-function echoPhantomCallback()
-{
-    ?>
-    <script type="text/javascript">
-        $('document').ready(function () {
-            setTimeout(function () {
-                try {
-                    var status = window.callPhantom({ status: "loaded" });
-                } catch (error) {
-                    console.log("CALLBACK ERROR", error.message)
-                }
-            }, 100);
-        });
-    </script>
-    <?php
-}
-
 
 // Initialize session.
 global $config;
@@ -99,7 +74,6 @@ if (check_login(false) === false) {
 </head>
 <body>
     <h1>Access is not granted</h1>
-    <?php echoPhantomCallback(); ?>
 </body>
 </html>
 
@@ -108,7 +82,7 @@ if (check_login(false) === false) {
 }
 
 // Access granted.
-$params = json_decode($data, true);
+$params = $data;
 
 // Metaconsole connection to the node.
 $server_id = $params['server_id'];
@@ -124,7 +98,6 @@ if (is_metaconsole() === true && empty($server_id) === false) {
         ui_print_error_message(
             __('There was a problem connecting with the node')
         );
-        echoPhantomCallback();
         ?>
         </body>
         </html>
@@ -132,7 +105,6 @@ if (is_metaconsole() === true && empty($server_id) === false) {
         exit;
     }
 }
-
 
 $user_language = get_user_language($config['id_user']);
 if (file_exists('languages/'.$user_language.'.mo') === true) {
@@ -146,16 +118,16 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id).' - '.$interface_name; ?>)</title>
+        <title>Pandora FMS Graph</title>
         <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
         <link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
         <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
-        <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.current.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery-ui.min.js'></script>
+        <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.min.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.time.js"></script>
@@ -170,6 +142,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.exportdata.pandora.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.axislabels.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/pandora.flot.js"></script>
+        <script language="javascript" type="text/javascript" src="graphs/chartjs/chart.js"></script>
     </head>
     <body style='background-color: <?php echo $params['backgroundColor']; ?>;'>
     <?php
@@ -177,41 +150,38 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     $params['menu'] = false;
 
     $params['disable_black'] = true;
-    $params_combined = json_decode($data_combined, true);
-    $module_list = json_decode($data_module_list, true);
+    $params_combined = $data_combined;
+    $module_list = $data_module_list;
 
-    if (isset($params['vconsole']) === false || $params['vconsole'] === false) {
-        if ((int) $viewport_width > 0) {
-            $params['width'] = (int) $viewport_width;
-        }
+    $viewport = [
+        'width'  => 0,
+        'height' => 0,
+    ];
 
-        if ((isset($params['width']) === false
-            || ($params['width'] <= 0))
-        ) {
-            if ((int) $params['width'] <= 0) {
-                $params['width'] = 650;
-            }
-
-            if ((int) $params['landscape'] === 1) {
-                $params['width'] = 850;
-            }
-
-            if ($type_graph_pdf === 'slicebar') {
-                $params['width'] = 100;
-                $params['height'] = 70;
-            }
-        }
+    if (isset($params['options']['viewport']) === true) {
+        $viewport = $params['viewport'];
     }
 
-        echo '<div>';
+    $style = '';
+    if (empty($params['options']['viewport']['width']) === false) {
+        $style .= 'width:'.$params['options']['viewport']['width'].'px;';
+    }
+
+    if (empty($params['options']['viewport']['height']) === false) {
+        $style .= 'height:'.$params['options']['viewport']['height'].'px;';
+    }
+
+    echo '<div id="container-chart-generator-item" style="'.$style.' margin:0px;">';
     switch ($type_graph_pdf) {
         case 'combined':
             $params['pdf'] = true;
-            echo graphic_combined_module(
+            $result = graphic_combined_module(
                 $module_list,
                 $params,
                 $params_combined
             );
+
+            echo $result;
         break;
 
         case 'sparse':
@@ -219,20 +189,15 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
             echo grafico_modulo_sparse($params);
         break;
 
-        case 'pie_chart':
+        case 'pie_graph':
             $params['pdf'] = true;
-            echo flot_pie_chart(
-                $params['values'],
-                $params['keys'],
-                $params['width'],
-                $params['height'],
-                $params['water_mark_url'],
-                $params['font'],
-                $config['font_size'],
-                $params['legend_position'],
-                $params['colors'],
-                $params['hide_labels']
+            $chart = get_build_setup_charts(
+                'PIE',
+                $params['options'],
+                $params['chart_data']
             );
+
+            echo $chart->render(true);
         break;
 
         case 'vbar':
@@ -259,27 +224,16 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
 
         case 'ring_graph':
             $params['pdf'] = true;
-            echo flot_custom_pie_chart(
-                $params['chart_data'],
-                $params['width'],
-                $params['height'],
-                $params['colors'],
-                $params['module_name_list'],
-                $params['long_index'],
-                $params['no_data'],
-                false,
-                '',
-                $params['water_mark'],
-                $params['font'],
-                $config['font_size'],
-                $params['unit'],
-                $params['ttl'],
-                $params['homeurl'],
-                $params['background_color'],
-                $params['legend_position'],
-                $params['background_color'],
-                $params['pdf']
+            $params['options']['width'] = 500;
+            $params['options']['height'] = 500;
+
+            $chart = get_build_setup_charts(
+                'DOUGHNUT',
+                $params['options'],
+                $params['chart_data']
             );
+
+            echo $chart->render(true);
         break;
 
         case 'slicebar':
@@ -313,7 +267,6 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     }
 
         echo '</div>';
-        echoPhantomCallback();
     ?>
     </body>
 </html>

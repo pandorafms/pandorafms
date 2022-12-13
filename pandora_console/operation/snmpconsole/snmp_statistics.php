@@ -209,7 +209,7 @@ $table_source_row['table'] = html_print_table($table_source_data, true);
 unset($table_source_data);
 
 if (empty($table_source_graph_data)) {
-    $table_source_graph = graph_nodata_image();
+    $table_source_graph = graph_nodata_image([]);
 } else {
     $table_source_graph = pie_graph(
         $table_source_graph_data,
@@ -266,7 +266,7 @@ $table_oid_row['table'] = html_print_table($table_oid_data, true);
 unset($table_oid_data);
 
 if (empty($table_oid_graph_data)) {
-    $table_oid_graph = graph_nodata_image();
+    $table_oid_graph = graph_nodata_image([]);
 } else {
     $table_oid_graph = pie_graph(
         $table_oid_graph_data,

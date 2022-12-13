@@ -2625,9 +2625,28 @@ class Item extends CachedModel
      */
     public static function checkLayoutAlertsRecursive(array $item, array $visitedLayouts=[])
     {
+        if (isset($item['type']) === true) {
+            $excludedItemTypes = [
+                22,
+                17,
+                18,
+                1,
+                23,
+                15,
+                14,
+                10,
+                4,
+            ];
+
+            if (in_array($item['type'], $excludedItemTypes) === true) {
+                return false;
+            }
+        }
+
         $agentID = (int) $item['id_agent'];
         $agentModuleID = (int) $item['id_agente_modulo'];
         $linkedLayoutID = (int) $item['id_layout_linked'];
+        $metaconsoleID = (int) $item['id_metaconsole'];
 
         $visitedLayouts[] = $item['id_layout'];
 
@@ -2646,7 +2665,21 @@ class Item extends CachedModel
                 $agentModuleID
             );
 
+            // Connect to node.
+            if (\is_metaconsole() === true
+                && \metaconsole_connect(null, $metaconsoleID) !== NOERR
+            ) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+
             $firedAlert = db_get_sql($alerts_sql);
+
+            // Restore connection.
+            if (\is_metaconsole() === true) {
+                \metaconsole_restore_db();
+            }
 
             // Item has a triggered alert.
             if ($firedAlert !== false) {
@@ -2669,6 +2702,7 @@ class Item extends CachedModel
                 'id_agent',
                 'id_agente_modulo',
                 'id_layout_linked',
+                'id_metaconsole',
             ]
         );
 

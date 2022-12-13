@@ -457,8 +457,11 @@ button.ui-button::-moz-focus-inner {
   outline: 0;
 }
 .ui-dialog .ui-dialog-titlebar {
-  padding: 0.4em 1em;
-  position: relative;
+  height: 38px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 .ui-dialog .ui-dialog-title {
   float: left;
@@ -471,7 +474,6 @@ button.ui-button::-moz-focus-inner {
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
   right: 0.3em;
-  top: 50%;
   width: 20px;
   margin: -10px 0 0 0;
   padding: 1px;
@@ -847,11 +849,7 @@ body .ui-tooltip {
 .ui-widget textarea,
 .ui-widget button {
 }
-.ui-widget.ui-widget-content {
-  border: 1px solid #c5c5c5;
-}
 .ui-widget-content {
-  border: 1px solid #ddd;
   background: #fff;
   color: #333;
 }
@@ -859,13 +857,15 @@ body .ui-tooltip {
   color: #333;
 }
 .ui-widget-header {
-  border: 1px solid #ddd;
   background: #e9e9e9;
   color: #333;
   font-weight: bold;
 }
 .ui-widget-header a {
   color: #333;
+}
+.ui-dialog .ui-widget-header {
+  margin: -3px -3px 0px -3px;
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,
@@ -997,34 +997,6 @@ a.ui-button:active,
 .ui-icon {
   width: 16px;
   height: 16px;
-}
-.ui-icon,
-.ui-widget-content .ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_444444_256x240.png");
-}
-.ui-widget-header .ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_444444_256x240.png");
-}
-.ui-state-hover .ui-icon,
-.ui-state-focus .ui-icon,
-.ui-button:hover .ui-icon,
-.ui-button:focus .ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_555555_256x240.png");
-}
-.ui-state-active .ui-icon,
-.ui-button:active .ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_ffffff_256x240.png");
-}
-.ui-state-highlight .ui-icon,
-.ui-button .ui-state-highlight.ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_777620_256x240.png");
-}
-.ui-state-error .ui-icon,
-.ui-state-error-text .ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_cc0000_256x240.png");
-}
-.ui-button .ui-icon {
-  background-image: url("jQueryUI-1.12.1/themes/base/images/ui-icons_777777_256x240.png");
 }
 .ui-icon-blank {
   background-position: 16px 16px;

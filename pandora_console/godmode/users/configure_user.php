@@ -35,8 +35,6 @@ require_once $config['homedir'].'/vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
@@ -130,6 +128,8 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
 
 if (is_ajax()) {
     $delete_profile = (bool) get_parameter('delete_profile');
+    $get_user_profile = (bool) get_parameter('get_user_profile');
+
     if ($delete_profile) {
         $id2 = (string) get_parameter('id_user');
         $id_up = (int) get_parameter('id_user_profile');
@@ -211,9 +211,64 @@ if (is_ajax()) {
 
         return;
     }
+
+    if ($get_user_profile === true) {
+        $profile_id = (int) get_parameter('profile_id');
+        $group_id = (int) get_parameter('group_id', -1);
+        $user_id = (string) get_parameter('user_id', '');
+        $no_hierarchy = (int) get_parameter('no_hierarchy', -1);
+        $assigned_by = (string) get_parameter('assigned_by', '');
+        $id_policy = (int) get_parameter('id_policy', -1);
+        $tags = (string) get_parameter('id_policy', '');
+
+        $filter = [];
+
+        if ($group_id > -1) {
+            $filter['id_perfil'] = $profile_id;
+        }
+
+        if ($group_id > -1) {
+            $filter['id_grupo'] = $group_id;
+        }
+
+        if ($user_id !== '') {
+            $filter['id_usuario'] = $user_id;
+        }
+
+        if ($no_hierarchy > -1) {
+            $filter['no_hierarchy'] = $no_hierarchy;
+        }
+
+        if ($assigned_by !== '') {
+            $filter['assigned_by'] = $assigned_by;
+        }
+
+        if ($id_policy > -1) {
+            $filter['id_policy'] = $id_policy;
+        }
+
+        if ($tags !== '') {
+            $filter['tags'] = $tags;
+        }
+
+        $profile = db_get_all_rows_filter(
+            'tusuario_perfil',
+            $filter
+        );
+
+        if ($profile !== false && count($profile) > 0) {
+            echo json_encode($profile);
+
+            return;
+        } else {
+            echo json_encode('');
+        }
+
+        return;
+    }
 }
 
-
+enterprise_hook('open_meta_frame');
 
 $tab = get_parameter('tab', 'user');
 
@@ -442,7 +497,7 @@ if ($create_user) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
-    } else if (excludedPassword($password_new) === true) {
+    } else if (enterprise_hook('excludedPassword', [$password_new]) === true) {
         $is_err = true;
         ui_print_error_message(__('The password provided is not valid. Please set another one.'));
         $user_info = $values;
@@ -1717,13 +1772,14 @@ $(document).ready (function () {
     var is_err = '<?php echo $is_err; ?>';
     var data = [];
     var aux = 0;
-
-    if(json_profile.val() != '') {
-        var data = JSON.parse(json_profile.val());
-    }
     
-    $('input:image[name="add"]').click(function (e) {
-        e.preventDefault();
+    function addProfile(form) {
+        try {
+            var data = JSON.parse(json_profile.val());
+        } catch {
+            var data = [];
+        }
+
         var profile = $('#assign_profile').val();
         var profile_text = $('#assign_profile option:selected').text();
         var group = $('#assign_group').val();
@@ -1739,14 +1795,26 @@ $(document).ready (function () {
         }
 
         if (profile === '0' || group === '-1') {
-            alert('<?php echo __('please select profile and group'); ?>');
+            alert('<?php echo __('Please select profile and group'); ?>');
             return;
         }
 
         if (id_user == '' || is_err == 1) {
             let new_json = `{"profile":${profile},"group":${group},"tags":[${tags}],"hierarchy":${hierarchy}}`;
-            data.push(new_json);
+
+            var profile_is_added = Object.entries(data).find(function(_data) {
+                return _data[1] === new_json;
+            });
+
+            if (typeof profile_is_added === 'undefined') {
+                data.push(new_json);
+            } else {
+                alert('<?php echo __('This profile is already defined'); ?>');
+                return;
+            }
+
             json_profile.val(JSON.stringify(data));
+
             profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
             group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="bot forced_title" alt="${group_text}"/>`;
             group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
@@ -1765,8 +1833,39 @@ $(document).ready (function () {
             aux++;
 
         } else {
-            this.form.submit();
+            form.submit();
         }
+    }
+
+    $('input:image[name="add"]').click(function (e) {
+        e.preventDefault();
+
+        if (id_user.length === 0) {
+            addProfile(this.form);
+            return;
+        }
+
+        var params = [];
+        params.push("get_user_profile=1");
+        params.push("profile_id=" + $('#assign_profile').val())
+        params.push("group_id=" + $('#assign_group').val());
+        params.push("user_id=" + id_user);
+        params.push("page=godmode/users/configure_user");
+        jQuery.ajax ({
+            data: params.join("&"),
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            form: this.form,
+            url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            success: function (data) {
+                if (data.length > 0) {
+                    alert('<?php echo __('This profile is already defined'); ?>');
+                } else {
+                    addProfile(this.form);
+                }
+            }
+        });
     });
 
     $('input:image[name="del"]').click(function (e) {
@@ -1841,9 +1940,11 @@ function delete_profile(event, btn) {
 
     var json = json_profile.val();
     var test = JSON.parse(json);
-    delete test[position-1];
-    json_profile.val(JSON.stringify(test));
 
+    var position_offset = <?php echo (is_metaconsole() === true) ? 2 : 1; ?>;
+
+    test.splice(position-position_offset, 1);
+    json_profile.val(JSON.stringify(test));
 }
 
 function show_data_section () {

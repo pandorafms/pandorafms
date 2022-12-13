@@ -3540,6 +3540,11 @@ function ui_print_datatable(array $parameters)
                     titleAttr: "'.__('Export current page to CSV').'",
                     title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
                     fieldSeparator: "'.$config['csv_divider'].'",
+                    action: function ( e, dt, node, config ) {
+                        blockResubmit(node);
+                        // Call the default csvHtml5 action method to create the CSV file
+                        $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
+                    },
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3547,7 +3552,7 @@ function ui_print_datatable(array $parameters)
                             page : "All",
                             search : "applied"
                         }'.$export_columns.'
-                    }
+                    },
                 }
             ] : [],
             lengthMenu: '.json_encode($pagination_options).',
@@ -3669,6 +3674,16 @@ function ui_print_datatable(array $parameters)
     ) {
         $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
         $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    if (isset($parameters['csv']) === true) {
+        $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
+            if ( indicator ) {
+                console.log('a');
+            }
+            else {
+                console.log('b');
+            }";
     }
 
     $js .= '});';
@@ -4001,11 +4016,12 @@ function ui_toggle(
     );
 
     // Options.
+    $style = 'overflow:hidden;';
     if ($hidden_default) {
-        $style = 'display:none';
+        $style .= 'height:0;position:absolute;';
         $original = $img_b;
     } else {
-        $style = '';
+        $style .= 'height:auto;position:relative;';
         $original = $img_a;
     }
 
@@ -4111,24 +4127,28 @@ function ui_toggle(
     $output .= '            if (is_metaconsole == 0) {';
     $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
     $output .= "			    }\n";
     $output .= "			    else {\n";
     $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
     $output .= "			    }\n";
     $output .= "		    }\n";
     $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";

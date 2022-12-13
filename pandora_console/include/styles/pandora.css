@@ -4762,8 +4762,11 @@ input:checked + .p-slider:before {
 .white_box {
   background-color: #fff;
   border: 1px solid #e1e1e1;
-  border-radius: 5px;
-  padding: 20px 50px;
+  border-radius: 0px 0px 5px 5px;
+}
+
+.white_box > div {
+  margin: 20px;
 }
 
 /*

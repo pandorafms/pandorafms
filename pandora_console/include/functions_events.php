@@ -800,7 +800,7 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['severity']) === true && $filter['severity'] > 0) {
+    if (isset($filter['severity']) === true && $filter['severity'] !== '' && (int) $filter['severity'] > -1) {
         if (is_array($filter['severity']) === true) {
             if (in_array(-1, $filter['severity']) === false) {
                 $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
@@ -1033,14 +1033,13 @@ function events_get_all(
     // Prepare agent join sql filters.
     $table = 'tevento';
     $tevento = 'tevento te';
-    $agent_join_filters = [];
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
     $conditionMetaconsole = '';
 
     // Agent alias.
     if (empty($filter['agent_alias']) === false) {
-        $agent_join_filters[] = sprintf(
+        $sql_filters[] = sprintf(
             ' AND ta.alias = "%s" ',
             $filter['agent_alias']
         );
@@ -1124,27 +1123,27 @@ function events_get_all(
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
-                    io_safe_output($filter['custom_data'])
+                    io_safe_output_html($filter['custom_data'])
                 );
             } else {
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
-                    io_safe_output($filter['custom_data'])
+                    io_safe_output_html($filter['custom_data'])
                 );
             }
         } else {
             if ($filter['custom_data_filter_type'] === '1') {
                 $sql_filters[] = sprintf(
-                    ' AND JSON_VALID(custom_data) = 1 AND JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") ',
-                    $filter['custom_data'],
-                    $filter['custom_data']
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND cast(JSON_EXTRACT(custom_data, "$.*") as CHAR) LIKE lower("%%%s%%") ',
+                    io_safe_output($filter['custom_data'])
                 );
             } else {
                 $sql_filters[] = sprintf(
-                    ' AND JSON_VALID(custom_data) = 1 AND JSON_KEYS(custom_data) REGEXP "%s" ',
-                    $filter['custom_data'],
-                    $filter['custom_data']
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND cast(JSON_KEYS(custom_data) as CHAR) REGEXP "%s" ',
+                    io_safe_output($filter['custom_data'])
                 );
             }
         }
@@ -1311,7 +1310,7 @@ function events_get_all(
             'te.',
             // Alt table tag for id_grupo.
             $user_admin_group_all,
-            (bool) $filter['search_secondary_groups']
+            (bool) (isset($filter['search_secondary_groups']) === true) ? $filter['search_secondary_groups'] : false
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1338,7 +1337,7 @@ function events_get_all(
             'te.',
             // Alt table tag for id_grupo.
             $user_admin_group_all,
-            (bool) $filter['search_secondary_groups']
+            (bool) (isset($filter['search_secondary_groups']) === true) ? $filter['search_secondary_groups'] : false
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1365,7 +1364,7 @@ function events_get_all(
             'te.',
             // Alt table tag for id_grupo.
             $user_admin_group_all,
-            (bool) $filter['search_secondary_groups']
+            (bool) (isset($filter['search_secondary_groups']) === true) ? $filter['search_secondary_groups'] : false
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1561,7 +1560,6 @@ function events_get_all(
                 %s JOIN %s ta
                 ON ta.%s = te.id_agente
                 %s
-                %s
                 %s JOIN tgrupo tg
                 ON %s
                 WHERE 1=1
@@ -1576,7 +1574,6 @@ function events_get_all(
             %s
             %s JOIN %s ta
                 ON ta.%s = te.id_agente
-            %s
             %s
             %s JOIN tgrupo tg
                 ON %s 
@@ -1593,7 +1590,6 @@ function events_get_all(
             $tagente_table,
             $tagente_field,
             $conditionMetaconsole,
-            join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
             join(' ', $sql_filters),
@@ -1607,7 +1603,6 @@ function events_get_all(
             $tagente_table,
             $tagente_field,
             $conditionMetaconsole,
-            join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
             join(' ', $sql_filters),
@@ -1622,7 +1617,6 @@ function events_get_all(
             %s
             %s JOIN %s ta
             ON ta.%s = te.id_agente
-            %s
             %s
             %s JOIN tgrupo tg
             ON %s
@@ -1642,7 +1636,6 @@ function events_get_all(
             $tagente_table,
             $tagente_field,
             $conditionMetaconsole,
-            join(' ', $agent_join_filters),
             $tgrupo_join,
             join(' ', $tgrupo_join_filters),
             join(' ', $sql_filters),
@@ -1657,8 +1650,7 @@ function events_get_all(
         return $sql;
     }
 
-    if (!$user_is_admin) {
-        // XXX: Confirm there's no extra grants unhandled!.
+    if (!$user_is_admin && users_can_manage_group_all('ER') === false) {
         $can_manage = '0 as user_can_manage';
         if (empty($EM_groups) === false) {
             $can_manage = sprintf(
@@ -1848,11 +1840,14 @@ function events_get_all(
             );
 
             if (isset($limit, $offset) === true
-                && $limit !== 0
+                && (int) $limit !== 0
                 && isset($filter['csv_all']) === false
             ) {
                 $count = count($data);
-                $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
+                // -1 For pagination 'All'.
+                ((int) $limit === -1)
+                    ? $end = count($data)
+                    : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
                     'buffers' => $buffers,
@@ -1870,7 +1865,7 @@ function events_get_all(
 
             return $return;
         } else {
-            return $data;
+            return ['count' => count($data)];
         }
     }
 
@@ -3721,6 +3716,15 @@ function events_get_response_target(
         );
     }
 
+    if (strpos($target, '_group_contact_') !== false) {
+        $info_groups = groups_get_group_by_id($event['id_grupo']);
+        $target = str_replace(
+            '_group_contact_',
+            (isset($info_groups['contact']) === true) ? $info_groups['contact'] : 'N/A',
+            $target
+        );
+    }
+
     if (strpos($target, '_event_utimestamp_') !== false) {
         $target = str_replace(
             '_event_utimestamp_',
@@ -4701,22 +4705,30 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Timestamp');
 
-    if ($group_rep == 1 && $event['event_rep'] > 1) {
-        $data[1] = __('First event').': '.date($config['date_format'], $event['timestamp_first']).'<br>'.__('Last event').': '.date($config['date_format'], $event['timestamp_last']);
+    if ($event['event_rep'] > 1) {
+        $data[1] = __('First event').': ';
+        $data[1] .= date($config['date_format'], $event['timestamp_first']);
+        $data[1] .= '<br>';
+        $data[1] .= __('Last event').': ';
+        $data[1] .= date($config['date_format'], $event['timestamp_last']);
     } else {
         $data[1] = date($config['date_format'], $event['utimestamp']);
     }
 
     $table_general->data[] = $data;
 
-    // $event['owner_user'] = $event['id_usuario'];
     $data = [];
     $data[0] = __('Owner');
-    if (empty($event['owner_user'])) {
+    if (empty($event['owner_user']) === true) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
-        $user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
-        if (empty($user_owner)) {
+        $user_owner = db_get_value(
+            'fullname',
+            'tusuario',
+            'id_user',
+            $event['owner_user']
+        );
+        if (empty($user_owner) === true) {
             $user_owner = $event['owner_user'];
         }
 

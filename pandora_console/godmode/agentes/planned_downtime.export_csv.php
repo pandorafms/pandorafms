@@ -124,6 +124,8 @@ if (!empty($groups)) {
 if (!empty($downtimes)) {
     ob_clean();
     // Show contentype header
+    // Set cookie for download control.
+    setDownloadCookieToken();
     header('Content-type: text/csv');
     header('Content-Disposition: attachment; filename="pandora_planned_downtime_'.date('Y/m/d H:i:s').'.csv"');
 
@@ -161,7 +163,7 @@ if (!empty($downtimes)) {
         if (!empty($downtime_agents)) {
             foreach ($downtime_agents as $downtime_agent) {
                 $downtime_items = [];
-                $downtime_items[] = $downtime_agent[alias];
+                $downtime_items[] = $downtime_agent['alias'];
 
                 if (!$downtime_agent['all_modules']) {
                     $agent_id = $downtime_agent['agent_id'];

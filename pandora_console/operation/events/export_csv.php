@@ -150,6 +150,7 @@ $now = date('Y-m-d');
 // Download header.
 header('Content-type: text/txt');
 header('Content-Disposition: attachment; filename="export_events_'.$now.'.csv"');
+setDownloadCookieToken();
 
 try {
     $fb64 = get_parameter('fb64', null);

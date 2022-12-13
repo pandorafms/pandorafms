@@ -309,7 +309,7 @@ $table_ip .= '<div class="label_select_child_right">'.html_print_input(
         'name'  => 'fixed_ip',
         'value' => $fixed_ip,
     ]
-).__('Fix IP address').ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</div>';
+).__('Fix IP address').'<p style="margin-right: 15px">'.ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</p></div>';
 
 $table_ip .= '</div></div>';
 
@@ -870,6 +870,35 @@ foreach ($fields as $field) {
             '',
             '',
             true,
+            true
+        );
+    } else if ($field['is_link_enabled']) {
+        list($link_text, $link_url) = json_decode($custom_value, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $link_text = '';
+            $link_url = '';
+        }
+
+        $data_field[1] = '<span style="line-height: 3.5;">'.__('Link text:').'</span>';
+        $data_field[1] .= '<br>';
+        $data_field[1] .= html_print_textarea(
+            'customvalue_'.$field['id_field'].'[]',
+            2,
+            65,
+            $link_text,
+            'class="min-height-30px',
+            true
+        );
+        $data_field[1] .= '<br>';
+        $data_field[1] .= '<span style="line-height: 3.5;">'.__('Link URL:').'</span>';
+        $data_field[1] .= '<br>';
+        $data_field[1] .= html_print_textarea(
+            'customvalue_'.$field['id_field'].'[]',
+            2,
+            65,
+            $link_url,
+            'class="min-height-30px',
             true
         );
     } else {

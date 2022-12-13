@@ -189,6 +189,8 @@ if ($export_profile) {
         }
     }
 
+    // Set cookie for download control.
+    setDownloadCookieToken();
     // Send headers to tell the browser we're sending a file
     header('Content-type: application/octet-stream');
     header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $profile_info['name']).'.csv');
@@ -285,7 +287,7 @@ foreach ($result as $row) {
         ]
     );
     $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
-    $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
+    $data[3] .= '<a onclick="blockResubmit($(this))" href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
     array_push($table->data, $data);
 }

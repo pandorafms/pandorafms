@@ -506,6 +506,7 @@ class ModuleTemplates extends HTML
                     header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $fileName).'.csv');
                     header('Pragma: no-cache');
                     header('Expires: 0');
+                    setDownloadCookieToken();
 
                     // Clean up output buffering
                     while (@ob_end_clean()) {
@@ -931,7 +932,7 @@ class ModuleTemplates extends HTML
                 ]
             );
             $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'" onclick="blockResubmit($(this))">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
             array_push($table->data, $data);
         }

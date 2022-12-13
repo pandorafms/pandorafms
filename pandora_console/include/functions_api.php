@@ -64,6 +64,7 @@ use PandoraFMS\Agent;
 use PandoraFMS\Module;
 use PandoraFMS\Enterprise\Cluster;
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\Event;
 use PandoraFMS\SpecialDay;
 
 
@@ -3585,6 +3586,19 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
     if (! $values['module_macros']) {
         $values['module_macros'] = '';
         // Column 'module_macros' cannot be null.
+    }
+
+    $type_exist = db_get_value_filter(
+        'id_tipo',
+        'ttipo_modulo',
+        [
+            'id_tipo' => $values['id_tipo_modulo'],
+        ]
+    );
+
+    if ((bool) $type_exist === false) {
+        returnError('Module type does not exist');
+        return;
     }
 
     if ($agent_by_alias) {
@@ -11228,366 +11242,6 @@ function api_set_gis_agent($id_agent, $trash1, $other, $return_type, $user_in_db
 }
 
 
-function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db)
-{
-    global $config;
-
-    $table_events = 'tevento';
-
-    // By default.
-    $status = 3;
-    $search = '';
-    $event_type = '';
-    $severity = -1;
-    $id_agent = -1;
-    $id_agentmodule = -1;
-    $id_alert_am = -1;
-    $id_event = -1;
-    $id_user_ack = 0;
-    $event_view_hr = 0;
-    $tag = '';
-    $group_rep = EVENT_GROUP_REP_ALL;
-    $utimestamp_upper = 0;
-    $utimestamp_bottom = 0;
-    $id_alert_template = -1;
-
-    $use_agent_name = ($other['data'][16] === '1') ? true : false;
-
-    $filter = otherParameter2Filter($other, true, $use_agent_name);
-
-    if (isset($filter['criticity'])) {
-        $severity = $filter['criticity'];
-    }
-
-    if (isset($filter['id_agente'])) {
-        $id_agent = $filter['id_agente'];
-    }
-
-    if (isset($filter['id_agentmodule'])) {
-        $id_agentmodule = $filter['id_agentmodule'][0];
-    }
-
-    if (isset($filter['id_alert_am'])) {
-        $id_alert_am = $filter['id_alert_am'];
-    }
-
-    if (isset($filter['id_usuario'])) {
-        $id_user_ack = $filter['id_usuario'];
-    }
-
-    if (isset($filter['estado'])) {
-        $status = $filter['estado'];
-    }
-
-    if (isset($filter['evento'])) {
-        $search = $filter['evento'];
-    }
-
-    if (isset($filter['id_alert_template'])) {
-        $id_alert_template = $filter['id_alert_template'];
-    }
-
-    $id_group = (int) $filter['id_group'];
-
-    $user_groups = users_get_groups($user_in_db, 'ER');
-    $user_id_groups = [];
-    if (!empty($user_groups)) {
-        $user_id_groups = array_keys($user_groups);
-    }
-
-    $is_admin = (bool) db_get_value(
-        'is_admin',
-        'tusuario',
-        'id_user',
-        $user_in_db
-    );
-
-    if (isset($filter['id_group'])) {
-        // The admin can see all groups
-        if ($is_admin) {
-            if (($id_group !== -1) && ($id_group !== 0)) {
-                $id_groups = [$id_group];
-            }
-        } else {
-            if (empty($id_group)) {
-                $id_groups = $user_id_groups;
-            } else {
-                if (in_array($id_group, $user_id_groups)) {
-                    $id_groups = [$id_group];
-                } else {
-                    $id_groups = [];
-                }
-            }
-        }
-    } else {
-        if (!$is_admin) {
-            $id_groups = $user_id_groups;
-        }
-    }
-
-    if (isset($filter['tag'])) {
-        $tag = $filter['tag'];
-    }
-
-    if (isset($filter['event_type'])) {
-        $event_type = $filter['event_type'];
-    }
-
-    if ($filter['utimestamp']) {
-        if (isset($filter['utimestamp']['>'])) {
-            $utimestamp_upper = $filter['utimestamp']['>'];
-        }
-
-        if (isset($filter['utimestamp']['<'])) {
-            $utimestamp_bottom = $filter['utimestamp']['<'];
-        }
-    }
-
-    // TODO MOVE THIS CODE AND THE CODE IN pandora_console/operation/events/events_list.php
-    // to a function.
-    $sql_post = '';
-
-    if (!empty($id_groups)) {
-        $sql_post = ' AND id_grupo IN ('.implode(',', $id_groups).')';
-    } else {
-        // The admin can see all groups
-        if (!$is_admin) {
-            $sql_post = ' AND 1=0';
-        }
-    }
-
-    // Skip system messages if user is not PM
-    if (!check_acl($user_in_db, 0, 'PM')) {
-        $sql_post .= ' AND id_grupo != 0';
-    }
-
-    switch ($status) {
-        case 0:
-        case 1:
-        case 2:
-            $sql_post .= ' AND estado = '.$status;
-        break;
-
-        case 3:
-            $sql_post .= ' AND (estado = 0 OR estado = 2)';
-        break;
-    }
-
-    if ($search != '') {
-        $sql_post .= " AND evento LIKE '%".io_safe_input($search)."%'";
-    }
-
-    if ($event_type != '') {
-        // If normal, warning, could be several (going_up_warning, going_down_warning... too complex
-        // for the user so for him is presented only "warning, critical and normal"
-        if ($event_type == 'warning' || $event_type == 'critical' || $event_type == 'normal') {
-            $sql_post .= " AND event_type LIKE '%$event_type%' ";
-        } else if ($event_type == 'not_normal') {
-            $sql_post .= " AND ( event_type LIKE '%warning%'
-                OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
-        } else {
-            $sql_post .= " AND event_type = '".$event_type."'";
-        }
-    }
-
-    if ($severity != -1) {
-        $sql_post .= ' AND criticity = '.$severity;
-    }
-
-    if ($id_agent != -1) {
-        $sql_post .= ' AND id_agente = '.$id_agent;
-    }
-
-    if ($id_agentmodule != -1) {
-        $sql_post .= ' AND id_agentmodule = '.$id_agentmodule;
-    }
-
-    if ($id_event != -1) {
-        $sql_post .= ' AND id_evento = '.$id_event;
-    }
-
-    if ($id_user_ack != '0') {
-        $sql_post .= " AND id_usuario = '".$id_user_ack."'";
-    }
-
-    if ($utimestamp_upper != 0) {
-        $sql_post .= ' AND utimestamp >= '.$utimestamp_upper;
-    }
-
-    if ($utimestamp_bottom != 0) {
-        $sql_post .= ' AND utimestamp <= '.$utimestamp_bottom;
-    }
-
-    if ($event_view_hr > 0) {
-        // Put hours in seconds
-        $unixtime = (get_system_time() - ($event_view_hr * SECONDS_1HOUR));
-        $sql_post .= ' AND (utimestamp > '.$unixtime.' OR estado = 2)';
-    }
-
-    // Search by tag
-    if ($tag != '') {
-        $sql_post .= " AND tags LIKE '".io_safe_input($tag)."'";
-    }
-
-    // Inject the raw sql
-    if (isset($filter['sql'])) {
-        $sql_post .= ' AND ('.$filter['sql'].') ';
-    }
-
-    // Inject agent ID filter (it is set as the first numeric key in filter array).
-    if (isset($filter[0]) === true) {
-        $sql_post .= ' AND '.$filter[0];
-    }
-
-    if ($id_alert_template !== -1) {
-        $sql_post .= ' AND talert_template_modules.id_alert_template = '.$id_alert_template;
-    }
-
-    $alert_join = '';
-
-    if ($id_alert_template !== -1) {
-        $alert_join = ' INNER JOIN talert_template_modules ON '.$table_events.'.id_alert_am=talert_template_modules.id';
-    }
-
-    if ($group_rep == EVENT_GROUP_REP_ALL) {
-        if ($filter['total']) {
-            $sql = 'SELECT COUNT(*)
-                        FROM '.$table_events.'
-                        WHERE 1=1 '.$sql_post;
-        } else if ($filter['more_criticity']) {
-            $sql = 'SELECT criticity
-                        FROM '.$table_events.'
-                        WHERE 1=1 '.$sql_post.'
-                        ORDER BY criticity DESC
-                        LIMIT 1';
-        } else {
-            if (is_metaconsole() === true) {
-                $sql = 'SELECT *,
-                            (SELECT t2.nombre
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_name,
-                            (SELECT t2.icon
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_icon
-                            FROM '.$table_events.$alert_join.'
-                            WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC';
-            } else {
-                $sql = 'SELECT *,
-                            (SELECT t1.alias
-                                FROM tagente t1
-                                WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-                            (SELECT t2.nombre
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-                            (SELECT t2.icon
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-                            (SELECT tmodule.name
-                                FROM tmodule
-                                WHERE id_module IN (
-                                    SELECT tagente_modulo.id_modulo
-                                    FROM tagente_modulo
-                                    WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                            FROM '.$table_events.$alert_join.'
-                            WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC';
-            }
-        }
-    } else {
-        db_process_sql('SET group_concat_max_len = 9999999');
-
-        $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-                MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_last
-            FROM ".$table_events.'
-            WHERE 1=1 '.$sql_post.'
-            GROUP BY evento, id_agentmodule
-            ORDER BY timestamp_last DESC';
-    }
-
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('Parameter error.');
-            return;
-        } else {
-            // Default values
-            $separator = ';';
-        }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
-    }
-
-    $result = db_get_all_rows_sql($sql);
-
-    if (($result !== false)
-        && (!$filter['total'])
-        && (!$filter['more_criticity'])
-    ) {
-        $urlImage = ui_get_full_url(false);
-
-        // Add the description and image
-        foreach ($result as $key => $row) {
-            if (defined('METACONSOLE')) {
-                $row['agent_name'] = agents_meta_get_name(
-                    $row['id_agente'],
-                    'none',
-                    $row['server_id']
-                );
-
-                $row['module_name'] = meta_modules_get_name(
-                    $row['id_agentmodule'],
-                    $row['server_id']
-                );
-            }
-
-            // FOR THE TEST THE API IN THE ANDROID
-            // $row['evento'] = $row['id_evento'];
-            $row['description_event'] = events_print_type_description($row['event_type'], true);
-            $row['img_description'] = events_print_type_img($row['event_type'], true, true);
-            $row['criticity_name'] = get_priority_name($row['criticity']);
-
-            switch ($row['criticity']) {
-                default:
-                case EVENT_CRIT_MAINTENANCE:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_maintenance.png';
-                break;
-                case EVENT_CRIT_INFORMATIONAL:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_informational.png';
-                break;
-
-                case EVENT_CRIT_NORMAL:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_normal.png';
-                break;
-
-                case EVENT_CRIT_WARNING:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_warning.png';
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_critical.png';
-                break;
-            }
-
-            $row['img_criticy'] = $img_sev;
-
-            $result[$key] = $row;
-        }
-    }
-
-    $data['type'] = 'array';
-    $data['data'] = $result;
-
-    returnData($returnType, $data, $separator);
-    if (empty($result)) {
-        return false;
-    }
-
-    return true;
-}
-
-
 /**
  * Update an event
  *
@@ -11657,71 +11311,162 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
 
 
 /**
+ * Get events.
  *
  * @param $trash1
  * @param $trah2
  * @param $other
  * @param $returnType
- * @param $user_in_db
  */
-function api_get_events($node_id, $trash2, $other, $returnType, $user_in_db=null)
+function api_get_events($node_id, $trash2, $other, $returnType)
 {
-    if ($user_in_db !== null) {
-        $correct = get_events_with_user(
-            $trash1,
-            $trash2,
-            $other,
-            $returnType,
-            $user_in_db
-        );
+    $separator = (isset($other['data'][0]) === true && empty($other['data'][0]) === false) ? $other['data'][0] : ';';
 
-        $last_error = error_get_last();
-        if (!$correct && !empty($last_error)) {
-            $errors = [
-                E_ERROR,
-                E_WARNING,
-                E_USER_ERROR,
-                E_USER_WARNING,
-            ];
-            if (in_array($last_error['type'], $errors)) {
-                returnError('ERROR_API_PANDORAFMS', $returnType);
-            }
-        }
-
-        return;
-    }
-
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('Parameter error.');
-            return;
+    if (is_metaconsole() === true) {
+        if (empty($node_id) === true && $node_id != 0) {
+            $node_id = array_keys(metaconsole_get_names(['disabled' => 0]));
+            $node_id[] = 0;
         } else {
-            // Default values
-            $separator = ';';
+            $node_id = [(int) $node_id];
         }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
-
-        // By default it uses agent alias.
-        $use_agent_name = ($other['data'][16] === '1') ? true : false;
-
-        $filterString = otherParameter2Filter($other, false, $use_agent_name);
+    } else {
+        $node_id = 0;
     }
 
-    $dataRows = db_get_all_rows_filter('tevento', $filterString);
+    $filters = [
+        'group_rep'         => EVENT_GROUP_REP_ALL,
+        'severity'          => (isset($other['data'][1]) === true) ? $other['data'][1] : null,
+        'agent_alias'       => (isset($other['data'][2]) === true) ? $other['data'][2] : null,
+        'module_search'     => (isset($other['data'][3]) === true) ? $other['data'][3] : null,
+        'filter_only_alert' => (isset($other['data'][4]) === true) ? $other['data'][4] : null,
+        'id_user_ack'       => (isset($other['data'][5]) === true) ? $other['data'][5] : null,
+        'date_from'         => (isset($other['data'][6]) === true && empty($other['data'][6]) === false) ? date('y-m-d', $other['data'][6]) : null,
+        'date_to'           => (isset($other['data'][7]) === true && empty($other['data'][7]) === false) ? date('y-m-d', $other['data'][7]) : null,
+        'time_from'         => (isset($other['data'][6]) === true && empty($other['data'][6]) === false) ? date('h:i:s', $other['data'][6]) : null,
+        'time_to'           => (isset($other['data'][7]) === true && empty($other['data'][7]) === false) ? date('h:i:s', $other['data'][7]) : null,
+        'status'            => (isset($other['data'][8]) === true) ? $other['data'][8] : null,
+        'search'            => (isset($other['data'][9]) === true) ? $other['data'][9] : null,
+        'id_group_filter'   => (isset($other['data'][13]) === true) ? $other['data'][13] : null,
+        'tag_with'          => (isset($other['data'][14]) === true) ? base64_encode(io_safe_output($other['data'][14])) : null,
+        'event_type'        => (isset($other['data'][15]) === true) ? $other['data'][15] : null,
+        'id_server'         => $node_id,
+    ];
 
-    $last_error = error_get_last();
-    if (empty($dataRows)) {
-        if (!empty($last_error)) {
-            returnError('ERROR_API_PANDORAFMS', $returnType);
-
-            return;
+    $limit = null;
+    if (isset($other['data'][10]) === true) {
+        if (empty($other['data'][10]) === true) {
+            $limit = 0;
+        } else {
+            $limit = $other['data'][10];
         }
     }
 
-    $data['type'] = 'array';
-    $data['data'] = $dataRows;
+    $offset = null;
+    if (isset($other['data'][11]) === true) {
+        if (empty($other['data'][11]) === true) {
+            $offset = 0;
+        } else {
+            $offset = $other['data'][11];
+        }
+    } else {
+        if (isset($other['data'][10]) === true) {
+            $offset = 0;
+        }
+    }
 
+    $fields = ['te.*'];
+    $order_direction = 'desc';
+    $order_field = 'te.utimestamp';
+    $filter_total = false;
+    if (isset($other['data'][12]) === true
+        && empty($other['data'][12]) === false
+    ) {
+        $filter_total = true;
+        if ($other['data'][12] === 'total') {
+            $fields = ['count'];
+            $limit = null;
+            $offset = null;
+        } else if ($other['data'][12] === 'more_criticity') {
+            $fields = ['te.criticity'];
+            $order_direction = 'desc';
+            $order_field = 'te.criticity';
+            $limit = 1;
+            $offset = 0;
+        }
+    }
+
+    $events = Event::search(
+        $fields,
+        $filters,
+        $offset,
+        $limit,
+        $order_direction,
+        $order_field
+    );
+
+    $result = $events;
+    if (is_metaconsole() === true && empty($limit) === false) {
+        $result = $events['data'];
+    }
+
+    if (is_array($result) === true && $filter_total === false) {
+        $urlImage = ui_get_full_url(false);
+
+        // Add the description and image.
+        foreach ($result as $key => $row) {
+            if (is_metaconsole() === true) {
+                if (empty($row['id_agente']) === false) {
+                    $row['agent_name'] = agents_meta_get_name(
+                        $row['id_agente'],
+                        'none',
+                        $row['server_id']
+                    );
+                }
+
+                if (empty($row['id_agentmodule']) === false) {
+                    $row['module_name'] = meta_modules_get_name(
+                        $row['id_agentmodule'],
+                        $row['server_id']
+                    );
+                }
+            }
+
+            // FOR THE TEST THE API IN THE ANDROID.
+            $row['description_event'] = events_print_type_description($row['event_type'], true);
+            $row['img_description'] = events_print_type_img($row['event_type'], true, true);
+            $row['criticity_name'] = get_priority_name($row['criticity']);
+
+            switch ($row['criticity']) {
+                default:
+                case EVENT_CRIT_MAINTENANCE:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_maintenance.png';
+                break;
+
+                case EVENT_CRIT_INFORMATIONAL:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_informational.png';
+                break;
+
+                case EVENT_CRIT_NORMAL:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_normal.png';
+                break;
+
+                case EVENT_CRIT_WARNING:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_warning.png';
+                break;
+
+                case EVENT_CRIT_CRITICAL:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_critical.png';
+                break;
+            }
+
+            $row['img_criticy'] = $img_sev;
+
+            $result[$key] = $row;
+        }
+    }
+
+    $data['type'] = $returnType;
+    $data['data'] = $result;
     returnData($returnType, $data, $separator);
     return;
 }

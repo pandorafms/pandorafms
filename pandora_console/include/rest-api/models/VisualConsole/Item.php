@@ -2296,6 +2296,7 @@ class Item extends CachedModel
                 false
             );
 
+            $aux_images = $all_images;
             foreach ($all_images as $image_file) {
                 $image_file = substr($image_file, 0, (strlen($image_file) - 4));
 
@@ -2311,7 +2312,11 @@ class Item extends CachedModel
                     continue;
                 }
 
-                $result[$image_file] = $image_file;
+                // Check the 4 images.
+                $array_images = preg_grep('/'.$image_file.'(_ok|_bad|_warning)*\./', $aux_images);
+                if (count($array_images) >= 4) {
+                    $result[$image_file] = $image_file;
+                }
             }
         }
 

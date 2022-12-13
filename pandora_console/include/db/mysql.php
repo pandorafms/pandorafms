@@ -1046,7 +1046,7 @@ function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AN
  *
  * @return mixed Array of the row or false in case of error.
  */
-function mysql_db_get_all_rows_filter($table, $filter=[], $fields=false, $where_join='AND', $search_history_db=false, $returnSQL=false)
+function mysql_db_get_all_rows_filter($table, $filter=[], $fields=false, $where_join='AND', $search_history_db=false, $returnSQL=false, $cache=true)
 {
     // TODO: Validate and clean fields
     if (empty($fields)) {
@@ -1077,7 +1077,7 @@ function mysql_db_get_all_rows_filter($table, $filter=[], $fields=false, $where_
     if ($returnSQL) {
         return $sql;
     } else {
-        return db_get_all_rows_sql($sql, $search_history_db);
+        return db_get_all_rows_sql($sql, $search_history_db, $cache);
     }
 }
 

@@ -553,7 +553,7 @@ if ($load_filter_modal) {
     );
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
-    echo '<form method="post" id="form_load_filter">';
+    echo '<form method="post" id="form_load_filter" action="index.php?sec=eventos&sec2=operation/events/events&pure=">';
 
     $table = new StdClass;
     $table->id = 'load_filter_form';
@@ -1580,7 +1580,7 @@ if ($get_extended_event) {
     $filter = get_parameter('filter', []);
     $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
-    $event_rep = $group_rep;
+    $event_rep = (empty($group_rep) === true) ? EVENT_GROUP_REP_EVENTS : $group_rep;
     $timestamp_first = $event['timestamp_first'];
     $timestamp_last = $event['timestamp_last'];
     $server_id = $event['server_id'];
@@ -2270,7 +2270,7 @@ if ($drawConsoleSound === true) {
                         ],
                     ],
                     [
-                        'label'     => __('Time Sound'),
+                        'label'     => __('Sound duration'),
                         'arguments' => [
                             'type'     => 'select',
                             'fields'   => $times_sound,

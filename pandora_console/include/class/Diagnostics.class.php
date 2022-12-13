@@ -141,8 +141,9 @@ class Diagnostics extends Wizard
             'images/pdf.png',
             true,
             [
-                'title' => __('Export to PDF'),
-                'class' => 'invert_filter',
+                'title'   => __('Export to PDF'),
+                'class'   => 'invert_filter',
+                'onclick' => 'blockResubmit($(this))',
             ]
         );
         $header_buttons = [

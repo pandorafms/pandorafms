@@ -8368,8 +8368,10 @@ function reporting_advanced_sla(
                             }
                         } else {
                             $time_out += $time_interval;
-                            if ($wt_check['wt_in_downtime']) {
-                                $time_out += $wt_check['downtime_interval'];
+                            if (isset($wt_check['wt_in_downtime']) === true) {
+                                if ($wt_check['wt_in_downtime']) {
+                                    $time_out += $wt_check['downtime_interval'];
+                                }
                             }
 
                             // Ignore worktime, is in an invalid period:
@@ -8680,8 +8682,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
                     $item['id_agent_module']
                 );
 
-                if (isset($item['compare']) === true
-                    && empty($item['compare']) === true
+                if (isset($item['compare']) === false
+                    || empty($item['compare']) === true
                 ) {
                     $row['data']['compare'] = false;
                 } else {
@@ -14860,9 +14862,7 @@ function reporting_sla_get_status_period_compliance(
         return REPORT_STATUS_ERR;
     }
 
-    if ($priority_mode == REPORT_PRIORITY_MODE_OK
-        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
-    ) {
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
         return REPORT_STATUS_OK;
     }
 

@@ -170,7 +170,7 @@ class AlertsFiredWidget extends Widget
         $this->configurationRequired = false;
         if (isset($this->values['groupId']) === false) {
             $this->configurationRequired = true;
-        } else {
+        } else if ($this->values['groupId'] !== '0') {
             $check_exist = \db_get_value(
                 'id_grupo',
                 'tgrupo',

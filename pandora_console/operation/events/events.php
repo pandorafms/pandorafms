@@ -222,7 +222,7 @@ $id_source_event = get_parameter(
 
 $server_id = get_parameter(
     'filter[server_id]',
-    ($filter['id_server_meta'] ?? '')
+    ($filter['server_id'] ?? '')
 );
 
 if (is_metaconsole() === true) {
@@ -241,13 +241,19 @@ if (is_metaconsole() === true) {
 
     $servers[0] = __('Metaconsola');
 
-    if ($server_id === '') {
+    if (empty($server_id) === true) {
         $server_id = array_keys($servers);
-    } else if (is_array($server_id) === false) {
-        if ((int) $server_id !== 0) {
-            $server_id = [$server_id];
-        } else {
-            $server_id = array_keys($servers);
+    } else {
+        if (is_array($server_id) === false) {
+            if (is_numeric($server_id) === true) {
+                if ($server_id !== 0) {
+                    $server_id = [$filter['server_id']];
+                } else {
+                    $server_id = array_keys($servers);
+                }
+            } else {
+                $server_id = explode(',', $filter['server_id']);
+            }
         }
     }
 }
@@ -1108,7 +1114,21 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
         $id_source_event = ($filter['id_source_event'] ?? '');
-        $server_id = $filter['server_id'];
+        $server_id = '';
+        if (empty($filter['server_id']) === false) {
+            if (is_array($server_id) === false) {
+                if (is_numeric($server_id) === true) {
+                    if ($server_id !== 0) {
+                        $server_id = [$filter['server_id']];
+                    } else {
+                        $server_id = array_keys($servers);
+                    }
+                } else {
+                    $server_id = explode(',', $filter['server_id']);
+                }
+            }
+        }
+
         $custom_data = $filter['custom_data'];
         $custom_data_filter_type = $filter['custom_data_filter_type'];
     }
@@ -1428,7 +1448,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
         'images/csv.png',
         true,
         [
@@ -2849,7 +2869,11 @@ $(document).ready( function() {
         inputs = $("#<?php echo $form_id; ?> :input");
         values = {};
         inputs.each(function() {
-            values[this.name] = $(this).val();
+            if (this.name === 'server_id') {
+                values[this.name] = $(this).val().join();
+            } else {
+                values[this.name] = $(this).val();
+            }
         })
 
         values['history'] = "<?php echo (int) $history; ?>";
@@ -2880,11 +2904,11 @@ $(document).ready( function() {
     $("#text-event_view_hr").on("keyup",function(){
         hours = $('#text-event_view_hr').val();
         if (hours == '' || hours == 0 ) {
-            $('#summary_hours').html('<?php echo __('Any'); ?>');
+            $('#summary_hours').text('<?php echo __('Any'); ?>');
         } else if (hours == 1) {
-            $('#summary_hours').html('<?php echo __('Last hour.'); ?>');
+            $('#summary_hours').text('<?php echo __('Last hour.'); ?>');
         } else {
-            $('#summary_hours').html(hours + '<?php echo ' '.__('hours.'); ?>');
+            $('#summary_hours').text(hours + '<?php echo ' '.__('hours.'); ?>');
         }
     });
 
@@ -3030,7 +3054,11 @@ $(document).ready( function() {
             inputs = $("#events_form :input");
             values = {};
             inputs.each(function() {
-                values[this.name] = $(this).val();
+                if (this.name === 'server_id') {
+                    values[this.name] = $(this).val().join();
+                } else {
+                    values[this.name] = $(this).val();
+                }
             })
 
             var newValue = btoa(JSON.stringify(values));           

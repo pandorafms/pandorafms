@@ -1256,7 +1256,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_extra` TINYTEXT,
   `user_comment` TEXT,
   `id_source_event` INT  NULL DEFAULT 0,
-  `server_id` INT NOT NULL DEFAULT 0,
+  `server_id` TEXT,
   `time_from` TIME NULL,
   `time_to` TIME NULL,
   `custom_data` VARCHAR(500) DEFAULT '',
@@ -2103,6 +2103,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
   `display_on_front` TINYINT NOT NULL DEFAULT 0,
   `is_password_type` TINYINT NOT NULL DEFAULT 0,
   `combo_values` TEXT ,
+  `is_link_enabled` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3654,6 +3655,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
   `background_color` VARCHAR(50) NOT NULL DEFAULT '#FFF',
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
+  `maintenance_mode` TEXT,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

@@ -1238,6 +1238,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `severity` TEXT,
   `status` INT NOT NULL DEFAULT -1,
   `search` TEXT,
+  `not_search` INT NOT NULL DEFAULT 0,
   `text_agent` TEXT,
   `id_agent` INT DEFAULT 0,
   `id_agent_module` INT DEFAULT 0,
@@ -1261,6 +1262,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `time_to` TIME NULL,
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
+  `owner_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2103,6 +2105,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
   `display_on_front` TINYINT NOT NULL DEFAULT 0,
   `is_password_type` TINYINT NOT NULL DEFAULT 0,
   `combo_values` TEXT ,
+  `is_link_enabled` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

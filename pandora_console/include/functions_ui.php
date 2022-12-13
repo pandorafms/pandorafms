@@ -3540,6 +3540,11 @@ function ui_print_datatable(array $parameters)
                     titleAttr: "'.__('Export current page to CSV').'",
                     title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
                     fieldSeparator: "'.$config['csv_divider'].'",
+                    action: function ( e, dt, node, config ) {
+                        blockResubmit(node);
+                        // Call the default csvHtml5 action method to create the CSV file
+                        $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
+                    },
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3547,7 +3552,7 @@ function ui_print_datatable(array $parameters)
                             page : "All",
                             search : "applied"
                         }'.$export_columns.'
-                    }
+                    },
                 }
             ] : [],
             lengthMenu: '.json_encode($pagination_options).',
@@ -3669,6 +3674,16 @@ function ui_print_datatable(array $parameters)
     ) {
         $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
         $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    if (isset($parameters['csv']) === true) {
+        $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
+            if ( indicator ) {
+                console.log('a');
+            }
+            else {
+                console.log('b');
+            }";
     }
 
     $js .= '});';

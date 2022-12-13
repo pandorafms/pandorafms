@@ -904,7 +904,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
     global $module_field_column_mampping;
 
     // module related field mappings 2/2 (output field => column for 'tagente_estado')
-    global    $estado_fields_to_columns_mapping;
+    global $estado_fields_to_columns_mapping;
 
     // alert related field mappings (output field => column for 'talert_template_modules', ... )
     $alert_fields_to_columns_mapping = [
@@ -1016,9 +1016,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         $groups = [];
     }
 
-    $groups = str_replace('\n', $returnReplace, $groups);
-
     foreach ($groups as &$group) {
+        $group = str_replace('\n', $returnReplace, $group);
+
         $group['type_row'] = 'group';
         $returnVar[] = $group;
 
@@ -1034,9 +1034,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
             $agents = [];
         }
 
-        $agents = str_replace('\n', $returnReplace, $agents);
-
         foreach ($agents as $index => &$agent) {
+            $agent = str_replace('\n', $returnReplace, $agent);
+
             $agent['type_row']  = 'agent';
             $returnVar[] = $agent;
 
@@ -1063,9 +1063,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
                 $modules = [];
             }
 
-            $modules = str_replace('\n', $returnReplace, $modules);
-
             foreach ($modules as &$module) {
+                $module = str_replace('\n', $returnReplace, $module);
+
                 $module['type_row'] = 'module';
 
                 if ($module['module_macros']) {
@@ -1097,9 +1097,8 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
                     $alerts = [];
                 }
 
-                $alerts = str_replace('\n', $returnReplace, $alerts);
-
                 foreach ($alerts as &$alert) {
+                    $alert = str_replace('\n', $returnReplace, $alert);
                     $alert['type_row'] = 'alert';
                     $returnVar[] = $alert;
                 }
@@ -3586,6 +3585,19 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
     if (! $values['module_macros']) {
         $values['module_macros'] = '';
         // Column 'module_macros' cannot be null.
+    }
+
+    $type_exist = db_get_value_filter(
+        'id_tipo',
+        'ttipo_modulo',
+        [
+            'id_tipo' => $values['id_tipo_modulo'],
+        ]
+    );
+
+    if ((bool) $type_exist === false) {
+        returnError('Module type does not exist');
+        return;
     }
 
     if ($agent_by_alias) {

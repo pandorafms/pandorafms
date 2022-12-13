@@ -21,7 +21,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
 use LWP::Simple;
-#use Data::Dumper;
+use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.767 Build 221209";
+my $version = "7.0NG.767 Build 221213";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1292,6 +1292,58 @@ sub param_check ($$;$) {
 sub help_screen_line($$$){
 	my ($option, $parameters, $help) = @_;
 	print "\n\t$option $parameters : $help.\n" unless ($param ne '' && $param ne $option);
+}
+
+sub check_values($) {
+	my ($check) = @_;
+	use experimental 'smartmatch';
+
+	my $arg_cont = 2;
+	my $cont = 0;
+	my @args = @ARGV;
+	my $total = $#args;
+
+	while ($arg_cont <= $total) {
+		# Check type.
+		if ($check->[$cont]->{'type'} eq 'json') {
+			my $json_out = eval { decode_json($args[$arg_cont]) };
+			if ($@)
+			{
+					print "\nValue `$args[$arg_cont]` is an invalid json. \nError:$@\n";
+					exit;
+			}
+		}
+
+		# Check values.
+		if (defined($check->[$cont]->{'values'})) {
+			if (!($args[$arg_cont] ~~ $check->[$cont]->{'values'})) {
+				print "\nError: value `$args[$arg_cont]` is not valid for $check->[$cont]->{'name'}\n";
+				print "\tAvailable options: \t$check->[$cont]->{'values'}->[0]";
+				if (defined($check->[$cont]->{'text_extra'}->[0])) {
+					print " $check->[$cont]->{'text_extra'}->[0]";
+				}
+				print "\n";
+
+				my $cont_aux = 1;
+				my $while = 'false';
+				while ($while eq 'false') {
+					if (defined($check->[$cont]->{'values'}->[$cont_aux])) {
+						print "\t\t\t\t$check->[$cont]->{'values'}->[$cont_aux]";
+						if (defined($check->[$cont]->{'text_extra'}->[$cont_aux])) {
+							print " $check->[$cont]->{'text_extra'}->[$cont_aux]";
+						}
+						print "\n";
+					} else {
+						exit;
+					}
+					$cont_aux++;
+				}
+			}
+		}
+
+		$cont++;
+		$arg_cont++;
+	}
 }
 
 ###############################################################################
@@ -4671,7 +4723,7 @@ sub cli_add_event_comment() {
 		$id_user = 'admin';
 	}
 	else {
-		$id_user = pandora_get_user_id($dbh,$user_name);
+		$id_user = pandora_get_user_id($dbh,safe_input($user_name));
 		exist_check($id_user,'user',$user_name);
 	}
 	
@@ -4680,7 +4732,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp, event_id => $id_event});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
@@ -7812,9 +7864,57 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
+			my @fields = (
+				{'name' => 'event'},
+				{
+					'name' => 'event_type',
+					'values' => [
+						'unknown','alert_fired','alert_recovered','alert_ceased',
+						'alert_manual_validation','recon_host_detected','system',
+						'error','new_agent','going_up_warning','going_up_critical','going_down_warning',
+						'going_down_normal','going_down_critical','going_up_normal','configuration_change'
+					]
+				},
+				{'name' => 'group_name'},
+				{'name' => 'agent_name'},
+				{'name' => 'module_name'},
+				{
+					'name' => 'event_status',
+					'values' => ['0', '1', '2'],
+					'text_extra' => ['(New)', '(Validated)', '(In process)']
+				},
+				{
+					'name' => 'severity',
+					'values' => ['0', '1', '2', '3', '4', '5', '6'],
+					'text_extra' => [
+						'(Maintenance)', '(Informational)', '(Normal)',
+						'(Warning)', '(Critical)', '(Minor)', '(Major)'
+					]
+				},
+				{'name' => 'template_name'},
+				{'name' => 'user_name'},
+				{'name' => 'comment'},
+				{'name' => 'source'},
+				{'name' => 'id_extra'},
+				{'name' => 'tags'},
+				{'type' => 'json', 'name' => 'custom_data_json'},
+				{
+					'name' => 'force_create_agent',
+					'values' => ['0', '1']
+				},
+				{'name' => 'critical_instructions'},
+				{'name' => 'warning_instructions'},
+				{'name' => 'unknown_instructions'},
+				{'name' => 'use_alias'},
+				{'name' => 'metaconsole'}
+			);
+
 			param_check($ltotal, 20, 17);
+
+			check_values(\@fields);
+
 			cli_create_event();
-		}		
+		}
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 8, 7);
 			cli_validate_event();

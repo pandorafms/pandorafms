@@ -122,6 +122,10 @@ $search = get_parameter(
     'filter[search]',
     ($filter['search'] ?? '')
 );
+$not_search = get_parameter(
+    'filter[not_search]',
+    0
+);
 $text_agent = get_parameter(
     'filter[text_agent]',
     ($filter['text_agent'] ?? '')
@@ -152,6 +156,10 @@ $event_view_hr = get_parameter(
 $id_user_ack = get_parameter(
     'filter[id_user_ack]',
     ($filter['id_user_ack'] ?? '')
+);
+$owner_user = get_parameter(
+    'filter[owner_user]',
+    ($filter['owner_user'] ?? '')
 );
 $group_rep = get_parameter(
     'filter[group_rep]',
@@ -1082,6 +1090,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $severity = $filter['severity'];
         $status = $filter['status'];
         $search = $filter['search'];
+        $not_search = $filter['not_search'];
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
         $id_agent_module = $filter['id_agent_module'];
@@ -1095,6 +1104,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $pagination = $filter['pagination'];
         $event_view_hr = $filter['event_view_hr'];
         $id_user_ack = $filter['id_user_ack'];
+        $owner_user = $filter['owner_user'];
         $group_rep = $filter['group_rep'];
         $tag_with = json_decode(io_safe_output($filter['tag_with']));
         $tag_without = json_decode(io_safe_output($filter['tag_without']));
@@ -1448,7 +1458,7 @@ if ($pure) {
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
+    $csv['text'] = '<a class="events_link" onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
         'images/csv.png',
         true,
         [
@@ -1707,8 +1717,23 @@ $inputs[] = $in;
 
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
-$in = '<div class="filter_input"><label>'.__('Free search').'</label>';
-$in .= $data.'</div>';
+// Search recursive groups.
+$data .= ui_print_help_tip(
+    __('Search for elements NOT containing given text.'),
+    true
+);
+$data .= html_print_checkbox_switch(
+    'not_search',
+    $not_search,
+    $not_search,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+$in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
+$in .= $data;
+$in .= '</div>';
 $inputs[] = $in;
 
 if (is_array($severity) === false) {
@@ -1747,7 +1772,7 @@ $data = html_print_checkbox_switch(
     $search_recursive_groups,
     true,
     false,
-    'search_in_secondary_groups(this);',
+    'checked_slide_events(this);',
     true
 );
 
@@ -1769,7 +1794,7 @@ $data = html_print_checkbox_switch(
     $search_secondary_groups,
     true,
     false,
-    'search_in_secondary_groups(this);',
+    'checked_slide_events(this);',
     true
 );
 
@@ -1931,6 +1956,19 @@ $data = html_print_select(
     true
 );
 $in = '<div class="filter_input"><label>'.__('User ack.').'</label>';
+$in .= $data.'</div>';
+$adv_inputs[] = $in;
+
+$data = html_print_select(
+    $user_users,
+    'owner_user',
+    $owner_user,
+    '',
+    __('Any'),
+    0,
+    true
+);
+$in = '<div class="filter_input"><label>'.__('Owner').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
@@ -3076,7 +3114,7 @@ $(document).ready( function() {
 
 });
 
-function search_in_secondary_groups(element) {
+function checked_slide_events(element) {
     var value = $("#checkbox-"+element.name).val();
     if (value == 0) {
         $("#checkbox-"+element.name).val(1);

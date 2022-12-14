@@ -70,10 +70,16 @@ $options_agents = [
 ];
 
 if (check_acl($config['id_user'], 0, 'UM')) {
-    $options_users = [
-        'add_profiles'    => __('Bulk profile add'),
-        'delete_profiles' => __('Bulk profile delete'),
-    ];
+    if (is_metaconsole() === false) {
+        $options_users = [
+            'add_profiles'    => __('Bulk profile add'),
+            'delete_profiles' => __('Bulk profile delete'),
+        ];
+    }
+
+    if (users_is_admin() === true) {
+        $options_users['edit_users'] = __('Edit users in bulk');
+    }
 } else {
     $options_users = [];
 }
@@ -94,16 +100,15 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 $options_policies = [];
 $policies_options = enterprise_hook('massive_policies_options');
-$policies_options = array_unique($policies_options);
-
 if ($policies_options != ENTERPRISE_NOT_HOOK) {
+    $policies_options = array_unique($policies_options);
     $options_policies = array_merge($options_policies, $policies_options);
 }
 
 $options_snmp = [];
 $snmp_options = enterprise_hook('massive_snmp_options');
-$snmp_options = array_reverse($snmp_options);
 if ($snmp_options != ENTERPRISE_NOT_HOOK) {
+    $snmp_options = array_reverse($snmp_options);
     $options_snmp = array_merge($options_snmp, $snmp_options);
 }
 
@@ -477,6 +482,10 @@ switch ($option) {
 
     case 'edit_plugins':
         include_once $config['homedir'].'/godmode/massive/massive_edit_plugins.php';
+    break;
+
+    case 'edit_users':
+        include_once $config['homedir'].'/godmode/massive/massive_edit_users.php';
     break;
 
     default:

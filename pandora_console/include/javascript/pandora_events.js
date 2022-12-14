@@ -707,7 +707,7 @@ function execute_event_response(event_list_btn) {
               }
 
               in_process_event(
-                "events",
+                "table_events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -727,7 +727,7 @@ function execute_event_response(event_list_btn) {
               }
 
               validate_event(
-                "events",
+                "table_events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -747,7 +747,7 @@ function execute_event_response(event_list_btn) {
               }
 
               execute_delete_event_reponse(
-                "events",
+                "table_events",
                 event_id,
                 $(this).attr("event_rep"),
                 this.parentElement.parentElement,
@@ -846,7 +846,56 @@ function check_execute_response_massive(response_id, response_parameters) {
 
 function event_widget_options() {
   if ($("#customFilter").val() != "-1") {
-    $(".event-widget-input").disable();
+    $.ajax({
+      type: "POST",
+      url: "ajax.php",
+      dataType: "json",
+      data: {
+        page: "include/ajax/events",
+        get_filter_values: 1,
+        id: $("#customFilter").val()
+      },
+      success: function(data) {
+        if (data["event_type"] === "") {
+          $("#eventType").val("0");
+          $("#eventType").trigger("change");
+        } else {
+          $("#eventType").val(data["event_type"]);
+          $("#eventType").trigger("change");
+        }
+
+        $("#limit").val(data["pagination"]);
+        $("#limit").trigger("change");
+
+        $("input[name='maxHours']").val(data["event_view_hr"]);
+
+        $("#eventStatus").val(data["status"]);
+        $("#eventStatus").trigger("change");
+
+        let posicion = data["severity"].indexOf(-1);
+        if (posicion !== -1) {
+          $("#severity").val(-1);
+          $("#severity").trigger("change");
+        } else {
+          const severity_array = data["severity"].split(",");
+          $("#severity").val(severity_array[0]);
+          $("#severity").trigger("change");
+        }
+
+        $("#tagsId option").attr("selected", false);
+        $.each(
+          atob(data["tag_with"])
+            .slice(0, -1)
+            .slice(1)
+            .split(","),
+          function(i, e) {
+            $(`#tagsId option[value=${e}]`).prop("selected", true);
+          }
+        );
+
+        $(".event-widget-input").disable();
+      }
+    });
   } else {
     $(".event-widget-input").enable();
   }
@@ -920,7 +969,7 @@ function openSoundEventModal(settings) {
                 sound = true;
               }
 
-              test_sound_button(sound);
+              test_sound_button(sound, settings.urlSound);
             });
 
             // Play Stop.
@@ -977,9 +1026,9 @@ function openSoundEventModal(settings) {
     .show();
 }
 
-function test_sound_button(test_sound) {
+function test_sound_button(test_sound, urlSound) {
   if (test_sound === true) {
-    add_audio();
+    add_audio(urlSound);
   } else {
     remove_audio();
   }
@@ -1035,8 +1084,8 @@ function action_events_sound(mode, settings) {
   }
 }
 
-function add_audio() {
-  var sound = "./include/sounds/" + $("#tabs-sound-modal #sound_id").val();
+function add_audio(urlSound) {
+  var sound = urlSound + $("#tabs-sound-modal #sound_id").val();
   $(".actions-sound-modal").append(
     "<audio id='id_sound_event' src='" +
       sound +
@@ -1062,7 +1111,7 @@ function listen_event_sound(settings) {
 
 function check_event_sound(settings) {
   jQuery.post(
-    "./ajax.php",
+    settings.url,
     {
       page: "include/ajax/events",
       get_events_fired: 1,
@@ -1091,7 +1140,7 @@ function check_event_sound(settings) {
         remove_audio();
 
         // Apend audio.
-        add_audio();
+        add_audio(settings.urlSound);
 
         // Add elements.
         data.forEach(function(element) {

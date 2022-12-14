@@ -102,7 +102,7 @@ $table_details->data[] = $data;
 
 if ($alert['times_fired'] > 0) {
     $status = STATUS_ALERT_FIRED;
-    $title = __('Alert fired').' '.$alert['internal_counter'].' '.__('time(s)');
+    $title = __('Alert fired').' '.$alert['times_fired'].' '.__('time(s)');
 } else if ($alert['disabled'] > 0) {
     $status = STATUS_ALERT_DISABLED;
     $title = __('Alert disabled');

@@ -284,7 +284,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false)
         if (empty($profile['tags'])) {
             $data['tags'] = '';
         } else {
-            if (is_array($profile['tags'] === false)) {
+            if (is_array($profile['tags']) === false) {
                 $tags_ids = explode(',', $profile['tags']);
             } else {
                 $tags_ids = $profile['tags'];

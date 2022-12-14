@@ -515,6 +515,10 @@ function config_update_config()
                         if (config_update_value('reset_pass_option', (bool) get_parameter('reset_pass_option'), true) === false) {
                             $error_update[] = __('Activate reset password');
                         }
+
+                        if (config_update_value('exclusion_word_list', (string) get_parameter('exclusion_word_list'), true) === false) {
+                            $error_update[] = __('Exclusion word list for passwords');
+                        }
                     }
                 break;
 
@@ -608,7 +612,7 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (config_update_value('ldap_admin_pass', io_input_password(io_safe_output(get_parameter('ldap_admin_pass'))), true) === false) {
+                    if (config_update_value('ldap_admin_pass', io_input_password(get_parameter('ldap_admin_pass')), true) === false) {
                         $error_update[] = __('Admin LDAP password');
                     }
 
@@ -644,7 +648,7 @@ function config_update_config()
                         $error_update[] = __('Admin secondary LDAP login');
                     }
 
-                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(io_safe_output(get_parameter('ldap_admin_pass_secondary'))), true) === false) {
+                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(get_parameter('ldap_admin_pass_secondary')), true) === false) {
                         $error_update[] = __('Admin secondary LDAP password');
                     }
 
@@ -1563,6 +1567,10 @@ function config_update_config()
                         $error_update[] = __('Enable history event');
                     }
 
+                    if (config_update_value('history_trap_enabled', get_parameter('history_trap_enabled'), true) === false) {
+                        $error_update[] = __('Enable history trap');
+                    }
+
                     if (config_update_value('history_db_user', get_parameter('history_db_user'), true) === false) {
                         $error_update[] = __('Database user');
                     }
@@ -1598,6 +1606,22 @@ function config_update_config()
                         || config_update_value('history_event_days', $history_event_days) === false
                     ) {
                         $error_update[] = __('Event Days');
+                    }
+
+                    $history_trap_days = get_parameter('history_trap_days');
+                    if (is_numeric($history_trap_days) === false
+                        || $history_trap_days <= 0
+                        || config_update_value('history_trap_days', $history_trap_days) === false
+                    ) {
+                        $error_update[] = __('Trap Days');
+                    }
+
+                    $trap_history_purge = get_parameter('history_traps_days_purge');
+                    if (is_numeric($trap_history_purge) === false
+                        || $trap_history_purge <= 0
+                        || config_update_value('trap_history_purge', $trap_history_purge) === false
+                    ) {
+                        $error_update[] = __('Trap history purge');
                     }
 
                     $history_db_step = get_parameter('history_db_step');
@@ -1662,6 +1686,14 @@ function config_update_config()
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database events purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'trap_history_purge',
+                                get_parameter('history_traps_days_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database traps purge');
                             }
 
                             if ($dbm->setConfigToken(
@@ -2199,6 +2231,10 @@ function config_process_config()
         config_update_value('reset_pass_option', 0);
     }
 
+    if (isset($config['exclusion_word_list']) === false) {
+        config_update_value('exclusion_word_list', '');
+    }
+
     if (!isset($config['include_agents'])) {
         config_update_value('include_agents', 0);
     }
@@ -2520,6 +2556,10 @@ function config_process_config()
         config_update_value('history_event_enabled', false);
     }
 
+    if (!isset($config['history_trap_enabled'])) {
+        config_update_value('history_trap_enabled', false);
+    }
+
     if (!isset($config['history_db_host'])) {
         config_update_value('history_db_host', '');
     }
@@ -2554,6 +2594,14 @@ function config_process_config()
 
     if (!isset($config['history_event_days'])) {
         config_update_value('history_event_days', 90);
+    }
+
+    if (!isset($config['history_trap_days'])) {
+        config_update_value('history_trap_days', 90);
+    }
+
+    if (!isset($config['trap_history_purge'])) {
+        config_update_value('trap_history_purge', 180);
     }
 
     if (!isset($config['history_db_step'])) {
@@ -3398,7 +3446,7 @@ function config_process_config()
     }
 
     if (!isset($config['ehorus_port'])) {
-        config_update_value('ehorus_port', 18080);
+        config_update_value('ehorus_port', 443);
     }
 
     if (!isset($config['ehorus_req_timeout'])) {

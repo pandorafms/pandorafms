@@ -90,7 +90,7 @@ $node_id = (int) get_parameter('node_id', 0);
 
 if ($get_comments === true) {
     $event = get_parameter('event', false);
-    $event_rep = get_parameter('event_rep', false);
+    $event_rep = (int) get_parameter('event_rep', 0);
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
@@ -98,7 +98,7 @@ if ($get_comments === true) {
     $eventsGrouped = [];
     // Consider if the event is grouped.
     $whereGrouped = '1=1';
-    if (isset($event_rep) === true && $event_rep > 0) {
+    if ($event_rep === EVENT_GROUP_REP_EVENTS) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
             '`evento` = "%s"',
@@ -119,6 +119,11 @@ if ($get_comments === true) {
                 (int) $event['id_agentmodule']
             );
         }
+    } else if ($event_rep === EVENT_GROUP_REP_EXTRAIDS) {
+        $whereGrouped = sprintf(
+            '`id_extra` = "%s"',
+            $event['id_extra']
+        );
     } else {
         $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
     }
@@ -175,7 +180,7 @@ if ($delete_event === true) {
     $filter = get_parameter('filter', []);
     $id_evento = (int) get_parameter('id_evento', 0);
     $server_id = (int) get_parameter('server_id', 0);
-    $event_rep = get_parameter('event_rep', 0);
+    $event_rep = (int) get_parameter('event_rep', 0);
 
     try {
         if (is_metaconsole() === true
@@ -228,7 +233,7 @@ if ($validate_event === true) {
     $filter = get_parameter('filter', []);
     $id_evento = (int) get_parameter('id_evento', 0);
     $server_id = (int) get_parameter('server_id', 0);
-    $event_rep = get_parameter('event_rep', 0);
+    $event_rep = (int) get_parameter('event_rep', 0);
 
     try {
         if (is_metaconsole() === true
@@ -240,7 +245,7 @@ if ($validate_event === true) {
 
         if ($event_rep === 0) {
             // Disable group by when there're result is unique.
-            $filter['group_rep'] = 0;
+            $filter['group_rep'] = EVENT_GROUP_REP_ALL;
         }
 
         // Check acl.
@@ -285,7 +290,7 @@ if ($in_process_event === true) {
     $filter = get_parameter('filter', []);
     $id_evento = (int) get_parameter('id_evento', 0);
     $server_id = (int) get_parameter('server_id', 0);
-    $event_rep = get_parameter('event_rep', 0);
+    $event_rep = (int) get_parameter('event_rep', 0);
 
     try {
         if (is_metaconsole() === true
@@ -297,7 +302,7 @@ if ($in_process_event === true) {
 
         if ($event_rep === 0) {
             // Disable group by when there're result is unique.
-            $filter['group_rep'] = 0;
+            $filter['group_rep'] = EVENT_GROUP_REP_ALL;
         }
 
         // Check acl.
@@ -346,12 +351,14 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
     $values['id_agent_module'] = get_parameter('id_agent_module');
     $values['pagination'] = get_parameter('pagination');
     $values['event_view_hr'] = get_parameter('event_view_hr');
     $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['owner_user'] = get_parameter('owner_user');
     $values['group_rep'] = get_parameter('group_rep');
     $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
     $values['tag_without'] = get_parameter(
@@ -404,12 +411,14 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
     $values['id_agent_module'] = get_parameter('id_agent_module');
     $values['pagination'] = get_parameter('pagination');
     $values['event_view_hr'] = get_parameter('event_view_hr');
     $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['owner_user'] = get_parameter('owner_user');
     $values['group_rep'] = get_parameter('group_rep');
     $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
     $values['tag_without'] = get_parameter(
@@ -466,7 +475,6 @@ if ($get_filter_values) {
         $event_filter = [
             'status'                  => EVENT_NO_VALIDATED,
             'event_view_hr'           => $config['event_view_hr'],
-            'group_rep'               => 1,
             'tag_with'                => [],
             'tag_without'             => [],
             'history'                 => false,
@@ -477,13 +485,14 @@ if ($get_filter_values) {
             'user_comment'            => '',
             'id_extra'                => '',
             'id_user_ack'             => '',
+            'owner_user'              => '',
             'date_from'               => '',
             'time_from'               => '',
             'date_to'                 => '',
             'time_to'                 => '',
             'severity'                => '',
             'event_type'              => '',
-            'group_rep'               => 0,
+            'group_rep'               => EVENT_GROUP_REP_ALL,
             'id_group'                => 0,
             'id_group_filter'         => 0,
             'group_name'              => 'All',
@@ -549,7 +558,7 @@ if ($load_filter_modal) {
     );
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
-    echo '<form method="post" id="form_load_filter">';
+    echo '<form method="post" id="form_load_filter" action="index.php?sec=eventos&sec2=operation/events/events&pure=">';
 
     $table = new StdClass;
     $table->id = 'load_filter_form';
@@ -638,6 +647,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'not_search')
+                    $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
                     $('input[name=text_agent]').val(val);
                 if (i == 'id_agent')
@@ -650,6 +661,8 @@ function load_form_filter() {
                     $("#text-event_view_hr").val(val);
                 if (i == 'id_user_ack')
                     $("#id_user_ack").val(val);
+                if (i == 'owner_user')
+                    $("#owner_user").val(val);
                 if (i == 'group_rep')
                     $("#group_rep").val(val);
                 if (i == 'tag_with')
@@ -894,12 +907,14 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
             "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
             "pagination" : $("#pagination").val(),
             "event_view_hr" : $("#text-event_view_hr").val(),
             "id_user_ack" : $("#id_user_ack").val(),
+            "owner_user" : $("#owner_user").val(),
             "group_rep" : $("#group_rep").val(),
             "tag_with": Base64.decode($("#hidden-tag_with").val()),
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
@@ -971,12 +986,14 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
         "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
         "pagination" : $("#pagination").val(),
         "event_view_hr" : $("#text-event_view_hr").val(),
         "id_user_ack" : $("#id_user_ack").val(),
+        "owner_user" : $("#owner_user").val(),
         "group_rep" : $("#group_rep").val(),
         "tag_with" : Base64.decode($("#hidden-tag_with").val()),
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),
@@ -1576,7 +1593,7 @@ if ($get_extended_event) {
     $filter = get_parameter('filter', []);
     $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
-    $event_rep = $group_rep;
+    $event_rep = (empty($group_rep) === true) ? EVENT_GROUP_REP_EVENTS : $group_rep;
     $timestamp_first = $event['timestamp_first'];
     $timestamp_last = $event['timestamp_last'];
     $server_id = $event['server_id'];
@@ -2266,7 +2283,7 @@ if ($drawConsoleSound === true) {
                         ],
                     ],
                     [
-                        'label'     => __('Time Sound'),
+                        'label'     => __('Sound duration'),
                         'arguments' => [
                             'type'     => 'select',
                             'fields'   => $times_sound,
@@ -2413,12 +2430,13 @@ if ($get_events_fired) {
             'severity'                => -1,
             'status'                  => -1,
             'search'                  => '',
+            'not_search'              => 0,
             'text_agent'              => '',
             'id_agent'                => 0,
             'id_agent_module'         => 0,
             'pagination'              => 0,
             'id_user_ack'             => 0,
-            'group_rep'               => 0,
+            'group_rep'               => EVENT_GROUP_REP_ALL,
             'tag_with'                => [],
             'tag_without'             => [],
             'filter_only_alert'       => -1,

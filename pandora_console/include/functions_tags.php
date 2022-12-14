@@ -1107,7 +1107,7 @@ function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
 
     $profiles_without_tags = db_get_value_sql($query);
 
-    if ($profiles_without_tags == 0) {
+    if (users_is_admin() === true || $profiles_without_tags == 0) {
         // --------------------------------------------------------------
         // FIXED FOR TICKET #1921
         //

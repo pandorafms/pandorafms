@@ -375,10 +375,18 @@ class TopNWidget extends Widget
             );
         }
 
+        // Prevent double safe input in agents_get_group_agents function.
+        $agentRegex = io_safe_output($agentRegex);
+
         // This function check ACL.
         $agents = @agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);
         $agentsId = \array_keys($agents);
         $agentsIdString = \implode(',', $agentsId);
+
+        // Prevent from error when performing IN clause with an empty string.
+        if ($agentsIdString === '') {
+            $agentsIdString = 'NULL';
+        }
 
         // Initialize variables.
         $date = \get_system_time();

@@ -72,7 +72,6 @@ our @EXPORT = qw(
 	SNMPSERVER
 	SATELLITESERVER
 	MFSERVER
-	TRANSACTIONALSERVER
 	SYNCSERVER
 	SYSLOGSERVER
 	WUXSERVER
@@ -2837,7 +2836,6 @@ sub get_server_name {
 	return "ICMPSERVER" if ($server_type eq ICMPSERVER);
 	return "SNMPSERVER" if ($server_type eq SNMPSERVER);
 	return "SATELLITESERVER" if ($server_type eq SATELLITESERVER);
-	return "TRANSACTIONALSERVER" if ($server_type eq TRANSACTIONALSERVER);
 	return "MFSERVER" if ($server_type eq MFSERVER);
 	return "SYNCSERVER" if ($server_type eq SYNCSERVER);
 	return "WUXSERVER" if ($server_type eq WUXSERVER);

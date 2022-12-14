@@ -617,33 +617,71 @@ class CredentialStore extends Wizard
             $password = $google_creds->private_key_id;
         }
 
-        if (empty($identifier) === true) {
-            $error = __('Key identifier is required');
-        } else if ($id_group === null) {
-            $error = __('You must select a group where store this key!');
-        } else if (empty($product) === true) {
-            $error = __('You must specify a product type');
-        } else if (empty($username) === true || (empty($password) === true)) {
-            $error = __('You must specify a username and/or password');
-        } else if (evaluate_ascii_valid_string(io_safe_output($identifier)) === false) {
-            $error = __('Identifier with forbidden characters. Check the documentation.');
-        }
+        if ($product !== 'SNMP') {
+            if (empty($identifier) === true) {
+                $error = __('Key identifier is required');
+            } else if ($id_group === null) {
+                $error = __('You must select a group where store this key!');
+            } else if (empty($product) === true) {
+                $error = __('You must specify a product type');
+            } else if (empty($username) === true || (empty($password) === true)) {
+                $error = __('You must specify a username and/or password');
+            } else if (evaluate_ascii_valid_string(io_safe_output($identifier)) === false) {
+                $error = __('Identifier with forbidden characters. Check the documentation.');
+            }
 
-        if (isset($error) === true) {
-            $this->ajaxMsg('error', $error);
-            exit;
-        }
+            if (isset($error) === true) {
+                $this->ajaxMsg('error', $error);
+                exit;
+            }
 
-        // Encrypt content (if needed).
-        $values = [
-            'identifier' => $identifier,
-            'id_group'   => $id_group,
-            'product'    => $product,
-            'username'   => io_input_password(io_safe_output($username)),
-            'password'   => io_input_password(io_safe_output($password)),
-            'extra_1'    => io_input_password(io_safe_output($extra_1)),
-            'extra_2'    => io_input_password(io_safe_output($extra_2)),
-        ];
+            // Encrypt content (if needed).
+            $values = [
+                'identifier' => $identifier,
+                'id_group'   => $id_group,
+                'product'    => $product,
+                'username'   => io_input_password(io_safe_output($username)),
+                'password'   => io_input_password(io_safe_output($password)),
+                'extra_1'    => io_input_password(io_safe_output($extra_1)),
+                'extra_2'    => io_input_password(io_safe_output($extra_2)),
+            ];
+        } else {
+            $values = [
+                'identifier' => $identifier,
+                'id_group'   => $id_group,
+                'product'    => $product,
+            ];
+
+            $community = (string) get_parameter('community', '');
+            $version = (string) get_parameter('version', '1');
+            $extra_json = [
+                'community' => $community,
+                'version'   => $version,
+            ];
+            if ($version === '3') {
+                $securityLevelV3 = (string) get_parameter('securityLevelV3', 'authNoPriv');
+                $extra_json['securityLevelV3'] = $securityLevelV3;
+                $authUserV3 = (string) get_parameter('authUserV3', '');
+                $extra_json['authUserV3'] = $authUserV3;
+                if ($securityLevelV3 === 'authNoPriv' || $securityLevelV3 === 'authPriv') {
+                    $authUserV3 = (string) get_parameter('authUserV3', '');
+                    $extra_json['authUserV3'] = $authUserV3;
+                    $authMethodV3 = (string) get_parameter('authMethodV3', 'MD5');
+                    $extra_json['authMethodV3'] = $authMethodV3;
+                    $authPassV3 = (string) get_parameter('authPassV3', '');
+                    $extra_json['authPassV3'] = $authPassV3;
+
+                    if ($securityLevelV3 === 'authPriv') {
+                        $privacyMethodV3 = (string) get_parameter('privacyMethodV3', 'AES');
+                        $extra_json['privacyMethodV3'] = $privacyMethodV3;
+                        $privacyPassV3 = (string) get_parameter('privacyPassV3', '');
+                        $extra_json['privacyPassV3'] = $privacyPassV3;
+                    }
+                }
+            }
+
+            $values['extra_1'] = json_encode($extra_json);
+        }
 
         // Spaces  are not allowed.
         $values['identifier'] = \io_safe_input(
@@ -947,6 +985,8 @@ class CredentialStore extends Wizard
                     'AZURE'  => __('Azure'),
                     'SAP'    => __('SAP'),
                     'GOOGLE' => __('Google'),
+                    'WMI'    => __('WMI'),
+                    'SNMP'   => __('SNMP'),
                 ],
                 'selected'    => (isset($values['product']) ? $values['product'] : 'CUSTOM'),
                 'disabled'    => (bool) $values['product'],
@@ -987,6 +1027,19 @@ class CredentialStore extends Wizard
                 $extra1 = true;
                 $extra2 = false;
                 $extra1_type = 'textarea';
+            break;
+
+            case 'WMI':
+                $extra_1_label = __('Namespace');
+                $extra1 = true;
+                $extra2 = false;
+            break;
+
+            case 'SNMP':
+                $user = false;
+                $pass = false;
+                $extra1 = false;
+                $extra2 = false;
             break;
 
             case 'CUSTOM':
@@ -1056,6 +1109,141 @@ class CredentialStore extends Wizard
                     'display'     => $extra2,
                 ],
 
+            ];
+        }
+
+        if ($values['product'] === 'SNMP') {
+            $json_values = json_decode($values['extra_1'], true);
+            $inputs[] = [
+                'label'     => __('SNMP community'),
+                'id'        => 'li_snmp_1',
+                'arguments' => [
+                    'name'        => 'community',
+                    'input_class' => 'flex-row',
+                    'type'        => 'text',
+                    'value'       => $json_values['community'],
+                    'return'      => true,
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('SNMP version'),
+                'id'        => 'li_snmp_2',
+                'arguments' => [
+                    'name'        => 'version',
+                    'input_class' => 'flex-row',
+                    'type'        => 'select',
+                    'script'      => 'showVersion()',
+                    'fields'      => [
+                        '1'  => __('1'),
+                        '2'  => __('2'),
+                        '2c' => __('2c'),
+                        '3'  => __('3'),
+                    ],
+                    'selected'    => (isset($json_values['version']) ? $json_values['version'] : '1'),
+                    'return'      => true,
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('Security level'),
+                'id'        => 'li_snmp_3',
+                'style'     => ($json_values['version'] !== '3') ? 'display: none;' : '',
+                'arguments' => [
+                    'name'        => 'securityLevelV3',
+                    'input_class' => 'flex-row',
+                    'type'        => 'select',
+                    'script'      => 'showSecurity()',
+                    'fields'      => [
+                        'authNoPriv'   => __('Authenticated and non-private method'),
+                        'authPriv'     => __('Authenticated and private method'),
+                        'noAuthNoPriv' => __('Non-authenticated and non-private method'),
+                    ],
+                    'selected'    => (isset($json_values['securityLevelV3']) ? $json_values['securityLevelV3'] : 'authNoPriv'),
+                    'return'      => true,
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('User authentication'),
+                'id'        => 'li_snmp_4',
+                'style'     => ($json_values['version'] !== '3') ? 'display: none;' : '',
+                'arguments' => [
+                    'name'        => 'authUserV3',
+                    'input_class' => 'flex-row',
+                    'type'        => 'text',
+                    'value'       => $json_values['authUserV3'],
+                    'return'      => true,
+                ],
+            ];
+
+            $authNoPrivate = (
+                isset($json_values['securityLevelV3']) &&
+                ($json_values['securityLevelV3'] === 'authNoPriv' || $json_values['securityLevelV3'] === 'authPriv')
+            ) ? '' : 'display: none;';
+
+            $inputs[] = [
+                'label'     => __('Authentication method'),
+                'id'        => 'li_snmp_5',
+                'style'     => $authNoPrivate,
+                'arguments' => [
+                    'name'        => 'authMethodV3',
+                    'input_class' => 'flex-row',
+                    'type'        => 'select',
+                    'fields'      => [
+                        'MD5' => __('MD5'),
+                        'SHA' => __('SHA'),
+                    ],
+                    'selected'    => (isset($json_values['authMethodV3']) ? $json_values['authMethodV3'] : 'MD5'),
+                    'return'      => true,
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('Password authentication'),
+                'id'        => 'li_snmp_6',
+                'style'     => $authNoPrivate,
+                'arguments' => [
+                    'name'        => 'authPassV3',
+                    'input_class' => 'flex-row',
+                    'type'        => 'password',
+                    'value'       => $json_values['authPassV3'],
+                    'return'      => true,
+                ],
+            ];
+
+            $authPrivate = (isset($json_values['securityLevelV3']) && $json_values['securityLevelV3'] === 'authPriv')
+                ? ''
+                : 'display: none;';
+
+            $inputs[] = [
+                'label'     => __('Privacy method'),
+                'id'        => 'li_snmp_7',
+                'style'     => $authPrivate,
+                'arguments' => [
+                    'name'        => 'privacyMethodV3',
+                    'input_class' => 'flex-row',
+                    'type'        => 'select',
+                    'fields'      => [
+                        'AES' => __('AES'),
+                        'DES' => __('DES'),
+                    ],
+                    'selected'    => (isset($json_values['privacyMethodV3']) ? $json_values['privacyMethodV3'] : 'AES'),
+                    'return'      => true,
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('Privacy pass'),
+                'id'        => 'li_snmp_8',
+                'style'     => $authPrivate,
+                'arguments' => [
+                    'name'        => 'privacyPassV3',
+                    'input_class' => 'flex-row',
+                    'type'        => 'password',
+                    'value'       => $json_values['privacyPassV3'],
+                    'return'      => true,
+                ],
             ];
         }
 
@@ -1175,7 +1363,246 @@ class CredentialStore extends Wizard
                     $('<textarea name="extra_1" id="text-extra_1">'+val+'</textarea>')
                 );
                 $('#div-extra_1').show();
+            } else if ($('#product :selected').val() == "WMI") {
+                $('#div-username label').text('<?php echo __('Username'); ?>');
+                $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-extra_1 label').text('<?php echo __('Namespace'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
+                $('#div-extra_1').show();
+                $('#div-extra_2').hide();
+            } else if ($('#product :selected').val() == "SNMP") {
+                $('#div-username').hide();
+                $('#div-password').hide();
+                $('#div-extra_1').hide();
+                $('#div-extra_2').hide();
+
+                if ($('#li_snmp_1').length > 0) {
+                    console.log($('#li_snmp_1').length);
+                    const test = '<?php echo $json_values; ?>';
+                    console.log(test);
+                } else {
+                    const ul = $('#modal_form').children('ul')[0];
+
+                    // SNMP community.
+                    const li_community = document.createElement("li");
+                    li_community.id = 'li_snmp_1';
+                    const label_community = document.createElement("label");
+                    label_community.textContent = '<?php echo __('SNMP community'); ?>';
+                    const input_community = document.createElement("input");
+                    input_community.type = 'text';
+                    input_community.className = 'text_input';
+                    input_community.name = 'community';
+                    li_community.append(label_community);
+                    li_community.append(input_community);
+                    ul.append(li_community);
+
+                    // SNMP version.
+                    const li_version = document.createElement("li");
+                    li_version.id = 'li_snmp_2';
+                    const label_version = document.createElement("label");
+                    label_version.textContent = '<?php echo __('SNMP version'); ?>';
+                    const select_version = document.createElement("select");
+                    select_version.name = 'version';
+                    select_version.id = 'version';
+                    select_version.onchange = function() {
+                        showVersion();
+                    };
+                    let option1 = document.createElement("option");
+                    let option2 = document.createElement("option");
+                    let option2c = document.createElement("option");
+                    let option3 = document.createElement("option");
+                    option1.value = '1';
+                    option1.text = '1';
+                    option2.value = '2';
+                    option2.text = '2';
+                    option2c.value = '2c';
+                    option2c.text = '2c';
+                    option3.value = '3';
+                    option3.text = '3';
+                    select_version.appendChild(option1);
+                    select_version.appendChild(option2);
+                    select_version.appendChild(option2c);
+                    select_version.appendChild(option3);
+                    li_version.append(label_version);
+                    li_version.append(select_version);
+                    ul.append(li_version);
+                    $("#version").select2();
+
+                    // Security.
+                    const li_security = document.createElement("li");
+                    li_security.id = 'li_snmp_3';
+                    const label_security = document.createElement("label");
+                    label_security.textContent = '<?php echo __('Security level'); ?>';
+                    const select_security = document.createElement("select");
+                    select_security.name = 'securityLevelV3';
+                    select_security.id = 'securityLevelV3';
+                    select_security.onchange = function() {
+                        showSecurity();
+                    }
+                    option1 = document.createElement("option");
+                    option2 = document.createElement("option");
+                    option3 = document.createElement("option");
+                    option1.value = 'authNoPriv';
+                    option1.text = '<?php echo __('Authenticated and non-private method'); ?>';
+                    option2.value = 'authPriv';
+                    option2.text = '<?php echo __('Authenticated and private method'); ?>';
+                    option3.value = 'noAuthNoPriv';
+                    option3.text = '<?php echo __('Non-authenticated and non-private method'); ?>';
+                    select_security.appendChild(option1);
+                    select_security.appendChild(option2);
+                    select_security.appendChild(option3);
+                    li_security.append(label_security);
+                    li_security.append(select_security);
+                    ul.append(li_security);
+                    $("#securityLevelV3").select2();
+
+                    // User.
+                    const li_user = document.createElement("li");
+                    li_user.id = 'li_snmp_4';
+                    const label_user = document.createElement("label");
+                    label_user.textContent = '<?php echo __('User authentication'); ?>';
+                    const input_user = document.createElement("input");
+                    input_user.type = 'text';
+                    input_user.className = 'text_input';
+                    input_user.name = 'authUserV3';
+                    li_user.append(label_user);
+                    li_user.append(input_user);
+                    ul.append(li_user);
+
+                    // Authentication method.
+                    const li_method = document.createElement("li");
+                    li_method.id = 'li_snmp_5';
+                    const label_method = document.createElement("label");
+                    label_method.textContent = '<?php echo __('Authentication method'); ?>';
+                    const select_method = document.createElement("select");
+                    select_method.name = 'authMethodV3';
+                    select_method.id = 'method';
+                    option1 = document.createElement("option");
+                    option2 = document.createElement("option");
+                    option1.value = 'MD5';
+                    option1.text = '<?php echo __('MD5'); ?>';
+                    option2.value = 'SHA';
+                    option2.text = '<?php echo __('SHA'); ?>';
+                    select_method.appendChild(option1);
+                    select_method.appendChild(option2);
+                    li_method.append(label_method);
+                    li_method.append(select_method);
+                    ul.append(li_method);
+                    $("#method").select2();
+
+                    // Password.
+                    const li_password = document.createElement("li");
+                    li_password.id = 'li_snmp_6';
+                    const label_password = document.createElement("label");
+                    label_password.textContent = '<?php echo __('Password authentication'); ?>';
+                    const input_password = document.createElement("input");
+                    input_password.type = 'password';
+                    input_password.className = 'text_input';
+                    input_password.name = 'authPassV3';
+                    li_password.append(label_password);
+                    li_password.append(input_password);
+                    ul.append(li_password);
+
+                    // Privacy method.
+                    const li_privacy = document.createElement("li");
+                    li_privacy.id = 'li_snmp_7';
+                    const label_privacy = document.createElement("label");
+                    label_privacy.textContent = '<?php echo __('Privacy method'); ?>';
+                    const select_privacy = document.createElement("select");
+                    select_privacy.name = 'privacyMethodV3';
+                    select_privacy.id = 'privacy';
+                    option1 = document.createElement("option");
+                    option2 = document.createElement("option");
+                    option1.value = 'AES';
+                    option1.text = '<?php echo __('AES'); ?>';
+                    option2.value = 'DES';
+                    option2.text = '<?php echo __('DES'); ?>';
+                    select_privacy.appendChild(option1);
+                    select_privacy.appendChild(option2);
+                    li_privacy.append(label_privacy);
+                    li_privacy.append(select_privacy);
+                    ul.append(li_privacy);
+                    $("#privacy").select2();
+
+                    // Privacy pass.
+                    const li_privacyPassV3 = document.createElement("li");
+                    li_privacyPassV3.id = 'li_snmp_8';
+                    const label_privacyPassV3 = document.createElement("label");
+                    label_privacyPassV3.textContent = '<?php echo __('Privacy pass'); ?>';
+                    const input_privacyPassV3 = document.createElement("input");
+                    input_privacyPassV3.type = 'password';
+                    input_privacyPassV3.className = 'text_input';
+                    input_privacyPassV3.name = 'privacyPassV3';
+                    li_privacyPassV3.append(label_privacyPassV3);
+                    li_privacyPassV3.append(input_privacyPassV3);
+                    ul.append(li_privacyPassV3);
+
+                    $('#li_snmp_3').hide();
+                    $('#li_snmp_4').hide();
+                    $('#li_snmp_5').hide();
+                    $('#li_snmp_6').hide();
+                    $('#li_snmp_7').hide();
+                    $('#li_snmp_8').hide();
+                }
             }
+        }
+
+        function showVersion() {
+            if ($('#version').val() === '3') {
+                $('#li_snmp_3').show();
+                $('#li_snmp_4').show();
+                $('#li_snmp_5').show();
+                $('#li_snmp_6').show();
+            } else {
+                $('#li_snmp_3').hide();
+                $('#li_snmp_4').hide();
+                $('#li_snmp_5').hide();
+                $('#li_snmp_6').hide();
+                $('#li_snmp_7').hide();
+                $('#li_snmp_8').hide();
+            }
+        }
+
+        function showSecurity() {
+            const value = $('#securityLevelV3').val();
+            switch (value) {
+                case 'noAuthNoPriv':
+                    $('#li_snmp_4').show();
+                    $('#li_snmp_5').hide();
+                    $('#li_snmp_6').hide();
+                    $('#li_snmp_7').hide();
+                    $('#li_snmp_8').hide();
+                break;
+
+                case 'authPriv':
+                    $('#li_snmp_4').show();
+                    $('#li_snmp_5').show();
+                    $('#li_snmp_6').show();
+                    $('#li_snmp_7').show();
+                    $('#li_snmp_8').show();
+                break;
+
+                case 'authNoPriv':
+                default:
+                    $('#li_snmp_4').show();
+                    $('#li_snmp_5').show();
+                    $('#li_snmp_6').show();
+                    $('#li_snmp_7').hide();
+                    $('#li_snmp_8').hide();
+                break;
+            }
+        }
+
+        function hideSNMP() {
+            $('#li_snmp_1').hide();
+            $('#li_snmp_2').hide();
+            $('#li_snmp_3').hide();
+            $('#li_snmp_4').hide();
+            $('#li_snmp_5').hide();
+            $('#li_snmp_6').hide();
+            $('#li_snmp_7').hide();
+            $('#li_snmp_8').hide();
         }
 
         /**

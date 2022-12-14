@@ -250,9 +250,9 @@ function process_user_login_remote($login, $pass, $api=false)
 {
     global $config, $mysql_cache;
 
-    // Remote authentication
+    // Remote authentication.
     switch ($config['auth']) {
-        // LDAP
+        // LDAP.
         case 'ldap':
             $sr = ldap_process_user_login($login, $pass);
             // Try with secondary server if not login.
@@ -265,7 +265,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Active Directory
+        // Active Directory.
         case 'ad':
             if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
@@ -273,7 +273,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Remote Pandora FMS
+        // Remote Pandora FMS.
         case 'pandora':
             if (enterprise_hook('remote_pandora_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
@@ -281,7 +281,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Remote Integria
+        // Remote Integria.
         case 'integria':
             if (enterprise_hook('remote_integria_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
@@ -289,7 +289,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Unknown authentication method
+        // Unknown authentication method.
         default:
             $config['auth_error'] = 'User not found in database or incorrect password';
         return false;
@@ -303,7 +303,7 @@ function process_user_login_remote($login, $pass, $api=false)
         }
     }
 
-    // Authentication ok, check if the user exists in the local database
+    // Authentication ok, check if the user exists in the local database.
     if (is_user($login)) {
         if (!user_can_login($login) && $api === false) {
             return false;
@@ -370,10 +370,10 @@ function process_user_login_remote($login, $pass, $api=false)
         return $login;
     }
 
-    // The user does not exist and can not be created
+    // The user does not exist and can not be created.
     if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted($login)) {
         $config['auth_error'] = __(
-            'Ooops User not found in 
+            'Ooops User not found in
 				database or incorrect password'
         );
 
@@ -758,6 +758,12 @@ function delete_user(string $id_user)
 function update_user_password(string $user, string $password_new)
 {
     global $config;
+
+    if (enterprise_hook('excludedPassword', [$password_new]) === true) {
+        $config['auth_error'] = __('The password provided is not valid. Please, set another one.');
+        return false;
+    }
+
     if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
             "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
@@ -803,7 +809,44 @@ function update_user(string $id_user, array $values)
         return false;
     }
 
-    return db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
+    $output = db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
+
+    if (isset($values['is_admin']) === true && (bool) $values['is_admin'] === true) {
+        // Administrator user must be activated in all notifications sections.
+        $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+
+        foreach ($notificationSources as $notification) {
+            $user_source = db_get_value_filter(
+                'id_source',
+                'tnotification_source_user',
+                [
+                    'id_source' => $notification['id'],
+                    'id_user'   => $id_user,
+                ]
+            );
+
+            if ($user_source !== false) {
+                @db_process_sql_update(
+                    'tnotification_source_user',
+                    ['enabled' => 1],
+                    [
+                        'id_source' => $notification['id'],
+                        'id_user'   => $id_user,
+                    ]
+                );
+            } else if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
+                @db_process_sql_insert(
+                    'tnotification_source_user',
+                    [
+                        'id_source' => $notification['id'],
+                        'id_user'   => $id_user,
+                    ]
+                );
+            }
+        }
+    }
+
+    return $output;
 }
 
 
@@ -839,6 +882,9 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
     foreach ($ldap_tokens as $token) {
         $ldap[$token] = $secondary_server === true ? $config[$token.'_secondary'] : $config[$token];
     }
+
+    // Remove entities ldap admin pass.
+    $ldap['ldap_admin_pass'] = io_safe_output($ldap['ldap_admin_pass']);
 
     // Connect to the LDAP server
     if (stripos($ldap['ldap_server'], 'ldap://') !== false
@@ -920,6 +966,12 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
         $filter = '('.$ldap['ldap_login_attr'].'='.io_safe_output($login).')';
 
         $sr = ldap_search($ds, io_safe_output($ldap['ldap_base_dn']), $filter);
+
+        if (empty($sr) === true) {
+            $config['auth_error'] = 'ldap search failed';
+            @ldap_close($ds);
+            return false;
+        }
 
         $memberof = ldap_get_entries($ds, $sr);
 

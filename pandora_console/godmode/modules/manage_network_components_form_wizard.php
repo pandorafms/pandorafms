@@ -409,6 +409,12 @@ $table->rowspan['warning-svg-row'][2] = 3;
 push_table_row($data, 'warning-svg-row');
 
 $data = [];
+$data[0] .= __('Change to critical status after');
+$data[1] .= html_print_input_text('warning_time', $warning_time, '', 5, 15, true);
+$data[1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
+push_table_row($data, 'title-warning-time');
+
+$data = [];
 $data[0] = __('Critical');
 // Critical interval values.
 $data[1] = '<span class="minmax_values" id="critical_minmax_values">';

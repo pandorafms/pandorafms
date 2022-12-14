@@ -77,7 +77,7 @@ final class EventsHistory extends Item
      *
      * @return mixed String representing the grid color (not empty) or null.
      */
-    private function extractLegendColor(array $data): string
+    private static function extractLegendColor(array $data): string
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['legendColor', 'border_color']),

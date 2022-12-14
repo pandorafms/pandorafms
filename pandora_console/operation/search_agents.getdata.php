@@ -269,7 +269,7 @@ if ($searchAgents) {
 
     if ($agents !== false) {
         $totalAgents = db_get_value_sql(
-            'SELECT COUNT(id_agente) AS agent_count '.$sql
+            'SELECT COUNT(DISTINCT id_agente) AS agent_count '.$sql
         );
     }
 }

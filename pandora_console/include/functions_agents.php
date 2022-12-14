@@ -4325,7 +4325,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 {
     ui_require_css_file('heatmap');
 
-    $all_modules = agents_get_modules($id_agent);
+    $all_modules = agents_get_modules($id_agent, 'id_agente_modulo', ['disabled' => 0]);
     if (empty($all_modules)) {
         return null;
     }
@@ -4367,7 +4367,6 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
         $status = modules_get_agentmodule_status($key);
         switch ($status) {
             case 0:
-            case 4:
             case 300:
                 $status = 'normal';
             break;
@@ -4386,6 +4385,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
                 $status = 'unknown';
             break;
 
+            case 4:
             case 5:
                 $status = 'notinit';
             break;

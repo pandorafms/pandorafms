@@ -42,7 +42,6 @@ require_once $config['homedir'].'/include/functions_users.php';
 if (is_metaconsole() === true) {
     enterprise_include_once('include/functions_metaconsole.php');
     enterprise_include_once('meta/include/functions_agents_meta.php');
-    enterprise_hook('open_meta_frame');
 }
 
 if (is_ajax() === true) {
@@ -270,6 +269,7 @@ if (is_ajax() === true) {
     return;
 }
 
+enterprise_hook('open_meta_frame');
 
 $tab = (string) get_parameter('tab', 'groups');
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / agent-fields@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-agent-fields" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dark-/-20-/-agent-fields-off">
+            <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+            <path d="M19,0 L1,0 C0.44771525,0 0,0.44771525 0,1 L0,4 C0,4.55228475 0.44771525,5 1,5 L19,5 C19.5522847,5 20,4.55228475 20,4 L20,1 C20,0.44771525 19.5522847,0 19,0 Z M18,2 L18,3 L2,3 L2,2 L18,2 Z" id="Rectangle" fill="#3F3F3F"></path>
+            <path d="M19,6 L1,6 C0.44771525,6 0,6.44771525 0,7 L0,10 C0,10.5522847 0.44771525,11 1,11 L19,11 C19.5522847,11 20,10.5522847 20,10 L20,7 C20,6.44771525 19.5522847,6 19,6 Z M18,8 L18,9 L2,9 L2,8 L18,8 Z" id="Rectangle-Copy" fill="#3F3F3F"></path>
+            <path d="M19,12 L1,12 C0.44771525,12 0,12.4477153 0,13 L0,19 C0,19.5522847 0.44771525,20 1,20 L19,20 C19.5522847,20 20,19.5522847 20,19 L20,13 C20,12.4477153 19.5522847,12 19,12 Z M18,14 L18,18 L2,18 L2,14 L18,14 Z" id="Rectangle-Copy-2" fill="#3F3F3F"></path>
+        </g>
+    </g>
+</svg>

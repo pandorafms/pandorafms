@@ -864,15 +864,15 @@ function ui_print_type_agent_icon(
     if ($id_os == 19) {
         // Satellite.
         $options['title'] = __('Satellite');
-        $output = html_print_image('images/satellite.png', true, ['class' => 'invert_filter'], false, false, false, true);
+        $output = html_print_image('images/satellite@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
     } else if ($remote_contact == $contact && $remote == 0 && $version == '') {
         // Network.
         $options['title'] = __('Network');
-        $output = html_print_image('images/network.png', true, ['class' => 'invert_filter'], false, false, false, true);
+        $output = html_print_image('images/network-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
     } else {
         // Software.
         $options['title'] = __('Software');
-        $output = html_print_image('images/data.png', true, ['class' => 'invert_filter'], false, false, false, true);
+        $output = html_print_image('images/data-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
     }
 
     return $output;
@@ -5121,7 +5121,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     // Default value.
-    $icon_agent = 'images/svg/agents.svg';
+    $icon_agent = 'images/agents@svg.svg';
 
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';

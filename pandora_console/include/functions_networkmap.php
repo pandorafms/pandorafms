@@ -4175,14 +4175,12 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
                 if ($map['id_parent_source_data'] == $discovery['module_a']
                     && $map['id_child_source_data'] == $discovery['module_b']
                 ) {
-                    hd('entra y borra', true);
                     unset($relations_discovery[$key]);
                     unset($relations_maps[$key2]);
                     continue 2;
                 } else if ($map['id_parent_source_data'] == $discovery['module_b']
                     && $map['id_child_source_data'] == $discovery['module_a']
                 ) {
-                    hd('entra y borra 2', true);
                     unset($relations_discovery[$key]);
                     unset($relations_maps[$key2]);
                     continue 2;
@@ -4190,22 +4188,61 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
             }
         }
 
-        foreach ($relations_discovery as $key => $value) {
-            // db_process_sql_insert(
-            // 'trel_item',
-            // [
-            // 'id_map'                => $id_networkmap,
-            // 'id_parent'             => $parent_node,
-            // 'id_child'              => $child_node,
-            // 'id_parent_source_data' => $parent,
-            // 'id_child_source_data'  => $node['source_data'],
-            // 'parent_type'           => 0,
-            // 'child_type'            => 0,
-            // ]
-            // );
-        }
+        // Relations Module <-> Module.
+        foreach ($relations_discovery as $key => $relation) {
+            $module_a = $relation['module_a'];
+            $agent_a = modules_get_agentmodule_agent($module_a);
+            $module_b = $relation['module_b'];
+            $agent_b = modules_get_agentmodule_agent($module_b);
 
-        hd($relations_discovery, true);
+            $exist = db_get_row_filter(
+                'trel_item',
+                [
+                    'id_map'                => $id_networkmap,
+                    'id_parent_source_data' => $module_a,
+                    'id_child_source_data'  => $module_b,
+                    'deleted'               => 0,
+                ]
+            );
+            $exist_reverse = db_get_row_filter(
+                'trel_item',
+                [
+                    'id_map'                => $id_networkmap,
+                    'id_parent_source_data' => $module_b,
+                    'id_child_source_data'  => $module_a,
+                    'deleted'               => 0,
+                ]
+            );
+
+            if (empty($exist) === true && empty($exist_reverse) === true) {
+                $item_a = db_get_value(
+                    'id',
+                    'titem',
+                    'source_data',
+                    $agent_a
+                );
+
+                $item_b = db_get_value(
+                    'id',
+                    'titem',
+                    'source_data',
+                    $agent_b
+                );
+
+                db_process_sql_insert(
+                    'trel_item',
+                    [
+                        'id_map'                => $id_networkmap,
+                        'id_parent'             => $item_a,
+                        'id_child'              => $item_b,
+                        'id_parent_source_data' => $module_a,
+                        'id_child_source_data'  => $module_b,
+                        'parent_type'           => 1,
+                        'child_type'            => 1,
+                    ]
+                );
+            }
+        }
     } else if ((int) $networkmap['source'] === SOURCE_NETWORK) {
         // Network map, based on direct network.
         $agents = networkmap_get_nodes_from_ip_mask(

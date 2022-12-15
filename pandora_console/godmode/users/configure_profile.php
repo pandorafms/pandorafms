@@ -439,7 +439,7 @@ enterprise_hook('close_meta_frame');
                 data: {
                     page: 'include/ajax/profile',
                     search_profile_nanme: true,
-                    profile_name: $('#text-name').val(),
+                    profile_name: $('#text-name').val().trim(),
                 },
                 success: function (data) {
                     if(data === 'true'){

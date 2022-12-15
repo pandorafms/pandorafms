@@ -2731,7 +2731,7 @@ function html_print_anchor(
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
 
     foreach ($attrs as $attribute) {
-        if (isset($options[$attribute])) {
+        if (isset($options[$attribute]) === true && empty($options[$attribute]) === false) {
             $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
         }
     }
@@ -6434,7 +6434,7 @@ function html_print_go_back_button(string $url, array $options=[], bool $return=
                 false,
                 'window.location.href = \''.$url.'\'',
                 [
-                    'icon' => ($options['action_class'] ?? 'cancel'),
+                    'icon' => ($options['action_class'] ?? 'back'),
                     'mode' => 'secondary',
                 ],
                 true
@@ -6585,6 +6585,66 @@ function html_print_subtitle_table(string $caption, array $options=[], bool $ret
             'class'   => ($options['class'] ?? 'section_table_title'),
             'style'   => ($options['style'] ?? ''),
             'content' => $caption,
+        ],
+        $return
+    );
+}
+
+
+/**
+ * Prints a menu button.
+ *
+ * @param array   $options Available options.
+ *      - `id`: Id for the anchor.
+ *      - `style`: Anchor inline styles.
+ *      - `href`: Route to go.
+ *      - `class`: Class for the anchor.
+ *      - `image`: Path of the image.
+ *      - `image_class`: Class for image. `invert_filter main_menu_icon` by default.
+ *      - `title`: Alt Title for the image.
+ *      - `disabled`: If true, the button does nothing.
+ *      - `disabled_title`: If filled, add to the button and additional information.
+ *      - `disabled_allow_onclick`: If true, the button will do onclick.
+ *      - `onClick`: onClick action for anchor.
+ *      - `content`: Alternative content.
+ * @param boolean $return  If true, returns a string with formed menu button.
+ *
+ * @return string.
+ */
+function html_print_menu_button(array $options, bool $return=false)
+{
+    // Disabled.
+    if (isset($options['disabled']) === true && $options['disabled'] === true) {
+        $options['href'] = '#';
+        $options['title'] .= ($options['disabled_title'] ?? '');
+        $options['image_class'] = (isset($options['image_class']) === true) ? $options['image_class'].' alpha50' : 'alpha50 main_menu_icon';
+        if (isset($options['disabled_allow_onclick']) === false || $options['disabled_allow_onclick'] !== true) {
+            $options['onClick'] = '';
+        }
+    }
+
+    // Attach the image. Otherwise, add additional content if user desires.
+    if (isset($options['image']) === true) {
+        $content = html_print_image(
+            $options['image'],
+            true,
+            [
+                'title' => ($options['title'] ?? ''),
+                'class' => ($options['image_class'] ?? 'invert_filter main_menu_icon'),
+            ]
+        );
+    } else {
+        $content = ($options['content'] ?? '');
+    }
+
+    return html_print_anchor(
+        [
+            'id'      => ($options['id'] ?? ''),
+            'href'    => ($options['href'] ?? ''),
+            'class'   => ($options['class'] ?? ''),
+            'style'   => ($options['style'] ?? ''),
+            'onClick' => ($options['onClick'] ?? ''),
+            'content' => $content,
         ],
         $return
     );

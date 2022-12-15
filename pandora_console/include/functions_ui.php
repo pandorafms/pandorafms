@@ -644,10 +644,11 @@ function ui_print_tags_warning($return=false)
  * @param boolean $link             Whether the group have link or not.
  * @param boolean $force_show_image Force show image.
  * @param boolean $show_as_image    Show as image.
+ * @param string  $class            Overrides the default class.
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_group_icon($id_group, $return=false, $path='groups_small', $style='', $link=true, $force_show_image=false, $show_as_image=false)
+function ui_print_group_icon($id_group, $return=false, $path='groups_small', $style='', $link=true, $force_show_image=false, $show_as_image=false, $class='')
 {
     global $config;
 
@@ -660,23 +661,25 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
     $output = '';
 
     // Don't show link in metaconsole.
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $link = false;
     }
 
-    if ($link) {
+    if ($link === true) {
         $output = '<a href="'.$config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
     }
 
     if ($config['show_group_name']) {
         $output .= '<span title="'.groups_get_name($id_group, true).'">'.groups_get_name($id_group, true).'&nbsp;</span>';
     } else {
-        if (empty($icon)) {
+        if (empty($icon) === true) {
             $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
         } else {
-            $class = 'bot';
-            if ($icon === 'transmit') {
-                $class .= ' invert_filter';
+            if (empty($class) === true) {
+                $class = 'bot';
+                if ($icon === 'transmit') {
+                    $class .= ' invert_filter';
+                }
             }
 
             $output .= html_print_image(
@@ -781,7 +784,7 @@ function ui_print_os_icon(
     $options=false,
     $big_icons=false
 ) {
-    $subfolder = 'os_icons';
+    $subfolder = '.';
     if ($networkmap) {
         $subfolder = 'networkmap';
     }
@@ -790,15 +793,11 @@ function ui_print_os_icon(
         $subfolder .= '/so_big_icons';
     }
 
-    if (is_metaconsole()) {
-        $no_in_meta = false;
-    } else {
-        $no_in_meta = true;
-    }
+    $no_in_meta = (is_metaconsole() === false);
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
     $os_name = get_os_name($id_os);
-    if (empty($icon)) {
+    if (empty($icon) === true) {
         if ($only_src) {
             $output = html_print_image(
                 'images/'.$subfolder.'/unknown.png',
@@ -2557,7 +2556,7 @@ function ui_print_moduletype_icon(
             [
                 'border' => 0,
                 'title'  => $type['descripcion'],
-                'class'  => 'invert_filter',
+                'class'  => 'invert_filter main_menu_icon',
             ],
             false,
             $relative
@@ -5607,7 +5606,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
+            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
         }
 
 		function set_functions_change_autocomplete_'.$input_name.'() {
@@ -5879,7 +5878,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			if (select_item_click) {
                 select_item_click = 0;
                 $("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -5894,7 +5893,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 			//Set loading
 			$("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
 			var term = input_value; //Word to search
 			
 			'.$javascript_change_ajax_params_text.'
@@ -5911,7 +5910,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				success: function (data) {
 						if (data.length < 2) {
 							//Set icon
-							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; '.$inputStyles.'");
+							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
 							return;
 						}
 
@@ -5961,7 +5960,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 						//Set icon
 						$("#'.$input_id.'")
-                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; '.$inputStyles.'")
+                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; '.$inputStyles.'")
 						return;
 					}
 				});
@@ -5980,7 +5979,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; '.$text_color.' '.$inputStyles.'';
+    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$text_color.' '.$inputStyles.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

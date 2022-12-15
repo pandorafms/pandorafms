@@ -544,7 +544,7 @@ if (empty($agent_id) === false
             // TabName.
             __('QuickShell'),
             // TabIcon.
-            'images/ehorus/terminal.png',
+            'images/quick-shell@svg.svg',
             // TabFunction.
             'quickShell',
             // Version.

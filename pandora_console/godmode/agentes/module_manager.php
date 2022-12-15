@@ -1073,71 +1073,82 @@ foreach ($modules as $module) {
     }
 
     if ((bool) $module['disabled'] === true) {
-        $data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente.'&enable_module='.$module['id_agente_modulo']."'>".html_print_image(
-            'images/svg/change-active.svg',
-            true,
+        $data[8] = html_print_menu_button(
             [
-                'alt'   => __('Enable module'),
+                'href'  => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&enable_module='.$module['id_agente_modulo'],
+                'image' => 'images/change-active.svg',
                 'title' => __('Enable module'),
-                'class' => 'filter_none',
-            ]
-        ).'</a>';
+            ],
+            true
+        );
     } else {
-        $data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente.'&disable_module='.$module['id_agente_modulo']."'>".html_print_image(
-            'images/svg/change-pause.svg',
-            true,
+        $data[8] = html_print_menu_button(
             [
-                'alt'   => __('Disable module'),
+                'href'  => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&disable_module='.$module['id_agente_modulo'],
+                'image' => 'images/change-pause.svg',
                 'title' => __('Disable module'),
-            ]
-        ).'</a>';
+            ],
+            true
+        );
     }
 
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') && $module['id_tipo_modulo'] != 25) {
-        $data[8] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-        $data[8] .= html_print_image(
-            'images/svg/duplicate.svg',
-            true,
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true && $module['id_tipo_modulo'] !== 25) {
+        $data[8] .= html_print_menu_button(
             [
-                'title' => __('Duplicate'),
-                'class' => 'invert_filter',
-            ]
+                'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'],
+                'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                'image'   => 'images/copy.svg',
+                'title'   => __('Duplicate'),
+            ],
+            true
         );
-        $data[8] .= '</a> ';
 
         // Make a data normalization.
-        if (isset($numericModules[$type]) === true) {
+        /*
+            if (isset($numericModules[$type]) === true) {
             if ($numericModules[$type] === true) {
-                $data[8] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-                $data[8] .= html_print_image(
-                    'images/svg/module-graph.svg',
-                    true,
+                $data[8] .= html_print_menu_button(
                     [
-                        'title' => __('Normalize'),
-                        'class' => 'invert_filter',
-                    ]
+                        'href'        => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
+                        'onClick'     => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                        'image'       => 'images/module-graph.svg',
+                        'title'       => __('Normalize'),
+                        'image_class' => (isset($numericModules[$type]) === false || $numericModules[$type] === false) ? 'alpha50' : 'invert_filter main_menu_icon',
+                    ],
+                    true
                 );
-                $data[8] .= '</a>';
             }
-        } else {
+            } else {
             $data[8] .= html_print_image(
                 'images/svg/module-graph.svg',
                 true,
                 [
                     'title' => __('Normalize (Disabled)'),
-                    'style' => 'opacity: 0.5;',
+                    'image_class' => 'opacity: 0.5;',
                 ]
             );
             $data[8] .= '&nbsp;&nbsp;';
-        }
+            }
+        */
+        $data[8] .= html_print_menu_button(
+            [
+                'href'           => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
+                'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                'image'          => 'images/module-graph.svg',
+                'title'          => __('Normalize'),
+                'disabled'       => (isset($numericModules[$type]) === false || $numericModules[$type] === false),
+                'disabled_title' => ' ('.__('Disabled').')',
+            ],
+            true
+        );
 
         // Create network component action.
-        if ((is_user_admin($config['id_user']) === true)
+        /*
+            if ((is_user_admin($config['id_user']) === true)
             && ((int) $module['id_modulo'] === MODULE_NETWORK)
-        ) {
+            ) {
             $data[8] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
-				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
             $data[8] .= html_print_image(
                 'images/op_network.png',
                 true,
@@ -1147,29 +1158,39 @@ foreach ($modules as $module) {
                 ]
             );
             $data[8] .= '</a> ';
-        } else {
+            } else {
             $data[8] .= html_print_image(
                 'images/network.disabled.png',
                 true,
                 ['title' => __('Create network component (Disabled)')]
             );
             $data[8] .= '&nbsp;&nbsp;';
-        }
+            }
+        */
+        $data[8] .= html_print_menu_button(
+            [
+                'href'           => 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'],
+                'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                'image'          => 'images/cluster@svg.svg',
+                'title'          => __('Create network component'),
+                'disabled'       => ((is_user_admin($config['id_user']) === true) && (int) $module['id_modulo'] === MODULE_NETWORK) === false,
+                'disabled_title' => ' ('.__('Disabled').')',
+            ],
+            true
+        );
     }
 
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         // Delete module.
-        $data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-        $data[9] .= html_print_image(
-            'images/svg/delete.svg',
-            true,
+        $data[9] = html_print_menu_button(
             [
-                'title' => __('Delete'),
-                'class' => 'invert_filter',
-            ]
+                'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
+                'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                'image'   => 'images/delete.svg',
+                'title'   => __('Delete'),
+            ],
+            true
         );
-        $data[9] .= '</a> ';
     }
 
     $table->cellclass[] = [
@@ -1280,7 +1301,7 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
             draggable: true,
             modal: true,
             close: false,
-            height: 245,
+            height: 222,
             width: 480,
             overlay: {
                 opacity: 0.5,

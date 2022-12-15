@@ -161,6 +161,7 @@ $params['javascript_is_function_select'] = true;
 $params['selectbox_id'] = 'prediction_module';
 $params['none_module_text'] = __('Select Module');
 $params['use_hidden_input_idagent'] = true;
+$params['input_style'] = 'width: 100%;';
 $params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
 $data[0] = ui_print_agent_autocomplete_input($params);
 
@@ -177,14 +178,18 @@ if ($id_agente > 0) {
         '',
         __('Select Module'),
         0,
-        true
+        true,
+        false,
+        true,
+        false,
+        'width: 100%;'
     );
 } else {
     $predictionModuleInput = '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
 
 $data[1] = $predictionModuleInput;
-$data[2] = html_print_select([__('Weekly'), __('Monthly'), __('Daily')], 'custom_integer_2', $custom_integer_2, '', '', 0, true);
+$data[2] = html_print_select([__('Weekly'), __('Monthly'), __('Daily')], 'custom_integer_2', $custom_integer_2, '', '', 0, true, false, true, '', false, 'width: 100%;');
 $data[2] .= html_print_input_hidden('id_agente_module_prediction', $id_agente, true);
 $table_simple->cellclass['prediction_module'][0] = 'w33p';
 $table_simple->cellclass['prediction_module'][1] = 'w33p';
@@ -201,21 +206,22 @@ $table_simple->cellclass['caption_capacity_planning'][2] = 'w33p';
 push_table_simple($data, 'caption_capacity_planning');
 
 $data = [];
-$data[0] = html_print_input(
+$data[0] = html_print_select(
     [
-        'type'     => 'select',
-        'return'   => 'true',
-        'name'     => 'estimation_type',
-        'class'    => 'w100p',
-        'style'    => 'width: 100px;',
-        'fields'   => [
-            'estimation_absolute'    => __('Estimated absolute value'),
-            'estimation_calculation' => __('Calculation of days to reach limit'),
-        ],
-        'selected' => $estimation_type,
+        'estimation_absolute'    => __('Estimated absolute value'),
+        'estimation_calculation' => __('Calculation of days to reach limit'),
     ],
-    'div',
-    false
+    'estimation_type',
+    $estimation_type,
+    '',
+    '',
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
 );
 
 $data[1] = html_print_input(

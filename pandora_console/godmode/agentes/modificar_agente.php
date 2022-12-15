@@ -855,20 +855,16 @@ if ($agents !== false) {
 
         echo "<td align='left' class='$tdcolor'>";
         // Has remote configuration ?
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             enterprise_include_once('include/functions_config_agents.php');
             if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-                echo "<a href='index.php?".'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'tab=remote_configuration&'.'id_agente='.$agent['id_agente']."&disk_conf=1'>";
-                echo html_print_image(
-                    'images/application_edit.png',
-                    true,
+                html_print_menu_button(
                     [
-                        'align' => 'middle',
+                        'href'  => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1',
+                        'image' => 'images/remote-configuration@svg.svg',
                         'title' => __('Edit remote config'),
-                        'class' => 'invert_filter',
                     ]
                 );
-                echo '</a>';
             }
         }
 

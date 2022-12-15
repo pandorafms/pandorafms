@@ -390,7 +390,7 @@ html_print_div(
             'go_back',
             false,
             '',
-            ['icon' => 'cancel'],
+            ['icon' => 'back'],
             true
         ).html_print_submit_button(
             $buttonCaption,

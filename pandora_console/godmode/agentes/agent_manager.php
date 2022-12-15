@@ -308,7 +308,7 @@ if (enterprise_installed() === true) {
     $paramsParentAgent['selectbox_id'] = 'cascade_protection_module';
     $paramsParentAgent['javascript_is_function_select'] = true;
     $paramsParentAgent['cascade_protection'] = true;
-    $paramsParentAgent['input_style'] = 'width: 540px;';
+    $paramsParentAgent['input_style'] = 'width: 100%;';
 
     if ($id_agente !== 0) {
         // Deletes the agent's offspring.
@@ -380,14 +380,13 @@ if ($new_agent === true) {
     $tableAgent->data['alias'][0] .= html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5,
-            'class'   => 'mrgn_lft_5px',
             'content' => html_print_image(
-                'images/application_edit.png',
+                'images/remote-configuration@svg.svg',
                 true,
                 [
                     'border' => 0,
                     'title'  => __('This agent can be remotely configured'),
-                    'class'  => 'invert_filter',
+                    'class'  => 'invert_filter after_input_icon',
                 ]
             ),
         ],
@@ -411,7 +410,7 @@ $tableAgent->data['additional_ip_address'][2] = html_print_input(
         'name'  => 'fixed_ip',
         'value' => $fixed_ip,
     ]
-).__('Fix IP address').'<p style="margin-right: 15px">'.ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</p></div>';
+);
 
 $table_ip .= '</div></div>';
 
@@ -489,7 +488,11 @@ $tableAgent->data['primary_group'][0] .= html_print_div(
             $grupo,
             true,
             'groups_small',
-            ($id_agente === 0) ? 'display: none;' : ''
+            ($id_agente === 0) ? 'display: none;' : '',
+            true,
+            false,
+            false,
+            'after_input_icon'
         ),
     ],
     true
@@ -532,7 +535,7 @@ $tableAgent->data['os'][0] = html_print_select_from_sql(
 );
 $tableAgent->data['os'][0] .= html_print_div(
     [
-        'class'   => 'mrgn_lft_5px',
+        'class'   => 'after_input_icon',
         'id'      => 'os_preview',
         'content' => ui_print_os_icon(
             $id_os,
@@ -807,7 +810,7 @@ if ($new_agent === false && isset($filename) === true && file_exists($filename['
     $tableAdvancedAgent->data['remote_configuration'][0] .= html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente,
-            'class'   => 'mrgn_lft_5px',
+            'class'   => 'after_input_icon',
             'content' => html_print_image(
                 'images/cross.png',
                 true,

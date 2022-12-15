@@ -323,11 +323,6 @@ if ($edit === false) {
     }
 
     $table_simple->data['module_n_type'][1] = '<span class="result_info_text">'.modules_get_moduletype_description($id_module_type).' ('.$type_names_hash[$id_module_type].')</span>';
-    $table_simple->data['module_n_type'][1] .= html_print_input_hidden(
-        'type_names',
-        base64_encode(io_json_mb_encode($type_names_hash)),
-        true
-    );
 } else {
     $idModuleType = (isset($id_module_type) === true) ? $idModuleType : '';
     // Removed web analysis and log4x from select.
@@ -375,17 +370,36 @@ if ($edit === false) {
         false,
         100
     );
-
-    // Store the relation between id and name of the types on a hidden field.
-    $table_simple->data['module_n_type'][1] .= html_print_input_hidden(
-        'type_names',
-        base64_encode(io_json_mb_encode($type_names_hash)),
-        true
-    );
 }
+
+hd($type_names_hash);
+hd($_REQUEST);
+// Store the relation between id and name of the types on a hidden field.
+$table_simple->data['module_n_type'][1] .= html_print_input_hidden(
+    'type_names',
+    base64_encode(io_json_mb_encode($type_names_hash)),
+    true
+);
+
 
 if ($edit_module === true) {
     $id_module_type = (int) $id_module_type;
+    // Check if the module type is string.
+    switch ($id_module_type) {
+        case MODULE_TYPE_GENERIC_DATA_STRING:
+        case MODULE_TYPE_REMOTE_TCP_STRING:
+        case MODULE_TYPE_REMOTE_SNMP_STRING:
+        case MODULE_TYPE_ASYNC_STRING:
+        case MODULE_TYPE_WEB_CONTENT_STRING:
+        case MODULE_TYPE_REMOTE_CMD_STRING:
+            $stringTypeModule = true;
+        break;
+
+        default:
+            $stringTypeModule = false;
+        break;
+    }
+
     if (($id_module_type >= 1 && $id_module_type <= 5)
         || ($id_module_type >= 21 && $id_module_type <= 23)
         || ($id_module_type === 100)
@@ -428,12 +442,11 @@ $tableBasicThresholds->rowclass = [];
 $tableBasicThresholds->data = [];
 
 // WARNING THRESHOLD.
-if (modules_is_string_type($id_module_type) === false) {
-    $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
-    $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
-    $tableBasicThresholds->cellclass['caption_warning_threshold'] = 'show_hide_thresholds_minmax';
-    $tableBasicThresholds->cellclass['warning_threshold'] = 'show_hide_thresholds_minmax';
-    $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').' ('.__('Min / Max').')';
+$tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
+$tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').'&nbsp;';
+if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === false)) {
+    $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
     $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
         'min_warning',
         $min_warning,
@@ -465,18 +478,23 @@ if (modules_is_string_type($id_module_type) === false) {
             html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), $warning_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
             html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), $percentage_warning, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
         ],
-        [],
+        [ 'class' => 'margin-top-10' ],
         true
     );
 }
 
-if (modules_is_string_type($id_module_type) === true) {
-    $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
-    $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
-    $tableBasicThresholds->cellclass['caption_warning_threshold'] = 'show_hide_thresholds_string';
-    $tableBasicThresholds->cellclass['warning_threshold'] = 'show_hide_thresholds_string';
-    $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').' ('.__('Str.').')';
-    $tableBasicThresholds->data['warning_threshold'][1] .= html_print_input_text(
+if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === true)) {
+    $tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = __('Inverse interval');
+    $tableBasicThresholds->data['switch_warning_inverse_string'][0] = html_print_checkbox_switch(
+        'warning_inverse_string',
+        1,
+        $warning_inverse,
+        true,
+        $disabledBecauseInPolicy
+    );
+
+    $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
+    $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
         'str_warning',
         str_replace('"', '', $str_warning),
         '',
@@ -488,88 +506,91 @@ if (modules_is_string_type($id_module_type) === true) {
         '',
         $classdisabledBecauseInPolicy
     ).'</span>';
-
-    $divPercentageContent = __('Percentage');
-    $divPercentageContent .= html_print_checkbox_switch('percentage_warning', 1, $percentage_warning, true, $disabledBecauseInPolicy);
-    $divPercentageContent .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-
-    $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
-        [
-            'id'      => 'percentage_warning',
-            'content' => $divPercentageContent,
-        ],
-        true
-    );
 }
 
-// CRITICAL THRESHOLD.
-$tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
-$tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
-$tableBasicThresholds->cellclass['caption_critical_threshold'] = 'show_hide_thresholds_minmax';
-$tableBasicThresholds->cellclass['critical_threshold'] = 'show_hide_thresholds_minmax';
-$tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').' ('.__('Min / Max').')';
-$tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
-    'min_critical',
-    $min_critical,
-    '',
-    10,
-    255,
-    true,
-    $disabledBecauseInPolicy || $edit === false,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
-);
-$tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
-    'max_critical',
-    $max_critical,
-    '',
-    10,
-    255,
-    true,
-    $disabledBecauseInPolicy || $edit === false,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
-).'</span>';
 
-$tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
+$tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
     [
-        html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
-        html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
-        html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
-    ],
-    [],
-    true
-);
-
-$divPercentageContent = __('Percentage');
-$divPercentageContent .= html_print_checkbox_switch('percentage_critical', 1, $percentage_critical, true, $disabledBecauseInPolicy);
-$divPercentageContent .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-
-$tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
-    [
-        'id'      => 'percentage_critical',
+        'id'      => 'percentage_warning',
         'content' => $divPercentageContent,
     ],
     true
 );
 
-$tableBasicThresholds->cellclass['caption_critical_threshold'] = 'show_hide_thresholds_string';
-$tableBasicThresholds->cellclass['critical_threshold'] = 'show_hide_thresholds_string';
-$tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').' ('.__('Str.').')';
-$tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
-    'str_critical',
-    str_replace('"', '', $str_critical),
-    '',
-    10,
-    1024,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
-);
+// CRITICAL THRESHOLD.
+$tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
+$tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').'&nbsp;';
+if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === false)) {
+    $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
+    $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
+        'min_critical',
+        $min_critical,
+        '',
+        10,
+        255,
+        true,
+        $disabledBecauseInPolicy || $edit === false,
+        false,
+        '',
+        $classdisabledBecauseInPolicy
+    );
+    $tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
+        'max_critical',
+        $max_critical,
+        '',
+        10,
+        255,
+        true,
+        $disabledBecauseInPolicy || $edit === false,
+        false,
+        '',
+        $classdisabledBecauseInPolicy
+    ).'</span>';
+
+    $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
+        [
+            html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
+            html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
+            html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
+        ],
+        [ 'class' => 'margin-top-10' ],
+        true
+    );
+}
+
+if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === true)) {
+    $tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = __('Inverse interval');
+    $tableBasicThresholds->data['switch_critical_inverse_string'][0] = html_print_checkbox_switch(
+        'critical_inverse_string',
+        1,
+        $critical_inverse,
+        true,
+        $disabledBecauseInPolicy
+    );
+
+    $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
+        [
+            'id'      => 'percentage_critical',
+            'content' => $divPercentageContent,
+        ],
+        true
+    );
+
+    $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_str_critical">('.__('Str.').')</span>';
+    $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
+        'str_critical',
+        str_replace('"', '', $str_critical),
+        '',
+        10,
+        1024,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy
+    );
+}
 
 $table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 320px;width: 100%';
 $table_simple->cellclass['thresholds_table'][0] = 'basic_thresholds_table basic_thresholds_inputs';
@@ -701,15 +722,16 @@ $table_advanced->colspan = [];
 $table_advanced->rowspan = [];
 
 $table_advanced->rowclass['title_1'] = 'w100p';
-$table_advanced->cellstyle['title_1'][0] = 'width: 100%;';
-$table_advanced->data['title_1'][0] = html_print_subtitle_table(__('Identification and Categorization'), [], true);
-$table_advanced->data['title_1'][0] .= html_print_div(
+$table_advanced->cellstyle['title_1'][0] = 'width: 40px;';
+$table_advanced->cellstyle['title_1'][1] = 'width: 100%;';
+$table_advanced->data['title_1'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
         'content' => '',
     ],
     true
 );
+$table_advanced->data['title_1'][1] = html_print_subtitle_table(__('Identification and Categorization'), [], true);
 $table_advanced->rowclass['captions_custom_category'] = 'field_half_width pdd_t_10px';
 $table_advanced->rowclass['custom_id_category'] = 'field_half_width';
 $table_advanced->data['captions_custom_category'][0] = __('Custom ID');
@@ -1002,15 +1024,17 @@ $table_advanced->data['textarea_crit_warn_instructions'][1] = html_print_textare
 );
 
 $table_advanced->rowclass['title_2'] = 'w100p mrgn_top_20px';
-$table_advanced->cellstyle['title_2'][0] = 'width: 100%;';
-$table_advanced->data['title_2'][0] = html_print_subtitle_table(__('Execution interval'), [], true);
-$table_advanced->data['title_2'][0] .= html_print_div(
+$table_advanced->cellstyle['title_2'][0] = 'width: 40px;';
+$table_advanced->cellstyle['title_2'][1] = 'width: 100%;';
+$table_advanced->data['title_2'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
         'content' => '',
     ],
     true
 );
+$table_advanced->data['title_2'][1] = html_print_subtitle_table(__('Execution interval'), [], true);
+
 $table_advanced->data['caption_execution_interval'][0] = __('Interval');
 $table_advanced->data['execution_interval'][0] = '<span class="result_info_text">'.$outputExecutionInterval.'</span>';
 $table_advanced->data['execution_interval'][0] .= html_print_input_hidden('moduletype', $moduletype, true);
@@ -1027,22 +1051,23 @@ if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
     $table_advanced->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true, true);
 } else {
     $table_advanced->data['caption_cron_from_select'][0] = __('Cron from');
-    $table_advanced->data['cron_from_select'][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
+    $table_advanced->data['cron_from_select'][0] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 
     $table_advanced->data['caption_cron_to_select'][0] = __('Cron to');
-    $table_advanced->data['cron_to_select'][1] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+    $table_advanced->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
 }
 
 $table_advanced->rowclass['title_3'] = 'w100p mrgn_top_20px';
-$table_advanced->cellstyle['title_3'][0] = 'width: 100%;';
-$table_advanced->data['title_3'][0] = html_print_subtitle_table(__('Thresholds and state changes'), [], true);
-$table_advanced->data['title_3'][0] .= html_print_div(
+$table_advanced->cellstyle['title_3'][0] = 'width: 40px;';
+$table_advanced->cellstyle['title_3'][1] = 'width: 100%;';
+$table_advanced->data['title_3'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
         'content' => '',
     ],
     true
 );
+$table_advanced->data['title_3'][1] = html_print_subtitle_table(__('Thresholds and state changes'), [], true);
 
 $table_advanced->rowclass['caption_min_max_values'] = 'w50p pdd_t_10px';
 $table_advanced->rowclass['min_max_values'] = 'w50p';
@@ -1256,25 +1281,17 @@ if ((bool) preg_match('/async/', $module_type_name) === false || $edit === true)
     $table_advanced->data['ff_interval_timeout'][1] .= '<span id="ff_timeout_disable" class="result_info_text">'.__('Disabled').'</span>';
 }
 
-
-
-
-
-
-
-
-
 $table_advanced->rowclass['title_4'] = 'w100p mrgn_top_20px';
-$table_advanced->cellstyle['title_4'][0] = 'width: 100%;';
-$table_advanced->data['title_4'][0] = html_print_subtitle_table(__('Data and their processing'), [], true);
-$table_advanced->data['title_4'][0] .= html_print_div(
+$table_advanced->cellstyle['title_4'][0] = 'width: 40px;';
+$table_advanced->cellstyle['title_4'][1] = 'width: 100%;';
+$table_advanced->data['title_4'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
         'content' => '',
     ],
     true
 );
-
+$table_advanced->data['title_4'][1] = html_print_subtitle_table(__('Data and their processing'), [], true);
 
 $table_advanced->rowclass['caption_process_unit'] = 'w50p';
 $table_advanced->rowclass['process_unit'] = 'w50p';
@@ -1305,19 +1322,21 @@ $table_advanced->data['process_unit'][1] = html_print_extended_select_for_post_p
 );
 
 $table_advanced->rowclass['title_5'] = 'w100p mrgn_top_20px';
-$table_advanced->cellstyle['title_5'][0] = 'width: 100%;';
-$table_advanced->data['title_5'][0] = html_print_subtitle_table(
-    __('Notifications and alerts'),
-    [],
-    true
-);
-$table_advanced->data['title_5'][0] .= html_print_div(
+$table_advanced->cellstyle['title_5'][0] = 'width: 40px;';
+$table_advanced->cellstyle['title_5'][1] = 'width: 100%;';
+$table_advanced->data['title_5'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
         'content' => '',
     ],
     true
 );
+$table_advanced->data['title_5'][1] = html_print_subtitle_table(
+    __('Notifications and alerts'),
+    [],
+    true
+);
+
 
 $table_advanced->data['caption_export_target'][0] = __('Export target');
 if ($__code_from === 'policies') {
@@ -1707,9 +1726,8 @@ $(document).ready (function () {
                          'width=800,height=600'
                          );
                      }
-                   
-                    
                 }
+
                 if(type_name_selected == 'remote_tcp_string' ||
                  type_name_selected == 'remote_tcp_proc' ||
                  type_name_selected == 'remote_tcp_inc' ||
@@ -1753,25 +1771,49 @@ $(document).ready (function () {
             }
         }
 
+        setModuleType(type_name_selected);
+    });
+
+    function setModuleType(type_name_selected) {
         if (type_name_selected.match(/_string$/) == null) {
-            // Numeric types
-            $('#string_critical').hide();
-            $('#string_warning').hide();
-            $('#minmax_critical').show();
-            $('#minmax_warning').show();
-            $('#svg_dinamic').show();
+            // Hide string fields.
+            $('[id*=str_warning]').hide();
+            $('[id*=str_critical]').hide();
+            $('[id*=switch_warning_inverse_string]').hide();
+            $('[id*=switch_critical_inverse_string]').hide();
+            // Show numeric fields.
+            $('[id*=switch_warning_threshold]').show();
+            $('[id*=switch_critical_threshold]').show();
+            $('#caption_minmax_warning').show();
+            $('#caption_minmax_critical').show();
+            $('#text-min_warning').show();
+            $('#text-min_critical').show();
+            $('#text-max_warning').show();
+            $('#text-max_critical').show();
             $('#percentage_warning').show();
             $('#percentage_critical').show();
+            // Show dinamic reference.
+            $('#svg_dinamic').show();
         }
         else {
-            // String types
-            $('#string_critical').show();
-            $('#string_warning').show();
-            $('#minmax_critical').hide();
-            $('#minmax_warning').hide();
-            $('#svg_dinamic').hide();
+            // Show string fields.
+            $('[id*=str_warning]').show();
+            $('[id*=str_critical]').show();
+            $('[id*=switch_warning_inverse_string]').show();
+            $('[id*=switch_critical_inverse_string]').show();
+            // Hide numeric fields.
+            $('[id*=switch_warning_threshold]').hide();
+            $('[id*=switch_critical_threshold]').hide();
+            $('#caption_minmax_warning').hide();
+            $('#caption_minmax_critical').hide();
+            $('#text-min_warning').hide();
+            $('#text-min_critical').hide();
+            $('#text-max_warning').hide();
+            $('#text-max_critical').hide();
             $('#percentage_warning').hide();
             $('#percentage_critical').hide();
+            // Hide dinamic reference.
+            $('#svg_dinamic').hide();
         }
 
         if (type_name_selected.match(/async/) == null) {
@@ -1782,7 +1824,7 @@ $(document).ready (function () {
             $('#ff_timeout').show();
             $('#ff_timeout_disable').hide();
         }
-    });
+    }
 
     $("#id_module_type").trigger('change');
 
@@ -1857,19 +1899,23 @@ $(document).ready (function () {
         $('#'+thisLabel).siblings().attr('checked', false);
         
         if ($('#radius-warning_inverse').prop('checked') === true) {
-            $('#percentage_warning').hide();
+            //$('#percentage_warning').hide();
+            $("#svg_dinamic").show();
         }
 
         if ($('#radius-critical_inverse').prop('checked') === true) {
-            $('#percentage_critical').hide();
+            //$('#percentage_critical').hide();
+            $("#svg_dinamic").show();
         }
 
         if ($('#radius-percentage_warning').prop('checked') === true) {
-            $('#warning_inverse').hide();
+            //$('#warning_inverse').hide();
+            $("#svg_dinamic").hide();
         }
 
         if ($('#radius-percentage_critical').prop('checked') === true) {
-            $('#critical_inverse').hide();
+            //$('#critical_inverse').hide();
+            $("#svg_dinamic").hide();
         }
 
         $('#radius-warning_inverse').change (function() {

@@ -193,7 +193,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
                         if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                             $data = "<span title='".$last_data['datos']."' class='nowrap'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                         } else if (is_numeric($last_data['datos'])) {
-                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -209,7 +209,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
                     default:
                         if (is_numeric($last_data['datos'])) {
-                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -232,7 +232,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                     $data = "<span title='".human_milliseconds_to_string($last_data['datos'])."' class='nowrap'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                 } else if (is_numeric($last_data['datos'])) {
-                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -248,7 +248,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
             default:
                 if (is_numeric($last_data['datos'])) {
-                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -271,7 +271,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
             $data_macro = modules_get_unit_macro($last_data['datos'], $module['unit']);
             if ($data_macro) {
                 if (is_numeric($data_macro)) {
-                    $last_data_str = "<span class='span_treeview'>".remove_right_zeros(number_format($data_macro, $config['graph_precision'])).'</span>';
+                    $last_data_str = "<span class='span_treeview'>".remove_right_zeros(number_format($data_macro, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                 } else {
                     $last_data_str = ui_print_truncate_text(
                         io_safe_output($data_macro),

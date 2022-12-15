@@ -429,7 +429,9 @@ if (check_login()) {
                     $table_modules->data[$key][1] = remove_right_zeros(
                         number_format(
                             $value['datos'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                 } else {

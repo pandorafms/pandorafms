@@ -499,7 +499,9 @@ if (check_login()) {
                                         $data[] = remove_right_zeros(
                                             number_format(
                                                 $row[$attr[0]],
-                                                $config['graph_precision']
+                                                $config['graph_precision'],
+                                                $config['decimal_separator'],
+                                                $config['thousand_separator']
                                             )
                                         );
                                     }
@@ -507,7 +509,9 @@ if (check_login()) {
                                     $data[] = remove_right_zeros(
                                         number_format(
                                             $row[$attr[0]],
-                                            $config['graph_precision']
+                                            $config['graph_precision'],
+                                            $config['decimal_separator'],
+                                            $config['thousand_separator']
                                         )
                                     );
                                 }
@@ -524,7 +528,9 @@ if (check_login()) {
                                     $data[] = remove_right_zeros(
                                         number_format(
                                             $row[$attr[0]],
-                                            $config['graph_precision']
+                                            $config['graph_precision'],
+                                            $config['decimal_separator'],
+                                            $config['thousand_separator']
                                         )
                                     );
                                 }

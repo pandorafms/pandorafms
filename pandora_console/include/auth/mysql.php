@@ -213,10 +213,16 @@ function process_user_login_local($login, $pass, $api=false)
 
     $row = db_get_row_sql($sql);
 
-    // Check that row exists, that password is not empty and that password is the same hash
-    if ($row !== false && $row['password'] !== md5('')
-        && $row['password'] == md5($pass)
-    ) {
+    // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
+    if (strlen($row['password']) === 32) {
+        // MD5.
+        $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+    } else {
+        // Bcrypt.
+        $credentials_check = password_verify($pass, $row['password']);
+    }
+
+    if ($credentials_check === true) {
         // Login OK
         // Nick could be uppercase or lowercase (select in MySQL
         // is not case sensitive)
@@ -656,7 +662,7 @@ function create_user($id_user, $password, $user_info)
 {
     $values = $user_info;
     $values['id_user'] = $id_user;
-    $values['password'] = md5($password);
+    $values['password'] = password_hash($password, PASSWORD_BCRYPT);
     $values['last_connect'] = 0;
     $values['registered'] = get_system_time();
 
@@ -766,7 +772,7 @@ function update_user_password(string $user, string $password_new)
 
     if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
-            "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
+            "UPDATE tusuario SET password = '".password_hash($password_new, PASSWORD_BCRYPT)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
         );
 
         $connection = mysql_connect_db(
@@ -786,7 +792,7 @@ function update_user_password(string $user, string $password_new)
     return db_process_sql_update(
         'tusuario',
         [
-            'password'         => md5($password_new),
+            'password'         => password_hash($password_new, PASSWORD_BCRYPT),
             'last_pass_change' => date('Y/m/d H:i:s', get_system_time()),
         ],
         ['id_user' => $user]

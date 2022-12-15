@@ -594,10 +594,10 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $hashdata = $user.$pwd_deserialiced['auth_token'];
 
         $hashdata = md5($hashdata);
-        $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
+        $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'];
 
         if ($grants_on_node && (bool) $user_access_node !== false) {
-            $cellName .= '<a href="'.$url.'">'.'<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+            $cellName .= '<a onclick="sendHash(\''.$url.'\')" href="#"><b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
         } else {
             $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
         }
@@ -703,7 +703,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                 $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
             }
         } else {
-            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
             $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
         }
 
@@ -905,5 +905,12 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         metaconsole_restore_db();
     }
 
-    return;
+    echo "
+        <script>
+            function sendHash(url) {
+                window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
+ 
+            }
+
+        </script>";
 }

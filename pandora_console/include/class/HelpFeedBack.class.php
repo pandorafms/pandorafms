@@ -94,7 +94,8 @@ class HelpFeedBack extends Wizard
         ui_require_css_file('help_feedback');
 
         $help_url = get_parameter('b', null);
-        $help_url = base64_decode($help_url);
+        $help_url = io_safe_input(base64_decode($help_url));
+
         if ($help_url === null) {
             echo __('Page not found');
         } else {

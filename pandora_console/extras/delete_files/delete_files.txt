@@ -1674,3 +1674,14 @@ enterprise/include/lib/ClusterModule.php
 enterprise/include/lib/ClusterViewer/ClusterManager.php
 enterprise/include/lib/ClusterViewer/ClusterWizard.php
 enterprise/operation/cluster/cluster.php
+enterprise/meta/general/upload_head_image.php
+general/first_task/transactional_list.php
+enterprise/include/ajax/transactional.ajax.php
+enterprise/include/class/Transactionalmap.class.php
+enterprise/include/help/es/help_transactional_map_phases.php
+enterprise/include/javascript/transactional/TransactionalController.js
+enterprise/include/functions_transactional.php
+enterprise/operation/agentes/manage_transmap.php
+enterprise/operation/agentes/manage_transmap_creation.php
+enterprise/operation/agentes/manage_transmap_creation_phases_data.php
+enterprise/operation/agentes/transactional_map.php

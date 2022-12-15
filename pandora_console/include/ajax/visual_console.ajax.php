@@ -37,6 +37,7 @@ $ajax = true;
 $render_map = (bool) get_parameter('render_map', false);
 $graph_javascript = (bool) get_parameter('graph_javascript', false);
 $force_remote_check = (bool) get_parameter('force_remote_check', false);
+$update_maintanance_mode = (bool) get_parameter('update_maintanance_mode', false);
 $load_css_cv = (bool) get_parameter('load_css_cv', false);
 
 if ($render_map) {
@@ -97,5 +98,31 @@ if ($load_css_cv === true) {
 
     $output = css_label_styles_visual_console($uniq, $ratio);
     echo $output;
+    return;
+}
+
+if ($update_maintanance_mode === true) {
+    $idVisualConsole = (int) get_parameter('idVisualConsole', 0);
+    $mode = (bool) get_parameter('mode', false);
+
+    $values = [];
+    if ($mode === true) {
+        $values['maintenance_mode'] = json_encode(
+            [
+                'user'      => $config['id_user'],
+                'timestamp' => time(),
+            ]
+        );
+    } else {
+        $values['maintenance_mode'] = null;
+    }
+
+    $result = db_process_sql_update(
+        'tlayout',
+        $values,
+        ['id' => $idVisualConsole]
+    );
+
+    echo json_encode(['result' => $result]);
     return;
 }

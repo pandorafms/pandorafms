@@ -583,8 +583,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
       status_module: status_module,
       "module_name[]": idModules,
       selection_mode: selection_mode,
-      tags: tags_selected,
-      id_group: id_group
+      tags: tags_selected
     },
     function(data) {
       $("#agents").append(
@@ -2184,3 +2183,19 @@ $.fn.filterByText = function(textbox) {
       });
   });
 };
+
+function loadPasswordConfig(id, value) {
+  $.ajax({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/config.ajax",
+      token_name: `${value}`,
+      no_boolean: 1
+    },
+    type: "GET",
+    dataType: "json",
+    success: function(data) {
+      $(`#${id}`).val(data);
+    }
+  });
+}

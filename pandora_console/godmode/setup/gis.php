@@ -63,6 +63,7 @@ switch ($action) {
     break;
 }
 
+$table = new stdClass();
 $table->class = 'info_table';
 $table->width = '98%';
 $table->head[0] = __('Map connection name');

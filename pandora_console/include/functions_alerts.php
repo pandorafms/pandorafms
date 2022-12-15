@@ -1147,13 +1147,31 @@ function alerts_create_alert_agent_module($id_agent_module, $id_alert_template, 
     $values['id_alert_template'] = (int) $id_alert_template;
     $values['last_reference'] = time();
 
-    $sql = sprintf(
-        'INSERT IGNORE INTO talert_template_modules(%s) VALUES(%s)',
-        implode(', ', array_keys($values)),
-        implode(', ', array_values($values))
+    $exist = db_get_value_sql(
+        sprintf(
+            'SELECT COUNT(id)
+            FROM talert_template_modules
+            WHERE id_agent_module = %d
+                AND id_alert_template = %d
+                AND id_policy_alerts = 0
+            ',
+            $id_agent_module,
+            $id_alert_template
+        )
     );
 
-    return @db_process_sql($sql, 'insert_id');
+    $result = false;
+    if ((int) $exist === 0) {
+        $sql = sprintf(
+            'INSERT INTO talert_template_modules(%s) VALUES(%s)',
+            implode(', ', array_keys($values)),
+            implode(', ', array_values($values))
+        );
+
+        $result = db_process_sql($sql, 'insert_id');
+    }
+
+    return $result;
 }
 
 

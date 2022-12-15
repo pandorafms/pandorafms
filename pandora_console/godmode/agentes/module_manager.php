@@ -40,16 +40,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_servers.php';
 
-$search_string = io_safe_output(
-    urldecode(
-        trim(
-            get_parameter(
-                'search_string',
-                ''
-            )
-        )
-    )
-);
+$search_string = get_parameter('search_string');
 
 global $policy_page;
 
@@ -454,8 +445,6 @@ if ($module_action === 'delete') {
     }
 } else if ($module_action === 'disable') {
     $id_agent_modules_disable = (array) get_parameter('id_delete');
-
-    $count_correct_delete_modules = 0;
     $updated_count = 0;
 
     foreach ($id_agent_modules_disable as $id_agent_module_disable) {
@@ -495,6 +484,52 @@ if ($module_action === 'delete') {
                     __('There was a problem completing the operation. Applied to %d/%d modules.'),
                     $updated_count,
                     $count_modules_to_disable
+                )
+            );
+        }
+    }
+} else if ($module_action === 'enable') {
+    $id_agent_modules_enable = (array) get_parameter('id_delete');
+    $updated_count = 0;
+
+    foreach ($id_agent_modules_enable as $id_agent_module_enable) {
+        $sql = sprintf(
+            'UPDATE tagente_modulo
+                SET disabled = 0
+                WHERE id_agente_modulo = %d',
+            $id_agent_module_enable
+        );
+
+        $id_agent_changed[] = modules_get_agentmodule_agent($id_agent_module_enable);
+        $agent_update_result = db_process_sql_update(
+            'tagente',
+            ['update_module_count' => 1],
+            ['id_agente' => $id_agent_changed]
+        );
+
+        if (db_process_sql($sql) !== false && $agent_update_result !== false) {
+            $updated_count++;
+        }
+    }
+
+    $count_modules_to_enable = count($id_agent_modules_enable);
+
+    if ($updated_count === 0) {
+        ui_print_error_message(
+            sprintf(
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
+                $count_modules_to_enable
+            )
+        );
+    } else {
+        if ($updated_count == $count_modules_to_enable) {
+            ui_print_success_message(__('Operation finished successfully.'));
+        } else {
+            ui_print_error_message(
+                sprintf(
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $updated_count,
+                    $count_modules_to_enable
                 )
             );
         }
@@ -1283,6 +1318,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     html_print_select(
         [
             'disable' => 'Disable selected modules',
+            'enable'  => 'Enable selected modules',
             'delete'  => 'Delete selected modules',
         ],
         'module_action',
@@ -1294,6 +1330,8 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         false,
         false
     );
+
+    echo '&nbsp&nbsp&nbsp&nbsp';
 
     html_print_submit_button(
         __('Execute action'),

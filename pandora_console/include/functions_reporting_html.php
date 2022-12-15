@@ -1944,7 +1944,16 @@ function reporting_html_inventory($table, $item, $pdf=0)
                                         $table1->head[$k] = $k;
                                         $table1->headstyle[$k] = 'text-align: left';
                                         $table1->cellstyle[$str_key][$k] = 'text-align: left;';
-                                        $table1->data[$str_key][$k] = $v;
+                                        if ($pdf === 0) {
+                                            $table1->data[$str_key][$k] = $v;
+                                        } else {
+                                            // Workaround to prevent table columns from growing indefinitely in PDFs.
+                                            $table1->data[$str_key][$k] = preg_replace(
+                                                '/([^\s]{30})(?=[^\s])/',
+                                                '$1'.'<br>',
+                                                $v
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -3998,7 +4007,7 @@ function reporting_html_text(&$table, $item)
  */
 function reporting_html_availability($table, $item, $pdf=0)
 {
-    $retun_pdf = '';
+    $return_pdf = '';
 
     $style = db_get_value(
         'style',
@@ -4225,7 +4234,7 @@ function reporting_html_availability($table, $item, $pdf=0)
             } else {
                 $table_row[] = $row['agent'];
                 $item_name = $row['availability_item'];
-                if ((bool) $row['compare'] === false) {
+                if ((bool) $row['compare'] === true) {
                     $item_name .= ' ('.__('24 x 7').')';
                 }
 
@@ -4413,6 +4422,7 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table2->data[] = $table_row2;
         }
     } else {
+        $table = new stdClass();
         $table->colspan['error']['cell'] = 3;
         $table->data['error']['cell'] = __(
             'There are no Agent/Modules defined'
@@ -5971,11 +5981,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
         include_once '../../include/graphs/functions_gd.php';
     }
 
-    $max_value = count($events);
-
-    if (is_metaconsole()) {
-        $max_value = SECONDS_1HOUR;
-    }
+    $period = SECONDS_1DAY;
 
     if (!$text_header_event) {
         $text_header_event = __('Events info (1hr.)');
@@ -6048,7 +6054,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
         } else {
             $graph_data[] = [
                 'data'       => $color,
-                'utimestamp' => 1,
+                'utimestamp' => SECONDS_1DAY,
             ];
         }
     }
@@ -6067,9 +6073,9 @@ function reporting_get_event_histogram($events, $text_header_event=false)
 
         $slicebar = flot_slicesbar_graph(
             $graph_data,
-            $max_value,
-            '450px;border:0',
-            25,
+            $period,
+            '400px;border:0',
+            40,
             $full_legend,
             $colors,
             $config['fontpath'],
@@ -6082,7 +6088,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
             [],
             true,
             1,
-            false,
+            450,
             true
         );
 

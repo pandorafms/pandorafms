@@ -199,6 +199,21 @@ if (is_ajax()) {
                 );
                 $table->data['ldap_admin_pass'] = $row;
 
+                // Ldapsearch timeout.
+                // Default Ldapsearch timeout.
+                set_when_empty($config['ldap_searh_timeout'], 5);
+                $row = [];
+                $row['name'] = __('Ldap search timeout (secs)');
+                $row['control'] = html_print_input_text(
+                    'ldap_search_timeout',
+                    $config['ldap_search_timeout'],
+                    '',
+                    10,
+                    10,
+                    true
+                );
+                $table->data['ldap_search_timeout'] = $row;
+
                 // Enable/disable secondary ldap.
                 // Set default value.
                 set_unless_defined($config['secondary_ldap_enabled'], false);

@@ -181,6 +181,7 @@ if (empty($alert_templates)) {
     $alert_templates = '';
 }
 
+$table = new stdClass();
 $table->id = 'delete_table';
 $table->width = '98%';
 $table->data = [];

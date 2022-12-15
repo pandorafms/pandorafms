@@ -449,71 +449,23 @@ sub cleanup_old_commands {
 }
 
 ################################################################################
-# Executes a command using defined timeout.
+# Executes a command.
 ################################################################################
 sub execute_command_timeout {
-  my ($self, $cmd, $timeout) = @_;
+  my ($self, $cmd, $std_files, $timeout) = @_;
 
   if (!defined($timeout)
     || !looks_like_number($timeout)
     || $timeout <= 0
   ) {
-    `$cmd`;
-    return $?>>8;
-  }
-
-  my $remaining_timeout = $timeout;
-
-  my $RET;
-  my $output;
-
-  my $pid = open ($RET, "-|");
-  if (!defined($pid)) {
-    # Failed to fork.
-    $self->set_last_error('[command] Failed to fork.');
-    return undef;
-  }
-  if ($pid == 0) {
-    # Child.
-    my $ret;
-    eval {
-      local $SIG{ALRM} = sub { die "timeout\n" };
-      alarm $timeout;
-      `$cmd`;
-      alarm 0;
-    };
-
-    my $result = ($?>>8);
-    return $result;
-
-    # Exit child.
-    # Child finishes.
-    exit;
-
+    `($cmd) $std_files`;
+  } elsif ($^O eq 'MSWin32') {
+    `(pandora_agent_exec.exe $timeout $cmd) $std_files`;
   } else {
-    # Parent waiting.
-    while( --$remaining_timeout > 0 ){
-      if (wait == -1) {
-        last;
-      }
-      # Wait child up to timeout seconds.
-      sleep 1;
-    }
+    `(pandora_agent_exec $timeout $cmd) $std_files`;
   }
 
-  if ($remaining_timeout > 0) {
-    # Retrieve output from child.
-    $output = do { local $/; <$RET> };
-    $output = $output>>8;
-  }
-  else {
-    # Timeout expired.
-    return 124;
-  }
-
-  close($RET);
-
-  return $output;
+  return $?>>8;
 }
 
 ################################################################################
@@ -538,7 +490,8 @@ sub execute_command_block {
 
     do {
       $err_level = $self->execute_command_timeout(
-        "($commands) $std_files",
+        $commands,
+        $std_files,
         $timeout
       );
 
@@ -554,7 +507,8 @@ sub execute_command_block {
 
       do {
         $err_level = $self->execute_command_timeout(
-          "($comm) $std_files",
+          $comm,
+          $std_files,
           $timeout
         );
 
@@ -564,7 +518,7 @@ sub execute_command_block {
       } while ((--$retries) > 0);
 
       # Do not continue evaluating block if failed.
-      last unless ($err_level == 0);
+      last unless (looks_like_number($err_level) && $err_level == 0);
     }
   }
 
@@ -599,7 +553,7 @@ sub evaluate_command {
   );
 
   # Precondition not satisfied.
-  return $self->report_command($ref, $err_level) unless ($err_level == 0);
+  return $self->report_command($ref, $err_level) unless (looks_like_number($err_level) && $err_level == 0);
 
   # Main run.
   $err_level = $self->execute_command_block(
@@ -609,7 +563,7 @@ sub evaluate_command {
   );
 
   # Script not success.
-  return $self->report_command($ref, $err_level) unless ($err_level == 0);
+  return $self->report_command($ref, $err_level) unless (looks_like_number($err_level) && $err_level == 0);
 
   # Check postconditions
   $err_level = $self->execute_command_block(

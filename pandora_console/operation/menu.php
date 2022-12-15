@@ -171,8 +171,6 @@ if ($access_console_node === true) {
         $sub['operation/agentes/pandora_networkmap']['text'] = __('Network map');
         $sub['operation/agentes/pandora_networkmap']['id'] = 'Network map';
         $sub['operation/agentes/pandora_networkmap']['refr'] = 0;
-
-        enterprise_hook('transmap_console');
     }
 
     enterprise_hook('services_menu');
@@ -415,7 +413,7 @@ if ($access_console_node === true) {
                 $user_event_filter = [
                     'status'        => EVENT_NO_VALIDATED,
                     'event_view_hr' => $config['event_view_hr'],
-                    'group_rep'     => 1,
+                    'group_rep'     => EVENT_GROUP_REP_EVENTS,
                     'tag_with'      => [],
                     'tag_without'   => [],
                     'history'       => false,
@@ -431,10 +429,6 @@ if ($access_console_node === true) {
         }
 
         // Sound Events.
-        // $javascript = 'javascript: openSoundEventWindow();';
-        // $sub[$javascript]['text'] = __('Sound Events');
-        // $sub[$javascript]['id'] = 'Sound Events';
-        // $sub[$javascript]['type'] = 'direct';
         $data_sound = base64_encode(
             json_encode(
                 [
@@ -445,6 +439,7 @@ if ($access_console_node === true) {
                     'silenceAlarm' => __('Silence alarm'),
                     'url'          => ui_get_full_url('ajax.php'),
                     'page'         => 'include/ajax/events',
+                    'urlSound'     => 'include/sounds/',
                 ]
             )
         );

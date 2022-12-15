@@ -125,7 +125,6 @@ function notifications_get_subtypes(?string $source=null)
     $subtypes = [
         'System status' => [
             'NOTIF.LICENSE.LIMITED',
-            'NOTIF.LICENSE.EXPIRATION',
             'NOTIF.FILES.ATTACHMENT',
             'NOTIF.FILES.DATAIN',
             'NOTIF.FILES.DATAIN.BADXML',

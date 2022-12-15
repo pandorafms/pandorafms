@@ -172,6 +172,7 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
   `last_dynamic_update` BIGINT NOT NULL DEFAULT 0,
   `last_unknown_update` BIGINT NOT NULL DEFAULT 0,
   `last_status_change` BIGINT NOT NULL DEFAULT 0,
+  `warning_count` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `idx_agente` (`id_agente`),
@@ -271,6 +272,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `debug_content` TEXT,
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
+  `warning_time` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -553,7 +555,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
-  UNIQUE (`id_agent_module`, `id_alert_template`),
+  UNIQUE (`id_agent_module`, `id_alert_template`, `id_policy_alerts`),
   INDEX force_execution (`force_execution`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -764,7 +766,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
   `identifier` VARCHAR(100) NOT NULL,
   `id_group` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') DEFAULT 'CUSTOM',
+  `product` ENUM('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP', 'WMI', 'SNMP') DEFAULT 'CUSTOM',
   `username` TEXT,
   `password` TEXT,
   `extra_1` TEXT,
@@ -874,6 +876,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `summary` TEXT,
   `type` INT NOT NULL DEFAULT 0,
   `subnet_csv` TINYINT UNSIGNED DEFAULT 0,
+  `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1,
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
@@ -1001,6 +1004,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `enabled` TINYINT UNSIGNED DEFAULT 1,
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
+  `warning_time` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1234,6 +1238,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `severity` TEXT,
   `status` INT NOT NULL DEFAULT -1,
   `search` TEXT,
+  `not_search` INT NOT NULL DEFAULT 0,
   `text_agent` TEXT,
   `id_agent` INT DEFAULT 0,
   `id_agent_module` INT DEFAULT 0,
@@ -1252,11 +1257,12 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_extra` TINYTEXT,
   `user_comment` TEXT,
   `id_source_event` INT  NULL DEFAULT 0,
-  `server_id` INT NOT NULL DEFAULT 0,
+  `server_id` TEXT,
   `time_from` TIME NULL,
   `time_to` TIME NULL,
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
+  `owner_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1309,6 +1315,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `integria_user_level_pass` VARCHAR(45),
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,
+  `auth_token_secret` VARCHAR(45) DEFAULT NULL,
   CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1678,6 +1685,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
   `background_color` VARCHAR(50) NOT NULL DEFAULT '#FFF',
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
+  `maintenance_mode` TEXT,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2098,6 +2106,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
   `display_on_front` TINYINT NOT NULL DEFAULT 0,
   `is_password_type` TINYINT NOT NULL DEFAULT 0,
   `combo_values` TEXT ,
+  `is_link_enabled` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2419,6 +2428,7 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
   `prediction_threshold` INT DEFAULT 0,
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
+  `warning_time` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_network_component_group`) REFERENCES tnetwork_component_group(`id_sg`)
     ON DELETE CASCADE ON UPDATE CASCADE
@@ -2501,6 +2511,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
   `cps` INT NOT NULL DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
+  `warning_time` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id`),
   KEY `main_idx` (`id_policy`),
   UNIQUE (`id_policy`, `name`)
@@ -3404,37 +3415,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
--- Table `ttransaction`
+-- Table `treset_pass`
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ttransaction` (
-  `transaction_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `agent_id` INT UNSIGNED NOT NULL,
-  `group_id` INT UNSIGNED NOT NULL DEFAULT 0,
-  `description` TEXT,
-  `name` VARCHAR(250) NOT NULL,
-  `loop_interval` INT UNSIGNED NOT NULL DEFAULT 40,
-  `ready` INT UNSIGNED NOT NULL DEFAULT 0,
-  `running` INT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`transaction_id`)
-) engine=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- ---------------------------------------------------------------------
--- Table `tphase`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tphase`(
-  `phase_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `transaction_id` INT UNSIGNED NOT NULL,
-  `agent_id` INT UNSIGNED NOT NULL,
-  `name` VARCHAR(250) NOT NULL,
-  `idx` INT UNSIGNED NOT NULL,
-  `dependencies` TEXT,
-  `enables` TEXT,
-  `launch` TEXT,
-  `retries` INT UNSIGNED DEFAULT null,
-  `timeout` INT UNSIGNED DEFAULT null,
-  PRIMARY KEY (`phase_id`,`transaction_id`)
-) engine=InnoDB DEFAULT CHARSET=UTF8MB4;
-
 CREATE TABLE IF NOT EXISTS `treset_pass` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` VARCHAR(255) NOT NULL DEFAULT '',
@@ -3648,6 +3630,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
   `background_color` VARCHAR(50) NOT NULL DEFAULT '#FFF',
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
+  `maintenance_mode` TEXT,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

@@ -38,11 +38,12 @@ $display_on_front = (int) get_parameter('display_on_front', 0);
 $is_password_type = (int) get_parameter('is_password_type', 0);
 $combo_values = (string) get_parameter('combo_values', '');
 $combo_value_selected = (string) get_parameter('combo_value_selected', '');
+$is_link_enabled = (bool) get_parameter('is_link_enabled', 0);
 
 // Create field.
 if ($create_field) {
     // Check if name field is empty.
-    if ($name == '') {
+    if ($name === '') {
         ui_print_error_message(__('The name must not be empty'));
     } else if ($name == db_get_value('name', 'tagent_custom_fields', 'name', $name)) {
         ui_print_error_message(__('The name must be unique'));
@@ -54,6 +55,7 @@ if ($create_field) {
                 'display_on_front' => $display_on_front,
                 'is_password_type' => $is_password_type,
                 'combo_values'     => $combo_values,
+                'is_link_enabled'  => $is_link_enabled,
             ]
         );
         ui_print_success_message(__('Field successfully created'));
@@ -63,12 +65,13 @@ if ($create_field) {
 // Update field.
 if ($update_field) {
     // Check if name field is empty.
-    if ($name != '') {
+    if ($name !== '') {
         $values = [
             'name'             => $name,
             'display_on_front' => $display_on_front,
             'is_password_type' => $is_password_type,
             'combo_values'     => $combo_values,
+            'is_link_enabled'  => $is_link_enabled,
         ];
 
         $result = db_process_sql_update('tagent_custom_fields', $values, ['id_field' => $id_field]);

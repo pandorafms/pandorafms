@@ -116,6 +116,7 @@ $max_critical = (float) get_parameter('max_critical');
 $str_critical = (string) get_parameter('str_critical');
 $ff_event = (int) get_parameter('ff_event');
 $history_data = (bool) get_parameter('history_data');
+$warning_time = (int) get_parameter('warning_time');
 
 // Don't read as (float) because it lost it's decimals when put into MySQL
 // where are very big and PHP uses scientific notation, p.e:
@@ -407,6 +408,7 @@ if ($is_management_allowed === true && $create_component) {
                 'name_oid'              => $name_oid,
                 'module_enabled'        => $module_enabled,
                 'enabled'               => $enabled,
+                'warning_time'          => $warning_time,
             ]
         );
     } else {
@@ -511,6 +513,7 @@ if ($is_management_allowed === true && $update_component) {
                 'name_oid'              => $name_oid,
                 'module_enabled'        => $module_enabled,
                 'enabled'               => $enabled,
+                'warning_time'          => $warning_time,
             ]
         );
     } else {

@@ -1055,7 +1055,7 @@ switch ($action) {
                         ]
                     );
                     $data[2] .= '</a>';
-                    $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
+                    $data[3] = '<a onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
                     $data[3] .= html_print_image(
                         'images/xml.png',
                         true,
@@ -2056,6 +2056,11 @@ switch ($action) {
                             'show_summary_group',
                             0
                         );
+
+                        $server_multiple = get_parameter(
+                            'server_multiple',
+                            0
+                        );
                         $filter_event_severity = get_parameter(
                             'filter_event_severity',
                             0
@@ -2213,8 +2218,11 @@ switch ($action) {
                         );
 
                         switch ($values['type']) {
-                            case 'event_report_agent':
                             case 'event_report_group':
+                                $style['server_multiple'] = json_encode(
+                                    $server_multiple
+                                );
+                            case 'event_report_agent':
                             case 'event_report_module':
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
@@ -2950,10 +2958,16 @@ switch ($action) {
                         $style['dyn_height'] = get_parameter('dyn_height', 230);
 
                         switch ($values['type']) {
-                            case 'event_report_agent':
                             case 'event_report_group':
+                                $server_multiple = get_parameter(
+                                    'server_multiple',
+                                    ''
+                                );
+                                $style['server_multiple'] = json_encode(
+                                    $server_multiple
+                                );
+                            case 'event_report_agent':
                             case 'event_report_module':
-
                                 $show_summary_group = get_parameter(
                                     'show_summary_group',
                                     0

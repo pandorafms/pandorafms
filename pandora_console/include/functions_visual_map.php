@@ -3708,6 +3708,8 @@ function visual_map_print_visual_map(
 
 // End function
 // Start function
+
+
 /**
  * Get a list with the layouts for a user.
  *
@@ -3719,8 +3721,6 @@ function visual_map_print_visual_map(
  *
  * @return array A list of layouts the user can see.
  */
-
-
 function visual_map_get_user_layouts(
     $id_user=0,
     $only_names=false,
@@ -3729,6 +3729,7 @@ function visual_map_get_user_layouts(
     $favourite=false,
     $check_user_groups=true
 ) {
+    $where = '';
     if (! is_array($filter)) {
         $filter = [];
     } else {
@@ -3819,17 +3820,19 @@ function visual_map_get_user_layouts(
             $retval[$layout['id']] = $layout;
         }
 
-        // add_perms
-        if (isset($groups[$layout['id_group']]['vconsole_view'])) {
-            $retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
-        }
+        if ($only_names === false) {
+            // Aad_perms.
+            if (isset($groups[$layout['id_group']]['vconsole_view'])) {
+                $retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
+            }
 
-        if (isset($groups[$layout['id_group']]['vconsole_edit'])) {
-            $retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
-        }
+            if (isset($groups[$layout['id_group']]['vconsole_edit'])) {
+                $retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
+            }
 
-        if (isset($groups[$layout['id_group']]['vconsole_management'])) {
-            $retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+            if (isset($groups[$layout['id_group']]['vconsole_management'])) {
+                $retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+            }
         }
     }
 

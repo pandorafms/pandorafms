@@ -546,6 +546,7 @@ if (isset($config['id_user']) === false) {
             if ((!isset($double_auth_success)
                 || !$double_auth_success)
                 && is_double_auth_enabled($nick_in_db)
+                && (bool) $config['double_auth_enabled'] === true
             ) {
                 // Store this values in the session to know if the user login
                 // was correct.
@@ -1131,7 +1132,7 @@ if (get_parameter('login', 0) !== 0) {
     $php_version = phpversion();
     $php_version_array = explode('.', $php_version);
     if ($php_version_array[0] < 7) {
-        include_once 'general/php7_message.php';
+        include_once 'general/php_message.php';
     }
 }
 

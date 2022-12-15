@@ -72,7 +72,7 @@ function initialiceLayout(data) {
 
   var positionGrid = grid.el.getBoundingClientRect();
   var gridWidth = positionGrid.width;
-
+  var title = data.title;
   getCellsLayout();
 
   function getCellsLayout() {
@@ -548,7 +548,7 @@ function initialiceLayout(data) {
   function addWidgetDialog(id) {
     $("#modal-add-widget")
       .dialog({
-        title: "New Widget",
+        title: data.title,
         resizable: false,
         modal: true,
         overlay: {
@@ -1385,6 +1385,12 @@ function dashboardLoadVC(settings) {
       ? "mobile"
       : "dashboard"
   );
+
+  if (settings.props.maintenanceMode != null) {
+    if (settings.props.maintenanceMode.user !== settings.id_user) {
+      visualConsoleManager.visualConsole.enableMaintenanceMode();
+    }
+  }
 
   if (settings.mobile_view_orientation_vc === true) {
     $(window).on("orientationchange", function() {

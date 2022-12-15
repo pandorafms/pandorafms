@@ -90,6 +90,7 @@ final class Container extends Model
             'backgroundURL'     => static::extractBackgroundUrl($data),
             'relationLineWidth' => (int) $data['relationLineWidth'],
             'hash'              => static::extractHash($data),
+            'maintenanceMode'   => static::extractMaintenanceMode($data),
         ];
     }
 
@@ -180,7 +181,7 @@ final class Container extends Model
             null
         );
 
-        return ($backgroundImage === 'None.png') ? null : $backgroundImage;
+        return ($backgroundImage === 'None.png') ? null : str_replace(' ', '%20', $backgroundImage);
     }
 
 
@@ -235,6 +236,45 @@ final class Container extends Model
             ),
             null
         );
+    }
+
+
+    /**
+     * Extract a background color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the color (not empty) or null.
+     */
+    private static function extractMaintenanceMode(array $data)
+    {
+        global $config;
+        $maintenance_mode = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'maintenanceMode',
+                    'maintenance_mode',
+                ]
+            ),
+            null
+        );
+
+        $result = null;
+        if ($maintenance_mode !== null) {
+            $result = json_decode($maintenance_mode, true);
+
+            $result['date'] = date(
+                $config['date_format'],
+                $result['timestamp']
+            );
+
+            $result['timestamp'] = human_time_description_raw(
+                (time() - $result['timestamp'])
+            );
+        }
+
+        return $result;
     }
 
 

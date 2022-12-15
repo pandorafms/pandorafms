@@ -140,7 +140,7 @@ $table->data['1']['2'] .= html_print_submit_button(
     __('Export to CSV'),
     'export_csv',
     false,
-    'class="sub next"',
+    'class="sub next" onclick="blockResumit($(this))"',
     true
 );
 
@@ -221,6 +221,8 @@ if (get_parameter('export_csv')) {
         ob_end_clean();
     }
 
+    // Set cookie for download control.
+    setDownloadCookieToken();
     // Write metadata.
     header('Content-type: text/csv;');
     header('Content-Disposition: attachment; filename="network_data.csv"');

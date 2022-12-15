@@ -13,20 +13,26 @@ function configure_modules_form() {
   $("#id_module_type").change(function() {
     if (id_modules_icmp.in_array(this.value)) {
       $(
-        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-tcp_send, tr#simple-tcp_receive"
+        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials, tr#simple-tcp_send, tr#simple-tcp_receive"
       ).hide();
       $("#text-tcp_port").attr("disabled", "1");
     } else if (id_modules_snmp.in_array(this.value)) {
-      $("tr#simple-snmp_1, tr#simple-snmp_2").show();
+      $(
+        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials"
+      ).show();
       $("tr#simple-tcp_send, tr#simple-tcp_receive").hide();
       $("#text-tcp_port").removeAttr("disabled");
     } else if (id_modules_tcp.in_array(this.value)) {
-      $("tr#simple-snmp_1, tr#simple-snmp_2").hide();
+      $(
+        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials"
+      ).hide();
       $("tr#simple-tcp_send, tr#simple-tcp_receive").show();
       $("#text-tcp_port").removeAttr("disabled");
     } else if (id_modules_exec.in_array(this.value)) {
       $("tr#simple-tcp_send, tr#simple-tcp_receive").hide();
-      $("tr#simple-snmp_1, tr#simple-snmp_2").hide();
+      $(
+        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials"
+      ).hide();
       $("#text-tcp_port").attr("disabled", false);
     }
   });
@@ -162,6 +168,11 @@ function configure_modules_form() {
         $("#text-dynamic_min").attr(
           "value",
           data["dynamic_min"] == 0 ? 0 : data["dynamic_min"]
+        );
+
+        $("#text-warning_time").attr(
+          "value",
+          data["warning_time"] == 0 ? 0 : data["warning_time"]
         );
 
         if (data["dynamic_two_tailed"])
@@ -454,6 +465,11 @@ function configure_modules_form() {
           $("#post_process_manual").show();
           $("#post_process_default").hide();
         }
+
+        $("#text-warning_time").attr(
+          "value",
+          data["warning_time"] == 0 ? 0 : data["warning_time"]
+        );
 
         $("#text-post_process_text").attr(
           "value",

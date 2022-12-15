@@ -51,6 +51,9 @@ $default_filename = 'data_exported - '.date($config['date_format']);
 $filename = (string) get_parameter('filename', $default_filename);
 $filename = io_safe_output($filename);
 
+// Set cookie for download control.
+setDownloadCookieToken();
+
 /*
  * $data = array(
  *   'head' => array(<column>,<column>,...,<column>),

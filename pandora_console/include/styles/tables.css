@@ -384,13 +384,13 @@ a.pandora_pagination.current:hover {
   /*border: 1px solid #dcdcdc !important;*/
   padding: 1px !important;
   /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);*/
-  width: 24px;
-  height: 24px;
 }
 
 /* This class is for only one icon to be a button type. */
 .action_button_img {
   cursor: pointer;
+  width: 24px;
+  height: 24px;
 }
 
 .table_action_buttons a,

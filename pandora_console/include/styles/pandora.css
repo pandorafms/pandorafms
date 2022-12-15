@@ -3296,7 +3296,7 @@ a.tip > img {
  * ---------------------------------------------------------------------
  */
 input.search_input {
-  background-image: url("../../images/input_zoom_gray.png");
+  background-image: url("../../images/details.svg");
   background-position: center right 10px;
   background-repeat: no-repeat;
   background-size: 17px;
@@ -3783,6 +3783,9 @@ div.div_groups_status {
   background: none;
 }
 
+.tab_operation img {
+  width: 20px;
+}
 .agents_modules_table {
   border: 1px solid #e2e2e2;
   border-spacing: 0px;
@@ -9864,6 +9867,11 @@ button.submitButton.mini {
   border: 2px solid #14524f;
 }
 
+button.buttonButton > div.mini,
+button.submitButton > div.mini {
+  width: 1.5rem;
+  height: 1.5rem;
+}
 button.buttonButton:not(.secondary):not(.link),
 button.submitButton:not(.secondary):not(.link) {
   background: linear-gradient(
@@ -9912,8 +9920,8 @@ button.submitButton.onlyIcon.pending {
 
 button.buttonButton.onlyIcon.completed,
 button.submitButton.onlyIcon.completed {
-  mask: url(../../images/svg/success.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/success.svg) no-repeat right / contain;
+  mask: url(../../images/validate.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/validate.svg) no-repeat right / contain;
 }
 
 /* Visual Consoles */
@@ -10022,14 +10030,14 @@ button.submitButton.onlyIcon.service_min {
 
 button.buttonButton.onlyIcon.delete_item,
 button.submitButton.onlyIcon.delete_item {
-  mask: url(../../images/svg/trash.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/trash.svg) no-repeat right / contain;
+  mask: url(../../images/delete.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/delete.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.copy_item,
 button.submitButton.onlyIcon.copy_item {
-  mask: url(../../images/svg/duplicate.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/duplicate.svg) no-repeat right / contain;
+  mask: url(../../images/copy.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/copy.svg) no-repeat right / contain;
 }
 
 button.buttonButton.link-create-item,
@@ -10127,15 +10135,15 @@ button div.next {
 }
 
 button div.search {
-  mask: url(../../images/svg/search.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/search.svg) no-repeat center / contain;
+  mask: url(../../images/details.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/details.svg) no-repeat center / contain;
 }
 
 button div.wand,
 button div.update,
 button div.upd {
-  mask: url(../../images/svg/success.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/success.svg) no-repeat center / contain;
+  mask: url(../../images/validate.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/validate.svg) no-repeat center / contain;
 }
 
 button div.add {
@@ -10144,8 +10152,8 @@ button div.add {
 }
 
 button div.delete {
-  mask: url(../../images/svg/trash.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/trash.svg) no-repeat center / contain;
+  mask: url(../../images/delete.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/delete.svg) no-repeat center / contain;
 }
 
 button div.cancel {
@@ -10153,9 +10161,14 @@ button div.cancel {
   -webkit-mask: url(../../images/svg/left.svg) no-repeat center / contain;
 }
 
+button div.back {
+  mask: url(../../images/go-back@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/go-back@svg.svg) no-repeat center / contain;
+}
 button div.cog {
-  mask: url(../../images/svg/cog.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/cog.svg) no-repeat center / contain;
+  mask: url(../../images/configuration@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/configuration@svg.svg) no-repeat center /
+    contain;
 }
 
 button div.fail {
@@ -10520,6 +10533,9 @@ tr.bring_next_field {
 }
 
 /* FLOATING FORM */
+.floating_form {
+  padding: 12px;
+}
 .floating_form td {
   font-size: 11pt;
   min-height: 32px;
@@ -10732,4 +10748,13 @@ pre.external_tools_output {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border-left: 0;
+}
+
+.main_menu_icon {
+  width: 20px;
+}
+
+.after_input_icon {
+  width: 32px;
+  margin-left: 10px;
 }

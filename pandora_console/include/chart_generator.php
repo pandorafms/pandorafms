@@ -46,9 +46,17 @@ $data_decoded = json_decode(io_safe_output($data_raw), true);
 if (json_last_error() === JSON_ERROR_NONE) {
     $data = $data_decoded['data'];
     $session_id = $data_decoded['session_id'];
-    $data_combined = $data_decoded['data_combined'];
-    $data_module_list = $data_decoded['data_module_list'];
     $type_graph_pdf = $data_decoded['type_graph_pdf'];
+
+    $data_combined = [];
+    if (isset($data_decoded['data_combined']) === true) {
+        $data_combined = $data_decoded['data_combined'];
+    }
+
+    $data_module_list = [];
+    if (isset($data_decoded['data_module_list']) === true) {
+        $data_module_list = $data_decoded['data_module_list'];
+    }
 }
 
 // Initialize session.
@@ -83,9 +91,15 @@ if (check_login(false) === false) {
 
 // Access granted.
 $params = $data;
+if (isset($params['backgroundColor']) === false) {
+    $params['backgroundColor'] = 'inherit';
+}
 
 // Metaconsole connection to the node.
-$server_id = $params['server_id'];
+$server_id = 0;
+if (isset($params['server_id']) === true) {
+    $server_id = $params['server_id'];
+}
 
 if (is_metaconsole() === true && empty($server_id) === false) {
     $server = metaconsole_get_connection_by_id($server_id);
@@ -143,8 +157,9 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.axislabels.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/pandora.flot.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/chartjs/chart.js"></script>
+        <script language="javascript" type="text/javascript" src="graphs/chartjs/chartjs-plugin-datalabels.min.js"></script>
     </head>
-    <body style='background-color: <?php echo $params['backgroundColor']; ?>;'>
+    <body style='width:794px; margin: 0px; background-color: <?php echo $params['backgroundColor']; ?>;'>
     <?php
     $params['only_image'] = false;
     $params['menu'] = false;
@@ -158,17 +173,16 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         'height' => 0,
     ];
 
+    $style = 'width:100%;';
     if (isset($params['options']['viewport']) === true) {
-        $viewport = $params['viewport'];
-    }
+        $viewport = $params['options']['viewport'];
+        if (empty($viewport['width']) === false) {
+            $style .= 'width:'.$viewport['width'].'px;';
+        }
 
-    $style = '';
-    if (empty($params['options']['viewport']['width']) === false) {
-        $style .= 'width:'.$params['options']['viewport']['width'].'px;';
-    }
-
-    if (empty($params['options']['viewport']['height']) === false) {
-        $style .= 'height:'.$params['options']['viewport']['height'].'px;';
+        if (empty($viewport['height']) === false) {
+            $style .= 'height:'.$viewport['height'].'px;';
+        }
     }
 
     echo '<div id="container-chart-generator-item" style="'.$style.' margin:0px;">';
@@ -200,26 +214,15 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
             echo $chart->render(true);
         break;
 
-        case 'vbar':
+        case 'vbar_graph':
             $params['pdf'] = true;
-            echo flot_vcolumn_chart($params);
-        break;
-
-        case 'hbar':
-            $params['pdf'] = true;
-            echo flot_hcolumn_chart(
-                $params['chart_data'],
-                $params['width'],
-                $params['height'],
-                $params['water_mark_url'],
-                $params['font'],
-                $config['font_size'],
-                $params['backgroundColor'],
-                $params['tick_color'],
-                $params['val_min'],
-                $params['val_max'],
-                $params['pdf']
+            $chart = get_build_setup_charts(
+                'BAR',
+                $params['options'],
+                $params['chart_data']
             );
+
+            echo $chart->render(true);
         break;
 
         case 'ring_graph':

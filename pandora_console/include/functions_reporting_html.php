@@ -961,7 +961,7 @@ function reporting_html_top_n($table, $item, $pdf=0)
             $table->data['top_n']['cell'] = html_print_table($table1, true);
         }
 
-        if (!empty($item['charts']['pie'])) {
+        if (empty($item['charts']['pie']) === false) {
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['pie'];
             } else {
@@ -970,16 +970,15 @@ function reporting_html_top_n($table, $item, $pdf=0)
             }
         }
 
-        if (!empty($item['charts']['bars'])) {
+        if (empty($item['charts']['bars']) === false) {
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['bars'];
             } else {
-                // $table->colspan['char_bars']['cell'] = 3;
                 $table->data['char_pie'][1] = $item['charts']['bars'];
             }
         }
 
-        if (!empty($item['resume'])) {
+        if (empty($item['resume']) === false) {
             $table1 = new stdClass();
             $table1->width = '99%';
 

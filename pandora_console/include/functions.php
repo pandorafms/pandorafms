@@ -4247,6 +4247,8 @@ function generator_chart_to_pdf(
         // Creates a new page.
         $page = $browser->createPage();
 
+        hd($url.'?data='.urlencode(json_encode($data)), true);
+
         // Navigate to an URL.
         $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
         $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
@@ -4259,19 +4261,28 @@ function generator_chart_to_pdf(
 
         if (isset($params['options']['viewport']) === true
             && isset($params['options']['viewport']['height']) === true
+            && empty($params['options']['viewport']['height']) === false
         ) {
             $dynamic_height = $params['options']['viewport']['height'];
         }
 
-        // Width page A4.
-        $width = 794;
-        if (isset($params['options']['viewport']) === true
-            && isset($params['options']['viewport']['width']) === true
-        ) {
-            $width = $params['options']['viewport']['width'];
+        $dynamic_width = $page->evaluate('document.getElementById("container-chart-generator-item").clientWidth')->getReturnValue();
+        if (empty($dynamic_width) === true) {
+            $dynamic_width = 794;
         }
 
-        $clip = new Clip(0, 0, $width, $dynamic_height);
+        if (isset($params['options']['viewport']) === true
+            && isset($params['options']['viewport']['width']) === true
+            && empty($params['options']['viewport']['width']) === false
+        ) {
+            $dynamic_width = $params['options']['viewport']['width'];
+        }
+
+        hd('Tomando el Clip', true);
+        hd('Width: ['.$dynamic_width.']', true);
+        hd('Height: ['.$dynamic_height.']', true);
+
+        $clip = new Clip(0, 0, $dynamic_width, $dynamic_height);
 
         if ($params['return_img_base_64']) {
             $b64 = $page->screenshot(['clip' => $clip])->getBase64();

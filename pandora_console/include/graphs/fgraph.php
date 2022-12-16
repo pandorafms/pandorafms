@@ -184,420 +184,6 @@ function vbar_graph(
     $chart = get_build_setup_charts('BAR', $options, $chart_data);
     $output = $chart->render(true);
     return $output;
-
-    // INFO IN: https://github.com/flot/flot/blob/master/API.md.
-    // Xaxes chart Title.
-    if (isset($options['x']['title']['title']) === false) {
-        $options['x']['title']['title'] = '';
-    }
-
-    if (isset($options['x']['title']['fontSize']) === false) {
-        $options['x']['title']['fontSize'] = ((int) $config['font_size'] + 2);
-    }
-
-    if (isset($options['x']['title']['fontFamily']) === false) {
-        $options['x']['title']['fontFamily'] = preg_replace(
-            '/.ttf/',
-            'Font, lato',
-            $config['fontpath']
-        );
-    }
-
-    if (isset($options['x']['title']['padding']) === false) {
-        $options['x']['title']['padding'] = 10;
-    }
-
-    // Xaxes font ticks.
-    if (isset($options['x']['font']['size']) === false) {
-        $options['x']['font']['size'] = ((int) $config['font_size'] + 2);
-    }
-
-    if (isset($options['x']['font']['lineHeight']) === false) {
-        $options['x']['font']['lineHeight'] = ((int) $config['font_size'] + 2);
-    }
-
-    if (isset($options['x']['font']['style']) === false) {
-        $options['x']['font']['style'] = 'normal';
-    }
-
-    if (isset($options['x']['font']['weight']) === false) {
-        $options['x']['font']['weight'] = 'normal';
-    }
-
-    if (isset($options['x']['font']['family']) === false) {
-        $options['x']['font']['family'] = preg_replace(
-            '/.ttf/',
-            'Font',
-            $config['fontpath']
-        );
-    }
-
-    if (isset($options['x']['font']['variant']) === false) {
-        $options['x']['font']['variant'] = 'small-caps';
-    }
-
-    if (isset($options['x']['font']['color']) === false) {
-        $options['x']['font']['color'] = '#545454';
-        if ($options['pdf'] === true) {
-            $options['x']['font']['color'] = '#000';
-        } else if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $options['x']['font']['color'] = '#fff';
-        }
-    }
-
-    // Show ticks.
-    if (isset($options['x']['show']) === false) {
-        $options['x']['show'] = true;
-    }
-
-    // Type position bottom or top or left or right.
-    if (isset($options['x']['position']) === false) {
-        $options['x']['position'] = 'bottom';
-    }
-
-    // Grid color axes x.
-    if (isset($options['x']['color']) === false) {
-        $options['x']['color'] = '#ffffff';
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $options['x']['color'] = '#222';
-        }
-    }
-
-    if (isset($options['x']['labelWidth']) === false) {
-        $options['x']['labelWidth'] = null;
-    }
-
-    if (isset($options['x']['labelHeight']) === false) {
-        $options['x']['labelHeight'] = null;
-    }
-
-    // Yaxes chart Title.
-    if (isset($options['y']['title']['title']) === false) {
-        $options['y']['title']['title'] = '';
-    }
-
-    if (isset($options['y']['title']['fontSize']) === false) {
-        $options['y']['title']['fontSize'] = ((int) $config['font_size'] + 2);
-    }
-
-    if (isset($options['y']['title']['fontFamily']) === false) {
-        $options['y']['title']['fontFamily'] = preg_replace(
-            '/.ttf/',
-            'Font',
-            $config['fontpath']
-        );
-    }
-
-    if (isset($options['y']['title']['padding']) === false) {
-        $options['y']['title']['padding'] = 10;
-    }
-
-    // Yaxes font ticks.
-    if (isset($options['y']['font']['size']) === false) {
-        $options['y']['font']['size'] = ((int) $config['font_size'] + 2);
-    }
-
-    if (isset($options['y']['font']['lineHeight']) === false) {
-        $options['y']['font']['lineHeight'] = ((int) $config['font_size'] + 2);
-    }
-
-    if (isset($options['y']['font']['style']) === false) {
-        $options['y']['font']['style'] = 'normal';
-    }
-
-    if (isset($options['y']['font']['weight']) === false) {
-        $options['y']['font']['weight'] = 'normal';
-    }
-
-    if (isset($options['y']['font']['family']) === false) {
-        $options['y']['font']['family'] = preg_replace(
-            '/.ttf/',
-            'Font',
-            $config['fontpath']
-        );
-    }
-
-    if (isset($options['y']['font']['variant']) === false) {
-        $options['y']['font']['variant'] = 'small-caps';
-    }
-
-    if (isset($options['y']['font']['color']) === false) {
-        $options['y']['font']['color'] = '#545454';
-        if ($options['pdf'] === true) {
-            $options['y']['font']['color'] = '#000';
-        } else if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $options['y']['font']['color'] = '#fff';
-        }
-    }
-
-    // Show ticks.
-    if (isset($options['y']['show']) === false) {
-        $options['y']['show'] = true;
-    }
-
-    // Type position bottom or top or left or right.
-    if (isset($options['y']['position']) === false) {
-        $options['y']['position'] = 'left';
-    }
-
-    // Grid color axes y.
-    if (isset($options['y']['color']) === false) {
-        $options['y']['color'] = '#ffffff';
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $options['y']['color'] = '#222';
-        }
-    }
-
-    if (isset($options['y']['labelWidth']) === false) {
-        $options['y']['labelWidth'] = null;
-    }
-
-    if (isset($options['y']['labelHeight']) === false) {
-        $options['y']['labelHeight'] = null;
-    }
-
-    // Bars options.
-    // left, right or center.
-    if (isset($options['bars']['align']) === false) {
-        $options['bars']['align'] = 'center';
-    }
-
-    if (isset($options['bars']['barWidth']) === false) {
-        $options['bars']['barWidth'] = 0.8;
-    }
-
-    if (isset($options['bars']['horizontal']) === false) {
-        $options['bars']['horizontal'] = false;
-    }
-
-    // Grid Options.
-    if (isset($options['grid']['show']) === false) {
-        $options['grid']['show'] = true;
-    }
-
-    if (isset($options['grid']['aboveData']) === false) {
-        $options['grid']['aboveData'] = false;
-    }
-
-    if (isset($options['grid']['color']) === false) {
-        $options['grid']['color'] = '#ffffff';
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $options['grid']['color'] = '#111';
-        }
-    }
-
-    if (isset($options['grid']['backgroundColor']) === false) {
-        $options['grid']['backgroundColor'] = [
-            'colors' => [
-                '#ffffff',
-                '#ffffff',
-            ],
-        ];
-        if ($config['style'] === 'pandora_black' && !is_metaconsole() && $ttl === 1) {
-            $options['grid']['backgroundColor'] = [
-                'colors' => [
-                    '#222',
-                    '#222',
-                ],
-            ];
-        }
-    }
-
-    if (isset($options['grid']['margin']) === false) {
-        $options['grid']['margin'] = 0;
-    }
-
-    if (isset($options['grid']['labelMargin']) === false) {
-        $options['grid']['labelMargin'] = 5;
-    }
-
-    if (isset($options['grid']['axisMargin']) === false) {
-        $options['grid']['axisMargin'] = 5;
-    }
-
-    if (isset($options['grid']['markings']) === false) {
-        $options['grid']['markings'] = [];
-    }
-
-    if (isset($options['grid']['borderWidth']) === false) {
-        $options['grid']['borderWidth'] = 0;
-    }
-
-    if (isset($options['grid']['borderColor']) === false) {
-        $options['grid']['borderColor'] = '#ffffff';
-    }
-
-    if (isset($options['grid']['minBorderMargin']) === false) {
-        $options['grid']['minBorderMargin'] = 5;
-    }
-
-    if (isset($options['grid']['clickable']) === false) {
-        $options['grid']['clickable'] = false;
-    }
-
-    if (isset($options['grid']['hoverable']) === false) {
-        $options['grid']['hoverable'] = false;
-    }
-
-    if (isset($options['grid']['autoHighlight']) === false) {
-        $options['grid']['autoHighlight'] = false;
-    }
-
-    if (isset($options['grid']['mouseActiveRadius']) === false) {
-        $options['grid']['mouseActiveRadius'] = false;
-    }
-
-    // Series bars.
-    if (isset($options['seriesBars']['show']) === false) {
-        $options['seriesBars']['show'] = true;
-    }
-
-    if (isset($options['seriesBars']['lineWidth']) === false) {
-        $options['seriesBars']['lineWidth'] = 0.3;
-    }
-
-    if (isset($options['seriesBars']['fill']) === false) {
-        $options['seriesBars']['fill'] = true;
-    }
-
-    if (isset($options['seriesBars']['fillColor']) === false) {
-        $options['seriesBars']['fillColor'] = [
-            'colors' => [
-                [ 'opacity' => 0.9 ],
-                [ 'opacity' => 0.9 ],
-            ],
-        ];
-    };
-
-    // Generals options.
-    if (isset($options['generals']['unit']) === false) {
-        $options['generals']['unit'] = '';
-    }
-
-    if (isset($options['generals']['divisor']) === false) {
-        $options['generals']['divisor'] = 1000;
-    }
-
-    if (isset($options['generals']['forceTicks']) === false) {
-        $options['generals']['forceTicks'] = false;
-    }
-
-    if (isset($options['generals']['arrayColors']) === false) {
-        $options['generals']['arrayColors'] = false;
-    }
-
-    if (isset($options['generals']['rotate']) === false) {
-        $options['generals']['rotate'] = false;
-    }
-
-    if (isset($options['generals']['pdf']['width']) === false) {
-        $options['generals']['pdf']['width'] = false;
-    }
-
-    if (isset($options['generals']['pdf']['height']) === false) {
-        $options['generals']['pdf']['height'] = false;
-    }
-
-    $params = [
-        'data'       => $data,
-        'x'          => [
-            'title'       => [
-                'title'      => $options['x']['title']['title'],
-                'fontSize'   => $options['x']['title']['fontSize'],
-                'fontFamily' => $options['x']['title']['fontFamily'],
-                'padding'    => $options['x']['title']['padding'],
-            ],
-            'font'        => [
-                'size'       => $options['x']['font']['size'],
-                'lineHeight' => $options['x']['font']['lineHeight'],
-                'style'      => $options['x']['font']['style'],
-                'weight'     => $options['x']['font']['weight'],
-                'family'     => $options['x']['font']['family'],
-                'variant'    => $options['x']['font']['variant'],
-                'color'      => ($options['agent_view'] === true) ? 'black' : $options['x']['font']['color'],
-            ],
-            'show'        => $options['x']['show'],
-            'position'    => $options['x']['position'],
-            'color'       => $options['x']['color'],
-            'labelWidth'  => $options['x']['labelWidth'],
-            'labelHeight' => $options['x']['labelHeight'],
-        ],
-        'y'          => [
-            'title'       => [
-                'title'      => $options['y']['title']['title'],
-                'fontSize'   => $options['y']['title']['fontSize'],
-                'fontFamily' => $options['y']['title']['fontFamily'],
-                'padding'    => $options['y']['title']['padding'],
-            ],
-            'font'        => [
-                'size'       => $options['y']['font']['size'],
-                'lineHeight' => $options['y']['font']['lineHeight'],
-                'style'      => $options['y']['font']['style'],
-                'weight'     => $options['y']['font']['weight'],
-                'family'     => $options['y']['font']['family'],
-                'variant'    => $options['y']['font']['variant'],
-                'color'      => ($options['agent_view'] === true) ? 'black' : $options['y']['font']['color'],
-            ],
-            'show'        => $options['y']['show'],
-            'position'    => $options['y']['position'],
-            'color'       => $options['y']['color'],
-            'labelWidth'  => $options['y']['labelWidth'],
-            'labelHeight' => $options['y']['labelHeight'],
-        ],
-        'bars'       => [
-            'align'      => $options['bars']['align'],
-            'barWidth'   => $options['bars']['barWidth'],
-            'horizontal' => $options['bars']['horizontal'],
-        ],
-        'grid'       => [
-            'show'              => $options['grid']['show'],
-            'aboveData'         => $options['grid']['aboveData'],
-            'color'             => $options['grid']['color'],
-            'backgroundColor'   => $options['grid']['backgroundColor'],
-            'margin'            => ($options['agent_view'] === true) ? 6 : $options['grid']['margin'],
-            'labelMargin'       => ($options['agent_view'] === true) ? 12 : $options['grid']['labelMargin'],
-            'axisMargin'        => $options['grid']['axisMargin'],
-            'markings'          => $options['grid']['markings'],
-            'borderWidth'       => $options['grid']['borderWidth'],
-            'borderColor'       => $options['grid']['borderColor'],
-            'minBorderMargin'   => $options['grid']['minBorderMargin'],
-            'clickable'         => $options['grid']['clickable'],
-            'hoverable'         => $options['grid']['hoverable'],
-            'autoHighlight'     => $options['grid']['autoHighlight'],
-            'mouseActiveRadius' => $options['grid']['mouseActiveRadius'],
-        ],
-        'seriesBars' => [
-            'show'      => $options['seriesBars']['show'],
-            'lineWidth' => $options['seriesBars']['lineWidth'],
-            'fill'      => $options['seriesBars']['fill'],
-            'fillColor' => $options['seriesBars']['fillColor'],
-        ],
-        'generals'   => [
-            'unit'        => $options['generals']['unit'],
-            'divisor'     => $options['generals']['divisor'],
-            'forceTicks'  => $options['generals']['forceTicks'],
-            'arrayColors' => $options['generals']['arrayColors'],
-            'rotate'      => $options['generals']['rotate'],
-        ],
-    ];
-
-    if ($options['agent_view'] === true) {
-        $params['agent_view'] = true;
-    }
-
-    if (empty($params['data']) === true) {
-        return graph_nodata_image($options);
-    }
-
-    if ((int) $ttl === 2) {
-        $params['backgroundColor'] = $options['grid']['backgroundColor'];
-        $params['return_img_base_64'] = true;
-        $params['generals']['pdf']['width'] = $options['generals']['pdf']['width'];
-        $params['generals']['pdf']['height'] = $options['generals']['pdf']['height'];
-        return generator_chart_to_pdf('vbar', $params);
-    }
-
-    return flot_vcolumn_chart($params);
 }
 
 
@@ -836,7 +422,9 @@ function pie_graph(
         $chart_data = $chart_data_trunc;
     }
 
-    if ((int) $options['ttl'] === 2) {
+    if (isset($options['ttl']) === true
+        && (int) $options['ttl'] === 2
+    ) {
         $params = [
             'chart_data'         => $chart_data,
             'options'            => $options,
@@ -951,6 +539,7 @@ function get_build_setup_charts($type, $options, $data)
             'color'     => '',
             'clip'      => true,
             'clamp'     => true,
+            'anchor'    => 'center',
             'formatter' => 'namefunction',
             'fonts'     => [
                 'family'     => '',
@@ -1017,9 +606,9 @@ function get_build_setup_charts($type, $options, $data)
     }
 
     // Fonts.
-    // $chart->defaults()->getFonts()->setFamily($config['fontpath']);
-    // $chart->defaults()->getFonts()->setStyle('normal');
-    $chart->defaults()->getFonts()->setSize(($config['font_size'] + 5));
+    $chart->defaults()->getFonts()->setFamily($config['fontpath']);
+    $chart->defaults()->getFonts()->setStyle('normal');
+    $chart->defaults()->getFonts()->setSize(($config['font_size']) + 2);
 
     if (isset($options['waterMark']) === true
         && empty($options['waterMark']) === false
@@ -1032,7 +621,9 @@ function get_build_setup_charts($type, $options, $data)
         $chart->defaults()->getWaterMark()->setAlign('top');
     }
 
-    if (isset($options['pdf']) === true && $options['pdf'] === true) {
+    if ((isset($options['pdf']) === true && $options['pdf'] === true)
+        || (isset($options['ttl']) === true && (int) $options['ttl'] === 2)
+    ) {
         $chart->options()->disableAnimation(false);
     }
 
@@ -1085,6 +676,33 @@ function get_build_setup_charts($type, $options, $data)
 
     $chart->options()->getPlugins()->getLegend()->setAlign($legendAlign);
 
+    if (isset($options['layout']) === true
+        && empty($options['layout']) === false
+        && is_array($options['layout']) === true
+    ) {
+        $layout = $chart->options()->getLayout();
+        if (isset($options['layout']['padding']) === true
+            && empty($options['layout']['padding']) === false
+            && is_array($options['layout']['padding']) === true
+        ) {
+            if (isset($options['layout']['padding']['top']) === true) {
+                $layout->padding()->setTop($options['layout']['padding']['top']);
+            }
+
+            if (isset($options['layout']['padding']['bottom']) === true) {
+                $layout->padding()->setBottom($options['layout']['padding']['bottom']);
+            }
+
+            if (isset($options['layout']['padding']['left']) === true) {
+                $layout->padding()->setLeft($options['layout']['padding']['left']);
+            }
+
+            if (isset($options['layout']['padding']['right']) === true) {
+                $layout->padding()->setRight($options['layout']['padding']['right']);
+            }
+        }
+    }
+
     // Display labels.
     if (isset($options['dataLabel']) === true
         && empty($options['dataLabel']) === false
@@ -1101,14 +719,14 @@ function get_build_setup_charts($type, $options, $data)
 
         $dataLabel->setDisplay($dataLabelDisplay);
 
-        $dataLabelColor = '#ffffff';
+        $dataLabelColor = '#343434';
         if (isset($options['dataLabel']['color']) === true) {
             $dataLabelColor = $options['dataLabel']['color'];
         }
 
         $dataLabel->setColor($dataLabelColor);
 
-        $dataLabelClip = true;
+        $dataLabelClip = false;
         if (isset($options['dataLabel']['clip']) === true) {
             $dataLabelClip = $options['dataLabel']['clip'];
         }
@@ -1122,12 +740,35 @@ function get_build_setup_charts($type, $options, $data)
 
         $dataLabel->setClamp($dataLabelClamp);
 
+        $dataLabelAnchor = 'end';
+        if (isset($options['dataLabel']['anchor']) === true) {
+            $dataLabelAnchor = $options['dataLabel']['anchor'];
+        }
+
+        $dataLabel->setAnchor($dataLabelAnchor);
+
+        $dataLabelAlign = 'end';
+        if (isset($options['dataLabel']['align']) === true) {
+            $dataLabelAlign = $options['dataLabel']['align'];
+        }
+
+        $dataLabel->setAlign($dataLabelAlign);
+
+        $dataLabelOffset = 0;
+        if (isset($options['dataLabel']['offset']) === true) {
+            $dataLabelOffset = $options['dataLabel']['offset'];
+        }
+
+        $dataLabel->setOffset($dataLabelOffset);
+
         $dataLabelFormatter = 'formatterDataLabelPie';
         if (isset($options['dataLabel']['formatter']) === true) {
             $dataLabelFormatter = $options['dataLabel']['formatter'];
         }
 
         $dataLabel->setFormatter($dataLabelFormatter);
+
+        $dataLabel->getFonts()->setSize(8);
 
         if (isset($options['dataLabel']['fonts']) === true
             && empty($options['dataLabel']['fonts']) === false

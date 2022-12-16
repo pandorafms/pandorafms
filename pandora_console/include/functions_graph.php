@@ -3479,7 +3479,11 @@ function graph_custom_sql_graph(
                 }
             }
 
-            $data[$label.'_'.$count] = $value;
+            if ((int) $ttl === 2 && $type === 'sql_graph_pie') {
+                $data[$label.'_'.$count.' ('.$value.')'] = $value;
+            } else {
+                $data[$label.'_'.$count] = $value;
+            }
         } else {
             if (isset($data[__('Other')]) === false) {
                 $data[__('Other')] = 0;
@@ -3505,7 +3509,7 @@ function graph_custom_sql_graph(
     if ((int) $ttl === 2) {
         $output .= '<img src="data:image/png;base64,';
     } else {
-        $output .= '<div style="margin: 0 auto;">';
+        $output .= '<div style="height:'.($height).'px; margin: 0 auto;">';
     }
 
     switch ($type) {
@@ -3531,6 +3535,10 @@ function graph_custom_sql_graph(
                 $options['axis'] = 'y';
             }
 
+            if ((int) $ttl === 2) {
+                $options['dataLabel'] = ['display' => 'auto'];
+            }
+
             $output .= vbar_graph(
                 $data,
                 $options
@@ -3539,7 +3547,6 @@ function graph_custom_sql_graph(
 
         case 'sql_graph_pie':
             $options = [
-                'width'     => $width,
                 'height'    => $height,
                 'waterMark' => $water_mark,
                 'ttl'       => $ttl,
@@ -3549,6 +3556,16 @@ function graph_custom_sql_graph(
                     'align'    => 'center',
                 ],
             ];
+
+            if ((int) $ttl === 2) {
+                $options['dataLabel'] = ['display' => 'auto'];
+                $options['layout'] = [
+                    'padding' => [
+                        'top'    => 12,
+                        'bottom' => 12,
+                    ],
+                ];
+            }
 
             // Pie.
             $output .= pie_graph(

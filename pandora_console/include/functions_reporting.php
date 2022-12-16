@@ -1925,16 +1925,12 @@ function reporting_event_top_n(
 
             if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
                 $options_charts = [
-                    'viewport' => [
-                        'width'  => 500,
-                        'height' => 0,
-                    ],
-                    'legend'   => [
+                    'legend' => [
                         'display'  => true,
                         'position' => 'right',
                         'align'    => 'center',
                     ],
-                    'ttl'      => $ttl,
+                    'ttl'    => $ttl,
                 ];
 
                 if ((int) $ttl === 2) {
@@ -1955,12 +1951,6 @@ function reporting_event_top_n(
                     $return['charts']['pie'] .= '</div>';
                 }
 
-                if ((int) $ttl === 2) {
-                    $return['charts']['bars'] = '<img src="data:image/png;base64,';
-                } else {
-                    $return['charts']['bars'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
-                }
-
                 $options = [
                     'height' => (count($data_hbar) * 30),
                     'ttl'    => $ttl,
@@ -1975,6 +1965,12 @@ function reporting_event_top_n(
                         ],
                     ],
                 ];
+
+                if ((int) $ttl === 2) {
+                    $return['charts']['bars'] = '<img src="data:image/png;base64,';
+                } else {
+                    $return['charts']['bars'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
+                }
 
                 $return['charts']['bars'] .= vbar_graph(
                     $data_hbar,

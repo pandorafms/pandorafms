@@ -426,6 +426,14 @@ enterprise_hook('close_meta_frame');
                 $(id).css({'cursor':'not-allowed', 'opacity':'0.5'});
             });
         }
+
+        //Not enable enter for prevent submits
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
     });
 
     $('#text-name').on('blur',function(){

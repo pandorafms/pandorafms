@@ -281,7 +281,7 @@ final class StaticGraph extends Item
             ) {
                 if (\is_numeric($value)) {
                     $imgTitle .= __('Last value: ').\remove_right_zeros(
-                        \number_format((float) $value, (int) $config['graph_precision'])
+                        \number_format((float) $value, (int) $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])
                     );
                 } else {
                     $imgTitle .= __('Last value: ').$value;

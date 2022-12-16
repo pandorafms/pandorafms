@@ -6592,10 +6592,11 @@ function ui_print_comments($comments)
     } else {
         $rest_time = (time() - $last_comment['utimestamp']);
         $time_last = (($rest_time / 60) / 60);
-        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
+
+        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], $config['thousand_separator']).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], $config['thousand_separator']).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     }
 

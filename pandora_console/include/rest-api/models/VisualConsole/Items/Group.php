@@ -397,10 +397,12 @@ final class Group extends Item
         string $groupName,
         array $agentStats
     ): string {
-        $critical = \number_format($agentStats['critical'], 2).'%';
-        $warning = \number_format($agentStats['warning'], 2).'%';
-        $normal = \number_format($agentStats['normal'], 2).'%';
-        $unknown = \number_format($agentStats['unknown'], 2).'%';
+        global $config;
+
+        $critical = \number_format($agentStats['critical'], 2, $config['decimal_separator'], $config['thousand_separator']).'%';
+        $warning = \number_format($agentStats['warning'], 2, $config['decimal_separator'], $config['thousand_separator']).'%';
+        $normal = \number_format($agentStats['normal'], 2, $config['decimal_separator'], $config['thousand_separator']).'%';
+        $unknown = \number_format($agentStats['unknown'], 2, $config['decimal_separator'], $config['thousand_separator']).'%';
 
         $html = '<div class="group-container">';
         $html .= '<div class="group-item-title">';

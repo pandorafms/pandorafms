@@ -396,8 +396,8 @@ final class Percentile extends Item
         $data['value'] = (float) \number_format(
             (float) $moduleValue,
             (int) $config['graph_precision'],
-            '.',
-            ''
+            $config['decimal_separator'],
+            $config['thousand_separator']
         );
         $unit = '';
         if ($moduleId !== null && $moduleId !== 0) {

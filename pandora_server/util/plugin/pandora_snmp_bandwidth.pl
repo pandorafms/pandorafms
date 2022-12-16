@@ -230,7 +230,12 @@ sub prepare_tree {
 
     my $duplex = snmp_get(\%duplex_call);
     if (ref($duplex) eq "HASH") {
+<<<<<<< Updated upstream
       if (! exists($duplex->{'data'}) || $duplex->{'data'} eq '') {
+=======
+      if ($duplex->{'data'} ne '2' && $duplex->{'data'} ne '3') {
+        # Unknown duplex.
+>>>>>>> Stashed changes
         $duplex = 0;
       } else {
         $duplex = int $duplex->{'data'};

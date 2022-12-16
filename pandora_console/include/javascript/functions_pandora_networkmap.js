@@ -1699,7 +1699,6 @@ function selected_node(d, selected_param, hold_other_selections) {
   );
 
   d3.event.stopPropagation();
-  d3.event.preventDefault();
 }
 
 function clear_selection() {
@@ -4020,8 +4019,8 @@ function draw_elements_graph() {
         font_size +
         "px !important; text-align:center; text-anchor:middle; fill:#000000"
     )
-    .text(function(d) {
-      return ellipsize(get_node_name_ov(d), 30);
+    .html(function(d) {
+      return get_node_name_ov(d, true, font_size);
     })
     .classed("dragable_node fill_fff", true) //own dragable
     .on("click", selected_node)
@@ -4030,7 +4029,7 @@ function draw_elements_graph() {
     });
 
   node_temp.append("title").text(function(d) {
-    return get_node_name_ov(d);
+    return get_node_name_ov(d, false);
   });
 
   node.exit().remove();
@@ -4040,9 +4039,18 @@ function is_central_node(data) {
   return data.type == 0 && data.id_agent == 0;
 }
 
-function get_node_name_ov(data) {
+function get_node_name_ov(data, generate_link, font_size) {
+  font_size = font_size || 20;
+
+  var data_text = data.text;
+
+  if (generate_link === true && data.networkmap_id > 0) {
+    data_text = `<a href="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap&amp;tab=view&amp;id_networkmap=
+    ${data.networkmap_id}" style="font-size: ${font_size}px;">${data.text}</a>`;
+  }
+
   // Node central name should be the product name
-  return is_central_node(data) ? $("#hidden-product_name").val() : data.text;
+  return is_central_node(data) ? $("#hidden-product_name").val() : data_text;
 }
 
 function choose_group_for_show_agents() {

@@ -4020,6 +4020,8 @@ function draw_elements_graph() {
         "px !important; text-align:center; text-anchor:middle; fill:#000000"
     )
     .html(function(d) {
+      d.text = ellipsize(d.text, 30);
+
       return get_node_name_ov(d, true, font_size);
     })
     .classed("dragable_node fill_fff", true) //own dragable

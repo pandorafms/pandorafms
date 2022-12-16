@@ -4043,6 +4043,7 @@ function is_central_node(data) {
 
 function get_node_name_ov(data, generate_link, font_size) {
   font_size = font_size || 20;
+  generate_link = generate_link || false;
 
   var data_text = data.text;
 

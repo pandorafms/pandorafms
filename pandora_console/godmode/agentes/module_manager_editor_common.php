@@ -372,8 +372,6 @@ if ($edit === false) {
     );
 }
 
-hd($type_names_hash);
-hd($_REQUEST);
 // Store the relation between id and name of the types on a hidden field.
 $table_simple->data['module_n_type'][1] .= html_print_input_hidden(
     'type_names',
@@ -866,17 +864,31 @@ $tagsCompleteData = html_print_div(
     true
 );
 
+$sqlGetTags = sprintf(
+    'SELECT a.id_tag, name FROM ttag a, %s b WHERE a.id_tag = b.id_tag AND %s = %s %s ORDER BY name',
+    $__table_modules,
+    $__id_where,
+    $__id,
+    $__sql
+);
+
+$listSelectedTags = db_get_all_rows_sql($sqlGetTags);
+
+$listSelectedTagShow = array_reduce(
+    $listSelectedTags,
+    function ($carry, $item) {
+        $carry[] = $item['id_tag'];
+        return $carry;
+    }
+);
+
 $tagsCompleteData .= html_print_div(
     [
         'class'   => 'tags_selected_container',
         'content' => html_print_select_from_sql(
-            "SELECT a.id_tag, name 
-            FROM ttag a, $__table_modules b
-            WHERE a.id_tag = b.id_tag AND $__id_where = $__id
-                $__sql
-            ORDER BY name",
+            $sqlGetTags,
             'id_tag_selected[]',
-            '',
+            $listSelectedTagShow,
             '',
             '',
             '',
@@ -890,7 +902,22 @@ $tagsCompleteData .= html_print_div(
     ],
     true
 );
-
+/*
+    $tagsCompleteData .= html_print_select(
+    $listSelectedTags,
+    'id_tag_selected[]',
+    $listSelectedTagShow,
+    '',
+    '',
+    0,
+    true,
+    true,
+    false,
+    '',
+    $disabledBecauseInPolicy,
+    'width: 200px;'
+    );
+*/
 $table_advanced->data['tags_module_parent'][0] .= html_print_div(
     [
         'class'   => 'tags_complete_container',

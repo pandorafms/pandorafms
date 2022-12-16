@@ -910,7 +910,7 @@ if (isset($_GET['fix_module'])) {
 }
 
 $update_agent = (bool) get_parameter('update_agent');
-
+hd($_REQUEST, true);
 // Update AGENT.
 if ($update_agent) {
     // If modified some agent paramenter.

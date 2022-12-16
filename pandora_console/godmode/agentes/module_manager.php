@@ -55,21 +55,25 @@ $sec2 = (string) get_parameter('sec2');
 $filterTable = new stdClass();
 $filterTable->class = 'fixed_filter_bar';
 $filterTable->data = [];
-$filterTable->cellstyle[0][0] = 'flex: 0 1 20%;';
-$filterTable->data[0][0] = '<span>'.__('Search').'</span>';
+$filterTable->cellstyle[0][0] = 'flex: 0 1 20%;align-items: center;';
+$filterTable->data[0][0] = html_print_div([ 'content' => __('Search') ], true);
 $filterTable->data[0][0] .= html_print_input_text(
     'search_string',
     $search_string,
     '',
-    15,
+    0,
     255,
-    true
+    true,
+    false,
+    false,
+    '',
+    'w100p'
 );
 $filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
 
 if ((bool) $policy_page === false) {
     $filterTable->cellstyle[0][1] = 'flex: 0 1 20%';
-    $filterTable->data[0][1] = '<span>'.__('Show in hierachy mode').'</span>';
+    $filterTable->data[0][1] = html_print_div([ 'content' => __('Show in hierachy mode') ], true);
     $filterTable->data[0][1] .= html_print_checkbox_switch(
         'status_hierachy_mode',
         '',
@@ -1205,7 +1209,7 @@ foreach ($modules as $module) {
 }
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
+    echo '<form class="datatable_form" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
 		onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 }
 
@@ -1249,9 +1253,7 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
         false,
         '',
         false,
-        false,
-        false,
-        300
+        'width: 260px;',
     );
 
     html_print_action_buttons(

@@ -10666,7 +10666,6 @@ pre.external_tools_output {
 
 .fixed_filter_bar {
   position: sticky;
-  height: 60px;
   top: 114px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
@@ -10689,8 +10688,13 @@ pre.external_tools_output {
   justify-content: flex-start;
 }
 
-.fixed_filter_bar span {
-  margin-right: 15px;
+.fixed_filter_bar td > div {
+  margin-right: 10px;
+  font-size: 10pt;
+}
+
+.fixed_filter_bar input {
+  height: 32px;
 }
 
 .fixed_filter_content {

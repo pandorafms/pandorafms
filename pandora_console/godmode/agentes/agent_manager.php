@@ -377,21 +377,23 @@ if ($new_agent === true) {
     $tableAgent->data['additional_alias'][0] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
     $tableAgent->data['additional_alias'][1] = __('Use alias as name');
 } else {
-    $tableAgent->data['alias'][0] .= html_print_anchor(
-        [
-            'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5,
-            'content' => html_print_image(
-                'images/remote-configuration@svg.svg',
-                true,
-                [
-                    'border' => 0,
-                    'title'  => __('This agent can be remotely configured'),
-                    'class'  => 'invert_filter after_input_icon',
-                ]
-            ),
-        ],
-        true
-    );
+    if ($remote_agent === true) {
+        $tableAgent->data['alias'][0] .= html_print_anchor(
+            [
+                'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5,
+                'content' => html_print_image(
+                    'images/remote-configuration@svg.svg',
+                    true,
+                    [
+                        'border' => 0,
+                        'title'  => __('This agent can be remotely configured'),
+                        'class'  => 'invert_filter after_input_icon',
+                    ]
+                ),
+            ],
+            true
+        );
+    }
 }
 
 // Ip adress.
@@ -794,29 +796,30 @@ $tableAdvancedAgent->data['agent_quiet'][0] = html_print_checkbox_switch('quiet'
 // Remote configuration.
 if ($new_agent === false && isset($filename) === true && file_exists($filename['md5']) === true) {
     $tableAdvancedAgent->data['caption_remote_configuration'][0] = __('Remote configuration');
-    $tableAdvancedAgent->rowclass['remote_configuration'] = 'w540px';
+    $tableAdvancedAgent->cellstyle['remote_configuration'][0] = 'display: flex; align-items: center;';
+    $tableAdvancedAgent->cellclass['remote_configuration'][0] = 'w540px';
     $tableAdvancedAgent->data['remote_configuration'][0] = html_print_input_text(
         'remote_file_timestamp',
         date('F d Y H:i:s', fileatime($filename['md5'])),
         '',
-        68,
-        255,
+        0,
+        100,
         true,
         true,
         false,
         '',
-        ''
+        'w540px'
     );
     $tableAdvancedAgent->data['remote_configuration'][0] .= html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente,
-            'class'   => 'after_input_icon',
             'content' => html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
                 [
-                    'title' => __('Delete remote configuration file'),
-                    'class' => 'vertical_middle invert_filter mrgn_lft_5px',
+                    'border' => 0,
+                    'title'  => __('Delete remote configuration file'),
+                    'class'  => 'invert_filter after_input_icon',
                 ]
             ),
         ],

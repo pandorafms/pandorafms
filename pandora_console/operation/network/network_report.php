@@ -317,13 +317,20 @@ if (empty($data)) {
     echo '<div class="flex mrgn_top_10px">';
     html_print_table($table);
 
+    $options = [
+        'height' => 230,
+        'legend' => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+    ];
+
     // Print the graph.
     echo '<div class="mrgn_top_50px w40p">';
     echo pie_graph(
         $chart_data,
-        320,
-        200,
-        __('Others')
+        $options
     );
     echo '</div>';
     echo '</div>';

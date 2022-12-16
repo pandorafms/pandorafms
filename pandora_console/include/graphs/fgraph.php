@@ -154,18 +154,36 @@ function progressbar(
 /**
  * Draw vertical bars graph.
  *
- * @param array   $data   Data chart.
- * @param array   $params Params draw chart.
- * @param integer $ttl    Pdf option.
+ * @param array   $chart_data Data chart.
+ * @param array   $params     Params draw chart.
+ * @param integer $ttl        Pdf option.
  *
  * @return mixed
  */
 function vbar_graph(
-    array $data,
+    array $chart_data,
     array $options,
     int $ttl=1
 ) {
     global $config;
+
+    if (empty($chart_data) === true) {
+        return graph_nodata_image($options);
+    }
+
+    if (isset($options['ttl']) === true && (int) $options['ttl'] === 2) {
+        $params = [
+            'chart_data'         => $chart_data,
+            'options'            => $options,
+            'return_img_base_64' => true,
+        ];
+
+        return generator_chart_to_pdf('vbar_graph', $params);
+    }
+
+    $chart = get_build_setup_charts('BAR', $options, $chart_data);
+    $output = $chart->render(true);
+    return $output;
 
     // INFO IN: https://github.com/flot/flot/blob/master/API.md.
     // Xaxes chart Title.
@@ -769,27 +787,53 @@ function hbar_graph(
 }
 
 
+/**
+ * Pie graph PIE.
+ *
+ * @param array $chart_data Data.
+ * @param array $options    Options.
+ *
+ * @return string  Output html charts
+ */
 function pie_graph(
     $chart_data,
     $options
 ) {
-    /*
-        $width,
-        $height,
-        $others_str='other',
-        $homedir='',
-        $water_mark='',
-        $font='',
-        $font_size=8,
-        $ttl=1,
-        $legend_position=false,
-        $colors='',
-        $hide_labels=false,
-        $max_values=9
-    */
-
     if (empty($chart_data) === true) {
         return graph_nodata_image($options);
+    }
+
+    // Remove the html_entities.
+    $temp = [];
+    foreach ($chart_data as $key => $value) {
+        $temp[io_safe_output($key)] = $value;
+    }
+
+    $chart_data = $temp;
+
+    // Number max elements.
+    $max_values = (isset($options['maxValues']) === true) ? $options['maxValues'] : 9;
+    if (count($chart_data) > $max_values) {
+        $others_str = (isset($options['otherStr']) === true) ? $options['otherStr'] : __('Others');
+        $chart_data_trunc = [];
+        $n = 1;
+        foreach ($chart_data as $key => $value) {
+            if ($n < $max_values) {
+                $chart_data_trunc[$key] = $value;
+            } else {
+                if (isset($chart_data_trunc[$others_str]) === true) {
+                    $chart_data_trunc[$others_str] = 0;
+                }
+
+                if (empty($value) === false) {
+                    $chart_data_trunc[$others_str] += $value;
+                }
+            }
+
+            $n++;
+        }
+
+        $chart_data = $chart_data_trunc;
     }
 
     if ((int) $options['ttl'] === 2) {
@@ -805,72 +849,6 @@ function pie_graph(
     $chart = get_build_setup_charts('PIE', $options, $chart_data);
     $output = $chart->render(true, true);
     return $output;
-
-    /*
-        if ($water_mark !== false) {
-        setup_watermark($water_mark, $water_mark_file, $water_mark_url);
-        }
-
-        // This library allows only 8 colors.
-        // $max_values = 9;
-        // Remove the html_entities.
-        $temp = [];
-        foreach ($chart_data as $key => $value) {
-        $temp[io_safe_output($key)] = $value;
-        }
-
-        $chart_data = $temp;
-
-        if (count($chart_data) > $max_values) {
-        $chart_data_trunc = [];
-        $n = 1;
-        foreach ($chart_data as $key => $value) {
-            if ($n < $max_values) {
-                $chart_data_trunc[$key] = $value;
-            } else {
-                if (!isset($chart_data_trunc[$others_str])) {
-                    $chart_data_trunc[$others_str] = 0;
-                }
-
-                $chart_data_trunc[$others_str] += $value;
-            }
-
-            $n++;
-        }
-
-        $chart_data = $chart_data_trunc;
-        }
-
-        if ($ttl == 2) {
-        $params = [
-            'values'          => array_values($chart_data),
-            'keys'            => array_keys($chart_data),
-            'width'           => $width,
-            'height'          => $height,
-            'water_mark_url'  => $water_mark_url,
-            'font'            => $font,
-            'font_size'       => $font_size,
-            'legend_position' => $legend_position,
-            'colors'          => $colors,
-            'hide_labels'     => $hide_labels,
-        ];
-
-        return generator_chart_to_pdf('pie_chart', $params);
-        }
-
-        return flot_pie_chart(
-        array_values($chart_data),
-        array_keys($chart_data),
-        $width,
-        $height,
-        $water_mark_url,
-        $font,
-        $font_size,
-        $legend_position,
-        $colors,
-        $hide_labels
-        );
-    */
 }
 
 
@@ -887,16 +865,12 @@ function ring_graph(
     $options
 ) {
     global $config;
-    // TODO: XXX chartjs.
-    // $ttl
-    // $hide_labels
-    // $background_color
-    // $pdf
+
     if (empty($chart_data) === true) {
         return graph_nodata_image($options);
     }
 
-    if ((int) $options['ttl'] === 2) {
+    if (isset($options['ttl']) === true && (int) $options['ttl'] === 2) {
         $params = [
             'chart_data'         => $chart_data,
             'options'            => $options,
@@ -927,6 +901,10 @@ function get_build_setup_charts($type, $options, $data)
             $chart = $factory->create($factory::PIE);
         break;
 
+        case 'BAR':
+            $chart = $factory->create($factory::BAR);
+        break;
+
         default:
             // code...
         break;
@@ -941,6 +919,7 @@ function get_build_setup_charts($type, $options, $data)
         'radius'              => null,
         'rotation'            => null,
         'circumference'       => null,
+        'axis'                => 'y',
         'legend'              => [
             'display'  => true,
             'position' => 'top',
@@ -965,6 +944,52 @@ function get_build_setup_charts($type, $options, $data)
                 'style'      => 'normal',
                 'weight'     => null,
                 'lineHeight' => 1.2,
+            ],
+        ],
+        'dataLabel'           => [
+            'display'   => true,
+            'color'     => '',
+            'clip'      => true,
+            'clamp'     => true,
+            'formatter' => 'namefunction',
+            'fonts'     => [
+                'family'     => '',
+                'size'       => 12,
+                'style'      => 'normal',
+                'weight'     => null,
+                'lineHeight' => 1.2,
+            ],
+        ],
+        'scales'              => [
+            'x' => [
+                'grid'  => [
+                    'display' => false,
+                    'color'   => 'orange',
+                ],
+                'ticks' => [
+                    'fonts' => [
+                        'family'     => '',
+                        'size'       => 12,
+                        'style'      => 'normal',
+                        'weight'     => null,
+                        'lineHeight' => 1.2,
+                    ],
+                ],
+            ],
+            'y' => [
+                'grid'  => [
+                    'display' => false,
+                    'color'   => 'orange',
+                ],
+                'ticks' => [
+                    'fonts' => [
+                        'family'     => '',
+                        'size'       => 12,
+                        'style'      => 'normal',
+                        'weight'     => null,
+                        'lineHeight' => 1.2,
+                    ],
+                ],
             ],
         ],
     ];
@@ -1060,6 +1085,68 @@ function get_build_setup_charts($type, $options, $data)
 
     $chart->options()->getPlugins()->getLegend()->setAlign($legendAlign);
 
+    // Display labels.
+    if (isset($options['dataLabel']) === true
+        && empty($options['dataLabel']) === false
+        && is_array($options['dataLabel']) === true
+    ) {
+        $dataLabel = $chart->options()->getPlugins()->getDataLabel();
+
+        $chart->addPlugin('ChartDataLabels');
+
+        $dataLabelDisplay = 'auto';
+        if (isset($options['dataLabel']['display']) === true) {
+            $dataLabelDisplay = $options['dataLabel']['display'];
+        }
+
+        $dataLabel->setDisplay($dataLabelDisplay);
+
+        $dataLabelColor = '#ffffff';
+        if (isset($options['dataLabel']['color']) === true) {
+            $dataLabelColor = $options['dataLabel']['color'];
+        }
+
+        $dataLabel->setColor($dataLabelColor);
+
+        $dataLabelClip = true;
+        if (isset($options['dataLabel']['clip']) === true) {
+            $dataLabelClip = $options['dataLabel']['clip'];
+        }
+
+        $dataLabel->setClip($dataLabelClip);
+
+        $dataLabelClamp = true;
+        if (isset($options['dataLabel']['clamp']) === true) {
+            $dataLabelClamp = $options['dataLabel']['clamp'];
+        }
+
+        $dataLabel->setClamp($dataLabelClamp);
+
+        $dataLabelFormatter = 'formatterDataLabelPie';
+        if (isset($options['dataLabel']['formatter']) === true) {
+            $dataLabelFormatter = $options['dataLabel']['formatter'];
+        }
+
+        $dataLabel->setFormatter($dataLabelFormatter);
+
+        if (isset($options['dataLabel']['fonts']) === true
+            && empty($options['dataLabel']['fonts']) === false
+            && is_array($options['dataLabel']['fonts']) === true
+        ) {
+            if (isset($options['dataLabel']['fonts']['size']) === true) {
+                $dataLabel->getFonts()->setSize($options['dataLabel']['fonts']['size']);
+            }
+
+            if (isset($options['dataLabel']['fonts']['style']) === true) {
+                $dataLabel->getFonts()->setStyle($options['dataLabel']['fonts']['style']);
+            }
+
+            if (isset($options['dataLabel']['fonts']['family']) === true) {
+                $dataLabel->getFonts()->setFamily($options['dataLabel']['fonts']['family']);
+            }
+        }
+    }
+
     // Title.
     if (isset($options['title']) === true
         && empty($options['title']) === false
@@ -1132,21 +1219,122 @@ function get_build_setup_charts($type, $options, $data)
         $chart->setCircumference($options['circumference']);
     }
 
+    if (isset($options['scales']) === true
+        && empty($options['scales']) === false
+        && is_array($options['scales']) === true
+    ) {
+        $scales = $chart->options()->getScales();
+        if (isset($options['scales']['x']) === true
+            && empty($options['scales']['x']) === false
+            && is_array($options['scales']['x']) === true
+        ) {
+            if (isset($options['scales']['x']['bounds']) === true) {
+                $scales->getX()->setBounds($options['scales']['x']['bounds']);
+            }
+
+            if (isset($options['scales']['x']['grid']) === true
+                && empty($options['scales']['x']['grid']) === false
+                && is_array($options['scales']['x']['grid']) === true
+            ) {
+                if (isset($options['scales']['x']['grid']['display']) === true) {
+                    $scales->getX()->grid()->setDrawOnChartArea($options['scales']['x']['grid']['display']);
+                }
+
+                if (isset($options['scales']['x']['grid']['color']) === true) {
+                    $scales->getX()->grid()->setColor($options['scales']['x']['grid']['color']);
+                }
+            }
+
+            if (isset($options['scales']['x']['ticks']) === true
+                && empty($options['scales']['x']['ticks']) === false
+                && is_array($options['scales']['x']['ticks']) === true
+            ) {
+                if (isset($options['scales']['x']['ticks']['fonts']) === true
+                    && empty($options['scales']['x']['ticks']['fonts']) === false
+                    && is_array($options['scales']['x']['ticks']['fonts']) === true
+                ) {
+                    $scaleXTicksFonts = $scales->getX()->ticks()->getFonts();
+                    if (isset($options['scales']['x']['ticks']['fonts']['size']) === true) {
+                        $scaleXTicksFonts->setSize($options['scales']['x']['ticks']['fonts']['size']);
+                    }
+
+                    if (isset($options['scales']['x']['ticks']['fonts']['style']) === true) {
+                        $scaleXTicksFonts->setStyle($options['scales']['x']['ticks']['fonts']['style']);
+                    }
+
+                    if (isset($options['scales']['x']['ticks']['fonts']['family']) === true) {
+                        $scaleXTicksFonts->setFamily($options['scales']['x']['ticks']['fonts']['family']);
+                    }
+                }
+            }
+        }
+
+        if (isset($options['scales']['y']) === true
+            && empty($options['scales']['y']) === false
+            && is_array($options['scales']['y']) === true
+        ) {
+            if (isset($options['scales']['y']['bounds']) === true) {
+                $scales->getY()->setBounds($options['scales']['y']['bounds']);
+            }
+
+            if (isset($options['scales']['y']['grid']) === true
+                && empty($options['scales']['y']['grid']) === false
+                && is_array($options['scales']['y']['grid']) === true
+            ) {
+                if (isset($options['scales']['y']['grid']['display']) === true) {
+                    $scales->getY()->grid()->setDrawOnChartArea($options['scales']['y']['grid']['display']);
+                }
+
+                if (isset($options['scales']['y']['grid']['color']) === true) {
+                    $scales->getY()->grid()->setColor($options['scales']['y']['grid']['color']);
+                }
+            }
+
+            if (isset($options['scales']['y']['ticks']) === true
+                && empty($options['scales']['y']['ticks']) === false
+                && is_array($options['scales']['y']['ticks']) === true
+            ) {
+                if (isset($options['scales']['y']['ticks']['fonts']) === true
+                    && empty($options['scales']['y']['ticks']['fonts']) === false
+                    && is_array($options['scales']['y']['ticks']['fonts']) === true
+                ) {
+                    $scaleYTicksFonts = $scales->getY()->ticks()->getFonts();
+                    if (isset($options['scales']['y']['ticks']['fonts']['size']) === true) {
+                        $scaleYTicksFonts->setSize($options['scales']['y']['ticks']['fonts']['size']);
+                    }
+
+                    if (isset($options['scales']['y']['ticks']['fonts']['style']) === true) {
+                        $scaleYTicksFonts->setStyle($options['scales']['y']['ticks']['fonts']['style']);
+                    }
+
+                    if (isset($options['scales']['y']['ticks']['fonts']['family']) === true) {
+                        $scaleYTicksFonts->setFamily($options['scales']['y']['ticks']['fonts']['family']);
+                    }
+                }
+            }
+        }
+    }
+
     // Color.
     if (isset($options['colors']) === true
         && empty($options['colors']) === false
         && is_array($options['colors']) === true
     ) {
         $colors = $options['colors'];
+        $borders = $options['colors'];
     } else {
         // Colors.
         $defaultColor = [];
+        $defaultBorder = [];
         $defaultColorArray = color_graph_array();
         foreach ($defaultColorArray as $key => $value) {
-            $defaultColor[$key] = $value['color'];
+            list($r, $g, $b) = sscanf($value['color'], '#%02x%02x%02x');
+            $defaultColor[$key] = 'rgba('.$r.', '.$g.', '.$b.', 0.6)';
+            $defaultBorder[$key] = $value['color'];
         }
 
         $colors = array_values($defaultColor);
+        $borders = array_values($defaultBorder);
     }
 
     // Set labels.
@@ -1154,7 +1342,34 @@ function get_build_setup_charts($type, $options, $data)
 
     // Add Datasets.
     $setData = $chart->createDataSet();
-    $setData->setLabel('data')->setBackgroundColor($colors)->data()->exchangeArray(array_values($data));
+    switch ($type) {
+        case 'DOUGHNUT':
+        case 'PIE':
+            $setData->setLabel('data')->setBackgroundColor($borders);
+            $setData->setLabel('data')->data()->exchangeArray(array_values($data));
+        break;
+
+        case 'BAR':
+            $setData->setLabel('data')->setBackgroundColor($colors);
+            $setData->setLabel('data')->setBorderColor($borders);
+            $setData->setLabel('data')->setBorderWidth(2);
+
+            $setData->setLabel('data')->data()->exchangeArray(array_values($data));
+
+            // Para las horizontales.
+            if (isset($options['axis']) === true
+                && empty($options['axis']) === false
+            ) {
+                $chart->options()->setIndexAxis($options['axis']);
+                $setData->setAxis($options['axis']);
+            }
+        break;
+
+        default:
+            // code...
+        break;
+    }
+
     $chart->addDataSet($setData);
 
     return $chart;

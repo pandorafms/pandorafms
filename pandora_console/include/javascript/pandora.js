@@ -2199,3 +2199,13 @@ function loadPasswordConfig(id, value) {
     }
   });
 }
+
+var formatterDataLabelPie = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  console.log(datasets[0].data);
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+    let percentage = ((value * 100) / sum).toFixed(1) + "%";
+    return percentage;
+  }
+};

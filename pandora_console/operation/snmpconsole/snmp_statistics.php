@@ -211,16 +211,19 @@ unset($table_source_data);
 if (empty($table_source_graph_data)) {
     $table_source_graph = graph_nodata_image([]);
 } else {
+    $options = [
+        'height'    => 200,
+        'waterMark' => $water_mark,
+        'legend'    => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+    ];
+
     $table_source_graph = pie_graph(
         $table_source_graph_data,
-        400,
-        550,
-        __('Other'),
-        '',
-        $water_mark,
-        $config['fontpath'],
-        $config['font_size'],
-        1
+        $options
     );
 }
 
@@ -268,16 +271,19 @@ unset($table_oid_data);
 if (empty($table_oid_graph_data)) {
     $table_oid_graph = graph_nodata_image([]);
 } else {
+    $options = [
+        'height'    => 200,
+        'waterMark' => $water_mark,
+        'legend'    => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+    ];
+
     $table_oid_graph = pie_graph(
         $table_oid_graph_data,
-        400,
-        550,
-        __('Other'),
-        '',
-        $water_mark,
-        $config['fontpath'],
-        $config['font_size'],
-        1
+        $options
     );
 }
 

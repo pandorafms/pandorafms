@@ -2344,7 +2344,7 @@ function get_if_module_is_image($id_module)
 }
 
 
-function get_bars_module_data($id_module, $vBars=false)
+function get_bars_module_data($id_module)
 {
     // This charts is only serialize graphs.
     // In other string show image no data to show.
@@ -2355,7 +2355,7 @@ function get_bars_module_data($id_module, $vBars=false)
     );
 
     $values = false;
-    // avoid showing the image type modules. WUX
+    // Avoid showing the image type modules. WUX.
     if (strpos($mod_values, 'data:image/png;base64') !== 0) {
         if (preg_match("/\r\n/", $mod_values)) {
             $values = explode("\r\n", $mod_values);
@@ -2373,19 +2373,9 @@ function get_bars_module_data($id_module, $vBars=false)
         return false;
     }
 
-    if ($vBars === false) {
-        foreach ($values as $val) {
-            $data = explode(',', $val);
-            $values_to_return[$data[0]] = ['g' => $data[1]];
-        }
-    } else {
-        foreach ($values as $val) {
-            $data = explode(',', $val);
-            $values_to_return[] = [
-                'tick' => $data[0],
-                'data' => $data[1],
-            ];
-        }
+    foreach ($values as $val) {
+        $data = explode(',', $val);
+        $values_to_return[$data[0]] = $data[1];
     }
 
     return $values_to_return;

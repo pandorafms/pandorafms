@@ -509,17 +509,13 @@ class TopNEventByModuleWidget extends Widget
 
             $output = pie_graph(
                 $data_pie,
-                $width,
-                $height,
-                __('other'),
-                '',
-                false,
-                $config['fontpath'],
-                $config['font_size'],
-                1,
-                $this->values['legendPosition'],
-                '',
-                false
+                [
+                    'legend' => [
+                        'display'  => true,
+                        'position' => 'right',
+                        'align'    => 'center',
+                    ],
+                ]
             );
         }
 

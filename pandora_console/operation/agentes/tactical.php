@@ -222,7 +222,6 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         $event_filter .= ' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
     }
 
-    hd('aaaaaaaaaaaaaaa');
     $events = events_print_event_table($event_filter, 10, '100%', true, false, true);
     ui_toggle(
         $events,

@@ -4238,20 +4238,32 @@ function generator_chart_to_pdf(
         ];
     }
 
-    $browserFactory = new BrowserFactory('chromium-browser');
-
-    // Starts headless chrome.
-    $browser = $browserFactory->createBrowser(['noSandbox' => true]);
     try {
-        // Creates a new page and navigate to an URL.
+        $browserFactory = new BrowserFactory('chromium-browser');
+
+        // Starts headless chrome.
+        $browser = $browserFactory->createBrowser(['noSandbox' => true]);
+
+        // Creates a new page.
         $page = $browser->createPage();
 
-        $page->navigate($url.'?data='.urlencode(json_encode($data)))->waitForNavigation(Page::DOM_CONTENT_LOADED);
+        // Navigate to an URL.
+        $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
+        $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+
+        // Dynamic.
         $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();
         if (empty($dynamic_height) === true) {
             $dynamic_height = 200;
         }
 
+        if (isset($params['options']['viewport']) === true
+            && isset($params['options']['viewport']['height']) === true
+        ) {
+            $dynamic_height = $params['options']['viewport']['height'];
+        }
+
+        // Width page A4.
         $width = 794;
         if (isset($params['options']['viewport']) === true
             && isset($params['options']['viewport']['width']) === true
@@ -4260,26 +4272,22 @@ function generator_chart_to_pdf(
         }
 
         $clip = new Clip(0, 0, $width, $dynamic_height);
-        $b64 = $page->screenshot(['clip' => $clip])->getBase64();
+
+        if ($params['return_img_base_64']) {
+            $b64 = $page->screenshot(['clip' => $clip])->getBase64();
+            // To be used in alerts.
+            return $b64;
+        } else {
+            // To be used in PDF files.
+            $b64 = $page->screenshot(['clip' => $clip])->saveToFile($img_path);
+            $config['temp_images'][] = $img_path;
+            return '<img src="'.$img_url.'" />';
+        }
     } catch (\Throwable $th) {
         hd($th, true);
     } finally {
         $browser->close();
     }
-
-    // TODO: XXX chartjs.
-    /*
-        if ($params['return_img_base_64']) {
-        // To be used in alerts.
-        return $img_content;
-        } else {
-        // To be used in PDF files.
-        $config['temp_images'][] = $img_path;
-        return '<img src="'.$img_url.'" />';
-        }
-    */
-
-    return $b64;
 }
 
 

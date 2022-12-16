@@ -55,6 +55,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
 
         // Chartjs.
         $output .= '<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/chartjs/chart.js').'"></script>';
+        $output .= '<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/chartjs/chartjs-plugin-datalabels.min.js').'"></script>';
 
         $output .= "
 			<script type='text/javascript'>

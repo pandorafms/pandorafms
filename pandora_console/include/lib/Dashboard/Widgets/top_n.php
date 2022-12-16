@@ -476,7 +476,7 @@ class TopNWidget extends Widget
         foreach ($modules as $module) {
             $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20, false, true, false);
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
-            $data_hbar[$item_name]['g'] = $module[$display];
+            $data_hbar[io_safe_output($item_name)] = $module[$display];
             // Calculation of max-min values for show in graph.
             $calc = (ceil((5 * (float) $module[$display]) / 100) + $module[$display]);
             // Set of max-min values for graph.
@@ -498,26 +498,23 @@ class TopNWidget extends Widget
 
         $height = (count($data_hbar) * 25 + 35);
         $output .= '<div class="container-center">';
-        $output .= hbar_graph(
-            array_reverse($data_hbar),
-            $size['width'],
-            $height,
-            [],
-            [],
-            '',
-            '',
-            '',
-            '',
-            $config['homedir'].'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            true,
-            1,
-            $config['homeurl'],
-            'white',
-            '#DFDFDF',
-            $valueMin,
-            $valueMax
+        $options = [
+            'height' => $height,
+            'axis'   => 'y',
+            'legend' => ['display' => false],
+            'scales' => [
+                'x' => [
+                    'grid' => ['display' => false],
+                ],
+                'y' => [
+                    'grid' => ['display' => false],
+                ],
+            ],
+        ];
+
+        $output .= vbar_graph(
+            $data_hbar,
+            $options
         );
         $output .= '</div>';
 

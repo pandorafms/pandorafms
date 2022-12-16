@@ -351,7 +351,7 @@ class Cluster extends Entity
                 ['nombre' => $name]
             );
 
-            if ($module !== null) {
+            if ($module !== null && empty($module) === false) {
                 if (count($module) > 1) {
                     $msg = __METHOD__.' error: Multiple occurrences of "';
                     $msg .= $name.'", please remove duplicates from agent "';

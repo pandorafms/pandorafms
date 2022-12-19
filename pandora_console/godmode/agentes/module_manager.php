@@ -1002,7 +1002,7 @@ foreach ($modules as $module) {
     // Module type (by server type ).
     $data[2] = '';
     if ($module['id_modulo'] > 0) {
-        $data[2] = servers_show_type($module['id_modulo']);
+        $data[2] = ui_print_servertype_icon((int) $module['id_modulo']);
     }
 
     $module_status = db_get_row(

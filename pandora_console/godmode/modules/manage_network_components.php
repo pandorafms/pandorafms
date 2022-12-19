@@ -798,55 +798,7 @@ foreach ($components as $component) {
         $data[0] = io_safe_output($component['name']);
     }
 
-    switch ($component['id_modulo']) {
-        case MODULE_NETWORK:
-            $data[1] .= html_print_image(
-                'images/op_network.png',
-                true,
-                [
-                    'title' => __('Network module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_WMI:
-            $data[1] .= html_print_image(
-                'images/wmi.png',
-                true,
-                [
-                    'title' => __('WMI module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_PLUGIN:
-            $data[1] .= html_print_image(
-                'images/plugin.png',
-                true,
-                [
-                    'title' => __('Plug-in module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_WIZARD:
-            $data[1] .= html_print_image(
-                'images/wand.png',
-                true,
-                [
-                    'title' => __('Wizard module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        default:
-            // Not possible.
-        break;
-    }
+    $data[1] .= ui_print_servertype_icon((int) $component['id_modulo']);
 
     $data[2] = ui_print_moduletype_icon($component['type'], true);
     $data[3] = "<span class='font_8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';

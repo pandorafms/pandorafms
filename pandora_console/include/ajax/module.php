@@ -1102,7 +1102,7 @@ if (check_login()) {
                 }
             }
 
-            $data[2] = servers_show_type($module['id_modulo']).'&nbsp;';
+            $data[2] = ui_print_servertype_icon((int) $module['id_modulo']);
 
             if (check_acl($config['id_user'], $id_grupo, 'AW')
                 && $cluster_view === false

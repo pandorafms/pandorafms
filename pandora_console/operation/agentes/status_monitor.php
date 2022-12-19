@@ -1552,7 +1552,7 @@ if (!empty($result)) {
         }
 
         if (in_array('server_type', $show_fields) || is_metaconsole()) {
-            $data[4] = servers_show_type($row['id_modulo']);
+            $data[4] = ui_print_servertype_icon((int) $row['id_modulo']);
         }
 
 
@@ -1574,8 +1574,8 @@ if (!empty($result)) {
             }
         }
 
-        if (in_array('server_type', $show_fields) || is_metaconsole()) {
-            $data[4] = servers_show_type($row['id_modulo']);
+        if (in_array('server_type', $show_fields) === true || is_metaconsole() === true) {
+            $data[4] = ui_print_servertype_icon((int) $row['id_modulo']);
         }
 
 

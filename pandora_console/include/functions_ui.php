@@ -6829,3 +6829,76 @@ function ui_print_spinner(string $text='Loading', bool $return=false)
         echo $output;
     }
 }
+
+
+/**
+ * Return a formed server type icon.
+ *
+ * @param integer $id Id of server type.
+ *
+ * @return string.
+ */
+function ui_print_servertype_icon(int $id)
+{
+    switch ($id) {
+        case MODULE_DATA:
+            $title = __('Data server');
+            $image = 'images/data-server@svg.svg';
+        break;
+
+        case MODULE_NETWORK:
+            $title = __('Network server');
+            $image = 'images/network-server@svg.svg';
+        break;
+
+        case MODULE_PLUGIN:
+            $title = __('Plugin server');
+            $image = 'images/plugins@svg.svg';
+        break;
+
+        case MODULE_PREDICTION:
+            $title = __('Prediction server');
+            $image = 'images/prediction@svg.svg';
+        break;
+
+        case MODULE_WMI:
+            $title = __('WMI server');
+            $image = 'images/WMI@svg.svg';
+        break;
+
+        case MODULE_WEB:
+            $title = __('WEB server');
+            $image = 'images/server-web@svg.svg';
+        break;
+
+        case MODULE_WUX:
+            $title = __('WUX server');
+            $image = 'images/wux@svg.svg';
+        break;
+
+        case MODULE_WIZARD:
+            $title = __('Wizard Module');
+            $image = 'images/wizard@svg.svg';
+        break;
+
+        default:
+            $title = '';
+            $image = '';
+        break;
+    }
+
+    if (empty($title) === true && empty($image) === true) {
+        $return = '--';
+    } else {
+        $return = html_print_image(
+            $image,
+            true,
+            [
+                'title' => sprintf('%s %s', get_product_name(), $title),
+                'class' => 'invert_filter main_menu_icon',
+            ]
+        );
+    }
+
+    return $return;
+}

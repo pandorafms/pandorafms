@@ -873,14 +873,18 @@ $sqlGetTags = sprintf(
 );
 
 $listSelectedTags = db_get_all_rows_sql($sqlGetTags);
+if (empty($listSelectedTags) === false) {
+    $listSelectedTagShow = array_reduce(
+        $listSelectedTags,
+        function ($carry, $item) {
+            $carry[] = $item['id_tag'];
+            return $carry;
+        }
+    );
+} else {
+    $listSelectedTagShow = [];
+}
 
-$listSelectedTagShow = array_reduce(
-    $listSelectedTags,
-    function ($carry, $item) {
-        $carry[] = $item['id_tag'];
-        return $carry;
-    }
-);
 
 $tagsCompleteData .= html_print_div(
     [

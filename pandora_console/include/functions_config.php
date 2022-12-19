@@ -1475,6 +1475,15 @@ function config_update_config()
                     if (config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'), true) === false) {
                         $error_update[] = __('Use data multiplier');
                     }
+
+                    if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {
+                        $error_update[] = __('Decimal separator');
+                    } else {
+                        $thousand_separator = ((string) get_parameter('decimal_separator', '.') === '.') ? ',' : '.';
+                        if (config_update_value('thousand_separator', $thousand_separator, true) === false) {
+                            $error_update[] = __('Thousand separator');
+                        }
+                    }
                 break;
 
                 case 'net':
@@ -3446,7 +3455,7 @@ function config_process_config()
     }
 
     if (!isset($config['ehorus_port'])) {
-        config_update_value('ehorus_port', 18080);
+        config_update_value('ehorus_port', 443);
     }
 
     if (!isset($config['ehorus_req_timeout'])) {
@@ -3477,6 +3486,10 @@ function config_process_config()
 
     if (!isset($config['module_library_password'])) {
         config_update_value('module_library_password', '');
+    }
+
+    if (!isset($config['decimal_separator'])) {
+        config_update_value('decimal_separator', '.');
     }
 
     // Finally, check if any value was overwritten in a form.

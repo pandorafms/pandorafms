@@ -223,6 +223,8 @@ function list_files($directory, $stringSearch, $searchHandler, $return=false)
  */
 function format_numeric($number, $decimals=1)
 {
+    global $config;
+
     // Translate to float in case there are characters in the string so
     // fmod doesn't throw a notice
     $number = (float) $number;
@@ -231,17 +233,11 @@ function format_numeric($number, $decimals=1)
         return 0;
     }
 
-    // Translators: This is separator of decimal point
-    $dec_point = __('.');
-    // Translators: This is separator of decimal point
-    $thousands_sep = __(',');
-
-    // If has decimals
     if (fmod($number, 1) > 0) {
-        return number_format($number, $decimals, $dec_point, $thousands_sep);
+        return number_format($number, $decimals, $config['decimal_separator'], $config['thousand_separator']);
     }
 
-    return number_format($number, 0, $dec_point, $thousands_sep);
+    return number_format($number, 0, $config['decimal_separator'], $config['thousand_separator']);
 }
 
 
@@ -4088,14 +4084,18 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                     $data_return['legend'][$key] .= ' '.__('Max:');
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                     $data_return['legend'][$key] .= ' '._('Avg:');
@@ -4103,7 +4103,8 @@ function series_type_graph_array($data, $show_elements_graph)
                         number_format(
                             $value['avg'],
                             $config['graph_precision'],
-                            $config['csv_decimal_separator']
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     ).' '.$str;
                 }
@@ -4160,7 +4161,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['data'][0][1],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     ).' '.$str;
                 }

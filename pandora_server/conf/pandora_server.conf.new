@@ -533,14 +533,6 @@ snmpserver 1
 
 snmp_threads 4
 
-# Pandora FMS TransactionalServer (PANDORA FMS ENTERPRISE ONLY).
-
-transactionalserver 0
-
-# Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
-
-transactional_threshold 2
-
 # Block size for block producer/consumer servers, that is, the number of modules
 # per block (15 by default) (PANDORA FMS ENTERPRISE ONLY).
 

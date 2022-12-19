@@ -2291,7 +2291,9 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
                     $row['data_module'] = remove_right_zeros(
                         number_format(
                             $data['data_module'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                 } else {
@@ -2784,7 +2786,7 @@ function reporting_html_historical_data($table, $item, $pdf=0)
         } else {
             $row = [
                 $data[__('Date')],
-                remove_right_zeros(number_format($data[__('Data')], $config['graph_precision'])),
+                remove_right_zeros(number_format($data[__('Data')], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
             ];
         }
 
@@ -2924,7 +2926,9 @@ function reporting_html_last_value($table, $item, $pdf=0)
             $dataDatos = remove_right_zeros(
                 number_format(
                     $item['data']['datos'],
-                    $config['graph_precision']
+                    $config['graph_precision'],
+                    $config['decimal_separator'],
+                    $config['thousand_separator']
                 )
             );
         } else {
@@ -3469,7 +3473,9 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
         ).' '.__('OK').': '.remove_right_zeros(
             number_format(
                 $item['data']['ok']['value'],
-                $config['graph_precision']
+                $config['graph_precision'],
+                $config['decimal_separator'],
+                $config['thousand_separator']
             )
         ).' %</p>';
 
@@ -3480,7 +3486,9 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
         ).' '.__('Not OK').': '.remove_right_zeros(
             number_format(
                 $item['data']['fail']['value'],
-                $config['graph_precision']
+                $config['graph_precision'],
+                $config['decimal_separator'],
+                $config['thousand_separator']
             )
         ).' % '.'</p>';
     }
@@ -3834,7 +3842,9 @@ function reporting_html_value(
                         remove_right_zeros(
                             number_format(
                                 $data[__('Maximun')],
-                                $config['graph_precision']
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
                             )
                         ),
                     ];

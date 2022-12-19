@@ -2178,7 +2178,7 @@ function html_print_extended_select_for_time(
             false,
             $class,
             $readonly,
-            'padding: 0px 5px; height: 42px; margin-top: -6px; width: 140px;'.$select_style,
+            'padding: 0px 5px; height: 42px; margin: -6px 0 0 6px; width: 140px;'.$select_style,
             false,
             false,
             false,
@@ -2279,7 +2279,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
     $table = new stdClass();
     $table->id = 'cron';
     $table->width = '100%';
-    $table->class = 'table_section cron_section';
+    $table->class = 'cron_section';
     $table->style = [];
     $table->style[0] = 'width: 20%;';
     $table->style[1] = 'width: 20%;';

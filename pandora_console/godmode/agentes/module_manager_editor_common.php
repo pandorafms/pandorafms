@@ -433,7 +433,7 @@ if ((bool) $disabledBecauseInPolicy === true) {
 
 // Thresholds Table.
 $tableBasicThresholds = new stdClass();
-$tableBasicThresholds->class = 'w100p table_section';
+$tableBasicThresholds->class = 'w100p';
 $tableBasicThresholds->id = 'basic_thresholds';
 $tableBasicThresholds->style = [];
 $tableBasicThresholds->rowclass = [];
@@ -591,10 +591,10 @@ if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeM
 }
 
 $table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 320px;width: 100%';
-$table_simple->cellclass['thresholds_table'][0] = 'basic_thresholds_table basic_thresholds_inputs';
+$table_simple->cellclass['thresholds_table'][0] = 'table_section half_section_left';
 $table_simple->data['thresholds_table'][0] = html_print_table($tableBasicThresholds, true);
 if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) {
-    $table_simple->cellclass['thresholds_table'][1] = 'basic_thresholds_table basic_thresholds_image';
+    $table_simple->cellclass['thresholds_table'][1] = 'table_section half_section_rigth';
     $table_simple->data['thresholds_table'][1] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
@@ -1069,24 +1069,36 @@ $table_advanced->data['title_2'][1] = html_print_subtitle_table(__('Execution in
 $table_advanced->data['caption_execution_interval'][0] = __('Interval');
 $table_advanced->data['execution_interval'][0] = '<span class="result_info_text">'.$outputExecutionInterval.'</span>';
 $table_advanced->data['execution_interval'][0] .= html_print_input_hidden('moduletype', $moduletype, true);
+
+// Cron Table.
+$tableCron = new stdClass();
+$tableCron->class = 'w100p';
+$tableCron->id = 'advanced_cron';
+$tableCron->style = [];
+$tableCron->rowclass = [];
+$tableCron->data = [];
+
 // Cron table styles.
-$table_advanced->cellstyle['cron_from_select'][0] = 'padding: 0; margin: 0 -4px; width: 100%;';
-$table_advanced->cellstyle['cron_to_select'][0] = 'padding: 0; margin: 0 -4px; width: 100%;';
+$tableCron->cellstyle['cron_from_select'][0] = 'padding: 0; margin: 0 -4px; width: 100%;';
+$tableCron->cellstyle['cron_to_select'][0] = 'padding: 0; margin: 0 -4px; width: 100%;';
 
 if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
     $has_remote_conf = enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]);
-    $table_advanced->data['caption_cron_from_select'][0] = __('Cron from');
-    $table_advanced->data['cron_from_select'][0] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true);
+    $tableCron->data['caption_cron_from_select'][0] = __('Cron from');
+    $tableCron->data['cron_from_select'][0] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true);
 
-    $table_advanced->data['caption_cron_to_select'][0] = __('Cron to');
-    $table_advanced->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true, true);
+    $tableCron->data['caption_cron_to_select'][0] = __('Cron to');
+    $tableCron->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, ((bool) $has_remote_conf === true) ? $disabledBecauseInPolicy : true, true);
 } else {
-    $table_advanced->data['caption_cron_from_select'][0] = __('Cron from');
-    $table_advanced->data['cron_from_select'][0] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
+    $tableCron->data['caption_cron_from_select'][0] = __('Cron from');
+    $tableCron->data['cron_from_select'][0] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 
-    $table_advanced->data['caption_cron_to_select'][0] = __('Cron to');
-    $table_advanced->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+    $tableCron->data['caption_cron_to_select'][0] = __('Cron to');
+    $tableCron->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
 }
+
+$table_advanced->rowclass['cron_section'] = 'table_section full_section';
+$table_advanced->data['cron_section'] = html_print_table($tableCron, true);
 
 $table_advanced->rowclass['title_3'] = 'w100p mrgn_top_20px';
 $table_advanced->cellstyle['title_3'][0] = 'width: 40px;';
@@ -1108,10 +1120,17 @@ $table_advanced->data['caption_min_max_values'][1] = __('Max. Value');
 $table_advanced->data['min_max_values'][0] = html_print_input_text('min', $min, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy.' w100p');
 $table_advanced->data['min_max_values'][1] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy.' w100p');
 
-$table_advanced->data['caption_dynamic_threshold_interval'][0] = __('Dynamic Threshold Interval');
-$table_advanced->rowclass['dynamic_threshold_interval'] = 'w50p';
-// $table_advanced->cellclass['dynamic_threshold_interval'][0] = 'w50p';
-$table_advanced->data['dynamic_threshold_interval'][0] = html_print_extended_select_for_time(
+// Dynamic Threholds.
+$tableDynamicThreshold = new stdClass();
+$tableDynamicThreshold->class = 'w100p';
+$tableDynamicThreshold->id = 'advanced_dynamic';
+$tableDynamicThreshold->style = [];
+$tableDynamicThreshold->rowclass = [];
+$tableDynamicThreshold->data = [];
+
+$tableDynamicThreshold->data['caption_dynamic_threshold_interval'][0] = __('Dynamic Threshold Interval');
+$tableDynamicThreshold->rowclass['dynamic_threshold_interval'] = 'w540px';
+$tableDynamicThreshold->data['dynamic_threshold_interval'][0] = html_print_extended_select_for_time(
     'dynamic_interval',
     $dynamic_interval,
     '',
@@ -1121,37 +1140,19 @@ $table_advanced->data['dynamic_threshold_interval'][0] = html_print_extended_sel
     true,
     '',
     false,
-    $classdisabledBecauseInPolicy.' w100p',
+    $classdisabledBecauseInPolicy.' w50p',
     $disabledBecauseInPolicy
 );
-$table_advanced->data['dynamic_threshold_interval'][1] = html_print_anchor(
-    [
-        'onClick' => 'advanced_option_dynamic()',
-        'content' => html_print_image(
-            'images/cog.png',
-            true,
-            [
-                'title' => __('Advanced options Dynamic Threshold'),
-                'class' => 'invert_filter',
-            ]
-        ),
-    ],
-    true
-);
 
-$table_advanced->rowclass['caption_adv_dynamic_threshold_interval'] = 'hide_dinamic pdd_t_10px w100p';
-$table_advanced->rowclass['adv_dynamic_threshold_interval'] = 'hide_dinamic w100p';
-$table_advanced->cellclass['caption_adv_dynamic_threshold_interval'][0] = 'w33p';
-$table_advanced->cellclass['caption_adv_dynamic_threshold_interval'][1] = 'w33p';
-$table_advanced->cellclass['caption_adv_dynamic_threshold_interval'][2] = 'w33p';
-$table_advanced->cellclass['adv_dynamic_threshold_interval'][0] = 'w33p';
-$table_advanced->cellclass['adv_dynamic_threshold_interval'][1] = 'w33p';
-$table_advanced->cellclass['adv_dynamic_threshold_interval'][2] = 'w33p';
-$table_advanced->data['caption_adv_dynamic_threshold_interval'][0] = __('Dynamic Threshold Min.');
-$table_advanced->data['caption_adv_dynamic_threshold_interval'][1] = __('Dynamic Threshold Max.');
-$table_advanced->data['caption_adv_dynamic_threshold_interval'][2] = __('Dynamic Threshold Two Tailed');
-
-$table_advanced->data['adv_dynamic_threshold_interval'][0] = html_print_input_text(
+$tableDynamicThreshold->rowclass['caption_adv_dynamic_threshold_interval'] = 'pdd_t_10px w100p';
+$tableDynamicThreshold->rowclass['adv_dynamic_threshold_interval'] = 'w100p';
+$tableDynamicThreshold->cellclass['caption_adv_dynamic_threshold_interval'][0] = 'w33p';
+$tableDynamicThreshold->cellclass['caption_adv_dynamic_threshold_interval'][1] = 'w33p';
+$tableDynamicThreshold->cellclass['adv_dynamic_threshold_interval'][0] = 'w33p';
+$tableDynamicThreshold->cellclass['adv_dynamic_threshold_interval'][1] = 'w33p';
+$tableDynamicThreshold->data['caption_adv_dynamic_threshold_interval'][0] = __('Min.');
+$tableDynamicThreshold->data['caption_adv_dynamic_threshold_interval'][1] = __('Max.');
+$tableDynamicThreshold->data['adv_dynamic_threshold_interval'][0] = html_print_input_text(
     'dynamic_min',
     $dynamic_min,
     '',
@@ -1163,7 +1164,7 @@ $table_advanced->data['adv_dynamic_threshold_interval'][0] = html_print_input_te
     '',
     $classdisabledBecauseInPolicy.' w100p'
 );
-$table_advanced->data['adv_dynamic_threshold_interval'][1] = html_print_input_text(
+$tableDynamicThreshold->data['adv_dynamic_threshold_interval'][1] = html_print_input_text(
     'dynamic_max',
     $dynamic_max,
     '',
@@ -1175,7 +1176,13 @@ $table_advanced->data['adv_dynamic_threshold_interval'][1] = html_print_input_te
     '',
     $classdisabledBecauseInPolicy.' w100p'
 );
-$table_advanced->data['adv_dynamic_threshold_interval'][2] = html_print_checkbox_switch(
+
+$tableDynamicThreshold->rowclass['caption_adv_dynamic_threshold_twotailed'] = 'pdd_t_10px w100p';
+$tableDynamicThreshold->rowclass['adv_dynamic_threshold_twotailed'] = 'w100p';
+$tableDynamicThreshold->cellclass['caption_adv_dynamic_threshold_twotailed'][0] = 'w33p';
+$tableDynamicThreshold->cellclass['adv_dynamic_threshold_twotailed'][0] = 'w33p';
+$tableDynamicThreshold->data['caption_adv_dynamic_threshold_twotailed'][0] = __('Two Tailed');
+$tableDynamicThreshold->data['adv_dynamic_threshold_twotailed'][0] = html_print_checkbox_switch(
     'dynamic_two_tailed',
     1,
     $dynamic_two_tailed,
@@ -1183,10 +1190,19 @@ $table_advanced->data['adv_dynamic_threshold_interval'][2] = html_print_checkbox
     $disabledBecauseInPolicy
 );
 
+$table_advanced->rowclass['dynamic_threshold_table'] = 'table_section full_section';
+$table_advanced->data['dynamic_threshold_table'] = html_print_table($tableDynamicThreshold, true);
+
+$tableFFThreshold = new stdClass();
+$tableFFThreshold->class = 'w100p';
+$tableFFThreshold->id = 'advanced_flipflop';
+$tableFFThreshold->style = [];
+$tableFFThreshold->rowclass = [];
+$tableFFThreshold->data = [];
 // FF stands for Flip-flop.
-$table_advanced->data['caption_ff_main_thresholds'][0] = __('FF threshold');
-$table_advanced->rowclass['ff_main_thresholds'] = 'w100p';
-$table_advanced->data['ff_main_thresholds'][0] = html_print_switch_radio_button(
+$tableFFThreshold->data['caption_ff_main_thresholds'][0] = __('FF threshold');
+$tableFFThreshold->rowclass['ff_main_thresholds'] = 'w100p';
+$tableFFThreshold->data['ff_main_thresholds'][0] = html_print_switch_radio_button(
     [
         html_print_radio_button_extended('each_ff', 0, __('All state changing'), $each_ff, false, 'ffStateChange(0)', '', true, false, '', 'ff_all_state'),
         html_print_radio_button_extended('each_ff', 1, __('Each state changing'), $each_ff, false, 'ffStateChange(1)', '', true, false, '', 'ff_each_state'),
@@ -1195,12 +1211,12 @@ $table_advanced->data['ff_main_thresholds'][0] = html_print_switch_radio_button(
     true
 );
 
-$table_advanced->rowclass['caption_ff_thresholds_all'] = 'w50p ff_thresholds_line pdd_t_10px';
-$table_advanced->rowclass['ff_thresholds_all'] = 'w50p ff_thresholds_line';
-$table_advanced->cellclass['caption_ff_thresholds_all'][0] = 'w50p';
-$table_advanced->cellclass['ff_thresholds_all'][0] = 'w50p';
-$table_advanced->data['caption_ff_thresholds_all'][0] = __('Change all states');
-$table_advanced->data['ff_thresholds_all'][0] = html_print_input_text(
+$tableFFThreshold->rowclass['caption_ff_thresholds_all'] = 'w50p ff_thresholds_line pdd_t_10px';
+$tableFFThreshold->rowclass['ff_thresholds_all'] = 'w50p ff_thresholds_line';
+$tableFFThreshold->cellclass['caption_ff_thresholds_all'][0] = 'w50p';
+$tableFFThreshold->cellclass['ff_thresholds_all'][0] = 'w50p';
+$tableFFThreshold->data['caption_ff_thresholds_all'][0] = __('Change all states');
+$tableFFThreshold->data['ff_thresholds_all'][0] = html_print_input_text(
     'ff_event',
     $ff_event,
     '',
@@ -1213,19 +1229,19 @@ $table_advanced->data['ff_thresholds_all'][0] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->rowclass['caption_ff_thresholds_each'] = 'w50p ff_thresholds_line pdd_t_10px';
-$table_advanced->rowclass['ff_thresholds_each'] = 'w50p ff_thresholds_line';
-$table_advanced->cellclass['caption_ff_thresholds_each'][0] = 'w33p';
-$table_advanced->cellclass['caption_ff_thresholds_each'][1] = 'w33p';
-$table_advanced->cellclass['caption_ff_thresholds_each'][2] = 'w33p';
-$table_advanced->cellclass['ff_thresholds_each'][0] = 'w33p';
-$table_advanced->cellclass['ff_thresholds_each'][1] = 'w33p';
-$table_advanced->cellclass['ff_thresholds_each'][2] = 'w33p';
-$table_advanced->data['caption_ff_thresholds_each'][0] = __('To normal');
-$table_advanced->data['caption_ff_thresholds_each'][1] = __('To warning');
-$table_advanced->data['caption_ff_thresholds_each'][2] = __('To critical');
+$tableFFThreshold->rowclass['caption_ff_thresholds_each'] = 'w50p ff_thresholds_line pdd_t_10px';
+$tableFFThreshold->rowclass['ff_thresholds_each'] = 'w50p ff_thresholds_line';
+$tableFFThreshold->cellclass['caption_ff_thresholds_each'][0] = 'w33p';
+$tableFFThreshold->cellclass['caption_ff_thresholds_each'][1] = 'w33p';
+$tableFFThreshold->cellclass['caption_ff_thresholds_each'][2] = 'w33p';
+$tableFFThreshold->cellclass['ff_thresholds_each'][0] = 'w33p';
+$tableFFThreshold->cellclass['ff_thresholds_each'][1] = 'w33p';
+$tableFFThreshold->cellclass['ff_thresholds_each'][2] = 'w33p';
+$tableFFThreshold->data['caption_ff_thresholds_each'][0] = __('To normal');
+$tableFFThreshold->data['caption_ff_thresholds_each'][1] = __('To warning');
+$tableFFThreshold->data['caption_ff_thresholds_each'][2] = __('To critical');
 
-$table_advanced->data['ff_thresholds_each'][0] = html_print_input_text(
+$tableFFThreshold->data['ff_thresholds_each'][0] = html_print_input_text(
     'ff_event_normal',
     $ff_event_normal,
     '',
@@ -1238,7 +1254,7 @@ $table_advanced->data['ff_thresholds_each'][0] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->data['ff_thresholds_each'][1] = html_print_input_text(
+$tableFFThreshold->data['ff_thresholds_each'][1] = html_print_input_text(
     'ff_event_warning',
     $ff_event_warning,
     '',
@@ -1251,7 +1267,7 @@ $table_advanced->data['ff_thresholds_each'][1] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->data['ff_thresholds_each'][2] = html_print_input_text(
+$tableFFThreshold->data['ff_thresholds_each'][2] = html_print_input_text(
     'ff_event_critical',
     $ff_event_critical,
     '',
@@ -1264,14 +1280,9 @@ $table_advanced->data['ff_thresholds_each'][2] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_advanced->data['caption_ff_keep_counters'][0] = __('Keep counters');
-$table_advanced->data['ff_keep_counters'][0] = html_print_checkbox_switch(
-    'ff_type',
-    1,
-    $ff_type,
-    true,
-    $disabledBecauseInPolicy
-);
+
+$table_advanced->rowclass['flipflop_thresholds_table'] = 'table_section full_section';
+$table_advanced->data['flipflop_thresholds_table'] = html_print_table($tableFFThreshold, true);
 
 $table_advanced->rowclass['caption_ff_interval_timeout'] = 'w50p';
 $table_advanced->rowclass['ff_interval_timeout'] = 'w50p';
@@ -1311,6 +1322,15 @@ if ((bool) preg_match('/async/', $module_type_name) === true || $edit === true) 
 if ((bool) preg_match('/async/', $module_type_name) === false || $edit === true) {
     $table_advanced->data['ff_interval_timeout'][1] .= '<span id="ff_timeout_disable" class="result_info_text">'.__('Disabled').'</span>';
 }
+
+$table_advanced->data['caption_ff_keep_counters'][0] = __('Keep counters');
+$table_advanced->data['ff_keep_counters'][0] = html_print_checkbox_switch(
+    'ff_type',
+    1,
+    $ff_type,
+    true,
+    $disabledBecauseInPolicy
+);
 
 $table_advanced->rowclass['title_4'] = 'w100p mrgn_top_20px';
 $table_advanced->cellstyle['title_4'][0] = 'width: 40px;';

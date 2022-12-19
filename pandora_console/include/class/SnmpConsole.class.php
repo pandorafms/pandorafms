@@ -54,6 +54,7 @@ class SnmpConsole extends HTML
         'deleteTraps',
         'validateTrap',
         'validateTraps',
+        'showInfo',
     ];
 
     /**
@@ -123,7 +124,7 @@ class SnmpConsole extends HTML
         ).'</a>';
         $list['active'] = true;
 
-        // Header
+        // Header.
         ui_print_standard_header(
             __('SNMP Console'),
             'images/op_snmp.png',
@@ -298,7 +299,7 @@ class SnmpConsole extends HTML
                                 'class'    => 'w200px',
                                 'fields'   => $status_array,
                                 'return'   => true,
-                                'selected' => -1,
+                                'selected' => 0,
                             ],
                             [
                                 'label'    => __('Group by Enterprise String/IP'),
@@ -342,7 +343,12 @@ class SnmpConsole extends HTML
         echo '<div class="w98p right">';
         html_print_submit_button(__('Validate'), 'updatebt', false, 'class="sub ok"');
         echo '&nbsp;';
-        html_print_submit_button(__('Delete'), 'deletebt', false, 'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"');
+        html_print_submit_button(
+            __('Delete'),
+            'deletebt',
+            false,
+            'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"'
+        );
         echo '</div>';
 
         echo '<div class="snmp_view_div">';
@@ -543,6 +549,19 @@ class SnmpConsole extends HTML
                 }
             }
 
+            if ($filters['filter_free_search'] !== '') {
+                $whereSubquery .= '
+                    AND (source LIKE "%'.$filters['filter_free_search'].'%" OR
+                    oid LIKE "%'.$filters['filter_free_search'].'%" OR
+                    oid_custom LIKE "%'.$filters['filter_free_search'].'%" OR
+                    type_custom LIKE "%'.$filters['filter_free_search'].'%" OR
+                    value LIKE "%'.$filters['filter_free_search'].'%" OR
+                    value_custom LIKE "%'.$filters['filter_free_search'].'%" OR
+                    id_usuario LIKE "%'.$filters['filter_free_search'].'%" OR
+                    text LIKE "%'.$filters['filter_free_search'].'%" OR
+                    description LIKE "%'.$filters['filter_free_search'].'%")';
+            }
+
             if ($filters['filter_status'] != -1) {
                 $whereSubquery .= ' AND status = '.$filters['filter_status'];
             }
@@ -602,6 +621,13 @@ class SnmpConsole extends HTML
                     $data,
                     function ($carry, $item) use ($filters, $where_without_group) {
                         global $config;
+
+                        if (empty($carry) === true) {
+                            $count = 0;
+                        } else {
+                            $count = count($carry);
+                        }
+
                         // Transforms array of arrays $data into an array
                         // of objects, making a post-process of certain fields.
                         $tmp = (object) $item;
@@ -652,14 +678,14 @@ class SnmpConsole extends HTML
                             $enterprise_string = __('N/A');
                         }
 
-                        $tmp->enterprise_string = '<div class="'.$severity_class.' snmp-div"><a href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.');">'.$enterprise_string.'</a></div>';
+                        $tmp->enterprise_string = '<div class="'.$severity_class.' snmp-div"><a href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.','.$count.');">'.$enterprise_string.'</a></div>';
 
                         // Count.
                         if ($filters['filter_group_by']) {
-                            $sql = "SELECT count(*) FROM ttrap WHERE 1=1
-                                    $where_without_group
-                                    AND oid='".$tmp->oid."'
-                                    AND source='".$tmp->source."'";
+                            $sql = 'SELECT count(*) FROM ttrap WHERE 1=1
+                                    '.$where_without_group.'
+                                    AND oid="'.$tmp->oid.'"
+                                    AND source="'.$tmp->source.'"';
                             $group_traps = db_get_value_sql($sql);
                             $tmp->count = '<div class="'.$severity_class.' snmp-div">'.$group_traps.'</div>';
                         }
@@ -715,8 +741,8 @@ class SnmpConsole extends HTML
                             ).'</a> ';
                         }
 
-                        if ($tmp->source == '') {
-                            if (\user_is_admin()) {
+                        if ($tmp->source === '') {
+                            if (\users_is_admin()) {
                                 $tmp->action .= '<a href="#">'.html_print_image(
                                     'images/cross.png',
                                     true,
@@ -741,7 +767,7 @@ class SnmpConsole extends HTML
                             ).'</a> ';
                         }
 
-                        $tmp->action .= '<a href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.');">'.html_print_image(
+                        $tmp->action .= '<a href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.','.$count.');">'.html_print_image(
                             'images/eye.png',
                             true,
                             [
@@ -926,6 +952,21 @@ class SnmpConsole extends HTML
 
 
     /**
+     * VShow info trap.
+     *
+     * @return void
+     */
+    public function showInfo()
+    {
+        global $config;
+
+        $id_trap = get_parameter('id', 0);
+        echo json_encode($id_trap);
+        return;
+    }
+
+
+    /**
      * Load Javascript code.
      *
      * @return string.
@@ -988,6 +1029,31 @@ class SnmpConsole extends HTML
                         }
                     });
                 }
+            }
+
+            /**
+             *   Show more information
+             */
+            function toggleVisibleExtendedInfo(id, position) {
+                $.ajax({
+                    method: 'get',
+                    url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                    data: {
+                        page: 'operation/snmpconsole/snmp_view',
+                        method: 'showInfo',
+                        id: id,
+                    },
+                    datatype: "json",
+                    success: function(data) {
+                        console.log(data);
+                        $('#test').remove();
+                        var tr = $('#snmp_console tr').eq(position+1);
+                        tr.after('<tr id="test" role="row"><td>HOLAAAAAAAA</td><td>ADIOSSSSS</td></tr>');
+                    },
+                    error: function(e) {
+                        console.error(e);
+                    }
+                });
             }
 
             $(document).ready(function() {

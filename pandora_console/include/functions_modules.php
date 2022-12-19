@@ -3983,6 +3983,75 @@ function recursive_get_dt_from_modules_tree(&$f_modules, $modules, $deep)
 
 
 /**
+ * Get the module data from a children
+ *
+ * @param  integer $id_module Id module
+ * @return array Children module data
+ */
+function get_children_module($id_module)
+{
+    $children_module_data = db_get_all_rows_sql(
+        'SELECT *
+		FROM tagente_modulo
+		WHERE parent_module_id = '.$id_module
+    );
+
+    return $children_module_data;
+}
+
+
+function module_check_childrens_and_delete($id_module)
+{
+    $children_data = get_children_module($id_module);
+    // Check if exist have a childer
+    if ($children_data) {
+        // If have more than 1 children
+        if (is_array($children_data)) {
+            foreach ($children_data as $children_module_data) {
+                if ($children_module_data['parent_module_id']) {
+                    // Search children and delete this module
+                    // Before delete, lets check if exist (Just for cases it's already deleted)
+                    if (modules_check_agentmodule_exists($children_module_data['parent_module_id'])) {
+                        modules_delete_agent_module($children_module_data['parent_module_id']);
+                    }
+
+                    module_check_childrens_and_delete($children_module_data['id_agente_modulo']);
+                } else {
+                    // If haven't children just delete
+                    // Before delete, lets check if exist (Just for cases it's already deleted)
+                    if (modules_check_agentmodule_exists($children_module_data['id_agente_modulo'])) {
+                        modules_delete_agent_module($children_module_data['id_agente_modulo']);
+                    }
+                }
+            }
+        } else {
+            // If just have 1 children
+            if ($children_data['parent_module_id']) {
+                // Before delete, lets check if exist (Just for cases it's already deleted)
+                if (modules_check_agentmodule_exists($children_data['parent_module_id'])) {
+                    modules_delete_agent_module($children_data['parent_module_id']);
+                }
+
+                module_check_childrens_and_delete($children_data['id_agente_modulo']);
+            } else {
+                // If haven't children just delete
+                // Before delete, lets check if exist (Just for cases it's already deleted)
+                if (modules_check_agentmodule_exists($children_data['id_agente_modulo'])) {
+                    modules_delete_agent_module($children_data['id_agente_modulo']);
+                }
+            }
+        }
+    } else {
+        // Haven't childrens, so delete
+        // Before delete, lets check if exist (Just for cases it's already deleted)
+        if (modules_check_agentmodule_exists($id_module)) {
+            modules_delete_agent_module($id_module);
+        }
+    }
+}
+
+
+/**
  * @brief Get the button with the link to open realtime stats into a new window
  * Only to native (not satellite discovered) snmp modules.
  *

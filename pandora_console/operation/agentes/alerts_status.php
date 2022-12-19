@@ -28,7 +28,7 @@
 
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 if (is_ajax()) {
@@ -37,7 +37,7 @@ if (is_ajax()) {
     $get_alert_fired = get_parameter('get_alert_fired', 0);
 
     if ($get_alert_fired) {
-        // Calculate alerts fired
+        // Calculate alerts fired.
         $data_reporting = reporting_get_group_stats();
         echo $data_reporting['monitor_alerts_fired'];
     }
@@ -53,7 +53,7 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$filter = get_parameter('disabled', 'all_enabled');
+$filter = get_parameter('filter', 'all_enabled');
 $filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)
@@ -122,7 +122,7 @@ if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, 'AW')) {
 
 $idAgent = get_parameter_get('id_agente', 0);
 
-// Show alerts for specific agent
+// Show alerts for specific agent.
 if ($idAgent != 0) {
     $url = $url.'&id_agente='.$idAgent;
 
@@ -179,7 +179,7 @@ if ($idAgent != 0) {
     );
 
     $idGroup = $id_group;
-    // If there is no agent defined, it means that it cannot search for the secondary groups
+    // If there is no agent defined, it means that it cannot search for the secondary groups.
     $all_groups = [$id_group];
 
     $print_agent = true;
@@ -294,7 +294,7 @@ if ($free_search != '') {
 
             $columns = array_merge(
                 $columns,
-                ['agent']
+                ['agent_name']
             );
         }
 
@@ -309,10 +309,10 @@ if ($free_search != '') {
 
         $columns = array_merge(
             $columns,
-            ['module'],
-            ['template'],
+            ['agent_module_name'],
+            ['template_name'],
             ['action'],
-            ['lastFired'],
+            ['last_fired'],
             ['status']
         );
 
@@ -335,7 +335,9 @@ if ($free_search != '') {
         }
 
 
-        $alert_action = empty(alerts_get_alert_actions_filter()) === false ? alerts_get_alert_actions_filter() : ['' => __('No actions')];
+        $alert_action = empty(alerts_get_alert_actions_filter()) === false
+            ? alerts_get_alert_actions_filter()
+            : ['' => __('No actions')];
 
 
         ob_start();
@@ -352,14 +354,14 @@ if ($free_search != '') {
                     'ajax_url'            => 'include/ajax/alert_list.ajax',
                     'ajax_data'           => [
                         'get_agent_alerts_datatable' => 1,
-                        'id_agent'                   => $id_agent,
+                        'id_agent'                   => $idAgent,
                         'url'                        => $url,
                         'agent_view_page'            => true,
                         'all_groups'                 => $all_groups,
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module',
+                        'field'     => 'agent_module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),
@@ -395,12 +397,12 @@ if ($free_search != '') {
                     'ajax_url'            => 'include/ajax/alert_list.ajax',
                     'ajax_data'           => [
                         'get_agent_alerts_datatable' => 1,
-                        'id_agent'                   => $id_agent,
+                        'id_agent'                   => $idAgent,
                         'url'                        => $url,
                     ],
                     'drawCallback'        => 'alerts_table_controls()',
                     'order'               => [
-                        'field'     => 'module',
+                        'field'     => 'agent_module_name',
                         'direction' => 'asc',
                     ],
                     'zeroRecords'         => __('No alerts found'),
@@ -451,7 +453,7 @@ if ($free_search != '') {
             echo $html_content;
         }
 
-            // strict user hidden
+            // Strict user hidden.
             echo '<div id="strict_hidden" class="invisible">';
             html_print_input_text('strict_user_hidden', $strict_user);
 

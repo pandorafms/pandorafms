@@ -358,7 +358,7 @@ if (!is_user_admin($config['id_user'])) {
     $filter['id_group'] = array_keys(users_get_groups(false, 'LM'));
 }
 
-$total_templates = alerts_get_alert_templates($filter, ['COUNT(*) AS total']);
+$total_templates = alerts_get_alert_templates($filter, ['COUNT(*) AS total'], true);
 $total_templates = $total_templates[0]['total'];
 
 $templates = alerts_get_alert_templates(

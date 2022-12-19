@@ -467,14 +467,29 @@ if (modules_is_string_type($id_module_type) === false) {
     $table_simple->data[2][1] .= '</div>';
 }
 
+$table_simple->data[3][0] .= '<span id="warning_time">'.__('Change to critical status after');
+$table_simple->data[3][1] .= html_print_input_text(
+    'warning_time',
+    $warning_time,
+    '',
+    5,
+    255,
+    true,
+    $disabledBecauseInPolicy,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
+$table_simple->data[3][1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
+
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
-$table_simple->data[3][0] = __('Critical threshold');
+$table_simple->data[4][0] = __('Critical threshold');
 if (!modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[3][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
-    $table_simple->data[3][1] .= html_print_input_text(
+    $table_simple->data[4][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
+    $table_simple->data[4][1] .= html_print_input_text(
         'min_critical',
         $min_critical,
         '',
@@ -486,8 +501,8 @@ if (!modules_is_string_type($id_module_type) || $edit) {
         '',
         $classdisabledBecauseInPolicy
     );
-    $table_simple->data[3][1] .= '<br /><em>'.__('Max.').'</em>';
-    $table_simple->data[3][1] .= html_print_input_text(
+    $table_simple->data[4][1] .= '<br /><em>'.__('Max.').'</em>';
+    $table_simple->data[4][1] .= html_print_input_text(
         'max_critical',
         $max_critical,
         '',
@@ -502,8 +517,8 @@ if (!modules_is_string_type($id_module_type) || $edit) {
 }
 
 if (modules_is_string_type($id_module_type) || $edit) {
-    $table_simple->data[3][1] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-    $table_simple->data[3][1] .= html_print_input_text(
+    $table_simple->data[4][1] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
+    $table_simple->data[4][1] .= html_print_input_text(
         'str_critical',
         str_replace('"', '', $str_critical),
         '',
@@ -517,33 +532,33 @@ if (modules_is_string_type($id_module_type) || $edit) {
     ).'</span>';
 }
 
-$table_simple->data[3][1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>';
-$table_simple->data[3][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
-$table_simple->data[3][1] .= '</div>';
+$table_simple->data[4][1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>';
+$table_simple->data[4][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
+$table_simple->data[4][1] .= '</div>';
 
 
 if (modules_is_string_type($id_module_type) === false) {
-    $table_simple->data[3][1] .= '<div id="percentage_critical" /><em>'.__('Percentage').'</em>';
-    $table_simple->data[3][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-    $table_simple->data[3][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true, $disabledBecauseInPolicy);
-    $table_simple->data[3][1] .= '</div>';
+    $table_simple->data[4][1] .= '<div id="percentage_critical" /><em>'.__('Percentage').'</em>';
+    $table_simple->data[4][1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
+    $table_simple->data[4][1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true, $disabledBecauseInPolicy);
+    $table_simple->data[4][1] .= '</div>';
 }
 
-$table_simple->data[4][0] = __('Historical data');
+$table_simple->data[5][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
     // checkbox because HTML dont send disabled fields
     // and could be disabled by error.
-    $table_simple->data[4][1] = html_print_checkbox(
+    $table_simple->data[5][1] = html_print_checkbox(
         'history_data_fake',
         1,
         $history_data,
         true,
         $disabledBecauseInPolicy
     );
-    $table_simple->data[4][1] .= '<input type="hidden" name="history_data" value="'.(int) $history_data.'">';
+    $table_simple->data[5][1] .= '<input type="hidden" name="history_data" value="'.(int) $history_data.'">';
 } else {
-    $table_simple->data[4][1] = html_print_checkbox(
+    $table_simple->data[5][1] = html_print_checkbox(
         'history_data',
         1,
         $history_data,
@@ -669,13 +684,12 @@ $table_advanced->data[2][3] = __('Max. Value');
 $table_advanced->data[2][4] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 
-
 $table_advanced->data[3][0] = __('Dynamic Threshold Interval');
 $table_advanced->data[3][1] = html_print_extended_select_for_time(
     'dynamic_interval',
     $dynamic_interval,
     '',
-    'None',
+    __('None'),
     '0',
     10,
     true,

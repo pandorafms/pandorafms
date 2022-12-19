@@ -196,6 +196,13 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
     serialized = "";
   }
 
+  var id_group = null;
+  if (typeof $("#filter_group") !== "undefined") {
+    try {
+      id_group = $("#filter_group").val();
+    } catch (error) {}
+  }
+
   $("#module")
     .prop("disabled", true)
     .empty()
@@ -238,7 +245,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       selection_mode: selection_mode,
       serialized: serialized,
       id_server: id_server,
-      status_module: module_status
+      status_module: module_status,
+      id_group: id_group
     },
     function(data) {
       $("#module").empty();
@@ -886,7 +894,6 @@ function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").css("display", "none");
   $("#" + name + "_default").css("display", "inline");
-
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
     $("#text-" + name + "_text").val(300);
@@ -897,7 +904,7 @@ function period_select_init(name, allow_zero) {
     } else {
       $("#" + name + "_select option:eq(1)").prop("selected", true);
     }
-  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
+  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero == 1) {
     $("#" + name + "_units option:last").prop("selected", false);
     $("#" + name + "_manual").css("display", "inline");
     $("#" + name + "_default").css("display", "none");
@@ -1041,10 +1048,10 @@ function adjustTextUnits(name) {
     var restInt = parseInt(rest).toString();
 
     if (rest != restInt && unitsSelected == false) {
-      $("#" + name + "_units option:eq(" + ($(this).index() - 1) + ")").prop(
-        "selected",
-        true
-      );
+      var value_selected = $(
+        "#" + name + "_units option:eq(" + ($(this).index() - 1) + ")"
+      ).val();
+      $("#" + name + "_units").val(value_selected);
 
       $("#text-" + name + "_text").val(restPrev);
       unitsSelected = true;
@@ -2176,3 +2183,19 @@ $.fn.filterByText = function(textbox) {
       });
   });
 };
+
+function loadPasswordConfig(id, value) {
+  $.ajax({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/config.ajax",
+      token_name: `${value}`,
+      no_boolean: 1
+    },
+    type: "GET",
+    dataType: "json",
+    success: function(data) {
+      $(`#${id}`).val(data);
+    }
+  });
+}

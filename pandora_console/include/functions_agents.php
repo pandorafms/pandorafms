@@ -789,7 +789,7 @@ function agents_get_agents_selected($group)
         );
 
         $all = array_reduce(
-            $all,
+            (empty($all) === true) ? [] : $all,
             function ($carry, $item) {
                 $carry[$item['id_agente']] = $item['alias'];
                 return $carry;
@@ -3487,12 +3487,13 @@ function agents_get_agent_custom_field($agent_id, $custom_field_name)
 /**
  * Unverified documentation.
  *
- * @param integer $id_group      Module group.
- * @param array   $id_agents     Array of agent ids.
- * @param boolean $selection     Show common (false) or all modules (true).
- * @param boolean $return        Return (false) or dump to output (true).
- * @param boolean $index_by_name Use module name as key.
- * @param boolean $pure_return   Return as retrieved from DB.
+ * @param integer $id_group         Module group.
+ * @param array   $id_agents        Array of agent ids.
+ * @param boolean $selection        Show common (false) or all modules (true).
+ * @param boolean $return           Return (false) or dump to output (true).
+ * @param boolean $index_by_name    Use module name as key.
+ * @param boolean $pure_return      Return as retrieved from DB.
+ * @param boolean $notStringModules Not string modules.
  *
  * @return array With modules or null if error.
  */
@@ -3502,7 +3503,8 @@ function select_modules_for_agent_group(
     $selection,
     $return=true,
     $index_by_name=false,
-    $pure_return=false
+    $pure_return=false,
+    $notStringModules=false
 ) {
     global $config;
     $agents = (empty($id_agents)) ? [] : implode(',', $id_agents);
@@ -3510,6 +3512,7 @@ function select_modules_for_agent_group(
     $filter_agent_group = '';
     $filter_group = '';
     $filter_agent = '';
+    $filter_not_string_modules = '';
     $selection_filter = '';
     $sql_conditions_tags = '';
     $sql_tags_inner = '';
@@ -3522,6 +3525,23 @@ function select_modules_for_agent_group(
 
     if ($agents != null) {
         $filter_agent = ' AND tagente.id_agente IN ('.$agents.')';
+    }
+
+    if ($notStringModules === true) {
+        $filter_not_string_modules = sprintf(
+            ' AND (tagente_modulo.id_tipo_modulo <> %d AND
+                tagente_modulo.id_tipo_modulo <> %d AND
+                tagente_modulo.id_tipo_modulo <> %d AND
+                tagente_modulo.id_tipo_modulo <> %d AND
+                tagente_modulo.id_tipo_modulo <> %d AND
+                tagente_modulo.id_tipo_modulo <> %d)',
+            MODULE_TYPE_GENERIC_DATA_STRING,
+            MODULE_TYPE_REMOTE_TCP_STRING,
+            MODULE_TYPE_REMOTE_SNMP_STRING,
+            MODULE_TYPE_ASYNC_STRING,
+            MODULE_TYPE_WEB_CONTENT_STRING,
+            MODULE_TYPE_REMOTE_CMD_STRING
+        );
     }
 
     if (!users_can_manage_group_all('AR')) {
@@ -3567,6 +3587,7 @@ function select_modules_for_agent_group(
 				$filter_agent_group
 				$filter_group
 				$filter_agent
+                $filter_not_string_modules
 				$sql_conditions_tags
 		) x
 		GROUP BY nombre
@@ -4304,7 +4325,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 {
     ui_require_css_file('heatmap');
 
-    $all_modules = agents_get_modules($id_agent);
+    $all_modules = agents_get_modules($id_agent, 'id_agente_modulo', ['disabled' => 0]);
     if (empty($all_modules)) {
         return null;
     }
@@ -4346,7 +4367,6 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
         $status = modules_get_agentmodule_status($key);
         switch ($status) {
             case 0:
-            case 4:
             case 300:
                 $status = 'normal';
             break;
@@ -4365,6 +4385,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
                 $status = 'unknown';
             break;
 
+            case 4:
             case 5:
                 $status = 'notinit';
             break;

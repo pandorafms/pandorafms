@@ -899,6 +899,7 @@ $order = null;
 
 switch ($sortField) {
     case 'agent_alias':
+        $fieldForSorting = 'agent_alias';
         switch ($sort) {
             case 'up':
                 $selectAgentNameUp = $selected;
@@ -919,6 +920,7 @@ switch ($sortField) {
     break;
 
     case 'type':
+        $fieldForSorting = 'module_type';
         switch ($sort) {
             case 'up':
                 $selectDataTypeUp = $selected;
@@ -939,6 +941,7 @@ switch ($sortField) {
     break;
 
     case 'moduletype':
+        $fieldForSorting = 'module_type';
         switch ($sort) {
             case 'up':
                 $selectTypeUp = $selected;
@@ -959,6 +962,7 @@ switch ($sortField) {
     break;
 
     case 'module_name':
+        $fieldForSorting = 'module_name';
         switch ($sort) {
             case 'up':
                 $selectModuleNameUp = $selected;
@@ -979,6 +983,7 @@ switch ($sortField) {
     break;
 
     case 'interval':
+        $fieldForSorting = 'module_interval';
         switch ($sort) {
             case 'up':
                 $selectIntervalUp = $selected;
@@ -999,6 +1004,7 @@ switch ($sortField) {
     break;
 
     case 'status':
+        $fieldForSorting = 'estado';
         switch ($sort) {
             case 'up':
                 $selectStatusUp = $selected;
@@ -1019,6 +1025,7 @@ switch ($sortField) {
     break;
 
     case 'last_status_change':
+        $fieldForSorting = 'last_status_change';
         switch ($sort) {
             case 'up':
                 $selectStatusUp = $selected;
@@ -1039,6 +1046,7 @@ switch ($sortField) {
     break;
 
     case 'timestamp':
+        $fieldForSorting = 'utimestamp';
         switch ($sort) {
             case 'up':
                 $selectTimestampUp = $selected;
@@ -1059,6 +1067,7 @@ switch ($sortField) {
     break;
 
     case 'data':
+        $fieldForSorting = 'datos';
         switch ($sort) {
             case 'up':
                 $selectDataUp = $selected;
@@ -1079,6 +1088,7 @@ switch ($sortField) {
     break;
 
     default:
+        $fieldForSorting = 'agent_alias';
         $selectAgentNameUp = $selected;
         $selectAgentNameDown = false;
         $selectDataTypeUp = false;
@@ -1101,6 +1111,7 @@ switch ($sortField) {
         ];
     break;
 }
+
 
         $sql = 'SELECT
     (SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
@@ -1215,6 +1226,8 @@ if ($autosearch) {
 
                 $result = array_merge($result, $result_server);
             }
+
+            usort($result, arrayOutputSorting($sort, $fieldForSorting));
 
             metaconsole_restore_db();
         }
@@ -1576,7 +1589,7 @@ if (!empty($result)) {
                 if (is_numeric($row['datos'])) {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_OK,
-                        __('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                        __('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                         true
                     );
                 } else {
@@ -1591,7 +1604,12 @@ if (!empty($result)) {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
                         __('CRITICAL').': '.remove_right_zeros(
-                            number_format($row['datos'], $config['graph_precision'])
+                            number_format(
+                                $row['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            )
                         ),
                         true
                     );
@@ -1607,7 +1625,12 @@ if (!empty($result)) {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_WARNING,
                         __('WARNING').': '.remove_right_zeros(
-                            number_format($row['datos'], $config['graph_precision'])
+                            number_format(
+                                $row['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            )
                         ),
                         true
                     );
@@ -1623,7 +1646,12 @@ if (!empty($result)) {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_UNKNOWN,
                         __('UNKNOWN').': '.remove_right_zeros(
-                            number_format($row['datos'], $config['graph_precision'])
+                            number_format(
+                                $row['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            )
                         ),
                         true
                     );
@@ -1639,7 +1667,12 @@ if (!empty($result)) {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_NO_DATA,
                         __('NO DATA').': '.remove_right_zeros(
-                            number_format($row['datos'], $config['graph_precision'])
+                            number_format(
+                                $row['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            )
                         ),
                         true
                     );
@@ -1659,7 +1692,7 @@ if (!empty($result)) {
                         if (is_numeric($row['datos'])) {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                                 true
                             );
                         } else {
@@ -1675,7 +1708,7 @@ if (!empty($result)) {
                         if (is_numeric($row['datos'])) {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                                 true
                             );
                         } else {
@@ -1691,7 +1724,7 @@ if (!empty($result)) {
                         if (is_numeric($row['datos'])) {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                                 true
                             );
                         } else {
@@ -1836,12 +1869,12 @@ if (!empty($result)) {
                                     if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                                         $salida = human_milliseconds_to_string($row['datos']);
                                     } else {
-                                        $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                        $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                                     }
                                 break;
 
                                 default:
-                                    $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                    $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                                 break;
                             }
                         break;
@@ -1853,12 +1886,12 @@ if (!empty($result)) {
                             if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                                 $salida = human_milliseconds_to_string($row['datos']);
                             } else {
-                                $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                             }
                         break;
 
                         default:
-                            $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                            $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                         break;
                     }
                 }

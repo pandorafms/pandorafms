@@ -656,7 +656,7 @@ function menu_get_sec_pages($sec, $menu_hash=false)
         foreach ($menu[$sec]['sub'] as $k => $v) {
             // Avoid special cases of standalone windows.
             if (preg_match('/^javascript:/', $k) || preg_match('/\.php/', $k)) {
-                if ($sec !== 'links') {
+                if ($sec !== 'links' && $sec !== 'eventos') {
                     continue;
                 }
             }

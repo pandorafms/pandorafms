@@ -181,7 +181,7 @@ $module_macros = [];
 // Create agent.
 if ($create_agent) {
     $mssg_warning = 0;
-    $alias_safe_output = io_safe_output(get_parameter('alias', ''));
+    $alias_safe_output = strip_tags(io_safe_output(get_parameter('alias', '')));
     $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
@@ -238,7 +238,15 @@ if ($create_agent) {
     $field_values = [];
 
     foreach ($fields as $field) {
-        $field_values[$field['id_field']] = (string) get_parameter_post('customvalue_'.$field['id_field'], '');
+        $field_value = get_parameter_post('customvalue_'.$field['id_field'], '');
+
+        if ($field['is_link_enabled']) {
+            $field_value = json_encode($field_value);
+        } else {
+            $field_value = (string) $field_value;
+        }
+
+        $field_values[$field['id_field']] = $field_value;
     }
 
     // Check if agent exists (BUG WC-50518-2).
@@ -948,7 +956,7 @@ if ($update_agent) {
     $mssg_warning = 0;
     $id_agente = (int) get_parameter_post('id_agente');
     $nombre_agente = str_replace('`', '&lsquo;', (string) get_parameter_post('agente', ''));
-    $alias_safe_output = io_safe_output(get_parameter('alias', ''));
+    $alias_safe_output = strip_tags(io_safe_output(get_parameter('alias', '')));
     $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
@@ -1012,7 +1020,22 @@ if ($update_agent) {
     $field_values = [];
 
     foreach ($fields as $field) {
-        $field_values[$field['id_field']] = (string) get_parameter_post('customvalue_'.$field['id_field'], '');
+        $field_value = get_parameter_post('customvalue_'.$field['id_field'], '');
+
+        if ($field['is_link_enabled']) {
+            if ($field_value[1] !== '') {
+                $parsed_url = parse_url($field_value[1]);
+                if (empty($parsed_url['scheme']) === true) {
+                    $field_value[1] = 'http://'.ltrim($field_value[1], '/');
+                }
+            }
+
+            $field_value = json_encode($field_value);
+        } else {
+            $field_value = (string) $field_value;
+        }
+
+        $field_values[$field['id_field']] = $field_value;
     }
 
     foreach ($field_values as $key => $value) {
@@ -1060,14 +1083,15 @@ if ($update_agent) {
         // If there is an agent with the same name, but a different ID.
     }
 
-    if ($unique_ip && $direccion_agente != '') {
+    if ($direccion_agente !== $address_list && (bool) $unique_ip === true && $direccion_agente != '') {
         $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
         $exists_ip  = db_get_row_sql($sql);
     }
 
+    $old_group = agents_get_agent_group($id_agente);
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
-    } else if (group_allow_more_agents($grupo, true, 'update') === false) {
+    } else if ($old_group !== $grupo && group_allow_more_agents($grupo, true, 'update') === false) {
         ui_print_error_message(__('Agent cannot be updated due to the maximum agent limit for this group'));
     } else if ($exists_ip) {
         ui_print_error_message(__('Duplicate main IP address'));
@@ -1491,6 +1515,7 @@ if ($update_module || $create_module) {
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
+    $warning_time = (float) get_parameter('warning_time');
     if ($unit === '0') {
         $unit = '';
     }
@@ -1672,6 +1697,7 @@ if ($update_module) {
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
         'module_macros'         => $module_macros,
+        'warning_time'          => $warning_time,
     ];
 
 
@@ -1880,6 +1906,7 @@ if ($create_module) {
         'id_category'           => $id_category,
         'disabled_types_event'  => addslashes($disabled_types_event),
         'module_macros'         => $module_macros,
+        'warning_time'          => $warning_time,
     ];
 
     if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {

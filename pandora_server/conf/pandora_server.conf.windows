@@ -119,6 +119,10 @@ networkserver 1
 
 dataserver 1
 
+# Enable (1) or disable (0) the Data Server smart queue, which gives priority
+# to new data coming from agents at the expense of buffered XML files.
+dataserver_smart_queue 1
+
 # Activate (1) Pandora FMS Recon server
 
 reconserver 1
@@ -425,14 +429,6 @@ snmpserver 1
 # Number of threads for the Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
 
 snmp_threads 4
-
-# Pandora FMS TransactionalServer (PANDORA FMS ENTERPRISE ONLY).
-
-transactionalserver 0
-
-# Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
-
-transactional_threshold 2
 
 # Block size for block producer/consumer servers, that is, the number of modules
 # per block (15 by default) (PANDORA FMS ENTERPRISE ONLY).

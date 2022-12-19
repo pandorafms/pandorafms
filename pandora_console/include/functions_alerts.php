@@ -795,7 +795,7 @@ function alerts_delete_alert_template($id_alert_template)
  *
  * @return mixed Array with selected alert templates or false if something goes wrong.
  */
-function alerts_get_alert_templates($filter=false, $fields=false)
+function alerts_get_alert_templates($filter=false, $fields=false, $total=false)
 {
     global $config;
 
@@ -811,31 +811,16 @@ function alerts_get_alert_templates($filter=false, $fields=false)
 
     $templates_sql = @db_get_all_rows_filter('talert_templates', $filter, $fields, 'AND', false, true);
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $limit_sql = '';
-            if (isset($offset) && isset($limit)) {
-                $limit_sql = " LIMIT $offset, $limit ";
-            } else {
-                $limit_sql = '';
-            }
-
-            $sql = sprintf('%s %s', $templates_sql, $limit_sql);
-
-            $alert_templates = db_get_all_rows_sql($sql);
-        break;
-
-        case 'oracle':
-            $set = [];
-            if (isset($offset) && isset($limit)) {
-                $set['limit'] = $limit;
-                $set['offset'] = $offset;
-            }
-
-            $alert_templates = oracle_recode_query($templates_sql, $set, 'AND', false);
-        break;
+    $limit_sql = '';
+    if (isset($offset) && isset($limit) && $total === false) {
+        $limit_sql = " LIMIT $offset, $limit ";
+    } else {
+        $limit_sql = '';
     }
+
+    $sql = sprintf('%s %s', $templates_sql, $limit_sql);
+
+    $alert_templates = db_get_all_rows_sql($sql);
 
     return $alert_templates;
 }
@@ -1162,13 +1147,31 @@ function alerts_create_alert_agent_module($id_agent_module, $id_alert_template, 
     $values['id_alert_template'] = (int) $id_alert_template;
     $values['last_reference'] = time();
 
-    $sql = sprintf(
-        'INSERT IGNORE INTO talert_template_modules(%s) VALUES(%s)',
-        implode(', ', array_keys($values)),
-        implode(', ', array_values($values))
+    $exist = db_get_value_sql(
+        sprintf(
+            'SELECT COUNT(id)
+            FROM talert_template_modules
+            WHERE id_agent_module = %d
+                AND id_alert_template = %d
+                AND id_policy_alerts = 0
+            ',
+            $id_agent_module,
+            $id_alert_template
+        )
     );
 
-    return @db_process_sql($sql, 'insert_id');
+    $result = false;
+    if ((int) $exist === 0) {
+        $sql = sprintf(
+            'INSERT INTO talert_template_modules(%s) VALUES(%s)',
+            implode(', ', array_keys($values)),
+            implode(', ', array_values($values))
+        );
+
+        $result = db_process_sql($sql, 'insert_id');
+    }
+
+    return $result;
 }
 
 

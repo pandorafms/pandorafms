@@ -59,6 +59,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 18px;
+  position: relative;
 }
 
 #tabs-sound-modal ul.wizard li.interval-sounds label,
@@ -97,7 +98,7 @@
 }
 
 #tabs-sound-modal button.upd,
-input.upd {
+#button-melody_sound {
   background-image: url(../../images/sound_wave.png);
   background-position: 90px 8px;
 }
@@ -225,6 +226,7 @@ input.upd {
   background-position: 70px 17px;
   color: #ffffff;
   padding-left: 20px;
+  border: 0;
 }
 
 .actions-sound-modal .buttons-sound-modal button.stop,
@@ -234,6 +236,7 @@ input.upd {
   background-position: 70px 17px;
   color: #ffffff;
   padding-left: 20px;
+  border: 0;
 }
 
 .actions-sound-modal .buttons-sound-modal button.alerts,

@@ -159,6 +159,12 @@ export interface VisualConsoleProps extends Size {
   backgroundColor: string | null;
   isFavorite: boolean;
   relationLineWidth: number;
+  maintenanceMode: MaintenanceModeInterface | null;
+}
+
+export interface MaintenanceModeInterface {
+  user: string;
+  timestamp: number;
 }
 
 /**
@@ -181,7 +187,8 @@ export function visualConsolePropsDecoder(
     backgroundURL,
     backgroundColor,
     isFavorite,
-    relationLineWidth
+    relationLineWidth,
+    maintenanceMode
   } = data;
 
   if (id == null || isNaN(parseInt(id))) {
@@ -202,6 +209,7 @@ export function visualConsolePropsDecoder(
     backgroundColor: notEmptyStringOr(backgroundColor, null),
     isFavorite: parseBoolean(isFavorite),
     relationLineWidth: parseIntOr(relationLineWidth, 0),
+    maintenanceMode: maintenanceMode,
     ...sizePropsDecoder(data)
   };
 }
@@ -1220,6 +1228,28 @@ export default class VisualConsole {
       item.meta = { ...item.meta, editMode: false };
     });
     this.containerRef.classList.remove("is-editing");
+  }
+
+  /**
+   * Enable the maintenance mode.
+   */
+  public enableMaintenanceMode(): void {
+    this.elements.forEach(item => {
+      item.meta = { ...item.meta, maintenanceMode: true };
+    });
+    this.containerRef.classList.add("is-maintenance");
+    this.containerRef.classList.remove("is-editing");
+  }
+
+  /**
+   * Disable the maintenance mode.
+   */
+  public disableMaintenanceMode(): void {
+    this.elements.forEach(item => {
+      item.meta = { ...item.meta, maintenanceMode: false };
+    });
+    this.containerRef.classList.remove("is-maintenance");
+    this.containerRef.classList.add("is-editing");
   }
 
   /**

@@ -42,7 +42,7 @@ use constant {
   DISCOVERY_DEPLOY_AGENTS => 9,
   DISCOVERY_APP_SAP => 10,
   DISCOVERY_APP_DB2 => 11,
-	DISCOVERY_APP_MICROSOFT_SQL_SERVER => 12,
+  DISCOVERY_APP_MICROSOFT_SQL_SERVER => 12,
   DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,
@@ -151,6 +151,9 @@ sub new {
     # Found parents.
     parents => {},
 
+    # Port counts for each switch.
+    ports => {},
+
     # Route cache.
     routes => [],
     default_gw => undef,
@@ -212,6 +215,7 @@ sub new {
     snmp_security_level => '',
     snmp_timeout => 2,
     snmp_version => 1,
+    snmp_skip_non_enabled_ifs => 1,
     subnets => [],
     autoconfiguration_enabled => 0,
 
@@ -309,6 +313,7 @@ sub new {
     $self->{'snmp_privacy_method'} = '';
     $self->{'snmp_privacy_pass'} = '';
     $self->{'snmp_security_level'} = '';
+    $self->{'snmp_skip_non_enabled_ifs'} = '';
   }
 
   return $self;
@@ -366,13 +371,16 @@ sub add_iface($$$) {
 ################################################################################
 # Discover connectivity from address forwarding tables.
 ################################################################################
-sub aft_connectivity($$) {
-  my ($self, $switch) = @_;
+sub aft_connectivity($$$) {
+  my ($self, $switch, $single_port) = @_;
   my (%mac_temp, @aft_temp);
 
   return unless ($self->is_snmp_discovered($switch));
 
   $self->enable_vlan_cache();
+
+  # Fill port counts if needed.
+  $self->fill_port_counts($switch);
 
   # Get the address forwarding table (AFT) of each switch.
   my @aft;
@@ -392,7 +400,7 @@ sub aft_connectivity($$) {
     $host_if_name = defined($host_if_name) ? $host_if_name : 'Host Alive';
 
     # Get the interface associated to the port were we found the MAC address.
-    my $switch_if_name = $self->get_if_from_aft($switch, $aft_mac);
+    my $switch_if_name = $self->get_if_from_aft($switch, $aft_mac, $single_port);
     next unless defined($switch_if_name) and ($switch_if_name ne '');
 
     # Do not connect a host to a switch twice using the same interface.
@@ -771,12 +779,28 @@ sub get_iface($$) {
 ################################################################################
 # Get an interface name from an AFT entry. Returns undef on error.
 ################################################################################
-sub get_if_from_aft($$$) {
-  my ($self, $switch, $mac) = @_;
+sub get_if_from_aft($$$$) {
+  my ($self, $switch, $mac, $single_port) = @_;
 
   # Get the port associated to the MAC.
   my $port = $self->snmp_get_value($switch, "$DOT1DTPFDBPORT." . mac_to_dec($mac));
   return '' unless defined($port);
+
+  # Are we looking for interfaces with a single port entry?
+  if ($single_port == 1 &&
+      defined($self->{'ports'}->{$switch}) &&
+      defined($self->{'ports'}->{$switch}->{$port}) &&
+      $self->{'ports'}->{$switch}->{$port} > 1) {
+    return '';
+  }
+
+  # Are we looking for interfaces with multiple port entries?
+  if ($single_port == 0 &&
+      defined($self->{'ports'}->{$switch}) &&
+      defined($self->{'ports'}->{$switch}->{$port}) &&
+      $self->{'ports'}->{$switch}->{$port} <= 1) {
+    return '';
+  }
 
   # Get the interface index associated to the port.
   my $if_index = $self->snmp_get_value($switch, "$DOT1DBASEPORTIFINDEX.$port");
@@ -934,6 +958,24 @@ sub get_mac_from_ip($$) {
   $self->add_mac($mac, $host);
 
   $self->call('message', "Found MAC $mac for host $host in the local ARP cache.", 5);
+}
+
+################################################################################
+# Find out the number of entries for each port on the given switch.
+################################################################################
+sub fill_port_counts($$) {
+  my ($self, $switch) = @_;
+
+  return if (defined($self->{'ports'}->{$switch}));
+
+  # List all the ports.
+  foreach my $port ($self->snmp_get_value_array($switch, $DOT1DTPFDBPORT)) {
+    if (!defined($self->{'ports'}->{$switch}->{$port})) {
+      $self->{'ports'}->{$switch}->{$port} = 1;
+    } else {
+      $self->{'ports'}->{$switch}->{$port} += 1;
+    }
+  }
 }
 
 ################################################################################
@@ -1992,11 +2034,20 @@ sub scan($) {
     $self->call('message', "[2/6] Finding address forwarding table connectivity...", 3);
     $self->{'c_network_name'} = '';
     $self->{'step'} = STEP_AFT;
-    ($progress, $step) = (50, 10.0 / scalar(@hosts)); # From 50% to 60%.
+    ($progress, $step) = (50, (10.0 / scalar(@hosts)) / 2.0); # From 50% to 60%.
+
+    # Connect hosts on ports where there are no other hosts.
     for (my $i = 0; defined($hosts[$i]); $i++) {
       $self->call('update_progress', $progress);
       $progress += $step;
-      $self->aft_connectivity($hosts[$i]);
+      $self->aft_connectivity($hosts[$i], 1);
+    }
+
+    # Connect hosts on ports even if they're shared by other hosts.
+    for (my $i = 0; defined($hosts[$i]); $i++) {
+      $self->call('update_progress', $progress);
+      $progress += $step;
+      $self->aft_connectivity($hosts[$i], 0);
     }
 
     # Connect hosts that are still unconnected using traceroute.

@@ -147,6 +147,7 @@ $image_threshold = false;
 $time_compare_overlapped = false;
 
 // Added for events items.
+$server_multiple = [0];
 $show_summary_group = false;
 $filter_event_severity = false;
 $filter_event_type = false;
@@ -168,6 +169,7 @@ $visual_format = 0;
 $filter_search = '';
 $filter_exclude = '';
 
+$use_prefix_notation = true;
 
 // Added for select fields.
 $total_time = true;
@@ -460,6 +462,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'max_value':
@@ -475,6 +478,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'min_value':
@@ -490,6 +494,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'sumatory':
@@ -503,6 +508,7 @@ switch ($action) {
                     $idAgentModule = $item['id_agent_module'];
                     $period = $item['period'];
                     $uncompressed_module = $item['uncompressed_module'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'historical_data':
@@ -639,9 +645,10 @@ switch ($action) {
                     $filter_search = $style['event_filter_search'];
                     $filter_exclude = $style['event_filter_exclude'];
 
+                    $server_multiple = json_decode($style['server_multiple'], true);
                     $filter_event_severity = json_decode($style['filter_event_severity'], true);
-                    $filter_event_status   = json_decode($style['filter_event_status'], true);
-                    $filter_event_type     = json_decode($style['filter_event_type'], true);
+                    $filter_event_status = json_decode($style['filter_event_status'], true);
+                    $filter_event_type = json_decode($style['filter_event_type'], true);
 
 
                     $include_extended_events = $item['show_extended_events'];
@@ -771,6 +778,7 @@ switch ($action) {
                     $show_resume = $item['show_resume'];
                     $show_graph = $item['show_graph'];
                     $order_uptodown = $item['order_uptodown'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
 
                     $text_agent = '';
                     if (isset($style['text_agent']) === true
@@ -1221,6 +1229,37 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+            <?php
+        }
+        ?>
+
+        <?php
+        if ($meta) {
+            ?>
+                <tr id="row_multiple_servers"   class="datos">
+                    <td class="bolder"><?php echo __('Server'); ?></td>
+                    <td  >
+                <?php
+                $server_ids = [];
+                $server_ids[0] = __('Local metaconsole');
+                $get_servers = metaconsole_get_servers();
+                foreach ($get_servers as $key => $server) {
+                    $server_ids[$server['id']] = $server['server_name'];
+                }
+
+                html_print_select(
+                    $server_ids,
+                    'server_multiple[]',
+                    $server_multiple,
+                    '',
+                    '',
+                    0,
+                    false,
+                    true
+                );
+                ?>
+                    </td>
+                </tr>
             <?php
         }
         ?>
@@ -1786,46 +1825,10 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
-                if ($source) {
-                    $sql_log_report = 'SELECT id_agente, alias
-							FROM tagente, tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent
-                            AND tagente.disabled = 0
-                            AND tagent_module_log.source like "'.$source.'"';
-                } else {
-                    $sql_log_report = 'SELECT id_agente, alias
-							FROM tagente, tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent
-                            AND tagente.disabled = 0';
-                }
-
-                $all_agent_log = db_get_all_rows_sql($sql_log_report);
-
-                if (isset($all_agent_log) && is_array($all_agent_log)) {
-                    foreach ($all_agent_log as $key => $value) {
-                        $agents2[$value['id_agente']] = $value['alias'];
-                    }
-                }
-
-                if ((empty($agents2)) || $agents2 == -1) {
-                    $agents = [];
-                }
-
-                    $agents_select = [];
-                if (is_array($id_agents) || is_object($id_agents)) {
-                    foreach ($id_agents as $id) {
-                        foreach ($agents2 as $key => $a) {
-                            if ($key == (int) $id) {
-                                $agents_select[$key] = $key;
-                            }
-                        }
-                    }
-                }
-
                 html_print_select(
-                    $agents2,
+                    [],
                     'id_agents3[]',
-                    $agents_select,
+                    '',
                     $script = '',
                     '',
                     0,
@@ -1851,9 +1854,9 @@ $class = 'databox filters';
                 $all_agents = agents_get_agents_selected($group);
 
                 html_print_select(
-                    $all_agents,
+                    [],
                     'id_agents2[]',
-                    $id_agents,
+                    '',
                     $script = '',
                     '',
                     0,
@@ -2335,7 +2338,7 @@ $class = 'databox filters';
             <td class="bolder">
             <?php
             echo __('SQL query').ui_print_help_tip(
-                __('The entities of the fields that contain them must be included.'),
+                __('The entities of the fields that contain them must be included. Also is possible use macros like `_start_date_` or `_end_date_`.'),
                 true
             );
             ?>
@@ -3403,6 +3406,22 @@ $class = 'databox filters';
                     '',
                     !$lapse_calc
                 );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_use_prefix_notation" class="datos advanced_elements">
+            <td class="bolder">
+                <?php
+                echo __('Use prefix notation');
+                ui_print_help_tip(
+                    __('Use prefix notation for numeric values (example: 20,8Kbytes/sec), otherwise full value will be displayed (example: 20.742 bytes/sec)')
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch('use_prefix_notation', 1, $use_prefix_notation);
                 ?>
             </td>
         </tr>
@@ -6110,6 +6129,148 @@ function addGeneralRow() {
     }
 }
 
+function loadGeneralAgents(agent_group) {
+    var params = [];
+
+    var group = <?php echo $group; ?>;
+    group = agent_group || group;
+
+    params.push("get_agents=1");
+    params.push("group="+parseInt(group));
+    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
+    params.push("page=include/ajax/reporting.ajax");
+
+
+    $('#id_agents2')
+        .find('option')
+        .remove();
+
+    $('#id_agents2')
+        .append('<option>Loading agents...</option>');
+
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action=
+        <?php
+        echo '"'.ui_get_full_url(
+            false,
+            false,
+            false,
+            false
+        ).'"';
+        ?>
+        + "/ajax.php",
+        timeout: 300000,
+        dataType: 'json',
+        success: function (data) {
+            if (data['correct']) {
+                $('#id_agents2')
+                    .find('option')
+                    .remove();
+
+                var selectElements = [];
+                var selectedStr = 'selected="selected"';
+
+                if (data['select_agents'] === null) {
+                    return;
+                }
+
+                if (Array.isArray(data['select_agents'])) {
+                    data['select_agents'].forEach(function(agentAlias, agentID) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents2')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    });
+                } else {
+                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents2')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadLogAgents() {
+    var params = [];
+
+    params.push("get_log_agents=1");
+    params.push("source=<?php echo $source; ?>");
+    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
+    params.push("page=include/ajax/reporting.ajax");
+
+    $('#id_agents3')
+        .find('option')
+        .remove();
+
+    $('#id_agents3')
+        .append('<option>Loading agents...</option>');
+
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action=
+        <?php
+        echo '"'.ui_get_full_url(
+            false,
+            false,
+            false,
+            false
+        ).'"';
+        ?>
+        + "/ajax.php",
+        timeout: 300000,
+        dataType: 'json',
+        success: function (data) {
+            if (data['correct']) {
+                $('#id_agents3')
+                    .find('option')
+                    .remove();
+
+                var selectElements = [];
+                var selectedStr = 'selected="selected"';
+
+                if (data['select_agents'] === null) {
+                    return;
+                }
+
+                if (Array.isArray(data['select_agents'])) {
+                    data['select_agents'].forEach(function(agentAlias, agentID) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents3')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    });
+                } else {
+                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents3')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    }
+                }
+            }
+        }
+    });
+}
+
 function chooseType() {
     var meta = '<?php echo (is_metaconsole() === true) ? 1 : 0; ?>';
     type = $("#type").val();
@@ -6173,6 +6334,7 @@ function chooseType() {
     $("#row_alert_templates").hide();
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
+    $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
     $("#row_agent_multi").hide();
@@ -6227,6 +6389,7 @@ function chooseType() {
     $("#row_show_summary").hide();
     $("#row_group_by").hide();
     $("#row_type_show").hide();
+    $("#row_use_prefix_notation").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6244,7 +6407,7 @@ function chooseType() {
         case 'event_report_group':
             $("#row_description").show();
             $("#row_period").show();
-            $("#row_servers").show();
+            $("#row_multiple_servers").show();
             $("#row_group").show();
             $("#row_event_filter").show();
             $("#row_event_graphs").show();
@@ -6278,6 +6441,9 @@ function chooseType() {
             $("#agents_row").show();
             $("#row_source").show();
             $("#row_historical_db_check").hide();
+
+            loadLogAgents();
+
             break;
 
         case 'increment':
@@ -6418,6 +6584,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'max_value':
@@ -6429,6 +6596,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'min_value':
@@ -6440,6 +6608,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'sumatory':
@@ -6449,6 +6618,7 @@ function chooseType() {
             $("#row_period").show();
             $("#row_historical_db_check").hide();
             $("#row_uncompressed_module").show();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'historical_data':
@@ -6568,6 +6738,13 @@ function chooseType() {
                 $("#lapse_select").val('0').trigger('change');
                 $("#hidden-lapse").val('0');
             }
+
+            loadGeneralAgents();
+
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
+
             break;
 
         case 'event_report_group':
@@ -6729,6 +6906,7 @@ function chooseType() {
             $("#row_show_resume").show();
             $("#row_show_graph").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'exception':
@@ -6763,6 +6941,12 @@ function chooseType() {
             $("#agents_modules_row").show();
             $("#modules_row").show();
             $("#row_historical_db_check").hide();
+
+            loadGeneralAgents();
+
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
             break;
 
         case 'inventory_changes':
@@ -7139,7 +7323,6 @@ function change_custom_fields_macros_report(id) {
             "macro_id": id
         },
         function (data, status) {
-            console.log(id);
             $("td#table-macros-definition-"+id+"-value").empty();
             $("td#table-macros-definition-"+id+"-value").append(data);
         },

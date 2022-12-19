@@ -774,6 +774,16 @@ class Manager implements PublicLogin
 
         $dashboards = \db_get_all_rows_sql($sql_dashboard);
 
+        if ($favourite === true && $dashboards !== false && count($dashboards) > 0) {
+            $dashboards = array_map(
+                function ($dashboard) {
+                    $dashboard['name'] = io_safe_input($dashboard['name']);
+                    return $dashboard;
+                },
+                $dashboards
+            );
+        }
+
         if ($dashboards === false) {
             $dashboards = [];
         }

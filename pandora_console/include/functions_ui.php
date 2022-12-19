@@ -1075,7 +1075,7 @@ function ui_format_alert_row(
         }
     }
 
-    if (is_metaconsole() === true) {
+    if (is_metaconsole() === true && (int) $server_id !== 0) {
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -3402,7 +3402,7 @@ function ui_print_datatable(array $parameters)
         $filter .= '</li>';
 
         $filter .= '</ul><div id="both"></div></form>';
-        if (isset($parameters['form']['no_toggle']) === false && ($parameters['form']['no_toggle'] !== true)) {
+        if (isset($parameters['form']['no_toggle']) === false) {
             $filter = ui_toggle(
                 $filter,
                 __('Filter'),
@@ -3466,7 +3466,10 @@ function ui_print_datatable(array $parameters)
     foreach ($names as $column) {
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
-            $table .= 'title="'.__($column['title']).'" ';
+            if (isset($column['title']) === true) {
+                $table .= 'title="'.__($column['title']).'" ';
+            }
+
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
             $table .= $column['extra'];
             $table .= '</th>';
@@ -3537,6 +3540,11 @@ function ui_print_datatable(array $parameters)
                     titleAttr: "'.__('Export current page to CSV').'",
                     title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
                     fieldSeparator: "'.$config['csv_divider'].'",
+                    action: function ( e, dt, node, config ) {
+                        blockResubmit(node);
+                        // Call the default csvHtml5 action method to create the CSV file
+                        $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
+                    },
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3544,7 +3552,7 @@ function ui_print_datatable(array $parameters)
                             page : "All",
                             search : "applied"
                         }'.$export_columns.'
-                    }
+                    },
                 }
             ] : [],
             lengthMenu: '.json_encode($pagination_options).',
@@ -3655,7 +3663,7 @@ function ui_print_datatable(array $parameters)
             order: [[ '.$order.' ]]
         };
 
-        var dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
@@ -3666,6 +3674,16 @@ function ui_print_datatable(array $parameters)
     ) {
         $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
         $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    if (isset($parameters['csv']) === true) {
+        $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
+            if ( indicator ) {
+                console.log('a');
+            }
+            else {
+                console.log('b');
+            }";
     }
 
     $js .= '});';
@@ -3998,11 +4016,12 @@ function ui_toggle(
     );
 
     // Options.
+    $style = 'overflow:hidden;';
     if ($hidden_default) {
-        $style = 'display:none';
+        $style .= 'height:0;position:absolute;';
         $original = $img_b;
     } else {
-        $style = '';
+        $style .= 'height:auto;position:relative;';
         $original = $img_a;
     }
 
@@ -4101,28 +4120,35 @@ function ui_toggle(
     // JQuery Toggle.
     $output .= '<script type="text/javascript">'."\n";
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
+    $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
     $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-    $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
-    $output .= "			else {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
+    $output .= '            if (is_metaconsole == 0) {';
+    $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+    $output .= "			    }\n";
+    $output .= "			    else {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+    $output .= "			    }\n";
+    $output .= "		    }\n";
     $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";
@@ -6507,7 +6533,7 @@ function ui_print_breadcrums($tab_name)
 /**
  * Show last comment
  *
- * @param array $comments array with comments
+ * @param string $comments String with comments.
  *
  * @return string  HTML string with the last comment of the events.
  */
@@ -6531,31 +6557,46 @@ function ui_print_comments($comments)
     foreach ($comments_array as $comm) {
         // Show the comments more recent first.
         if (is_array($comm)) {
-            $last_comment[] = array_reverse($comm);
+            $order_utimestamp = array_reduce(
+                $comm,
+                function ($carry, $item) {
+                    $carry[$item['utimestamp']] = $item;
+                    return $carry;
+                }
+            );
+
+            $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+            $last_comment = $order_utimestamp[$key_max_utimestamp];
         }
+    }
+
+    if (empty($last_comment) === true) {
+        return '';
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
     // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
     // Else show comments hours ago
-    if ($last_comment[0][0]['action'] != 'Added comment') {
-        $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
+    if ($last_comment['action'] != 'Added comment') {
+        $last_comment['comment'] = $last_comment['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
+    $short_comment = substr($last_comment['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+        $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     } else {
-        $rest_time = (time() - $last_comment[0][0]['utimestamp']);
+        $rest_time = (time() - $last_comment['utimestamp']);
         $time_last = (($rest_time / 60) / 60);
-        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+
+        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], $config['thousand_separator']).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], $config['thousand_separator']).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     }
 

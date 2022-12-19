@@ -51,6 +51,8 @@ if ($is_windows) {
 // Initialize variables
 $id_module_inventory = (int) get_parameter('id_module_inventory');
 
+$script_mode = 1;
+
 // Updating
 if ($id_module_inventory) {
     $row = db_get_row(
@@ -67,6 +69,8 @@ if ($id_module_inventory) {
         $code = $row['code'];
         $data_format = $row['data_format'];
         $block_mode = $row['block_mode'];
+        $script_path = $row['script_path'];
+        $script_mode = $row['script_mode'];
     } else {
         ui_print_error_message(__('Inventory module error'));
         include 'general/footer.php';
@@ -122,10 +126,33 @@ $table->data[4][0] = '<strong>'.__('Format').'</strong>';
 $table->data[4][0] .= ui_print_help_tip(__('separate fields with ').SEPARATOR_COLUMN, true);
 $table->data[4][1] = html_print_input_text('format', $data_format, '', 50, 100, true);
 
-$table->data[5][0] = '<strong>'.__('Code').'</strong>';
-$table->data[5][0] .= ui_print_help_tip(__("Here is placed the script for the REMOTE inventory modules Local inventory modules don't use this field").SEPARATOR_COLUMN, true);
+$table->data[5][0] = '<strong>'.__('Script mode').'</strong>';
+$table->data[5][0] .= ui_print_help_tip(__(''), true);
+$table->data[5][1] = __('Use script');
+$table->data[5][1] .= html_print_radio_button(
+    'script_mode',
+    1,
+    '',
+    $script_mode,
+    true
+).'&nbsp;&nbsp;';
+$table->data[5][1] .= '&nbsp&nbsp&nbsp&nbsp'.__('Use inline code');
+$table->data[5][1] .= html_print_radio_button(
+    'script_mode',
+    2,
+    '',
+    $script_mode,
+    true
+).'&nbsp;&nbsp;';
 
-$table->data[5][1] = html_print_textarea('code', 25, 80, base64_decode($code), '', true);
+$table->data[6][0] = '<strong>'.__('Script path').'</strong>';
+$table->data[6][1] = html_print_input_text('script_path', $script_path, '', 50, 1000, true);
+
+$table->data[7][0] = '<strong>'.__('Code').'</strong>';
+$table->data[7][0] .= ui_print_help_tip(__("Here is placed the script for the REMOTE inventory modules Local inventory modules don't use this field").SEPARATOR_COLUMN, true);
+
+$table->data[7][1] = html_print_textarea('code', 25, 80, base64_decode($code), '', true);
+
 
 echo '<form name="inventorymodule" id="inventorymodule_form" method="post" 
 	action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules">';
@@ -151,3 +178,30 @@ echo '</form>';
 if (defined('METACONSOLE')) {
     enterprise_hook('close_meta_frame');
 }
+
+?>
+
+<script type="text/javascript">
+    $(document).ready (function () {
+        var mode = <?php echo $script_mode; ?>;
+
+        if (mode == 1) {
+            $('#table1-6').show();
+            $('#table1-7').hide();
+        } else {
+            $('#table1-7').show();
+            $('#table1-6').hide(); 
+        }
+
+        $('input[type=radio][name=script_mode]').change(function() {
+            if (this.value == 1) {
+                $('#table1-6').show();
+                $('#table1-7').hide();
+            }
+            else if (this.value == 2) {
+                $('#table1-7').show();
+                $('#table1-6').hide();
+            }
+        });
+    });
+</script>

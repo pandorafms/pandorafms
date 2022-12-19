@@ -170,7 +170,7 @@ http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
 execute_cmd "yum install -y $extra_repos" "Installing extra repositories"
-execute_cmd "yum-config-manager --enable remi-php74" "Configuring PHP"
+execute_cmd "yum-config-manager --enable remi-php80" "Configuring PHP"
 
 # Install percona Database
 #[ -f /etc/my.cnf ] && rm -rf /etc/my.cnf
@@ -282,6 +282,8 @@ server_dependencies=" \
     expect \
 	openssh-clients \
     java \
+    bind-utils \
+    whois \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.artica.es/centos7/pandorawmic-1.0.0-1.x86_64.rpm"

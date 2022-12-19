@@ -219,6 +219,8 @@ function list_files($directory, $stringSearch, $searchHandler, $return=false)
  */
 function format_numeric($number, $decimals=1)
 {
+    global $config;
+
     // Translate to float in case there are characters in the string so
     // fmod doesn't throw a notice
     $number = (float) $number;
@@ -227,17 +229,11 @@ function format_numeric($number, $decimals=1)
         return 0;
     }
 
-    // Translators: This is separator of decimal point
-    $dec_point = __('.');
-    // Translators: This is separator of decimal point
-    $thousands_sep = __(',');
-
-    // If has decimals
     if (fmod($number, 1) > 0) {
-        return number_format($number, $decimals, $dec_point, $thousands_sep);
+        return number_format($number, $decimals, $config['decimal_separator'], $config['thousand_separator']);
     }
 
-    return number_format($number, 0, $dec_point, $thousands_sep);
+    return number_format($number, 0, $config['decimal_separator'], $config['thousand_separator']);
 }
 
 
@@ -1001,6 +997,30 @@ function get_parameter_post($name, $default='')
 {
     if ((isset($_POST[$name])) && ($_POST[$name] != '')) {
         return io_safe_input($_POST[$name]);
+    }
+
+    return $default;
+}
+
+
+/**
+ * Get header.
+ *
+ * @param string      $key     Key.
+ * @param string|null $default Default.
+ *
+ * @return string|null
+ */
+function get_header(string $key, ?string $default=null): ?string
+{
+    static $headers;
+    if (!isset($headers)) {
+        $headers = getAllHeaders();
+    }
+
+    $adjust_key = ucwords(strtolower($key));
+    if (isset($headers[$adjust_key])) {
+        return $headers[$adjust_key];
     }
 
     return $default;
@@ -4060,14 +4080,18 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                     $data_return['legend'][$key] .= ' '.__('Max:');
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                     $data_return['legend'][$key] .= ' '._('Avg:');
@@ -4075,7 +4099,8 @@ function series_type_graph_array($data, $show_elements_graph)
                         number_format(
                             $value['avg'],
                             $config['graph_precision'],
-                            $config['csv_decimal_separator']
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     ).' '.$str;
                 }
@@ -4132,7 +4157,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['data'][0][1],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     ).' '.$str;
                 }
@@ -6216,4 +6243,53 @@ function notify_reporting_console_node()
     }
 
     return $return;
+}
+
+
+/**
+ * Auxiliar Ordenation function
+ *
+ * @param string $sort      Direction of sort.
+ * @param string $sortField Field for perform the sorting.
+ *
+ * @return mixed
+ */
+function arrayOutputSorting($sort, $sortField)
+{
+    return function ($a, $b) use ($sort, $sortField) {
+        if ($sort === 'up' || $sort === 'asc') {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcasecmp($a[$sortField], $b[$sortField]);
+            } else {
+                return ($a[$sortField] - $b[$sortField]);
+            }
+        } else {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcasecmp($b[$sortField], $a[$sortField]);
+            } else {
+                return ($a[$sortField] + $b[$sortField]);
+            }
+        }
+    };
+}
+
+
+/**
+ * Get dowload started cookie from js and set ready cokkie for download ready comntrol.
+ *
+ * @return
+ */
+function setDownloadCookieToken()
+{
+    $download_cookie = get_cookie('downloadToken', false);
+    if ($download_cookie === false) {
+        return;
+    } else {
+        setcookie(
+            'downloadReady',
+            $download_cookie,
+            (time() + 15),
+            '/'
+        );
+    }
 }

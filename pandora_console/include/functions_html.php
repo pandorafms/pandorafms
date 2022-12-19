@@ -1664,36 +1664,23 @@ function html_print_select_multiple_modules_filtered(array $data):string
         ]
     );
 
-    // Show common modules.
-    $selection = [
-        0 => __('Show common modules'),
-        1 => __('Show all modules'),
-    ];
-
-    if (true) {
-        $output .= html_print_input(
-            [
-
-                'label'    => __('Only common modules'),
-                'type'     => 'switch',
-                'value'    => 'checked',
-                'id'       => 'filtered-module-show-common-modules-'.$uniqId,
-                'return'   => true,
-                'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-            ]
-        );
-    } else {
-        $output .= html_print_input(
-            [
-                'label'  => __('Show common modules'),
-                'type'   => 'select',
-                'fields' => $selection,
-                'name'   => 'filtered-module-show-common-modules-'.$uniqId,
-                'return' => true,
-                'script' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-            ]
-        );
+    $commonModules = 0;
+    if (empty($data['mShowCommonModules']) === false) {
+        $commonModules = 1;
     }
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Only common modules'),
+            'type'     => 'switch',
+            'checked'  => $commonModules,
+            'value'    => $commonModules,
+            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
+            'id'       => 'filtered-module-show-common-modules-'.$uniqId,
+            'return'   => true,
+            'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+        ]
+    );
 
     if (empty($data['mAgents']) === false
         && empty($data['mModuleGroup'] === false)
@@ -1701,7 +1688,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = get_modules_agents(
             $data['mModuleGroup'],
             explode(',', $data['mAgents']),
-            $data['mShowCommonModules'],
+            !$commonModules,
             false,
             true
         );
@@ -1709,10 +1696,18 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $all_modules = [];
     }
 
+    $mModules = $data['mModules'];
     if (is_array($data['mModules']) === false) {
-        $result = explode(((is_metaconsole() === true) ? SEPARATOR_META_MODULE : ','), $data['mModules']);
-    } else {
-        $result = $data['mModules'];
+        $mModules = explode(
+            ',',
+            $data['mModules']
+        );
+    }
+
+    $result = [];
+    // Clean double safe input.
+    foreach ($mModules as $name) {
+        $result[] = io_safe_output($name);
     }
 
     $output .= html_print_input(
@@ -1955,7 +1950,7 @@ function html_print_extended_select_for_post_process(
     $found = false;
 
     if ($selected) {
-        if (array_key_exists(number_format($selected, 14, '.', ','), $fields)) {
+        if (array_key_exists(number_format($selected, 14, $config['decimal_separator'], $config['thousand_separator']), $fields)) {
             $found = true;
         }
     }
@@ -2075,7 +2070,7 @@ function html_print_extended_select_for_time(
     $custom_fields=false,
     $style_icon='',
     $no_change=false,
-    $allow_zero=false
+    $allow_zero=0
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2089,30 +2084,19 @@ function html_print_extended_select_for_time(
         $fields['-2'] = __('No change');
     }
 
-    if (! $selected) {
-        foreach ($fields as $t_key => $t_value) {
-            if ($t_key != -1) {
-                if ($nothing == '') {
-                    // -1 means 'custom'
-                    $selected = $t_key;
-                    break;
-                } else {
-                    $selected = $nothing;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Allow the use of the value zero.
-    if ($allow_zero === true) {
-        $selected_zero = true;
-    } else {
-        $selected_zero = ($selected != 0) ? true : false;
-    }
-
-    if (($selected !== false) && (!isset($fields[$selected]) && $selected_zero)) {
+    if (empty($selected) === false
+        && $selected !== '0'
+        && isset($fields[$selected]) === false
+    ) {
+        $allow_zero = false;
         $fields[$selected] = human_time_description_raw($selected, true);
+    }
+
+    if (empty($nothing) === true
+        && (empty($selected) === true
+        || $selected === '0')
+    ) {
+            $selected = 300;
     }
 
     $units = [
@@ -2180,14 +2164,23 @@ function html_print_extended_select_for_time(
             $uniq_name.'_units',
             '1',
             ''.$script,
-            $nothing,
-            $nothing_value,
+            '',
+            0,
             false,
             false,
             false,
             $class,
             $readonly,
-            'font-size: xx-small;'.$select_style
+            'padding: 7px 3px;'.$select_style,
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
         );
         echo ' <a href="javascript:">'.html_print_image(
             'images/list.png',
@@ -2202,7 +2195,7 @@ function html_print_extended_select_for_time(
     echo '</div>';
     echo "<script type='text/javascript'>
 		$(document).ready (function () {
-			period_select_init('".$uniq_name."', ".(($allow_zero) ? 'true' : 'null').");
+			period_select_init('".$uniq_name."', ".(($allow_zero) ? 1 : 0).");
 			period_select_events('".$uniq_name."');
 		});
 		function period_select_".$name."_update(seconds) {
@@ -4742,12 +4735,12 @@ function html_print_autocomplete_modules(
  *
  * @return string HTML code
  */
-function html_print_timezone_select($name, $selected='')
+function html_print_timezone_select($name, $selected='', $nothing='', $nothing_value='')
 {
-    $timezones_index = timezone_identifiers_list();
     $timezones = timezone_identifiers_list();
-    $timezones = array_combine($timezones_index, $timezones);
-    return html_print_select($timezones, $name, $selected, '', __('None'), '', true, false, false);
+    $timezones = array_combine($timezones, $timezones);
+    $timezones = (['' => __('none')] + $timezones);
+    return html_print_select($timezones, $name, $selected, '', $nothing, $nothing_value, true, false, false);
 }
 
 
@@ -4956,7 +4949,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     $output = '';
 
     if (($data['label'] ?? false) && $input_only === false) {
-        $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
+        $output = '<'.$wrapper.' id="'.$wrapper.'-'.($data['name'] ?? '').'" ';
         $output .= ' class="'.($data['input_class'] ?? '').'">';
         $output .= '<label '.$style.' class="'.($data['label_class'] ?? '').'">';
         $output .= ($data['label'] ?? '');
@@ -4977,7 +4970,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     if (isset($data['wrapper']) === true) {
         $output = '<'.$data['wrapper'].' '.$wrapper_attributes.' id="wr_'.$data['name'].'" ';
-        $output .= ' class="'.$data['input_class'].'">';
+        $output .= ' class="'.($data['input_class'] ?? '').'">';
     }
 
     switch (($data['type'] ?? null)) {
@@ -5097,7 +5090,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_color(
                 $data['name'],
                 $data['value'],
-                $data['id'],
+                ($data['id'] ?? ''),
                 ((isset($data['class']) === true) ? $data['class'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false)
             );
@@ -5608,7 +5601,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0,
                     $data['agent_ids'],
                     $data['selectionModules'],
-                    true
+                    true,
+                    false,
+                    (isset($data['notStringModules']) === true && $data['notStringModules'] === true) ? true : false
                 );
             }
 

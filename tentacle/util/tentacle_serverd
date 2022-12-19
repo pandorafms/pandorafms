@@ -119,7 +119,6 @@ case "$1" in
 			rc_status -v
 		else
 			echo "Tentacle Server could not be started."
-			echo "Verify that Tentacle port is not used."
 			rc_failed 7 # program not running
 		fi
 

@@ -275,6 +275,7 @@ export function itemMetaDecoder(data: UnknownObject): ItemMeta | never {
     receivedAt,
     error,
     editMode: parseBoolean(data.editMode),
+    maintenanceMode: parseBoolean(data.maintenanceMode),
     isFromCache: parseBoolean(data.isFromCache),
     isFetching: false,
     isUpdating: false,

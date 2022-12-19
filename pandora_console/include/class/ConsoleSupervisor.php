@@ -679,7 +679,6 @@ class ConsoleSupervisor
                 $max_age = 0;
             break;
 
-            case 'NOTIF.LICENSE.EXPIRATION':
             case 'NOTIF.FILES.ATTACHMENT':
             case 'NOTIF.FILES.DATAIN':
             case 'NOTIF.FILES.DATAIN.BADXML':
@@ -846,7 +845,9 @@ class ConsoleSupervisor
         }
 
         // Expiry.
-        if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
+        if (($days_to_expiry <= 15) && ($days_to_expiry > 0)
+            && ((is_user_admin($config['id_user'])) || (check_acl($config['id_user'], 0, 'PM')))
+        ) {
             if ($config['license_mode'] == 1) {
                 $title = __('License is about to expire');
                 $msg = 'Your license will expire in %d days. Please, contact our sales department.';
@@ -867,7 +868,7 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
-        } else if ($days_to_expiry < 0) {
+        } else if (($days_to_expiry <= 0) && ((is_user_admin($config['id_user'])) || (check_acl($config['id_user'], 0, 'PM')))) {
             if ($config['license_mode'] == 1) {
                 $title = __('Expired license');
                 $msg = __('Your license has expired. Please, contact our sales department.');
@@ -1466,7 +1467,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.PHP.INPUT_TIME',
                     'title'   => sprintf(
-                        __("'%s' value in PHP configuration is not recommended"),
+                        __('%s value in PHP configuration is not recommended'),
                         'max_input_time'
                     ),
                     'message' => sprintf(
@@ -1593,17 +1594,21 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.PHANTOMJS');
         }
 
-        if ($php_version_array[0] < 7) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
+        if ($php_version_array[0] < 8) {
+            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
+                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
+            }
+
+            if ($config['language'] == 'ja') {
+                $url = 'https://pandorafms.com/manual/ja/documentation/07_technical_annexes/18_php_8';
             }
 
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
+                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 8.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );

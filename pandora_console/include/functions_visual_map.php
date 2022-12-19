@@ -924,7 +924,7 @@ function visual_map_print_item(
 
                 $value_text = format_for_graph($module_value, 2);
                 if ($value_text <= 0) {
-                    $value_text = remove_right_zeros(number_format($module_value, $config['graph_precision']));
+                    $value_text = remove_right_zeros(number_format($module_value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                 }
 
                 if (!empty($unit_text)) {
@@ -1743,7 +1743,7 @@ function visual_map_print_item(
                                 || (modules_is_boolean($layoutData['id_agente_modulo']) && $layoutData['show_last_value'] != 0)
                             ) {
                                 if (is_numeric($value)) {
-                                    $img_style_title .= ' <br>'.__('Last value: ').remove_right_zeros(number_format($value, $config['graph_precision']));
+                                    $img_style_title .= ' <br>'.__('Last value: ').remove_right_zeros(number_format($value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                                 } else {
                                     $img_style_title .= ' <br>'.__('Last value: ').$value;
                                 }
@@ -1881,13 +1881,13 @@ function visual_map_print_item(
                             echo '</tr>';
                             echo "<tr class='bg_whitesmoke height_90p'>";
                                 echo '<td>';
-                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='critical_vm'>Critical</div>";
-                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
+                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='warning_vm'>Warning</div>";
-                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
+                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='normal_vm'>Normal</div>";
-                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
+                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='unknown_vm'>Unknown</div>";
                                 echo '</td>';
                             echo '</tr>';
@@ -2462,7 +2462,7 @@ function visual_map_get_simple_value($type, $id_module, $period=SECONDS_1DAY)
                 } else {
                     if (is_numeric($value)) {
                         if ($config['simple_module_value']) {
-                            $value = remove_right_zeros(number_format($value, $config['graph_precision']));
+                            $value = remove_right_zeros(number_format($value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                         }
                     }
 
@@ -3708,6 +3708,8 @@ function visual_map_print_visual_map(
 
 // End function
 // Start function
+
+
 /**
  * Get a list with the layouts for a user.
  *
@@ -3719,8 +3721,6 @@ function visual_map_print_visual_map(
  *
  * @return array A list of layouts the user can see.
  */
-
-
 function visual_map_get_user_layouts(
     $id_user=0,
     $only_names=false,
@@ -3729,6 +3729,7 @@ function visual_map_get_user_layouts(
     $favourite=false,
     $check_user_groups=true
 ) {
+    $where = '';
     if (! is_array($filter)) {
         $filter = [];
     } else {
@@ -3819,17 +3820,19 @@ function visual_map_get_user_layouts(
             $retval[$layout['id']] = $layout;
         }
 
-        // add_perms
-        if (isset($groups[$layout['id_group']]['vconsole_view'])) {
-            $retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
-        }
+        if ($only_names === false) {
+            // Aad_perms.
+            if (isset($groups[$layout['id_group']]['vconsole_view'])) {
+                $retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
+            }
 
-        if (isset($groups[$layout['id_group']]['vconsole_edit'])) {
-            $retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
-        }
+            if (isset($groups[$layout['id_group']]['vconsole_edit'])) {
+                $retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
+            }
 
-        if (isset($groups[$layout['id_group']]['vconsole_management'])) {
-            $retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+            if (isset($groups[$layout['id_group']]['vconsole_management'])) {
+                $retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+            }
         }
     }
 
@@ -4080,7 +4083,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         // When the status calculation type is 'default', only one critical
         // element is required to set the layout status as critical, so we can
         // return the critical status right now.
-        if ($status_data['linked_layout_status_type'] === 'default'
+        if ((isset($status_data['linked_layout_status_type']) === true && $status_data['linked_layout_status_type'] === 'default')
             && ($status == VISUAL_MAP_STATUS_CRITICAL_BAD
             || $status == VISUAL_MAP_STATUS_CRITICAL_ALERT)
         ) {
@@ -4104,71 +4107,73 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         metaconsole_restore_db();
     }
 
-    // Status calculation.
-    switch ($status_data['linked_layout_status_type']) {
-        default:
-        case 'default':
-            $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
-            $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
-            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
-            $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
-            $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
+    if (isset($status_data['linked_layout_status_type']) === true) {
+        // Status calculation.
+        switch ($status_data['linked_layout_status_type']) {
+            default:
+            case 'default':
+                $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+                $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+                $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
+                $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
+                $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if ($num_items_critical_alert > 0) {
-                return VISUAL_MAP_STATUS_CRITICAL_ALERT;
-            } else if ($num_items_critical > 0) {
-                return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($num_items_warning_alert > 0) {
-                return VISUAL_MAP_STATUS_WARNING_ALERT;
-            } else if ($num_items_warning > 0) {
-                return VISUAL_MAP_STATUS_WARNING;
-            } else if ($num_items_unknown > 0) {
-                return VISUAL_MAP_STATUS_UNKNOWN;
-            } else {
-                return VISUAL_MAP_STATUS_NORMAL;
-            }
-        break;
-        case 'weight':
-            $weight = $status_data['id_layout_linked_weight'];
-            $num_items = count($valid_layout_items);
-            $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
-            $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
-            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
-            $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
-            $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
+                if ($num_items_critical_alert > 0) {
+                    return VISUAL_MAP_STATUS_CRITICAL_ALERT;
+                } else if ($num_items_critical > 0) {
+                    return VISUAL_MAP_STATUS_CRITICAL_BAD;
+                } else if ($num_items_warning_alert > 0) {
+                    return VISUAL_MAP_STATUS_WARNING_ALERT;
+                } else if ($num_items_warning > 0) {
+                    return VISUAL_MAP_STATUS_WARNING;
+                } else if ($num_items_unknown > 0) {
+                    return VISUAL_MAP_STATUS_UNKNOWN;
+                } else {
+                    return VISUAL_MAP_STATUS_NORMAL;
+                }
+            break;
+            case 'weight':
+                $weight = $status_data['id_layout_linked_weight'];
+                $num_items = count($valid_layout_items);
+                $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+                $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+                $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
+                $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
+                $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if (($num_items_critical > 0 || $num_items_critical_alert > 0)
-                && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
-            ) {
-                return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
-                && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
-            ) {
-                return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
-            } else if ($num_items_unknown > 0
-                && (($num_items_unknown * 100) / $num_items) >= $weight
-            ) {
-                return VISUAL_MAP_STATUS_UNKNOWN;
-            } else {
-                return VISUAL_MAP_STATUS_NORMAL;
-            }
-        break;
+                if (($num_items_critical > 0 || $num_items_critical_alert > 0)
+                    && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
+                ) {
+                    return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
+                } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
+                    && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
+                ) {
+                    return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
+                } else if ($num_items_unknown > 0
+                    && (($num_items_unknown * 100) / $num_items) >= $weight
+                ) {
+                    return VISUAL_MAP_STATUS_UNKNOWN;
+                } else {
+                    return VISUAL_MAP_STATUS_NORMAL;
+                }
+            break;
 
-        case 'service':
-            $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
-            $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
+            case 'service':
+                $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
+                $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
 
-            $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
-            $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
+                $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
+                $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
 
-            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
-                return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($warning_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
-                return VISUAL_MAP_STATUS_WARNING;
-            } else {
-                return VISUAL_MAP_STATUS_NORMAL;
-            }
-        break;
+                if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
+                    return VISUAL_MAP_STATUS_CRITICAL_BAD;
+                } else if ($warning_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
+                    return VISUAL_MAP_STATUS_WARNING;
+                } else {
+                    return VISUAL_MAP_STATUS_NORMAL;
+                }
+            break;
+        }
     }
 }
 

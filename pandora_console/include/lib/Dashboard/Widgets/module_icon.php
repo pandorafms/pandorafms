@@ -28,6 +28,7 @@
 
 namespace PandoraFMS\Dashboard;
 use PandoraFMS\Dashboard;
+use PandoraFMS\Enterprise\Metaconsole\Node;
 
 global $config;
 
@@ -186,6 +187,44 @@ class ModuleIconWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['moduleId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node = new Node($this->values['metaconsoleId']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_sql(
+                    sprintf(
+                        'SELECT id_agente_modulo
+                        FROM tagente_modulo
+                        WHERE id_agente_modulo = %s
+                            AND delete_pending = 0',
+                        $this->values['moduleId']
+                    )
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -334,7 +373,6 @@ class ModuleIconWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -343,6 +381,8 @@ class ModuleIconWidget extends Widget
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
                 'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
+                'nothing'        => __('None'),
+                'nothing_value'  => 0,
             ],
         ];
 
@@ -515,7 +555,7 @@ class ModuleIconWidget extends Widget
         // Div value.
         $output .= '<div style="flex: 0 1 10px; font-size:'.$sizeValue.'px;">';
         $output .= remove_right_zeros(
-            number_format($data_module, $config['graph_precision'])
+            number_format($data_module, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])
         );
         $output .= '</div>';
 

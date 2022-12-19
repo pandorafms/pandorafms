@@ -222,9 +222,16 @@ if (is_ajax()) {
             $id_group,
             $id_agents,
             $selection,
-            $select_mode
+            $select_mode,
+            (bool) !$select_mode
         );
-        echo json_encode($modules);
+
+        // Clean double safe input.
+        foreach ($modules as $id => $name) {
+            $result[$id] = io_safe_output($name);
+        }
+
+        echo json_encode($result);
         return;
     }
 
@@ -473,6 +480,7 @@ if (is_ajax()) {
         $serialized = get_parameter('serialized', '');
         $id_server = (int) get_parameter('id_server', 0);
         $status_modulo = (int) get_parameter('status_module', -1);
+        $id_group_selected = (int) get_parameter('id_group', 0);
         $metaconsole_server_name = null;
         if (!empty($id_server)) {
             $metaconsole_server_name = db_get_value(
@@ -700,14 +708,18 @@ if (is_ajax()) {
                 // Get all user's groups.
                 $id_group = array_keys(users_get_groups($config['id_user']));
 
-                if (is_array($id_group)) {
+                if (is_array($id_group) && empty($id_group_selected) === true) {
                     $id_group = implode(',', $id_group);
+                } else {
+                    if (in_array($id_group_selected, $id_group) === true) {
+                        $id_group = $id_group_selected;
+                    }
                 }
 
                 $where_tags .= ' AND tagente.id_grupo IN ('.$id_group.')';
 
                 if ($selection_mode == 'common') {
-                    $sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';
+                    $sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0'.$where_tags;
                     $agent_total = db_get_value_sql($sql_agent_total);
                     $sql = sprintf(
                         "SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1

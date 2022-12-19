@@ -114,6 +114,7 @@ use Encode;
 use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
+use Tie::File;
 use Time::Local;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
@@ -215,6 +216,7 @@ our @EXPORT = qw(
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
 	pandora_output_password
+	pandora_snmptrapd_still_working
 	pandora_planned_downtime
 	pandora_planned_downtime_set_quiet_elements
 	pandora_planned_downtime_unset_quiet_elements
@@ -299,7 +301,6 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
-	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -1301,12 +1302,16 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
 	}
 
-	my $agent_status;
-	if(ref ($module) eq "HASH") {
-		$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+	my $time_down;
+	if ($alert_mode == RECOVERED_ALERT && defined($extra_macros->{'_modulelaststatuschange_'})) {
+		$time_down = (time() - $extra_macros->{'_modulelaststatuschange_'});
+	} else {
+		my $agent_status;
+		if(ref ($module) eq "HASH") {
+			$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+		}
+		$time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 	}
-
-	my $time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 
 	if (is_numeric($data)) {
 		my $data_precision = $pa_config->{'graph_precision'};
@@ -1649,6 +1654,70 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			pandora_sendmail ($pa_config, $field1, $field2, $field3, $content_type);
 		}
 	
+	# Email report
+	} elsif ($clean_name eq "Send report by e-mail") {
+		# Text
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# API connection
+		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "set";
+		$params->{"op2"} = "send_report";
+		$params->{"other_mode"} = "url_encode_separator_|;|";
+		
+		$field4 = safe_input($field4);
+		$field4 =~ s/&amp;/&/g;
+
+		$params->{"other"} = $field1.'|;|'.$field5.'|;|'.$field2.'|;|'.$field3.'|;|'.$field4.'|;|0';
+
+		$ua->post($url, $params);
+
+	# Email report (from template)
+	} elsif ($clean_name eq "Send report by e-mail (from template)") {
+		# Text
+		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# API connection
+		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "set";
+		$params->{"op2"} = "send_report";
+		$params->{"other_mode"} = "url_encode_separator_|;|";
+
+		$field5 = safe_input($field5);
+		$field5 =~ s/&amp;/&/g;
+
+		$params->{"other"} = $field1.'|;|'.$field6.'|;|'.$field3.'|;|'.$field4.'|;|'.$field5.'|;|1|;|'.$field2;
+
+		$ua->post($url, $params);
+
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Monitoring Event") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
@@ -2032,6 +2101,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $new_status = get_module_status ($processed_data, $module, $module_type, $last_data_value);
 	my $last_status_change = $agent_status->{'last_status_change'};
 
+
+	# Escalate warning to critical if needed.
+	$new_status = escalate_warning($pa_config, $agent, $module, $agent_status, $new_status, $known_status);
+
 	# Set the last status change macro. Even if its value changes later, whe want the original value.
 	$extra_macros->{'_modulelaststatuschange_'} = $last_status_change;
 	
@@ -2074,12 +2147,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	if ($last_known_status == $new_status) {
 		# Avoid overflows
 		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
-		
+
 		$status_changes++;
 		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
 			# Only type ff with counters.
 			$status_changes = 0 if ($module->{'ff_type'} == 0);
-			
+
 			$ff_start_utimestamp = $utimestamp;
 
 			# Reset counters because expired timeout.
@@ -2091,16 +2164,16 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	else {
 		# Only type ff with counters. 
 		$status_changes = 0 if ($module->{'ff_type'} == 0);
-		
+
 		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
 	}
-	
+
 	if ($module->{'ff_type'} == 0) {
 		# Active ff interval.
 		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
 			$current_interval = $module->{'module_ff_interval'};
 		}
-		
+
 		# Change status.
 		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
@@ -2112,6 +2185,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			# Update module status count.
 			$mark_for_update = 1;
 
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+		} elsif ($status_changes >= $min_ff_event && $known_status == $new_status && $new_status == 1) {
 			# Safe mode execution.
 			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
 				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
@@ -2202,11 +2280,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
 				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?,
-				last_status_change = ?
+				last_status_change = ?, warning_count = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
-			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $module->{'id_agente_modulo'});
+			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $agent_status->{'warning_count'}, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.
@@ -5099,17 +5177,14 @@ sub get_module_status ($$$$) {
 			}
 			# (-inf, critical_min), [critical_max, +inf)
 			else {
-				if ($critical_min == 0) {
-					return 1 if ($data > $critical_max);
-				}elsif ($critical_max == 0) {
-					return 1 if ($data <= $critical_min);
+				if ($critical_max < $critical_min) {
+					return 1 if ($data < $critical_min);
 				} else {
 					return 1 if ($data < $critical_min || $data >= $critical_max);
-					return 1 if ($data <= $critical_max && $critical_max < $critical_min);
 				}
 			}
 		}
-
+	
 		# Warning
 		if ($warning_min ne $warning_max) {
 			# [warning_min, warning_max)
@@ -5119,13 +5194,10 @@ sub get_module_status ($$$$) {
 			}
 			# (-inf, warning_min), [warning_max, +inf)
 			else {
-				if ($warning_min == 0) {
-					return 2 if ($data > $warning_max);
-				}elsif ($warning_max == 0) {
-					return 2 if ($data <= $warning_min);
+				if ($warning_max < $warning_min) {
+					return 2 if ($data < $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
-					return 2 if ($data <= $warning_max && $warning_max < $warning_min);
 				}
 			}
 		}
@@ -6834,7 +6906,7 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
 		'params=' . $data_ticket .'&' .
 		'token=|;|';
 
-	my $content = get($call_api);
+	 my $content = get($call_api);
 
 	if (is_numeric($content) && $content ne "-1") {
 		return $content;
@@ -7403,6 +7475,80 @@ sub process_inventory_module_diff ($$$$$$;$) {
 	}
 }
 
+##########################################################################
+=head2 C<< escalate_warning (I<$pa_config>, I<$agent>, I<$module>, I<$agent_status>, I<$new_status>, I<$known_status>) >>
+
+Return the new module status after taking warning escalation into
+consideration. Updates counters in $agent_status.
+
+=cut
+##########################################################################
+sub escalate_warning {
+	my ($pa_config, $agent, $module, $agent_status, $new_status, $known_status) = @_;
+
+	# Warning escalation disabled. Return the new status.
+	if ($module->{'warning_time'} == 0) {
+		return $new_status;
+	}
+
+	# Updating or reset warning counts.
+	if ($new_status != MODULE_WARNING) {
+		$agent_status->{'warning_count'} = 0;
+		return $new_status;
+	}
+
+	if ($known_status == MODULE_WARNING) {
+		$agent_status->{'warning_count'} += 1;
+	}
+
+	if ($agent_status->{'warning_count'} > $module->{'warning_time'}) {
+		logger($pa_config, "Escalating warning status to critical status for agent ID " . $agent->{'id_agente'} . " module '" . $module->{'nombre'} . "'.", 10);
+		$agent_status->{'warning_count'} = $module->{'warning_time'} + 1; # Prevent overflows.
+		return MODULE_CRITICAL;
+	}
+
+	return MODULE_WARNING;
+}
+########################################################################
+
+=head2 C<< pandora_snmptrapd_still_working (I<$pa_config>, I<$dbh>) >> 
+snmptrapd sometimes freezes and eventually its status needs to be checked.
+=cut
+
+########################################################################
+sub pandora_snmptrapd_still_working ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	if ($pa_config->{'snmpserver'} eq '1') {
+		# Variable that defines the maximum time of delay between kksks.
+		my $timeMaxLapse = 3600;
+		# Check last snmptrapd saved in DB.
+		my $lastTimestampSaved = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(timestamp)
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT 1');
+		# Read the last log file line.
+		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
+		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
+		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
+
+		$lastTimestampLogFile = '' unless defined ($lastTimestampLogFile);
+
+		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
+		# If time or date not filled in, probably havent caught any snmptraps yet.
+		if (defined $date && defined $time && $time ne '' && $date ne '') {
+			my ($hour, $min, $sec) = split(/:/, $time, 3);
+			my ($year, $month, $day) = split(/-/, $date, 3);
+			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);
+			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampLogFile gt ($lastTimestampSaved + $timeMaxLapse)) {
+				my $lapseMessage = "snmptrapd service probably is stuck.";
+				logger($pa_config, $lapseMessage, 1);
+				pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+			}
+		}
+
+	}
+}
 
 # End of function declaration
 # End of defined Code

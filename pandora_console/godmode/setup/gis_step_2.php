@@ -207,6 +207,7 @@ switch ($action) {
     break;
 }
 
+$table = new stdClass();
 $table->width = '90%';
 
 $table->data = [];

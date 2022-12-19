@@ -1833,14 +1833,24 @@ function reporting_event_top_n(
 
                         $divisor = get_data_multiplier($units[$key_dt]);
 
-                        $data['formated_value'] = format_for_graph(
-                            $dt,
-                            2,
-                            '.',
-                            ',',
-                            $divisor,
-                            $units[$key_dt]
-                        );
+                        if ((bool) $content['use_prefix_notation'] === false) {
+                            $data['formated_value'] = number_format(
+                                $dt,
+                                2,
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            ).' '.$units[$key_dt];
+                        } else {
+                            $data['formated_value'] = format_for_graph(
+                                $dt,
+                                2,
+                                '.',
+                                ',',
+                                $divisor,
+                                $units[$key_dt]
+                            );
+                        }
+
                         $data_return[] = $data;
                     }
 
@@ -1901,14 +1911,25 @@ function reporting_event_top_n(
                         $data['agent'] = $an;
                         $data['module'] = $module_name[$key_an];
                         $data['value'] = $data_top[$key_an];
-                        $data['formated_value'] = format_for_graph(
-                            $data_top[$key_an],
-                            2,
-                            '.',
-                            ',',
-                            $divisor,
-                            $units[$key_an]
-                        );
+
+                        if ((bool) $content['use_prefix_notation'] === false) {
+                            $data['formated_value'] = number_format(
+                                $data_top[$key_an],
+                                2,
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            ).' '.$units[$key_an];
+                        } else {
+                            $data['formated_value'] = format_for_graph(
+                                $data_top[$key_an],
+                                2,
+                                '.',
+                                ',',
+                                $divisor,
+                                $units[$key_an]
+                            );
+                        }
+
                         $data_return[] = $data;
                     }
 
@@ -2018,26 +2039,8 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
-    $id_meta = 0;
-    $node_historical_event_enbled = '';
-    if (is_metaconsole() === true && empty($content['server_name']) === false) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-
-        // Check if node historical event is enable.
-        $sql = sprintf(
-            'SELECT value
-            FROM tconfig
-            WHERE token LIKE "history_event_enabled"'
-        );
-
-        $result = db_get_row_sql($sql);
-        $node_historical_event_enbled = $result['value'];
-    }
-
     $history = false;
-    if ($config['history_event_enabled'] || $node_historical_event_enbled) {
+    if ($config['history_event_enabled']) {
         $history = true;
     }
 
@@ -2075,12 +2078,26 @@ function reporting_event_report_group(
     $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
 
     // Filter.
-    $show_summary_group         = $event_filter['show_summary_group'];
-    $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
-    $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
-    $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
+    $show_summary_group = $event_filter['show_summary_group'];
+    $filter_event_severity = json_decode($event_filter['filter_event_severity'], true);
+    $filter_event_type = json_decode($event_filter['filter_event_type'], true);
+    $filter_event_status = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
     $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
+
+    $servers = false;
+    if (is_metaconsole() === true) {
+        // Only meta by default.
+        $servers = [0];
+        if (isset($event_filter['server_multiple']) === true) {
+            $servers = json_decode($event_filter['server_multiple'], true);
+        } else {
+            // Retrocompatibility.
+            if (empty($content['server_name']) === false) {
+                $servers = [metaconsole_get_id_server($content['server_name'])];
+            }
+        }
+    }
 
     // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
@@ -2112,10 +2129,6 @@ function reporting_event_report_group(
         }
     }
 
-    if (is_metaconsole() === true) {
-        metaconsole_restore_db();
-    }
-
     $data = events_get_agent(
         false,
         $content['period'],
@@ -2130,7 +2143,7 @@ function reporting_event_report_group(
         true,
         false,
         false,
-        $id_meta,
+        $servers,
         $filter_event_filter_exclude
     );
 
@@ -4011,7 +4024,7 @@ function reporting_groups_nodes($content)
         }
 
         // Grouped.
-        $filters['group_rep'] = 1;
+        $filters['group_rep'] = EVENT_GROUP_REP_EVENTS;
 
         $events = Event::search(
             [
@@ -6925,6 +6938,13 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
+                } else if ((bool) $content['use_prefix_notation'] === false) {
+                    $formated_value = number_format(
+                        $value,
+                        $config['graph_precision'],
+                        $config['decimal_separator'],
+                        $config['thousand_separator']
+                    ).' '.$unit;
                 } else {
                     $formated_value = format_for_graph(
                         $value,
@@ -7085,6 +7105,13 @@ function reporting_value($report, $content, $type, $pdf=false)
             );
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
+            } else if ((bool) $content['use_prefix_notation'] === false) {
+                $formated_value = number_format(
+                    $value,
+                    $config['graph_precision'],
+                    $config['decimal_separator'],
+                    $config['thousand_separator']
+                ).' '.$unit;
             } else {
                 $divisor = get_data_multiplier($unit);
 
@@ -7213,7 +7240,7 @@ function reporting_sql($report, $content)
         $sql = $content['external_source'];
     }
 
-    // Check if exist sql macro
+    // Check if exist sql macro.
     $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.
@@ -7746,15 +7773,7 @@ function reporting_advanced_sla(
             }
 
             if (isset($max_value) === false || (int) $max_value === 0) {
-                if ($max_value === '0'
-                    && $max_value < $min_value
-                    && isset($min_value_warning) === true
-                    && $min_value_warning > $max_value
-                ) {
-                    $max_value = $min_value_warning;
-                } else {
-                    $max_value = null;
-                }
+                $max_value = null;
             }
 
             if (isset($max_value) === false && isset($min_value) === false) {
@@ -8309,18 +8328,21 @@ function reporting_advanced_sla(
                                             $inverse_interval
                                         );
 
-                                        // Warning SLA check.
-                                        $sla_check_value_warning = sla_check_value(
-                                            $current_data['datos'],
-                                            $min_value_warning,
-                                            $max_value_warning,
-                                            $inverse_interval_warning,
-                                            1
-                                        );
+                                        $sla_check_value_warning = false;
+                                        if ($sla_check_value === true) {
+                                            // Warning SLA check.
+                                            $sla_check_value_warning = sla_check_value(
+                                                $current_data['datos'],
+                                                $min_value_warning,
+                                                $max_value_warning,
+                                                $inverse_interval_warning,
+                                                1
+                                            );
+                                        }
                                     }
 
                                     // Not unknown nor not init values.
-                                    if ($sla_check_value_warning && $sla_check_warning === true) {
+                                    if ($sla_check_value_warning === true && $sla_check_warning === true) {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0
                                             && $i !== 0)
@@ -8381,8 +8403,10 @@ function reporting_advanced_sla(
                             }
                         } else {
                             $time_out += $time_interval;
-                            if ($wt_check['wt_in_downtime']) {
-                                $time_out += $wt_check['downtime_interval'];
+                            if (isset($wt_check['wt_in_downtime']) === true) {
+                                if ($wt_check['wt_in_downtime']) {
+                                    $time_out += $wt_check['downtime_interval'];
+                                }
                             }
 
                             // Ignore worktime, is in an invalid period:
@@ -8693,8 +8717,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
                     $item['id_agent_module']
                 );
 
-                if (isset($item['compare']) === true
-                    && empty($item['compare']) === true
+                if (isset($item['compare']) === false
+                    || empty($item['compare']) === true
                 ) {
                     $row['data']['compare'] = false;
                 } else {
@@ -11542,7 +11566,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
         $data['status'] = 'critical';
     } else if ($data['monitor_warning'] > 0) {
         $data['status'] = 'warning';
-    } else if (($data['monitor_unknown'] > 0) || ($data['agents_unknown'] > 0)) {
+    } else if (($data['monitor_unknown'] > 0) || ($data['agent_unknown'] > 0)) {
         $data['status'] = 'unknown';
     } else if ($data['monitor_ok'] > 0) {
         $data['status'] = 'ok';
@@ -14723,6 +14747,25 @@ function reporting_sql_macro(array $report, string $sql): string
         );
     }
 
+    if (preg_match('/_start_date_/', $sql)) {
+        $date_init = get_parameter('date_init', date(DATE_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $time_init = get_parameter('time_init', date(TIME_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $datetime_init = strtotime($date_init.' '.$time_init);
+        $sql = str_replace(
+            '_start_date_',
+            $datetime_init,
+            $sql
+        );
+    }
+
+    if (preg_match('/_end_date_/', $sql)) {
+        $sql = str_replace(
+            '_end_date_',
+            $report['datetime'],
+            $sql
+        );
+    }
+
     return $sql;
 }
 
@@ -14854,9 +14897,7 @@ function reporting_sla_get_status_period_compliance(
         return REPORT_STATUS_ERR;
     }
 
-    if ($priority_mode == REPORT_PRIORITY_MODE_OK
-        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
-    ) {
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
         return REPORT_STATUS_OK;
     }
 

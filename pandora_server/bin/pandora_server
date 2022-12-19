@@ -456,6 +456,9 @@ sub pandora_server_tasks ($) {
 					}
 				}
 				
+				# Check if snmptrapd is freeze.
+				pandora_snmptrapd_still_working ($pa_config, $dbh);
+
 				# Event auto-expiry
 				my $expiry_time = $pa_config->{"event_expiry_time"};
 				my $expiry_window = $pa_config->{"event_expiry_window"};

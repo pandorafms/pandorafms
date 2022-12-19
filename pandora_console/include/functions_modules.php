@@ -4000,6 +4000,12 @@ function get_children_module($id_module)
 }
 
 
+/**
+ * Find and delete the childers modules from the $id_module
+ *
+ * @param  mixed $id_module
+ * @return void
+ */
 function module_check_childrens_and_delete($id_module)
 {
     $children_data = get_children_module($id_module);

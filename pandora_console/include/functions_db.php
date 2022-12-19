@@ -757,7 +757,8 @@ function db_uncompress_module_data(
     $id_agente_modulo,
     $tstart=false,
     $tend=false,
-    $slice_size=false
+    $slice_size=false,
+    $force_slice_not_data=false
 ) {
     global $config;
 
@@ -860,7 +861,10 @@ function db_uncompress_module_data(
 
     $module_interval = modules_get_interval($id_agente_modulo);
 
-    if (($raw_data === false) && ( $first_utimestamp === false )) {
+    if (($force_slice_not_data === false)
+        && ($raw_data === false)
+        && ( $first_utimestamp === false )
+    ) {
         // No data.
         return false;
     }

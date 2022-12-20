@@ -237,6 +237,11 @@ function process_user_login_local($login, $pass, $api=false)
             return false;
         }
 
+        // Override password to use Bcrypt encryption.
+        if (strlen($row['password']) === 32) {
+            update_user_password($login, $pass);
+        }
+
         return $row['id_user'];
     } else {
         if (!user_can_login($login)) {
@@ -753,7 +758,7 @@ function delete_user(string $id_user)
 
 
 /**
- * Update the password in MD5 for user pass as id_user with
+ * Update the password using BCRYPT algorithm for specific id_user passing
  * password in plain text.
  *
  * @param string $user         User ID.
@@ -1056,7 +1061,7 @@ function create_user_and_permisions_ldap(
     $values['id_user'] = $id_user;
 
     if ($config['ldap_save_password'] || $config['ad_save_password']) {
-        $values['password'] = md5($password);
+        $values['password'] = password_hash($password, PASSWORD_BCRYPT);
     }
 
     $values['last_connect'] = 0;
@@ -1488,9 +1493,9 @@ function change_local_user_pass_ldap($id_user, $password)
     $local_user_pass = db_get_value_filter('password', 'tusuario', ['id_user' => $id_user]);
 
     $return = false;
-    if (md5($password) !== $local_user_pass) {
+    if (password_hash($password, PASSWORD_BCRYPT) !== $local_user_pass) {
         $values_update = [];
-        $values_update['password'] = md5($password);
+        $values_update['password'] = password_hash($password, PASSWORD_BCRYPT);
 
         $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
     }

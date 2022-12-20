@@ -64,14 +64,79 @@ class SnmpConsole extends HTML
      */
     private $ajaxController;
 
+    /**
+     * Filter alert.
+     *
+     * @var integer
+     */
+    private $filter_alert;
+
+    /**
+     * Filter severity.
+     *
+     * @var integer
+     */
+    private $filter_severity;
+
+    /**
+     * Filter search.
+     *
+     * @var string
+     */
+    private $filter_free_search;
+
+    /**
+     * Filter status.
+     *
+     * @var integer
+     */
+    private $filter_status;
+
+    /**
+     * Filter group by.
+     *
+     * @var integer
+     */
+    private $filter_group_by;
+
+    /**
+     * Filter hours.
+     *
+     * @var integer
+     */
+    private $filter_hours_ago;
+
+    /**
+     * Filter trap type.
+     *
+     * @var integer
+     */
+    private $filter_trap_type;
+
+    /**
+     * Refresh.
+     *
+     * @var integer
+     */
+    private $refr;
+
 
     /**
      * Class constructor
      *
      * @param string $ajaxController Ajax controller.
      */
-    public function __construct(string $ajaxController)
-    {
+    public function __construct(
+        string $ajaxController,
+        int $filter_alert,
+        int $filter_severity,
+        string $filter_free_search,
+        int $filter_status,
+        int $filter_group_by,
+        int $filter_hours_ago,
+        int $filter_trap_type,
+        int $refr
+    ) {
         global $config;
 
         check_login();
@@ -89,6 +154,14 @@ class SnmpConsole extends HTML
 
         // Set the ajax controller.
         $this->ajaxController = $ajaxController;
+        $this->filter_alert = $filter_alert;
+        $this->filter_severity = $filter_severity;
+        $this->filter_free_search = $filter_free_search;
+        $this->filter_status = $filter_status;
+        $this->filter_group_by = $filter_group_by;
+        $this->filter_hours_ago = $filter_hours_ago;
+        $this->filter_trap_type = $filter_trap_type;
+        $this->refr = $refr;
     }
 
 
@@ -106,6 +179,8 @@ class SnmpConsole extends HTML
         ui_require_css_file('wizard');
         ui_require_css_file('discovery');
 
+        $default_refr = 300;
+
         if (!isset($config['pure']) || $config['pure'] === false) {
             $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
                 'images/op_reporting.png',
@@ -115,7 +190,7 @@ class SnmpConsole extends HTML
                     'class' => 'invert_filter',
                 ]
             ).'</a>';
-            $list['text'] = '<a href="'.$this->ajaxController.'&pure='.$config['pure'].'">'.html_print_image(
+            $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
                 'images/op_snmp.png',
                 true,
                 [
@@ -125,7 +200,7 @@ class SnmpConsole extends HTML
             ).'</a>';
             $list['active'] = true;
 
-            $screen['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=1">'.html_print_image(
+            $screen['text'] = '<a href="#" onClick="javascript:fullscreen(1)">'.html_print_image(
                 'images/full_screen.png',
                 true,
                 [
@@ -158,17 +233,14 @@ class SnmpConsole extends HTML
                 ]
             );
         } else {
-             echo '<div id="dashboard-controls">';
+            echo '<div id="dashboard-controls">';
 
             echo '<div id="menu_tab">';
             echo '<ul class="mn">';
             // Normal view button.
             echo '<li class="nomn">';
-            $normal_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired.'&filter_status='.$filter_status.'&refresh='.((int) get_parameter('refresh', 0)).'&pure=0&trap_type='.$trap_type.'&group_by='.$group_by.'&free_search_string='.$free_search_string.'&date_from_trap='.$date_from_trap.'&date_to_trap='.$date_to_trap.'&time_from_trap='.$time_from_trap.'&time_to_trap='.$time_to_trap;
 
-            $urlPagination = $normal_url.'&pagination='.$pagination.'&offset='.$offset;
-
-            echo '<a href="'.$urlPagination.'">';
+            echo '<a href="#" onClick="javascript:fullscreen(0)">';
             echo html_print_image(
                 'images/normal_screen.png',
                 true,
@@ -188,14 +260,14 @@ class SnmpConsole extends HTML
 
             echo '<form id="refr-form" method="get" action="'.$normal_url.'"  >';
             echo __('Refresh every').':';
-            echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+            echo html_print_select(get_refresh_time_array(), 'refresh', $this->refr, '', '', 0, true, false, false);
             echo '</form>';
             echo '</li>';
 
             html_print_input_hidden('sec', 'snmpconsole');
             html_print_input_hidden('sec2', 'operation/snmpconsole/snmp_view');
             html_print_input_hidden('pure', 1);
-            html_print_input_hidden('refresh', ($refr > 0 ? $refr : $default_refr));
+            html_print_input_hidden('refresh', (($this->refr > 0) ? $this->refr : $default_refr));
 
             // Dashboard name.
             echo '<li class="nomn">';
@@ -348,7 +420,7 @@ class SnmpConsole extends HTML
                                 'class'    => 'w200px',
                                 'fields'   => $show_alerts,
                                 'return'   => true,
-                                'selected' => -1,
+                                'selected' => $this->filter_alert,
                             ],
                             [
                                 'label'    => __('Severity'),
@@ -358,7 +430,7 @@ class SnmpConsole extends HTML
                                 'class'    => 'w200px',
                                 'fields'   => $severities,
                                 'return'   => true,
-                                'selected' => -1,
+                                'selected' => $this->filter_severity,
                             ],
                             [
                                 'label' => __('Free search'),
@@ -366,6 +438,7 @@ class SnmpConsole extends HTML
                                 'class' => 'w400px',
                                 'id'    => 'filter_free_search',
                                 'name'  => 'filter_free_search',
+                                'value' => $this->filter_free_search,
                             ],
                             [
                                 'label'    => __('Status'),
@@ -375,13 +448,13 @@ class SnmpConsole extends HTML
                                 'class'    => 'w200px',
                                 'fields'   => $status_array,
                                 'return'   => true,
-                                'selected' => 0,
+                                'selected' => $this->filter_status,
                             ],
                             [
                                 'label'    => __('Group by Enterprise String/IP'),
                                 'type'     => 'select',
                                 'name'     => 'filter_group_by',
-                                'selected' => 0,
+                                'selected' => $this->filter_group_by,
                                 'disabled' => false,
                                 'return'   => true,
                                 'id'       => 'filter_group_by',
@@ -396,7 +469,7 @@ class SnmpConsole extends HTML
                                 'class' => 'w200px',
                                 'id'    => 'filter_hours_ago',
                                 'name'  => 'filter_hours_ago',
-                                'value' => '8',
+                                'value' => $this->filter_hours_ago,
                             ],
                             [
                                 'label'    => __('Trap type'),
@@ -406,7 +479,7 @@ class SnmpConsole extends HTML
                                 'class'    => 'w200px',
                                 'fields'   => $trap_types,
                                 'return'   => true,
-                                'selected' => -1,
+                                'selected' => $this->filter_trap_type,
                             ],
                         ],
                     ],
@@ -1038,26 +1111,136 @@ class SnmpConsole extends HTML
 
         $id_trap = get_parameter('id', 0);
         $group_by = get_parameter('group_by', 0);
+        $alert = get_parameter('alert', -1);
+        $severity = get_parameter('severity', -1);
+        $search = get_parameter('search', '');
+        $status = get_parameter('status', 0);
+        $hours_ago = get_parameter('hours_ago', 8);
+        $trap_type = get_parameter('trap_type', -1);
 
         $trap = db_get_row('ttrap', 'id_trap', $id_trap);
 
         if ($group_by) {
-            $sql = "SELECT * FROM ttrap WHERE 1=1
-					AND oid='".$trap['oid']."'
-					AND source='".$trap['source']."'";
+            $now = new DateTime();
+            $ago = new DateTime();
+            $interval = new DateInterval(sprintf('PT%dH', $hours_ago));
+            $ago->sub($interval);
+
+            $date_from_trap = $ago->format('Y/m/d');
+            $date_to_trap = $now->format('Y/m/d');
+            $time_from_trap = $ago->format('H:i:s');
+            $time_to_trap = $now->format('H:i:s');
+
+            $whereSubquery = '';
+            if ($alert  != -1) {
+                $whereSubquery .= ' AND alerted = '.$$alert;
+            }
+
+            if ($severity != -1) {
+                // There are two special severity values aimed to match two different trap standard severities
+                // in database: warning/critical and critical/normal.
+                if ($severity != EVENT_CRIT_OR_NORMAL
+                    && $severity != EVENT_CRIT_WARNING_OR_CRITICAL
+                ) {
+                    // Test if enterprise is installed to search oid in text or oid field in ttrap.
+                    if ($config['enterprise_installed']) {
+                        $whereSubquery .= ' AND (
+                            (alerted = 0 AND severity = '.$severity.') OR
+                            (alerted = 1 AND priority = '.$severity.'))';
+                    } else {
+                        $whereSubquery .= ' AND (
+                            (alerted = 0 AND 1 = '.$severity.') OR
+                            (alerted = 1 AND priority = '.$severity.'))';
+                    }
+                } else if ($severity === EVENT_CRIT_WARNING_OR_CRITICAL) {
+                    // Test if enterprise is installed to search oid in text or oid field in ttrap.
+                    if ($config['enterprise_installed']) {
+                        $whereSubquery .= ' AND (
+                        (alerted = 0 AND (severity = '.EVENT_CRIT_WARNING.' OR severity = '.EVENT_CRIT_CRITICAL.')) OR
+                        (alerted = 1 AND (priority = '.EVENT_CRIT_WARNING.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+                    } else {
+                        $whereSubquery .= ' AND (
+                        (alerted = 1 AND (priority = '.EVENT_CRIT_WARNING.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+                    }
+                } else if ($severity === EVENT_CRIT_OR_NORMAL) {
+                    // Test if enterprise is installed to search oid in text or oid field in ttrap.
+                    if ($config['enterprise_installed']) {
+                        $whereSubquery .= ' AND (
+                        (alerted = 0 AND (severity = '.EVENT_CRIT_NORMAL.' OR severity = '.EVENT_CRIT_CRITICAL.')) OR
+                        (alerted = 1 AND (priority = '.EVENT_CRIT_NORMAL.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+                    } else {
+                        $whereSubquery .= ' AND (
+                        (alerted = 1 AND (priority = '.EVENT_CRIT_NORMAL.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+                    }
+                }
+            }
+
+            if ($search !== '') {
+                $whereSubquery .= '
+                    AND (source LIKE "%'.$search.'%" OR
+                    oid LIKE "%'.$search.'%" OR
+                    oid_custom LIKE "%'.$search.'%" OR
+                    type_custom LIKE "%'.$search.'%" OR
+                    value LIKE "%'.$search.'%" OR
+                    value_custom LIKE "%'.$search.'%" OR
+                    id_usuario LIKE "%'.$search.'%" OR
+                    text LIKE "%'.$search.'%" OR
+                    description LIKE "%'.$search.'%")';
+            }
+
+            if ($status != -1) {
+                $whereSubquery .= ' AND status = '.$status;
+            }
+
+            if ($date_from_trap != '') {
+                if ($time_from_trap != '') {
+                    $whereSubquery .= '
+                        AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("'.$date_from_trap.' '.$time_from_trap.'"))
+                    ';
+                } else {
+                    $whereSubquery .= '
+                        AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("'.$date_from_trap.' 23:59:59"))
+                    ';
+                }
+            }
+
+            if ($date_to_trap != '') {
+                if ($time_to_trap) {
+                    $whereSubquery .= '
+                        AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("'.$date_to_trap.' '.$time_to_trap.'"))
+                    ';
+                } else {
+                    $whereSubquery .= '
+                        AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("'.$date_to_trap.' 23:59:59"))
+                    ';
+                }
+            }
+
+            if ($trap_type == 5) {
+                $whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';
+            } else if ($trap_type != -1) {
+                $whereSubquery .= ' AND type = '.$trap_type;
+            }
+
+            $sql = 'SELECT * FROM ttrap WHERE 1=1
+                '.$whereSubquery.'
+                AND oid="'.$trap['oid'].'"
+                AND source="'.$trap['source'].'"';
             $group_traps = db_get_all_rows_sql($sql);
             $count_group_traps = count($group_traps);
 
-            $sql = "SELECT timestamp FROM ttrap WHERE 1=1
-					AND oid='".$trap['oid']."'
-					AND source='".$trap['source']."'
-					ORDER BY `timestamp` DESC";
+            $sql = 'SELECT timestamp FROM ttrap WHERE 1=1
+                '.$whereSubquery.'
+                AND oid="'.$trap['oid'].'"
+                AND source="'.$trap['source'].'"
+                ORDER BY `timestamp` DESC';
             $last_trap = db_get_value_sql($sql);
 
-            $sql = "SELECT timestamp FROM ttrap WHERE 1=1
-					AND oid='".$trap['oid']."'
-					AND source='".$trap['source']."'
-					ORDER BY `timestamp` ASC";
+            $sql = 'SELECT timestamp FROM ttrap WHERE 1=1
+                '.$whereSubquery.'
+                AND oid="'.$trap['oid'].'"
+                AND source="'.$trap['source'].'"
+                ORDER BY `timestamp` ASC';
             $first_trap = db_get_value_sql($sql);
 
             $trap['count'] = $count_group_traps;
@@ -1135,6 +1318,20 @@ class SnmpConsole extends HTML
                 }
             }
 
+
+            function fullscreen(pure) {
+                let new_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure='+pure;
+                new_url += '&filter_severity='+$('#filter_severity').val();
+                new_url += '&filter_status='+$('#filter_status').val();
+                new_url += '&filter_alert='+$('#filter_alert').val();
+                new_url += '&filter_group_by=0&filter_free_search='+$('#text-filter_free_search').val();
+                new_url += '&filter_hours_ago='+$('#text-filter_hours_ago').val();
+                new_url += '&filter_trap_type='+$('#filter_trap_type').val();
+
+                window.location.href = new_url;
+            }
+
+
             /**
              *   Show more information
              */
@@ -1148,6 +1345,12 @@ class SnmpConsole extends HTML
                         method: 'showInfo',
                         id: id,
                         group_by : $('#filter_group_by').val(),
+                        alert: $('#filter_alert').val(),
+                        severity: $('#filter_severity').val(),
+                        search: $('#text-filter_free_search').val(),
+                        status: $('#filter_status').val(),
+                        hours_ago: $('#text-filter_hours_ago').val(),
+                        trap_type: $('#filter_trap_type').val()
                     },
                     datatype: "json",
                     success: function(data) {
@@ -1223,7 +1426,9 @@ class SnmpConsole extends HTML
                             new_url += '&filter_severity='+$('#filter_severity').val();
                             new_url += '&filter_status='+$('#filter_status').val();
                             new_url += '&filter_alert='+$('#filter_alert').val();
-                            new_url += '&group_by=0';
+                            new_url += '&filter_group_by=0&filter_free_search='+$('#text-filter_free_search').val();
+                            new_url += '&filter_hours_ago='+$('#text-filter_hours_ago').val();
+                            new_url += '&filter_trap_type='+$('#filter_trap_type').val();
 
                             const string = '<a href="'+new_url+'"><?php echo __('See more details'); ?></a>';
 
@@ -1318,6 +1523,44 @@ class SnmpConsole extends HTML
                     const c = this.checked;
                     $(':checkbox').prop('checked', c);
                 });
+
+                var controls = document.getElementById('dashboard-controls');
+                autoHideElement(controls, 1000);
+
+                var startCountDown = function (duration, cb) {
+                    $('div.dashboard-countdown').countdown('destroy');
+                    if (!duration) return;
+                    var t = new Date();
+                    t.setTime(t.getTime() + duration * 1000);
+                    $('div.dashboard-countdown').countdown({
+                        until: t,
+                        format: 'MS',
+                        layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>) ',
+                        alwaysExpire: true,
+                        onExpiry: function () {
+                            var dt_snmp = $("#snmp_console").DataTable();
+                            dt_snmp.draw();
+                            startCountDown(duration);
+                            throw "exit";
+                        }
+                    });
+                }
+
+                // Auto refresh select
+                $('form#refr-form').submit(function (event) {
+                    event.preventDefault();
+                });
+
+                var handleRefrChange = function (event) {
+                    event.preventDefault();
+                    var url = $('form#refr-form').prop('action');
+                    var refr = Number.parseInt(event.target.value, 10);
+
+                    startCountDown(refr);
+                }
+
+                $('form#refr-form select').change(handleRefrChange).change();
+
             });
         </script>
         <?php

@@ -33,10 +33,29 @@ require_once $config['homedir'].'/include/class/SnmpConsole.class.php';
 
 $ajaxPage = $config['homedir'].'/operation/snmpconsole/snmp_view';
 
+$filter_alert = get_parameter('filter_alert', -1);
+$filter_severity = get_parameter('filter_severity', -1);
+$filter_free_search = get_parameter('filter_free_search', '');
+$filter_status = get_parameter('filter_status', 0);
+$filter_group_by = get_parameter('filter_group_by', 0);
+$filter_hours_ago = get_parameter('filter_hours_ago', 8);
+$filter_trap_type = get_parameter('filter_trap_type', -1);
+$refr = get_parameter('refr', 300);
+
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
-    $controller = new SnmpConsole($ajaxPage);
+    $controller = new SnmpConsole(
+        $ajaxPage,
+        $filter_alert,
+        $filter_severity,
+        $filter_free_search,
+        $filter_status,
+        $filter_group_by,
+        $filter_hours_ago,
+        $filter_trap_type,
+        $refr
+    );
 } catch (Exception $e) {
     if ((bool) is_ajax() === true) {
         echo json_encode(['error' => '[SnmpConsole]'.$e->getMessage() ]);

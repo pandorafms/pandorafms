@@ -4332,6 +4332,14 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $total_modules = count($all_modules);
 
+    if ($width !== 0 && $height !== 0) {
+        $measuresProvided = false;
+        $width = 200;
+        $height = 50;
+    } else {
+        $measuresProvided = true;
+    }
+
     // Best square.
     $high = (float) max($width, $height);
     $low = 0.0;
@@ -4348,6 +4356,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
 
+    // $measureSymbol = ($measuresProvided === true) ? '' : '%';
     // Print starmap.
     $html = sprintf(
         '<svg id="svg_%s" style="width: %spx; height: %spx;">',
@@ -4398,6 +4407,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
             $y,
             $row,
             $column,
+            // $square_length.$measureSymbol,
             $square_length,
             $square_length,
             $status,

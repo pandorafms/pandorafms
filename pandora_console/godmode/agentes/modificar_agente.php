@@ -68,6 +68,7 @@ if (! check_acl(
 enterprise_include_once('include/functions_policies.php');
 require_once 'include/functions_agents.php';
 require_once 'include/functions_users.php';
+enterprise_include_once('include/functions_config_agents.php');
 
 $search = get_parameter('search', '');
 
@@ -171,17 +172,10 @@ if ($agent_to_delete) {
         __('Could not be deleted.')
     );
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         // Check if the remote config file still exist.
-        if (isset($config['remote_config'])) {
-            enterprise_include_once(
-                'include/functions_config_agents.php'
-            );
-            if (enterprise_hook(
-                'config_agents_has_remote_configuration',
-                [$id_agente]
-            )
-            ) {
+        if (isset($config['remote_config']) === true) {
+            if ((bool) enterprise_hook('config_agents_has_remote_configuration', [$id_agente]) === true) {
                 ui_print_error_message(
                     __('Maybe the files conf or md5 could not be deleted')
                 );
@@ -190,7 +184,7 @@ if ($agent_to_delete) {
     }
 }
 
-if ($enable_agent) {
+if ($enable_agent > 0) {
     $result = db_process_sql_update(
         'tagente',
         ['disabled' => 0],
@@ -198,7 +192,7 @@ if ($enable_agent) {
     );
     $alias = io_safe_output(agents_get_alias($enable_agent));
 
-    if ($result) {
+    if ((bool) $result !== false) {
         // Update the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 0];
@@ -833,7 +827,7 @@ if ($agents !== false) {
         echo ' | ';
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
-            if (enterprise_installed()) {
+            if (enterprise_installed() === true) {
                 $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
                     $agent['id_agente']
                 );
@@ -853,11 +847,10 @@ if ($agents !== false) {
         echo '</div>';
         echo '</td>';
 
-        echo "<td align='left' class='$tdcolor'>";
-        // Has remote configuration ?
+        echo '<td class="'.$tdcolor.'" align="left" valign="middle">';
+        // Has remote configuration.
         if (enterprise_installed() === true) {
-            enterprise_include_once('include/functions_config_agents.php');
-            if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
+            if ((bool) enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]) === true) {
                 html_print_menu_button(
                     [
                         'href'  => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1',
@@ -871,12 +864,17 @@ if ($agents !== false) {
         echo '</td>';
 
         // Operating System icon.
-        echo "<td class='$tdcolor' align='left' valign='middle'>";
-        ui_print_os_icon($agent['id_os'], false);
+        echo '<td class="'.$tdcolor.'" align="left" valign="middle">';
+        html_print_div(
+            [
+                'class'   => 'main_menu_icon',
+                'content' => ui_print_os_icon($agent['id_os'], false, true),
+            ]
+        );
         echo '</td>';
 
         // Type agent (Networt, Software or Satellite).
-        echo "<td class='$tdcolor' align='left' valign='middle'>";
+        echo '<td class="'.$tdcolor.'" align="left" valign="middle">';
         echo ui_print_type_agent_icon(
             $agent['id_os'],
             $agent['ultimo_contacto_remoto'],
@@ -888,7 +886,14 @@ if ($agents !== false) {
 
 
         // Group icon and name.
-        echo "<td class='$tdcolor' align='left' valign='middle'>".ui_print_group_icon($agent['id_grupo'], true).'</td>';
+        echo '<td class="'.$tdcolor.'" align="left" valign="middle">';
+        html_print_div(
+            [
+                'class'   => 'main_menu_icon',
+                'content' => ui_print_group_icon($agent['id_grupo'], true),
+            ]
+        );
+        echo '</td>';
 
         // Description.
         echo "<td class='".$tdcolor."f9'><span class='".$custom_font_size."'>".ui_print_truncate_text($agent['comentarios'], 'description', true, true, true, '[&hellip;]').'</span></td>';

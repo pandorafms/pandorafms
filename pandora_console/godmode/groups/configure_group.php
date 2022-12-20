@@ -47,66 +47,54 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('meta/include/functions_agents_meta.php');
 
 // Default values.
-$icon = '';
-$name = '';
-$id_parent = 0;
-$group_pass = '';
-$alerts_disabled = 0;
-$custom_id = '';
-$propagate = 0;
-$skin = 0;
-$contact = '';
-$other = '';
-$description = '';
-$max_agents = 0;
-
 $create_group = (bool) get_parameter('create_group');
 $id_group = (int) get_parameter('id_group');
-
-if ($id_group) {
+$acl_parent = true;
+if ($id_group > 0) {
     $group = db_get_row('tgrupo', 'id_grupo', $id_group);
-    if ($group) {
+    if ($group !== false) {
+        $icon = $group['icon'];
         $name = $group['nombre'];
-        if (empty($group['icon'])) {
-            $icon = false;
-        } else {
-            $icon = $group['icon'].'.png';
-        }
-
+        $id_parent = $group['parent'];
         $group_pass = io_safe_output($group['password']);
         $alerts_disabled = $group['disabled'];
-        $id_parent = $group['parent'];
         $custom_id = $group['custom_id'];
         $propagate = $group['propagate'];
         $skin = $group['id_skin'];
-        $description = $group['description'];
         $contact = $group['contact'];
         $other = $group['other'];
+        $description = $group['description'];
         $max_agents = $group['max_agents'];
     } else {
-        ui_print_error_message(__('There was a problem loading group'));
-        echo '</table>';
-        echo '</div>';
-        echo '<div id="both">&nbsp;</div>';
-        echo '</div>';
-        echo '<div id="foot">';
-        // include 'general/footer.php';
-        echo '</div>';
-        echo '</div>';
+        db_pandora_audit(
+            AUDIT_LOG_SYSTEM,
+            'There was a problem loading group in configure agent group.'
+        );
+        include 'general/noaccess.php';
         exit;
     }
+} else {
+    // Set default values.
+    $icon = '';
+    $name = '';
+    $id_parent = 0;
+    $group_pass = '';
+    $alerts_disabled = 0;
+    $custom_id = '';
+    $propagate = 0;
+    $skin = 0;
+    $contact = '';
+    $other = '';
+    $description = '';
+    $max_agents = 0;
 }
 
-// Header
+// Header.
 if (is_metaconsole() === true) {
     agents_meta_print_header();
     $sec = 'advanced';
 } else {
-    if ($id_group) {
-        $title_in_header = __('Update group');
-    } else {
-        $title_in_header = __('Create group');
-    }
+    $title_in_header = ($id_group > 0) ? __('Update group') : __('Create group');
 
     // Header.
     ui_print_standard_header(
@@ -130,16 +118,15 @@ if (is_metaconsole() === true) {
     $sec = 'gagente';
 }
 
+
+// Data before table.
+$files = list_files('images/', '@groups.svg', 1, 0);
+
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
-if (defined('METACONSOLE')) {
-    if ($id_group) {
-        $table->head[0] = __('Update Group');
-    } else {
-        $table->head[0] = __('Create Group');
-    }
-
+if (is_metaconsole() === true) {
+    $table->head[0] = ($id_group > 0) ? __('Update group') : __('Create group');
     $table->head_colspan[0] = 4;
     $table->headstyle[0] = 'text-align: center';
 }
@@ -149,30 +136,18 @@ $table->style[0] = 'font-weight: bold';
 $table->data = [];
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text('name', $name, '', 35, 100, true);
-
 $table->data[1][0] = __('Icon');
-$files = list_files('images/groups_small/', 'png', 1, 0);
-foreach ($files as $key => $f) {
-    // Remove from the list the non-desired .png files
-    if (strpos($f, '.bad.png') !== false || strpos($f, '.default.png') !== false || strpos($f, '.ok.png') !== false || strpos($f, '.warning.png') !== false) {
-        unset($files[$key]);
-    }
-}
-
 $table->data[1][1] = html_print_select($files, 'icon', $icon, '', 'None', '', true);
 $table->data[1][1] .= ' <span id="icon_preview">';
-if ($icon) {
-    $table->data[1][1] .= html_print_image('images/groups_small/'.$icon, true);
+if (empty($icon) === false) {
+    $table->data[1][1] .= html_print_image('images/'.$icon, true);
 }
 
 $table->data[1][1] .= '</span>';
-
 $table->data[2][0] = __('Parent');
-
-$acl_parent = true;
-if ($id_group) {
+if ($id_group > 0) {
     // The user can access to the parent, but she want to edit the group.
-    if (!check_acl($config['id_user'], $id_parent, 'AR')) {
+    if ((bool) check_acl($config['id_user'], $id_parent, 'AR') === false) {
         $acl_parent = false;
 
         $table->data[2][1] = __('You have not access to the parent.').html_print_input_hidden('id_parent', $id_parent, true);
@@ -214,14 +189,14 @@ if ($id_group) {
     $table->data[2][1] .= '</div>';
 }
 
-if ($acl_parent) {
+if ($acl_parent === true) {
     $table->data[2][1] .= ' <span id="parent_preview">';
-    $table->data[2][1] .= html_print_image('images/groups_small/'.( $id_parent != 0 ? groups_get_icon($id_parent) : 'without_group').'.png', true);
+    $table->data[2][1] .= html_print_image('images/'.(($id_parent !== 0) ? groups_get_icon($id_parent) : 'unknown@groups.svg'), true);
     $table->data[2][1] .= '</span>';
 }
 
 $i = 3;
-if ($config['enterprise_installed']) {
+if ((bool) $config['enterprise_installed'] === true) {
     $i = 4;
     $table->data[3][0] = __('Group Password');
     $table->data[3][1] = html_print_input_password('group_pass', $group_pass, '', 16, 255, true);
@@ -251,20 +226,11 @@ $table->data[$i][0] = __('Other').ui_print_help_tip(__('Information accessible t
 $table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true);
 $i++;
 
-// $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
-// if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK && !defined('METACONSOLE')) {
-// $table->data[10][0] = __('Skin');
-// $table->data[10][1] = skins_print_select($config['id_user'], 'skin', $skin, '', __('None'), 0, true);
-// }
 $table->data[$i][0] = __('Max agents allowed').'&nbsp;'.ui_print_help_tip(__('Set the maximum of agents allowed for this group. 0 is unlimited.'), true);
 $table->data[$i][1] = html_print_input_text('max_agents', $max_agents, '', 10, 255, true);
 $i++;
 
-if (defined('METACONSOLE')) {
-    $sec = 'advanced';
-} else {
-    $sec = 'gagente';
-}
+$sec = (is_metaconsole() === true) ? 'advanced' : 'gagente';
 
 echo '<form name="grupo" method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/group_list&pure='.$config['pure'].'" >';
 html_print_table($table);
@@ -294,7 +260,7 @@ function icon_changed () {
         if (data != "") {
             var params = [];
             params.push("get_image_path=1");
-            params.push("img_src=images/groups_small/" + data);
+            params.push("img_src=images/" + data);
             params.push("page=include/ajax/skins.ajax");
             params.push("only_src=1");
             jQuery.ajax ({
@@ -330,7 +296,7 @@ function parent_changed () {
                     }
                     var params = [];
                     params.push("get_image_path=1");
-                    params.push("img_src=images/groups_small/" + data['icon'] + ".png");
+                    params.push("img_src=images/" + data['icon']);
                     params.push("page=include/ajax/skins.ajax");
                     params.push("only_src=1");
                     jQuery.ajax ({

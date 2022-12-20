@@ -5933,7 +5933,7 @@ div#status_pie path {
 div#status_pie {
   margin-bottom: 2em;
 }
-
+/*
 .agent_details_header {
   display: flex;
   justify-content: flex-end;
@@ -5941,7 +5941,22 @@ div#status_pie {
   border-bottom: 1px solid #e2e2e2;
   padding: 8px 20px;
 }
-
+*/
+.agent_details_header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+  padding: 8px 20px;
+}
+/*
+.agent_details_content {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  padding-bottom: 0;
+}
+*/
 .agent_details_content {
   display: flex;
   align-items: flex-start;
@@ -5949,15 +5964,17 @@ div#status_pie {
   padding-bottom: 0;
 }
 
-.agent_details_agent_name {
-  display: flex;
-  align-items: center;
+.agent_details_content .agent_details_graph {
+  text-align: center;
+  flex: 0 1 30%;
 }
 
-.agent_details_remote_cfg {
-  align-self: flex-start;
+.agent_details_content .agent_details_info {
+  flex: 1 1 70%;
+  overflow: hidden;
+  min-width: 220px;
 }
-
+/*
 .agent_details_graph {
   text-align: center;
   margin: 0 auto;
@@ -5967,6 +5984,16 @@ div#status_pie {
   max-width: 45%;
   overflow: hidden;
   min-width: 220px;
+}
+*/
+
+.agent_details_agent_name {
+  display: flex;
+  align-items: center;
+}
+
+.agent_details_remote_cfg {
+  align-self: flex-start;
 }
 
 .agent_details_info span {

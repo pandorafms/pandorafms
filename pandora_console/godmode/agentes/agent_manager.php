@@ -489,7 +489,7 @@ $tableAgent->data['primary_group'][0] .= html_print_div(
         'content' => ui_print_group_icon(
             $grupo,
             true,
-            'groups_small',
+            '',
             ($id_agente === 0) ? 'display: none;' : '',
             true,
             false,

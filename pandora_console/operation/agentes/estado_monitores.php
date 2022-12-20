@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,14 +30,14 @@
 global $config;
 
 // Ajax tooltip to deploy modules's tag info.
-if (is_ajax()) {
+if (is_ajax() === true) {
     $get_tag_tooltip = (bool) get_parameter('get_tag_tooltip', 0);
     $get_relations_tooltip = (bool) get_parameter('get_relations_tooltip', 0);
 
 
-    if ($get_tag_tooltip) {
+    if ($get_tag_tooltip === true) {
         $id_agente_modulo = (int) get_parameter('id_agente_modulo');
-        if ($id_agente_modulo == false) {
+        if ($id_agente_modulo === 0) {
             return;
         }
 
@@ -80,9 +80,9 @@ if (is_ajax()) {
     }
 
 
-    if ($get_relations_tooltip) {
+    if ($get_relations_tooltip === true) {
         $id_agente_modulo = (int) get_parameter('id_agente_modulo');
-        if ($id_agente_modulo == false) {
+        if ($id_agente_modulo === 0) {
             return;
         }
 
@@ -94,7 +94,7 @@ if (is_ajax()) {
         ];
         $relations = modules_get_relations($params);
 
-        if (empty($relations)) {
+        if (empty($relations) === true) {
             return;
         }
 
@@ -136,7 +136,7 @@ if (is_ajax()) {
     return;
 }
 
-if (!isset($id_agente)) {
+if (isset($id_agente) === false) {
     // This page is included, $id_agente should be passed to it.
     db_pandora_audit(
         AUDIT_LOG_HACK_ATTEMPT,
@@ -172,7 +172,13 @@ print_form_filter_monitors(
     $status_hierachy_mode
 );
 
-echo '<div id="module_list"></div>';
+echo html_print_div(
+    [
+        'id'      => 'module_list',
+        'content' => '',
+    ],
+    true
+);
 
 $html_toggle = ob_get_clean();
 

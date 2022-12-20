@@ -648,17 +648,13 @@ function ui_print_tags_warning($return=false)
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_group_icon($id_group, $return=false, $path='groups_small', $style='', $link=true, $force_show_image=false, $show_as_image=false, $class='')
+function ui_print_group_icon($id_group, $return=false, $path='', $style='', $link=true, $force_show_image=false, $show_as_image=false, $class='')
 {
     global $config;
 
-    if ($id_group > 0) {
-        $icon = (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
-    } else {
-        $icon = 'world';
-    }
-
     $output = '';
+
+    $icon = ($id_group > 0) ? (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group) : 'unknown@groups.svg';
 
     // Don't show link in metaconsole.
     if (is_metaconsole() === true) {
@@ -669,7 +665,7 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
         $output = '<a href="'.$config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
     }
 
-    if ($config['show_group_name']) {
+    if ((bool) $config['show_group_name'] === true) {
         $output .= '<span title="'.groups_get_name($id_group, true).'">'.groups_get_name($id_group, true).'&nbsp;</span>';
     } else {
         if (empty($icon) === true) {
@@ -683,7 +679,7 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
             }
 
             $output .= html_print_image(
-                'images/'.$path.'/'.$icon.'.png',
+                'images/'.$icon,
                 true,
                 [
                     'style' => $style,
@@ -699,15 +695,15 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
         }
     }
 
-    if ($link) {
+    if ($link === true) {
         $output .= '</a>';
     }
 
-    if (!$return) {
+    if ($return === false) {
         echo $output;
+    } else {
+        return $output;
     }
-
-    return $output;
 }
 
 

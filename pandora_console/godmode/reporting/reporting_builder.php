@@ -1097,10 +1097,7 @@ switch ($action) {
 
                     $data[$next] = ui_print_group_icon(
                         $report['id_group'],
-                        true,
-                        'groups_small',
-                        '',
-                        !defined('METACONSOLE')
+                        true
                     );
                     $next++;
                 }

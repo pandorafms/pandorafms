@@ -871,7 +871,7 @@ if ($tab == 'tree') {
 
         foreach ($groups as $key => $group) {
             $url = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            if (is_metaconsole()) {
+            if (is_metaconsole() === true) {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
             } else {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
@@ -886,7 +886,7 @@ if ($tab == 'tree') {
 
             if ($group['icon'] != '') {
                 $table->data[$key][2] = html_print_image(
-                    'images/groups_small/'.$group['icon'].'.png',
+                    'images/'.$group['icon'],
                     true,
                     [
                         'style' => '',

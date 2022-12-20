@@ -187,7 +187,7 @@ foreach ($filters as $filter) {
     }
 
 
-    $data[2] = ui_print_group_icon($filter['id_group'], true, 'groups_small', '', !defined('METACONSOLE'));
+    $data[2] = ui_print_group_icon($filter['id_group'], true);
     $data[3] = '';
 
     if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {

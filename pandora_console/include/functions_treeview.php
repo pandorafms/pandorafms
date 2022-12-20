@@ -690,18 +690,16 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $go_to_agent = '<div style="text-align: right">';
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
-            if (enterprise_installed()) {
-                $cluster = PandoraFMS\Cluster::loadFromAgentId(
-                    $agent['id_agente']
-                );
-                $url = 'index.php?sec=reporting&sec2=';
-                $url .= 'operation/cluster/cluster';
-                $url = ui_get_full_url(
-                    $url.'&op=update&id='.$cluster->id()
-                );
-                $go_to_agent .= '<a target="_blank" href="'.$url.'">';
-                $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
-            }
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $url = 'index.php?sec=reporting&sec2=';
+            $url .= 'operation/cluster/cluster';
+            $url = ui_get_full_url(
+                $url.'&op=update&id='.$cluster->id()
+            );
+            $go_to_agent .= '<a target="_blank" href="'.$url.'">';
+            $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
         } else {
             $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
             $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8df19e49d9715736491944daea32b45c",
+    "content-hash": "be2ad3d9d4df55d7ccb87981e82c4932",
     "packages": [
         {
             "name": "amphp/amp",
@@ -548,6 +548,69 @@
                 }
             ],
             "time": "2021-10-25T18:29:10+00:00"
+        },
+        {
+            "name": "artica/phpchartjs",
+            "version": "v1.0.1",
+            "dist": {
+                "type": "path",
+                "url": "../../../phpchartjs",
+                "reference": "7ec8ed26f31671a6fc0c91c294b48dc9625d7827"
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "halfpastfouram/collection": "1.0.0",
+                "laminas/laminas-json": ">3.1.2",
+                "php": ">=7.2",
+                "symfony/var-dumper": "^3.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "*",
+                "phpunit/phpunit": "^9.5",
+                "sensiolabs/security-checker": "^5.0",
+                "squizlabs/php_codesniffer": "3.5.3"
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "Artica\\PHPChartJS\\": "src/",
+                    "Test\\": "test/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "./vendor/bin/phpunit"
+                ],
+                "cs-check": [
+                    "./vendor/bin/phpcs"
+                ],
+                "cs-fix": [
+                    "./vendor/bin/phpcbf"
+                ]
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Bob Kruithof"
+                },
+                {
+                    "name": "Daniel Barbero"
+                }
+            ],
+            "description": "PHP library for ChartJS",
+            "homepage": "https://artica.es/",
+            "keywords": [
+                "chartjs",
+                "graph",
+                "php"
+            ],
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
         },
         {
             "name": "chrome-php/chrome",
@@ -1217,62 +1280,6 @@
                 }
             ],
             "time": "2020-11-13T09:40:50+00:00"
-        },
-        {
-            "name": "nutsy/phpchartjs",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/danielbarmar85/phpchartjs.git",
-                "reference": "a6c7683198e6c4d4536fd8063a38e6277598a1b8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/danielbarmar85/phpchartjs/zipball/a6c7683198e6c4d4536fd8063a38e6277598a1b8",
-                "reference": "a6c7683198e6c4d4536fd8063a38e6277598a1b8",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-json": "*",
-                "halfpastfouram/collection": "1.0.0",
-                "laminas/laminas-json": ">3.1.2",
-                "php": ">=7.2",
-                "symfony/var-dumper": "^3.4"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "*",
-                "phpunit/phpunit": "^9.5",
-                "sensiolabs/security-checker": "^5.0",
-                "squizlabs/php_codesniffer": "3.5.3"
-            },
-            "type": "package",
-            "autoload": {
-                "psr-4": {
-                    "Test\\": "test/",
-                    "Nutsy\\PHPChartJS\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "AGPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Daniel Barbero"
-                }
-            ],
-            "description": "PHP library for ChartJS",
-            "homepage": "https://thenutsycompany.com/",
-            "keywords": [
-                "chartjs",
-                "graph",
-                "php"
-            ],
-            "support": {
-                "source": "https://github.com/danielbarmar85/phpchartjs/tree/v1.0.0"
-            },
-            "time": "2022-11-23T13:00:43+00:00"
         },
         {
             "name": "opis/closure",

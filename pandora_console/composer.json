@@ -16,8 +16,17 @@
     "mpdf/mpdf": "^8.0.15",
     "swiftmailer/swiftmailer": "^6.0",
     "amphp/parallel-functions": "^1.0",
-    "nutsy/phpchartjs": "*",
-    "chrome-php/chrome": "^1.7.1"
+    "chrome-php/chrome": "^1.7.1",
+    "artica/phpchartjs": "^1.0"
+  },
+  "repositories": {
+    "phpchartjs": {
+      "type": "path",
+      "url": "../../../phpchartjs",
+      "options": {
+        "symlink": false
+      }
+    }
   },
   "autoload": {
     "psr-4": {

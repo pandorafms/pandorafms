@@ -73,10 +73,6 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         array (
             'Opis\\Closure\\' => 13,
         ),
-        'N' => 
-        array (
-            'Nutsy\\PHPChartJS\\' => 17,
-        ),
         'M' => 
         array (
             'Mpdf\\' => 5,
@@ -104,6 +100,7 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         ),
         'A' => 
         array (
+            'Artica\\PHPChartJS\\' => 18,
             'Amp\\Sync\\' => 9,
             'Amp\\Serialization\\' => 18,
             'Amp\\Process\\' => 12,
@@ -135,7 +132,7 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'Test\\' => 
         array (
             0 => __DIR__ . '/..' . '/halfpastfouram/collection/test',
-            1 => __DIR__ . '/..' . '/nutsy/phpchartjs/test',
+            1 => __DIR__ . '/..' . '/artica/phpchartjs/test',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
@@ -193,10 +190,6 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         array (
             0 => __DIR__ . '/..' . '/opis/closure/src',
         ),
-        'Nutsy\\PHPChartJS\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nutsy/phpchartjs/src',
-        ),
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
@@ -236,6 +229,10 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
+        ),
+        'Artica\\PHPChartJS\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/artica/phpchartjs/src',
         ),
         'Amp\\Sync\\' => 
         array (

@@ -419,6 +419,7 @@ class Widget
                 case 'GroupedMeterGraphs':
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
+                case 'DataMatrix':
                     $className .= '\\'.$name;
                 break;
 

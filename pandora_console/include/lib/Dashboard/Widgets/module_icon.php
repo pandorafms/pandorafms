@@ -555,7 +555,7 @@ class ModuleIconWidget extends Widget
         // Div value.
         $output .= '<div style="flex: 0 1 10px; font-size:'.$sizeValue.'px;">';
         $output .= remove_right_zeros(
-            number_format($data_module, $config['graph_precision'])
+            number_format($data_module, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])
         );
         $output .= '</div>';
 

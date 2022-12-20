@@ -98,6 +98,8 @@ Exported Functions:
 
 =item * C<pandora_self_monitoring>
 
+=item * C<pandora_thread_monitoring>
+
 =item * C<pandora_sample_agent>
 
 =back
@@ -258,6 +260,7 @@ our @EXPORT = qw(
 	pandora_group_statistics
 	pandora_server_statistics
 	pandora_self_monitoring
+	pandora_thread_monitoring
 	pandora_sample_agent
 	pandora_process_policy_queue
 	pandora_sync_agents_integria
@@ -6064,6 +6067,67 @@ sub pandora_self_monitoring ($$) {
 	print XMLFILE $xml_output;
 	close (XMLFILE);
 }
+
+##########################################################################
+=head2 C<< pandora_thread_monitoring (I<$pa_config>, I<$dbh>, I<$servers>) >>
+
+Generate stats for Pandora FMS threads.
+
+=cut
+##########################################################################
+
+sub pandora_thread_monitoring ($$$) {
+	my ($pa_config, $dbh, $servers) = @_;
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+
+	my $xml_output = "";
+	
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	foreach my $server (@{$servers}) {
+		while (my ($tid, $stats) = each(%{$server->getProducerStats()})) {
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Status</name>";
+			$xml_output .=" <type>generic_proc</type>";
+			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" </module>";
+	
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Processing Rate</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
+			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" </module>";
+		}
+
+		my $idx = 0;
+		my $consumer_stats = $server->getConsumerStats();
+		foreach my $tid (sort(keys(%{$consumer_stats}))) {
+			my $stats = $consumer_stats->{$tid};
+
+			$idx += 1;
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Consumer #$idx Status</name>";
+			$xml_output .=" <type>generic_proc</type>";
+			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" </module>";
+	
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Consumer #$idx Processing Rate</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
+			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" </module>";
+		}
+	}
+	$xml_output .= "</agent_data>";
+
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
+	print XMLFILE $xml_output;
+	close (XMLFILE);
+}
+
 ##########################################################################
 =head2 C<< xml_module_template (I<$module_name>, I<$module_type>, I<$module_data>) >>
 

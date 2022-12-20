@@ -695,7 +695,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                     $agent['id_agente']
                 );
                 $url = 'index.php?sec=reporting&sec2=';
-                $url .= '/operation/cluster/cluster';
+                $url .= 'operation/cluster/cluster';
                 $url = ui_get_full_url(
                     $url.'&op=update&id='.$cluster->id()
                 );

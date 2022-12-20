@@ -851,7 +851,7 @@ foreach ($agents as $agent) {
                 $agent['id_agente']
             );
             $url = 'index.php?sec=reporting&sec2=';
-            $url .= '/operation/cluster/cluster';
+            $url .= 'operation/cluster/cluster';
             $url = ui_get_full_url(
                 $url.'&op=view&id='.$cluster->id()
             );
@@ -870,7 +870,7 @@ foreach ($agents as $agent) {
                     $agent['id_agente']
                 );
                 $url = 'index.php?sec=reporting&sec2=';
-                $url .= '/operation/cluster/cluster';
+                $url .= 'operation/cluster/cluster';
                 $url = ui_get_full_url(
                     $url.'&op=update&id='.$cluster->id()
                 );

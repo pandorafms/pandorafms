@@ -2048,7 +2048,12 @@ if (is_ajax() === true) {
 
         $array_filter = json_decode($networkmap['filter']);
         if (isset($array_filter->z_dash)) {
-            $array_filter->z_dash = number_format($scale, 2);
+            $array_filter->z_dash = number_format(
+                $scale,
+                2,
+                $config['decimal_separator'],
+                $config['thousand_separator']
+            );
         }
 
         $filter = json_encode($array_filter);

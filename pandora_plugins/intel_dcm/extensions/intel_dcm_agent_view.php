@@ -142,26 +142,26 @@ function main_intel_dcm_agent_view()
     $sql = "SELECT description FROM tagent_custom_data WHERE id_field = $id_field_derated_power AND id_agent = $id_agent";
     $derated_power = db_get_value_sql($sql);
 
-    $percent = number_format((($avg_power / $derated_power) * 100), 2);
+    $percent = number_format((($avg_power / $derated_power) * 100), 2, $config['decimal_separator'], $config['thousand_separator']);
 
     $data[0] = '<b>'.__('Power utilization')." $percent%</b>";
     $data[0] .= progress_bar($percent, 400, 30, '', 2);
     $data[0] .= '<br><br>';
     $data[0] .= '<b>'.__('Current stats').'</b>';
     $data[0] .= '<br><br>';
-    $data[0] .= __('Power demand').': <b>'.number_format($avg_power, 2).' Wh</b>';
+    $data[0] .= __('Power demand').': <b>'.number_format($avg_power, 2, $config['decimal_separator'], $config['thousand_separator']).' Wh</b>';
     $data[0] .= '<br>';
-    $data[0] .= __('Inlet temp').': <b>'.number_format($avg_temp, 2).' ºC</b>';
+    $data[0] .= __('Inlet temp').': <b>'.number_format($avg_temp, 2, $config['decimal_separator'], $config['thousand_separator']).' ºC</b>';
     $data[0] .= '<br><br><br>';
     $data[0] .= '<b>'.__('Last week summary').'</b>';
     $data[0] .= '<br><br>';
-    $data[0] .= __('Equipment energy consumed').': <b>'.number_format($mnged_energy, 2).' Wh</b>';
+    $data[0] .= __('Equipment energy consumed').': <b>'.number_format($mnged_energy, 2, $config['decimal_separator'], $config['thousand_separator']).' Wh</b>';
     $data[0] .= '<br>';
-    $data[0] .= __('Equipment energy bill').': <b>'.number_format($mnged_energy_bill, 2).' €</b>';
+    $data[0] .= __('Equipment energy bill').': <b>'.number_format($mnged_energy_bill, 2, $config['decimal_separator'], $config['thousand_separator']).' €</b>';
     $data[0] .= '<br>';
-    $data[0] .= __('Calculated cooling energy').': <b>'.number_format($cooling_energy, 2).' Wh</b>';
+    $data[0] .= __('Calculated cooling energy').': <b>'.number_format($cooling_energy, 2, $config['decimal_separator'], $config['thousand_separator']).' Wh</b>';
     $data[0] .= '<br>';
-    $data[0] .= __('Calculated cooling energy bill').': <b>'.number_format($cooling_energy_bill, 2).' €</b>';
+    $data[0] .= __('Calculated cooling energy bill').': <b>'.number_format($cooling_energy_bill, 2, $config['decimal_separator'], $config['thousand_separator']).' €</b>';
 
     // Print avg. power graph
     $start_date = date('Y-m-d');

@@ -14,7 +14,7 @@ require_once 'include/functions_custom_graphs.php';
 require_once 'include/functions_graph.php';
 
 $save_custom_graph = (bool) get_parameter('save_custom_graph');
-$print_custom_graph = (bool) get_parameter('print_custom_graph');
+$print_custom_graph = (bool) get_parameter('print_custom_graph', false);
 $print_sparse_graph = (bool) get_parameter('print_sparse_graph');
 $get_graphs = (bool) get_parameter('get_graphs_container');
 
@@ -52,13 +52,13 @@ if ($save_custom_graph) {
     return;
 }
 
-if ($print_custom_graph) {
+if ($print_custom_graph === true) {
     ob_clean();
 
     $width_value = (int) get_parameter('width', CHART_DEFAULT_WIDTH);
 
     if ($width_value === -1) {
-        $width_value = '';
+        $width_value = '95%';
     }
 
     $params = [
@@ -214,7 +214,7 @@ if ($get_graphs) {
                         ];
 
                         $table .= grafico_modulo_sparse($params);
-                        $contador --;
+                        $contador--;
                     }
 
                     // $table .= "</br>";
@@ -253,7 +253,7 @@ if ($get_graphs) {
                             $params_combined
                         );
 
-                        $contador --;
+                        $contador--;
                     }
                 break;
 
@@ -323,7 +323,7 @@ if ($get_graphs) {
                             ];
 
                             $table .= grafico_modulo_sparse($params);
-                            $contador --;
+                            $contador--;
                         }
                     }
                 break;

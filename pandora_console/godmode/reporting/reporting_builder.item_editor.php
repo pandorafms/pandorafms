@@ -78,6 +78,14 @@ $agents_inventory_display_options['estado'] = __('Status');
 $agents_inventory_display_options['agent_version'] = __('Version');
 $agents_inventory_display_options['remote'] = __('Remote configuration');
 
+// Modules inventory display options.
+$modules_inventory_display_options = [];
+$modules_inventory_display_options['alias'] = __('Name');
+$modules_inventory_display_options['direccion'] = __('Description');
+$modules_inventory_display_options['id_os'] = __('Tags');
+$modules_inventory_display_options['id_grupo'] = __('Module groups');
+$modules_inventory_display_options['secondary_groups'] = __('Group');
+
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 if (enterprise_include_once('include/functions_metaconsole.php')) {
@@ -135,9 +143,11 @@ $current_month = true;
 // Only avg is selected by default for the simple graphs.
 $fullscale = false;
 $percentil = false;
+$image_threshold = false;
 $time_compare_overlapped = false;
 
 // Added for events items.
+$server_multiple = [0];
 $show_summary_group = false;
 $filter_event_severity = false;
 $filter_event_type = false;
@@ -159,6 +169,7 @@ $visual_format = 0;
 $filter_search = '';
 $filter_exclude = '';
 
+$use_prefix_notation = true;
 
 // Added for select fields.
 $total_time = true;
@@ -178,6 +189,9 @@ $agent_min_value = true;
 $uncompressed_module = true;
 $macros_definition = '';
 $render_definition = '';
+
+$text_agent = '';
+$text_agent_module = '';
 
 $only_data = false;
 
@@ -307,6 +321,7 @@ switch ($action) {
                 case 'simple_graph':
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
+                    $image_threshold = (isset($style['image_threshold']) === true) ? (bool) $style['image_threshold'] : false;
                     $graph_render = $item['graph_render'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
@@ -447,6 +462,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'max_value':
@@ -462,6 +478,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'min_value':
@@ -477,6 +494,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'sumatory':
@@ -490,6 +508,7 @@ switch ($action) {
                     $idAgentModule = $item['id_agent_module'];
                     $period = $item['period'];
                     $uncompressed_module = $item['uncompressed_module'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'historical_data':
@@ -626,9 +645,10 @@ switch ($action) {
                     $filter_search = $style['event_filter_search'];
                     $filter_exclude = $style['event_filter_exclude'];
 
+                    $server_multiple = json_decode($style['server_multiple'], true);
                     $filter_event_severity = json_decode($style['filter_event_severity'], true);
-                    $filter_event_status   = json_decode($style['filter_event_status'], true);
-                    $filter_event_type     = json_decode($style['filter_event_type'], true);
+                    $filter_event_status = json_decode($style['filter_event_status'], true);
+                    $filter_event_type = json_decode($style['filter_event_type'], true);
 
 
                     $include_extended_events = $item['show_extended_events'];
@@ -676,6 +696,21 @@ switch ($action) {
                     $period = $item['period'];
                     $order_uptodown = $item['order_uptodown'];
                     $show_resume = $item['show_resume'];
+
+                    $text_agent = '';
+                    if (isset($style['text_agent']) === true
+                        && empty($style['text_agent']) === false
+                    ) {
+                        $text_agent = base64_decode($style['text_agent']);
+                    }
+
+
+                    $text_agent_module = '';
+                    if (isset($style['text_agent_module']) === true
+                        && empty($style['text_agent_module']) === false
+                    ) {
+                        $text_agent_module = base64_decode($style['text_agent_module']);
+                    }
                 break;
 
                 case 'availability':
@@ -743,6 +778,22 @@ switch ($action) {
                     $show_resume = $item['show_resume'];
                     $show_graph = $item['show_graph'];
                     $order_uptodown = $item['order_uptodown'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
+
+                    $text_agent = '';
+                    if (isset($style['text_agent']) === true
+                        && empty($style['text_agent']) === false
+                    ) {
+                        $text_agent = base64_decode($style['text_agent']);
+                    }
+
+
+                    $text_agent_module = '';
+                    if (isset($style['text_agent_module']) === true
+                        && empty($style['text_agent_module']) === false
+                    ) {
+                        $text_agent_module = base64_decode($style['text_agent_module']);
+                    }
                 break;
 
                 case 'exception':
@@ -753,6 +804,21 @@ switch ($action) {
                     $show_resume = $item['show_resume'];
                     $show_graph = $item['show_graph'];
                     $order_uptodown = $item['order_uptodown'];
+
+                    $text_agent = '';
+                    if (isset($style['text_agent']) === true
+                        && empty($style['text_agent']) === false
+                    ) {
+                        $text_agent = base64_decode($style['text_agent']);
+                    }
+
+
+                    $text_agent_module = '';
+                    if (isset($style['text_agent_module']) === true
+                        && empty($style['text_agent_module']) === false
+                    ) {
+                        $text_agent_module = base64_decode($style['text_agent_module']);
+                    }
                 break;
 
                 case 'agent_module':
@@ -849,6 +915,14 @@ switch ($action) {
 
                     $idAgent = $es['id_agents'];
                     $idAgentModule = $inventory_modules;
+                break;
+
+                case 'modules_inventory':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+
+                    $selected_agent_group_filter = $es['agent_group_filter'];
+                    $selected_module_group = $es['module_group'];
                 break;
 
                 case 'inventory':
@@ -1091,6 +1165,52 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_agent_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent').ui_print_help_tip(
+                    __('Case insensitive regular expression for agent name. For example: Network.* will match with the following agent names: network_agent1, NetworK CHECKS'),
+                    true
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_input_text(
+                    'text_agent',
+                    $text_agent,
+                    '',
+                    30,
+                    100,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_module_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Module').ui_print_help_tip(
+                    __('Case insensitive regular expression or string for module name. For example: if you use this field with "Module exact match" enabled then this field has to be fulfilled with the literally string of the module name, if not you can use a regular expression. Example: .*usage.* will match: cpu_usage, vram usage in matchine 1.'),
+                    true
+                );
+                ?>
+            </td>
+            <td class="mx180px">
+                <?php
+                html_print_input_text(
+                    'text_agent_module',
+                    $text_agent_module,
+                    '',
+                    30,
+                    100,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
         <?php
         if ($meta) {
             ?>
@@ -1109,6 +1229,37 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+            <?php
+        }
+        ?>
+
+        <?php
+        if ($meta) {
+            ?>
+                <tr id="row_multiple_servers"   class="datos">
+                    <td class="bolder"><?php echo __('Server'); ?></td>
+                    <td  >
+                <?php
+                $server_ids = [];
+                $server_ids[0] = __('Local metaconsole');
+                $get_servers = metaconsole_get_servers();
+                foreach ($get_servers as $key => $server) {
+                    $server_ids[$server['id']] = $server['server_name'];
+                }
+
+                html_print_select(
+                    $server_ids,
+                    'server_multiple[]',
+                    $server_multiple,
+                    '',
+                    '',
+                    0,
+                    false,
+                    true
+                );
+                ?>
+                    </td>
+                </tr>
             <?php
         }
         ?>
@@ -1674,46 +1825,10 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
-                if ($source) {
-                    $sql_log_report = 'SELECT id_agente, alias
-							FROM tagente, tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent
-                            AND tagente.disabled = 0
-                            AND tagent_module_log.source like "'.$source.'"';
-                } else {
-                    $sql_log_report = 'SELECT id_agente, alias
-							FROM tagente, tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent
-                            AND tagente.disabled = 0';
-                }
-
-                $all_agent_log = db_get_all_rows_sql($sql_log_report);
-
-                if (isset($all_agent_log) && is_array($all_agent_log)) {
-                    foreach ($all_agent_log as $key => $value) {
-                        $agents2[$value['id_agente']] = $value['alias'];
-                    }
-                }
-
-                if ((empty($agents2)) || $agents2 == -1) {
-                    $agents = [];
-                }
-
-                    $agents_select = [];
-                if (is_array($id_agents) || is_object($id_agents)) {
-                    foreach ($id_agents as $id) {
-                        foreach ($agents2 as $key => $a) {
-                            if ($key == (int) $id) {
-                                $agents_select[$key] = $key;
-                            }
-                        }
-                    }
-                }
-
                 html_print_select(
-                    $agents2,
+                    [],
                     'id_agents3[]',
-                    $agents_select,
+                    '',
                     $script = '',
                     '',
                     0,
@@ -1739,9 +1854,9 @@ $class = 'databox filters';
                 $all_agents = agents_get_agents_selected($group);
 
                 html_print_select(
-                    $all_agents,
+                    [],
                     'id_agents2[]',
-                    $id_agents,
+                    '',
                     $script = '',
                     '',
                     0,
@@ -2223,7 +2338,7 @@ $class = 'databox filters';
             <td class="bolder">
             <?php
             echo __('SQL query').ui_print_help_tip(
-                __('The entities of the fields that contain them must be included.'),
+                __('The entities of the fields that contain them must be included. Also is possible use macros like `_start_date_` or `_end_date_`.'),
                 true
             );
             ?>
@@ -2499,6 +2614,23 @@ $class = 'databox filters';
                 'fullscale',
                 1,
                 $fullscale
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_image_threshold"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Show threshold');
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'image_threshold',
+                1,
+                $image_threshold
             );
             ?>
             </td>
@@ -3278,6 +3410,22 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_use_prefix_notation" class="datos advanced_elements">
+            <td class="bolder">
+                <?php
+                echo __('Use prefix notation');
+                ui_print_help_tip(
+                    __('Use prefix notation for numeric values (example: 20,8Kbytes/sec), otherwise full value will be displayed (example: 20.742 bytes/sec)')
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch('use_prefix_notation', 1, $use_prefix_notation);
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_uncompressed_module"   class="datos">
             <td class="bolder">
             <?php
@@ -3531,7 +3679,22 @@ $class = 'databox filters';
                 true,
                 'agent_group_filter',
                 $selected_agent_group_filter,
-                ''
+                '',
+                '',
+                0,
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                'id_grupo',
+                false,
+                false,
+                false,
+                120
             );
             ?>
             </td>
@@ -3707,6 +3870,48 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_module_group_filter" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Module group filter');
+                ?>
+            </td>
+            <td>
+            <?php
+            $rows_select = [];
+            $rows_select[0] = __('Not assigned');
+            if ($is_metaconsole === false) {
+                $rows = db_get_all_rows_sql(
+                    'SELECT * FROM tmodule_group ORDER BY name'
+                );
+                $rows = io_safe_output($rows);
+                if (empty($rows) === false) {
+                    foreach ($rows as $module_group) {
+                        $rows_select[$module_group['id_mg']] = $module_group['name'];
+                    }
+                }
+            } else {
+                $rows_select = modules_get_modulegroups();
+            }
+
+            html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
+            html_print_select(
+                $rows_select,
+                'module_group',
+                $selected_module_group,
+                '',
+                __('All'),
+                -1,
+                false,
+                false,
+                true,
+                '',
+                false,
+                'width: 120px;'
+            );
+            ?>
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -5924,6 +6129,148 @@ function addGeneralRow() {
     }
 }
 
+function loadGeneralAgents(agent_group) {
+    var params = [];
+
+    var group = <?php echo $group; ?>;
+    group = agent_group || group;
+
+    params.push("get_agents=1");
+    params.push("group="+parseInt(group));
+    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
+    params.push("page=include/ajax/reporting.ajax");
+
+
+    $('#id_agents2')
+        .find('option')
+        .remove();
+
+    $('#id_agents2')
+        .append('<option>Loading agents...</option>');
+
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action=
+        <?php
+        echo '"'.ui_get_full_url(
+            false,
+            false,
+            false,
+            false
+        ).'"';
+        ?>
+        + "/ajax.php",
+        timeout: 300000,
+        dataType: 'json',
+        success: function (data) {
+            if (data['correct']) {
+                $('#id_agents2')
+                    .find('option')
+                    .remove();
+
+                var selectElements = [];
+                var selectedStr = 'selected="selected"';
+
+                if (data['select_agents'] === null) {
+                    return;
+                }
+
+                if (Array.isArray(data['select_agents'])) {
+                    data['select_agents'].forEach(function(agentAlias, agentID) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents2')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    });
+                } else {
+                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents2')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadLogAgents() {
+    var params = [];
+
+    params.push("get_log_agents=1");
+    params.push("source=<?php echo $source; ?>");
+    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
+    params.push("page=include/ajax/reporting.ajax");
+
+    $('#id_agents3')
+        .find('option')
+        .remove();
+
+    $('#id_agents3')
+        .append('<option>Loading agents...</option>');
+
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action=
+        <?php
+        echo '"'.ui_get_full_url(
+            false,
+            false,
+            false,
+            false
+        ).'"';
+        ?>
+        + "/ajax.php",
+        timeout: 300000,
+        dataType: 'json',
+        success: function (data) {
+            if (data['correct']) {
+                $('#id_agents3')
+                    .find('option')
+                    .remove();
+
+                var selectElements = [];
+                var selectedStr = 'selected="selected"';
+
+                if (data['select_agents'] === null) {
+                    return;
+                }
+
+                if (Array.isArray(data['select_agents'])) {
+                    data['select_agents'].forEach(function(agentAlias, agentID) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents3')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    });
+                } else {
+                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
+                        var optionAttr = '';
+                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
+                            optionAttr = ' selected="selected"';
+                        }
+
+                        $('#id_agents3')
+                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
+                    }
+                }
+            }
+        }
+    });
+}
+
 function chooseType() {
     var meta = '<?php echo (is_metaconsole() === true) ? 1 : 0; ?>';
     type = $("#type").val();
@@ -5965,11 +6312,14 @@ function chooseType() {
     $("#row_show_graph").hide();
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
+    $("#row_image_threshold").hide();
     $("#row_graph_render").hide();
     $("#row_macros_definition").hide();
     $("#row_render_definition").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
+    $("#row_agent_regexp").hide();
+    $("#row_module_regexp").hide();
     $("#row_exception_condition_value").hide();
     $("#row_exception_condition").hide();
     $("#row_dyn_height").hide();
@@ -5984,6 +6334,7 @@ function chooseType() {
     $("#row_alert_templates").hide();
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
+    $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
     $("#row_agent_multi").hide();
@@ -6023,6 +6374,8 @@ function chooseType() {
     $("#row_agents_inventory_display_options").hide();
     $("#row_agent_server_filter").hide();
     $("#row_agent_group_filter").hide();
+    $("#row_module_group_filter").hide();
+    $("#row_module_group_filter").hide();
     $("#row_os").hide();
     $("#row_custom_field_filter").hide();
     $("#row_custom_field").hide();
@@ -6036,6 +6389,7 @@ function chooseType() {
     $("#row_show_summary").hide();
     $("#row_group_by").hide();
     $("#row_type_show").hide();
+    $("#row_use_prefix_notation").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6053,7 +6407,7 @@ function chooseType() {
         case 'event_report_group':
             $("#row_description").show();
             $("#row_period").show();
-            $("#row_servers").show();
+            $("#row_multiple_servers").show();
             $("#row_group").show();
             $("#row_event_filter").show();
             $("#row_event_graphs").show();
@@ -6087,6 +6441,9 @@ function chooseType() {
             $("#agents_row").show();
             $("#row_source").show();
             $("#row_historical_db_check").hide();
+
+            loadLogAgents();
+
             break;
 
         case 'increment':
@@ -6099,6 +6456,7 @@ function chooseType() {
         case 'simple_graph':
             $("#row_time_compare_overlapped").show();
             $("#row_fullscale").show();
+            $("#row_image_threshold").show();
             $("#row_graph_render").show();
             $("#row_percentil").show();
 
@@ -6226,6 +6584,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'max_value':
@@ -6237,6 +6596,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'min_value':
@@ -6248,6 +6608,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'sumatory':
@@ -6257,6 +6618,7 @@ function chooseType() {
             $("#row_period").show();
             $("#row_historical_db_check").hide();
             $("#row_uncompressed_module").show();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'historical_data':
@@ -6376,6 +6738,13 @@ function chooseType() {
                 $("#lapse_select").val('0').trigger('change');
                 $("#hidden-lapse").val('0');
             }
+
+            loadGeneralAgents();
+
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
+
             break;
 
         case 'event_report_group':
@@ -6459,6 +6828,8 @@ function chooseType() {
             $("#row_order_uptodown").show();
             $("#row_show_resume").show();
             $("#row_show_in_same_row").show();
+            $("#row_agent_regexp").show();
+            $("#row_module_regexp").show();
 
             var checked = $("input[name='last_value']").prop("checked");
 
@@ -6527,12 +6898,15 @@ function chooseType() {
             $("#row_description").show();
             $("#row_period").show();
             $("#row_max_min_avg").show();
+            $("#row_agent_regexp").show();
+            $("#row_module_regexp").show();
             $("#row_quantity").show();
             $("#general_list").show();
             $("#row_order_uptodown").show();
             $("#row_show_resume").show();
             $("#row_show_graph").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'exception':
@@ -6544,6 +6918,8 @@ function chooseType() {
             $("#row_order_uptodown").show();
             $("#row_show_resume").show();
             $("#row_show_graph").show();
+            $("#row_agent_regexp").show();
+            $("#row_module_regexp").show();
 
             var checked = $("input[name='last_value']").prop("checked");
 
@@ -6565,6 +6941,12 @@ function chooseType() {
             $("#agents_modules_row").show();
             $("#modules_row").show();
             $("#row_historical_db_check").hide();
+
+            loadGeneralAgents();
+
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
             break;
 
         case 'inventory_changes':
@@ -6642,6 +7024,14 @@ function chooseType() {
                     $('#text-agent_custom_field_filter').prop('disabled', true);
                 }
             });
+
+            break;
+
+        case 'modules_inventory':
+            $("#row_group").show();
+            $("#row_agent_server_filter").show();
+            $("#row_agent_group_filter").show();
+            $("#row_module_group_filter").show();
 
             break;
 
@@ -6933,7 +7323,6 @@ function change_custom_fields_macros_report(id) {
             "macro_id": id
         },
         function (data, status) {
-            console.log(id);
             $("td#table-macros-definition-"+id+"-value").empty();
             $("td#table-macros-definition-"+id+"-value").append(data);
         },

@@ -252,11 +252,22 @@ class TreeService extends Tree
     protected function getProcessedServices()
     {
         $is_favourite = $this->getServiceFavouriteFilter();
+        $service_search = $this->getServiceNameSearchFilter();
 
         if (users_can_manage_group_all('AR')) {
             $groups_acl = '';
         } else {
             $groups_acl = 'AND ts.id_group IN ('.implode(',', $this->userGroupsArray).')';
+        }
+
+        $exclude_children = 'ts.id NOT IN (
+            SELECT DISTINCT id_service_child
+            FROM tservice_element
+            WHERE id_server_meta = 0
+        )';
+
+        if ($service_search !== '') {
+            $exclude_children = '1=1';
         }
 
         $sql = sprintf(
@@ -277,15 +288,14 @@ class TreeService extends Tree
             FROM tservice ts
             LEFT JOIN tservice_element tse
                 ON tse.id_service = ts.id
-            WHERE ts.id NOT IN (
-                    SELECT DISTINCT id_service_child
-                    FROM tservice_element
-                    WHERE id_server_meta = 0
-                )
+             WHERE %s
+                %s
                 %s
                 %s
             GROUP BY ts.id',
+            $exclude_children,
             $is_favourite,
+            $service_search,
             $groups_acl
         );
 
@@ -527,7 +537,7 @@ class TreeService extends Tree
                     if (empty($title) === true) {
                         $tmp['title'] = '';
                     } else {
-                        $tmp['title'] = $title.'/';
+                        $tmp['title'] = io_safe_output($title).'/';
                     }
 
                     $tmp['title'] .= $service->name();
@@ -716,6 +726,23 @@ class TreeService extends Tree
             && empty($this->filter['is_favourite']) === false
         ) {
             return ' AND is_favourite = 1';
+        }
+
+        return '';
+    }
+
+
+    /**
+     * Retrieve SQL filter for current filter
+     *
+     * @return string SQL filter.
+     */
+    protected function getServiceNameSearchFilter()
+    {
+        if (isset($this->filter['searchService']) === true
+            && empty($this->filter['searchService']) === false
+        ) {
+            return " AND (ts.name LIKE '%".$this->filter['searchService']."%' OR ts.description LIKE '%".$this->filter['searchService']."%')";
         }
 
         return '';

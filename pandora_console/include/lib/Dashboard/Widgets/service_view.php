@@ -194,11 +194,9 @@ class ServiceViewWidget extends Widget
             $this->name = 'service_view';
         }
 
-        // // This forces at least a first configuration.
-        // $this->configurationRequired = false;
-        // if (empty($this->values['serviceId']) === true) {
-        // $this->configurationRequired = true;
-        // }
+        // This forces at least a first configuration.
+        $this->configurationRequired = false;
+
         $this->overflow_scrollbars = false;
     }
 
@@ -465,6 +463,22 @@ class ServiceViewWidget extends Widget
     public static function getName()
     {
         return 'service_view';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 270,
+        ];
+
+        return $size;
     }
 
 

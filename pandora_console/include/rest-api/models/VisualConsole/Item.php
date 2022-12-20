@@ -1150,7 +1150,7 @@ class Item extends CachedModel
                         'sec2'         => 'screens/screens',
                         'action'       => 'visualmap',
                         'id_visualmap' => $vcId,
-                        'pure'         => (int) $config['pure'],
+                        'pure'         => (int) (isset($config['pure']) === true) ? $config['pure'] : 0,
                     ]
                 );
             } else if (empty($linkedLayoutNodeId) === true
@@ -1175,7 +1175,7 @@ class Item extends CachedModel
                         'sec'  => 'network',
                         'sec2' => 'operation/visual_console/view',
                         'id'   => $vcId,
-                        'pure' => (int) $config['pure'],
+                        'pure' => (int) (isset($config['pure']) === true) ? $config['pure'] : 0,
                     ]
                 );
             } else if (\is_metaconsole() === true
@@ -1313,7 +1313,7 @@ class Item extends CachedModel
                                 'operation/agentes/status_monitor',
                                 ['id_module' => $moduleId],
                                 // No autologin from the public view.
-                                !$config['public_view'],
+                                !((isset($config['public_view']) === true) ? $config['public_view'] : false),
                                 $mobile_navigation,
                                 [
                                     'id'   => $moduleId,
@@ -2296,6 +2296,7 @@ class Item extends CachedModel
                 false
             );
 
+            $aux_images = $all_images;
             foreach ($all_images as $image_file) {
                 $image_file = substr($image_file, 0, (strlen($image_file) - 4));
 
@@ -2311,7 +2312,11 @@ class Item extends CachedModel
                     continue;
                 }
 
-                $result[$image_file] = $image_file;
+                // Check the 4 images.
+                $array_images = preg_grep('/'.$image_file.'(_ok|_bad|_warning)*\./', $aux_images);
+                if (count($array_images) >= 4) {
+                    $result[$image_file] = $image_file;
+                }
             }
         }
 

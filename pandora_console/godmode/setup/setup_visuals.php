@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -181,7 +181,8 @@ $backgrounds_list = array_merge($backgrounds_list_jpg, $backgrounds_list_png);
 $backgrounds_list = array_merge($backgrounds_list, $backgrounds_list_gif);
 asort($backgrounds_list);
 
-if (!enterprise_installed()) {
+$open = false;
+if (enterprise_installed() === false) {
     $open = true;
 }
 
@@ -953,7 +954,7 @@ $options_full_escale[2] = __('On Boolean graphs');
 $table_chars->data[$row][1] = html_print_select(
     $options_full_escale,
     'full_scale_option',
-    $config['full_scale_option'],
+    (isset($config['full_scale_option']) === true) ? $config['full_scale_option'] : 0,
     '',
     '',
     0,
@@ -973,7 +974,7 @@ $options_soft_graphs[1] = __('Show MAX/AVG/MIN by default');
 $table_chars->data[$row][1] = html_print_select(
     $options_soft_graphs,
     'type_mode_graph',
-    $config['type_mode_graph'],
+    (isset($config['type_mode_graph']) === true) ? $config['type_mode_graph'] : 0,
     '',
     '',
     0,
@@ -1053,13 +1054,31 @@ $table_vc->data[$row][1] = html_print_extended_select_for_time(
 $row++;
 
 $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console');
-$table_vc->data[$row][1] = html_print_select($values, 'vc_refr', (int) $config['vc_refr'], '', 'N/A', 0, true, false, false);
+$table_vc->data[$row][1] = html_print_select(
+    $values,
+    'vc_refr',
+    (int) $config['vc_refr'],
+    '',
+    'N/A',
+    0,
+    true,
+    false,
+    false
+);
 $row++;
 
 $vc_favourite_view_array[0] = __('Classic view');
 $vc_favourite_view_array[1] = __('View of favorites');
 $table_vc->data[$row][0] = __('Type of view of visual consoles');
-$table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config['vc_favourite_view'], '', '', 0, true);
+$table_vc->data[$row][1] = html_print_select(
+    $vc_favourite_view_array,
+    'vc_favourite_view',
+    $config['vc_favourite_view'],
+    '',
+    '',
+    0,
+    true
+);
 $row++;
 
 $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu');
@@ -1067,7 +1086,23 @@ $table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items
 $row++;
 
 $table_vc->data[$row][0] = __('Default line thickness for the Visual Console');
-$table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', (int) $config['vc_line_thickness'], '', 5, 5, true);
+$table_vc->data[$row][1] = html_print_input_text(
+    'vc_line_thickness',
+    (int) $config['vc_line_thickness'],
+    '',
+    5,
+    5,
+    true
+);
+
+$table_vc->data[$row][0] = __('Mobile view not allow visual console orientation');
+$table_vc->data[$row][1] = html_print_checkbox_switch(
+    'mobile_view_orientation_vc',
+    1,
+    (bool) $config['mobile_view_orientation_vc'],
+    true
+);
+$row++;
 
 
 // ----------------------------------------------------------------------
@@ -1133,7 +1168,17 @@ $interval_description = [
     'tiny'  => 'Short',
 ];
 $table_report->data[$row][0] = __('Interval description');
-$table_report->data[$row][1] = html_print_select($interval_description, 'interval_description', $config['interval_description'], '', '', '', true, false, false);
+$table_report->data[$row][1] = html_print_select(
+    $interval_description,
+    'interval_description',
+    (isset($config['interval_description']) === true) ? $config['interval_description'] : 'large',
+    '',
+    '',
+    '',
+    true,
+    false,
+    false
+);
 
 $row++;
 
@@ -1253,9 +1298,39 @@ $table_other->data[$row][1] = html_print_checkbox_switch(
 );
 $row++;
 
+$table_other->data[$row][0] = __('Show empty groups in group view');
+$table_other->data[$row][1] = html_print_checkbox_switch(
+    'show_empty_groups',
+    1,
+    $config['show_empty_groups'],
+    true
+);
+$row++;
+
 $table_other->data[$row][0] = __('Date format string');
 $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_format']);
 $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
+$row++;
+
+$decimal_separators = [
+    ',' => ',',
+    '.' => '.',
+];
+
+$table_other->data[$row][0] = __('Decimal separator');
+$table_other->data[$row][1] = html_print_select(
+    $decimal_separators,
+    'decimal_separator',
+    $config['decimal_separator'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    false
+);
+
+
 $row++;
 
 if ($config['prominent_time'] == 'comparation') {

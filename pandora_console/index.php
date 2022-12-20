@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Index.
  *
@@ -14,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,14 +28,14 @@
  */
 
 // Begin.
-if (!defined('__PAN_XHPROF__')) {
+if (defined('__PAN_XHPROF__') === false) {
     define('__PAN_XHPROF__', 0);
 }
 
 require 'vendor/autoload.php';
 
 if (__PAN_XHPROF__ === 1) {
-    if (function_exists('tideways_xhprof_enable')) {
+    if (function_exists('tideways_xhprof_enable') === true) {
         tideways_xhprof_enable();
     } else {
         error_log('Cannot find tideways_xhprof_enable function');
@@ -43,7 +44,7 @@ if (__PAN_XHPROF__ === 1) {
 
 // Set character encoding to UTF-8
 // fixes a lot of multibyte character issues.
-if (function_exists('mb_internal_encoding')) {
+if (function_exists('mb_internal_encoding') === true) {
     mb_internal_encoding('UTF-8');
 }
 
@@ -51,10 +52,10 @@ if (function_exists('mb_internal_encoding')) {
 // Activate gives more error information, not useful for production sites.
 $develop_bypass = 0;
 
-if ($develop_bypass != 1) {
+if ($develop_bypass !== 1) {
     // If no config file, automatically try to install.
-    if (! file_exists('include/config.php')) {
-        if (! file_exists('install.php')) {
+    if (file_exists('include/config.php') === false) {
+        if (file_exists('install.php') === false) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
             $flag_url = 0;
             foreach ($url as $key => $value) {
@@ -85,25 +86,25 @@ if ($develop_bypass != 1) {
         exit;
     }
 
-    if (isset($_POST['rename_file'])) {
+    if (isset($_POST['rename_file']) === true) {
         $rename_file_install = (bool) $_POST['rename_file'];
-        if ($rename_file_install) {
+        if ($rename_file_install === true) {
             $salida_rename = rename('install.php', 'install_old.php');
         }
     }
 
     // Check installer presence.
-    if (file_exists('install.php')) {
+    if (file_exists('install.php') === true) {
         $login_screen = 'error_install';
         include 'general/error_screen.php';
         exit;
     }
 
     // Check perms for config.php.
-    if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
-        if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != '0600')
-            && (substr(sprintf('%o', fileperms('include/config.php')), -4) != '0660')
-            && (substr(sprintf('%o', fileperms('include/config.php')), -4) != '0640')
+    if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        if ((substr(sprintf('%o', fileperms('include/config.php')), -4) !== '0600')
+            && (substr(sprintf('%o', fileperms('include/config.php')), -4) !== '0660')
+            && (substr(sprintf('%o', fileperms('include/config.php')), -4) !== '0640')
         ) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
             $flag_url = 0;
@@ -128,8 +129,8 @@ if ($develop_bypass != 1) {
     }
 }
 
-if ((! file_exists('include/config.php'))
-    || (! is_readable('include/config.php'))
+if ((file_exists('include/config.php') === false)
+    || (is_readable('include/config.php') === false)
 ) {
     $login_screen = 'error_noconfig';
     include 'general/error_screen.php';
@@ -143,7 +144,7 @@ if ((! file_exists('include/config.php'))
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
 
-if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+if (isset($config['console_log_enabled']) === true && (int) $config['console_log_enabled'] === 1) {
     ini_set('log_errors', 1);
     ini_set('error_log', $config['homedir'].'/log/console.log');
 } else {
@@ -151,26 +152,26 @@ if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1
     ini_set('error_log', '');
 }
 
-if (isset($config['error'])) {
+if (isset($config['error']) === true) {
     $login_screen = $config['error'];
     include 'general/error_screen.php';
     exit;
 }
 
 // If metaconsole activated, redirect to it.
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     header('Location: '.ui_get_full_url('index.php'));
     // Always exit after sending location headers.
     exit;
 }
 
-if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
+if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php') === true) {
     include_once ENTERPRISE_DIR.'/include/functions_login.php';
 }
 
-if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
+if (empty($config['https']) === false && empty($_SERVER['HTTPS']) === true) {
     $query = '';
-    if (count($_REQUEST)) {
+    if (count($_REQUEST) > 0) {
         // Some (old) browsers don't like the ?&key=var.
         $query .= '?1=1';
     }
@@ -207,8 +208,11 @@ if (get_parameter('refr') != null) {
     $config['refr'] = (int) get_parameter('refr');
 }
 
+// Get possible errors with files.
+$errorFileOutput = (string) get_parameter('errorFileOutput');
+
 $delete_file = get_parameter('del_file');
-if ($delete_file == 'yes_delete') {
+if ($delete_file === 'yes_delete') {
     $salida_delete = shell_exec('rm /var/www/html/pandora_console/install.php');
 }
 
@@ -224,9 +228,9 @@ ob_start('ui_process_page_head');
 enterprise_include_once('index.php');
 
 echo '<script type="text/javascript">';
-    echo 'var dispositivo = navigator.userAgent.toLowerCase();';
-    echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
-        echo 'document.location = "'.ui_get_full_url('/mobile').'";  }';
+echo 'var dispositivo = navigator.userAgent.toLowerCase();';
+echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
+echo 'document.location = "'.ui_get_full_url('/mobile').'";  }';
 echo '</script>';
 
 // This tag is included in the buffer passed to ui_process_page_head so
@@ -250,9 +254,9 @@ $validatedCSRF = validate_csrf_code();
 $process_login = false;
 
 // Update user password.
-$change_pass = get_parameter_post('renew_password', 0);
+$change_pass = (int) get_parameter_post('renew_password');
 
-if ($change_pass == 1) {
+if ($change_pass === 1) {
     $password_old = (string) get_parameter_post('old_password', '');
     $password_new = (string) get_parameter_post('new_password', '');
     $password_confirm = (string) get_parameter_post('confirm_new_password', '');
@@ -268,19 +272,19 @@ if (strlen($search) > 0) {
     $config['search_keywords'] = io_safe_input(trim(io_safe_output(get_parameter('keywords'))));
     // If not search category providad, we'll use an agent search.
     $config['search_category'] = get_parameter('search_category', 'all');
-    if (($config['search_keywords'] != 'Enter keywords to search') && (strlen($config['search_keywords']) > 0)) {
+    if (($config['search_keywords'] !== 'Enter keywords to search') && (strlen($config['search_keywords']) > 0)) {
         $searchPage = true;
     }
 }
 
 // Login process.
 enterprise_include_once('include/auth/saml.php');
-if (! isset($config['id_user'])) {
+if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
     setcookie('errormsg', null, -1);
 
-    if (isset($_GET['login'])) {
+    if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
         // Include it to use escape_string_sql function.
         $config['auth_error'] = '';
@@ -295,17 +299,51 @@ if (! isset($config['id_user'])) {
         // Since now, only the $pass variable are needed.
         unset($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
 
+        // IP allowed check.
+        $user_info = users_get_user_by_id($nick);
+        if ((bool) $user_info['allowed_ip_active'] === true) {
+            $userIP = $_SERVER['REMOTE_ADDR'];
+            $allowedIP = false;
+            $arrayIP = explode(',', $user_info['allowed_ip_list']);
+            // By default, if the IP definition is no correct, allows all.
+            if (empty($arrayIP) === true) {
+                $allowedIP = true;
+            } else {
+                $allowedIP = checkIPInRange($arrayIP, $userIP);
+            }
+
+            if ($allowedIP === false) {
+                $config['auth_error'] = 'IP not allowed';
+                $login_failed = true;
+                include_once 'general/login_page.php';
+                db_pandora_audit(
+                    AUDIT_LOG_USER_REGISTRATION,
+                    sprintf(
+                        'IP %s not allowed for user %s',
+                        $userIP,
+                        $nick
+                    ),
+                    $nick
+                );
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
+                }
+
+                exit('</html>');
+            }
+        }
+
         // If the auth_code exists, we assume the user has come from
         // double authorization page.
-        if (isset($_POST['auth_code'])) {
+        if (isset($_POST['auth_code']) === true) {
             $double_auth_success = false;
 
             // The double authentication is activated and the user has
             // surpassed the first step (the login).
             // Now the authentication code provided will be checked.
-            if (isset($_SESSION['prepared_login_da'])) {
-                if (isset($_SESSION['prepared_login_da']['id_user'])
-                    && isset($_SESSION['prepared_login_da']['timestamp'])
+            if (isset($_SESSION['prepared_login_da']) === true) {
+                if (isset($_SESSION['prepared_login_da']['id_user']) === true
+                    && isset($_SESSION['prepared_login_da']['timestamp']) === true
                 ) {
                     // The user has a maximum of 5 minutes to introduce
                     // the double auth code.
@@ -343,7 +381,7 @@ if (! isset($config['id_user'])) {
                             // Error message.
                             $config['auth_error'] = __("The code shouldn't be empty");
 
-                            if (!isset($_SESSION['prepared_login_da']['attempts'])) {
+                            if (isset($_SESSION['prepared_login_da']['attempts']) !== false) {
                                 $_SESSION['prepared_login_da']['attempts'] = 0;
                             }
 
@@ -396,7 +434,7 @@ if (! isset($config['id_user'])) {
             // the 2nd auth step.
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
-        } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
+        } else if (($config['auth'] === 'saml') && ($login_button_saml)) {
             $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
                 $login_failed = true;
@@ -430,7 +468,7 @@ if (! isset($config['id_user'])) {
             // process_user_login is a virtual function which should be defined in each auth file.
             // It accepts username and password. The rest should be internal to the auth file.
             // The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
-            // process_user_login should return false in case of errors or invalid login, the nickname if correct
+            // process_user_login should return false in case of errors or invalid login, the nickname if correct.
             $nick_in_db = process_user_login($nick, $pass);
 
             $expired_pass = false;
@@ -508,6 +546,7 @@ if (! isset($config['id_user'])) {
             if ((!isset($double_auth_success)
                 || !$double_auth_success)
                 && is_double_auth_enabled($nick_in_db)
+                && (bool) $config['double_auth_enabled'] === true
             ) {
                 // Store this values in the session to know if the user login
                 // was correct.
@@ -601,6 +640,13 @@ if (! isset($config['id_user'])) {
                 }
             }
 
+            if (is_reporting_console_node() === true) {
+                $_GET['sec'] = 'discovery';
+                $_GET['sec2'] = 'godmode/servers/discovery';
+                $_GET['wiz'] = 'tasklist';
+                $home_page = '';
+            }
+
             db_logon($nick_in_db, $_SERVER['REMOTE_ADDR']);
             $_SESSION['id_usuario'] = $nick_in_db;
             $config['id_user'] = $nick_in_db;
@@ -619,8 +665,6 @@ if (! isset($config['id_user'])) {
             if ($prepare_session) {
                 config_prepare_session();
             }
-
-
 
             // ==========================================================
             // -------- SET THE CUSTOM CONFIGS OF USER ------------------
@@ -731,9 +775,9 @@ if (! isset($config['id_user'])) {
         }
 
         // Boolean parameters.
-        $correct_pass_change = (boolean) get_parameter('correct_pass_change', false);
-        $reset               = (boolean) get_parameter('reset', false);
-        $first               = (boolean) get_parameter('first', false);
+        $correct_pass_change = (bool) get_parameter('correct_pass_change', false);
+        $reset               = (bool) get_parameter('reset', false);
+        $first               = (bool) get_parameter('first', false);
         // Strings.
         $reset_hash          = get_parameter('reset_hash');
         $pass1               = get_parameter_post('pass1');
@@ -955,7 +999,7 @@ if (! isset($config['id_user'])) {
         exit('</html>');
     } else {
         if (((bool) $user_in_db['is_admin'] === false)
-            && (            (bool) $user_in_db['not_login'] === true
+            && ((bool) $user_in_db['not_login'] === true
             || (is_metaconsole() === false
             && has_metaconsole() === true
             && is_management_allowed() === false
@@ -1038,6 +1082,13 @@ if ((bool) ($config['maintenance_mode'] ?? false) === true
     exit('</html>');
 }
 
+if (is_reporting_console_node() === true
+    && (bool) users_is_admin() === false
+) {
+    include 'general/reporting_console_node.php';
+    exit;
+}
+
 /*
  * ----------------------------------------------------------------------
     *  EXTENSIONS
@@ -1081,7 +1132,7 @@ if (get_parameter('login', 0) !== 0) {
     $php_version = phpversion();
     $php_version_array = explode('.', $php_version);
     if ($php_version_array[0] < 7) {
-        include_once 'general/php7_message.php';
+        include_once 'general/php_message.php';
     }
 }
 
@@ -1170,7 +1221,7 @@ if (has_metaconsole() === true
         $err .= '</div>';
         ?>
         <script type="text/javascript">
-            $(document).ready(function () {
+            $(document).ready(function() {
                 infoMessage({
                     title: '<?php echo __('Warning'); ?>',
                     text: '<?php echo $err; ?>',
@@ -1195,6 +1246,10 @@ if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
 
+if (is_reporting_console_node() === true) {
+    echo notify_reporting_console_node();
+}
+
 // Page loader / selector.
 if ($searchPage) {
     include 'operation/search_results.php';
@@ -1208,7 +1263,7 @@ if ($searchPage) {
                     $main_sec = $sec;
                 }
             } else if ($sec == 'gextensions') {
-                    $main_sec = get_parameter('extension_in_menu');
+                $main_sec = get_parameter('extension_in_menu');
                 if (empty($main_sec) === true) {
                     $main_sec = $sec;
                 }
@@ -1218,6 +1273,17 @@ if ($searchPage) {
 
             $sec = $sec2;
             $sec2 = '';
+        }
+
+        $tab = get_parameter('tab', '');
+        if (empty($tab) === true) {
+            $tab = get_parameter('wiz', '');
+        }
+
+        $acl_reporting_console_node = acl_reporting_console_node($page, $tab);
+        if ($acl_reporting_console_node === false) {
+            include 'general/reporting_console_node.php';
+            exit;
         }
 
         $page .= '.php';
@@ -1379,12 +1445,12 @@ if ($config['pure'] == 0) {
     // Main pure.
 }
 
-html_print_div(
+echo html_print_div(
     ['id' => 'wiz_container'],
     true
 );
 
-html_print_div(
+echo html_print_div(
     ['id' => 'um_msg_receiver'],
     true
 );
@@ -1426,26 +1492,27 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
-
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
-        if(theme === 'pandora'){
-        if($('table.info_table tr').length < 5){
+    if (theme === 'pandora') {
+        if ($('table.info_table tr').length < 5) {
             $('table.info_table tbody > tr').css('background-color', '#fff');
         }
     }
 
     // When the user scrolls down 400px from the top of the document, show the
     // button.
-    window.onscroll = function() {scrollFunction()};
+    window.onscroll = function() {
+        scrollFunction()
+    };
 
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            if(document.getElementById("top_btn")){
+            if (document.getElementById("top_btn")) {
                 document.getElementById("top_btn").style.display = "block";
             }
         } else {
-            if(document.getElementById("top_btn")){
+            if (document.getElementById("top_btn")) {
                 document.getElementById("top_btn").style.display = "none";
             }
         }
@@ -1455,53 +1522,65 @@ require 'include/php_to_js_values.php';
     function topFunction() {
 
         /*
-        * Safari.
-        * document.body.scrollTop = 0;
-        * For Chrome, Firefox, IE and Opera.
-        * document.documentElement.scrollTop = 0; 
-        */
+         * Safari.
+         * document.body.scrollTop = 0;
+         * For Chrome, Firefox, IE and Opera.
+         * document.documentElement.scrollTop = 0; 
+         */
 
-        $("HTML, BODY").animate({ scrollTop: 0 }, 500);
+        $("HTML, BODY").animate({
+            scrollTop: 0
+        }, 500);
     }
 
     // Initial load of page.
     $(document).ready(adjustFooter);
-    
+
     // Every resize of window.
     $(window).resize(adjustFooter);
-    
+
     // Every show/hide call may need footer re-layout.
     (function() {
         var oShow = jQuery.fn.show;
         var oHide = jQuery.fn.hide;
-        
+
         jQuery.fn.show = function () {
             var rv = oShow.apply(this, arguments);
             adjustFooter();
             return rv;
         };
-        jQuery.fn.hide = function () {
+        jQuery.fn.hide = function() {
             var rv = oHide.apply(this, arguments);
             adjustFooter();
             return rv;
         };
     })();
 
-    function first_time_identification () {
-        jQuery.post ("ajax.php",
-            {
+    function first_time_identification() {
+        jQuery.post("ajax.php", {
                 "page": "general/register",
                 "load_wizards": 'initial'
             },
-            function (data) {
-                $('#wiz_container').empty ()
-                    .html (data);
-                run_configuration_wizard ();
+            function(data) {
+                $('#wiz_container').empty()
+                    .html(data);
+                run_configuration_wizard();
             },
             "html"
         );
 
     }
+
+    <?php if (empty($errorFileOutput) === false) : ?>
+        // There are one issue with the file that you trying to catch. Show a dialog with message.
+        $(document).ready(function() {
+            confirmDialog({
+                title: "<?php echo __('Error'); ?>",
+                message: "<?php echo io_safe_output($errorFileOutput); ?>",
+                hideCancelButton: true,
+            });
+        });
+    <?php endif; ?>
 
     function show_modal(id) {
         var match = /notification-(.*)-id-([0-9]+)/.exec(id);
@@ -1512,42 +1591,42 @@ require 'include/php_to_js_values.php';
             );
             return;
         }
-        jQuery.post ("ajax.php",
-            {
+        jQuery.post("ajax.php", {
                 "page": "godmode/setup/setup_notifications",
                 "get_notification": 1,
                 "id": match[2]
             },
-            function (data) {
+            function(data) {
                 notifications_hide();
                 try {
                     var json = JSON.parse(data);
                     $('#um_msg_receiver')
-                        .empty ()
-                        .html (json.mensaje);
+                        .empty()
+                        .html(json.mensaje);
 
                     $('#um_msg_receiver').prop('title', json.subject);
-                    
+
                     // Launch modal.
                     $("#um_msg_receiver").dialog({
                         resizable: true,
                         draggable: true,
                         modal: true,
                         width: 800,
-                        buttons: [
-                            {
-                                text: "OK",
-                                click: function() {
-                                    $( this ).dialog( "close" );
-                                }
+                        height: 600,
+                        buttons: [{
+                            text: "OK",
+                            click: function() {
+                                $(this).dialog("close");
                             }
-                        ],
+                        }],
                         overlay: {
-                                opacity: 0.5,
-                                background: "black"
-                            },
+                            opacity: 0.5,
+                            background: "black"
+                        },
                         closeOnEscape: false,
-                        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+                        open: function(event, ui) {
+                            $(".ui-dialog-titlebar-close").hide();
+                        }
                     });
 
                     $(".ui-widget-overlay").css("background", "#000");
@@ -1563,30 +1642,30 @@ require 'include/php_to_js_values.php';
         );
     }
 
-    //Dynamically assign footer position and width.
-    function adjustFooter() {
-        /*
-        if (document.readyState !== 'complete' || $('#container').position() == undefined) {
-            return;
+        //Dynamically assign footer position and width.
+        function adjustFooter() {
+            /*
+            if (document.readyState !== 'complete' || $('#container').position() == undefined) {
+                return;
+            }
+            // minimum top value (upper limit) for div#foot
+            var ulim = $('#container').position().top + $('#container').outerHeight(true);
+            // window height. $(window).height() returns wrong value on Opera and Google Chrome.
+            var wh = document.documentElement.clientHeight;
+            // save div#foot's height for latter use
+            var h = $('#foot').height();
+            // new top value for div#foot
+            var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
+            /*
+            if ($('#foot').position().top != t) {
+                $('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+                $('#foot').height(h);
+            }
+            if ($('#foot').width() !=  $(window).width()) {
+                $('#foot').width($(window).width());
+            }
+            */
         }
-        // minimum top value (upper limit) for div#foot
-        var ulim = $('#container').position().top + $('#container').outerHeight(true);
-        // window height. $(window).height() returns wrong value on Opera and Google Chrome.
-        var wh = document.documentElement.clientHeight;
-        // save div#foot's height for latter use
-        var h = $('#foot').height();
-        // new top value for div#foot
-        var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
-        /*
-        if ($('#foot').position().top != t) {
-            $('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
-            $('#foot').height(h);
-        }
-        if ($('#foot').width() !=  $(window).width()) {
-            $('#foot').width($(window).width());
-        }
-        */
-    }
 </script>
 <?php
 if (__PAN_XHPROF__ === 1) {

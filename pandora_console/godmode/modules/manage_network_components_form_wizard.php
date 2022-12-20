@@ -178,6 +178,7 @@ switch ($type) {
     break;
 }
 
+$query_filter = [];
 if (empty($query_filter) === false) {
     $query_filter = json_decode($query_filter, true);
 }
@@ -406,6 +407,12 @@ $table->colspan['warning-svg-row'][2] = 2;
 $table->rowspan['warning-svg-row'][2] = 3;
 
 push_table_row($data, 'warning-svg-row');
+
+$data = [];
+$data[0] .= __('Change to critical status after');
+$data[1] .= html_print_input_text('warning_time', $warning_time, '', 5, 15, true);
+$data[1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
+push_table_row($data, 'title-warning-time');
 
 $data = [];
 $data[0] = __('Critical');

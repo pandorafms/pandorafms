@@ -509,6 +509,7 @@ class HostDevices extends Wizard
             $snmp_privacy_pass = get_parameter('snmp_privacy_pass', null);
             $snmp_auth_method = get_parameter('snmp_auth_method', null);
             $snmp_security_level = get_parameter('snmp_security_level', null);
+            $snmp_skip_non_enabled_ifs = get_parameter_switch('snmp_skip_non_enabled_ifs');
             $auth_strings = get_parameter('auth_strings', []);
 
             if ($snmp_version == 3) {
@@ -556,6 +557,7 @@ class HostDevices extends Wizard
             $this->task['snmp_privacy_pass'] = $snmp_privacy_pass;
             $this->task['snmp_auth_method'] = $snmp_auth_method;
             $this->task['snmp_security_level'] = $snmp_security_level;
+            $this->task['snmp_skip_non_enabled_ifs'] = $snmp_skip_non_enabled_ifs;
             $this->task['auth_strings'] = '';
             if (is_array($auth_strings) === true) {
                 $this->task['auth_strings'] = join(
@@ -914,7 +916,7 @@ class HostDevices extends Wizard
                             'hidden'    => (($this->task['subnet_csv'] == '1') ? 1 : 0),
                             'id'        => 'std_subnet',
                             'label'     => '<b>'.__('Network').':</b>'.ui_print_help_tip(
-                                __('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'),
+                                __('You can specify networks or fully qualified domain names of a specific host, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24, hostname.artica.es'),
                                 true
                             ),
                             'arguments' => [
@@ -941,6 +943,7 @@ class HostDevices extends Wizard
                         'return'                  => true,
                         'class'                   => 'discovery_list_input',
                         'simple_multiple_options' => true,
+                        'required'                => true,
                     ]
                 );
 
@@ -1001,6 +1004,7 @@ class HostDevices extends Wizard
                             $("#text-interval_text").val(10);
                             $("#hidden-interval").val('.$interval.');
                             $("#interval_units").val('.$unit.');
+                            $("#interval_units").trigger("change");
                         }
                     }).change();
                     
@@ -1208,6 +1212,24 @@ class HostDevices extends Wizard
                             'script'   => 'SNMPExtraShow(this.value)',
                             'selected' => $this->task['snmp_version'],
                             'return'   => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_options_skip_non_enabled_ifs',
+                'class'         => 'indented',
+                'block_content' => [
+                    [
+                        'label'     => __('Skip non-enabled interfaces'),
+                        'arguments' => [
+                            'name'   => 'snmp_skip_non_enabled_ifs',
+                            'type'   => 'switch',
+                            'value'  => (isset($this->task['snmp_enabled']) === true) ? $this->task['snmp_skip_non_enabled_ifs'] : 1,
+                            'size'   => 25,
+                            'return' => true,
                         ],
                     ],
                 ],
@@ -1485,6 +1507,7 @@ class HostDevices extends Wizard
 
                 function SNMPExtraShow(target) {
                     $("#snmp_options_basic").hide();
+                    $("#snmp_options_skip_non_enabled_ifs").hide();
                     $("#snmp_options_v3").hide();
                     if (document.getElementsByName("snmp_enabled")[0].checked) {
                         $("#snmp_extra").show();
@@ -1492,6 +1515,7 @@ class HostDevices extends Wizard
                             $("#snmp_options_v3").show();
                         } else {
                             $("#snmp_options_basic").show();
+                            $("#snmp_options_skip_non_enabled_ifs").show();
                         }
                     }
                 }
@@ -1517,6 +1541,7 @@ class HostDevices extends Wizard
                         // Hide unusable sections
                         $("#snmp_extra").hide();
                         $("#snmp_options_basic").hide();
+                        $("#snmp_options_skip_non_enabled_ifs").hide();
                         $("#snmp_options_v3").hide();
 
                         // Disable snmp dependant checks

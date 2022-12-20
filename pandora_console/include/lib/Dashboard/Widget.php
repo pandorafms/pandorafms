@@ -416,6 +416,13 @@ class Widget
                     $className .= '\OsQuickReportWidget';
                 break;
 
+                case 'GroupedMeterGraphs':
+                case 'ColorModuleTabs':
+                case 'BlockHistogram':
+                case 'DataMatrix':
+                    $className .= '\\'.$name;
+                break;
+
                 default:
                     $className = false;
                 break;
@@ -474,11 +481,10 @@ class Widget
         } else if ($this->loadError === true) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_error_message(
-                __('Widget cannot be loaded'),
+                __('Widget cannot be loaded').'. '.__('Please, configure the widget again to recover it'),
                 '',
                 true
             );
-            $output .= __('Please, configure the widget again to recover it');
             $output .= '</div>';
         } else {
             $output .= $this->load();
@@ -516,7 +522,9 @@ class Widget
         if (empty($values['background']) === true) {
             $values['background'] = '#ffffff';
 
-            if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+            if ($config['style'] === 'pandora_black'
+                && is_metaconsole() === false
+            ) {
                 $values['background'] = '#222222';
             }
         }
@@ -760,6 +768,22 @@ class Widget
     public function getFormJS()
     {
         return '';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration():array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 650,
+        ];
+
+        return $size;
     }
 
 

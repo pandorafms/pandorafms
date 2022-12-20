@@ -42,17 +42,10 @@ if (tags_has_user_acl_tags()) {
     ui_print_tags_warning();
 }
 
-$user_strict = (bool) db_get_value(
-    'strict_acl',
-    'tusuario',
-    'id_user',
-    $config['id_user']
-);
 $all_data = tactical_status_modules_agents(
     $config['id_user'],
-    $user_strict,
-    'AR',
-    $user_strict
+    false,
+    'AR'
 );
 $data = [];
 
@@ -144,7 +137,16 @@ $table->data[] = $tdata;
 
 // Modules by status.
 $tdata = [];
-$tdata[0] = reporting_get_stats_modules_status($data, 180, 100);
+
+$data_agents = [
+    __('Critical') => $data['monitor_critical'],
+    __('Warning')  => $data['monitor_warning'],
+    __('Normal')   => $data['monitor_ok'],
+    __('Unknown')  => $data['monitor_unknown'],
+    __('Not init') => $data['monitor_not_init'],
+];
+
+$tdata[0] = reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
 $table->rowclass[] = '';
 $table->data[] = $tdata;
 
@@ -288,7 +290,7 @@ foreach ($sessions as $session) {
     array_push($table->data, $data);
 }
 
-$activity .= html_print_table($table, true);
+$activity = html_print_table($table, true);
 unset($table);
 
 ui_toggle(

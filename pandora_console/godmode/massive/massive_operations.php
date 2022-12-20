@@ -68,17 +68,18 @@ $options_agents = [
     'edit_agents'   => __('Bulk agent edit'),
     'delete_agents' => __('Bulk agent delete'),
 ];
-if (is_metaconsole() === true) {
-    $options_agents = [
-        'delete_agents' => __('Bulk agent delete'),
-    ];
-}
 
 if (check_acl($config['id_user'], 0, 'UM')) {
-    $options_users = [
-        'add_profiles'    => __('Bulk profile add'),
-        'delete_profiles' => __('Bulk profile delete'),
-    ];
+    if (is_metaconsole() === false) {
+        $options_users = [
+            'add_profiles'    => __('Bulk profile add'),
+            'delete_profiles' => __('Bulk profile delete'),
+        ];
+    }
+
+    if (users_is_admin() === true) {
+        $options_users['edit_users'] = __('Edit users in bulk');
+    }
 } else {
     $options_users = [];
 }
@@ -99,16 +100,15 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 $options_policies = [];
 $policies_options = enterprise_hook('massive_policies_options');
-$policies_options = array_unique($policies_options);
-
 if ($policies_options != ENTERPRISE_NOT_HOOK) {
+    $policies_options = array_unique($policies_options);
     $options_policies = array_merge($options_policies, $policies_options);
 }
 
 $options_snmp = [];
 $snmp_options = enterprise_hook('massive_snmp_options');
-$snmp_options = array_reverse($snmp_options);
 if ($snmp_options != ENTERPRISE_NOT_HOOK) {
+    $snmp_options = array_reverse($snmp_options);
     $options_snmp = array_merge($options_snmp, $snmp_options);
 }
 
@@ -117,11 +117,6 @@ $satellite_options = enterprise_hook('massive_satellite_options');
 
 if ($satellite_options != ENTERPRISE_NOT_HOOK) {
     $options_satellite = array_merge($options_satellite, $satellite_options);
-}
-
-$options_services = enterprise_hook('massive_services_options');
-if ($options_services === ENTERPRISE_NOT_HOOK) {
-    $options_services = [];
 }
 
 
@@ -141,8 +136,6 @@ if (in_array($option, array_keys($options_alerts)) === true) {
     $tab = 'massive_satellite';
 } else if (in_array($option, array_keys($options_plugins)) === true) {
     $tab = 'massive_plugins';
-} else if (in_array($option, array_keys($options_services)) === true) {
-    $tab = 'massive_services';
 }
 
 if ($tab === 'massive_agents' && empty($option) === true) {
@@ -209,10 +202,6 @@ switch ($tab) {
 
     case 'massive_plugins':
         $options = $options_plugins;
-    break;
-
-    case 'massive_services':
-        $options = $options_services;
     break;
 
     default:
@@ -301,12 +290,6 @@ $satellitetab = enterprise_hook('massive_satellite_tab');
 
 if ($satellitetab == ENTERPRISE_NOT_HOOK) {
     $satellitetab = '';
-}
-
-$servicestab = enterprise_hook('massive_services_tab');
-
-if ($servicestab == ENTERPRISE_NOT_HOOK) {
-    $servicestab = '';
 }
 
 $onheader = [];
@@ -499,6 +482,10 @@ switch ($option) {
 
     case 'edit_plugins':
         include_once $config['homedir'].'/godmode/massive/massive_edit_plugins.php';
+    break;
+
+    case 'edit_users':
+        include_once $config['homedir'].'/godmode/massive/massive_edit_users.php';
     break;
 
     default:

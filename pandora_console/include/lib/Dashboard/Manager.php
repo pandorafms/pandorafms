@@ -180,6 +180,7 @@ class Manager implements PublicLogin
         'imageIconDashboardAjax',
         'formSlides',
         'callWidgetMethod',
+        'getSizeModalConfiguration',
     ];
 
 
@@ -772,6 +773,16 @@ class Manager implements PublicLogin
         }
 
         $dashboards = \db_get_all_rows_sql($sql_dashboard);
+
+        if ($favourite === true && $dashboards !== false && count($dashboards) > 0) {
+            $dashboards = array_map(
+                function ($dashboard) {
+                    $dashboard['name'] = io_safe_input($dashboard['name']);
+                    return $dashboard;
+                },
+                $dashboards
+            );
+        }
 
         if ($dashboards === false) {
             $dashboards = [];
@@ -1374,7 +1385,14 @@ class Manager implements PublicLogin
         global $config;
 
         $instance = $this->instanceWidget();
+        $blocks = [];
         $htmlInputs = $instance->getFormInputs([]);
+
+        if (isset($htmlInputs['blocks']) === true) {
+            $blocks = $htmlInputs['blocks'];
+            $htmlInputs = $htmlInputs['inputs'];
+        }
+
         $js = $instance->getFormJS();
 
         View::render(
@@ -1382,6 +1400,7 @@ class Manager implements PublicLogin
             [
                 'dashboardId' => $this->dashboardId,
                 'cellId'      => $this->cellId,
+                'blocks'      => $blocks,
                 'htmlInputs'  => $htmlInputs,
                 'js'          => $js,
             ]
@@ -1520,6 +1539,24 @@ class Manager implements PublicLogin
         }
 
         return false;
+
+    }
+
+
+    /**
+     * Size configuration modal (ajax only).
+     *
+     * @return void.
+     */
+    public function getSizeModalConfiguration():void
+    {
+        $result = [];
+        $widget = $this->instanceWidget();
+        $result = $widget->getSizeModalConfiguration();
+
+        echo json_encode($result);
+
+        return;
 
     }
 

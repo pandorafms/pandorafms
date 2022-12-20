@@ -67,6 +67,8 @@ define('REPORT_STATUS_DOWNTIME', 4);
 define('REPORT_STATUS_IGNORED', 5);
 
 // Clases.
+use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\Event;
 use PandoraFMS\Module;
 
 
@@ -767,6 +769,13 @@ function reporting_make_reporting_data(
 
             case 'agents_inventory':
                 $report['contents'][] = reporting_agents_inventory(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'modules_inventory':
+                $report['contents'][] = reporting_modules_inventory(
                     $report,
                     $content
                 );
@@ -1543,10 +1552,6 @@ function reporting_event_top_n(
     $return['top_n'] = $content['top_n_value'];
 
     if (empty($content['subitems'])) {
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
-        }
-
         // Get all the related data.
         $sql = sprintf(
             'SELECT id_agent_module, server_name
@@ -1555,7 +1560,67 @@ function reporting_event_top_n(
             $content['id_rc']
         );
 
-        $tops = db_process_sql($sql);
+        $tops = db_get_all_rows_sql($sql);
+        if ($tops === false) {
+            $tops = [];
+        }
+
+        // REGEXP.
+        $text_agent = '';
+        if (isset($content['style']['text_agent']) === true
+            && empty($content['style']['text_agent']) === false
+        ) {
+            $text_agent = base64_decode($content['style']['text_agent']);
+        }
+
+        $text_agent_module = '';
+        if (isset($content['style']['text_agent_module']) === true
+            && empty($content['style']['text_agent_module']) === false
+        ) {
+            $text_agent_module = base64_decode($content['style']['text_agent_module']);
+        }
+
+        $modules_regex = [];
+        if (empty($text_agent) === false) {
+            if (is_metaconsole() === true) {
+                $nodes = metaconsole_get_connections();
+                foreach ($nodes as $node) {
+                    try {
+                        $nd = new Node($node['id']);
+                        $nd->connect();
+                        $modules_regex_node = modules_get_regex(
+                            $text_agent,
+                            $text_agent_module,
+                            $node['server_name']
+                        );
+                    } catch (\Exception $e) {
+                        $nd->disconnect();
+                        $modules_regex_node = [];
+                    } finally {
+                        $nd->disconnect();
+                    }
+
+                    $modules_regex = array_merge($modules_regex, $modules_regex_node);
+                }
+            } else {
+                $modules_regex = modules_get_regex(
+                    $text_agent,
+                    $text_agent_module
+                );
+            }
+        }
+
+        if (empty($modules_regex) === false) {
+            $tops = array_merge($tops, $modules_regex);
+            $tops = array_reduce(
+                $tops,
+                function ($carry, $item) {
+                    $carry[$item['id_agent_module'].'|'.$item['server_name']] = $item;
+                    return $carry;
+                },
+                []
+            );
+        }
     } else {
         $tops = $content['subitems'];
     }
@@ -1578,6 +1643,9 @@ function reporting_event_top_n(
         $height = $force_height_chart;
     }
 
+    // Force width 600px.
+    $width = 600;
+
     if (empty($tops)) {
         $return['failed'] = __('There are no Agent/Modules defined');
     } else {
@@ -1589,7 +1657,6 @@ function reporting_event_top_n(
             if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -1643,18 +1710,51 @@ function reporting_event_top_n(
             switch ($order_uptodown) {
                 // Descending.
                 case 1:
-                    array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
+                    array_multisort(
+                        $data_top,
+                        SORT_DESC,
+                        $agent_name,
+                        SORT_ASC,
+                        $module_name,
+                        SORT_ASC,
+                        $id_agent_module,
+                        SORT_ASC,
+                        $units,
+                        SORT_ASC
+                    );
                 break;
 
                 // Ascending.
                 case 2:
-                    array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
+                    array_multisort(
+                        $data_top,
+                        SORT_ASC,
+                        $agent_name,
+                        SORT_ASC,
+                        $module_name,
+                        SORT_ASC,
+                        $id_agent_module,
+                        SORT_ASC,
+                        $units,
+                        SORT_ASC
+                    );
                 break;
 
                 // By agent name or without selection.
                 case 0:
                 case 3:
-                    array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
+                    array_multisort(
+                        $agent_name,
+                        SORT_ASC,
+                        $data_top,
+                        SORT_ASC,
+                        $module_name,
+                        SORT_ASC,
+                        $id_agent_module,
+                        SORT_ASC,
+                        $units,
+                        SORT_ASC
+                    );
                 break;
 
                 default:
@@ -1682,66 +1782,18 @@ function reporting_event_top_n(
                 $i = 0;
                 $data_pie_graph = [];
                 $data_hbar = [];
-                foreach ($data_top as $dt) {
-                    $item_name = '';
-                    $item_name = ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, '...').' - '.ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, '...');
-
-                    $item_name_key_pie = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_pie_graph[$item_name_key_pie])) {
-                            $item_name_key_pie .= ' ';
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
-
-                    $item_name_key_hbar = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_hbar[$item_name_key_hbar])) {
-                            $item_name_key_hbar = ' '.$item_name_key_hbar;
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
-
-                    $data_hbar[$item_name]['g'] = $dt;
-                    $data_pie_graph[$item_name] = $dt;
-
-                    if ($show_graph == 0 || $show_graph == 1) {
-                        $data = [];
-                        $data['agent'] = $agent_name[$i];
-                        $data['module'] = $module_name[$i];
-
-                        $data['value'] = $dt;
-
-                        $divisor = get_data_multiplier($units[$i]);
-
-                        $data['formated_value'] = format_for_graph($dt, 2, '.', ',', $divisor, $units[$i]);
-                        $data_return[] = $data;
-                    }
-
-                    $i++;
-                    if ($i >= $top_n_value) {
-                        break;
-                    }
-                }
-            } else if ($order_uptodown == 0 || $order_uptodown == 3) {
-                $i = 0;
-                $data_pie_graph = [];
-                $data_hbar = [];
-                foreach ($agent_name as $an) {
-                    $item_name = '';
+                foreach ($data_top as $key_dt => $dt) {
                     $item_name = ui_print_truncate_text(
-                        $agent_name[$i],
+                        $agent_name[$key_dt],
                         $truncate_size,
                         false,
                         true,
                         false,
                         '...'
-                    ).' - '.ui_print_truncate_text(
-                        $module_name[$i],
+                    );
+                    $item_name .= ' - ';
+                    $item_name .= ui_print_truncate_text(
+                        $module_name[$key_dt],
                         $truncate_size,
                         false,
                         true,
@@ -1769,17 +1821,115 @@ function reporting_event_top_n(
                         }
                     }
 
-                    $data_pie_graph[$item_name] = $data_top[$i];
-                    $data_hbar[$item_name]['g'] = $data_top[$i];
+                    $data_hbar[$item_name]['g'] = $dt;
+                    $data_pie_graph[$item_name] = $dt;
 
-                    $divisor = get_data_multiplier($units[$i]);
+                    if ($show_graph == 0 || $show_graph == 1) {
+                        $data = [];
+                        $data['agent'] = $agent_name[$key_dt];
+                        $data['module'] = $module_name[$key_dt];
+
+                        $data['value'] = $dt;
+
+                        $divisor = get_data_multiplier($units[$key_dt]);
+
+                        if ((bool) $content['use_prefix_notation'] === false) {
+                            $data['formated_value'] = number_format(
+                                $dt,
+                                2,
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            ).' '.$units[$key_dt];
+                        } else {
+                            $data['formated_value'] = format_for_graph(
+                                $dt,
+                                2,
+                                '.',
+                                ',',
+                                $divisor,
+                                $units[$key_dt]
+                            );
+                        }
+
+                        $data_return[] = $data;
+                    }
+
+                    $i++;
+                    if ($i >= $top_n_value) {
+                        break;
+                    }
+                }
+            } else if ($order_uptodown == 0 || $order_uptodown == 3) {
+                $i = 0;
+                $data_pie_graph = [];
+                $data_hbar = [];
+                foreach ($agent_name as $key_an => $an) {
+                    $item_name = '';
+                    $item_name = ui_print_truncate_text(
+                        $agent_name[$key_an],
+                        $truncate_size,
+                        false,
+                        true,
+                        false,
+                        '...'
+                    ).' - '.ui_print_truncate_text(
+                        $module_name[$key_an],
+                        $truncate_size,
+                        false,
+                        true,
+                        false,
+                        '...'
+                    );
+
+                    $item_name_key_pie = $item_name;
+                    $exist_key = true;
+                    while ($exist_key) {
+                        if (isset($data_pie_graph[$item_name_key_pie])) {
+                            $item_name_key_pie .= ' ';
+                        } else {
+                            $exist_key = false;
+                        }
+                    }
+
+                    $item_name_key_hbar = $item_name;
+                    $exist_key = true;
+                    while ($exist_key) {
+                        if (isset($data_hbar[$item_name_key_hbar])) {
+                            $item_name_key_hbar = ' '.$item_name_key_hbar;
+                        } else {
+                            $exist_key = false;
+                        }
+                    }
+
+                    $data_pie_graph[$item_name] = $data_top[$key_an];
+                    $data_hbar[$item_name]['g'] = $data_top[$key_an];
+
+                    $divisor = get_data_multiplier($units[$key_an]);
 
                     if ($show_graph == 0 || $show_graph == 1) {
                         $data = [];
                         $data['agent'] = $an;
-                        $data['module'] = $module_name[$i];
-                        $data['value'] = $data_top[$i];
-                        $data['formated_value'] = format_for_graph($data_top[$i], 2, '.', ',', $divisor, $units[$i]);
+                        $data['module'] = $module_name[$key_an];
+                        $data['value'] = $data_top[$key_an];
+
+                        if ((bool) $content['use_prefix_notation'] === false) {
+                            $data['formated_value'] = number_format(
+                                $data_top[$key_an],
+                                2,
+                                $config['decimal_separator'],
+                                $config['thousand_separator']
+                            ).' '.$units[$key_an];
+                        } else {
+                            $data['formated_value'] = format_for_graph(
+                                $data_top[$key_an],
+                                2,
+                                '.',
+                                ',',
+                                $divisor,
+                                $units[$key_an]
+                            );
+                        }
+
                         $data_return[] = $data;
                     }
 
@@ -1825,7 +1975,7 @@ function reporting_event_top_n(
                     $ttl,
                     $config['homeurl'],
                     'white',
-                    'black'
+                    '#DFDFDF'
                 );
             }
 
@@ -1889,26 +2039,8 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
-    $id_meta = 0;
-    $node_historical_event_enbled = '';
-    if (is_metaconsole() === true && empty($content['server_name']) === false) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-
-        // Check if node historical event is enable.
-        $sql = sprintf(
-            'SELECT value
-            FROM tconfig
-            WHERE token LIKE "history_event_enabled"'
-        );
-
-        $result = db_get_row_sql($sql);
-        $node_historical_event_enbled = $result['value'];
-    }
-
     $history = false;
-    if ($config['history_event_enabled'] || $node_historical_event_enbled) {
+    if ($config['history_event_enabled']) {
         $history = true;
     }
 
@@ -1946,12 +2078,26 @@ function reporting_event_report_group(
     $return['show_custom_data'] = (isset($event_filter['custom_data_events']) === true) ? (bool) $event_filter['custom_data_events'] : false;
 
     // Filter.
-    $show_summary_group         = $event_filter['show_summary_group'];
-    $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
-    $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
-    $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
+    $show_summary_group = $event_filter['show_summary_group'];
+    $filter_event_severity = json_decode($event_filter['filter_event_severity'], true);
+    $filter_event_type = json_decode($event_filter['filter_event_type'], true);
+    $filter_event_status = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
     $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
+
+    $servers = false;
+    if (is_metaconsole() === true) {
+        // Only meta by default.
+        $servers = [0];
+        if (isset($event_filter['server_multiple']) === true) {
+            $servers = json_decode($event_filter['server_multiple'], true);
+        } else {
+            // Retrocompatibility.
+            if (empty($content['server_name']) === false) {
+                $servers = [metaconsole_get_id_server($content['server_name'])];
+            }
+        }
+    }
 
     // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
@@ -1959,7 +2105,10 @@ function reporting_event_report_group(
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
 
-    if (isset($content['recursion']) && $content['recursion'] == 1 && $content['id_group'] != 0) {
+    if (isset($content['recursion'])
+        && $content['recursion'] == 1
+        && $content['id_group'] != 0
+    ) {
         $propagate = db_get_value(
             'propagate',
             'tgrupo',
@@ -1994,7 +2143,7 @@ function reporting_event_report_group(
         true,
         false,
         false,
-        $id_meta,
+        $servers,
         $filter_event_filter_exclude
     );
 
@@ -2025,27 +2174,26 @@ function reporting_event_report_group(
     $return['chart']['by_user_validator'] = null;
     $return['chart']['by_criticity'] = null;
     $return['chart']['validated_vs_unvalidated'] = null;
-    $server_name = $content['server_name'];
-    $metaconsole_dbtable = false;
-    if (is_metaconsole() === true && empty($server_name) === true) {
-        $metaconsole_dbtable = true;
-    }
 
     if ($event_graph_by_agent) {
-        $data_graph = events_get_count_events_by_agent(
-            $content['id_group'],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable,
-            $filter_event_filter_exclude
-        );
+        $data_graph_by_agent = [];
+        if (empty($data) === false) {
+            foreach ($data as $value) {
+                $k = $value['alias'];
+                if (is_metaconsole() === true) {
+                    $k = '('.$value['server_name'].') '.$value['alias'];
+                }
+
+                if (isset($data_graph_by_agent[$k]) === true) {
+                    $data_graph_by_agent[$k]++;
+                } else {
+                    $data_graph_by_agent[$k] = 1;
+                }
+            }
+        }
 
         $return['chart']['by_agent'] = pie_graph(
-            $data_graph,
+            $data_graph_by_agent,
             500,
             150,
             __('other'),
@@ -2058,20 +2206,9 @@ function reporting_event_report_group(
     }
 
     if ($event_graph_by_user_validator) {
-        $data_graph = events_get_count_events_validated_by_user(
-            ['id_group' => $content['id_group']],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable,
-            $filter_event_filter_exclude
-        );
-
+        $data_graph_by_user = events_get_count_events_validated_by_user($data);
         $return['chart']['by_user_validator'] = pie_graph(
-            $data_graph,
+            $data_graph_by_user,
             500,
             150,
             __('other'),
@@ -2084,21 +2221,22 @@ function reporting_event_report_group(
     }
 
     if ($event_graph_by_criticity) {
-        $data_graph = events_get_count_events_by_criticity(
-            ['id_group' => $content['id_group']],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable
-        );
+        $data_graph_by_criticity = [];
+        if (empty($data) === false) {
+            foreach ($data as $value) {
+                $k = get_priority_name($value['criticity']);
+                if (isset($data_graph_by_criticity[$k]) === true) {
+                    $data_graph_by_criticity[$k]++;
+                } else {
+                    $data_graph_by_criticity[$k] = 1;
+                }
+            }
+        }
 
-        $colors = get_criticity_pie_colors($data_graph);
+        $colors = get_criticity_pie_colors($data_graph_by_criticity);
 
         $return['chart']['by_criticity'] = pie_graph(
-            $data_graph,
+            $data_graph_by_criticity,
             500,
             150,
             __('other'),
@@ -2113,20 +2251,24 @@ function reporting_event_report_group(
     }
 
     if ($event_graph_validated_vs_unvalidated) {
-        $data_graph = events_get_count_events_validated(
-            ['id_group' => $content['id_group']],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable,
-            $filter_event_filter_exclude
-        );
+        $data_graph_by_status = [];
+        if (empty($data) === false) {
+            $status = [
+                1 => __('Validated'),
+                0 => __('Not validated'),
+            ];
+            foreach ($data as $value) {
+                $k = $status[$value['estado']];
+                if (isset($data_graph_by_status[$k]) === true) {
+                    $data_graph_by_status[$k]++;
+                } else {
+                    $data_graph_by_status[$k] = 1;
+                }
+            }
+        }
 
         $return['chart']['validated_vs_unvalidated'] = pie_graph(
-            $data_graph,
+            $data_graph_by_status,
             500,
             150,
             __('other'),
@@ -2136,10 +2278,6 @@ function reporting_event_report_group(
             $config['font_size'],
             $ttl
         );
-    }
-
-    if (is_metaconsole() === true) {
-        metaconsole_restore_db();
     }
 
     // Total events.
@@ -2320,6 +2458,14 @@ function reporting_event_report_module(
 }
 
 
+/**
+ * Generate agents inventory report.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array
+ */
 function reporting_agents_inventory($report, $content)
 {
     global $config;
@@ -2352,7 +2498,7 @@ function reporting_agents_inventory($report, $content)
     $custom_field_sql = '';
     $search_sql = '';
 
-    if (!empty($es_agent_custom_fields)) {
+    if (empty(array_filter($es_agent_custom_fields)) === false) {
         $custom_field_sql = 'INNER JOIN tagent_custom_data tacd ON tacd.id_agent = tagente.id_agente';
         if ($es_agent_custom_fields[0] != 0) {
             $custom_field_sql .= ' AND tacd.id_field IN ('.implode(',', $es_agent_custom_fields).')';
@@ -2506,6 +2652,146 @@ function reporting_agents_inventory($report, $content)
     }
 
     $return['data'] = $all_data;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Generate modules inventory report.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array
+ */
+function reporting_modules_inventory($report, $content)
+{
+    global $config;
+
+    $return['name'] = $content['name'];
+    $return['type'] = 'modules_inventory';
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $external_source = io_safe_input(json_decode($content['external_source'], true));
+    $es_agent_group_filter = $external_source['agent_group_filter'];
+    $module_group = $external_source['module_group'];
+    $es_agent_server_filter = $external_source['agent_server_filter'];
+
+    $search_sql = '';
+
+    if (empty($es_agent_group_filter) === false) {
+        $search_sql .= ' AND (ta.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
+    }
+
+    if (empty($module_group) === false && $module_group > -1) {
+        $search_sql .= ' AND tam.id_module_group = '.$module_group;
+    }
+
+    $user_groups_to_sql = '';
+
+    $user_groupsAR = users_get_groups($config['id_user'], 'AR');
+
+    $user_groups = $user_groupsAR;
+    $user_groups_to_sql = implode(',', array_keys($user_groups));
+
+    $sql = sprintf(
+        'SELECT tam.id_agente_modulo,
+        tam.nombre,
+        tam.descripcion,
+        tam.id_module_group,
+        ttm.id_tag,
+        ta.id_grupo AS group_id,
+        tasg.id_group AS sec_group_id
+        FROM tagente_modulo tam
+        INNER JOIN tagente ta
+            ON tam.id_agente = ta.id_agente
+        LEFT JOIN tagent_secondary_group tasg
+            ON ta.id_agente = tasg.id_agent
+        LEFT JOIN ttag_module ttm
+            ON ttm.id_agente_modulo = tam.id_agente_modulo
+        WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)) %s',
+        $user_groups_to_sql,
+        $user_groups_to_sql,
+        $search_sql
+    );
+
+    if (is_metaconsole()) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    } else {
+        $servers_ids = [0];
+    }
+
+    $return_data = [];
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_by_id($server_id);
+
+            if ((int) $es_agent_server_filter !== 0
+                && (int) $es_agent_server_filter !== (int) $server_id
+            ) {
+                continue;
+            }
+
+            metaconsole_connect($server);
+        }
+
+        $agents = db_get_all_rows_sql($sql);
+
+        $return_data[$server_id] = $agents;
+
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+    }
+
+    $all_data = [];
+
+    foreach ($return_data as $server_agents) {
+        foreach ($server_agents as $agent) {
+            $all_data[] = $agent;
+        }
+    }
+
+    $return['data'] = $all_data;
+
+    $module_row_data = [];
+
+    foreach ($return['data'] as $row) {
+        if (is_array($module_row_data[$row['id_agente_modulo']]) === false) {
+            $module_row_data[$row['id_agente_modulo']]['nombre'] = $row['nombre'];
+            $module_row_data[$row['id_agente_modulo']]['descripcion'] = $row['descripcion'];
+            $module_row_data[$row['id_agente_modulo']]['id_module_group'] = $row['id_module_group'];
+            $module_row_data[$row['id_agente_modulo']]['id_tag'] = [];
+            $module_row_data[$row['id_agente_modulo']]['group_id'] = [];
+            $module_row_data[$row['id_agente_modulo']]['sec_group_id'] = [];
+        }
+
+        if (in_array($row['id_tag'], $module_row_data[$row['id_agente_modulo']]['id_tag']) === false
+            && $row['id_tag'] !== null
+        ) {
+            $module_row_data[$row['id_agente_modulo']]['id_tag'][] = $row['id_tag'];
+        }
+
+        if (in_array($row['group_id'], $module_row_data[$row['id_agente_modulo']]['group_id']) === false
+            && $row['group_id'] !== null
+        ) {
+            $module_row_data[$row['id_agente_modulo']]['group_id'][] = $row['group_id'];
+        }
+
+        if (in_array($row['sec_group_id'], $module_row_data[$row['id_agente_modulo']]['sec_group_id']) === false
+            && $row['sec_group_id'] !== null
+        ) {
+            $module_row_data[$row['id_agente_modulo']]['sec_group_id'][] = $row['sec_group_id'];
+        }
+    }
+
+    $return['data'] = $module_row_data;
 
     return reporting_check_structure_content($return);
 }
@@ -3153,11 +3439,72 @@ function reporting_exception(
             WHERE id_report_content = %d',
             $content['id_rc']
         );
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
+
+        $exceptions = db_get_all_rows_sql($sql);
+        if ($exceptions === false) {
+            $exceptions = [];
         }
 
-        $exceptions = db_process_sql($sql);
+        // REGEXP.
+        $text_agent = '';
+        if (isset($content['style']['text_agent']) === true
+            && empty($content['style']['text_agent']) === false
+        ) {
+            $text_agent = base64_decode($content['style']['text_agent']);
+        }
+
+        $text_agent_module = '';
+        if (isset($content['style']['text_agent_module']) === true
+            && empty($content['style']['text_agent_module']) === false
+        ) {
+            $text_agent_module = base64_decode($content['style']['text_agent_module']);
+        }
+
+        $modules_regex = [];
+        if (empty($text_agent) === false) {
+            if (is_metaconsole() === true) {
+                $nodes = metaconsole_get_connections();
+                foreach ($nodes as $node) {
+                    try {
+                        $nd = new Node($node['id']);
+                        $nd->connect();
+                        $modules_regex_node = modules_get_regex(
+                            $text_agent,
+                            $text_agent_module,
+                            $node['server_name']
+                        );
+                    } catch (\Exception $e) {
+                        $nd->disconnect();
+                        $modules_regex_node = [];
+                    } finally {
+                        $nd->disconnect();
+                    }
+
+                    $modules_regex = array_merge($modules_regex, $modules_regex_node);
+                }
+            } else {
+                $modules_regex = modules_get_regex(
+                    $text_agent,
+                    $text_agent_module
+                );
+            }
+        }
+
+        if (empty($modules_regex) === false) {
+            $exceptions = array_merge($exceptions, $modules_regex);
+            $exceptions = array_reduce(
+                $exceptions,
+                function ($carry, $item) {
+                    if (isset($item['operation']) === false) {
+                        $item['operation'] = 'avg';
+                    }
+
+                    $carry[$item['id_agent_module'].'|'.$item['server_name']] = $item;
+                    return $carry;
+                },
+                []
+            );
+        }
     } else {
         $exceptions = $content['subitems'];
     }
@@ -3666,15 +4013,29 @@ function reporting_groups_nodes($content)
     if (empty($id_group)) {
         $events = [];
     } else {
-        $sql_where = sprintf(
-            ' WHERE id_grupo IN (%s) AND estado<>1 ',
-            implode(',', $id_group)
-        );
-        $events = events_get_events_grouped(
-            $sql_where,
+        // ID group.
+        if (empty($id_group) === false) {
+            $filters['id_group_filter'] = $id_group;
+        }
+
+        // Status.
+        if (empty($filter_event_status) === false) {
+            $filters['status'] = EVENT_NO_VALIDATED;
+        }
+
+        // Grouped.
+        $filters['group_rep'] = EVENT_GROUP_REP_EVENTS;
+
+        $events = Event::search(
+            [
+                'te.*',
+                'ta.alias',
+            ],
+            $filters,
             0,
             1000,
-            false
+            'desc',
+            'te.utimestamp'
         );
     }
 
@@ -3791,12 +4152,14 @@ function reporting_event_report_agent(
     $event_graph_by_criticity = $style['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
+
     $return['data'] = reporting_get_agents_detailed_event(
         $content['id_agent'],
         $content['period'],
         $report['datetime'],
-        true,
-        true,
         $history,
         $show_summary_group,
         $filter_event_severity,
@@ -3807,10 +4170,6 @@ function reporting_event_report_agent(
         $id_server,
         $show_custom_data
     );
-
-    if (is_metaconsole() === true) {
-        metaconsole_restore_db();
-    }
 
     reporting_set_conf_charts(
         $width,
@@ -3833,28 +4192,10 @@ function reporting_event_report_agent(
     $return['chart']['by_criticity'] = null;
     $return['chart']['validated_vs_unvalidated'] = null;
 
-    $server_name = $content['server_name'];
-    if (is_metaconsole() && $server_name != '') {
-        $metaconsole_dbtable = true;
-    } else {
-        $metaconsole_dbtable = false;
-    }
-
     if ($event_graph_by_user_validator) {
-        $data_graph = events_get_count_events_validated_by_user(
-            ['id_agent' => $content['id_agent']],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable,
-            $filter_event_filter_exclude
-        );
-
+        $data_graph_by_user = events_get_count_events_validated_by_user($return['data']);
         $return['chart']['by_user_validator'] = pie_graph(
-            $data_graph,
+            $data_graph_by_user,
             500,
             150,
             __('other'),
@@ -3867,22 +4208,22 @@ function reporting_event_report_agent(
     }
 
     if ($event_graph_by_criticity) {
-        $data_graph = events_get_count_events_by_criticity(
-            ['id_agent' => $content['id_agent']],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable,
-            $filter_event_filter_exclude
-        );
+        $data_graph_by_criticity = [];
+        if (empty($return['data']) === false) {
+            foreach ($return['data'] as $value) {
+                $k = get_priority_name($value['criticity']);
+                if (isset($data_graph_by_criticity[$k]) === true) {
+                    $data_graph_by_criticity[$k]++;
+                } else {
+                    $data_graph_by_criticity[$k] = 1;
+                }
+            }
+        }
 
-        $colors = get_criticity_pie_colors($data_graph);
+        $colors = get_criticity_pie_colors($data_graph_by_criticity);
 
         $return['chart']['by_criticity'] = pie_graph(
-            $data_graph,
+            $data_graph_by_criticity,
             500,
             150,
             __('other'),
@@ -3897,20 +4238,24 @@ function reporting_event_report_agent(
     }
 
     if ($event_graph_validated_vs_unvalidated) {
-        $data_graph = events_get_count_events_validated(
-            ['id_agent' => $content['id_agent']],
-            $content['period'],
-            $report['datetime'],
-            $filter_event_severity,
-            $filter_event_type,
-            $filter_event_status,
-            $filter_event_filter_search,
-            $metaconsole_dbtable,
-            $filter_event_filter_exclude
-        );
+        $data_graph_by_status = [];
+        if (empty($return['data']) === false) {
+            $status = [
+                1 => __('Validated'),
+                0 => __('Not validated'),
+            ];
+            foreach ($return['data'] as $value) {
+                $k = $status[$value['estado']];
+                if (isset($data_graph_by_status[$k]) === true) {
+                    $data_graph_by_status[$k]++;
+                } else {
+                    $data_graph_by_status[$k] = 1;
+                }
+            }
+        }
 
         $return['chart']['validated_vs_unvalidated'] = pie_graph(
-            $data_graph,
+            $data_graph_by_status,
             500,
             150,
             __('other'),
@@ -4929,7 +5274,7 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                 $data_macro['server_id']
                             );
                             if (metaconsole_connect($server) != NOERR) {
-                                continue;
+                                continue 2;
                             }
                         }
 
@@ -6593,6 +6938,13 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
+                } else if ((bool) $content['use_prefix_notation'] === false) {
+                    $formated_value = number_format(
+                        $value,
+                        $config['graph_precision'],
+                        $config['decimal_separator'],
+                        $config['thousand_separator']
+                    ).' '.$unit;
                 } else {
                     $formated_value = format_for_graph(
                         $value,
@@ -6753,6 +7105,13 @@ function reporting_value($report, $content, $type, $pdf=false)
             );
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
+            } else if ((bool) $content['use_prefix_notation'] === false) {
+                $formated_value = number_format(
+                    $value,
+                    $config['graph_precision'],
+                    $config['decimal_separator'],
+                    $config['thousand_separator']
+                ).' '.$unit;
             } else {
                 $divisor = get_data_multiplier($unit);
 
@@ -6881,7 +7240,7 @@ function reporting_sql($report, $content)
         $sql = $content['external_source'];
     }
 
-    // Check if exist sql macro
+    // Check if exist sql macro.
     $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.
@@ -6902,6 +7261,10 @@ function reporting_sql($report, $content)
             $historical_db = db_get_value_sql(
                 'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
             );
+
+            if (is_metaconsole() === true) {
+                $historical_db = $content['historical_db'];
+            }
         } else {
             $historical_db = $content['historical_db'];
         }
@@ -7410,15 +7773,7 @@ function reporting_advanced_sla(
             }
 
             if (isset($max_value) === false || (int) $max_value === 0) {
-                if ($max_value === '0'
-                    && $max_value < $min_value
-                    && isset($min_value_warning) === true
-                    && $min_value_warning > $max_value
-                ) {
-                    $max_value = $min_value_warning;
-                } else {
-                    $max_value = null;
-                }
+                $max_value = null;
             }
 
             if (isset($max_value) === false && isset($min_value) === false) {
@@ -7973,18 +8328,21 @@ function reporting_advanced_sla(
                                             $inverse_interval
                                         );
 
-                                        // Warning SLA check.
-                                        $sla_check_value_warning = sla_check_value(
-                                            $current_data['datos'],
-                                            $min_value_warning,
-                                            $max_value_warning,
-                                            $inverse_interval_warning,
-                                            1
-                                        );
+                                        $sla_check_value_warning = false;
+                                        if ($sla_check_value === true) {
+                                            // Warning SLA check.
+                                            $sla_check_value_warning = sla_check_value(
+                                                $current_data['datos'],
+                                                $min_value_warning,
+                                                $max_value_warning,
+                                                $inverse_interval_warning,
+                                                1
+                                            );
+                                        }
                                     }
 
                                     // Not unknown nor not init values.
-                                    if ($sla_check_value_warning && $sla_check_warning === true) {
+                                    if ($sla_check_value_warning === true && $sla_check_warning === true) {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0
                                             && $i !== 0)
@@ -8045,8 +8403,10 @@ function reporting_advanced_sla(
                             }
                         } else {
                             $time_out += $time_interval;
-                            if ($wt_check['wt_in_downtime']) {
-                                $time_out += $wt_check['downtime_interval'];
+                            if (isset($wt_check['wt_in_downtime']) === true) {
+                                if ($wt_check['wt_in_downtime']) {
+                                    $time_out += $wt_check['downtime_interval'];
+                                }
                             }
 
                             // Ignore worktime, is in an invalid period:
@@ -8357,8 +8717,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
                     $item['id_agent_module']
                 );
 
-                if (isset($item['compare']) === true
-                    && empty($item['compare']) === true
+                if (isset($item['compare']) === false
+                    || empty($item['compare']) === true
                 ) {
                     $row['data']['compare'] = false;
                 } else {
@@ -9428,14 +9788,75 @@ function reporting_general($report, $content)
     $return['show_in_same_row'] = $content['style']['show_in_same_row'];
 
     if (empty($content['subitems'])) {
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
-        }
-
         $generals = db_get_all_rows_filter(
             'treport_content_item',
             ['id_report_content' => $content['id_rc']]
         );
+
+        if ($generals === false) {
+            $generals = [];
+        }
+
+        // REGEXP.
+        $text_agent = '';
+        if (isset($content['style']['text_agent']) === true
+            && empty($content['style']['text_agent']) === false
+        ) {
+            $text_agent = base64_decode($content['style']['text_agent']);
+        }
+
+        $text_agent_module = '';
+        if (isset($content['style']['text_agent_module']) === true
+            && empty($content['style']['text_agent_module']) === false
+        ) {
+            $text_agent_module = base64_decode($content['style']['text_agent_module']);
+        }
+
+        $modules_regex = [];
+        if (empty($text_agent) === false) {
+            if (is_metaconsole() === true) {
+                $nodes = metaconsole_get_connections();
+                foreach ($nodes as $node) {
+                    try {
+                        $nd = new Node($node['id']);
+                        $nd->connect();
+                        $modules_regex_node = modules_get_regex(
+                            $text_agent,
+                            $text_agent_module,
+                            $node['server_name']
+                        );
+                    } catch (\Exception $e) {
+                        $nd->disconnect();
+                        $modules_regex_node = [];
+                    } finally {
+                        $nd->disconnect();
+                    }
+
+                    $modules_regex = array_merge($modules_regex, $modules_regex_node);
+                }
+            } else {
+                $modules_regex = modules_get_regex(
+                    $text_agent,
+                    $text_agent_module
+                );
+            }
+        }
+
+        if (empty($modules_regex) === false) {
+            $generals = array_merge($generals, $modules_regex);
+            $generals = array_reduce(
+                $generals,
+                function ($carry, $item) {
+                    if (isset($item['operation']) === false) {
+                        $item['operation'] = 'avg';
+                    }
+
+                    $carry[$item['id_agent_module'].'|'.$item['server_name']] = $item;
+                    return $carry;
+                },
+                []
+            );
+        }
     } else {
         $generals = $content['subitems'];
     }
@@ -9445,16 +9866,14 @@ function reporting_general($report, $content)
     }
 
     $i = 0;
-    $index = 0;
     $is_string = [];
 
-    foreach ($generals as $row) {
-        // Metaconsole connection
+    foreach ($generals as $key_row => $row) {
+        // Metaconsole connection.
         $server_name = $row['server_name'];
         if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
             $connection = metaconsole_get_connection($server_name);
             if (metaconsole_load_external_db($connection) != NOERR) {
-                // ui_print_error_message ("Error connecting to ".$server_name);
                 continue;
             }
         }
@@ -9463,7 +9882,7 @@ function reporting_general($report, $content)
             || modules_is_not_init($row['id_agent_module'])
         ) {
             if (is_metaconsole()) {
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
 
@@ -9474,7 +9893,7 @@ function reporting_general($report, $content)
         $ag_name = modules_get_agentmodule_agent_alias($row['id_agent_module']);
         $name_agent = modules_get_agentmodule_agent_name($row['id_agent_module']);
         $type_mod = modules_get_last_value($row['id_agent_module']);
-        $is_string[$index] = modules_is_string($row['id_agent_module']);
+        $is_string[$key_row] = modules_is_string($row['id_agent_module']);
         $unit = db_get_value(
             'unit',
             'tagente_modulo',
@@ -9483,7 +9902,7 @@ function reporting_general($report, $content)
         );
         $id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'nombre', $mod_name);
         if ($content['period'] == 0) {
-            $data_res[$index] = modules_get_last_value($row['id_agent_module']);
+            $data_res[$key_row] = modules_get_last_value($row['id_agent_module']);
         } else {
             $data_sum = reporting_get_agentmodule_data_sum(
                 $row['id_agent_module'],
@@ -9507,34 +9926,34 @@ function reporting_general($report, $content)
             );
 
             if ($content['style']['show_in_same_row'] && $content['group_by_agent'] == REPORT_GENERAL_NOT_GROUP_BY_AGENT) {
-                $data_res[$index] = [
+                $data_res[$key_row] = [
                     $data_avg,
                     $data_max,
                     $data_min,
                     $data_sum,
                 ];
             } else {
-                if (is_numeric($type_mod) && !$is_string[$index]) {
+                if (is_numeric($type_mod) && !$is_string[$key_row]) {
                     switch ($row['operation']) {
                         case 'sum':
-                            $data_res[$index] = $data_sum;
+                            $data_res[$key_row] = $data_sum;
                         break;
 
                         case 'max':
-                            $data_res[$index] = $data_max;
+                            $data_res[$key_row] = $data_max;
                         break;
 
                         case 'min':
-                            $data_res[$index] = $data_min;
+                            $data_res[$key_row] = $data_min;
                         break;
 
                         case 'avg':
                         default:
-                            $data_res[$index] = $data_avg;
+                            $data_res[$key_row] = $data_avg;
                         break;
                     }
                 } else {
-                    $data_res[$index] = $type_mod;
+                    $data_res[$key_row] = $type_mod;
                 }
             }
         }
@@ -9543,46 +9962,46 @@ function reporting_general($report, $content)
 
         switch ($content['group_by_agent']) {
             case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-                $id_agent_module[$index] = $row['id_agent_module'];
-                $agent_name[$index] = $ag_name;
-                $module_name[$index] = $mod_name;
-                $units[$index] = $unit;
-                $id_module_types[$index] = $id_module_type;
-                $operations[$index] = $row['operation'];
+                $id_agent_module[$key_row] = $row['id_agent_module'];
+                $agent_name[$key_row] = $ag_name;
+                $module_name[$key_row] = $mod_name;
+                $units[$key_row] = $unit;
+                $id_module_types[$key_row] = $id_module_type;
+                $operations[$key_row] = $row['operation'];
             break;
 
             case REPORT_GENERAL_GROUP_BY_AGENT:
-                $id_module_types[$index] = $id_module_type;
-                if ($id_module_types[$index] == 2 || $id_module_types[$index] == 6 || $id_module_types[$index] == 9 || $id_module_types[$index] == 18) {
-                    $data_res[$index] = round($data_res[$index], 0, PHP_ROUND_HALF_DOWN);
+                $id_module_types[$key_row] = $id_module_type;
+                if ($id_module_types[$key_row] == 2 || $id_module_types[$key_row] == 6 || $id_module_types[$key_row] == 9 || $id_module_types[$key_row] == 18) {
+                    $data_res[$key_row] = round($data_res[$key_row], 0, PHP_ROUND_HALF_DOWN);
                 }
 
-                if ($id_module_types[$index] == 2 || $id_module_types[$index] == 6 || $id_module_types[$index] == 9 || $id_module_types[$index] == 18) {
-                    if ($data_res[$index] == 1) {
-                        $data_res[$index] = 'Up';
-                    } else if ($data_res[$index] == 0) {
-                        $data_res[$index] = 'Down';
+                if ($id_module_types[$key_row] == 2 || $id_module_types[$key_row] == 6 || $id_module_types[$key_row] == 9 || $id_module_types[$key_row] == 18) {
+                    if ($data_res[$key_row] == 1) {
+                        $data_res[$key_row] = 'Up';
+                    } else if ($data_res[$key_row] == 0) {
+                        $data_res[$key_row] = 'Down';
                     }
                 }
 
-                if ($data_res[$index] === false) {
+                if ($data_res[$key_row] === false) {
                     $return['data'][$name_agent][$mod_name] = null;
                 } else {
-                    if (!is_numeric($data_res[$index])) {
-                        $return['data'][$name_agent][$mod_name] = $data_res[$index];
+                    if (!is_numeric($data_res[$key_row])) {
+                        $return['data'][$name_agent][$mod_name] = $data_res[$key_row];
                     } else {
-                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$key_row], 2, '.', ',', $divisor, ' '.$unit);
                     }
                 }
             break;
         }
 
         if ($content['style']['show_in_same_row']) {
-            foreach ($data_res[$index] as $val) {
+            foreach ($data_res[$key_row] as $val) {
                 // Calculate the avg, min and max
                 if (is_numeric($val)) {
                     $change_min = false;
-                    if (is_null($return['min']['value'])) {
+                    if ($return['min']['value'] === null) {
                         $change_min = true;
                     } else {
                         if ($return['min']['value'] > $val) {
@@ -9598,7 +10017,7 @@ function reporting_general($report, $content)
                     }
 
                     $change_max = false;
-                    if (is_null($return['max']['value'])) {
+                    if ($return['max']['value'] === null) {
                         $change_max = true;
                     } else {
                         if ($return['max']['value'] < $val) {
@@ -9622,51 +10041,50 @@ function reporting_general($report, $content)
             }
         } else {
             // Calculate the avg, min and max
-            if (is_numeric($data_res[$index]) && !$is_string[$index]) {
+            if (is_numeric($data_res[$key_row]) && !$is_string[$key_row]) {
                 $change_min = false;
-                if (is_null($return['min']['value'])) {
+                if ($return['min']['value'] === null) {
                     $change_min = true;
                 } else {
-                    if ($return['min']['value'] > $data_res[$index]) {
+                    if ($return['min']['value'] > $data_res[$key_row]) {
                         $change_min = true;
                     }
                 }
 
                 if ($change_min) {
-                    $return['min']['value'] = $data_res[$index];
-                    $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
+                    $return['min']['value'] = $data_res[$key_row];
+                    $return['min']['formated_value'] = format_for_graph($data_res[$key_row], 2, '.', ',', $divisor, ' '.$unit);
                     $return['min']['agent'] = $ag_name;
                     $return['min']['module'] = $mod_name;
                 }
 
                 $change_max = false;
-                if (is_null($return['max']['value'])) {
+                if ($return['max']['value'] === null) {
                     $change_max = true;
                 } else {
-                    if ($return['max']['value'] < $data_res[$index]) {
+                    if ($return['max']['value'] < $data_res[$key_row]) {
                         $change_max = true;
                     }
                 }
 
                 if ($change_max) {
-                    $return['max']['value'] = $data_res[$index];
-                    $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
+                    $return['max']['value'] = $data_res[$key_row];
+                    $return['max']['formated_value'] = format_for_graph($data_res[$key_row], 2, '.', ',', $divisor, ' '.$unit);
                     $return['max']['agent'] = $ag_name;
                     $return['max']['module'] = $mod_name;
                 }
 
                 if ($i == 0) {
-                    $return['avg_value'] = $data_res[$index];
+                    $return['avg_value'] = $data_res[$key_row];
                 } else {
-                    $return['avg_value'] = ((($return['avg_value'] * $i) / ($i + 1)) + ($data_res[$index] / ($i + 1)));
+                    $return['avg_value'] = ((($return['avg_value'] * $i) / ($i + 1)) + ($data_res[$key_row] / ($i + 1)));
                 }
             }
         }
 
-        $index++;
         $i++;
 
-        // Restore dbconnection
+        // Restore dbconnection.
         if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
             metaconsole_restore_db();
         }
@@ -9724,20 +10142,19 @@ function reporting_general($report, $content)
                 break;
             }
 
-            $i = 0;
-            foreach ($data_res as $d) {
+            foreach ($data_res as $d_key => $d) {
                 $data = [];
-                $data['agent'] = $agent_name[$i];
-                $data['module'] = $module_name[$i];
-                $data['id_agent_module'] = $id_agent_module[$i];
-                $data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$i]);
-                $data['id_module_type'] = $id_module_types[$i];
+                $data['agent'] = $agent_name[$d_key];
+                $data['module'] = $module_name[$d_key];
+                $data['id_agent_module'] = $id_agent_module[$d_key];
+                $data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$d_key]);
+                $data['id_module_type'] = $id_module_types[$d_key];
                 $data['operator'] = '';
                 if ($content['period'] != 0) {
                     if ($content['style']['show_in_same_row']) {
                         $data['operator'] = 'all';
                     } else {
-                        switch ($operations[$i]) {
+                        switch ($operations[$d_key]) {
                             case 'sum':
                                 $data['operator'] = __('Summatory');
                             break;
@@ -9763,28 +10180,16 @@ function reporting_general($report, $content)
                         if ($val === false) {
                             $data['value'][] = null;
                         } else {
-                            switch ($config['dbtype']) {
-                                case 'mysql':
-                                case 'postgresql':
-                                break;
+                            $divisor = get_data_multiplier($units[$d_key]);
 
-                                case 'oracle':
-                                    if (preg_match('/[0-9]+,[0-9]E+[+-][0-9]+/', $val)) {
-                                        $val = oracle_format_float_to_php($val);
-                                    }
-                                break;
-                            }
-
-                            $divisor = get_data_multiplier($units[$i]);
-
-                            if (!is_numeric($val) || $is_string[$i]) {
+                            if (!is_numeric($val) || $is_string[$d_key]) {
                                 $data['value'][] = $val;
 
                                 // to see the chains on the table
                                 $data['formated_value'][] = $val;
                             } else {
                                 $data['value'][] = $val;
-                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$units[$i]);
+                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$units[$d_key]);
                             }
                         }
                     }
@@ -9792,35 +10197,21 @@ function reporting_general($report, $content)
                     if ($d === false) {
                         $data['value'] = null;
                     } else {
-                        switch ($config['dbtype']) {
-                            case 'mysql':
-                            case 'postgresql':
-                            break;
+                        $divisor = get_data_multiplier($units[$d_key]);
 
-                            case 'oracle':
-                                if (preg_match('/[0-9]+,[0-9]E+[+-][0-9]+/', $d)) {
-                                    $d = oracle_format_float_to_php($d);
-                                }
-                            break;
-                        }
-
-                        $divisor = get_data_multiplier($units[$i]);
-
-                        if (!is_numeric($d) || $is_string[$i]) {
+                        if (!is_numeric($d) || $is_string[$d_key]) {
                             $data['value'] = $d;
 
                             // to see the chains on the table
                             $data['formated_value'] = $d;
                         } else {
                             $data['value'] = $d;
-                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, ' '.$units[$i]);
+                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, ' '.$units[$d_key]);
                         }
                     }
                 }
 
                 $return['data'][] = $data;
-
-                $i++;
             }
         break;
     }
@@ -10164,6 +10555,11 @@ function reporting_simple_graph(
         $fullscale = (bool) $content['style']['fullscale'];
     }
 
+    $image_threshold = false;
+    if (isset($content['style']['image_threshold'])) {
+        $image_threshold = (bool) $content['style']['image_threshold'];
+    }
+
     $return['chart'] = '';
 
     // Get chart.
@@ -10218,6 +10614,7 @@ function reporting_simple_graph(
                 'backgroundColor'    => 'transparent',
                 'return_img_base_64' => true,
                 'graph_render'       => $content['graph_render'],
+                'image_threshold'    => $image_threshold,
             ];
 
             if ($only_image === false) {
@@ -10459,14 +10856,14 @@ function reporting_get_module_detailed_event(
             $event['data'] = [];
         }
 
-        // total_events
+        // Total events.
         if (isset($event['data'])) {
             $event['total_events'] = count($event['data']);
         } else {
             $event['total_events'] = 0;
         }
 
-        // graphs
+        // Graphs.
         if (!empty($force_width_chart)) {
             $width = $force_width_chart;
         }
@@ -10476,20 +10873,9 @@ function reporting_get_module_detailed_event(
         }
 
         if ($event_graph_by_user_validator) {
-            $data_graph = events_get_count_events_validated_by_user(
-                ['id_agentmodule' => $id_module],
-                $period,
-                $date,
-                $filter_event_severity,
-                $filter_event_type,
-                $filter_event_status,
-                $filter_event_filter_search,
-                $metaconsole_dbtable,
-                $filter_event_filter_exclude
-            );
-
+            $data_graph_by_user = events_get_count_events_validated_by_user($event['data']);
             $event['chart']['by_user_validator'] = pie_graph(
-                $data_graph,
+                $data_graph_by_user,
                 500,
                 150,
                 __('other'),
@@ -10502,22 +10888,22 @@ function reporting_get_module_detailed_event(
         }
 
         if ($event_graph_by_criticity) {
-            $data_graph = events_get_count_events_by_criticity(
-                ['id_agentmodule' => $id_module],
-                $period,
-                $date,
-                $filter_event_severity,
-                $filter_event_type,
-                $filter_event_status,
-                $filter_event_filter_search,
-                $metaconsole_dbtable,
-                $filter_event_filter_exclude
-            );
+            $data_graph_by_criticity = [];
+            if (empty($event['data']) === false) {
+                foreach ($event['data'] as $value) {
+                    $k = get_priority_name($value['criticity']);
+                    if (isset($data_graph_by_criticity[$k]) === true) {
+                        $data_graph_by_criticity[$k]++;
+                    } else {
+                        $data_graph_by_criticity[$k] = 1;
+                    }
+                }
+            }
 
-            $colors = get_criticity_pie_colors($data_graph);
+            $colors = get_criticity_pie_colors($data_graph_by_criticity);
 
             $event['chart']['by_criticity'] = pie_graph(
-                $data_graph,
+                $data_graph_by_criticity,
                 500,
                 150,
                 __('other'),
@@ -10532,20 +10918,24 @@ function reporting_get_module_detailed_event(
         }
 
         if ($event_graph_validated_vs_unvalidated) {
-            $data_graph = events_get_count_events_validated(
-                ['id_agentmodule' => $id_module],
-                $period,
-                $date,
-                $filter_event_severity,
-                $filter_event_type,
-                $filter_event_status,
-                $filter_event_filter_search,
-                $metaconsole_dbtable,
-                $filter_event_filter_exclude
-            );
+            $data_graph_by_status = [];
+            if (empty($event['data']) === false) {
+                $status = [
+                    1 => __('Validated'),
+                    0 => __('Not validated'),
+                ];
+                foreach ($event['data'] as $value) {
+                    $k = $status[$value['estado']];
+                    if (isset($data_graph_by_status[$k]) === true) {
+                        $data_graph_by_status[$k]++;
+                    } else {
+                        $data_graph_by_status[$k] = 1;
+                    }
+                }
+            }
 
             $event['chart']['validated_vs_unvalidated'] = pie_graph(
-                $data_graph,
+                $data_graph_by_status,
                 500,
                 150,
                 __('other'),
@@ -10592,8 +10982,6 @@ function reporting_get_agents_detailed_event(
     $id_agents,
     $period=0,
     $date=0,
-    $return=false,
-    $only_data=false,
     $history=false,
     $show_summary_group=false,
     $filter_event_severity=false,
@@ -10606,10 +10994,7 @@ function reporting_get_agents_detailed_event(
 ) {
     global $config;
 
-    if ($only_data) {
-        $return_data = [];
-    }
-
+    $return_data = [];
     $id_agents = (array) safe_int($id_agents, 1);
 
     if (!is_numeric($date)) {
@@ -10619,8 +11004,6 @@ function reporting_get_agents_detailed_event(
     if (empty($date)) {
         $date = get_system_time();
     }
-
-    $events = [];
 
     foreach ($id_agents as $id_agent) {
         $event = events_get_agent(
@@ -10645,114 +11028,38 @@ function reporting_get_agents_detailed_event(
             $event = [];
         }
 
-        if ($only_data) {
-            $nevents = count($event);
-            for ($i = ($nevents - 1); $i >= 0; $i--) {
-                $e = $event[$i];
-                if ($show_summary_group) {
-                    $return_data[] = [
-                        'status'       => $e['estado'],
-                        'count'        => $e['event_rep'],
-                        'name'         => $e['evento'],
-                        'type'         => $e['event_type'],
-                        'criticity'    => $e['criticity'],
-                        'validated_by' => $e['id_usuario'],
-                        'timestamp'    => $e['timestamp_rep'],
-                        'id_evento'    => $e['id_evento'],
-                        'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
-                    ];
-                } else {
-                    $return_data[] = [
-                        'status'       => $e['estado'],
-                        'name'         => $e['evento'],
-                        'type'         => $e['event_type'],
-                        'criticity'    => $e['criticity'],
-                        'validated_by' => $e['id_usuario'],
-                        'timestamp'    => $e['timestamp'],
-                        'id_evento'    => $e['id_evento'],
-                        'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
-                    ];
-                }
-            }
-        } else {
-            if (!empty($event)) {
-                array_push($events, $event);
+        $nevents = count($event);
+        for ($i = ($nevents - 1); $i >= 0; $i--) {
+            $e = $event[$i];
+            if ($show_summary_group) {
+                $return_data[] = [
+                    'status'       => $e['estado'],
+                    'count'        => $e['event_rep'],
+                    'name'         => $e['evento'],
+                    'type'         => $e['event_type'],
+                    'criticity'    => $e['criticity'],
+                    'validated_by' => $e['id_usuario'],
+                    'timestamp'    => $e['timestamp_last'],
+                    'id_evento'    => $e['id_evento'],
+                    'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
+                ];
+            } else {
+                $return_data[] = [
+                    'status'       => $e['estado'],
+                    'name'         => $e['evento'],
+                    'type'         => $e['event_type'],
+                    'criticity'    => $e['criticity'],
+                    'validated_by' => $e['id_usuario'],
+                    'timestamp'    => $e['timestamp'],
+                    'id_evento'    => $e['id_evento'],
+                    'id_usuario'   => $e['id_usuario'],
+                    'custom_data'  => ($show_custom_data === true) ? $e['custom_data'] : '',
+                ];
             }
         }
     }
 
-    if ($only_data) {
-        return $return_data;
-    }
-
-    if ($events) {
-        $note = '';
-        if (count($events) >= 1000) {
-            $note .= '* '.__('Maximum of events shown').' (1000)<br>';
-        }
-
-        foreach ($events as $eventRow) {
-            foreach ($eventRow as $k => $event) {
-                // First pass along the class of this row.
-                $table->cellclass[$k][1] = $table->cellclass[$k][2] = $table->cellclass[$k][4] = $table->cellclass[$k][5] = $table->cellclass[$k][6] = get_priority_class($event['criticity']);
-
-                $data = [];
-                // Colored box.
-                switch ($event['estado']) {
-                    case 0:
-                        $img_st = 'images/star.png';
-                        $title_st = __('New event');
-                    break;
-
-                    case 1:
-                        $img_st = 'images/tick.png';
-                        $title_st = __('Event validated');
-                    break;
-
-                    case 2:
-                        $img_st = 'images/hourglass.png';
-                        $title_st = __('Event in process');
-                    break;
-                }
-
-                $data[] = html_print_image(
-                    $img_st,
-                    true,
-                    [
-                        'class' => 'image_status invert filter',
-                        'width' => 16,
-                        'title' => $title_st,
-                    ]
-                );
-
-                $data[] = $event['event_rep'];
-
-                $data[] = ui_print_truncate_text(
-                    io_safe_output($event['evento']),
-                    140,
-                    false,
-                    true
-                );
-                // $data[] = $event['event_type'];
-                $data[] = events_print_type_img($event['event_type'], true);
-
-                $data[] = get_priority_name($event['criticity']);
-                if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
-                    $data[] = '<i>'.__('System').'</i>';
-                } else {
-                    $user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-                    $data[] = io_safe_output($user_name);
-                }
-
-                $data[] = '<font style="font-size: 6pt;">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
-                array_push($table->data, $data);
-            }
-        }
-    }
-
-    if ($events) {
-        return html_print_table($table, $return).$note;
-    }
+    return $return_data;
 }
 
 
@@ -10997,7 +11304,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false, $recursive=false)
 {
     global $config;
 
@@ -11041,6 +11348,8 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
         $id_group = array_keys(
             users_get_groups($config['id_user'], $access, false)
         );
+    } else if ($recursive === true) {
+        $id_group = groups_get_children_ids($id_group);
     }
 
     // -----------------------------------------------------------------
@@ -11171,7 +11480,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
             $group_stat = db_get_all_rows_sql($sql);
             $data = [
                 'monitor_checks'            => (int) $group_stat[0]['modules'],
-                'monitor_alerts'            => (int) groups_monitor_alerts($group_array),
+                'monitor_alerts'            => (int) groups_monitor_alerts($group_stat[0]['id_group']),
                 'monitor_alerts_fired'      => (int) $group_stat[0]['alerts_fired'],
                 'monitor_alerts_fire_count' => (int) $group_stat[0]['alerts_fired'],
                 'monitor_ok'                => (int) $group_stat[0]['normal'],
@@ -11185,10 +11494,33 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
                 'agent_warning'             => (int) $group_stat[0]['agents_warnings'],
                 'agent_critical'            => (int) $group_stat[0]['agents_critical'],
                 'total_checks'              => (int) $group_stat[0]['modules'],
-                'total_alerts'              => (int) groups_monitor_alerts($group_array),
+                'total_alerts'              => (int) groups_monitor_alerts($group_stat[0]['id_group']),
                 'total_agents'              => (int) $group_stat[0]['agents'],
                 'utimestamp'                => (int) $group_stat[0]['utimestamp'],
             ];
+
+            if ($recursive === true) {
+                unset($group_stat[0]);
+                foreach ($group_stat as $value) {
+                    $data['monitor_checks'] = ($data['monitor_checks'] + $value['modules']);
+                    $data['monitor_alerts'] = ($data['monitor_alerts'] + groups_monitor_alerts($value['id_group']));
+                    $data['monitor_alerts_fired'] = ($data['monitor_alerts_fired'] + $value['alerts_fired']);
+                    $data['monitor_alerts_fire_count'] = ($data['monitor_alerts_fire_count'] + $value['alerts_fired']);
+                    $data['monitor_ok'] = ($data['monitor_ok'] + $value['normal']);
+                    $data['monitor_warning'] = ($data['monitor_warning'] + $value['warning']);
+                    $data['monitor_critical'] = ($data['monitor_critical'] + $value['critical']);
+                    $data['monitor_unknown'] = ($data['monitor_unknown'] + $value['unknown']);
+                    $data['monitor_not_init'] = ($data['monitor_not_init'] + $value['non-init']);
+                    $data['agent_not_init'] = ($data['agent_not_init'] + $value['agents_not_init']);
+                    $data['agent_unknown'] = ($data['agent_unknown'] + $value['agents_unknown']);
+                    $data['agent_ok'] = ($data['agent_ok'] + $value['agents_normal']);
+                    $data['agent_warning'] = ($data['agent_warning'] + $value['agents_warnings']);
+                    $data['agent_critical'] = ($data['agent_critical'] + $value['agents_critical']);
+                    $data['total_checks'] = ($data['total_checks'] + $value['modules']);
+                    $data['total_alerts'] = ($data['total_alerts'] + groups_monitor_alerts($value['id_group']));
+                    $data['total_agents'] = ($data['total_agents'] + $value['agents']);
+                }
+            }
         }
     }
 
@@ -11234,7 +11566,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_per
         $data['status'] = 'critical';
     } else if ($data['monitor_warning'] > 0) {
         $data['status'] = 'warning';
-    } else if (($data['monitor_unknown'] > 0) || ($data['agents_unknown'] > 0)) {
+    } else if (($data['monitor_unknown'] > 0) || ($data['agent_unknown'] > 0)) {
         $data['status'] = 'unknown';
     } else if ($data['monitor_ok'] > 0) {
         $data['status'] = 'ok';
@@ -11313,7 +11645,7 @@ function reporting_get_stats_alerts($data, $links=false)
 {
     global $config;
 
-    // Link URLS
+    // Link URLS.
     $mobile = false;
     if (isset($data['mobile'])) {
         if ($data['mobile']) {
@@ -11329,14 +11661,14 @@ function reporting_get_stats_alerts($data, $links=false)
         $urls = [];
         if ($links) {
             $urls['monitor_alerts'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&pure='.$config['pure'];
-            $urls['monitor_alerts_fired'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure='.$config['pure'];
+            $urls['monitor_alerts_fired'] = 'index.php?sec=estado&sec2=operation/agentes/alerts_status&disabled=fired&pure='.$config['pure'];
         } else {
             $urls['monitor_alerts'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60';
-            $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired';
+            $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&disabled=fired';
         }
     }
 
-    // Alerts table
+    // Alerts table.
     $table_al = html_get_predefined_table();
 
     $tdata = [];
@@ -11375,7 +11707,7 @@ function reporting_get_stats_alerts($data, $links=false)
         $output = '<fieldset class="databox tactical_set">
                     <legend>'.__('Defined and fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
     } else {
-        // Remove the defined alerts cause with the new cache table is difficult to retrieve them
+        // Remove the defined alerts cause with the new cache table is difficult to retrieve them.
         unset($table_al->data[0][0], $table_al->data[0][1]);
 
         $table_al->class = 'tactical_view';
@@ -14058,6 +14390,10 @@ function reporting_format_planned_downtime_dates($planned_downtime)
             $dates = date('Y-m-d H:i', $planned_downtime['date_from']).'&nbsp;'.__('to').'&nbsp;'.date('Y-m-d H:i', $planned_downtime['date_to']);
         break;
 
+        case 'cron':
+            $dates = __('Start condition').': <span class="italic">'.$planned_downtime['cron_interval_from'].'</span> - '.__('Stop condition').': <span class="italic">'.$planned_downtime['cron_interval_to'].'</span>';
+        break;
+
         case 'periodically':
             if (!isset($planned_downtime['type_periodicity'])) {
                 return '';
@@ -14411,6 +14747,25 @@ function reporting_sql_macro(array $report, string $sql): string
         );
     }
 
+    if (preg_match('/_start_date_/', $sql)) {
+        $date_init = get_parameter('date_init', date(DATE_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $time_init = get_parameter('time_init', date(TIME_FORMAT, (strtotime(date('Y-m-j')) - SECONDS_1DAY)));
+        $datetime_init = strtotime($date_init.' '.$time_init);
+        $sql = str_replace(
+            '_start_date_',
+            $datetime_init,
+            $sql
+        );
+    }
+
+    if (preg_match('/_end_date_/', $sql)) {
+        $sql = str_replace(
+            '_end_date_',
+            $report['datetime'],
+            $sql
+        );
+    }
+
     return $sql;
 }
 
@@ -14542,9 +14897,7 @@ function reporting_sla_get_status_period_compliance(
         return REPORT_STATUS_ERR;
     }
 
-    if ($priority_mode == REPORT_PRIORITY_MODE_OK
-        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
-    ) {
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
         return REPORT_STATUS_OK;
     }
 
@@ -14710,6 +15063,16 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             $items_label,
             ($description ?? '')
         );
+    }
+
+    $showLabelTicks = true;
+    if (isset($content['showLabelTicks']) === true) {
+        $showLabelTicks = $content['showLabelTicks'];
+    }
+
+    $height_graph = 80;
+    if (isset($content['height_graph']) === true) {
+        $height_graph = $content['height_graph'];
     }
 
     $return['title'] = $title;
@@ -14960,7 +15323,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     ];
 
     $width_graph  = 100;
-    $height_graph = 80;
     if (empty($array_result) === false) {
         $return['chart'] = flot_slicesbar_graph(
             $array_result,
@@ -14971,7 +15333,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             $colors,
             $config['fontpath'],
             $config['round_corner'],
-            $homeurl,
+            $config['homeurl'],
             '',
             '',
             false,
@@ -14980,7 +15342,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             true,
             $ttl,
             $content['sizeForTicks'],
-            true,
+            $showLabelTicks,
             $report['datetime']
         );
     } else {

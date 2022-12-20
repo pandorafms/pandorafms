@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Main configuration of Pandora FMS
  *
@@ -30,6 +31,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/functions.php';
 enterprise_include_once('include/functions_config.php');
+
 use PandoraFMS\Core\DBMaintainer;
 use PandoraFMS\Core\Config;
 
@@ -146,7 +148,7 @@ function config_update_config()
         return false;
     }
 
-    if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+    if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = false;
         $config['error_config_update_config']['message'] = __('Failed updated: User is not admin.');
@@ -358,6 +360,10 @@ function config_update_config()
                         $error_update[] = __('Module Custom ID read only');
                     }
 
+                    if (config_update_value('reporting_console_enable', get_parameter('reporting_console_enable'), true) === false) {
+                        $error_update[] = __('Enable console report');
+                    }
+
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
                         $error_update[] = __('Unique IP');
                     }
@@ -407,32 +413,6 @@ function config_update_config()
 
                         if (config_update_value('collection_max_size', get_parameter('collection_max_size'), true) === false) {
                             $error_update[] = __('Size of collection');
-                        }
-
-                        if (config_update_value('event_replication', (int) get_parameter('event_replication'), true) === false) {
-                            $error_update[] = __('Events replication');
-                        }
-
-                        if ((int) get_parameter('event_replication') === 1) {
-                            if (config_update_value('replication_interval', (int) get_parameter('replication_interval'), true) === false) {
-                                $error_update[] = __('Replication interval');
-                            }
-
-                            if (config_update_value('replication_limit', (int) get_parameter('replication_limit'), true) === false) {
-                                $error_update[] = __('Replication limit');
-                            }
-
-                            if (config_update_value('replication_mode', (string) get_parameter('replication_mode'), true) === false) {
-                                $error_update[] = __('Replication mode');
-                            }
-
-                            if (config_update_value('show_events_in_local', (string) get_parameter('show_events_in_local'), true) === false) {
-                                $error_update[] = __('Show events list in local console (read only)');
-                            }
-                        }
-
-                        if (config_update_value('replication_dbengine', (string) get_parameter('replication_dbengine'), true) === false) {
-                            $error_update[] = __('Replication DB engine');
                         }
 
                         if (config_update_value('replication_dbhost', (string) get_parameter('replication_dbhost'), true) === false) {
@@ -487,7 +467,7 @@ function config_update_config()
                 break;
 
                 case 'pass':
-                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === 1) {
+                    if (isset($config['enterprise_installed']) === true && (bool) $config['enterprise_installed'] === true) {
                         if (config_update_value('enable_pass_policy', get_parameter('enable_pass_policy'), true) === false) {
                             $error_update[] = __('Enable password policy');
                         }
@@ -534,6 +514,10 @@ function config_update_config()
 
                         if (config_update_value('reset_pass_option', (bool) get_parameter('reset_pass_option'), true) === false) {
                             $error_update[] = __('Activate reset password');
+                        }
+
+                        if (config_update_value('exclusion_word_list', (string) get_parameter('exclusion_word_list'), true) === false) {
+                            $error_update[] = __('Exclusion word list for passwords');
                         }
                     }
                 break;
@@ -628,8 +612,12 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (config_update_value('ldap_admin_pass', io_input_password(io_safe_output(get_parameter('ldap_admin_pass'))), true) === false) {
+                    if (config_update_value('ldap_admin_pass', io_input_password(get_parameter('ldap_admin_pass')), true) === false) {
                         $error_update[] = __('Admin LDAP password');
+                    }
+
+                    if (config_update_value('ldap_search_timeout', (int) get_parameter('ldap_search_timeout', 5), true) === false) {
+                        $error_update[] = __('Ldap search timeout');
                     }
 
                     if (config_update_value('ldap_server_secondary', get_parameter('ldap_server_secondary'), true) === false) {
@@ -660,7 +648,7 @@ function config_update_config()
                         $error_update[] = __('Admin secondary LDAP login');
                     }
 
-                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(io_safe_output(get_parameter('ldap_admin_pass_secondary'))), true) === false) {
+                    if (config_update_value('ldap_admin_pass_secondary', io_input_password(get_parameter('ldap_admin_pass_secondary')), true) === false) {
                         $error_update[] = __('Admin secondary LDAP password');
                     }
 
@@ -804,14 +792,7 @@ function config_update_config()
                 case 'perf':
                     // PERFORMANCE SETUP.
                     if (config_update_value('event_purge', get_parameter('event_purge'), true) === false) {
-                        $check_metaconsole_events_history = get_parameter('metaconsole_events_history', -1);
-                        $error_update[] = $check_metaconsole_events_history;
-                    }
-
-                    if ($check_metaconsole_events_history != -1) {
-                        if (config_update_value('metaconsole_events_history', get_parameter('metaconsole_events_history'), true) === false) {
-                            $error_update[] = __('Max. days before delete events');
-                        }
+                        $error_update[] = __('Event purge');
                     }
 
                     if (config_update_value('trap_purge', get_parameter('trap_purge'), true) === false) {
@@ -836,6 +817,10 @@ function config_update_config()
 
                     if (config_update_value('days_delete_unknown', (int) get_parameter('days_delete_unknown'), true) === false) {
                         $error_update[] = __('Max. days before delete unknown modules');
+                    }
+
+                    if (config_update_value('days_delete_not_initialized', (int) get_parameter('days_delete_not_initialized'), true) === false) {
+                        $error_update[] = __('Max. days before delete not initialized modules');
                     }
 
                     if (config_update_value('days_compact', (int) get_parameter('days_compact'), true) === false) {
@@ -926,6 +911,20 @@ function config_update_config()
 
                     if (config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'), true) === false) {
                         $error_update[] = __('SNMP walk binary path (fallback for v1)');
+                    }
+
+                    if (config_update_value('wmiBinary', get_parameter('wmiBinary'), true) === false) {
+                        $error_update[] = __('Default WMI Binary');
+                    }
+
+                    // Walk the array with defaults.
+                    $defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
+                    foreach ($defaultAgentWizardOptions as $key => $value) {
+                        $selectedAgentWizardOptions[$key] = get_parameter_switch('agent_wizard_defaults_'.$key);
+                    }
+
+                    if (config_update_value('agent_wizard_defaults', json_encode($selectedAgentWizardOptions), true) === false) {
+                        $error_update[] = __('SNMP Interface Agent Wizard');
                     }
 
                     $pjs = get_parameter('phantomjs_cache_interval');
@@ -1183,6 +1182,10 @@ function config_update_config()
                         $error_update[] = __('Default line thickness for the Visual Console');
                     }
 
+                    if (config_update_value('mobile_view_orientation_vc', (int) get_parameter('mobile_view_orientation_vc'), true) === false) {
+                        $error_update[] = __('Mobile view not allow visual console orientation');
+                    }
+
                     if (config_update_value('ser_menu_items', (int) get_parameter('ser_menu_items', 10), true) === false) {
                         $error_update[] = __('Default line menu items for the Services');
                     }
@@ -1261,6 +1264,10 @@ function config_update_config()
 
                     if (config_update_value('show_group_name', get_parameter('show_group_name'), true) === false) {
                         $error_update[] = __('Show the group name instead the group icon.');
+                    }
+
+                    if (config_update_value('show_empty_groups', get_parameter('show_empty_groups'), true) === false) {
+                        $error_update[] = __('Show empty groups in group view.');
                     }
 
                     if (config_update_value('custom_graph_width', (int) get_parameter('custom_graph_width', 1), true) === false) {
@@ -1468,6 +1475,15 @@ function config_update_config()
                     if (config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'), true) === false) {
                         $error_update[] = __('Use data multiplier');
                     }
+
+                    if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {
+                        $error_update[] = __('Decimal separator');
+                    } else {
+                        $thousand_separator = ((string) get_parameter('decimal_separator', '.') === '.') ? ',' : '.';
+                        if (config_update_value('thousand_separator', $thousand_separator, true) === false) {
+                            $error_update[] = __('Thousand separator');
+                        }
+                    }
                 break;
 
                 case 'net':
@@ -1560,6 +1576,10 @@ function config_update_config()
                         $error_update[] = __('Enable history event');
                     }
 
+                    if (config_update_value('history_trap_enabled', get_parameter('history_trap_enabled'), true) === false) {
+                        $error_update[] = __('Enable history trap');
+                    }
+
                     if (config_update_value('history_db_user', get_parameter('history_db_user'), true) === false) {
                         $error_update[] = __('Database user');
                     }
@@ -1576,12 +1596,41 @@ function config_update_config()
                         $error_update[] = __('Days');
                     }
 
+                    if (config_update_value('history_db_adv', get_parameter_switch('history_db_adv', 0), true) === false) {
+                        $error_update[] = __('Enable history database advanced');
+                    }
+
+                    $history_db_string_days = get_parameter('history_db_string_days');
+                    if ((is_numeric($history_db_string_days) === false
+                        || $history_db_string_days <= 0
+                        || config_update_value('history_db_string_days', $history_db_string_days) === false)
+                        && get_parameter_switch('history_db_adv', 0) === 1
+                    ) {
+                        $error_update[] = __('String Days');
+                    }
+
                     $history_event_days = get_parameter('history_event_days');
                     if (is_numeric($history_event_days) === false
                         || $history_event_days <= 0
                         || config_update_value('history_event_days', $history_event_days) === false
                     ) {
                         $error_update[] = __('Event Days');
+                    }
+
+                    $history_trap_days = get_parameter('history_trap_days');
+                    if (is_numeric($history_trap_days) === false
+                        || $history_trap_days <= 0
+                        || config_update_value('history_trap_days', $history_trap_days) === false
+                    ) {
+                        $error_update[] = __('Trap Days');
+                    }
+
+                    $trap_history_purge = get_parameter('history_traps_days_purge');
+                    if (is_numeric($trap_history_purge) === false
+                        || $trap_history_purge <= 0
+                        || config_update_value('trap_history_purge', $trap_history_purge) === false
+                    ) {
+                        $error_update[] = __('Trap history purge');
                     }
 
                     $history_db_step = get_parameter('history_db_step');
@@ -1646,6 +1695,14 @@ function config_update_config()
                             ) !== true
                             ) {
                                 $error_update[] = __('Historical database events purge');
+                            }
+
+                            if ($dbm->setConfigToken(
+                                'trap_history_purge',
+                                get_parameter('history_traps_days_purge')
+                            ) !== true
+                            ) {
+                                $error_update[] = __('Historical database traps purge');
                             }
 
                             if ($dbm->setConfigToken(
@@ -1835,7 +1892,7 @@ function config_update_config()
         $config['error_config_update_config']['correct'] = false;
         $values = implode('<br> -', $error_update);
         $config['error_config_update_config']['message'] = sprintf(
-            __('Failed updated: the next values cannot update: <br> -%s'),
+            __('Update failed. The next values could not be updated: <br> -%s'),
             $values
         );
 
@@ -2053,6 +2110,10 @@ function config_process_config()
         config_update_value('max_execution_event_response', 10);
     }
 
+    if (!isset($config['max_number_of_events_per_node'])) {
+        config_update_value('max_number_of_events_per_node', 100000);
+    }
+
     if (!isset($config['max_macro_fields'])) {
         config_update_value('max_macro_fields', 10);
     }
@@ -2087,12 +2148,12 @@ function config_process_config()
         config_update_value('snmpwalk_fallback', 'snmpwalk');
     }
 
-    if (!isset($config['event_purge'])) {
-        config_update_value('event_purge', 15);
+    if (isset($config['wmiBinary']) === false) {
+        config_update_value('wmiBinary', 'pandorawmic');
     }
 
-    if (!isset($config['metaconsole_events_history'])) {
-        config_update_value('metaconsole_events_history', 0);
+    if (!isset($config['event_purge'])) {
+        config_update_value('event_purge', 15);
     }
 
     if (!isset($config['realtimestats'])) {
@@ -2131,22 +2192,6 @@ function config_process_config()
         config_update_value('policy_add_max_agents', 200);
     }
 
-    if (!isset($config['event_replication'])) {
-        config_update_value('event_replication', 0);
-    }
-
-    if (!isset($config['replication_interval'])) {
-        config_update_value('replication_interval', 10);
-    }
-
-    if (!isset($config['replication_limit'])) {
-        config_update_value('replication_limit', 50);
-    }
-
-    if (!isset($config['replication_dbengine'])) {
-        config_update_value('replication_dbengine', 'mysql');
-    }
-
     if (!isset($config['replication_dbhost'])) {
         config_update_value('replication_dbhost', '');
     }
@@ -2167,16 +2212,8 @@ function config_process_config()
         config_update_value('replication_dbport', '');
     }
 
-    if (!isset($config['replication_mode'])) {
-        config_update_value('replication_mode', 'only_validated');
-    }
-
     if (!isset($config['metaconsole_agent_cache'])) {
         config_update_value('metaconsole_agent_cache', 0);
-    }
-
-    if (!isset($config['show_events_in_local'])) {
-        config_update_value('show_events_in_local', 0);
     }
 
     if (!isset($config['log_collector'])) {
@@ -2203,6 +2240,10 @@ function config_process_config()
         config_update_value('reset_pass_option', 0);
     }
 
+    if (isset($config['exclusion_word_list']) === false) {
+        config_update_value('exclusion_word_list', '');
+    }
+
     if (!isset($config['include_agents'])) {
         config_update_value('include_agents', 0);
     }
@@ -2221,6 +2262,10 @@ function config_process_config()
 
     if (!isset($config['module_custom_id_ro'])) {
         config_update_value('module_custom_id_ro', 0);
+    }
+
+    if (!isset($config['reporting_console_enable'])) {
+        config_update_value('reporting_console_enable', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -2259,9 +2304,35 @@ function config_process_config()
         config_update_value('2Fa_auth', '');
     }
 
-     /*
-      * Parse the ACL IP list for access API
-      */
+    if (isset($config['agent_wizard_defaults']) === false) {
+        config_update_value(
+            'agent_wizard_defaults',
+            json_encode(
+                [
+                    'ifOperStatus'    => 1,
+                    'ifInOctets'      => 1,
+                    'ifOutOctets'     => 1,
+                    'ifInUcastPkts'   => 0,
+                    'ifOutUcastPkts'  => 0,
+                    'ifInNUcastPkts'  => 0,
+                    'ifOutNUcastPkts' => 0,
+                    'locIfInCRC'      => 1,
+                    'Bandwidth'       => 1,
+                    'inUsage'         => 1,
+                    'outUsage'        => 1,
+                    'ifAdminStatus'   => 0,
+                    'ifInDiscards'    => 0,
+                    'ifOutDiscards'   => 0,
+                    'ifInErrors'      => 0,
+                    'ifOutErrors'     => 0,
+                ]
+            )
+        );
+    }
+
+    /*
+     * Parse the ACL IP list for access API
+     */
 
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
@@ -2494,6 +2565,10 @@ function config_process_config()
         config_update_value('history_event_enabled', false);
     }
 
+    if (!isset($config['history_trap_enabled'])) {
+        config_update_value('history_trap_enabled', false);
+    }
+
     if (!isset($config['history_db_host'])) {
         config_update_value('history_db_host', '');
     }
@@ -2518,8 +2593,24 @@ function config_process_config()
         config_update_value('history_db_days', 0);
     }
 
+    if (!isset($config['history_db_adv'])) {
+        config_update_value('history_db_adv', false);
+    }
+
+    if (!isset($config['history_db_string_days'])) {
+        config_update_value('history_db_string_days', 0);
+    }
+
     if (!isset($config['history_event_days'])) {
         config_update_value('history_event_days', 90);
+    }
+
+    if (!isset($config['history_trap_days'])) {
+        config_update_value('history_trap_days', 90);
+    }
+
+    if (!isset($config['trap_history_purge'])) {
+        config_update_value('trap_history_purge', 180);
     }
 
     if (!isset($config['history_db_step'])) {
@@ -2665,6 +2756,10 @@ function config_process_config()
 
     if (!isset($config['ldap_admin_pass'])) {
         config_update_value('ldap_admin_pass', '');
+    }
+
+    if (!isset($config['ldap_search_timeout'])) {
+        config_update_value('ldap_search_timeout', 5);
     }
 
     if (!isset($config['ldap_server_secondary'])) {
@@ -2817,7 +2912,7 @@ function config_process_config()
             $temp_ad_adv_perms = $config['ad_adv_perms'];
         }
 
-          config_update_value('ad_adv_perms', $temp_ad_adv_perms);
+        config_update_value('ad_adv_perms', $temp_ad_adv_perms);
     }
 
     if (!isset($config['ldap_adv_perms'])) {
@@ -3065,6 +3160,10 @@ function config_process_config()
         config_update_value('vc_line_thickness', 2);
     }
 
+    if (isset($config['mobile_view_orientation_vc']) === false) {
+        config_update_value('mobile_view_orientation_vc', 0);
+    }
+
     if (!isset($config['agent_size_text_small'])) {
         config_update_value('agent_size_text_small', 18);
     }
@@ -3143,6 +3242,10 @@ function config_process_config()
 
     if (!isset($config['show_group_name'])) {
         config_update_value('show_group_name', 0);
+    }
+
+    if (!isset($config['show_empty_groups'])) {
+        config_update_value('show_empty_groups', 1);
     }
 
     if (!isset($config['custom_graph_width'])) {
@@ -3352,7 +3455,7 @@ function config_process_config()
     }
 
     if (!isset($config['ehorus_port'])) {
-        config_update_value('ehorus_port', 18080);
+        config_update_value('ehorus_port', 443);
     }
 
     if (!isset($config['ehorus_req_timeout'])) {
@@ -3385,6 +3488,10 @@ function config_process_config()
         config_update_value('module_library_password', '');
     }
 
+    if (!isset($config['decimal_separator'])) {
+        config_update_value('decimal_separator', '.');
+    }
+
     // Finally, check if any value was overwritten in a form.
     config_update_config();
 }
@@ -3409,7 +3516,6 @@ function config_check()
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }
-
 }
 
 
@@ -3434,7 +3540,6 @@ function get_um_url()
     }
 
     return $url;
-
 }
 
 
@@ -3450,7 +3555,7 @@ function config_return_in_bytes($val)
     $last = strtolower($val[(strlen($val) - 1)]);
     $val = (int) trim($val);
     switch ($last) {
-        // The 'G' modifier is available since PHP 5.1.0.
+            // The 'G' modifier is available since PHP 5.1.0.
         case 'g':
             $val *= 1024;
         case 'm':

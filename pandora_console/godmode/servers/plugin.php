@@ -337,7 +337,7 @@ if (($create != '') || ($view != '')) {
 
     $data = [];
     $data[0] = __('Name');
-    $data[1] = '<input type="text" name="form_name" size=100 value="'.$form_name.'">';
+    $data[1] = '<input type="text" class="text_input" name="form_name" size=100 value="'.$form_name.'">';
     $table->colspan['plugin_name'][1] = 3;
     $table->data['plugin_name'] = $data;
 
@@ -399,10 +399,7 @@ if (($create != '') || ($view != '')) {
 
     $data = [];
     $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
-    $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
-    if ($locked) {
-        $data[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_advanced_conf lock', 'class' => 'invert_filter']);
-    }
+    $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf text_input" size=100 value="'.$form_execute.'" >';
 
     $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" class="bot">';
     $data[1] .= html_print_image('images/file.png', true, ['class' => 'invert_filter'], false, true);
@@ -411,11 +408,7 @@ if (($create != '') || ($view != '')) {
 
     $data = [];
     $data[0] = __('Plug-in parameters');
-    $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
-    if ($locked) {
-        $data[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_advanced_conf lock', 'class' => 'invert_filter']);
-    }
-
+    $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf text_input" size=100 value="'.$parameters.'" >';
     $table->data['plugin_parameters'] = $data;
 
     $data = [];
@@ -484,16 +477,10 @@ if (($create != '') || ($view != '')) {
         $datam = [];
         $datam[0] = __('Description')."<span class='normal_weight'> ($macro_name)</span>";
         $datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-        $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_macro'", true);
-        if ($locked) {
-            $datam[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_macro lock', 'class' => 'invert_filter']);
-        }
+        $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, false, '', "class='command_macro text_input'", true);
 
         $datam[2] = __('Default value')."<span class='normal_weight'> ($macro_name)</span>";
-        $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_macro'", true);
-        if ($locked) {
-            $datam[3] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_macro lock', 'class' => 'invert_filter']);
-        }
+        $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true);
 
         $table->data['plugin_'.$next_name_number] = $datam;
 
@@ -524,23 +511,14 @@ if (($create != '') || ($view != '')) {
 
         $datam = [];
         $datam[0] = __('Help')."<span class='normal_weight'> ($macro_name)</span><br><br><br>";
-        $tadisabled = $locked === true ? ' disabled' : '';
         $datam[1] = html_print_textarea(
             $macro_help_name,
             6,
             100,
             $macro_help_value,
-            'class="command_macro" class="w97p"'.$tadisabled,
+            'class="command_macro" class="w97p"',
             true
         );
-
-        if ($locked) {
-            $datam[1] .= html_print_image(
-                'images/lock_mc.png',
-                true,
-                ['class' => 'command_macro lock invert_filter']
-            );
-        }
 
         $datam[1] .= '<br><br><br>';
 
@@ -551,15 +529,16 @@ if (($create != '') || ($view != '')) {
 
     // Add/Delete buttons
     $datam = [];
-    $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span class="bolder">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image(
-        'images/add.png',
-        true,
-        ['class' => 'invert_filter']
-    ).'</a>';
-    $datam[0] .= '<div id="next_macro" class="invisible">'.$i.'</div>';
-    $datam[0] .= '<div id="next_row" class="invisible">'.$next_name_number.'</div>';
 
     if (!$locked) {
+        $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span class="bolder">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image(
+            'images/add.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
+        $datam[0] .= '<div id="next_macro" class="invisible">'.$i.'</div>';
+        $datam[0] .= '<div id="next_row" class="invisible">'.$next_name_number.'</div>';
+
         $delete_macro_style = '';
         if ($i <= 2) {
             $delete_macro_style = 'display:none;';
@@ -881,14 +860,16 @@ if (($create != '') || ($view != '')) {
                         'class' => 'invert_filter',
                     ]
                 ).'</a>&nbsp;&nbsp;';
-                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image(
-                    'images/cross.png',
-                    true,
-                    [
-                        'border' => '0',
-                        'class'  => 'invert_filter',
-                    ]
-                ).'</a>';
+                if ((bool) $row['no_delete'] === false) {
+                    echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image(
+                        'images/cross.png',
+                        true,
+                        [
+                            'border' => '0',
+                            'class'  => 'invert_filter',
+                        ]
+                    ).'</a>';
+                }
 
                 echo '</td>';
             }
@@ -1000,8 +981,11 @@ ui_require_javascript_file('pandora_modules');
             });
             update_preview();
         }
-        $('a#add_macro_btn').click(add_macro_click_event);
-        
+
+        if (locked === 0) {
+            $('a#add_macro_btn').click(add_macro_click_event);
+        }
+
         // Delete macro
         var delete_macro_click_event = function (event) {
             delete_macro_form('table-form-plugin_');
@@ -1029,45 +1013,12 @@ ui_require_javascript_file('pandora_modules');
         }
     }
     
-    var command_click_locked_event = function (event) {
-        var $element = $(this);
-        
-        if (!$element.is('input') || ($element.is('input') && ($element.prop('readonly') || $element.prop('disabled')))) {
-            if ($element.prop('id') === 'form_parameters') {
-                var message = '<?php echo __('Some modules or components are using the plugin'); ?>'
-                    + '.\n' + '<?php echo __('Are you sure you want to unlock this item?'); ?>';
-                
-                if (confirm(message)) {
-                    if ($element.is('input')) {
-                        $element
-                            .prop('readonly', false)
-                            .prop('disabled', false)
-                            .siblings('img.command_advanced_conf.lock')
-                                .remove();
-                    }
-                    else {
-                        $element
-                            .siblings('input.command_advanced_conf')
-                                .prop('readonly', false)
-                                .prop('disabled', false)
-                        $element.remove();
-                    }
-                }
-            }
-            else {
-                alert("<?php echo __('The plugin command cannot be updated because some modules or components are using the plugin.'); ?>");
-            }
-        }
-    }
-    
     var macros_click_locked_event = function (event) {
         alert("<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>");
     }
     
     if (locked) {
         $('a#add_macro_btn').click(add_macro_click_locked_event);
-        $('.command_advanced_conf').click(command_click_locked_event);
-        $('.command_macro').click(macros_click_locked_event);
     }
     
     

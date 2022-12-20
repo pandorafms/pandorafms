@@ -501,7 +501,10 @@ class TreeViewWidget extends Widget
         }
 
         $id_cell = $this->cellId;
-        $all_nodes = $this->values['openAllGroups'];
+        $all_nodes = false;
+        if (isset($this->values['openAllGroups']) === true) {
+            $all_nodes = $this->values['openAllGroups'];
+        }
 
         $tab = 'group';
         if (empty($this->values['typeTree']) === false) {
@@ -587,7 +590,7 @@ class TreeViewWidget extends Widget
 
         $output .= \html_print_input_hidden(
             'publi_dash_tree_view_hash',
-            $hash,
+            '',
             true
         );
         $output .= \html_print_input_hidden(
@@ -723,6 +726,22 @@ class TreeViewWidget extends Widget
     public static function getName()
     {
         return 'tree_view';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => (is_metaconsole() === true) ? 500 : 590,
+        ];
+
+        return $size;
     }
 
 

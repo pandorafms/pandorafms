@@ -86,7 +86,7 @@ ui_print_standard_header(
 
 // Currently this function makes loading this page is impossible. Change
 // and create new function.
-$all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
+$all_data = tactical_status_modules_agents($config['id_user'], false, 'AR');
 
 $data = [];
 

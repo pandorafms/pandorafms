@@ -1,19 +1,14 @@
 #!/bin/bash
 
-echo Change the user and group to /var/www/pandora_console.
-chmod -R u+rwX,g+rX,g-w,o-rwx /var/www/pandora_console
-chgrp www-data /var/www/pandora_console -R
-chown www-data /var/www/pandora_console -R
-if [ -d /var/www/html ]; then mv /var/www/pandora_console /var/www/html/; fi
-	
+echo Change the user and group to /var/www/html/pandora_console.
+chmod -R u+rwX,g+rX,g-w,o-rwx /var/www/html/pandora_console
+chgrp www-data /var/www/html/pandora_console -R
+chown www-data /var/www/html/pandora_console -R
+
 if [ -f /etc/init.d/apache2 ]; then
 echo Restart the apache.
 /etc/init.d/apache2 restart
 fi
-
-# Install pandora_websocket_engine service.
-cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
-chmod +x /etc/init.d/pandora_websocket_engine
 
 echo "You can now start the Pandora FMS Websocket service by executing"
 echo "   /etc/init.d/pandora_websocket_engine start"

@@ -35,10 +35,13 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.762 Build 220616";
+my $version = "7.0NG.767 Build 221220";
 
 # Pandora server configuration
 my %conf;
+
+# History DB configuration
+my $h_conf;
 
 # Long operations are divided in XX steps for performance
 my $BIG_OPERATION_STEP = 100;	# 100 is default
@@ -73,8 +76,8 @@ sub log_message ($$;$) {
 ########################################################################
 # Delete old data from the database.
 ########################################################################
-sub pandora_purgedb ($$) {
-	my ($conf, $dbh) = @_;
+sub pandora_purgedb ($$$) {
+	my ($conf, $dbh, $h_conf) = @_;
 	
 	# 1) Obtain last value for date limit
 	# 2) Delete all elements below date limit
@@ -141,12 +144,12 @@ sub pandora_purgedb ($$) {
 		
 		# Delete sessions data
 		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
-	
-		# Delete old inventory data
 	}
 	else {
 		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
 	}
+
+	pandora_delete_old_tplanned_downtime(\%conf, $dbh, $h_conf);
 
 	# String data deletion
 	if (!defined($conf->{'_string_purge'})){
@@ -168,33 +171,13 @@ sub pandora_purgedb ($$) {
 	}
 	if ($conf->{'_event_purge'} > 0) {
 		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
-		my $events_table = 'tevento';
 		
-		# If is installed enterprise version and enabled metaconsole, 
-		# check the events history copy and set the name of the metaconsole events table
-		if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
-			defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
-		
-			# If events history is enabled, save the new events (not validated or in process) to history database
-			if(defined($conf->{'_metaconsole_events_history'}) && $conf->{'_metaconsole_events_history'} eq '1') {
-				log_message ('PURGE', "Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days).");
-
-				my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
-				foreach my $event (@events) {
-					db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
-					db_do($dbh, "DELETE FROM tmetaconsole_event WHERE id_evento =".$event->{'id_evento'});
-				}
-			}
-			
-			$events_table = 'tmetaconsole_event';
-		}
-		
-		log_message ('PURGE', "Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days).", '');
+		log_message ('PURGE', "Deleting old event data from tevento (More than " . $conf->{'_event_purge'} . " days).", '');
 
 		# Delete with buffer to avoid problems with performance
-		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
+		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tevento WHERE utimestamp < ?", $event_limit);
 		while($events_to_delete > 0) {
-			db_delete_limit($dbh, $events_table, "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
+			db_delete_limit($dbh, 'tevento', "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
 			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 			
 			# Mark the progress
@@ -204,23 +187,6 @@ sub pandora_purgedb ($$) {
 			usleep (10000);
 		}
 		log_message ('', "\n");
-
-		if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
-			defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
-			log_message ('PURGE', "Deleting validated events from tmetaconsole_event_history.", '');
-			$events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tmetaconsole_event_history WHERE estado = 1");
-			while($events_to_delete > 0) {
-				db_delete_limit($dbh, 'tmetaconsole_event_history',  'estado = 1', $BIG_OPERATION_STEP);
-				$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
-			
-				# Mark the progress
-				log_message ('', ".");
-			
-				# Do not overload the MySQL server
-				usleep (10000);
-			}
-			log_message ('', "\n");
-		}
 	}
 	else {
 		log_message ('PURGE', 'event_purge is set to 0. Old events will not be deleted.');
@@ -378,7 +344,7 @@ sub pandora_purgedb ($$) {
 			log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
 		}
 		else {
-			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -r "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
 		}
 	}
 	else {
@@ -665,6 +631,7 @@ sub pandora_load_config_pdb ($) {
 
 	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
 	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
+	$conf->{'_trap_history_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
 	$conf->{'_audit_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
 	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'string_purge'");
 	$conf->{'_gis_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'gis_purge'");
@@ -675,22 +642,27 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
 	$conf->{'_history_db_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_enabled'");
 	$conf->{'_history_event_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_enabled'");
+	$conf->{'_history_trap_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_trap_enabled'");
 	$conf->{'_history_db_host'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_host'");
 	$conf->{'_history_db_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_port'");
 	$conf->{'_history_db_name'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_name'");
 	$conf->{'_history_db_user'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_user'");
 	$conf->{'_history_db_pass'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_pass'");
 	$conf->{'_history_db_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_days'");
+	$conf->{'_history_db_adv'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_adv'");
+	$conf->{'_history_db_string_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_string_days'");
 	$conf->{'_history_event_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_event_days'");
+	$conf->{'_history_trap_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_trap_days'");
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
+	$conf->{'_days_delete_not_initialized'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_not_initialized'");
+	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
-	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
  	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
@@ -873,20 +845,65 @@ sub pandora_checkdb_consistency {
 			usleep (100000);
 		}
 	}
+
+	# Perform a clean of not initialized modules.
+	if (defined($conf{'_days_delete_not_initialized'}) && $conf{'_days_delete_not_initialized'} > 0 && $conf->{'_delete_notinit'} eq "1") {
+	    log_message ('CHECKDB',
+		    "Deleting not initialized modules (More than " . $conf{'_days_delete_not_initialized'} . " days).");
+
+		my @modules = get_db_rows($dbh,
+			'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente
+			FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+				AND (estado = 4 OR estado = 5)
+				AND utimestamp < UNIX_TIMESTAMP() - ?',
+			86400 * $conf{'_days_delete_not_initialized'});
+
+		foreach my $module (@modules) {
+			my $id_agente = $module->{'id_agente'};
+			my $id_agente_modulo = $module->{'id_agente_modulo'};
+
+			# Skip policy modules
+			my $is_policy_module = enterprise_hook('is_policy_module',
+				[$dbh, $id_agente_modulo]);
+			next if (defined($is_policy_module) && $is_policy_module);
+
+			# Mark the agent for module and alert counters update
+			db_do ($dbh,
+				'UPDATE tagente
+				SET update_module_count = 1, update_alert_count = 1
+				WHERE id_agente = ?', $id_agente);
+
+			# Delete the module
+			db_do ($dbh,
+				'DELETE FROM tagente_modulo
+				WHERE disabled = 0
+					AND id_agente_modulo = ?', $id_agente_modulo);
+
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
+
+			# Delete any alerts associated to the module
+			db_do ($dbh, 'DELETE FROM talert_template_modules
+				WHERE id_agent_module = ?
+					AND NOT EXISTS (SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ?)',
+				$id_agente_modulo, $id_agente_modulo);
+
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
+		}
+	}
+
+
 	log_message ('CHECKDB',
 		"Checking database consistency (Missing status).");
 	
-	my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
+	my @modules = get_db_rows ($dbh, 'SELECT m.id_agente, m.id_agente_modulo, e.id_agente_estado FROM tagente_modulo AS m LEFT JOIN tagente_estado AS e ON m.id_agente_modulo = e.id_agente_modulo WHERE e.id_agente_estado IS NULL');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 		my $id_agente = $module->{'id_agente'};
-		
-		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh,
-			'SELECT COUNT(*)
-			FROM tagente_estado
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		next if (defined ($count) && $count > 0);
 		
 		db_do ($dbh,
 			'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
@@ -902,16 +919,9 @@ sub pandora_checkdb_consistency {
 	#    tagente_modulo, if there is any, delete it
 	#-------------------------------------------------------------------
 	
-	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_estado');
+	@modules = get_db_rows ($dbh, 'SELECT e.id_agente_modulo, m.id_agente FROM tagente_estado AS e LEFT JOIN tagente_modulo AS m ON e.id_agente_modulo = m.id_agente_modulo WHERE m.id_agente IS NULL');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
-		
-		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh,
-			'SELECT COUNT(*)
-			FROM tagente_modulo
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		next if (defined ($count) && $count > 0);
 		
 		db_do ($dbh, 'DELETE FROM tagente_estado
 			WHERE id_agente_modulo = ?', $id_agente_modulo);
@@ -1006,6 +1016,33 @@ sub pandora_delete_old_export_data {
 }
 
 ##############################################################################
+# Delete old data from tplanned_downtime.
+##############################################################################
+sub pandora_delete_old_tplanned_downtime {
+	my ($conf, $dbh, $h_conf) = @_;
+
+	# Use the configuration from the history DB if available, which should be
+	# less restrictive.
+	my $days_purge = $conf->{'_days_purge'};
+	if (defined($h_conf) &&
+	    defined($h_conf->{'_days_purge'}) &&
+		$h_conf->{'_days_purge'} > 0) {
+		$days_purge = $h_conf->{'_days_purge'};
+	}
+
+	# _days_purge was not configured.
+	return unless $days_purge > 0;
+
+	my $ulimit_timestamp = time() - (86400 * $days_purge);
+
+	log_message ('PURGE', "Deleting data older than $days_purge days from tplanned_downtime.");
+
+	db_do($dbh, "DELETE FROM tplanned_downtime
+	             WHERE type_execution = 'once'
+	             AND date_to < ?", $ulimit_timestamp);
+}
+
+##############################################################################
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
@@ -1085,6 +1122,26 @@ sub pandoradb_history ($$) {
 		log_message ('', "\n");
 	}
 
+	# Delete old traps.
+	if ($conf->{'_trap_history_purge'} > 0) {
+		log_message ('PURGE', "Deleting traps older than " . $conf->{'_trap_history_purge'} . " days from ttrap (history).", '');
+
+		my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_history_purge'}));
+
+		my $traps_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM ttrap WHERE timestamp < ?", $trap_limit);
+		while($traps_to_delete > 0) {
+			db_delete_limit($dbh, 'ttrap', "timestamp < ?", $BIG_OPERATION_STEP, $trap_limit);
+			$traps_to_delete = $traps_to_delete - $BIG_OPERATION_STEP;
+
+			# Mark the progress.
+			log_message ('', ".");
+				
+			# Do not overload the MySQL server.
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+
 	# Update tconfig with last time of database maintance time (now)
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
@@ -1095,13 +1152,13 @@ sub pandoradb_history ($$) {
 ###############################################################################
 # Main
 ###############################################################################
-sub pandoradb_main ($$$;$) {
-	my ($conf, $dbh, $history_dbh) = @_;
+sub pandoradb_main {
+	my ($conf, $dbh, $h_conf, $history_dbh) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
 	# Purge
-	pandora_purgedb ($conf, $dbh);
+	pandora_purgedb ($conf, $dbh, $h_conf);
 
 	# Consistency check
 	pandora_checkdb_consistency ($conf, $dbh);
@@ -1111,9 +1168,12 @@ sub pandoradb_main ($$$;$) {
 
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
-		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
 		if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+		}
+		if (defined($conf{'_history_trap_enabled'}) && $conf->{'_history_trap_enabled'} ne "" && $conf->{'_history_trap_enabled'} == 1) {
+			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_trap', [$dbh, $history_dbh, $conf->{'_history_trap_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}
 	}
 
@@ -1204,6 +1264,7 @@ if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1'
 	eval {
 		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
 		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));
+	 	$h_conf = pandoradb_load_history_conf($history_dbh);
 	};
 	if ($@) {
 		if (is_offline(\%conf)) {
@@ -1221,29 +1282,42 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Set the lock name for pandora_db.
-my $lock_name = $conf{'dbname'};
-
-# Release the database lock in forced mode.
-if ($conf{'_force'} == 1) {
-	log_message ('', " [*] Releasing database lock.\n\n");
-	db_release_pandora_lock($dbh, $lock_name, $LOCK_TIMEOUT);
+# Get a lock on the main database.
+my $db_lock = db_get_lock ($dbh, $conf{'dbname'} . '_pandora_db', $LOCK_TIMEOUT, 1);
+if ($db_lock == 0) { 
+	log_message ('', " [*] Another instance of DB Tool seems to be running on the main database.\n\n");
+	exit 1;
 }
 
-# Get a lock on dbname.
-my $lock = db_get_pandora_lock ($dbh, $lock_name, $LOCK_TIMEOUT);
-if ($lock == 0) { 
-	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
+# Get a lock on the history database.
+if (defined($history_dbh)) {
+	my $history_lock = db_get_lock ($history_dbh, $conf{'_history_db_name'} . '_pandora_db', $LOCK_TIMEOUT, 1);
+	if ($history_lock == 0) { 
+		log_message ('', " [*] Another instance of DB Tool seems to be running on the history database.\n\n");
+		exit 1;
+	}
+}
+
+# Get a lock merging.
+my $lock_merge = db_get_lock ($dbh, 'merge-working', $LOCK_TIMEOUT, 1);
+if ($lock_merge == 0) { 
+	log_message ('', " [*] Merge is running.\n\n");
+	exit 1;
+}
+
+# Get a lock on merging events.
+my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
+if ($lock_merge_events == 0) { 
+	log_message ('', " [*] Merge events is running.\n\n");
 	exit 1;
 }
 
 # Main
-pandoradb_main(\%conf, $dbh, $history_dbh);
+pandoradb_main(\%conf, $dbh, $h_conf, $history_dbh);
 
 # history_dbh is unset in pandoradb_main if not in use.
 if (defined($history_dbh)) {
 	log_message('', " [>] DB Tool running on historical database.\n");
-	my $h_conf = pandoradb_load_history_conf($history_dbh);
 
 	# Keep base settings.
 	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};
@@ -1273,9 +1347,6 @@ if (scalar(@types) != 0) {
 	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 }
-
-# Release the lock
-db_release_pandora_lock ($dbh, $lock_name);
 
 # Cleanup and exit
 db_disconnect ($history_dbh) if defined ($history_dbh);

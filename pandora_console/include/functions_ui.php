@@ -1075,7 +1075,7 @@ function ui_format_alert_row(
         }
     }
 
-    if (is_metaconsole() === true) {
+    if (is_metaconsole() === true && (int) $server_id !== 0) {
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -1178,8 +1178,14 @@ function ui_format_alert_row(
             $id_agent = modules_get_agentmodule_agent($alert['id_agent_module']);
         }
 
-        if (is_metaconsole() === true || !can_user_access_node()) {
-            $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', '');
+        if (is_metaconsole() === true) {
+            // Do not show link if user cannot access node
+            if ((bool) can_user_access_node() === true) {
+                $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'];
+                $data[$index['agent_name']] .= '<a href="'.$url.'">'.'<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b></a>';
+            } else {
+                $data[$index['agent_name']] .= '<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b>';
+            }
         } else {
             if ($agent_style !== false) {
                 $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
@@ -3173,6 +3179,7 @@ function ui_progress_extend(
  *        'class' => th class.
  *        'style' => th style.
  *        'text' => 'column1'.
+ *        'title'  => 'column title'.
  *      ]
  *   ],
  *   'columns' => [
@@ -3208,12 +3215,15 @@ function ui_progress_extend(
  *             'option2'
  *             ...
  *          ]
+ *       'no_toggle' => Pint form withouth UI toggle.
  *      ]
  *   ],
  *   'extra_html' => HTML content to be placed after 'filter' section.
  *   'drawCallback' => function to be called after draw. Sample in:
  *            https://datatables.net/examples/advanced_init/row_grouping.html
  * ]
+ *   'zeroRecords' => Message when zero records obtained from filter.(Leave blank for default).
+ *   'emptyTable' => Message when table data empty.(Leave blank for default).
  * End.
  *
  * @return string HTML code with datatable.
@@ -3254,7 +3264,7 @@ function ui_print_datatable(array $parameters)
         $parameters['paging'] = true;
     }
 
-    $no_sortable_columns = [];
+    $no_sortable_columns = json_encode([]);
     if (isset($parameters['no_sortable_columns'])) {
         $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
     }
@@ -3326,6 +3336,11 @@ function ui_print_datatable(array $parameters)
         $parameters['datacolumns'] = $parameters['columns'];
     }
 
+    if (isset($parameters['csv']) === false) {
+        $parameters['csv'] = 1;
+    }
+
+    $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
         if (isset($parameters['form']['id'])) {
@@ -3377,7 +3392,7 @@ function ui_print_datatable(array $parameters)
             foreach ($parameters['form']['extra_buttons'] as $button) {
                 $filter .= '<button id="'.$button['id'].'" ';
                 $filter .= ' class="'.$button['class'].'" ';
-                $filter .= ' style="'.$button['style'].'" ';
+                $filter .= ' style="'.($button['style'] ?? '').'" ';
                 $filter .= ' onclick="'.$button['onclick'].'" >';
                 $filter .= $button['text'];
                 $filter .= '</button>';
@@ -3387,16 +3402,18 @@ function ui_print_datatable(array $parameters)
         $filter .= '</li>';
 
         $filter .= '</ul><div id="both"></div></form>';
-        $filter = ui_toggle(
-            $filter,
-            __('Filter'),
-            '',
-            '',
-            true,
-            false,
-            'white_box white_box_opened',
-            'no-border'
-        );
+        if (isset($parameters['form']['no_toggle']) === false) {
+            $filter = ui_toggle(
+                $filter,
+                __('Filter'),
+                '',
+                '',
+                true,
+                false,
+                'white_box white_box_opened',
+                'no-border'
+            );
+        }
     } else if (isset($parameters['form_html'])) {
         $filter = ui_toggle(
             $parameters['form_html'],
@@ -3411,7 +3428,20 @@ function ui_print_datatable(array $parameters)
     }
 
     // Languages.
-    $processing = __('Processing');
+    $processing = '<div class=\'processing-datatables-inside\'>';
+    $processing .= '<i>'.__('Processing').'</i> ';
+    $processing .= str_replace(
+        '"',
+        "'",
+        html_print_image(
+            'images/spinner.gif',
+            true
+        )
+    );
+    $processing .= '</div>';
+
+    $zeroRecords = isset($parameters['zeroRecords']) === true ? $parameters['zeroRecords'] : __('No matching records found');
+    $emptyTable = isset($parameters['emptyTable']) === true ? $parameters['emptyTable'] : __('No data available in table');
 
     // Extra html.
     $extra = '';
@@ -3436,6 +3466,10 @@ function ui_print_datatable(array $parameters)
     foreach ($names as $column) {
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
+            if (isset($column['title']) === true) {
+                $table .= 'title="'.__($column['title']).'" ';
+            }
+
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
             $table .= $column['extra'];
             $table .= '</th>';
@@ -3457,7 +3491,8 @@ function ui_print_datatable(array $parameters)
     $(document).ready(function(){
         $.fn.dataTable.ext.errMode = "none";
         $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
-        dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
+
+        var settings_datatable = {
             drawCallback: function(settings) {';
     if (isset($parameters['drawCallback'])) {
         $js .= $parameters['drawCallback'];
@@ -3494,15 +3529,22 @@ function ui_print_datatable(array $parameters)
             responsive: true,
             dom: "plfrtiBp",
             language: {
-                processing:"'.$processing.'"
+                processing:"'.$processing.'",
+                zeroRecords:"'.$zeroRecords.'",
+                emptyYable:"'.$emptyTable.'",
             },
-            buttons: [
+            buttons: '.$parameters['csv'].'== 1 ? [
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
                     titleAttr: "'.__('Export current page to CSV').'",
                     title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
                     fieldSeparator: "'.$config['csv_divider'].'",
+                    action: function ( e, dt, node, config ) {
+                        blockResubmit(node);
+                        // Call the default csvHtml5 action method to create the CSV file
+                        $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
+                    },
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3510,16 +3552,20 @@ function ui_print_datatable(array $parameters)
                             page : "All",
                             search : "applied"
                         }'.$export_columns.'
-                    }
+                    },
                 }
-            ],
+            ] : [],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        $("#'.$form_id.'_loading").remove();
+                    }
+
                     if (json.error) {
-                        console.log(json.error);
+                        console.error(json.error);
                         $("#error-'.$table_id.'").html(json.error);
                         $("#error-'.$table_id.'").dialog({
                             title: "Filter failed",
@@ -3535,6 +3581,19 @@ function ui_print_datatable(array $parameters)
                             }
                         }).parent().addClass("ui-state-error");
                     } else {';
+
+    if (isset($parameters['ajax_return_operation']) === true
+        && empty($parameters['ajax_return_operation']) === false
+        && isset($parameters['ajax_return_operation_function']) === true
+        && empty($parameters['ajax_return_operation_function']) === false
+    ) {
+        $js .= '
+            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
+                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
+            }
+        ';
+    }
+
     if (isset($parameters['ajax_postprocess'])) {
         $js .= '
                     if (json.data) {
@@ -3551,6 +3610,18 @@ function ui_print_datatable(array $parameters)
                     }
                 },
                 data: function (data) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        var loading = \''.html_print_image(
+                        'images/spinner.gif',
+                        true,
+                        [
+                            'id'    => $form_id.'_loading',
+                            'class' => 'loading-search-datatables-button',
+                        ]
+                    ).'\';
+                        $("#'.$form_id.'_search_bt").parent().append(loading);
+                    }
+
                     inputs = $("#'.$form_id.' :input");
 
                     values = {};
@@ -3590,7 +3661,9 @@ function ui_print_datatable(array $parameters)
             $js .= '
             ],
             order: [[ '.$order.' ]]
-        });
+        };
+
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
@@ -3601,6 +3674,16 @@ function ui_print_datatable(array $parameters)
     ) {
         $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
         $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    if (isset($parameters['csv']) === true) {
+        $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
+            if ( indicator ) {
+                console.log('a');
+            }
+            else {
+                console.log('b');
+            }";
     }
 
     $js .= '});';
@@ -3933,11 +4016,12 @@ function ui_toggle(
     );
 
     // Options.
+    $style = 'overflow:hidden;';
     if ($hidden_default) {
-        $style = 'display:none';
+        $style .= 'height:0;position:absolute;';
         $original = $img_b;
     } else {
-        $style = '';
+        $style .= 'height:auto;position:relative;';
         $original = $img_a;
     }
 
@@ -4036,28 +4120,35 @@ function ui_toggle(
     // JQuery Toggle.
     $output .= '<script type="text/javascript">'."\n";
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
+    $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
     $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-    $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
-    $output .= "			else {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
-    $output .= "			}\n";
+    $output .= '            if (is_metaconsole == 0) {';
+    $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+    $output .= "			    }\n";
+    $output .= "			    else {\n";
+    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
+    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+    $output .= "			    }\n";
+    $output .= "		    }\n";
     $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
+    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
     $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";
@@ -5882,7 +5973,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'padding-right: 20px; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'padding-right: 20px; padding: 2px 5px; margin-bottom: 4px; border: none; border-bottom: 1px solid #ccc; border-radius: 0; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';
@@ -6442,7 +6533,7 @@ function ui_print_breadcrums($tab_name)
 /**
  * Show last comment
  *
- * @param array $comments array with comments
+ * @param string $comments String with comments.
  *
  * @return string  HTML string with the last comment of the events.
  */
@@ -6466,31 +6557,46 @@ function ui_print_comments($comments)
     foreach ($comments_array as $comm) {
         // Show the comments more recent first.
         if (is_array($comm)) {
-            $last_comment[] = array_reverse($comm);
+            $order_utimestamp = array_reduce(
+                $comm,
+                function ($carry, $item) {
+                    $carry[$item['utimestamp']] = $item;
+                    return $carry;
+                }
+            );
+
+            $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+            $last_comment = $order_utimestamp[$key_max_utimestamp];
         }
+    }
+
+    if (empty($last_comment) === true) {
+        return '';
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
     // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
     // Else show comments hours ago
-    if ($last_comment[0][0]['action'] != 'Added comment') {
-        $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
+    if ($last_comment['action'] != 'Added comment') {
+        $last_comment['comment'] = $last_comment['action'];
     }
 
-    $short_comment = substr($last_comment[0][0]['comment'], 0, 20);
+    $short_comment = substr($last_comment['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+        $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     } else {
-        $rest_time = (time() - $last_comment[0][0]['utimestamp']);
+        $rest_time = (time() - $last_comment['utimestamp']);
         $time_last = (($rest_time / 60) / 60);
-        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+
+        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], $config['thousand_separator']).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
 
         if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], $config['thousand_separator']).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     }
 

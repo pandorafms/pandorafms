@@ -1,18 +1,29 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Ajax script for List view for Alerts.
+ *
+ * @category   Alerts
+ * @package    Community
+ * @subpackage Software agents repository
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ==========================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnológicas S.L
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 require_once 'include/functions_agents.php';
@@ -26,6 +37,8 @@ $get_actions_module = (bool) get_parameter('get_actions_module');
 $show_update_action_menu = (bool) get_parameter('show_update_action_menu');
 $get_agent_alerts_agent_view = (bool) get_parameter('get_agent_alerts_agent_view');
 $resize_event_week = (bool) get_parameter('resize_event_week');
+$get_agent_alerts_datatable  = (bool) get_parameter('get_agent_alerts_datatable', 0);
+$alert_validate = (bool) get_parameter('alert_validate', false);
 
 if ($get_agent_alerts_simple) {
     $id_agent = (int) get_parameter('id_agent');
@@ -60,7 +73,7 @@ if ($get_agent_alerts_simple) {
 
 
     $alerts = agents_get_alerts_simple($id_agent);
-    if (empty($alerts)) {
+    if (empty($alerts) === true) {
         echo json_encode(false);
         return;
     }
@@ -424,7 +437,7 @@ if ($show_update_action_menu) {
     );
 
     $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
-    $data .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
+    $data .= '<table class="w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
             1,
@@ -442,7 +455,7 @@ if ($show_update_action_menu) {
         );
     if (! $id_agente) {
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2 bolder_6px">';
+            $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
             $data .= __('Agent').'&nbsp;'.ui_print_help_icon(
                 'alert_scalate',
                 true,
@@ -463,7 +476,7 @@ if ($show_update_action_menu) {
     }
 
         $data .= '<tr class="datos">';
-            $data .= '<td class="datos bolder_6px">';
+            $data .= '<td class="datos bolder pdd_6px font_10pt">';
             $data .= __('Module');
             $data .= '</td>';
             $data .= '<td class="datos">';
@@ -478,7 +491,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2 bolder_6px">';
+            $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
                 $data .= __('Action');
             $data .= '</td>';
             $data .= '<td class="datos2">';
@@ -494,12 +507,12 @@ if ($show_update_action_menu) {
                     true,
                     '',
                     false,
-                    'width:150px'
+                    'width:95%'
                 );
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos">';
-            $data .= '<td class="datos bolder_6px">';
+            $data .= '<td class="datos bolder pdd_6px font_10pt">';
                 $data .= __('Number of alerts match from');
             $data .= '</td>';
             $data .= '<td class="datos">';
@@ -523,7 +536,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2 bolder_6px">';
+            $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
                 $data .= __('Threshold');
             $data .= '</td>';
             $data .= '<td class="datos2">';
@@ -607,6 +620,353 @@ if ($resize_event_week === true) {
 
     echo html_print_table($table, true);
     return;
+}
+
+if ($alert_validate === true) {
+    include_once 'operation/agentes/alerts_status.functions.php';
+    $all_groups = get_parameter('all_groups');
+    $alert_ids = get_parameter('alert_ids', '');
+
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
+        $result = validateAlert($alert_ids);
+    } else {
+        $result = ui_print_error_message(__('Insufficient permissions to validate alerts'), '', true);
+    }
+
+    echo json_encode($result);
+
+    return;
+}
+
+if ($get_agent_alerts_datatable === true) {
+    // Datatables offset, limit and order.
+    $filter_alert = get_parameter('filter', []);
+    unset($filter_alert[0]);
+    $start = (int) get_parameter('start', 0);
+    $length = (int) get_parameter('length', $config['block_size']);
+    $order = get_datatable_order(true);
+    $url = get_parameter('url', '#');
+
+    if (empty($filter_alert['free_search']) === false) {
+        $free_search_alert = $filter_alert['free_search'];
+    } else {
+        $free_search_alert = $filter_alert['free_search_alert'];
+    }
+
+    $idGroup = $filter_alert['ag_group'];
+    $tag_filter = $filter_alert['tag_filter'];
+    $action_filter = $filter_alert['action'];
+
+    try {
+        ob_start();
+        include_once $config['homedir'].'/include/functions_agents.php';
+        include_once $config['homedir'].'/operation/agentes/alerts_status.functions.php';
+        include_once $config['homedir'].'/include/functions_users.php';
+
+        $agent_a = check_acl($config['id_user'], 0, 'AR');
+        $agent_w = check_acl($config['id_user'], 0, 'AW');
+        $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
+
+        $all_groups = get_parameter('all_groups');
+        $idAgent = (int) get_parameter('id_agent');
+
+        $sortField = $order['field'];
+        $sort = $order['direction'];
+        $selected = true;
+        $selectModuleUp = false;
+        $selectModuleDown = false;
+        $selectTemplateUp = false;
+        $selectTemplateDown = false;
+        $selectLastFiredUp = false;
+        $selectLastFiredDown = false;
+
+        switch ($sortField) {
+            case 'agent_module_name':
+                switch ($sort) {
+                    case 'asc':
+                        $selectModuleasc = $selected;
+                        $order = [
+                            'field' => 'agent_module_name',
+                            'order' => 'ASC',
+                        ];
+                    break;
+
+                    case 'desc':
+                        $selectModuledesc = $selected;
+                        $order = [
+                            'field' => 'agent_module_name',
+                            'order' => 'DESC',
+                        ];
+                    break;
+                }
+            break;
+
+            case 'template_name':
+                switch ($sort) {
+                    case 'asc':
+                        $selectTemplateasc = $selected;
+                        $order = [
+                            'field' => 'template_name',
+                            'order' => 'ASC',
+                        ];
+                    break;
+
+                    case 'desc':
+                        $selectTemplatedesc = $selected;
+                        $order = [
+                            'field' => 'template_name',
+                            'order' => 'DESC',
+                        ];
+                    break;
+                }
+            break;
+
+            case 'lastFired':
+                switch ($sort) {
+                    case 'asc':
+                        $selectLastFiredasc = $selected;
+                        $order = [
+                            'field' => 'last_fired',
+                            'order' => 'ASC',
+                        ];
+                    break;
+
+                    case 'desc':
+                        $selectLastFireddesc = $selected;
+                        $order = [
+                            'field' => 'last_fired',
+                            'order' => 'DESC',
+                        ];
+                    break;
+                }
+            break;
+
+            case 'agent_name':
+                switch ($sort) {
+                    case 'asc':
+                        $selectLastFiredasc = $selected;
+                        $order = [
+                            'field' => 'agent_name',
+                            'order' => 'ASC',
+                        ];
+                    break;
+
+                    case 'desc':
+                        $selectLastFireddesc = $selected;
+                        $order = [
+                            'field' => 'agent_name',
+                            'order' => 'DESC',
+                        ];
+                    break;
+                }
+            break;
+
+            case 'status':
+                switch ($sort) {
+                    case 'asc':
+                        $selectLastFiredasc = $selected;
+                        $order = [
+                            'field' => 'times_fired',
+                            'order' => 'ASC',
+                        ];
+                    break;
+
+                    case 'desc':
+                        $selectLastFireddesc = $selected;
+                        $order = [
+                            'field' => 'times_fired',
+                            'order' => 'DESC',
+                        ];
+                    break;
+                }
+            break;
+
+            default:
+                $selectDisabledasc = '';
+                $selectDisableddesc = '';
+                $selectModuleasc = $selected;
+                $selectModuledesc = false;
+                $selectTemplateasc = false;
+                $selectTemplatedesc = false;
+                $selectLastFiredasc = false;
+                $selectLastFireddesc = false;
+                $order = [
+                    'field' => 'agent_module_name',
+                    'order' => 'ASC',
+                ];
+            break;
+        }
+
+        if ($free_search_alert != '') {
+            $whereAlertSimple = 'AND ('.'id_alert_template IN (
+                SELECT id
+                FROM talert_templates
+                WHERE name LIKE "%'.$free_search_alert.'%") OR '.'id_alert_template IN (
+                SELECT id
+                FROM talert_templates
+                WHERE id_alert_action IN (
+                    SELECT id
+                    FROM talert_actions
+                    WHERE name LIKE "%'.$free_search_alert.'%")) OR '.'talert_template_modules.id IN (
+                SELECT id_alert_template_module
+                FROM talert_template_module_actions
+                WHERE id_alert_action IN (
+                    SELECT id
+                    FROM talert_actions
+                    WHERE name LIKE "%'.$free_search_alert.'%")) OR '.'id_agent_module IN (
+                SELECT id_agente_modulo
+                FROM tagente_modulo
+                WHERE nombre LIKE "%'.$free_search_alert.'%") OR '.'id_agent_module IN (
+                SELECT id_agente_modulo
+                FROM tagente_modulo
+                WHERE alias LIKE "%'.$free_search_alert.'%")'.')';
+        } else {
+            $whereAlertSimple = '';
+        }
+
+        // Add checks for user ACL.
+        $groups = users_get_groups($config['id_user'], $access);
+        $id_groups = array_keys($groups);
+
+        if (empty($id_groups)) {
+            $whereAlertSimple .= ' AND (1 = 0) ';
+        } else {
+            $whereAlertSimple .= sprintf(
+                ' AND id_agent_module IN (
+            SELECT tam.id_agente_modulo
+            FROM tagente_modulo tam
+            WHERE tam.id_agente IN (SELECT ta.id_agente
+                FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
+                    ta.id_agente = tasg.id_agent
+                    WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+                implode(',', $id_groups),
+                implode(',', $id_groups)
+            );
+        }
+
+        $alerts = [];
+        if ($agent_view_page === true) {
+            $options_simple = ['order' => $order];
+        } else {
+            $options_simple = [
+                'order'  => $order,
+                'limit'  => $length,
+                'offset' => $start,
+            ];
+        }
+
+        if ($idAgent !== 0) {
+            $filter_alert['disabled'] = 'all_enabled';
+        }
+
+        if (is_metaconsole() === true) {
+            include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
+            if ($idAgent != 0) {
+                $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+
+                $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
+            } else {
+                $id_groups = array_keys(
+                    users_get_groups($config['id_user'], 'AR', false)
+                );
+
+                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+
+                $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
+            }
+        } else {
+            if ($idAgent != 0) {
+                $alerts['alerts_simple'] = agents_get_alerts_simple($idAgent, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
+
+                $countAlertsSimple = agents_get_alerts_simple($idAgent, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
+            } else {
+                $id_groups = array_keys(
+                    users_get_groups($config['id_user'], $access, false)
+                );
+
+                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+
+                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
+            }
+        }
+
+        // Order and pagination metacosole.
+        if (is_metaconsole() === true) {
+            // Status order.
+            if ($sortField === 'status') {
+                foreach ($alerts['alerts_simple'] as $i => $alert) {
+                    if ($alert['times_fired'] > 0) {
+                        $alerts['alerts_simple'][$i]['status'] = '3';
+                    } else if ($alert['disabled'] > 0) {
+                        $alerts['alerts_simple'][$i]['status']  = '1';
+                    } else {
+                        $alerts['alerts_simple'][$i]['status']  = '2';
+                    }
+                }
+            }
+
+            usort($alerts['alerts_simple'], arrayOutputSorting($sort, $sortField));
+            $alerts['alerts_simple'] = array_slice($alerts['alerts_simple'], $start, $length);
+        }
+
+        $data = [];
+        if ($alerts['alerts_simple']) {
+            foreach ($alerts['alerts_simple'] as $alert) {
+                $data[] = ui_format_alert_row($alert, true, $url, 'font-size: 7pt;');
+            }
+
+
+            $data = array_reduce(
+                $data,
+                function ($carry, $row) {
+                    // Transforms array of arrays $data into an array
+                    // of objects, making a post-process of certain fields.
+                    $tmp = new stdClass();
+
+                    // Standby.
+                    $tmp->policy = $row[0];
+                    $tmp->standby = $row[1];
+                    $tmp->force = $row[2];
+                    $tmp->agent_name = $row[3];
+                    $tmp->agent_module_name = $row[4];
+                    $tmp->template_name = $row[5];
+                    $tmp->action = $row[6];
+                    $tmp->last_fired = $row[7];
+                    $tmp->status = $row[8];
+                    $tmp->validate = $row[9];
+
+                    $carry[] = $tmp;
+                    return $carry;
+                }
+            );
+        }
+
+
+         // Datatables format: RecordsTotal && recordsfiltered.
+        echo json_encode(
+            [
+                'data'            => $data,
+                'recordsTotal'    => $countAlertsSimple,
+                'recordsFiltered' => $countAlertsSimple,
+            ]
+        );
+         // Capture output.
+         $response = ob_get_clean();
+    } catch (\Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
+
+    // If not valid, show error with issue.
+    json_decode($response);
+    if (json_last_error() == JSON_ERROR_NONE) {
+        // If valid dump.
+        echo $response;
+    } else {
+        echo json_encode(
+            ['error' => $response]
+        );
+    }
 }
 
 return;

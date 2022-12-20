@@ -74,9 +74,7 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     return;
 }
 
-$alive_animation = agents_get_status_animation(
-    agents_get_interval_status($agent, false)
-);
+$alive_animation = agents_get_starmap($id_agente, 200, 50);
 
 /*
  * START: TABLE AGENT BUILD.
@@ -170,10 +168,10 @@ $status_img = agents_detail_view_status_img(
 $table_agent_header .= '<div class="icono_right">'.$status_img.'</div>';
 
 // Fixed width non interactive charts.
-$status_chart_width = 180;
-$graph_width = 180;
+$status_chart_width = 150;
+$graph_width = 150;
 
-$table_agent_graph = '<div id="status_pie" style="width: '.$status_chart_width.'px;">';
+$table_agent_graph = '<div id="status_pie" style="width: '.$graph_width.'px;">';
 $table_agent_graph .= graph_agent_status(
     $id_agente,
     $graph_width,
@@ -265,6 +263,27 @@ if ($has_remote_conf) {
         ['class' => 'invert_filter']
     );
     $remote_cfg .= __('Remote configuration enabled').'</p>';
+
+    $satellite_server = (int) db_get_value_filter(
+        'satellite_server',
+        'tagente',
+        ['id_agente' => $id_agente]
+    );
+
+    if (empty($satellite_server) === false) {
+        $satellite_name = db_get_value_filter(
+            'name',
+            'tserver',
+            ['id_server' => $satellite_server]
+        );
+
+        $remote_cfg .= '<p>'.html_print_image(
+            'images/satellite.png',
+            true,
+            ['class' => 'invert_filter']
+        );
+        $remote_cfg .= $satellite_name.'</p>';
+    }
 } else {
     $remote_cfg = '';
 }
@@ -527,6 +546,19 @@ foreach ($fields as $field) {
 
         if ($custom_value[0]['is_password_type']) {
                 $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+        } else if ($field['is_link_enabled'] === '1') {
+            list($link_text, $link_url) = json_decode($custom_value[0]['description'], true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $link_text = '';
+                $link_url = '';
+            }
+
+            if ($link_text === '') {
+                $link_text = $link_url;
+            }
+
+            $data[1] = '<a href="'.$link_url.'">'.$link_text.'</a>';
         } else {
             $data[1] = $custom_value[0]['description'];
         }
@@ -545,7 +577,10 @@ for ($i = 0; $i < $custom_fields_count; $i++) {
         $columns = array_merge($first_column, $second_column);
     } else {
         $columns = $first_column;
-        $filas = count($table_data->data);
+        if ($table_data->data !== null) {
+            $filas = count($table_data->data);
+        }
+
         $table_data->colspan[$filas][1] = 3;
     }
 
@@ -583,6 +618,7 @@ if ($config['agentaccess'] && $access_agent > 0) {
     $table_access_rate .= graphic_agentaccess(
         $id_agente,
         SECONDS_1DAY,
+        true,
         true
     );
     $table_access_rate .= '</div>';
@@ -658,9 +694,8 @@ if (!empty($network_interfaces)) {
     $table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_event_graph'] = 'width: 35%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_event_graph'] = 'right';
-    // $table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->align['interface_event_graph_text'] = 'left';
-    $table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_event_graph'] = 'width: 3%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_name'] = 'width: 30%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_name'] = 'left';
     $table_interface->align['interface_ip'] = 'left';
     $table_interface->align['last_contact'] = 'left';
@@ -796,12 +831,6 @@ if (!empty($network_interfaces)) {
         $data['interface_mac'] = $interface['mac'];
         $data['last_contact'] = __('Last contact: ').$last_contact;
         $data['interface_event_graph'] = $e_graph;
-        if ($event_text_cont == 0) {
-            $data['interface_event_graph_text'] = ui_print_help_tip('Module events graph', true);
-            $event_text_cont++;
-        } else {
-            $data['interface_event_graph_text'] = '';
-        }
 
         $table_interface->data[] = $data;
     }
@@ -916,7 +945,7 @@ if ($table_access_rate) {
 
 echo $agent_incidents;
 
-if (isset($table_interface)) {
+if (isset($table_interface) === true) {
     ui_toggle(
         html_print_table($table_interface, true),
         '<b>'.__('Interface information (SNMP)').'</b>',

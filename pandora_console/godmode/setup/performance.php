@@ -340,8 +340,19 @@ $table->data[8][1] = html_print_input_text(
     true
 );
 
-$table->data[9][0] = __('Max. days before delete autodisabled agents');
+
+$table->data[9][0] = __('Max. days before delete not initialized modules');
 $table->data[9][1] = html_print_input_text(
+    'days_delete_not_initialized',
+    $config['days_delete_not_initialized'],
+    '',
+    5,
+    5,
+    true
+);
+
+$table->data[10][0] = __('Max. days before delete autodisabled agents');
+$table->data[10][1] = html_print_input_text(
     'days_autodisable_deletion',
     $config['days_autodisable_deletion'],
     '',
@@ -350,8 +361,8 @@ $table->data[9][1] = html_print_input_text(
     true
 );
 
-$table->data[10][0] = __('Retention period of past special days');
-$table->data[10][1] = html_print_input_text(
+$table->data[11][0] = __('Retention period of past special days');
+$table->data[11][1] = html_print_input_text(
     'num_past_special_days',
     $config['num_past_special_days'],
     '',
@@ -360,8 +371,8 @@ $table->data[10][1] = html_print_input_text(
     true
 );
 
-$table->data[11][0] = __('Max. macro data fields');
-$table->data[11][1] = html_print_input_text(
+$table->data[12][0] = __('Max. macro data fields');
+$table->data[12][1] = html_print_input_text(
     'max_macro_fields',
     $config['max_macro_fields'],
     '',
@@ -374,8 +385,8 @@ $table->data[11][1] = html_print_input_text(
 );
 
 if (enterprise_installed()) {
-    $table->data[12][0] = __('Max. days before delete inventory data');
-    $table->data[12][1] = html_print_input_text(
+    $table->data[13][0] = __('Max. days before delete inventory data');
+    $table->data[13][1] = html_print_input_text(
         'inventory_purge',
         $config['inventory_purge'],
         '',
@@ -663,6 +674,16 @@ $tip = ui_print_help_tip(
     true
 );
 
+$table_other->data[$i][0] = __('WMI binary');
+$table_other->data[$i++][1] = html_print_input_text(
+    'wmiBinary',
+    $config['wmiBinary'],
+    '',
+    50,
+    50,
+    true
+);
+
 if (enterprise_installed() === true) {
     $table_other->data[$i][0] = __('PhantomJS cache cleanup ').$tip;
     $table_other->data[$i++][1] = html_print_input(
@@ -678,6 +699,28 @@ if (enterprise_installed() === true) {
             'selected' => ($config['phantomjs_cache_interval'] ?? PHANTOM_CACHE_CLEANUP_ONCE),
         ]
     );
+}
+
+// Agent Wizard defaults.
+$defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
+$tableSnmpWizard = new stdClass();
+$tableSnmpWizard->width = '100%';
+$tableSnmpWizard->class = 'databox filters';
+$tableSnmpWizard->data = [];
+$tableSnmpWizard->style[0] = 'font-weight: bold';
+$tableSnmpWizard->style[2] = 'font-weight: bold';
+$tableSnmpWizard->size[0] = '30%';
+$tableSnmpWizard->size[2] = '30%';
+
+$i = 0;
+$j = 0;
+foreach ($defaultAgentWizardOptions as $key => $value) {
+    $tableSnmpWizard->data[$i][$j++] = $key;
+    $tableSnmpWizard->data[$i][$j++] = html_print_checkbox_switch('agent_wizard_defaults_'.$key, 1, $value, true);
+    if ($j >= 3) {
+        $j = 0;
+        $i++;
+    }
 }
 
 echo '<form id="form_setup" method="post">';
@@ -702,6 +745,11 @@ if ($config['history_db_enabled'] == 1) {
 echo '<fieldset>';
     echo '<legend>'.__('Others').' '.ui_print_help_icon('others_database_maintenance_options_tab', true).'</legend>';
     html_print_table($table_other);
+echo '</fieldset>';
+
+echo '<fieldset>';
+    echo '<legend>'.__('Agent SNMP Interface Wizard defaults').' '.ui_print_help_icon('agent_snmp_wizard_options_tab', true).'</legend>';
+    html_print_table($tableSnmpWizard);
 echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

@@ -235,7 +235,7 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
     if (isset($config['remote_addr']) === true) {
         $ip = $config['remote_addr'];
     } else {
-        if ($_SERVER['REMOTE_ADDR']) {
+        if (isset($_SERVER['REMOTE_ADDR']) === true) {
             $ip = $_SERVER['REMOTE_ADDR'];
         } else {
             $ip = __('N/A');
@@ -757,7 +757,8 @@ function db_uncompress_module_data(
     $id_agente_modulo,
     $tstart=false,
     $tend=false,
-    $slice_size=false
+    $slice_size=false,
+    $force_slice_not_data=false
 ) {
     global $config;
 
@@ -792,6 +793,10 @@ function db_uncompress_module_data(
 
     $flag_async = false;
     if (strstr($module_type_str, 'async_data') !== false) {
+        $flag_async = true;
+    }
+
+    if (strstr($module_type_str, 'async_string') !== false) {
         $flag_async = true;
     }
 
@@ -856,7 +861,10 @@ function db_uncompress_module_data(
 
     $module_interval = modules_get_interval($id_agente_modulo);
 
-    if (($raw_data === false) && ( $first_utimestamp === false )) {
+    if (($force_slice_not_data === false)
+        && ($raw_data === false)
+        && ( $first_utimestamp === false )
+    ) {
         // No data.
         return false;
     }
@@ -1338,30 +1346,42 @@ function db_get_cached_queries()
  * This function comes back with an array in case of SELECT
  * in case of UPDATE, DELETE etc. with affected rows
  * an empty array in case of SELECT without results
- * Queries that return data will be cached so queries don't get repeated
+ * Queries that return data will be cached so queries don't get repeated.
  *
- * @param string SQL statement to execute
+ * @param string  $sql          SQL statement to execute.
+ * @param string  $rettype      What type of info to return in case of INSERT/UPDATE.
+ *              'affected_rows' will return mysql_affected_rows (default value)
+ *              'insert_id' will return the ID of an autoincrement value
+ *              'info' will return the full (debug) information of a query.
+ * @param string  $dbconnection Info conecction.
+ * @param boolean $cache        Cache.
+ * @param string  $status       The status and type of query (support only postgreSQL).
+ * @param boolean $autocommit   Set autocommit transaction mode true/false (Only oracle).
+ * @param array   $values       Values (Only type insert).
  *
- * @param string What type of info to return in case of INSERT/UPDATE.
- *        'affected_rows' will return mysql_affected_rows (default value)
- *        'insert_id' will return the ID of an autoincrement value
- *        'info' will return the full (debug) information of a query
- *
- * @param string                                                      $status     The status and type of query (support only postgreSQL).
- *
- * @param boolean                                                     $autocommit (Only oracle) Set autocommit transaction mode true/false
- *
- * @return mixed An array with the rows, columns and values in a multidimensional array or false in error
+ * @return mixed An array with the rows, columns and values in a multidimensional array or false in error.
  */
-function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache=true, &$status=null, $autocommit=true)
-{
+function db_process_sql(
+    $sql,
+    $rettype='affected_rows',
+    $dbconnection='',
+    $cache=true,
+    &$status=null,
+    $autocommit=true,
+    $values_insert=[]
+) {
     global $config;
 
     $rc = false;
     switch ($config['dbtype']) {
         case 'mysql':
         default:
-            $rc = @mysql_db_process_sql($sql, $rettype, $dbconnection, $cache);
+            $rc = @mysql_db_process_sql(
+                $sql,
+                $rettype,
+                $dbconnection,
+                $cache
+            );
         break;
 
         case 'postgresql':
@@ -1373,7 +1393,13 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
         break;
     }
 
-    db_sync($dbconnection, $sql, $rc);
+    db_sync(
+        $dbconnection,
+        $sql,
+        $rc,
+        $rettype,
+        $values_insert
+    );
 
     return $rc;
 }
@@ -1388,8 +1414,13 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
  *
  * @return void
  */
-function db_sync($dbconnection, $sql, $rc)
-{
+function db_sync(
+    $dbconnection,
+    $sql,
+    $rc,
+    $rettype='affected_rows',
+    $values_insert=[]
+) {
     global $config;
     if (enterprise_hook('is_metaconsole') === true
         && isset($config['centralized_management']) === true
@@ -1401,6 +1432,16 @@ function db_sync($dbconnection, $sql, $rc)
             // Synchronize changes to nodes if needed.
             $sync = new Synchronizer();
             if ($sync !== null) {
+                if ($rettype === 'insert_id') {
+                    $forceSql = $sync->updateInsertQueryAddPrimaryKey(
+                        $values_insert,
+                        $rc
+                    );
+                    if (empty($forceSql) === false) {
+                        $sql = $forceSql;
+                    }
+                }
+
                 if ($sync->queue($sql, $rc) === false) {
                     // Launch events per failed query.
                     $errors = $sync->getLatestErrors();
@@ -1696,13 +1737,13 @@ function db_process_delete_temp($table, $row, $value, $custom_value=false)
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function db_process_sql_insert($table, $values, $autocommit=true)
+function db_process_sql_insert($table, $values, $autocommit=true, $sqltostring=false)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_process_sql_insert($table, $values);
+        return mysql_db_process_sql_insert($table, $values, $sqltostring);
 
             break;
         case 'postgresql':
@@ -2276,7 +2317,13 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
         }
 
         if ($lock_status === false) {
-            return null;
+            db_pandora_audit(
+                AUDIT_LOG_SYSTEM,
+                'Issue in Database Lock',
+                'system'
+            );
+
+            return (int) null;
         }
 
         return (int) $lock_status;

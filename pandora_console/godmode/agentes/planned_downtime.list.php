@@ -137,12 +137,49 @@ if (is_ajax() === true) {
             'filters' => get_parameter('filter', []),
         ];
 
-        $modules = get_agents_modules_planned_dowtime($id, $options);
+        $type_downtime = db_get_value_filter(
+            'type_downtime',
+            'tplanned_downtime',
+            ['id' => $id]
+        );
+
+        if ($type_downtime === 'disable_agents') {
+            $sql = sprintf(
+                'SELECT ta.alias as agent_name
+                    FROM tplanned_downtime_agents tpa JOIN tagente ta
+                    ON tpa.id_agent = ta.id_agente
+                    WHERE tpa.id_downtime = %d',
+                $id
+            );
+            $data = db_get_all_rows_sql($sql);
+
+            if (empty($data) === false) {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        global $config;
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+
+                        $tmp->agent_name  = io_safe_output($item['agent_name']);
+                        $tmp->module_name   = __('All modules');
+
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            }
+        } else {
+            $data = get_agents_modules_planned_dowtime($id, $options);
+        }
+
+
         $count = get_agents_modules_planned_dowtime($id, $options, $count);
 
         echo json_encode(
             [
-                'data'            => $modules,
+                'data'            => $data,
                 'recordsTotal'    => $count[0]['total'],
                 'recordsFiltered' => $count[0]['total'],
             ]
@@ -317,6 +354,7 @@ $row = [];
 $execution_type_fields = [
     'once'         => __('Once'),
     'periodically' => __('Periodically'),
+    'cron'         => __('Cron'),
 ];
 $row[] = __('Execution type').'&nbsp;'.html_print_select(
     $execution_type_fields,
@@ -460,10 +498,15 @@ if (empty($groups) === false) {
             strtotime($date_to.' 23:59:59')
         );
 
+        $cron = sprintf(
+            'type_execution = "cron"'
+        );
+
         $where_values .= sprintf(
-            ' AND ((%s) OR (%s))',
+            ' AND ((%s) OR (%s) OR (%s))',
             $periodically_w,
-            $once_w
+            $once_w,
+            $cron
         );
     }
 
@@ -471,6 +514,7 @@ if (empty($groups) === false) {
         $filter_performed = true;
         $where_values .= sprintf(
             ' AND (type_execution = "periodically"
+                OR type_execution = "cron"
                 OR (type_execution = "once"
                 AND date_to >= "%s"))',
             time()
@@ -530,6 +574,8 @@ if (empty($groups) === false) {
         'type_execution',
         'type_periodicity',
         'id_user',
+        'cron_interval_from',
+        'cron_interval_to',
     ];
 
     $columns_str = implode(',', $columns);
@@ -660,8 +706,9 @@ if ($downtimes === false && $filter_performed === false) {
         $data['type'] = $type_text[$downtime['type_downtime']];
 
         $execution_text = [
-            'once'         => __('once'),
+            'once'         => __('Once'),
             'periodically' => __('Periodically'),
+            'cron'         => __('Cron'),
         ];
 
         $data['execution'] = $execution_text[$downtime['type_execution']];
@@ -860,7 +907,7 @@ if ($downtimes === false && $filter_performed === false) {
             __('Export to CSV'),
             'csv_export',
             false,
-            'location.href="godmode/agentes/planned_downtime.export_csv.php?'.$filter_params_str.'"',
+            'blockResubmit($(this)); location.href=\'godmode/agentes/planned_downtime.export_csv.php?'.$filter_params_str.'\'',
             'class="sub next"'
         );
     echo '</div>';

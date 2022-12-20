@@ -1,50 +1,135 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Events Mobile.
+ *
+ * @category   Events
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+use PandoraFMS\Enterprise\Metaconsole\Node;
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+/**
+ * Event class mobile.
+ */
 class Events
 {
 
+    /**
+     * Acl.
+     *
+     * @var boolean
+     */
     private $correct_acl = false;
 
+    /**
+     * Acl mode.
+     *
+     * @var string
+     */
     private $acl = 'ER';
 
+    /**
+     * Default
+     *
+     * @var boolean
+     */
     private $default = true;
 
+    /**
+     * Default filters.
+     *
+     * @var array
+     */
     private $default_filters = [];
 
+    /**
+     * Search.
+     *
+     * @var string
+     */
     private $free_search = '';
 
+    /**
+     * Hours.
+     *
+     * @var integer
+     */
     private $hours_old = 8;
 
+    /**
+     * Status.
+     *
+     * @var integer
+     */
     private $status = 3;
 
+    /**
+     * Type.
+     *
+     * @var string
+     */
     private $type = 'all';
 
+    /**
+     * Severity.
+     *
+     * @var integer
+     */
     private $severity = -1;
 
+    /**
+     * Filter.
+     *
+     * @var integer
+     */
     private $filter = 0;
 
+    /**
+     * Group.
+     *
+     * @var integer
+     */
     private $group = 0;
 
+    /**
+     * Agent.
+     *
+     * @var integer
+     */
     private $id_agent = 0;
 
-    private $all_events = false;
-
+    /**
+     * Columns.
+     *
+     * @var [type]
+     */
     private $columns = null;
 
-    private $readOnly = false;
 
-
-    function __construct()
+    /**
+     * Construcy
+     */
+    public function __construct()
     {
         $system = System::getInstance();
 
@@ -58,17 +143,29 @@ class Events
     }
 
 
+    /**
+     * Set read only
+     *
+     * @return void
+     */
     public function setReadOnly()
     {
         $this->readOnly = true;
     }
 
 
+    /**
+     * Ajax function.
+     *
+     * @param boolean $parameter2 Rarameters.
+     *
+     * @return void
+     */
     public function ajax($parameter2=false)
     {
         $system = System::getInstance();
 
-        if (!$this->correct_acl) {
+        if ($this->correct_acl === false) {
             return;
         } else {
             switch ($parameter2) {
@@ -78,10 +175,9 @@ class Events
                         $filters = ['id_agent' => $system->getRequest('id_agent', 0)];
                         $this->setFilters($filters);
                         $this->setReadOnly();
-                        $this->eventsGetFilters();
-                    } else {
-                        $this->eventsGetFilters();
                     }
+
+                    $this->eventsGetFilters();
 
                     $page = $system->getRequest('page', 0);
 
@@ -109,28 +205,72 @@ class Events
                             case 2:
                                 $img_st = 'images/hourglass_white.png';
                             break;
+
+                            default:
+                                // Not possible.
+                            break;
                         }
 
-                        if ($event['criticity'] == EVENT_CRIT_WARNING
-                            || $event['criticity'] == EVENT_CRIT_MAINTENANCE
-                            || $event['criticity'] == EVENT_CRIT_MINOR
+                        if ($event['criticity'] === EVENT_CRIT_WARNING
+                            || $event['criticity'] === EVENT_CRIT_MAINTENANCE
+                            || $event['criticity'] === EVENT_CRIT_MINOR
                         ) {
                             $img_st = str_replace('white.png', 'dark.png', $img_st);
                         }
 
-                        $status_icon = html_print_image($img_st, true, false, false, false, false, true);
+                        $status_icon = html_print_image(
+                            $img_st,
+                            true,
+                            false,
+                            false,
+                            false,
+                            false,
+                            true
+                        );
+
+                        if (isset($event['server_id']) === false) {
+                            $event['server_id'] = 0;
+                        }
 
                         $row = [];
-                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="#" onclick="openDetails('.$event['id_evento'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
+                        $row_0 = '<b class="ui-table-cell-label">';
+                        $row_0 .= __('Event Name');
+                        $row_0 .= '</b><a href="#" onclick="openDetails('.$event['id_evento'].','.$event['server_id'].')">';
+                        $row_0 .= '<div class="event_name">';
+                        $row_0 .= io_safe_output(
+                            str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])
+                        );
+                        $row_0 .= '</div></a>';
+
+                        $row[] = $row_0;
 
                         if ($event['id_agente'] == 0) {
                             $agent_name = __('System');
                         } else {
-                            $agent_name = '<span class="nobold">'.ui_print_agent_name($event['id_agente'], true, 'agent_small', '', false, '', '', false, false).'</span>';
+                            $agent_name = '<span class="nobold">';
+                            $agent_name .= ui_print_agent_name(
+                                $event['id_agente'],
+                                true,
+                                'agent_small',
+                                '',
+                                false,
+                                '',
+                                '',
+                                false,
+                                false
+                            );
+                            $agent_name .= '</span>';
                         }
 
                         $row_1 = '<span class="events_agent">'.$agent_name.'</span>';
-                        $row_1 .= '<span class="events_timestamp">'.ui_print_timestamp($event['timestamp_rep'], true, ['units' => 'tiny']).$status_icon.'</span>';
+                        $row_1 .= '<span class="events_timestamp">';
+                        $row_1 .= ui_print_timestamp(
+                            $event['timestamp_last'],
+                            true,
+                            ['units' => 'tiny']
+                        );
+                        $row_1 .= $status_icon;
+                        $row_1 .= '</span>';
 
                         $row[] = $row_1;
 
@@ -139,179 +279,279 @@ class Events
                     }
 
                     echo json_encode(['end' => $end, 'events' => $events]);
-
                 break;
 
                 case 'get_detail_event':
                     $system = System::getInstance();
 
                     $id_event = $system->getRequest('id_event', 0);
+                    $server_id = $system->getRequest('server_id', 0);
 
-                    $meta = false;
-                    if ($system->getConfig('metaconsole')) {
-                        $meta = true;
-                    }
-
-                    $event = events_get_event($id_event, false, $meta);
-                    if ($event) {
-                        // Check if it is a event from module.
-                        if ($event['id_agentmodule'] > 0) {
-                            $event['module_graph_link'] = '<a data-ajax="false" href="index.php?page=module_graph&id='.$event['id_agentmodule'].'">'.html_print_image('images/chart_curve.png', true, ['style' => 'vertical-align: middle;'], false, false, false, true).'</a>';
-                        } else {
-                            $event['module_graph_link'] = '<i>'.__('N/A').'</i>';
+                    try {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node = new Node($server_id);
+                            $node->connect();
                         }
 
-                        if ($event['id_agente'] > 0) {
-                            $event['agent'] = "<a class='black'"."href='index.php?page=agent&id=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</a>';
-                        } else {
-                            $event['agent'] = '<i>'.__('N/A').'</i>';
-                        }
+                        $event = events_get_event($id_event, false);
 
-                        $event['evento'] = io_safe_output($event['evento']);
-
-                        $event['clean_tags'] = events_clean_tags($event['tags']);
-                        $event['timestamp'] = date($system->getConfig('date_format'), $event['utimestamp']);
-                        if (empty($event['owner_user'])) {
-                            $event['owner_user'] = '<i>'.__('N/A').'</i>';
-                        } else {
-                            $user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
-                            if (empty($user_owner)) {
-                                $user_owner = $event['owner_user'];
-                            }
-
-                            $event['owner_user'] = $user_owner;
-                        }
-
-                        $event['event_type'] = events_print_type_description($event['event_type'], true);
-                        $event['event_type'] .= ' ';
-                        $event['event_type'] .= events_print_type_img($event['event_type'], true);
-
-                        if (!isset($group_rep)) {
-                            $group_rep = 0;
-                        }
-
-                        if ($group_rep != 0) {
-                            if ($event['event_rep'] <= 1) {
-                                $event['event_repeated'] = '<i>'.__('No').'</i>';
+                        if ($event !== false
+                            && empty($event) === false
+                        ) {
+                            // Check if it is a event from module.
+                            if ($event['id_agentmodule'] > 0) {
+                                $event['module_graph_link'] = '<a data-ajax="false" href="index.php?page=module_graph&id='.$event['id_agentmodule'].'">'.html_print_image('images/chart_curve.png', true, ['style' => 'vertical-align: middle;'], false, false, false, true).'</a>';
                             } else {
-                                $event['event_repeated'] = sprintf('%d Times', $event['event_rep']);
-                            }
-                        } else {
-                            $event['event_repeated'] = '<i>'.__('No').'</i>';
-                        }
-
-                        $event_criticity = get_priority_name($event['criticity']);
-
-                        switch ($event['criticity']) {
-                            default:
-                            case 0:
-                                $img_sev = 'images/status_sets/default/severity_maintenance.png';
-                            break;
-                            case 1:
-                                $img_sev = 'images/status_sets/default/severity_informational.png';
-                            break;
-
-                            case 2:
-                                $img_sev = 'images/status_sets/default/severity_normal.png';
-                            break;
-
-                            case 3:
-                                $img_sev = 'images/status_sets/default/severity_warning.png';
-                            break;
-
-                            case 4:
-                                $img_sev = 'images/status_sets/default/severity_critical.png';
-                            break;
-
-                            case 5:
-                                $img_sev = 'images/status_sets/default/severity_minor.png';
-                            break;
-
-                            case 6:
-                                $img_sev = 'images/status_sets/default/severity_major.png';
-                            break;
-                        }
-
-                        $event['criticity'] = ' '.$event_criticity;
-                        $event['criticity'] .= html_print_image(
-                            $img_sev,
-                            true,
-                            [
-                                'class'  => 'image_status',
-                                'width'  => 12,
-                                'height' => 12,
-                                'title'  => $event_criticity,
-                            ],
-                            false,
-                            false,
-                            false,
-                            true
-                        );
-
-                        if ($event['estado'] == 1) {
-                            $user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-                            if (empty($user_ack)) {
-                                $user_ack = $event['id_usuario'];
+                                $event['module_graph_link'] = '<i>'.__('N/A').'</i>';
                             }
 
-                            $date_ack = date($system->getConfig('date_format'), $event['ack_utimestamp']);
-                            $event['acknowledged_by'] = $user_ack.' ('.$date_ack.')';
-                        } else {
-                            $event['acknowledged_by'] = '<i>'.__('N/A').'</i>';
-                        }
-
-                        // Get Status
-                        switch ($event['estado']) {
-                            case 0:
-                                $img_st = 'images/star_dark.png';
-                                $title_st = __('New event');
-                            break;
-
-                            case 1:
-                                $img_st = 'images/tick.png';
-                                $title_st = __('Event validated');
-                            break;
-
-                            case 2:
-                                $img_st = 'images/hourglass.png';
-                                $title_st = __('Event in process');
-                            break;
-                        }
-
-                        $event['status'] = $title_st;
-                        $event['status'] .= ' ';
-                        $event['status'] .= html_print_image($img_st, true, false, false, false, false, true);
-
-                        $event['group'] = groups_get_name($event['id_grupo'], true);
-                        $event['group'] .= ui_print_group_icon($event['id_grupo'], true);
-
-                        $event['tags'] = tags_get_tags_formatted($event['tags']);
-                        if (empty($event['tags'])) {
-                            $event['tags'] = '<i>'.__('N/A').'</i>';
-                        }
-
-                        $event_comments = db_get_value('user_comment', 'tevento', 'id_evento', $id_event);
-                        $event_comments_array = [];
-                        $event_comments_array = json_decode($event_comments, true);
-                        // Support for new format only.
-                        if (empty($event_comments_array)) {
-                            $comment = '<i>'.__('N/A').'</i>';
-                        } else {
-                            $comment = '';
-                            $event_comments_array = array_reverse($event_comments_array);
-                            foreach ($event_comments_array as $c) {
-                                $comment .= date($system->getConfig('date_format'), $c['utimestamp']).' ('.$c['id_user'].')';
-                                $c['comment'] = io_safe_output($c['comment']);
-                                $c['comment'] = str_replace("\n", '<br>', $c['comment']);
-                                $comment .= '<br>'.$c['comment'].'<br>';
+                            if ($event['id_agente'] > 0) {
+                                $event['agent'] = "<a class='black'";
+                                $event['agent'] .= "href='index.php?page=agent&id=";
+                                $event['agent'] .= $event['id_agente']."'>";
+                                $event['agent'] .= agents_get_alias(
+                                    $event['id_agente']
+                                );
+                                $event['agent'] .= '</a>';
+                            } else {
+                                $event['agent'] = '<i>'.__('N/A').'</i>';
                             }
+
+                            $event['evento'] = io_safe_output(
+                                $event['evento']
+                            );
+
+                            $event['clean_tags'] = events_clean_tags(
+                                $event['tags']
+                            );
+                            $event['timestamp'] = date(
+                                $system->getConfig('date_format'),
+                                $event['utimestamp']
+                            );
+                            if (empty($event['owner_user']) === true) {
+                                $event['owner_user'] = '<i>'.__('N/A').'</i>';
+                            } else {
+                                $user_owner = db_get_value(
+                                    'fullname',
+                                    'tusuario',
+                                    'id_user',
+                                    $event['owner_user']
+                                );
+                                if (empty($user_owner) === true) {
+                                    $user_owner = $event['owner_user'];
+                                }
+
+                                $event['owner_user'] = $user_owner;
+                            }
+
+                            $event['event_type'] = events_print_type_description(
+                                $event['event_type'],
+                                true
+                            );
+                            $event['event_type'] .= ' ';
+                            $event['event_type'] .= events_print_type_img(
+                                $event['event_type'],
+                                true
+                            );
+
+                            if (isset($group_rep) === false) {
+                                $group_rep = EVENT_GROUP_REP_ALL;
+                            }
+
+                            if ((int) $group_rep !== EVENT_GROUP_REP_ALL) {
+                                if ($event['event_rep'] <= 1) {
+                                    $event['event_repeated'] = '<i>'.__('No').'</i>';
+                                } else {
+                                    $event['event_repeated'] = sprintf(
+                                        '%d Times',
+                                        $event['event_rep']
+                                    );
+                                }
+                            } else {
+                                $event['event_repeated'] = '<i>'.__('No').'</i>';
+                            }
+
+                            $event_criticity = get_priority_name(
+                                $event['criticity']
+                            );
+
+                            switch ($event['criticity']) {
+                                default:
+                                case 0:
+                                    $img_sev = 'images/status_sets/default/severity_maintenance.png';
+                                break;
+                                case 1:
+                                    $img_sev = 'images/status_sets/default/severity_informational.png';
+                                break;
+
+                                case 2:
+                                    $img_sev = 'images/status_sets/default/severity_normal.png';
+                                break;
+
+                                case 3:
+                                    $img_sev = 'images/status_sets/default/severity_warning.png';
+                                break;
+
+                                case 4:
+                                    $img_sev = 'images/status_sets/default/severity_critical.png';
+                                break;
+
+                                case 5:
+                                    $img_sev = 'images/status_sets/default/severity_minor.png';
+                                break;
+
+                                case 6:
+                                    $img_sev = 'images/status_sets/default/severity_major.png';
+                                break;
+                            }
+
+                            $event['criticity'] = ' '.$event_criticity;
+                            $event['criticity'] .= html_print_image(
+                                $img_sev,
+                                true,
+                                [
+                                    'class'  => 'image_status',
+                                    'width'  => 12,
+                                    'height' => 12,
+                                    'title'  => $event_criticity,
+                                ],
+                                false,
+                                false,
+                                false,
+                                true
+                            );
+
+                            if ((int) $event['estado'] === 1) {
+                                $user_ack = db_get_value(
+                                    'fullname',
+                                    'tusuario',
+                                    'id_user',
+                                    $event['id_usuario']
+                                );
+                                if (empty($user_ack) === true) {
+                                    $user_ack = $event['id_usuario'];
+                                }
+
+                                $date_ack = date(
+                                    $system->getConfig('date_format'),
+                                    $event['ack_utimestamp']
+                                );
+                                $event['acknowledged_by'] = $user_ack.' ('.$date_ack.')';
+                            } else {
+                                $event['acknowledged_by'] = '<i>'.__('N/A').'</i>';
+                            }
+
+                            // Get Status.
+                            switch ($event['estado']) {
+                                case 0:
+                                    $img_st = 'images/star_dark.png';
+                                    $title_st = __('New event');
+                                break;
+
+                                case 1:
+                                    $img_st = 'images/tick.png';
+                                    $title_st = __('Event validated');
+                                break;
+
+                                case 2:
+                                    $img_st = 'images/hourglass.png';
+                                    $title_st = __('Event in process');
+                                break;
+
+                                default:
+                                    // Not posible.
+                                break;
+                            }
+
+                            $event['status'] = $title_st;
+                            $event['status'] .= ' ';
+                            $event['status'] .= html_print_image(
+                                $img_st,
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                true
+                            );
+
+                            $event['group'] = groups_get_name(
+                                $event['id_grupo'],
+                                true
+                            );
+                            $event['group'] .= ui_print_group_icon(
+                                $event['id_grupo'],
+                                true
+                            );
+
+                            $event['tags'] = tags_get_tags_formatted(
+                                $event['tags']
+                            );
+                            if (empty($event['tags']) === true) {
+                                $event['tags'] = '<i>'.__('N/A').'</i>';
+                            }
+
+                            $event_comments = db_get_value(
+                                'user_comment',
+                                'tevento',
+                                'id_evento',
+                                $id_event
+                            );
+                            $event_comments_array = [];
+                            $event_comments_array = json_decode(
+                                $event_comments,
+                                true
+                            );
+                            // Support for new format only.
+                            if (empty($event_comments_array) === true) {
+                                $comment = '<i>'.__('N/A').'</i>';
+                            } else {
+                                $comment = '';
+                                $event_comments_array = array_reverse(
+                                    $event_comments_array
+                                );
+                                foreach ($event_comments_array as $c) {
+                                    $comment .= date(
+                                        $system->getConfig(
+                                            'date_format'
+                                        ),
+                                        $c['utimestamp']
+                                    ).' ('.$c['id_user'].')';
+                                    $c['comment'] = io_safe_output(
+                                        $c['comment']
+                                    );
+                                    $c['comment'] = str_replace(
+                                        "\n",
+                                        '<br>',
+                                        $c['comment']
+                                    );
+                                    $comment .= '<br>'.$c['comment'].'<br>';
+                                }
+                            }
+
+                            $event['comments'] = $comment;
+
+                            echo json_encode(['correct' => 1, 'event' => $event]);
+                        } else {
+                            echo json_encode(['correct' => 0, 'event' => []]);
+                        }
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
                         }
 
-                        $event['comments'] = $comment;
-
-                        echo json_encode(['correct' => 1, 'event' => $event]);
-                    } else {
                         echo json_encode(['correct' => 0, 'event' => []]);
+                    } finally {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
                     }
                 break;
 
@@ -319,21 +559,57 @@ class Events
                     $system = System::getInstance();
 
                     $id_event = $system->getRequest('id_event', 0);
+                    $server_id = $system->getRequest('server_id', 0);
 
-                    if (events_change_status($id_event, EVENT_VALIDATE, $system->getConfig('metaconsole'))) {
-                        echo json_encode(['correct' => 1]);
-                    } else {
+                    try {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node = new Node($server_id);
+                            $node->connect();
+                        }
+
+                        if (events_change_status($id_event, EVENT_VALIDATE) === true) {
+                            echo json_encode(['correct' => 1]);
+                        } else {
+                            echo json_encode(['correct' => 0]);
+                        }
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
+
                         echo json_encode(['correct' => 0]);
+                    } finally {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
                     }
+                break;
+
+                default:
+                    // Not possible.
                 break;
             }
         }
     }
 
 
+    /**
+     * Disable columns.
+     *
+     * @param array $columns Columns.
+     *
+     * @return void
+     */
     public function disabledColumns($columns=null)
     {
-        if (!empty($columns)) {
+        if (empty($columns) === false) {
             foreach ($columns as $column) {
                 $this->columns[$column] = 1;
             }
@@ -341,6 +617,11 @@ class Events
     }
 
 
+    /**
+     * Events get filters.
+     *
+     * @return void
+     */
     private function eventsGetFilters()
     {
         $system = System::getInstance();
@@ -402,72 +683,67 @@ class Events
             $this->default_filters['severity'] = false;
         }
 
-        if ($system->getRequest('filter', __('Preset Filters')) === __('Preset Filters')) {
-            // Set filter as default user event filter (only first time)
-            $this->filter = db_get_value('default_event_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
-
-            // Use user set default filter if admin set default filter is "none"
-            if ($this->filter == 0) {
-                $this->filter = db_get_value('id_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
-            }
-        } else {
-                 $this->filter = $system->getRequest('filter', __('Preset Filters'));
-        }
+        $this->filter = $system->getRequest('filter', 0);
 
         if ($this->filter != 0) {
             $this->default = false;
         }
 
-        // The user set a preset filter
+        // The user set a preset filter.
         if ($this->filter > 0) {
-            $this->loadPresetFilter();
+            // $this->loadPresetFilter();
         }
 
         $this->limit = $system->getRequest('limit', -1);
     }
 
 
+    /**
+     * Set filters.
+     *
+     * @param array $filters Filters.
+     *
+     * @return void
+     */
     public function setFilters($filters)
     {
-        if (isset($filters['id_agent'])) {
+        if (isset($filters['id_agent']) === true) {
             $this->id_agent = $filters['id_agent'];
         }
 
-        if (isset($filters['all_events'])) {
+        if (isset($filters['all_events']) === true) {
             $this->all_events = $filters['all_events'];
         }
     }
 
 
-    private function loadPresetFilter()
-    {
-        $filter = db_get_row('tevent_filter', 'id_filter', $this->filter);
-
-        $this->free_search = $filter['search'];
-        $this->hours_old = $filter['event_view_hr'];
-        $this->status = $filter['status'];
-        $this->type = $filter['event_type'];
-        $this->severity = $filter['severity'];
-    }
-
-
+    /**
+     * Show.
+     *
+     * @return void
+     */
     public function show()
     {
         if (!$this->correct_acl) {
-            $this->show_fail_acl();
+            $this->showFailAcl();
         } else {
             $this->eventsGetFilters();
-            $this->show_events();
+            $this->showEvents();
         }
     }
 
 
-    private function show_fail_acl()
+    /**
+     * Show fail.
+     *
+     * @return void
+     */
+    private function showFailAcl()
     {
         $error['type'] = 'onStart';
         $error['title_text'] = __('You don\'t have access to this page');
         $error['content_text'] = System::getDefaultACLFailText();
-        if (class_exists('HomeEnterprise')) {
+        if (class_exists('HomeEnterprise') === true) {
             $home = new HomeEnterprise();
         } else {
             $home = new Home();
@@ -477,7 +753,14 @@ class Events
     }
 
 
-    public function get_event_dialog_error_options($options)
+    /**
+     * Event dialog error.
+     *
+     * @param array $options Options.
+     *
+     * @return array Array.
+     */
+    public function getEventDialogErrorOptions($options)
     {
         $options['type'] = 'hidden';
 
@@ -489,7 +772,12 @@ class Events
     }
 
 
-    public function get_event_dialog_options()
+    /**
+     * Event dialog options.
+     *
+     * @return array
+     */
+    public function getEventDialogOptions()
     {
         $ui = Ui::getInstance();
 
@@ -500,7 +788,7 @@ class Events
         $options['title_close_button'] = true;
         $options['title_text'] = __('Event detail');
 
-        // Content
+        // Content.
         ob_start();
         ?>
         <table class="pandora_responsive alternate event_details">
@@ -578,6 +866,12 @@ class Events
             'type'  => 'hidden',
         ];
         $options['content_text'] .= $ui->getInput($options_hidden);
+        $options_hidden = [
+            'id'    => 'server_id',
+            'value' => 0,
+            'type'  => 'hidden',
+        ];
+        $options['content_text'] .= $ui->getInput($options_hidden);
         $options['content_text'] .= '<div id="validate_button_loading" class="invisible center">
 			<img src="images/ajax-loader.gif" /></div>';
         $options['content_text'] .= '<div id="validate_button_correct" class="invisible center">
@@ -591,17 +885,22 @@ class Events
     }
 
 
-    private function show_events()
+    /**
+     * Show events.
+     *
+     * @return void
+     */
+    private function showEvents()
     {
         $ui = Ui::getInstance();
 
         $ui->createPage();
 
-        $options = $this->get_event_dialog_options();
+        $options = $this->getEventDialogOptions();
 
         $ui->addDialog($options);
 
-        $options = $this->get_event_dialog_error_options($options);
+        $options = $this->getEventDialogErrorOptions($options);
 
         $ui->addDialog($options);
 
@@ -619,207 +918,161 @@ class Events
         );
         $ui->showFooter(false);
         $ui->beginContent();
-            $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
-            $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
+        $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
+        $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
-            $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
-            $ui->contentBeginCollapsible($filter_title);
-                $ui->beginForm('index.php?page=events');
-                /*
-                    $options = array(
-                        'name' => 'page',
-                        'type' => 'hidden',
-                        'value' => 'events'
-                        );
-                    $ui->formAddInput($options);*/
+        $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
+        $ui->contentBeginCollapsible($filter_title);
+        $ui->beginForm('index.php?page=events');
+        $items = db_get_all_rows_in_table('tevent_filter');
+        $items[] = [
+            'id_filter' => 0,
+            'id_name'   => __('None'),
+        ];
+        $options = [
+            'name'       => 'filter',
+            'title'      => __('Preset Filters'),
+            'label'      => __('Preset Filters'),
+            'items'      => $items,
+            'item_id'    => 'id_filter',
+            'item_value' => 'id_name',
+            'selected'   => $this->filter,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $items = db_get_all_rows_in_table('tevent_filter');
-                    $items[] = [
-                        'id_filter' => 0,
-                        'id_name'   => __('None'),
-                    ];
-                    $options = [
-                        'name'       => 'filter',
-                        'title'      => __('Preset Filters'),
-                        'label'      => __('Preset Filters'),
-                        'items'      => $items,
-                        'item_id'    => 'id_filter',
-                        'item_value' => 'id_name',
-                        'selected'   => $this->filter,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $system = System::getInstance();
+        $groups = users_get_groups_for_select(
+            $system->getConfig('id_user'),
+            'ER',
+            true,
+            true,
+            false,
+            'id_grupo'
+        );
+        $options = [
+            'name'     => 'group',
+            'title'    => __('Group'),
+            'label'    => __('Group'),
+            'items'    => $groups,
+            'selected' => $this->group,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $system = System::getInstance();
-                    $groups = users_get_groups_for_select(
-                        $system->getConfig('id_user'),
-                        'ER',
-                        true,
-                        true,
-                        false,
-                        'id_grupo'
-                    );
-                    $options = [
-                        'name'     => 'group',
-                        'title'    => __('Group'),
-                        'label'    => __('Group'),
-                        'items'    => $groups,
-                        'selected' => $this->group,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'     => 'status',
+            'title'    => __('Status'),
+            'label'    => __('Status'),
+            'items'    => events_get_all_status(),
+            'selected' => $this->status,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $options = [
-                        'name'     => 'status',
-                        'title'    => __('Status'),
-                        'label'    => __('Status'),
-                        'items'    => events_get_all_status(),
-                        'selected' => $this->status,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'     => 'type',
+            'title'    => __('Type'),
+            'label'    => __('Type'),
+            'items'    => array_merge(['all' => __('All')], get_event_types()),
+            'selected' => $this->type,
+        ];
 
-                    $options = [
-                        'name'     => 'type',
-                        'title'    => __('Type'),
-                        'label'    => __('Type'),
-                        'items'    => array_merge(['all' => __('All')], get_event_types()),
-                        'selected' => $this->type,
-                    ];
+        $ui->formAddSelectBox($options);
 
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'     => 'severity',
+            'title'    => __('Severity'),
+            'label'    => __('Severity'),
+            'items'    => (['-1' => __('All')] + get_priorities()),
+            'selected' => $this->severity,
+        ];
+        $ui->formAddSelectBox($options);
 
-                    $options = [
-                        'name'     => 'severity',
-                        'title'    => __('Severity'),
-                        'label'    => __('Severity'),
-                        'items'    => (['-1' => __('All')] + get_priorities()),
-                        'selected' => $this->severity,
-                    ];
-                    $ui->formAddSelectBox($options);
+        $options = [
+            'name'        => 'free_search',
+            'value'       => $this->free_search,
+            'placeholder' => __('Free search'),
+        ];
+        $ui->formAddInputSearch($options);
 
-                    $options = [
-                        'name'        => 'free_search',
-                        'value'       => $this->free_search,
-                        'placeholder' => __('Free search'),
-                    ];
-                    $ui->formAddInputSearch($options);
+        $options = [
+            'label' => __('Max. hours old'),
+            'name'  => 'hours_old',
+            'value' => $this->hours_old,
+            'min'   => 0,
+            'max'   => (24 * 7),
+            'step'  => 8,
+        ];
+        $ui->formAddSlider($options);
 
-                    $options = [
-                        'label' => __('Max. hours old'),
-                        'name'  => 'hours_old',
-                        'value' => $this->hours_old,
-                        'min'   => 0,
-                        'max'   => (24 * 7),
-                        'step'  => 8,
-                    ];
-                    $ui->formAddSlider($options);
-
-                    $options = [
-                        'icon'     => 'refresh',
-                        'icon_pos' => 'right',
-                        'text'     => __('Apply Filter'),
-                    ];
-                    $ui->formAddSubmitButton($options);
-                    $html = $ui->getEndForm();
-                    $ui->contentCollapsibleAddItem($html);
-                    $ui->contentEndCollapsible();
-                    $this->listEventsHtml();
-                    $ui->endContent();
-                    $ui->showPage();
+        $options = [
+            'icon'     => 'refresh',
+            'icon_pos' => 'right',
+            'text'     => __('Apply Filter'),
+        ];
+        $ui->formAddSubmitButton($options);
+        $html = $ui->getEndForm();
+        $ui->contentCollapsibleAddItem($html);
+        $ui->contentEndCollapsible();
+        $this->listEventsHtml();
+        $ui->endContent();
+        $ui->showPage();
     }
 
 
+    /**
+     * List events.
+     *
+     * @param integer $page Page.
+     *
+     * @return array
+     */
     private function getListEvents($page=0)
     {
         $system = System::getInstance();
 
-        // --------------Fill the SQL POST-------------------------------
-        $sql_post = ' WHERE 1=1 ';
+        $filters = [];
 
-        if ($this->status != null) {
-            switch ($this->status) {
-                case 0:
-                case 1:
-                case 2:
-                    $sql_post .= ' AND estado = '.$this->status;
-                break;
-
-                case 3:
-                    $sql_post .= ' AND (estado = 0 OR estado = 2)';
-                break;
-
-                default:
-                    // Not posible.
-                break;
-            }
+        // Status.
+        if (empty($this->status) === false) {
+            $filters['status'] = $this->status;
         }
 
-        if ($this->free_search != '') {
-            $sql_post .= " AND evento LIKE '%".io_safe_input($this->free_search)."%'";
+        // Filter search.
+        if (empty($this->free_search) === false) {
+            $filters['search'] = $this->free_search;
         }
 
-        if ($this->severity != null && $this->severity != -1) {
-            switch ($this->severity) {
-                case EVENT_CRIT_WARNING_OR_CRITICAL:
-                    $sql_post .= ' AND (criticity = '.EVENT_CRIT_WARNING.' OR 
-						criticity = '.EVENT_CRIT_CRITICAL.')';
-                break;
-
-                case EVENT_CRIT_NOT_NORMAL:
-                    $sql_post .= ' AND criticity != '.EVENT_CRIT_NORMAL;
-                break;
-
-                default:
-                    $sql_post .= ' AND criticity = '.$this->severity;
-                break;
-            }
+        // Severity.
+        if (empty($this->severity) === false) {
+            $filters['severity'] = $this->severity;
         }
 
-        if ($this->hours_old > 0) {
-            $unixtime = (get_system_time() - ($this->hours_old * SECONDS_1HOUR));
-            $sql_post .= ' AND (utimestamp > '.$unixtime.')';
-        }
-
-        if ($this->type != '') {
-            // If normal, warning, could be several (going_up_warning, going_down_warning... too complex
-            // for the user so for him is presented only "warning, critical and normal"
-            if ($this->type == 'warning' || $this->type == 'critical'
-                || $this->type == 'normal'
-            ) {
-                $sql_post .= " AND event_type LIKE '%".$this->type."%' ";
-            } else if ($this->type == 'not_normal') {
-                $sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
-            } else if ($this->type != 'all') {
-                $sql_post .= " AND event_type = '".$this->type."'";
-            }
-        }
-
-        $system = System::getInstance();
-        $groups = users_get_groups($system->getConfig('id_user'), 'ER');
-
-        // Group selection
-        if ($this->group > 0 && in_array($this->group, array_keys($groups))) {
-            // If a group is selected and it's in the groups allowed
-            $sql_post .= ' AND id_grupo = '.$this->group;
+        // Hours.
+        if (empty($this->hours_old) === false) {
+            $filters['event_view_hr'] = $this->hours_old;
         } else {
-            if (is_user_admin($system->getConfig('id_user'))) {
-                // Do nothing if you're admin, you get full access
-                $sql_post .= '';
-            } else {
-                // Otherwise select all groups the user has rights to.
-                $sql_post .= ' AND id_grupo IN ('.implode(',', array_keys($groups)).')';
-            }
+            $filters['event_view_hr'] = 8;
         }
 
-        if ($this->id_agent > 0) {
-            $sql_post .= ' AND id_agente = '.$this->id_agent;
+        // Type.
+        if (empty($this->type) === false) {
+            $filters['event_type'] = $this->type;
         }
 
-        // Skip system messages if user is not PM
-        if (!check_acl($system->getConfig('id_user'), 0, 'PM')) {
-            $sql_post .= ' AND id_grupo != 0';
+        // ID group.
+        if (empty($this->group) === false) {
+            $filters['id_group_filter'] = $this->group;
         }
 
-        // --------------------------------------------------------------
-        if (isset($this->limit) && $this->limit != -1) {
+        // Id Agent.
+        if ($this->id_agent !== false && empty($this->id_agent) === false) {
+            $filters['id_agent'] = $this->id_agent;
+        }
+
+        $filters['group_rep'] = EVENT_GROUP_REP_EVENTS;
+
+        if (isset($this->limit) === true
+            && $this->limit !== -1
+        ) {
             $offset = 0;
             $pagination = $this->limit;
         } else {
@@ -827,24 +1080,41 @@ class Events
             $pagination = $system->getPageSize();
         }
 
-        $meta = false;
-        if ($system->getConfig('metaconsole')) {
-            $meta = true;
-        }
-
-        $events_db = events_get_events_grouped(
-            $sql_post,
+        $events_db = events_get_all(
+            // Fields.
+            [
+                'te.*',
+                'ta.alias',
+            ],
+            // Filter.
+            $filters,
+            // Offset.
             $offset,
+            // Limit.
             $pagination,
-            $meta,
-            false
+            // Order.
+            'desc',
+            // Sort field.
+            'timestamp'
         );
 
-        if (empty($events_db)) {
-            $events_db = [];
+        if (is_metaconsole() === false) {
+            $count = events_get_all(
+                'count',
+                $filters
+            );
+
+            if ($count !== false) {
+                $total_events = $count['0']['nitems'];
+            }
+        } else {
+            $total_events = $events_db['total'];
+            $events_db = $events_db['data'];
         }
 
-        $total_events = events_get_total_events_grouped($sql_post, $meta);
+        if (empty($events_db) === true) {
+            $events_db = [];
+        }
 
         return [
             'events' => $events_db,
@@ -853,12 +1123,21 @@ class Events
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param integer $page     Page.
+     * @param boolean $return   Return.
+     * @param string  $id_table Id table.
+     *
+     * @return mixed
+     */
     public function listEventsHtml($page=0, $return=false, $id_table='list_events')
     {
         $system = System::getInstance();
         $ui = Ui::getInstance();
 
-        // Create an empty table to be filled from ajax
+        // Create an empty table to be filled from ajax.
         $table = new Table();
         $table->id = $id_table;
 
@@ -884,6 +1163,13 @@ class Events
     }
 
 
+    /**
+     * Events table.
+     *
+     * @param integer $id_agent Id agent.
+     *
+     * @return string
+     */
     public function putEventsTableJS($id_agent)
     {
         return '<script type="text/javascript">
@@ -892,6 +1178,11 @@ class Events
     }
 
 
+    /**
+     * Js dialog.
+     *
+     * @return void
+     */
     public function addJavascriptDialog()
     {
         $ui = Ui::getInstance();
@@ -899,25 +1190,24 @@ class Events
         $ui->contentAddHtml(
             '
 			<script type="text/javascript">
-				function openDetails(id_event) {
+				function openDetails(id_event, server_id) {
                     $.mobile.loading("show");
-					
 					postvars = {};
 					postvars["action"] = "ajax";
 					postvars["parameter1"] = "events";
 					postvars["parameter2"] = "get_detail_event";
 					postvars["id_event"] = id_event;
-					
+                    postvars["server_id"] = server_id;
+
 					$.ajax ({
 						type: "POST",
 						url: "index.php",
 						dataType: "json",
 						data: postvars,
-						success: 
+						success:
 							function (data) {
 								if (data.correct) {
 									event = data.event;
-									
 									//Fill the dialog
 									$("#detail_event_dialog h1.dialog_title")
 										.html(event["evento"]);
@@ -944,16 +1234,16 @@ class Events
 									$("#detail_event_dialog .cell_event_tags")
 										.html(event["tags"]);
 									$("#detail_event_dialog .cell_event_comments")
-
-.html(event["comments"]);
+                                        .html(event["comments"]);
 									$("#detail_event_dialog .cell_agent")
 										.html(event["agent"]);
-									
+
 									//The link to module graph
 									$(".cell_module_graph").html(event["module_graph_link"]);
-									
+
 									$("#event_id").val(id_event);
-									
+                                    $("#server_id").val(server_id);
+
 									if (event["estado"] != 1) {
 										$("#validate_button").show();
 									}
@@ -964,9 +1254,7 @@ class Events
 									$("#validate_button_loading").hide();
 									$("#validate_button_fail").hide();
 									$("#validate_button_correct").hide();
-									
                                     $.mobile.loading( "hide" );
-									
 									$("#detail_event_dialog_hook").click();
 								}
 								else {
@@ -981,40 +1269,41 @@ class Events
 							}
 						});
 				}
-				
-				
+
 				function validateEvent() {
 					id_event = $("#event_id").val();
-					
+                    server_id = $("#server_id").val();
+
 					$("#validate_button").hide();
 					$("#validate_button_loading").show();
-					
+
 					//Hide the button to close
 					$("#detail_event_dialog div.ui-header a.ui-btn-right")
 						.hide();
-					
+
 					postvars = {};
 					postvars["action"] = "ajax";
 					postvars["parameter1"] = "events";
 					postvars["parameter2"] = "validate_event";
 					postvars["id_event"] = id_event;
-					
+                    postvars["server_id"] = server_id;
+
 					$.ajax ({
 						type: "POST",
 						url: "index.php",
 						dataType: "json",
 						data: postvars,
-						success: 
+						success:
 							function (data) {
 								$("#validate_button_loading").hide();
-								
+
 								if (data.correct) {
 									$("#validate_button_correct").show();
 								}
 								else {
 									$("#validate_button_fail").show();
 								}
-								
+
 								$("#detail_event_dialog div.ui-header a.ui-btn-right")
 									.show();
 							},
@@ -1025,13 +1314,18 @@ class Events
 								$("#detail_event_dialog div.ui-header a.ui-btn-right")
 									.show();
 							}
-						});
+					});
 				}
 			</script>'
         );
     }
 
 
+    /**
+     * Js button.
+     *
+     * @return void
+     */
     private function addJavascriptAddBottom()
     {
         $ui = Ui::getInstance();
@@ -1054,18 +1348,17 @@ class Events
 									\"<td class='vertical_middle'>\" + event[1] + \"</td>\" +
 								\"</tr>\" + new_rows;
 							});
-							
+
 						$(\"table#\"+table_id+\" tbody\").append(new_rows);
-						
-						load_more_rows = 1;
+
+						load_more_rows = 0;
 						refresh_link_listener_list_events();
 					}
 				}
-				
+
 				function ajax_load_rows() {
 					if (load_more_rows) {
 						load_more_rows = 0;
-						
 						postvars = {};
 						postvars[\"action\"] = \"ajax\";
 						postvars[\"parameter1\"] = \"events\";
@@ -1079,12 +1372,12 @@ class Events
 						postvars[\"hours_old\"] = $(\"input[name='hours_old']\").val();
 						postvars[\"page\"] = page;
 						page++;
-						
+
 						$.post(\"index.php\",
 							postvars,
 							function (data) {
 								add_rows(data, 'list_events');
-												
+
 								if($('#list_events').offset() != undefined) {
 									//For large screens load the new events
 									//Check if the end of the event list tables is in the client limits
@@ -1093,7 +1386,7 @@ class Events
 										ajax_load_rows();
 									}
 								}
-								
+
 								if (data.events.length == 0 && page == 1) {
 									$('#empty_advice_events').show();
 								}
@@ -1101,7 +1394,7 @@ class Events
 							\"json\");
 					}
 				}
-				
+
 				function ajax_load_latest_agent_events(id_agent, limit) {
 					postvars = {};
 					postvars[\"action\"] = \"ajax\";
@@ -1110,7 +1403,7 @@ class Events
 					postvars[\"agent_events\"] = \"1\";
 					postvars[\"id_agent\"] = id_agent;
 					postvars[\"limit\"] = limit;
-					
+
 					$.post(\"index.php\",
 						postvars,
 						function (data) {
@@ -1122,23 +1415,20 @@ class Events
 						},
 						\"json\");
 				}
-				
+
 				$(document).ready(function() {
 						ajax_load_rows();
-						
 						$(window).bind(\"scroll\", function () {
 							custom_scroll();
 						});
-						
 						$(window).on(\"touchmove\", function(event) {
 							custom_scroll();
 						});
 				});
-				
+
 				function custom_scroll() {
 					if ($(this).scrollTop() + $(this).height()
 							>= ($(document).height() - 100)) {
-							
 							ajax_load_rows();
 						}
 				}
@@ -1147,6 +1437,11 @@ class Events
     }
 
 
+    /**
+     * Filter events.
+     *
+     * @return string
+     */
     private function filterEventsGetString()
     {
         global $system;

@@ -1440,13 +1440,17 @@ function snmp_browser_create_modules_snmp(
 /**
  * Prints html for create module from snmp massive dialog
  *
- * @param  string  $url_form
- * @param  string  $title
- * @param  boolean $return
- * @return void
+ * @param string  $target    Target.
+ * @param string  $snmp_conf Conf.
+ * @param boolean $return    Type return.
+ *
+ * @return string Output html.
  */
-function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $return=false)
-{
+function snmp_browser_print_create_module_massive(
+    $target='agent',
+    $snmp_conf='',
+    $return=false
+) {
     global $config;
 
     // String for labels.
@@ -1457,6 +1461,10 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
 
         case 'policy':
             $target_item = 'Policies';
+        break;
+
+        default:
+            // Not possible.
         break;
     }
 

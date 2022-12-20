@@ -162,7 +162,9 @@ class DiscoveryTaskList extends HTML
             $ret = false;
         }
 
-        $ret2 = $this->showList();
+        if (is_reporting_console_node() === false) {
+            $ret2 = $this->showList();
+        }
 
         if ($ret === false && $ret2 === false) {
             include_once $config['homedir'].'/general/first_task/recon_view.php';
@@ -662,7 +664,7 @@ class DiscoveryTaskList extends HTML
                         $data[0] .= '\'';
                         if ($task['type'] == DISCOVERY_HOSTDEVICES) {
                             $title = __('Are you sure?');
-                            $message = 'This action will rescan the target networks.';
+                            $message = __('This action will rescan the target networks.');
                             $data[0] .= ', {title: \''.$title.'\', message: \''.$message.'\'}';
                         }
 
@@ -1448,17 +1450,17 @@ class DiscoveryTaskList extends HTML
 
         // Header information.
         if ((int) $task['status'] <= 0 && empty($summary)) {
-            if ($task['type'] == DISCOVERY_APP_VMWARE && $task['utimestamp'] != 0) {
-                $outputMessage = __('Task completed.');
+            if ((int) $task['utimestamp'] !== 0) {
+                $output .= $this->progressTaskGraph($task);
             } else {
                 $outputMessage = __('This task has never executed');
-            }
 
-            $output .= ui_print_info_message(
-                $outputMessage,
-                '',
-                true
-            );
+                $output .= ui_print_info_message(
+                    $outputMessage,
+                    '',
+                    true
+                );
+            }
         } else if ($task['status'] == 1
             || ($task['utimestamp'] == 0 && $task['interval_sweep'])
         ) {

@@ -1,10 +1,10 @@
 <?php
 /**
- * Widget URL Pandora FMS Console
+ * Widget Simple graph Pandora FMS Console
  *
  * @category   Console Class
  * @package    Pandora FMS
- * @subpackage Widget URL
+ * @subpackage Widget
  * @version    1.0.0
  * @license    See below
  *
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@
  */
 
 namespace PandoraFMS\Dashboard;
+
+use PandoraFMS\Enterprise\Metaconsole\Node;
 
 global $config;
 
@@ -178,6 +180,44 @@ class SingleGraphWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['moduleId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node = new Node($this->values['metaconsoleId']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_sql(
+                    sprintf(
+                        'SELECT id_agente_modulo
+                        FROM tagente_modulo
+                        WHERE id_agente_modulo = %s
+                            AND delete_pending = 0',
+                        $this->values['moduleId']
+                    )
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -279,7 +319,6 @@ class SingleGraphWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -287,6 +326,8 @@ class SingleGraphWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
+                'nothing'        => __('None'),
+                'nothing_value'  => 0,
             ],
         ];
 
@@ -353,8 +394,8 @@ class SingleGraphWidget extends Widget
         include_once $config['homedir'].'/include/functions_agents.php';
         include_once $config['homedir'].'/include/functions_modules.php';
 
-        $module_name = \modules_get_agentmodule_name($id_module);
-        $units_name = \modules_get_unit($id_module);
+        $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
+        $units_name = \modules_get_unit($this->values['moduleId']);
 
         $trickHight = 10;
         if ($this->values['showLegend'] === 1) {
@@ -403,6 +444,22 @@ class SingleGraphWidget extends Widget
     public static function getName()
     {
         return 'single_graph';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 430,
+        ];
+
+        return $size;
     }
 
 

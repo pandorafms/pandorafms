@@ -743,8 +743,9 @@ switch ($action) {
         $search = trim(get_parameter('search', ''));
 
         $search_sql = '';
-        if ($search != '') {
-            $search_name = '%'.$search."%' OR description LIKE '%".$search.'%';
+
+        if ($search !== '') {
+            $search_name = "(name LIKE '%".$search."%' OR description LIKE '%".$search."%')";
         }
 
         $table_aux = new stdClass();
@@ -830,13 +831,10 @@ switch ($action) {
             $return_all_group = false;
         }
 
-        if ($search != '') {
-            $filter = [
-                'name'  => $search_name,
-                'order' => 'name',
-            ];
-        } else {
-            $filter = ['order' => 'name'];
+        $filter = ['order' => 'name'];
+
+        if ($search !== '') {
+            $filter[] = $search_name;
         }
 
         // Fix : group filter was not working
@@ -1057,7 +1055,7 @@ switch ($action) {
                         ]
                     );
                     $data[2] .= '</a>';
-                    $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
+                    $data[3] = '<a onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
                     $data[3] .= html_print_image(
                         'images/xml.png',
                         true,
@@ -1890,6 +1888,9 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
+                                );
                                 $good_format = true;
                             break;
 
@@ -1912,6 +1913,9 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
                                 );
                                 $good_format = true;
                             break;
@@ -2050,6 +2054,11 @@ switch ($action) {
 
                         $show_summary_group = get_parameter(
                             'show_summary_group',
+                            0
+                        );
+
+                        $server_multiple = get_parameter(
+                            'server_multiple',
                             0
                         );
                         $filter_event_severity = get_parameter(
@@ -2209,8 +2218,11 @@ switch ($action) {
                         );
 
                         switch ($values['type']) {
-                            case 'event_report_agent':
                             case 'event_report_group':
+                                $style['server_multiple'] = json_encode(
+                                    $server_multiple
+                                );
+                            case 'event_report_agent':
                             case 'event_report_module':
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
@@ -2254,6 +2266,9 @@ switch ($action) {
                                 );
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
+                                );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
                                 );
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2312,12 +2327,34 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'modules_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['module_group'] = get_parameter('module_group');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             case 'IPAM_network':
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
 
                                 // $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'top_n':
+                            case 'general':
+                            case 'exception':
+                                $text_agent = get_parameter('text_agent', '');
+                                $text_agent_module = get_parameter('text_agent_module', '');
+                                if (empty($text_agent) === false) {
+                                    $style['text_agent'] = base64_encode($text_agent);
+                                }
+
+                                if (empty($text_agent_module) === false) {
+                                    $style['text_agent_module'] = base64_encode($text_agent_module);
+                                }
                             break;
 
                             default:
@@ -2673,6 +2710,9 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
+                                );
                                 $good_format = true;
                             break;
 
@@ -2688,6 +2728,9 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
                                 );
                                 $good_format = true;
                             break;
@@ -2915,10 +2958,16 @@ switch ($action) {
                         $style['dyn_height'] = get_parameter('dyn_height', 230);
 
                         switch ($values['type']) {
-                            case 'event_report_agent':
                             case 'event_report_group':
+                                $server_multiple = get_parameter(
+                                    'server_multiple',
+                                    ''
+                                );
+                                $style['server_multiple'] = json_encode(
+                                    $server_multiple
+                                );
+                            case 'event_report_agent':
                             case 'event_report_module':
-
                                 $show_summary_group = get_parameter(
                                     'show_summary_group',
                                     0
@@ -3006,6 +3055,9 @@ switch ($action) {
                                 $style['fullscale'] = (int) get_parameter(
                                     'fullscale'
                                 );
+                                $style['image_threshold'] = (int) get_parameter(
+                                    'image_threshold'
+                                );
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -3063,10 +3115,32 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'modules_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['module_group'] = get_parameter('module_group');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             case 'IPAM_network':
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+                            break;
+
+                            case 'top_n':
+                            case 'general':
+                            case 'exception':
+                                $text_agent = get_parameter('text_agent', '');
+                                $text_agent_module = get_parameter('text_agent_module', '');
+                                if (empty($text_agent) === false) {
+                                    $style['text_agent'] = base64_encode($text_agent);
+                                }
+
+                                if (empty($text_agent_module) === false) {
+                                    $style['text_agent_module'] = base64_encode($text_agent_module);
+                                }
                             break;
 
                             default:

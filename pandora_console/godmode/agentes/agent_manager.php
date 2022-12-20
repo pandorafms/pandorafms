@@ -245,8 +245,11 @@ if (!$new_agent && $alias != '') {
     }
 
     // Remote configuration available.
+    $remote_agent = false;
     if (isset($filename)) {
         if (file_exists($filename['md5'])) {
+            $remote_agent = true;
+
             $agent_name = agents_get_name($id_agente);
             $agent_name = io_safe_output($agent_name);
             $agent_md5 = md5($agent_name, false);
@@ -299,6 +302,15 @@ $table_ip = '<div class="label_select"><p class="input_label">'.__('IP Address')
 $table_ip .= '<div class="label_select_parent">';
 $table_ip .= '<div class="label_select_child_left">'.html_print_input_text('direccion', $direccion_agente, '', 16, 100, true).'</div>';
 $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true).__('Unique IP').'</div>';
+$table_ip .= '<div class="label_select_child_right">'.html_print_input(
+    [
+        'type'  => 'switch',
+        'id'    => 'fixed_ip',
+        'name'  => 'fixed_ip',
+        'value' => $fixed_ip,
+    ]
+).__('Fix IP address').'<p style="margin-right: 15px">'.ui_print_help_tip(__('Avoid automatic IP address update when agent IP changes.'), true).'</p></div>';
+
 $table_ip .= '</div></div>';
 
 if ($id_agente) {
@@ -307,7 +319,7 @@ if ($id_agente) {
     $table_ip .= '<div class="label_select">';
     $table_ip .= '<div class="label_select_parent">';
     $table_ip .= '<div class="label_select_child_left">'.html_print_select($ip_all, 'address_list', $direccion_agente, '', '', 0, true).'</div>';
-    $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('delete_ip', 1, false, true).__('Delete selected').'</div>';
+    $table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('delete_ip', 1, false, true).__('Delete selected IPs').'</div>';
     $table_ip .= '</div></div>';
 }
 
@@ -427,6 +439,42 @@ $table_server .= html_print_select(
     true
 ).'<div class="label_select_child_icons"></div></div></div>';
 
+
+$table_satellite = '';
+if ($remote_agent === true) {
+    // Satellite server selector.
+    $satellite_servers = db_get_all_rows_filter(
+        'tserver',
+        ['server_type' => SERVER_TYPE_ENTERPRISE_SATELLITE],
+        [
+            'id_server',
+            'name',
+        ]
+    );
+
+    $satellite_names = [];
+    if (empty($satellite_servers) === false) {
+        foreach ($satellite_servers as $s_server) {
+            $satellite_names[$s_server['id_server']] = $s_server['name'];
+        }
+
+            $table_satellite = '<div class="label_select"><p class="input_label">'.__('Satellite').'</p>';
+            $table_satellite .= '<div class="label_select_parent">';
+
+            $table_satellite .= html_print_input(
+                [
+                    'type'          => 'select',
+                    'fields'        => $satellite_names,
+                    'name'          => 'satellite_server',
+                    'selected'      => $satellite_server,
+                    'nothing'       => __('None'),
+                    'nothinf_value' => 0,
+                    'return'        => true,
+                ]
+            ).'<div class="label_select_child_icons"></div></div></div>';
+    }
+}
+
 // Description.
 $table_description = '<div class="label_select"><p class="input_label">'.__('Description').'</p>';
 $table_description .= html_print_textarea(
@@ -443,7 +491,7 @@ $table_description .= html_print_textarea(
 echo '<div class="first_row">
         <div class="box-shadow agent_options '.$agent_options_update.' white_box">
             <div class="agent_options_column_left">'.$table_agent_name.$table_alias.$table_ip.$table_primary_group.'</div>
-            <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_description.'</div>
+            <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_satellite.$table_description.'</div>
         </div>';
 if (!$new_agent && $alias != '') {
     echo $table_qr_code;
@@ -824,6 +872,35 @@ foreach ($fields as $field) {
             true,
             true
         );
+    } else if ($field['is_link_enabled']) {
+        list($link_text, $link_url) = json_decode($custom_value, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $link_text = '';
+            $link_url = '';
+        }
+
+        $data_field[1] = '<span style="line-height: 3.5;">'.__('Link text:').'</span>';
+        $data_field[1] .= '<br>';
+        $data_field[1] .= html_print_textarea(
+            'customvalue_'.$field['id_field'].'[]',
+            2,
+            65,
+            $link_text,
+            'class="min-height-30px',
+            true
+        );
+        $data_field[1] .= '<br>';
+        $data_field[1] .= '<span style="line-height: 3.5;">'.__('Link URL:').'</span>';
+        $data_field[1] .= '<br>';
+        $data_field[1] .= html_print_textarea(
+            'customvalue_'.$field['id_field'].'[]',
+            2,
+            65,
+            $link_url,
+            'class="min-height-30px',
+            true
+        );
     } else {
         $data_field[1] = html_print_textarea(
             'customvalue_'.$field['id_field'],
@@ -1074,6 +1151,20 @@ ui_require_jquery_file('bgiframe');
             );
         }
         $("#text-agente").prop('readonly', true);
+
+
+        // Disable fixed ip button if empty.
+        if($("#text-direccion").val() == '') {
+                $("#fixed_ip").prop('disabled',true);
+        }
+
+        $("#text-direccion").on('input',function(e){
+            if($("#text-direccion").val() == '') {
+                $("#fixed_ip").prop('disabled',true);
+            } else {
+                $("#fixed_ip").prop('disabled',false);
+            }
+        });
 
     });
 </script>

@@ -219,6 +219,8 @@ function list_files($directory, $stringSearch, $searchHandler, $return=false)
  */
 function format_numeric($number, $decimals=1)
 {
+    global $config;
+
     // Translate to float in case there are characters in the string so
     // fmod doesn't throw a notice
     $number = (float) $number;
@@ -227,17 +229,11 @@ function format_numeric($number, $decimals=1)
         return 0;
     }
 
-    // Translators: This is separator of decimal point
-    $dec_point = __('.');
-    // Translators: This is separator of decimal point
-    $thousands_sep = __(',');
-
-    // If has decimals
     if (fmod($number, 1) > 0) {
-        return number_format($number, $decimals, $dec_point, $thousands_sep);
+        return number_format($number, $decimals, $config['decimal_separator'], $config['thousand_separator']);
     }
 
-    return number_format($number, 0, $dec_point, $thousands_sep);
+    return number_format($number, 0, $config['decimal_separator'], $config['thousand_separator']);
 }
 
 
@@ -1001,6 +997,30 @@ function get_parameter_post($name, $default='')
 {
     if ((isset($_POST[$name])) && ($_POST[$name] != '')) {
         return io_safe_input($_POST[$name]);
+    }
+
+    return $default;
+}
+
+
+/**
+ * Get header.
+ *
+ * @param string      $key     Key.
+ * @param string|null $default Default.
+ *
+ * @return string|null
+ */
+function get_header(string $key, ?string $default=null): ?string
+{
+    static $headers;
+    if (!isset($headers)) {
+        $headers = getAllHeaders();
+    }
+
+    $adjust_key = ucwords(strtolower($key));
+    if (isset($headers[$adjust_key])) {
+        return $headers[$adjust_key];
     }
 
     return $default;
@@ -1993,7 +2013,8 @@ function get_snmpwalk(
     $snmp_port='',
     $server_to_exec=0,
     $extra_arguments='',
-    $format='-Oa'
+    $format='-Oa',
+    $load_mibs='-m ALL'
 ) {
     global $config;
 
@@ -2057,15 +2078,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -2074,7 +2095,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' '.$load_mibs.' '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 
@@ -2262,7 +2283,14 @@ function check_login($output=true)
             || (isset($_SESSION['merge-request-user-trick']) === true
             && $_SESSION['merge-request-user-trick'] === $_SESSION['id_usuario'])
         ) {
-            $config['id_user'] = $_SESSION['id_usuario'];
+            if (isset($config['auth']) === true && $config['auth'] === 'ad' && is_user($_SESSION['id_usuario'])) {
+                // User name in active directory is case insensitive.
+                // Get the user name from database.
+                $user_info = get_user_info($_SESSION['id_usuario']);
+                $config['id_user'] = $user_info['id_user'];
+            } else {
+                $config['id_user'] = $_SESSION['id_usuario'];
+            }
 
             return true;
         }
@@ -2398,9 +2426,9 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
  * LM - Alert Management
  * PM - Pandora Management
  *
- * @param integer $id_user      User id
- * @param integer $id_group     Agents group id to check from
- * @param string  $access       Access privilege
+ * @param integer $id_user      User id.
+ * @param integer $id_group     Agents group id to check from.
+ * @param string  $access       Access privilege.
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
  *
  * @return boolean 1 if the user has privileges, 0 if not.
@@ -2408,7 +2436,7 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 function check_acl_restricted_all($id_user, $id_group, $access, $onlyOneGroup=false)
 {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {
@@ -4052,14 +4080,18 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                     $data_return['legend'][$key] .= ' '.__('Max:');
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                     $data_return['legend'][$key] .= ' '._('Avg:');
@@ -4067,7 +4099,8 @@ function series_type_graph_array($data, $show_elements_graph)
                         number_format(
                             $value['avg'],
                             $config['graph_precision'],
-                            $config['csv_decimal_separator']
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     ).' '.$str;
                 }
@@ -4124,7 +4157,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['data'][0][1],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     ).' '.$str;
                 }
@@ -4260,7 +4295,9 @@ function get_product_name()
 
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        if ($config['rb_product_name_alt']) {
+        if (isset($config['rb_product_name_alt']) === true
+            && empty($config['rb_product_name_alt']) === false
+        ) {
             return $config['rb_product_name_alt'];
         }
 
@@ -5987,6 +6024,38 @@ function send_test_email(
 
 
 /**
+ * Check ip is valid into network
+ *
+ * @param string $ip   Ip XXX.XXX.XXX.XXX.
+ * @param string $cidr Network XXX.XXX.XXX.XXX/XX.
+ *
+ * @return boolean
+ */
+function cidr_match($ip, $cidr)
+{
+    list($subnet, $mask) = explode('/', $cidr);
+
+    if ((ip2long($ip) & ~((1 << (32 - $mask)) - 1) ) == ip2long($subnet)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Microtime float number.
+ *
+ * @return float
+ */
+function microtime_float()
+{
+    list($usec, $sec) = explode(' ', microtime());
+    return ((float) $usec + (float) $sec);
+}
+
+
+/**
  * Return array of ancestors of item, given array.
  *
  * @param integer     $item    From index.
@@ -6054,4 +6123,173 @@ if (function_exists('str_contains') === false) {
     }
 
 
+}
+
+
+/**
+ * Is reporting console node.
+ *
+ * @return boolean
+ */
+function is_reporting_console_node()
+{
+    global $config;
+    if (isset($config['reporting_console_enable']) === true
+        && (bool) $config['reporting_console_enable'] === true
+        && isset($config['reporting_console_node']) === true
+        && (bool) $config['reporting_console_node'] === true
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Acl reporting console node.
+ *
+ * @param string $path Path.
+ *
+ * @return boolean
+ */
+function acl_reporting_console_node($path, $tab='')
+{
+    global $config;
+    if (is_reporting_console_node() === false) {
+        return true;
+    }
+
+    if (is_metaconsole() === true) {
+        if ($path === 'advanced/metasetup') {
+            switch ($tab) {
+                case 'update_manager_online':
+                case 'update_manager_offline':
+                case 'update_manager_history':
+                case 'update_manager_setup':
+                case 'file_manager':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === 'advanced/users_setup') {
+            switch ($tab) {
+                case 'user_edit':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === $config['homedir'].'/godmode/users/configure_user'
+            || $path === 'advanced/links'
+            || $path === $config['homedir'].'/enterprise/extensions/cron'
+        ) {
+            return true;
+        }
+    } else {
+        if ($path === 'godmode/servers/discovery') {
+            switch ($tab) {
+                case 'main':
+                case 'tasklist':
+                return true;
+
+                default:
+                return false;
+            }
+        }
+
+        if ($path === 'operation/users/user_edit'
+            || $path === 'operation/users/user_edit_notifications'
+            || $path === 'godmode/setup/file_manager'
+            || $path === 'godmode/update_manager/update_manager'
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+
+/**
+ * Necessary checks for the reporting console.
+ *
+ * @return string
+ */
+function notify_reporting_console_node()
+{
+    $return = '';
+
+    // Check php memory limit.
+    $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+    if ($PHPmemory_limit !== -1) {
+        $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
+        if ($config['language'] == 'es') {
+            $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
+        }
+
+        $msg = __("Not recommended '%s' value in PHP configuration", $PHPmemory_limit);
+        $msg .= '<br>'.__('Recommended value is: -1');
+        $msg .= '<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator');
+        $msg .= '<br><a href="'.$url.'" target="_blank">'.__('Documentation').'</a>';
+
+        $return = ui_print_error_message($msg, '', true);
+    }
+
+    return $return;
+}
+
+
+/**
+ * Auxiliar Ordenation function
+ *
+ * @param string $sort      Direction of sort.
+ * @param string $sortField Field for perform the sorting.
+ *
+ * @return mixed
+ */
+function arrayOutputSorting($sort, $sortField)
+{
+    return function ($a, $b) use ($sort, $sortField) {
+        if ($sort === 'up' || $sort === 'asc') {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcasecmp($a[$sortField], $b[$sortField]);
+            } else {
+                return ($a[$sortField] - $b[$sortField]);
+            }
+        } else {
+            if (is_string($a[$sortField]) === true) {
+                return strnatcasecmp($b[$sortField], $a[$sortField]);
+            } else {
+                return ($a[$sortField] + $b[$sortField]);
+            }
+        }
+    };
+}
+
+
+/**
+ * Get dowload started cookie from js and set ready cokkie for download ready comntrol.
+ *
+ * @return
+ */
+function setDownloadCookieToken()
+{
+    $download_cookie = get_cookie('downloadToken', false);
+    if ($download_cookie === false) {
+        return;
+    } else {
+        setcookie(
+            'downloadReady',
+            $download_cookie,
+            (time() + 15),
+            '/'
+        );
+    }
 }

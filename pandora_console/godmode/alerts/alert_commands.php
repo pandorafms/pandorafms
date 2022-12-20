@@ -15,6 +15,7 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
+require_once $config['homedir'].'/include/functions_reports.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
@@ -349,9 +350,94 @@ if (is_ajax()) {
                         );
                 } else {
                     $fields_value_select = [];
-                    $fv = explode(';', $field_value);
+                    $force_print_select = false;
 
-                    if (count($fv) > 1) {
+                    // Exception for dynamically filled select boxes.
+                    if (preg_match('/^_reports_$/i', $field_value)) {
+                        // Filter normal and metaconsole reports.
+                        if (is_metaconsole() === true) {
+                            $filter['metaconsole'] = 1;
+                        } else {
+                            $filter['metaconsole'] = 0;
+                        }
+
+                        $own_info = get_user_info($config['id_user']);
+                        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
+                            $return_all_group = true;
+                        } else {
+                            $return_all_group = false;
+                        }
+
+                        if (is_user_admin($config['id_user']) === false) {
+                            $filter[] = sprintf(
+                                'private = 0 OR (private = 1 AND id_user = "%s")',
+                                $config['id_user']
+                            );
+                        }
+
+                        $reports = reports_get_reports(
+                            $filter,
+                            [
+                                'name',
+                                'id_report',
+                            ],
+                            $return_all_group,
+                            'RR'
+                        );
+
+                        $fv = array_map(
+                            function ($report) {
+                                return $report['id_report'].','.$report['name'];
+                            },
+                            $reports
+                        );
+
+                        $force_print_select = true;
+                    } else if (preg_match('/^_report_templates_$/i', $field_value)) {
+                        // Filter normal and metaconsole reports.
+                        if (is_metaconsole() === true) {
+                            $filter['metaconsole'] = 1;
+                        } else {
+                            $filter['metaconsole'] = 0;
+                        }
+
+                        $own_info = get_user_info($config['id_user']);
+                        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
+                            $return_all_group = true;
+                        } else {
+                            $return_all_group = false;
+                        }
+
+                        if (is_user_admin($config['id_user']) === false) {
+                            $filter[] = sprintf(
+                                'private = 0 OR (private = 1 AND id_user = "%s")',
+                                $config['id_user']
+                            );
+                        }
+
+                        $templates = reports_get_report_templates(
+                            $filter,
+                            [
+                                'name',
+                                'id_report',
+                            ],
+                            $return_all_group,
+                            'RR'
+                        );
+
+                        $fv = array_map(
+                            function ($template) {
+                                return $template['id_report'].','.$template['name'];
+                            },
+                            $templates
+                        );
+
+                        $force_print_select = true;
+                    } else {
+                        $fv = explode(';', $field_value);
+                    }
+
+                    if (count($fv) > 1 || $force_print_select === true) {
                         if (!empty($fv)) {
                             foreach ($fv as $fv_option) {
                                 $fv_option = explode(',', $fv_option);
@@ -711,11 +797,7 @@ foreach ($commands as $command) {
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if ($is_management_allowed === true && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
-        if (check_acl($config['id_user'], 0, 'PM') || is_user_admin(
-            $config['id_user
-            ']
-        )
-        ) {
+        if (is_user_admin($config['id_user']) === true) {
                     $data['action'] = '<span class="inline_flex">';
             $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
             onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
@@ -742,7 +824,8 @@ if (isset($data) === true && count($table->data) > 0) {
     );
 }
 
-if ($is_management_allowed === true && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
+// Commands can only be created by the super administrator.
+if (users_is_admin() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');

@@ -34,7 +34,7 @@ check_login();
 
 if (is_ajax()) {
     $test_address = get_parameter('test_address', '');
-    $params = get_parameter('params', '');
+    $params = io_safe_output(get_parameter('params', ''));
 
     $res = send_test_email(
         $test_address,
@@ -494,6 +494,17 @@ $table->data[$i++][1] = html_print_checkbox_switch(
     'module_custom_id_ro',
     1,
     $config['module_custom_id_ro'],
+    true
+);
+
+$table->data[$i][0] = __('Enable console report').ui_print_help_tip(
+    __('Enable console report'),
+    true
+);
+$table->data[$i++][1] = html_print_checkbox_switch(
+    'reporting_console_enable',
+    1,
+    $config['reporting_console_enable'],
     true
 );
 

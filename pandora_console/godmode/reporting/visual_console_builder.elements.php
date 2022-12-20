@@ -165,6 +165,7 @@ if ($layoutDatas === false) {
 
 $alternativeStyle = true;
 
+$parents = visual_map_get_items_parents($idVisualConsole);
 
 foreach ($layoutDatas as $layoutData) {
     $idLayoutData = $layoutData['id'];
@@ -473,7 +474,6 @@ foreach ($layoutDatas as $layoutData) {
         break;
 
         default:
-            $parents = visual_map_get_items_parents($idVisualConsole);
             $table->data[($i + 1)][4] = html_print_select(
                 $parents,
                 'parent_'.$idLayoutData,
@@ -740,9 +740,9 @@ foreach ($layoutDatas as $layoutData) {
 $pure = get_parameter('pure', 0);
 
 if (!defined('METACONSOLE')) {
-    echo '<form method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
+    echo '<form class="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
 } else {
-    echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
+    echo "<form class='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
 }
 
 if (!defined('METACONSOLE')) {
@@ -807,26 +807,47 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 <script type="text/javascript">
     $(document).ready (function () {
-       
+        $('form.vc_elem_form').submit(function() {
+            var inputs_array = $(this).serializeArray();
+            var form_action = {};
+
+            form_action.name = 'go';
+            form_action.value = 'Update';
+            inputs_array.push(form_action);
+
+            var serialized_form_inputs = JSON.stringify(inputs_array);
+            var ajax_url = "<?php echo (is_metaconsole() === true) ? 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console='.$idVisualConsole : 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id']; ?>";
+
+            $.post({
+                url: ajax_url,
+                data: { serialized_form_inputs },
+                dataType: "json",
+                async: false,
+                complete: function (data) {
+                    location.reload();
+                }
+            });
+
+            return false;
+        });
+
         var added_config = {
             "selector": "#tinyMCE_editor",
-            "elements": "text-label",
+            "elements": "tinyMCE_editor",
             "plugins": "noneditable",
-            "theme_advanced_buttons1": 
-                "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
+            "theme_advanced_buttons1": "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
             "valid_children": "+body[style]",
             "theme_advanced_font_sizes": "true",
-            "content_css": 
-                <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
+            "content_css": <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
             "editor_deselector": "noselected",
             "inline_styles": true,
             "nowrap": true,
             "width": "400",
             "height": "200",
-    }
-    
-    defineTinyMCE(added_config);
-        
+            "body_class": "tinyMCEBody",
+        }
+
+        defineTinyMCE(added_config);
         $("#dialog_label_editor").hide ()
             .dialog ({
                 title: "<?php echo __('Edit label'); ?>",
@@ -837,48 +858,58 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
                     opacity: 0.5,
                     background: "black"
                 },
-                width: 450,
+                width: 530,
                 height: 300,
                 autoOpen: false,
                 beforeClose: function() {
                     var id_layout_data = $("#active_id_layout_data").val();
                     var label = tinyMCE.activeEditor.getContent();
-                    
                     $("#hidden-label_" + id_layout_data).val(label);
                 }
-        });
+            });
+
+        var idText = $("#ip_text").html();
     });
-    
-    var idText = $("#ip_text").html();
-    
+
     function show_dialog_label_editor(id_layout_data) {
         var label = $("#hidden-label_" + id_layout_data).val();
-        
         $("#active_id_layout_data").val(id_layout_data);
-        
-        $("#tinyMCE_editor").val(label);
         tinyMCE.activeEditor.setContent(label);
         $("#dialog_label_editor").dialog("open");
     }
-    
+
     function toggle_checkbox_multiple_delete() {
         checked_head_multiple = $("input[name='head_multiple_delete']")
             .is(":checked");
-        
         $("input[name='multiple_delete_items']")
             .prop("checked", checked_head_multiple);
     }
-    
+
     function submit_delete_multiple_items() {
+        event.preventDefault();
         delete_items = [];
         jQuery.each($("input[name='multiple_delete_items']:checked"),
             function(i, item) {
                 delete_items.push($(item).val());
             }
         );
-        
-        
-        $("input[name='id_item_json']").val(JSON.stringify(delete_items));
-        $("#form_multiple_delete").submit();
+
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: {
+                page: "godmode/reporting/visual_console_builder",
+                action: "multiple_delete",
+                tab: "list_elements",
+                id_item_json: JSON.stringify(delete_items),
+                id_visual_console: "<?php echo (is_metaconsole() === true) ? $idVisualConsole : $visualConsole['id']; ?>",
+            },
+            dataType: "json",
+            complete: function (data) {
+                location.reload();
+            }
+        });
+
+        return false;
     }
 </script>

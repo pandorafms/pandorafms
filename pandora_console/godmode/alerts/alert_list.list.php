@@ -1,25 +1,35 @@
 <?php
+/**
+ * List view for Alerts.
+ *
+ * @category   Alerts
+ * @package    Community
+ * @subpackage Software agents repository
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ==========================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnológicas S.L
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
-// Check if this page is included from a agent edition
-if (! check_acl($config['id_user'], 0, 'LW')
-    && ! check_acl($config['id_user'], 0, 'AD')
-    && ! check_acl($config['id_user'], 0, 'LM')
+// Check if this page is included from a agent edition.
+if ((bool) check_acl($config['id_user'], 0, 'LW') === false
+    && (bool) check_acl($config['id_user'], 0, 'AD') === false
+    && (bool) check_acl($config['id_user'], 0, 'LM') === false
 ) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -36,7 +46,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 $pure = get_parameter('pure', 0);
 $agent_id = get_parameter('agent_id', 0);
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $sec = 'advanced';
 } else {
     $sec = 'galertas';
@@ -48,7 +58,7 @@ if ($id_agente) {
     $sec2 = 'godmode/alerts/alert_list';
 }
 
-// Table for filter controls
+// Table for filter controls.
 $form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2='.$sec2.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure='.$config['pure'].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />";
 $form_filter .= '<table  cellpadding="0" cellspacing="0" class="databox filters w100p">';
@@ -60,7 +70,7 @@ $temp = agents_get_agents();
 $arrayAgents = [];
 
 // Avoid empty arrays, warning messages are UGLY !
-if ($temp) {
+if ($temp !== false) {
     foreach ($temp as $agentElement) {
         $arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
     }
@@ -93,11 +103,11 @@ $form_filter .= '</tr>';
 
 $all_groups = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 
-if (check_acl($config['id_user'], 0, 'AD')) {
+if ((bool) check_acl($config['id_user'], 0, 'AD') === true) {
     $groups_user = users_get_groups($config['id_user'], 'AD', $all_groups);
-} else if (check_acl($config['id_user'], 0, 'LW')) {
+} else if ((bool) check_acl($config['id_user'], 0, 'LW') === true) {
     $groups_user = users_get_groups($config['id_user'], 'LW', $all_groups);
-} else if (check_acl($config['id_user'], 0, 'LM')) {
+} else if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
     $groups_user = users_get_groups($config['id_user'], 'LM', $all_groups);
 }
 
@@ -109,16 +119,16 @@ $groups_id = implode(',', array_keys($groups_user));
 
 $form_filter .= '<tr>';
 
-$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id);");
+$temp = db_get_all_rows_sql('SELECT id, name FROM talert_actions WHERE id_group IN ('.$groups_id.');');
 $arrayActions = [];
-if (is_array($temp)) {
+if (is_array($temp) === true) {
     foreach ($temp as $actionElement) {
         $arrayActions[$actionElement['id']] = $actionElement['name'];
     }
 }
 
 $form_filter .= "<td class='bolder''>".__('Actions').'</td><td>';
-$form_filter .= html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true);
+$form_filter .= html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true, false, true, '', false, 'width:95%');
 $form_filter .= '</td>';
 $form_filter .= "<td class='bolder''>".__('Field content').'</td><td>';
 $form_filter .= html_print_input_text('field_content', $fieldContent, '', 12, 255, true);
@@ -155,7 +165,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
 $form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false);
 $form_filter .= '</td></tr>';
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $form_filter .= '<tr>';
     $form_filter .= "<td colspan='6' align='right'>";
     $form_filter .= html_print_submit_button(__('Update'), '', false, 'class="sub upd"', true);
@@ -170,7 +180,7 @@ if (defined('METACONSOLE')) {
 }
 
 $form_filter .= '</form>';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     echo '<br>';
 }
 
@@ -185,56 +195,55 @@ $simple_alerts = [];
 
 $total = 0;
 $where = '';
-if ($searchFlag) {
-    if ($status_alert === 'fired') {
-        $where .= ' AND talert_template_modules.times_fired > 0';
-    }
 
-    if ($status_alert === 'notfired') {
-        $where .= ' AND talert_template_modules.times_fired = 0';
-    }
+if ($status_alert === 'fired') {
+    $where .= ' AND talert_template_modules.times_fired > 0';
+}
 
-    if ($priority != -1 && $priority != '') {
-        $where .= ' AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = '.$priority.')';
-    }
+if ($status_alert === 'notfired') {
+    $where .= ' AND talert_template_modules.times_fired = 0';
+}
 
-    if (strlen(trim($templateName)) > 0) {
-        $where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%".trim($templateName)."%')";
-    }
+if ($priority != -1 && $priority != '') {
+    $where .= ' AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = '.$priority.')';
+}
 
-    if (strlen(trim($fieldContent)) > 0) {
-        $where .= " AND id_alert_template IN (SELECT id FROM talert_templates
+if (strlen(trim($templateName)) > 0) {
+    $where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%".trim($templateName)."%')";
+}
+
+if (strlen(trim($fieldContent)) > 0) {
+    $where .= " AND id_alert_template IN (SELECT id FROM talert_templates
 			WHERE field1 LIKE '%".trim($fieldContent)."%' OR field2 LIKE '%".trim($fieldContent)."%' OR
 				field3 LIKE '%".trim($fieldContent)."%' OR
 				field2_recovery LIKE '%".trim($fieldContent)."%' OR
 				field3_recovery LIKE '%".trim($fieldContent)."%')";
-    }
+}
 
-    if (strlen(trim($moduleName)) > 0) {
-        $where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%".trim($moduleName)."%')";
-    }
+if (strlen(trim($moduleName)) > 0) {
+    $where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%".trim($moduleName)."%')";
+}
 
-    if (strlen(trim($agentName)) > 0) {
-        $where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
+if (strlen(trim($agentName)) > 0) {
+    $where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
 			FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
 			WHERE t1.alias LIKE '".trim($agentName)."')";
-    }
+}
 
-    if ($actionID != -1 && $actionID != '') {
-        $where .= ' AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.'))';
-    }
+if ($actionID != -1 && $actionID != '') {
+    $where .= ' AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.'))';
+}
 
-    if ($status_alert === 'disabled') {
-        $where .= ' AND talert_template_modules.disabled = 1';
-    }
+if ($status_alert === 'disabled') {
+    $where .= ' AND talert_template_modules.disabled = 1';
+}
 
-    if ($status_alert === 'all_enabled') {
-        $where .= ' AND talert_template_modules.disabled = 0';
-    }
+if ($status_alert === 'all_enabled') {
+    $where .= ' AND talert_template_modules.disabled = 0';
+}
 
-    if ($standby != -1 && $standby != '') {
-        $where .= ' AND talert_template_modules.standby = '.$standby;
-    }
+if ($standby != -1 && $standby != '') {
+    $where .= ' AND talert_template_modules.standby = '.$standby;
 }
 
 $id_agents = array_keys($agents);
@@ -253,7 +262,7 @@ $total = agents_get_alerts_simple(
     true
 );
 
-if (empty($total)) {
+if (empty($total) === true) {
     $total = 0;
 }
 
@@ -277,14 +286,6 @@ $selectTemplateDown = false;
 switch ($sortField) {
     case 'disabled':
         switch ($sort) {
-            case 'up':
-                $selectDisabledUp = $selected;
-                $order = [
-                    'field' => 'disabled',
-                    'order' => 'ASC',
-                ];
-            break;
-
             case 'down':
                 $selectDisabledDown = $selected;
                 $order = [
@@ -292,19 +293,20 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+            case 'up':
+                $selectDisabledUp = $selected;
+                $order = [
+                    'field' => 'disabled',
+                    'order' => 'ASC',
+                ];
+            break;
         }
     break;
 
     case 'standby':
         switch ($sort) {
-            case 'up':
-                $selectStandbyUp = $selected;
-                $order = [
-                    'field' => 'standby',
-                    'order' => 'ASC',
-                ];
-            break;
-
             case 'down':
                 $selectStandbyDown = $selected;
                 $order = [
@@ -312,19 +314,20 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+            case 'up':
+                $selectStandbyUp = $selected;
+                $order = [
+                    'field' => 'standby',
+                    'order' => 'ASC',
+                ];
+            break;
         }
     break;
 
     case 'agent':
         switch ($sort) {
-            case 'up':
-                $selectAgentUp = $selected;
-                $order = [
-                    'field' => 'agent_name',
-                    'order' => 'ASC',
-                ];
-            break;
-
             case 'down':
                 $selectAgentDown = $selected;
                 $order = [
@@ -332,19 +335,20 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+            case 'up':
+                $selectAgentUp = $selected;
+                $order = [
+                    'field' => 'agent_name',
+                    'order' => 'ASC',
+                ];
+            break;
         }
     break;
 
     case 'module':
         switch ($sort) {
-            case 'up':
-                $selectModuleUp = $selected;
-                $order = [
-                    'field' => 'agent_module_name',
-                    'order' => 'ASC',
-                ];
-            break;
-
             case 'down':
                 $selectModuleDown = $selected;
                 $order = [
@@ -352,24 +356,34 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+            case 'up':
+                $selectModuleUp = $selected;
+                $order = [
+                    'field' => 'agent_module_name',
+                    'order' => 'ASC',
+                ];
+            break;
         }
     break;
 
     case 'template':
         switch ($sort) {
-            case 'up':
-                $selectTemplateUp = $selected;
-                $order = [
-                    'field' => 'template_name',
-                    'order' => 'ASC',
-                ];
-            break;
-
             case 'down':
                 $selectTemplateDown = $selected;
                 $order = [
                     'field' => 'template_name',
                     'order' => 'DESC',
+                ];
+            break;
+
+            default:
+            case 'up':
+                $selectTemplateUp = $selected;
+                $order = [
+                    'field' => 'template_name',
+                    'order' => 'ASC',
                 ];
             break;
         }
@@ -437,7 +451,7 @@ $simple_alerts = agents_get_alerts_simple(
 if (!$id_agente) {
     $url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'&offset='.$offset.$form_params;
 } else {
-    $url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente='.$id_agente.'&offset='.$offset.$form_params;
+    $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente='.$id_agente.'&offset='.$offset.$form_params;
 }
 
 // Urls to sort the table.
@@ -556,7 +570,7 @@ foreach ($simple_alerts as $alert) {
 
     if ($alert['times_fired'] > 0) {
         $status = STATUS_ALERT_FIRED;
-        $title = __('Alert fired').' '.$alert['internal_counter'].' '.__('time(s)');
+        $title = __('Alert fired').' '.$alert['times_fired'].' '.__('time(s)');
     } else if ($alert['disabled'] > 0) {
         $status = STATUS_ALERT_DISABLED;
         $title = __('Alert disabled');
@@ -717,13 +731,13 @@ foreach ($simple_alerts as $alert) {
 
         $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible">';
             $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" style="height:85%;">';
-                $data[3] .= '<table class="databox_color w100p bg_color222" style="height:100%;">';
+                $data[3] .= '<table class="w100p bg_color222">';
                     $data[3] .= html_print_input_hidden('add_action', 1, true);
                     $data[3] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
 
         if (! $id_agente) {
             $data[3] .= '<tr class="datos2">';
-                $data[3] .= '<td class="datos2 bolder pdd_6px">';
+                $data[3] .= '<td class="datos2 bolder pdd_6px font_10pt">';
                 $data[3] .= __('Agent');
                 $data[3] .= '</td>';
                 $data[3] .= '<td class="datos">';
@@ -733,7 +747,7 @@ foreach ($simple_alerts as $alert) {
         }
 
                     $data[3] .= '<tr class="datos">';
-                        $data[3] .= '<td class="datos bolder pdd_6px">';
+                        $data[3] .= '<td class="datos bolder pdd_6px font_10pt">';
                         $data[3] .= __('Module');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos">';
@@ -741,15 +755,15 @@ foreach ($simple_alerts as $alert) {
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos2">';
-                        $data[3] .= '<td class="datos2 bolder pdd_6px">';
+                        $data[3] .= '<td class="datos2 bolder pdd_6px font_10pt">';
                             $data[3] .= __('Action');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos2">';
-                            $data[3] .= html_print_select($actions, 'action_select', '', '', __('None'), 0, true, false, true, '', false, 'width:150px');
+                            $data[3] .= html_print_select($actions, 'action_select', '', '', __('None'), 0, true, false, true, '', false, 'width:95%');
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos">';
-                        $data[3] .= '<td class="datos bolder pdd_6px">';
+                        $data[3] .= '<td class="datos bolder pdd_6px font_10pt">';
                             $data[3] .= __('Number of alerts match from');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos">';
@@ -773,7 +787,7 @@ foreach ($simple_alerts as $alert) {
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos2">';
-                        $data[3] .= '<td class="datos2 bolder pdd_6px">';
+                        $data[3] .= '<td class="datos2 bolder pdd_6px font_10pt">';
                             $data[3] .= __('Threshold');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos2">';
@@ -1127,8 +1141,6 @@ function show_advance_options_action(id_alert) {
 function show_add_action(id_alert) {
     $("#add_action-div-" + id_alert).hide ()
         .dialog ({
-            resizable: true,
-            draggable: true,
             title: '<?php echo __('Add action'); ?>',
             modal: true,
             overlay: {
@@ -1136,14 +1148,14 @@ function show_add_action(id_alert) {
                 background: "black"
             },
             open: function() {
-                $(`#add_action-div-${id_alert}`).css('overflow', 'hidden');
+                $(`#add_action-div-${id_alert}`).css('overflow', 'initial');
                 $("select[id^='action_select'], select[id^='action_select']").select2({
                     tags: true,
                     dropdownParent: $("#add_action-div-" + id_alert)
                 });
             },
-            width: 455,
-            height: 500
+            width: 600,
+            height: 300
         })
         .show ();
 }
@@ -1179,8 +1191,8 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                             dropdownParent: $(`#update_action-div-${alert_id}`)
                         });
                     },
-                    width: 455,
-                    height: 500
+                    width: 600,
+                    height: 350
                 })
                 .show ();
         }

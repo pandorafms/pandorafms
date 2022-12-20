@@ -626,7 +626,7 @@ function grafico_modulo_sparse_data(
  * 'show_legend'         => true,
  * 'show_overview'       => true,
  * 'return_img_base_64'  => false,
- * 'image_treshold'      => false,
+ * 'image_threshold'      => false,
  * 'graph_combined'      => false,
  * 'graph_render'        => 0,
  * 'zoom'                => 1,
@@ -782,8 +782,8 @@ function grafico_modulo_sparse($params)
         $params['return_img_base_64'] = false;
     }
 
-    if (isset($params['image_treshold']) === false) {
-        $params['image_treshold'] = false;
+    if (isset($params['image_threshold']) === false) {
+        $params['image_threshold'] = false;
     }
 
     if (isset($params['graph_combined']) === false) {
@@ -1305,8 +1305,8 @@ function graphic_combined_module(
         $params['return_img_base_64'] = false;
     }
 
-    if (isset($params['image_treshold']) === false) {
-        $params['image_treshold'] = false;
+    if (isset($params['image_threshold']) === false) {
+        $params['image_threshold'] = false;
     }
 
     if (isset($params['show_unknown']) === false) {
@@ -1416,7 +1416,7 @@ function graphic_combined_module(
         }
     }
 
-    if (isset($sources) && is_array($sources)) {
+    if (isset($sources) === true && is_array($sources) === true) {
         $weights = [];
         $labels  = [];
         $modules = [];
@@ -1444,7 +1444,7 @@ function graphic_combined_module(
 
             array_push($modules, $modulepush);
             array_push($weights, $source['weight']);
-            if ($source['label'] != '' || $params_combined['labels']) {
+            if (empty($source['label']) === false || $params_combined['labels']) {
                 $agent_description = agents_get_description($id_agent);
                 $agent_group = agents_get_agent_group($id_agent);
                 $agent_address = agents_get_address($id_agent);
@@ -1496,6 +1496,10 @@ function graphic_combined_module(
                 metaconsole_restore_db();
             }
         }
+    }
+
+    if ((bool) $params_combined['from_interface'] === true) {
+        $labels  = [];
     }
 
     if ($module_list) {
@@ -2558,7 +2562,8 @@ function combined_graph_summatory_average(
 function graphic_agentaccess(
     int $id_agent,
     int $period=0,
-    ?bool $return=false
+    ?bool $return=false,
+    ?bool $agent_view=false
 ) {
     global $config;
 
@@ -2598,6 +2603,10 @@ function graphic_agentaccess(
 
     $options = [];
     $options['grid']['hoverable'] = true;
+
+    if ($agent_view === true) {
+        $options['agent_view'] = true;
+    }
 
     if ($return === true) {
         return vbar_graph($data_array, $options, 1);
@@ -3015,7 +3024,7 @@ function graph_sla_slicebar(
         true,
         $ttl,
         false,
-        false,
+        true,
         $date
     );
 }
@@ -3286,73 +3295,6 @@ function series_suffix_leyend($series_name, $series_suffix, $id_agent, $data_mod
 }
 
 
-function graph_events_validated($width=300, $height=200, $extra_filters=[], $meta=false, $history=false)
-{
-    global $config;
-    global $graphic_type;
-
-    $event_type = false;
-    if (array_key_exists('event_type', $extra_filters)) {
-        $event_type = $extra_filters['event_type'];
-    }
-
-    $event_severity = false;
-    if (array_key_exists('event_severity', $extra_filters)) {
-        $event_severity = $extra_filters['event_severity'];
-    }
-
-    $event_status = false;
-    if (array_key_exists('event_status', $extra_filters)) {
-        $event_status = $extra_filters['event_status'];
-    }
-
-    $event_filter_search = false;
-    if (array_key_exists('event_filter_search', $extra_filters)) {
-        $event_filter_search = $extra_filters['event_filter_search'];
-    }
-
-    $data_graph = events_get_count_events_validated(
-        ['id_group' => array_keys(users_get_groups())],
-        null,
-        null,
-        $event_severity,
-        $event_type,
-        $event_status,
-        $event_filter_search
-    );
-
-    $colors = [];
-    foreach ($data_graph as $k => $v) {
-        if ($k == __('Validated')) {
-            $colors[$k] = COL_NORMAL;
-        } else {
-            $colors[$k] = COL_CRITICAL;
-        }
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    echo pie_graph(
-        $data_graph,
-        $width,
-        $height,
-        __('other'),
-        '',
-        $water_mark,
-        $config['fontpath'],
-        $config['font_size'],
-        1,
-        'bottom',
-        $colors
-    );
-}
-
-
 /**
  * Print a pie graph with events data of group
  *
@@ -3365,13 +3307,13 @@ function grafico_eventos_grupo($width=300, $height=200, $url='', $noWaterMark=tr
     global $config;
     global $graphic_type;
 
-    // It was urlencoded, so we urldecode it
+    // It was urlencoded, so we urldecode it.
     $url = html_entity_decode(rawurldecode($url), ENT_QUOTES);
     $data = [];
     $loop = 0;
     define('NUM_PIECES_PIE', 6);
 
-    // Hotfix for the id_agente_modulo
+    // Hotfix for the id_agente_modulo.
     $url = str_replace(
         'SELECT id_agente_modulo',
         'SELECT_id_agente_modulo',
@@ -3386,22 +3328,24 @@ function grafico_eventos_grupo($width=300, $height=200, $url='', $noWaterMark=tr
         'INSERT ',
         'EXEC',
     ];
-    // remove bad strings from the query so queries like ; DELETE FROM  don't pass
+    // remove bad strings from the query so queries like ; DELETE FROM  don't pass.
     $url = str_ireplace($badstrings, '', $url);
 
-    // Hotfix for the id_agente_modulo
+    // Hotfix for the id_agente_modulo.
     $url = str_replace(
         'SELECT_id_agente_modulo',
         'SELECT id_agente_modulo',
         $url
     );
 
-    $event_table = 'tevento';
-    $field_extra = '';
-    $groupby_extra = '';
-
-    // Add tags condition to filter
-    $tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+    // Add tags condition to filter.
+    $tags_condition = tags_get_acl_tags(
+        $config['id_user'],
+        0,
+        'ER',
+        'event_condition',
+        'AND'
+    );
 
     if ($time_limit && $config['event_view_hr']) {
         $tags_condition .= ' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
@@ -3409,14 +3353,14 @@ function grafico_eventos_grupo($width=300, $height=200, $url='', $noWaterMark=tr
 
     // This will give the distinct id_agente, give the id_grupo that goes
     // with it and then the number of times it occured. GROUP BY statement
-    // is required if both DISTINCT() and COUNT() are in the statement
+    // is required if both DISTINCT() and COUNT() are in the statement.
     $sql = sprintf(
         'SELECT DISTINCT(id_agente) AS id_agente,
-                    COUNT(id_agente) AS count'.$field_extra.'
-                FROM '.$event_table.' te LEFT JOIN tagent_secondary_group tasg
+                    COUNT(id_agente) AS count
+                FROM tevento te LEFT JOIN tagent_secondary_group tasg
                     ON te.id_grupo = tasg.id_group
                 WHERE 1=1 %s %s
-                GROUP BY id_agente'.$groupby_extra.'
+                GROUP BY id_agente
                 ORDER BY count DESC LIMIT 8',
         $url,
         $tags_condition
@@ -3456,7 +3400,7 @@ function grafico_eventos_grupo($width=300, $height=200, $url='', $noWaterMark=tr
         $data[$name] = $system_events;
     }
 
-    // Sort the data
+    // Sort the data.
     arsort($data);
     if ($noWaterMark) {
         $water_mark = [
@@ -4024,7 +3968,7 @@ function graph_graphic_agentevents(
         EVENT_CRIT_CRITICAL => COL_CRITICAL,
     ];
 
-    // Draw slicebar graph
+    // Draw slicebar graph.
     $out = flot_slicesbar_graph(
         $data,
         $period,
@@ -4043,6 +3987,7 @@ function graph_graphic_agentevents(
         $not_interactive,
         1,
         $widgets,
+        true,
         $server_id
     );
 

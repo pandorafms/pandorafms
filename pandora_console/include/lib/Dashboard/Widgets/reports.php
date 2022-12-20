@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 require_once $config['homedir'].'/include/Image/image_functions.php';
 require_once $config['homedir'].'/include/functions_reporting_html.php';
@@ -172,6 +174,42 @@ class ReportsWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['reportId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node = new Node($this->values['node']);
+                    $node->connect();
+                }
+
+                // Reports.
+                $check_exist = db_get_value(
+                    'id_report',
+                    'treport',
+                    'id_report',
+                    $this->values['reportId']
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -216,15 +254,39 @@ class ReportsWidget extends Widget
             $return_all_group = true;
         }
 
-        // Reports.
-        $reports = \reports_get_reports(
-            false,
-            [
-                'id_report',
-                'name',
-            ],
-            $return_all_group
-        );
+        try {
+            if (is_metaconsole() === true
+                && $this->values['node'] > 0
+            ) {
+                $node = new Node($this->values['node']);
+                $node->connect();
+            }
+
+            // Reports.
+            $reports = \reports_get_reports(
+                false,
+                [
+                    'id_report',
+                    'name',
+                ],
+                $return_all_group
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $this->values['node'] > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $reports = [];
+        } finally {
+            if (is_metaconsole() === true
+                && $this->values['node'] > 0
+            ) {
+                $node->disconnect();
+            }
+        }
 
         // If currently selected report is not included in fields array
         // (it belongs to a group over which user has no permissions), then add
@@ -352,7 +414,7 @@ class ReportsWidget extends Widget
             $output .= 'Click to view: <a href="?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$this->values['reportId'].'">'.__('Report').'</a>';
             $output .= '</div>';
         } else {
-            $this->load_error = true;
+            $this->loadError = true;
         }
 
         return $output;
@@ -496,6 +558,22 @@ class ReportsWidget extends Widget
         <?php
         $js = ob_get_clean();
         return $js;
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => (is_metaconsole() === true) ? 330 : 260,
+        ];
+
+        return $size;
     }
 
 

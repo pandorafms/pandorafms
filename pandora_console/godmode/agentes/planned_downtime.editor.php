@@ -49,6 +49,7 @@ if (!$agent_d && !$agent_w) {
 set_unless_defined($config['past_planned_downtimes'], 1);
 
 require_once 'include/functions_users.php';
+require_once $config['homedir'].'/include/functions_cron.php';
 
 // Buttons.
 $buttons = [
@@ -122,6 +123,18 @@ $periodically_time_to = (string) get_parameter(
     'periodically_time_to',
     date(TIME_FORMAT, ($system_time + SECONDS_1HOUR))
 );
+
+$hour_from = get_parameter('cron_hour_from', '*');
+$minute_from = get_parameter('cron_minute_from', '*');
+$mday_from = get_parameter('cron_mday_from', '*');
+$month_from = get_parameter('cron_month_from', '*');
+$wday_from = get_parameter('cron_wday_from', '*');
+
+$hour_to = get_parameter('cron_hour_to', '*');
+$minute_to = get_parameter('cron_minute_to', '*');
+$mday_to = get_parameter('cron_mday_to', '*');
+$month_to = get_parameter('cron_month_to', '*');
+$wday_to = get_parameter('cron_wday_to', '*');
 
 $monday = (bool) get_parameter('monday');
 $tuesday = (bool) get_parameter('tuesday');
@@ -262,6 +275,193 @@ if ($create_downtime || $update_downtime) {
         );
     } else {
         $sql = '';
+        $error_cron_from = false;
+        $error_cron_to = false;
+        $error_field = '';
+
+        if ($type_execution === 'cron') {
+            // Validate 'from' cron values.
+            $hour_from = io_safe_output(trim($hour_from));
+            if (preg_match('/^((?:([0-1]?[0-9]|2[0-3])|\*)\s*(?:(?:[\/-]([0-1]?[0-9]|2[0-3])))?\s*)$/', $hour_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('hour (from)');
+            } else {
+                $interval_values = explode('-', $hour_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $minute_from = io_safe_output(trim($minute_from));
+            if (preg_match('/^((?:(5[0-9]|[0-5]?[0-9])|\*)\s*(?:(?:[\/-](5[0-9]|[0-5]?[0-9])))?\s*)$/', $minute_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('minute (from)');
+            } else {
+                $interval_values = explode('-', $minute_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $mday_from = io_safe_output(trim($mday_from));
+            if (preg_match('/^((?:(0?[1-9]|[12][0-9]|3[01])|\*)\s*(?:(?:[\/-](0?[1-9]|[12][0-9]|3[01])))?\s*)$/', $mday_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('month day (from)');
+            } else {
+                $interval_values = explode('-', $mday_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $month_from = io_safe_output(trim($month_from));
+            if (preg_match('/^((?:([1-9]|1[012])|\*)\s*(?:(?:[\/-]([1-9]|1[012])))?\s*)$/', $month_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('month (from)');
+            } else {
+                $interval_values = explode('-', $month_from);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            $wday_from = io_safe_output(trim($wday_from));
+            if (preg_match('/^((?:[0-6]|\*)\s*(?:(?:[\/-][0-6]))?\s*)$/', $wday_from, $matches) !== 1) {
+                $error_cron_from = true;
+                $error_field = __('week day (from)');
+            } else {
+                $interval_values = explode('-', $wday_from);
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_from = true;
+                    }
+                }
+            }
+
+            // Validate 'to' cron values.
+            $hour_to = io_safe_output(trim($hour_to));
+            if (preg_match('/^((?:([0-1]?[0-9]|2[0-3])|\*)\s*(?:(?:[\/-]([0-1]?[0-9]|2[0-3])))?\s*)$/', $hour_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('hour (to)');
+            } else {
+                $interval_values = explode('-', $hour_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $minute_to = io_safe_output(trim($minute_to));
+            if (preg_match('/^((?:(5[0-9]|[0-5]?[0-9])|\*)\s*(?:(?:[\/-](5[0-9]|[0-5]?[0-9])))?\s*)$/', $minute_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('minute (to)');
+            } else {
+                $interval_values = explode('-', $minute_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $mday_to = io_safe_output(trim($mday_to));
+            if (preg_match('/^((?:(0?[1-9]|[12][0-9]|3[01])|\*)\s*(?:(?:[\/-](0?[1-9]|[12][0-9]|3[01])))?\s*)$/', $mday_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('month day (to)');
+            } else {
+                $interval_values = explode('-', $mday_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $month_to = io_safe_output(trim($month_to));
+            if (preg_match('/^((?:([1-9]|1[012])|\*)\s*(?:(?:[\/-]([1-9]|1[012])))?\s*)$/', $month_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('month (to)');
+            } else {
+                $interval_values = explode('-', $month_to);
+
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $wday_to = io_safe_output(trim($wday_to));
+            if (preg_match('/^((?:[0-6]|\*)\s*(?:(?:[\/-][0-6]))?\s*)$/', $wday_to, $matches) !== 1) {
+                $error_cron_to = true;
+                $error_field = __('week day (to)');
+            } else {
+                $interval_values = explode('-', $wday_to);
+                if (count($interval_values) > 1) {
+                    $interval_from = $interval_values[0];
+                    $interval_to = $interval_values[1];
+
+                    if ((int) $interval_to < (int) $interval_from) {
+                        $error_cron_to = true;
+                    }
+                }
+            }
+
+            $cron_interval_from = io_safe_output($minute_from.' '.$hour_from.' '.$mday_from.' '.$month_from.' '.$wday_from);
+            $cron_interval_to = io_safe_output($minute_to.' '.$hour_to.' '.$mday_to.' '.$month_to.' '.$wday_to);
+        }
+
+        if (cron_check_syntax($cron_interval_from) !== 1) {
+            $cron_interval_from = '';
+        }
+
+        if (cron_check_syntax($cron_interval_to) !== 1) {
+            $cron_interval_to = '';
+        }
+
         if ($create_downtime) {
             // Check AD permission on new downtime.
             if (!in_array($id_group, $user_groups_ad)) {
@@ -273,50 +473,68 @@ if ($create_downtime || $update_downtime) {
                 return;
             }
 
-            if (trim(io_safe_output($name)) != '') {
-                if (!$check) {
-                    $values = [
-                        'name'                   => $name,
-                        'description'            => $description,
-                        'date_from'              => $datetime_from,
-                        'date_to'                => $datetime_to,
-                        'executed'               => 0,
-                        'id_group'               => $id_group,
-                        'only_alerts'            => 0,
-                        'monday'                 => $monday,
-                        'tuesday'                => $tuesday,
-                        'wednesday'              => $wednesday,
-                        'thursday'               => $thursday,
-                        'friday'                 => $friday,
-                        'saturday'               => $saturday,
-                        'sunday'                 => $sunday,
-                        'periodically_time_from' => $periodically_time_from,
-                        'periodically_time_to'   => $periodically_time_to,
-                        'periodically_day_from'  => $periodically_day_from,
-                        'periodically_day_to'    => $periodically_day_to,
-                        'type_downtime'          => $type_downtime,
-                        'type_execution'         => $type_execution,
-                        'type_periodicity'       => $type_periodicity,
-                        'id_user'                => $config['id_user'],
-                    ];
-                    if ($config['dbtype'] == 'oracle') {
-                        $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
-                        $values['periodically_time_to'] = '1970/01/01 '.$values['periodically_time_to'];
-                    }
-
-                    $result = db_process_sql_insert(
-                        'tplanned_downtime',
-                        $values
-                    );
-                } else {
+            if ($error_cron_to === true || $error_cron_from === true) {
+                if ($error_cron_from === true) {
                     ui_print_error_message(
-                        __('Each scheduled downtime must have a different name')
+                        __('Downtime start cron expression is not correct').': '.$error_field
                     );
                 }
+
+                if ($error_cron_to === true) {
+                    ui_print_error_message(
+                        __('Downtime stop cron expression is not correct').': '.$error_field
+                    );
+                }
+
+                $result = false;
             } else {
-                ui_print_error_message(
-                    __('Scheduled downtime must have a name')
-                );
+                if (trim(io_safe_output($name)) != '') {
+                    if (!$check) {
+                        $values = [
+                            'name'                   => $name,
+                            'description'            => $description,
+                            'date_from'              => $datetime_from,
+                            'date_to'                => $datetime_to,
+                            'executed'               => 0,
+                            'id_group'               => $id_group,
+                            'only_alerts'            => 0,
+                            'monday'                 => $monday,
+                            'tuesday'                => $tuesday,
+                            'wednesday'              => $wednesday,
+                            'thursday'               => $thursday,
+                            'friday'                 => $friday,
+                            'saturday'               => $saturday,
+                            'sunday'                 => $sunday,
+                            'periodically_time_from' => $periodically_time_from,
+                            'periodically_time_to'   => $periodically_time_to,
+                            'periodically_day_from'  => $periodically_day_from,
+                            'periodically_day_to'    => $periodically_day_to,
+                            'type_downtime'          => $type_downtime,
+                            'type_execution'         => $type_execution,
+                            'type_periodicity'       => $type_periodicity,
+                            'id_user'                => $config['id_user'],
+                            'cron_interval_from'     => $cron_interval_from,
+                            'cron_interval_to'       => $cron_interval_to,
+                        ];
+                        if ($config['dbtype'] == 'oracle') {
+                            $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
+                            $values['periodically_time_to'] = '1970/01/01 '.$values['periodically_time_to'];
+                        }
+
+                        $result = db_process_sql_insert(
+                            'tplanned_downtime',
+                            $values
+                        );
+                    } else {
+                        ui_print_error_message(
+                            __('Each scheduled downtime must have a different name')
+                        );
+                    }
+                } else {
+                    ui_print_error_message(
+                        __('Scheduled downtime must have a name')
+                    );
+                }
             }
         } else if ($update_downtime) {
             $old_downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
@@ -381,6 +599,8 @@ if ($create_downtime || $update_downtime) {
                     'type_execution'         => $type_execution,
                     'type_periodicity'       => $type_periodicity,
                     'id_user'                => $config['id_user'],
+                    'cron_interval_from'     => $cron_interval_from,
+                    'cron_interval_to'       => $cron_interval_to,
                 ];
                 if ($config['dbtype'] == 'oracle') {
                     $values['periodically_time_from'] = '1970/01/01 '.$values['periodically_time_from'];
@@ -388,15 +608,31 @@ if ($create_downtime || $update_downtime) {
                 }
             }
 
-            if ($is_running) {
+            if ($error_cron_to === true || $error_cron_from === true) {
+                if ($error_cron_from === true) {
+                    ui_print_error_message(
+                        __('Downtime start cron expression is not correct').': '.$error_field
+                    );
+                }
+
+                if ($error_cron_to === true) {
+                    ui_print_error_message(
+                        __('Downtime stop cron expression is not correct').': '.$error_field
+                    );
+                }
+
                 $result = false;
             } else {
-                if (!empty($values)) {
-                    $result = db_process_sql_update(
-                        'tplanned_downtime',
-                        $values,
-                        ['id' => $id_downtime]
-                    );
+                if ($is_running) {
+                    $result = false;
+                } else {
+                    if (!empty($values)) {
+                        $result = db_process_sql_update(
+                            'tplanned_downtime',
+                            $values,
+                            ['id' => $id_downtime]
+                        );
+                    }
                 }
             }
         }
@@ -458,6 +694,8 @@ if ($id_downtime > 0) {
         'type_execution',
         'type_periodicity',
         'id_user',
+        'cron_interval_from',
+        'cron_interval_to',
     ];
 
     switch ($config['dbtype']) {
@@ -532,6 +770,36 @@ if ($id_downtime > 0) {
     $saturday                 = (bool) $result['saturday'];
     $sunday                 = (bool) $result['sunday'];
 
+    $cron_interval_from = explode(' ', $result['cron_interval_from']);
+    if (isset($cron_interval_from[4]) === true) {
+        $minute_from = $cron_interval_from[0];
+        $hour_from = $cron_interval_from[1];
+        $mday_from = $cron_interval_from[2];
+        $month_from = $cron_interval_from[3];
+        $wday_from = $cron_interval_from[4];
+    } else {
+        $minute_from = '*';
+        $hour_from = '*';
+        $mday_from = '*';
+        $month_from = '*';
+        $wday_from = '*';
+    }
+
+    $cron_interval_to = explode(' ', $result['cron_interval_to']);
+    if (isset($cron_interval_to[4]) === true) {
+        $minute_to = $cron_interval_to[0];
+        $hour_to = $cron_interval_to[1];
+        $mday_to = $cron_interval_to[2];
+        $month_to = $cron_interval_to[3];
+        $wday_to = $cron_interval_to[4];
+    } else {
+        $minute_to = '*';
+        $hour_to = '*';
+        $mday_to = '*';
+        $month_to = '*';
+        $wday_to = '*';
+    }
+
     $running = (bool) $result['executed'];
 }
 
@@ -593,6 +861,7 @@ $table->data[3][1] = html_print_select(
     [
         'quiet'                 => __('Quiet'),
         'disable_agents'        => __('Disabled Agents'),
+        'disable_agent_modules' => __('Disable Modules'),
         'disable_agents_alerts' => __('Disabled only Alerts'),
     ],
     'type_downtime',
@@ -611,6 +880,7 @@ $table->data[4][1] = html_print_select(
     [
         'once'         => __('Once'),
         'periodically' => __('Periodically'),
+        'cron'         => __('Cron from/to'),
     ],
     'type_execution',
     $type_execution,
@@ -740,6 +1010,18 @@ $table->data[5][1] = "
                 </td>
             </tr>
         </table>
+    </div>
+    <div id="cron_time" style="display: none;">
+        <table class="w100p">
+            <tr>
+                <td>'.__('Cron from:').'</td>
+                <td>'.html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, false, false, true, 'from').'</td>
+            </tr>
+            <tr>
+                <td>'.__('Cron to:').'</td>
+                <td>'.html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, false, true, true, 'to').'</td>
+            </tr>
+        </table>
     </div>';
 
 if ($id_downtime > 0) {
@@ -797,20 +1079,32 @@ $table = new StdClass();
 $table->class = 'databox filters';
 $table->width = '100%';
 $table->data = [];
+$table->size[0] = '25%';
 
 $table->data[0][0] = __('Group filter');
-$table->data[0][1] = html_print_select_groups(false, $access, $return_all_group, 'filter_group', $filter_group, '', '', '', true, false, true, '', false, 'min-width:180px;margin-right:15px;');
+$table->data[0][1] = html_print_select_groups(
+    false,
+    $access,
+    $return_all_group,
+    'filter_group',
+    $filter_group,
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false,
+    'min-width:180px;margin-right:15px;'
+);
 $table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
 
 $table->data[1][0] = __('Available agents');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'width: 180px;');
+$table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'min-width: 250px;width: 70%;');
 
 
-if ($type_downtime != 'quiet') {
-    echo '<div id="available_modules_selection_mode" style="padding-top:20px;display: none;">';
-} else {
-    echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
-}
+$table->rowid[2] = 'available_modules_selection_mode';
 
 $table->data[2][1] = html_print_select(
     [
@@ -830,18 +1124,12 @@ $table->data[2][1] = html_print_select(
     'min-width:180px;'
 );
 
-echo '</div>';
 
+$table->rowid[3] = 'available_modules';
 $table->data[3][0] = __('Available modules:').ui_print_help_tip(
     __('Only for type Quiet for downtimes.'),
     true
 );
-
-if ($type_downtime != 'quiet') {
-    echo '<div id="available_modules" style="display: none;">';
-} else {
-    echo '<div id="available_modules" style="">';
-}
 
 $table->data[3][1] = html_print_select(
     [],
@@ -855,9 +1143,8 @@ $table->data[3][1] = html_print_select(
     true,
     '',
     false,
-    'width: 180px;'
+    'min-width: 250px;width: 70%;'
 );
-echo '</div>';
 
 // Print agent table.
 html_print_table($table);
@@ -886,7 +1173,6 @@ if ($id_downtime > 0) {
 }
 
 echo '</div>';
-html_print_input_hidden('all_agents', implode(',', array_keys($agents)));
 html_print_input_hidden('all_common_modules', '');
 echo '</form>';
 
@@ -1107,11 +1393,18 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     }
 
     $agents = (array) get_parameter('id_agents');
+    $filter_group = (int) get_parameter('filter_group', 0);
     $module_names = (array) get_parameter('module');
     $modules_selection_mode = (string) get_parameter('modules_selection_mode');
+    $type_downtime = (string) get_parameter('type_downtime', 'quiet');
+    $recursion = (bool) get_parameter_checkbox('recursion', false);
 
     $all_modules = ($modules_selection_mode === 'all' && (empty($module_names) || (string) $module_names[0] === '0'));
     $all_common_modules = ($modules_selection_mode === 'common' && (empty($module_names) || (string) $module_names[0] === '0'));
+
+    if ($type_downtime === 'disable_agents') {
+        $all_modules = true;
+    }
 
     if ($all_common_modules === true) {
         $module_names = explode(',', get_parameter('all_common_modules'));
@@ -1131,11 +1424,33 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     } else {
         // If is selected 'Any', get all the agents.
         if (count($agents) === 1 && (int) $agents[0] === -2) {
-            $all_agents = get_parameter('all_agents');
-            $agents = explode(',', $all_agents);
+            if ($recursion === true) {
+                $filter_group = groups_get_children_ids(
+                    $filter_group,
+                    false,
+                    true,
+                    'AW'
+                );
+            };
+
+            $agents = db_get_all_rows_filter(
+                'tagente',
+                ['id_grupo' => $filter_group],
+                'id_agente'
+            );
+
+            $agents = array_reduce(
+                $agents,
+                function ($carry, $item) {
+                    $carry[] = $item['id_agente'];
+
+                    return $carry;
+                }
+            );
         }
 
         foreach ($agents as $agent_id) {
+            $agent_id = (int) $agent_id;
             // Check module belongs to the agent.
             if ($modules_selection_mode == 'all' && $all_modules === false) {
                 $check = false;
@@ -1168,17 +1483,40 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                 continue;
             }
 
-            $values = [
-                'id_downtime' => $id_downtime,
-                'id_agent'    => $agent_id,
-                'all_modules' => $all_modules,
-            ];
-            $result = db_process_sql_insert(
+            // Check if agent is already in downtime.
+            $agent_in_downtime = db_get_value_filter(
+                'id_downtime',
                 'tplanned_downtime_agents',
-                $values
+                [
+                    'id_agent'    => $agent_id,
+                    'id_downtime' => $id_downtime,
+                ]
             );
 
-            if ($result && !$all_modules) {
+            if ($agent_in_downtime !== false) {
+                $values = ['all_modules' => $all_modules];
+
+                $result = db_process_sql_update(
+                    'tplanned_downtime_agents',
+                    $values,
+                    [
+                        'id_downtime' => $id_downtime,
+                        'id_agent'    => $agent_id,
+                    ]
+                );
+            } else {
+                $values = [
+                    'id_downtime' => $id_downtime,
+                    'id_agent'    => $agent_id,
+                    'all_modules' => $all_modules,
+                ];
+                $result = db_process_sql_insert(
+                    'tplanned_downtime_agents',
+                    $values
+                );
+            }
+
+            if ($result !== false && (bool) $all_modules === false) {
                 foreach ($module_names as $module_name) {
                     $module = modules_get_agentmodule_id(
                         $module_name,
@@ -1189,17 +1527,32 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                         continue;
                     }
 
-                    $values = [
-                        'id_downtime'     => $id_downtime,
-                        'id_agent'        => $agent_id,
-                        'id_agent_module' => $module['id_agente_modulo'],
-                    ];
-                    $result = db_process_sql_insert(
+                     // Check if modules are already in downtime.
+                    $module_in_downtime = db_get_value_filter(
+                        'id_downtime',
                         'tplanned_downtime_modules',
-                        $values
+                        [
+                            'id_downtime'     => $id_downtime,
+                            'id_agent'        => $agent_id,
+                            'id_agent_module' => $module['id_agente_modulo'],
+                        ]
                     );
 
-                    if ($result) {
+                    if ($module_in_downtime !== false) {
+                        continue;
+                    } else {
+                        $values = [
+                            'id_downtime'     => $id_downtime,
+                            'id_agent'        => $agent_id,
+                            'id_agent_module' => $module['id_agente_modulo'],
+                        ];
+                        $result = db_process_sql_insert(
+                            'tplanned_downtime_modules',
+                            $values
+                        );
+                    }
+
+                    if ($result !== false) {
                         $values = ['id_user' => $config['id_user']];
                         $result = db_process_sql_update(
                             'tplanned_downtime',
@@ -1228,6 +1581,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                 $("#available_modules_selection_mode").hide();
                 break;
             case 'quiet':
+            case 'disable_agent_modules':
                 $("#available_modules_selection_mode").show();
                 $("#available_modules").show();
                 break;
@@ -1238,11 +1592,18 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         switch ($("#type_execution").val()) {
             case 'once':
                 $("#periodically_time").hide();
+                $("#cron_time").hide();
                 $("#once_time").show();
                 break;
             case 'periodically':
                 $("#once_time").hide();
+                $("#cron_time").hide();
                 $("#periodically_time").show();
+                break;
+            case 'cron':
+                $("#once_time").hide();
+                $("#periodically_time").hide();
+                $("#cron_time").show();
                 break;
         }
     }
@@ -1535,7 +1896,6 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         $('input.hasDatepicker[readonly]').disable();
 
         $("#checkbox-recursion").click(function() {
-            recursion = this.checked;
             $("#filter_group").trigger("change");
         });
 
@@ -1545,6 +1905,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         });
 
         function populate_agents_selector() {
+            recursion = $("#checkbox-recursion").prop('checked');
             jQuery.post ("ajax.php",
                 {"page": "operation/agentes/ver_agente",
                     "get_agents_group_json": 1,

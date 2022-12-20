@@ -30,6 +30,8 @@ $display_on_front = (bool) get_parameter('display_on_front', 0);
 $is_password_type = (bool) get_parameter('is_password_type', 0);
 $is_combo_enable = (bool) get_parameter('is_combo_enable', 0);
 $combo_values = (string) get_parameter('combo_values', '');
+$is_link_enabled = (bool) get_parameter('is_link_enabled', 0);
+
 // Header.
 if ($id_field) {
     $field = db_get_row_filter('tagent_custom_fields', ['id_field' => $id_field]);
@@ -38,6 +40,7 @@ if ($id_field) {
     $is_password_type = $field['is_password_type'];
     $combo_values = $field['combo_values'] ? $field['combo_values'] : '';
     $is_combo_enable = $config['is_combo_enable'];
+    $is_link_enabled = $field['is_link_enabled'];
     ui_print_page_header(__('Update agent custom field'), 'images/custom_field.png', false, '', true, '');
 } else {
     ui_print_page_header(__('Create agent custom field'), 'images/custom_field.png', false, '', true, '');
@@ -128,6 +131,17 @@ $table->data[4][1] = html_print_textarea(
     true
 );
 
+$table->data[5][0] = __('Link type');
+$table->data[5][1] = html_print_checkbox_switch_extended(
+    'is_link_enabled',
+    1,
+    $is_link_enabled,
+    false,
+    '',
+    '',
+    true
+);
+
 echo '<form name="field" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/fields_manager">';
 html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -167,25 +181,46 @@ $(document).ready (function () {
     });
     }
    
-   
+    if ($('input[type=checkbox][name=is_link_enabled]').is(":checked") === true) {
+        $('#configure_field-1').hide();
+        $('#configure_field-3').hide();
+    } else {
+        $('#configure_field-1').show();
+        $('#configure_field-3').show();
+    }
+
+    $('input[type=checkbox][name=is_link_enabled]').change(function () {
+        if( $(this).is(":checked") ){
+            $('#configure_field-1').hide();
+            $('#configure_field-3').hide();
+        } else{
+            $('#configure_field-1').show();
+            $('#configure_field-3').show();
+        }
+    });
+    
     $('input[type=checkbox][name=is_combo_enable]').change(function () {
         if( $(this).is(":checked") ){
           $('#configure_field-4').show();
           dialog_message("#message_no_set_password");
           $('#configure_field-1').hide();
+          $('#configure_field-5').hide();
         }
         else{
           $('#configure_field-4').hide();
           $('#configure_field-1').show();
+          $('#configure_field-5').show();
         }
     });
     $('input[type=checkbox][name=is_password_type]').change(function () {
         if( $(this).is(":checked")){
             dialog_message("#message_no_set_combo");
             $('#configure_field-3').hide();
+            $('#configure_field-5').hide();
         }
         else{
             $('#configure_field-3').show();
+            $('#configure_field-5').show();
         }
     });
 });

@@ -31,7 +31,6 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 
 $form = [
     'id'       => 'form-search-widget',
-    'action'   => $url,
     'onsubmit' => 'return false;',
     'class'    => 'modal-dashboard',
     'enctype'  => 'multipart/form-data',
@@ -91,7 +90,7 @@ foreach ($widgets as $widget) {
     );
     $output .= '</div>';
     $output .= '<div class="list-widgets-description">';
-    $output .= $widget['description'];
+    $output .= __($widget['description']);
     $output .= '</div>';
     $output .= '</div>';
 }

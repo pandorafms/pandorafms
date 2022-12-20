@@ -258,8 +258,8 @@ class TopNWidget extends Widget
 
         // Order.
         $fields = [
-            1 => __('Descending'),
-            2 => __('Ascending'),
+            1 => __('Ascending'),
+            2 => __('Descending'),
             3 => __('By agent name'),
         ];
 
@@ -375,10 +375,18 @@ class TopNWidget extends Widget
             );
         }
 
+        // Prevent double safe input in agents_get_group_agents function.
+        $agentRegex = io_safe_output($agentRegex);
+
         // This function check ACL.
         $agents = @agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);
         $agentsId = \array_keys($agents);
         $agentsIdString = \implode(',', $agentsId);
+
+        // Prevent from error when performing IN clause with an empty string.
+        if ($agentsIdString === '') {
+            $agentsIdString = 'NULL';
+        }
 
         // Initialize variables.
         $date = \get_system_time();
@@ -466,7 +474,7 @@ class TopNWidget extends Widget
         ];
 
         foreach ($modules as $module) {
-            $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20);
+            $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20, false, true, false);
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
             $data_hbar[$item_name]['g'] = $module[$display];
             // Calculation of max-min values for show in graph.
@@ -537,6 +545,22 @@ class TopNWidget extends Widget
     public static function getName()
     {
         return 'top_n';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 530,
+        ];
+
+        return $size;
     }
 
 

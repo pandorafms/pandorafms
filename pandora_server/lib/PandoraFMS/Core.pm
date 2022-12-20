@@ -114,6 +114,7 @@ use Encode;
 use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
+use Tie::File;
 use Time::Local;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
@@ -215,6 +216,7 @@ our @EXPORT = qw(
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
 	pandora_output_password
+	pandora_snmptrapd_still_working
 	pandora_planned_downtime
 	pandora_planned_downtime_set_quiet_elements
 	pandora_planned_downtime_unset_quiet_elements
@@ -228,8 +230,9 @@ our @EXPORT = qw(
 	pandora_planned_downtime_monthly_stop
 	pandora_planned_downtime_weekly_start
 	pandora_planned_downtime_weekly_stop
+	pandora_planned_downtime_cron_start
+	pandora_planned_downtime_cron_stop
 	pandora_process_alert
-	pandora_process_event_replication
 	pandora_process_module
 	pandora_reset_server
 	pandora_safe_mode_modules_update
@@ -296,7 +299,6 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
-	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -506,7 +508,7 @@ B<Returns>:
 ##########################################################################
 sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh,
-	  $last_data_value, $correlatedItems, $event, $log) = @_;
+	  $last_data_value, $correlated_items, $event, $log) = @_;
 	
 	if (defined ($agent)) {
 		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output ($agent->{'nombre'}) . "'.", 10);
@@ -574,7 +576,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
 				# All day.
 				$inSlot = 1;
-			} elsif ($timeBlock->{'start'} le $time && $timeBlock->{'end'} ge $time) {
+			} elsif ($timeBlock->{'start'} le $time && (($timeBlock->{'end'} eq '00:00:00') || ($timeBlock->{'end'} ge $time))) {
 				# In range.
 				$inSlot = 1;
 			}
@@ -604,13 +606,16 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			
 			# Cease on valid data
 			$status = 3;
-			
+		
+			# Unlike module alerts, correlated alerts recover when they cease!
+			$status = 4 if ($alert->{'recovery_notify'} == 1 && !defined($alert->{'id_template_module'}));
+
 			# Always reset
 			($alert->{'internal_counter'}, $alert->{'times_fired'}) = (0, 0);
 		}
 		
 		# Recover takes precedence over cease
-		$status = 4 if ($alert->{'recovery_notify'} == 1);
+		$status = 4 if ($alert->{'recovery_notify'} == 1 && defined ($alert->{'id_template_module'}));
 		
 	}
 	elsif ($utimestamp > $limit_utimestamp && $alert->{'internal_counter'} > 0) {
@@ -691,7 +696,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 				$pa_config,
 				$dbh,
 				$alert,
-				$correlatedItems,
+				$correlated_items,
 				$event,
 				$log
 			]
@@ -793,7 +798,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		if ($pa_config->{'alertserver'} == 1) {
+		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
 				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
@@ -1295,12 +1300,16 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
 	}
 
-	my $agent_status;
-	if(ref ($module) eq "HASH") {
-		$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+	my $time_down;
+	if ($alert_mode == RECOVERED_ALERT && defined($extra_macros->{'_modulelaststatuschange_'})) {
+		$time_down = (time() - $extra_macros->{'_modulelaststatuschange_'});
+	} else {
+		my $agent_status;
+		if(ref ($module) eq "HASH") {
+			$agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+		}
+		$time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 	}
-
-	my $time_down = (defined ($agent_status)) ? (time() - $agent_status->{'last_status_change'}) : undef;
 
 	if (is_numeric($data)) {
 		my $data_precision = $pa_config->{'graph_precision'};
@@ -1643,6 +1652,70 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			pandora_sendmail ($pa_config, $field1, $field2, $field3, $content_type);
 		}
 	
+	# Email report
+	} elsif ($clean_name eq "Send report by e-mail") {
+		# Text
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# API connection
+		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "set";
+		$params->{"op2"} = "send_report";
+		$params->{"other_mode"} = "url_encode_separator_|;|";
+		
+		$field4 = safe_input($field4);
+		$field4 =~ s/&amp;/&/g;
+
+		$params->{"other"} = $field1.'|;|'.$field5.'|;|'.$field2.'|;|'.$field3.'|;|'.$field4.'|;|0';
+
+		$ua->post($url, $params);
+
+	# Email report (from template)
+	} elsif ($clean_name eq "Send report by e-mail (from template)") {
+		# Text
+		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# API connection
+		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "set";
+		$params->{"op2"} = "send_report";
+		$params->{"other_mode"} = "url_encode_separator_|;|";
+
+		$field5 = safe_input($field5);
+		$field5 =~ s/&amp;/&/g;
+
+		$params->{"other"} = $field1.'|;|'.$field6.'|;|'.$field3.'|;|'.$field4.'|;|'.$field5.'|;|1|;|'.$field2;
+
+		$ua->post($url, $params);
+
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Monitoring Event") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
@@ -2026,6 +2099,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $new_status = get_module_status ($processed_data, $module, $module_type, $last_data_value);
 	my $last_status_change = $agent_status->{'last_status_change'};
 
+
+	# Escalate warning to critical if needed.
+	$new_status = escalate_warning($pa_config, $agent, $module, $agent_status, $new_status, $known_status);
+
 	# Set the last status change macro. Even if its value changes later, whe want the original value.
 	$extra_macros->{'_modulelaststatuschange_'} = $last_status_change;
 	
@@ -2068,12 +2145,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	if ($last_known_status == $new_status) {
 		# Avoid overflows
 		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
-		
+
 		$status_changes++;
 		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
 			# Only type ff with counters.
 			$status_changes = 0 if ($module->{'ff_type'} == 0);
-			
+
 			$ff_start_utimestamp = $utimestamp;
 
 			# Reset counters because expired timeout.
@@ -2085,16 +2162,16 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	else {
 		# Only type ff with counters. 
 		$status_changes = 0 if ($module->{'ff_type'} == 0);
-		
+
 		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
 	}
-	
+
 	if ($module->{'ff_type'} == 0) {
 		# Active ff interval.
 		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
 			$current_interval = $module->{'module_ff_interval'};
 		}
-		
+
 		# Change status.
 		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
@@ -2106,6 +2183,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			# Update module status count.
 			$mark_for_update = 1;
 
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+		} elsif ($status_changes >= $min_ff_event && $known_status == $new_status && $new_status == 1) {
 			# Safe mode execution.
 			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
 				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
@@ -2196,11 +2278,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
 				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?,
-				last_status_change = ?
+				last_status_change = ?, warning_count = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
-			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $module->{'id_agente_modulo'});
+			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $agent_status->{'warning_count'}, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.
@@ -2223,6 +2305,108 @@ sub pandora_process_module ($$$$$$$$$;$) {
 }
 
 ########################################################################
+=head2 C<< pandora_planned_downtime_cron_start (I<$pa_config>, I<$dbh>) >> 
+
+Start the planned downtime, the cron type. 
+
+=cut
+########################################################################
+sub pandora_planned_downtime_cron_start($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $utimestamp = time();
+
+	# Start pending downtimes
+	my @downtimes = get_db_rows($dbh, 'SELECT *
+		FROM tplanned_downtime
+		WHERE type_execution = ? 
+			AND executed = 0', 'cron');
+
+	foreach my $downtime (@downtimes) {
+		my $start_downtime = PandoraFMS::Tools::cron_check($downtime->{'cron_interval_from'}, $utimestamp);
+
+		if ($start_downtime) {
+			if (!defined($downtime->{'description'})) {
+				$downtime->{'description'} = "N/A";
+			}
+
+			if (!defined($downtime->{'name'})) {
+				$downtime->{'name'} = "N/A";
+			}
+				
+			logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
+
+			db_do($dbh, 'UPDATE tplanned_downtime
+				SET executed = 1
+				WHERE id = ?', $downtime->{'id'});
+			pandora_event ($pa_config,
+				"Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				
+			if ($downtime->{'type_downtime'} eq "quiet") {
+				pandora_planned_downtime_set_quiet_elements($pa_config,
+				$dbh, $downtime->{'id'});
+			}
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				pandora_planned_downtime_set_disabled_elements($pa_config,
+				$dbh, $downtime);
+			}
+		}
+	}
+}
+
+########################################################################
+=head2 C<< pandora_planned_downtime_cron_stop (I<$pa_config>, I<$dbh>) >> 
+
+Stop the planned downtime, the cron type. 
+
+=cut
+########################################################################
+sub pandora_planned_downtime_cron_stop($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $utimestamp = time();
+	
+	# Stop executed downtimes
+	my @downtimes = get_db_rows($dbh, 'SELECT *
+		FROM tplanned_downtime
+		WHERE type_execution = ? 
+			AND executed = 1', 'cron');
+
+	foreach my $downtime (@downtimes) {
+		my $stop_downtime = PandoraFMS::Tools::cron_check($downtime->{'cron_interval_to'}, $utimestamp);
+
+		if ($stop_downtime) {
+			if (!defined($downtime->{'description'})) {
+				$downtime->{'description'} = "N/A";
+			}
+			
+			if (!defined($downtime->{'name'})) {
+				$downtime->{'name'} = "N/A";
+			}
+			
+			logger($pa_config, "Stopping planned cron downtime '" . $downtime->{'name'} . "'.", 10);
+
+			db_do($dbh, 'UPDATE tplanned_downtime
+				SET executed = 0
+				WHERE id = ?', $downtime->{'id'});
+			pandora_event ($pa_config,
+				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			
+			if ($downtime->{'type_downtime'} eq "quiet") {
+				pandora_planned_downtime_unset_quiet_elements($pa_config,
+					$dbh, $downtime->{'id'});
+			}
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+					pandora_planned_downtime_unset_disabled_elements($pa_config,
+						$dbh, $downtime);
+			}
+		}
+	}
+}
+
+########################################################################
 =head2 C<< pandora_planned_downtime_disabled_once_stop (I<$pa_config>, I<$dbh>) >> 
 
 Stop the planned downtime, the once type. 
@@ -2240,11 +2424,11 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 			AND type_execution = ?
 			AND executed = 1
 			AND date_to <= ?', 'quiet', 'once', $utimestamp);
-	
+
 	foreach my $downtime (@downtimes) {
 		
 		logger($pa_config, "Ending planned downtime '" . $downtime->{'name'} . "'.", 10);
-		
+
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
@@ -2320,15 +2504,22 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 	}
 		
 	if ($only_alerts == 0) {
-		db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
-			SET tp.manually_disabled = ta.disabled
-			WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
+		if ($downtime->{'type_downtime'} eq 'disable_agent_modules') {
+			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+				SET tam.disabled = 1, ta.update_module_count = 1
+				WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
+				ta.id_agente = tam.id_agente AND
+				tpdm.id_downtime = ?', $downtime->{'id'});
+		} else {
+			db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
+				SET tp.manually_disabled = ta.disabled
+				WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
 		
-		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
-			SET ta.disabled = 1, ta.update_module_count = 1
-			WHERE tpa.id_agent = ta.id_agente AND
-			tpa.id_downtime = ?',$downtime->{'id'});
-			
+			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+				SET ta.disabled = 1, ta.update_module_count = 1
+				WHERE tpa.id_agent = ta.id_agente AND
+				tpa.id_downtime = ?',$downtime->{'id'});
+		}
 	} else {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT *
 			FROM tplanned_downtime_agents
@@ -2360,12 +2551,20 @@ sub pandora_planned_downtime_unset_disabled_elements($$$) {
 			$only_alerts = 1;
 		}
 	}
-		
+
 	if ($only_alerts == 0) {
-		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
-			set ta.disabled = 0, ta.update_module_count = 1
-			WHERE tpa.id_agent = ta.id_agente AND
-			tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
+		if ($downtime->{'type_downtime'} eq 'disable_agent_modules') {
+			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+				SET tam.disabled = 0, ta.update_module_count = 1
+				WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
+				ta.id_agente = tam.id_agente AND
+				tpdm.id_downtime = ?', $downtime->{'id'});
+		} else {
+			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+				set ta.disabled = 0, ta.update_module_count = 1
+				WHERE tpa.id_agent = ta.id_agente AND
+				tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
+		}
 	} else {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT *
 			FROM tplanned_downtime_agents
@@ -2469,7 +2668,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 		WHERE type_downtime = ?
 			AND type_execution = ?
 			AND executed = 1 AND date_to <= ?', 'quiet', 'once', $utimestamp);
-	
+
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
 			$downtime->{'description'} = "N/A";
@@ -2481,7 +2680,6 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 		
 		logger($pa_config, "[PLANNED_DOWNTIME] " .
 			"Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
-		
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
@@ -2562,6 +2760,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 		WHERE type_periodicity = ?
 			AND executed = 0
 			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'cron' . $RDBMS_QUOTE_STRING . '
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
 			'monthly',
@@ -2639,12 +2838,13 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		WHERE type_periodicity = ?
 			AND executed = 1
 			AND type_execution <> ?
+			AND type_execution <> ?
 			AND (((periodically_day_from = ? AND periodically_time_from > ?) OR (periodically_day_from > ?))
 				OR ((periodically_day_to = ? AND periodically_time_to < ?) OR (periodically_day_to < ?)))',
-			'monthly', 'once',
+			'monthly', 'once', 'cron',
 			$number_day_month, $time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
-	
+
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
 			$downtime->{'description'} = "N/A";
@@ -2699,7 +2899,8 @@ sub pandora_planned_downtime_weekly_start($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ? 
 			AND type_execution <> ?
-			AND executed = 0', 'weekly', 'once');
+			AND type_execution <> ?
+			AND executed = 0', 'weekly', 'once', 'cron');
 	
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0 ;
@@ -2809,8 +3010,9 @@ sub pandora_planned_downtime_weekly_stop($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?
 			AND type_execution <> ?
-			AND executed = 1', 'weekly', 'once');
-	
+			AND type_execution <> ?
+			AND executed = 1', 'weekly', 'once', 'cron');
+
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0;
 
@@ -2920,6 +3122,9 @@ sub pandora_planned_downtime ($$) {
 	
 	pandora_planned_downtime_weekly_stop($pa_config, $dbh);
 	pandora_planned_downtime_weekly_start($pa_config, $dbh);
+
+	pandora_planned_downtime_cron_start($pa_config, $dbh);
+	pandora_planned_downtime_cron_stop($pa_config, $dbh);
 }
 
 ########################################################################
@@ -3002,10 +3207,10 @@ defined also the parent is updated.
 
 =cut
 ##########################################################################
-sub pandora_update_agent ($$$$$$$;$$) {
+sub pandora_update_agent ($$$$$$$;$$$) {
 	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
 		$agent_version, $agent_interval, $dbh, $timezone_offset,
-		$parent_agent_id) = @_;
+		$parent_agent_id, $satellite_server_id) = @_;
 	
 	# No access update for data without interval.
 	# Single modules from network server, for example. This could be very Heavy for Pandora FMS
@@ -3026,6 +3231,7 @@ sub pandora_update_agent ($$$$$$$;$$) {
 	                                         'os_version' => $os_version,
 	                                         'timezone_offset' => $timezone_offset,
 	                                         'id_parent' => $parent_agent_id,
+	                                         'satellite_server' => $satellite_server_id
 	                                        });
 	
 	db_do ($dbh, "UPDATE tagente SET $set WHERE id_agente = ?", @{$values}, $agent_id);
@@ -3787,7 +3993,6 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 		$source, $user_name, $comment, $id_extra, $tags,
 		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data,
 		$module_data, $module_status, $server_id) = @_;
-	my $event_table = is_metaconsole($pa_config) ? 'tmetaconsole_event' : 'tevento';
 
 	my $agent = undef;
 	if (defined($id_agente) && $id_agente != 0) {
@@ -3850,20 +4055,15 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
-		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
+		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
 	my $event_id = undef;
 
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	if (is_metaconsole($pa_config)) {
-			$event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, server_id, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $server_id, $custom_data, safe_input($module_data), $module_status);
-	} else {
-			$event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
-	}
 
 	# Do not write to the event file
 	return $event_id if ($pa_config->{'event_file'} eq '');
@@ -4974,17 +5174,14 @@ sub get_module_status ($$$$) {
 			}
 			# (-inf, critical_min), [critical_max, +inf)
 			else {
-				if ($critical_min == 0) {
-					return 1 if ($data > $critical_max);
-				}elsif ($critical_max == 0) {
-					return 1 if ($data <= $critical_min);
+				if ($critical_max < $critical_min) {
+					return 1 if ($data < $critical_min);
 				} else {
 					return 1 if ($data < $critical_min || $data >= $critical_max);
-					return 1 if ($data <= $critical_max && $critical_max < $critical_min);
 				}
 			}
 		}
-
+	
 		# Warning
 		if ($warning_min ne $warning_max) {
 			# [warning_min, warning_max)
@@ -4994,13 +5191,10 @@ sub get_module_status ($$$$) {
 			}
 			# (-inf, warning_min), [warning_max, +inf)
 			else {
-				if ($warning_min == 0) {
-					return 2 if ($data > $warning_max);
-				}elsif ($warning_max == 0) {
-					return 2 if ($data <= $warning_min);
+				if ($warning_max < $warning_min) {
+					return 2 if ($data < $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
-					return 2 if ($data <= $warning_max && $warning_max < $warning_min);
 				}
 			}
 		}
@@ -5482,85 +5676,6 @@ Process groups statistics for statistics table
 
 =cut
 ##########################################################################
-sub pandora_process_event_replication ($) {
-	my $pa_config = shift;
-	my $dbh_metaconsole;
-	my %pa_config = %{$pa_config};
-
-	# Get the console DB connection
-	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
-						$pa_config{'dbuser'}, $pa_config{'dbpass'});
-
-	my $is_event_replication_enabled = enterprise_hook('get_event_replication_flag', [$dbh]);
-	my $replication_interval = enterprise_hook('get_event_replication_interval', [$dbh]);
-		
-	# If there are not installed the enterprise version,  
-	# desactivated the event replication or the replication
-	# interval is wrong: abort
-	if($is_event_replication_enabled == 0) {
-		db_disconnect($dbh);
-		return;
-	}
-	
-	if($replication_interval <= 0) {
-		logger($pa_config, "The event replication interval must be greater than 0. Event replication aborted.", 1);
-		db_disconnect($dbh);
-		return;
-	}
-	
-	logger($pa_config, "Started event replication thread.", 1);
-
-	while($THRRUN == 1) { 
-		eval {{
-			local $SIG{__DIE__};
-			
-			# Get the metaconsole DB connection
-			$dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
-			$dbh_metaconsole = undef if $dbh_metaconsole eq '';
-			if (!defined($dbh_metaconsole)) {
-				logger($pa_config, "Metaconsole DB connection error. Event replication postponed.", 5);
-				next;
-			}
-			
-			# Get server id on metaconsole
-			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh]);
-		
-			# If the server name is not found in metaconsole setup: abort
-			if($metaconsole_server_id == -1) {
-				logger($pa_config, "The server name is not configured in metaconsole. Event replication postponed.", 5);
-				db_disconnect($dbh_metaconsole);
-				next;
-			}
-			
-			my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
-						
-			while($THRRUN == 1) { 
-		
-				# If we are not the master server sleep and check again.
-				if (pandora_is_master($pa_config) == 0) {
-					sleep ($pa_config->{'server_threshold'});
-					next;
-				}
-		
-				# Check the queue each N seconds
-				enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
-				sleep ($replication_interval);
-			}
-		}};
-		db_disconnect($dbh_metaconsole) if defined($dbh_metaconsole);
-		sleep ($replication_interval);
-	}
-
-	db_disconnect($dbh);
-}
-
-##########################################################################
-=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
-
-Process groups statistics for statistics table
-
-=cut
-##########################################################################
 sub pandora_process_policy_queue ($) {
 	my $pa_config = shift;
 	
@@ -5870,30 +5985,18 @@ sub pandora_self_monitoring ($$) {
 	}
 	
 	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE BINARY name = '".$pa_config->{"servername"}."'");
-	
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;
 	}
 	
-	my $dbmaintance;
-	if ($RDBMS eq 'postgresql') {
-		$dbmaintance = get_db_value ($dbh,
-			"SELECT COUNT(*)
-			FROM tconfig
-			WHERE token = 'db_maintance'
-				AND NULLIF(value, '')::int > UNIX_TIMESTAMP() - 86400");
-	}
-	elsif ($RDBMS eq 'oracle') {
-		$dbmaintance = get_db_value ($dbh,
-			"SELECT COUNT(*)
-			FROM tconfig
-			WHERE token = 'db_maintance' AND DBMS_LOB.substr(value, 100, 1) > UNIX_TIMESTAMP() - 86400");
-	}
-	else {
-		$dbmaintance = get_db_value ($dbh,
-			"SELECT COUNT(*)
-			FROM tconfig
-			WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
+	my $pandoradb = 0;
+	my $pandoradb_tstamp = get_db_value ($dbh, "SELECT `value` FROM tconfig WHERE token = 'db_maintance'");
+	if (!defined($pandoradb_tstamp) || $pandoradb_tstamp == 0) {
+		pandora_event ($pa_config, "Pandora DB maintenance tool has never been run.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+	} elsif ($pandoradb_tstamp < time() - 86400) {
+		pandora_event ($pa_config, "Pandora DB maintenance tool has not been run since " . strftime("%Y-%m-%d %H:%M:%S", localtime($pandoradb_tstamp)) . ".", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+	} else {
+		$pandoradb = 1;
 	}
 
 	my $start_performance = time;
@@ -5907,7 +6010,7 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
 	$xml_output .=" <type>generic_proc</type>";
-	$xml_output .=" <data>$dbmaintance</data>";
+	$xml_output .=" <data>$pandoradb</data>";
 	$xml_output .=" </module>";
 	
 	$xml_output .=" <module>";
@@ -6800,7 +6903,7 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
 		'params=' . $data_ticket .'&' .
 		'token=|;|';
 
-	my $content = get($call_api);
+	 my $content = get($call_api);
 
 	if (is_numeric($content) && $content ne "-1") {
 		return $content;
@@ -7097,6 +7200,80 @@ sub notification_get_groups {
 	return @results;
 }
 
+##########################################################################
+=head2 C<< escalate_warning (I<$pa_config>, I<$agent>, I<$module>, I<$agent_status>, I<$new_status>, I<$known_status>) >>
+
+Return the new module status after taking warning escalation into
+consideration. Updates counters in $agent_status.
+
+=cut
+##########################################################################
+sub escalate_warning {
+	my ($pa_config, $agent, $module, $agent_status, $new_status, $known_status) = @_;
+
+	# Warning escalation disabled. Return the new status.
+	if ($module->{'warning_time'} == 0) {
+		return $new_status;
+	}
+
+	# Updating or reset warning counts.
+	if ($new_status != MODULE_WARNING) {
+		$agent_status->{'warning_count'} = 0;
+		return $new_status;
+	}
+
+	if ($known_status == MODULE_WARNING) {
+		$agent_status->{'warning_count'} += 1;
+	}
+
+	if ($agent_status->{'warning_count'} > $module->{'warning_time'}) {
+		logger($pa_config, "Escalating warning status to critical status for agent ID " . $agent->{'id_agente'} . " module '" . $module->{'nombre'} . "'.", 10);
+		$agent_status->{'warning_count'} = $module->{'warning_time'} + 1; # Prevent overflows.
+		return MODULE_CRITICAL;
+	}
+
+	return MODULE_WARNING;
+}
+########################################################################
+
+=head2 C<< pandora_snmptrapd_still_working (I<$pa_config>, I<$dbh>) >> 
+snmptrapd sometimes freezes and eventually its status needs to be checked.
+=cut
+
+########################################################################
+sub pandora_snmptrapd_still_working ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	if ($pa_config->{'snmpserver'} eq '1') {
+		# Variable that defines the maximum time of delay between kksks.
+		my $timeMaxLapse = 3600;
+		# Check last snmptrapd saved in DB.
+		my $lastTimestampSaved = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(timestamp)
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT 1');
+		# Read the last log file line.
+		my $snmptrapdFile = $pa_config->{'snmp_logfile'};
+		tie my @snmptrapdFileComplete, 'Tie::File', $snmptrapdFile;
+		my $lastTimestampLogFile = $snmptrapdFileComplete[-1];
+
+		$lastTimestampLogFile = '' unless defined ($lastTimestampLogFile);
+
+		my ($protocol, $date, $time) = split(/\[\*\*\]/, $lastTimestampLogFile, 4);
+		# If time or date not filled in, probably havent caught any snmptraps yet.
+		if (defined $date && defined $time && $time ne '' && $date ne '') {
+			my ($hour, $min, $sec) = split(/:/, $time, 3);
+			my ($year, $month, $day) = split(/-/, $date, 3);
+			my $lastTimestampLogFile = timelocal($sec,$min,$hour,$day,$month-1,$year);
+			if ($lastTimestampSaved ne $lastTimestampLogFile && $lastTimestampLogFile gt ($lastTimestampSaved + $timeMaxLapse)) {
+				my $lapseMessage = "snmptrapd service probably is stuck.";
+				logger($pa_config, $lapseMessage, 1);
+				pandora_event ($pa_config, $lapseMessage, 0, 0, 4, 0, 0, 'system', 0, $dbh);
+			}
+		}
+
+	}
+}
 
 # End of function declaration
 # End of defined Code

@@ -816,13 +816,13 @@ function pandoraFlotSlicebar(
       }
     },
     grid: {
-      borderWidth: 1,
-      borderColor: "#C1C1C1",
+      borderWidth: 0,
+      borderColor: "transparent",
       tickColor: "#fff"
     },
     xaxes: [
       {
-        show: true,
+        show: show_date,
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,
@@ -1017,7 +1017,7 @@ function pandoraFlotArea(
   var max_x = date_array["final_date"] * 1000;
   var type = parseInt(params.stacked);
   var show_legend = params.show_legend;
-  var image_treshold = params.image_treshold;
+  var image_threshold = params.image_threshold;
   var short_data = params.short_data != "" ? params.short_data : 3;
   var grid_color = params.grid_color;
   var background_color = params.backgroundColor;
@@ -2212,7 +2212,7 @@ function pandoraFlotArea(
     }
 
     if (thresholded) {
-      var data_base_treshold = add_threshold(
+      var data_base_threshold = add_threshold(
         data_base,
         threshold_data,
         ranges.yaxis.from,
@@ -2225,7 +2225,7 @@ function pandoraFlotArea(
 
       plot = $.plot(
         $("#" + graph_id),
-        data_base_treshold,
+        data_base_threshold,
         $.extend(true, {}, options, {
           grid: {
             borderWidth: 1,
@@ -2461,14 +2461,14 @@ function pandoraFlotArea(
             );
         } else {
           $.each(update_legend, function(index, value) {
-            if (typeof value[x] !== "undefined") {
+            if (typeof value[x - 1] !== "undefined") {
               data_legend[index] =
                 " Min: " +
-                number_format(value[x].min, 0, unit, short_data, divisor) +
+                number_format(value[x - 1].min, 0, unit, short_data, divisor) +
                 " Max: " +
-                number_format(value[x].max, 0, unit, short_data, divisor) +
+                number_format(value[x - 1].max, 0, unit, short_data, divisor) +
                 " Avg: " +
-                number_format(value[x].avg, 0, unit, short_data, divisor);
+                number_format(value[x - 1].avg, 0, unit, short_data, divisor);
             } else {
               data_legend[index] = " Min: " + 0 + " Max: " + 0 + " Avg: " + 0;
             }
@@ -2611,7 +2611,7 @@ function pandoraFlotArea(
     $("#overview_" + graph_id).bind("mouseout", resetInteractivity);
   }
 
-  if (image_treshold) {
+  if (image_threshold) {
     var y_recal = plot.getAxes().yaxis.max;
     if (!thresholded) {
       // Recalculate the y axis
@@ -2625,7 +2625,7 @@ function pandoraFlotArea(
       );
     }
 
-    var datas_treshold = add_threshold(
+    var datas_threshold = add_threshold(
       data_base,
       threshold_data,
       plot.getAxes().yaxis.min,
@@ -2638,7 +2638,7 @@ function pandoraFlotArea(
 
     plot = $.plot(
       $("#" + graph_id),
-      datas_treshold,
+      datas_threshold,
       $.extend(true, {}, options, {
         yaxis: {
           max: y_recal.max
@@ -2716,6 +2716,7 @@ function pandoraFlotArea(
 
     $("#menu_export_csv_" + graph_id).click(function(e) {
       e.preventDefault();
+      blockResubmit($(this));
       plot.exportDataCSV();
       var es_firefox =
         navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
@@ -2772,7 +2773,7 @@ function pandoraFlotArea(
           );
         }
 
-        datas_treshold = add_threshold(
+        datas_threshold = add_threshold(
           data_base,
           threshold_data,
           plot.getAxes().yaxis.min,
@@ -2785,7 +2786,7 @@ function pandoraFlotArea(
 
         plot = $.plot(
           $("#" + graph_id),
-          datas_treshold,
+          datas_threshold,
           $.extend(true, {}, options, {
             yaxis: {
               min: max_draw["min"],
@@ -2945,39 +2946,6 @@ function set_watermark(graph_id, plot, watermark_src) {
   );
 }
 
-function get_event_details(event_ids) {
-  table = "";
-  if (typeof event_ids != "undefined") {
-    var inputs = [];
-    var table;
-    inputs.push("get_events_details=1");
-    inputs.push("event_ids=" + event_ids);
-    inputs.push("page=include/ajax/events");
-
-    // Autologin
-    if ($("#hidden-loginhash").val() != undefined) {
-      inputs.push("loginhash=" + $("#hidden-loginhash").val());
-      inputs.push("loginhash_data=" + $("#hidden-loginhash_data").val());
-      inputs.push("loginhash_user=" + $("#hidden-loginhash_user").val());
-    }
-
-    jQuery.ajax({
-      data: inputs.join("&"),
-      type: "GET",
-      url: (action = "../../ajax.php"),
-      timeout: 10000,
-      dataType: "html",
-      async: false,
-      success: function(data) {
-        table = data;
-        //forced_title_callback();
-      }
-    });
-  }
-
-  return table;
-}
-
 //Ajusta la grafica pequenña con el desplazamiento del eje y
 function adjust_left_width_canvas(adapter_id, adapted_id) {
   var adapter_left_margin = $("#" + adapter_id + " .yAxis .tickLabel").width();
@@ -3129,7 +3097,7 @@ function axis_thresholded(
   return y;
 }
 
-//add treshold
+//add threshold
 function add_threshold(
   data_base,
   threshold_data,
@@ -3249,13 +3217,13 @@ function add_threshold(
     }
   });
 
-  var extreme_treshold_array = [];
+  var extreme_threshold_array = [];
   var i = 0;
   var flag = true;
 
   $.each(threshold_array, function(index, value) {
     flag = true;
-    extreme_treshold_array[i] = {
+    extreme_threshold_array[i] = {
       below: value["max"],
       color: value["color"]
     };
@@ -3266,7 +3234,7 @@ function add_threshold(
       }
     });
     if (flag) {
-      extreme_treshold_array[i] = {
+      extreme_threshold_array[i] = {
         below: value["min"],
         color: datas[0].color
       };
@@ -3274,7 +3242,7 @@ function add_threshold(
     }
   });
 
-  datas[0].threshold = extreme_treshold_array;
+  datas[0].threshold = extreme_threshold_array;
 
   return datas;
 }

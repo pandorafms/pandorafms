@@ -410,7 +410,7 @@ if (check_login()) {
         $table_modules->head = [];
         $table_modules->head[0] = __('Module name');
         $table_modules->head[1] = __('Data');
-        $table_modules->head[2] = __('Treshold');
+        $table_modules->head[2] = __('Threshold');
         $table_modules->head[3] = __('Current interval');
         $table_modules->head[4] = __('Timestamp');
         $table_modules->head[5] = __('Status');
@@ -429,7 +429,9 @@ if (check_login()) {
                     $table_modules->data[$key][1] = remove_right_zeros(
                         number_format(
                             $value['datos'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
                         )
                     );
                 } else {

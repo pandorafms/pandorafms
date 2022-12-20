@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.762";
-my $pandora_build = "220616";
+my $pandora_version = "7.0NG.767";
+my $pandora_build = "221220";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -155,10 +155,6 @@ sub pandora_get_sharedconfig ($$) {
 	# Pandora FMS Console's attachment directory
 	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
 
-	#Limit of events replicate in metaconsole
-	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
-	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
-
 	#Public url
 	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
 
@@ -171,12 +167,6 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
 	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
-
-	$pa_config->{"event_replication"} = pandora_get_tconfig_token ($dbh, 'event_replication', 0);
-
-	if ($pa_config->{'include_agents'} eq '') {
-		$pa_config->{'include_agents'} = 0;
-	}
 
 	# PandoraFMS product name
 	$pa_config->{'rb_product_name'} = enterprise_hook(
@@ -239,6 +229,7 @@ sub pandora_load_config {
 	$pa_config->{"dbssl"} = 0;
 	$pa_config->{"dbsslcapath"} = "";
 	$pa_config->{"dbsslcafile"} = "";
+	$pa_config->{"verify_mysql_ssl_cert"} = "0";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
 	$pa_config->{"user"}  = "pandora"; # environment settings default user owner for files generated
@@ -265,8 +256,6 @@ sub pandora_load_config {
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
 	$pa_config->{"web_timeout"} = 60; # 6.0SP5
-	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
-	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
 	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"} = 3; # Fixed default
@@ -438,9 +427,6 @@ sub pandora_load_config {
 	# Patrol process of policies queue
 	$pa_config->{"policy_manager"} = 0; # 5.0
 
-	# Event replication process
-	$pa_config->{"event_replication"} = 0; # 5.0
-
 	# Event auto-validation
 	$pa_config->{"event_auto_validation"} = 1; # 5.0
 
@@ -537,8 +523,6 @@ sub pandora_load_config {
 	$pa_config->{"syslog_max"} = 65535; # 7.0.716
 	$pa_config->{"syslog_threads"} = 4; # 7.0.716
 
-	#$pa_config->{'include_agents'} = 0; #6.1
-	#
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
 
@@ -554,6 +538,7 @@ sub pandora_load_config {
 	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
 	
 	$pa_config->{"autoconfigure_agents"} = 1; # 7.0 725
+	$pa_config->{"autoconfigure_agents_threshold"} = 300; #7.0 764
 	
 	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
@@ -564,6 +549,7 @@ sub pandora_load_config {
 	$pa_config->{"alertserver"} = 0; # 7.0 756
 	$pa_config->{"alertserver_threads"} = 1; # 7.0 756
 	$pa_config->{"alertserver_warn"} = 180; # 7.0 756
+	$pa_config->{"alertserver_queue"} = 0; # 7.0 764
 
 	$pa_config->{'ncmserver'} = 0; # 7.0 758
 	$pa_config->{'ncmserver_threads'} = 1; # 7.0 758
@@ -572,6 +558,8 @@ sub pandora_load_config {
 	$pa_config->{"pandora_service_cmd"} = 'service pandora_server'; # 7.0 761
 	$pa_config->{"tentacle_service_cmd"} = 'service tentacle_serverd'; # 7.0 761
 	$pa_config->{"tentacle_service_watchdog"} = 1; # 7.0 761
+
+	$pa_config->{"dataserver_smart_queue"} = 0; # 765.
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -735,6 +723,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dbsslcafile\s(.*)/i) { 
 			$pa_config->{'dbsslcafile'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^verify_mysql_ssl_cert\s(.*)/i) { 
+			$pa_config->{'verify_mysql_ssl_cert'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^dbuser\s(.*)/i) { 
 			$pa_config->{'dbuser'}= clean_blank($1); 
 		}
@@ -782,12 +773,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^web_timeout\s+([0-9]*)/i) {
 			$pa_config->{'web_timeout'}= clean_blank($1); 
-		}
-		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
-			$pa_config->{'transactionalserver'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
-			$pa_config->{'transactional_threshold'}= clean_blank($1);
 		}
 		if ($parametro =~ m/^transactional_pool\s(.*)/i) {
 			$tbuf= clean_blank($1); 
@@ -1187,9 +1172,6 @@ sub pandora_load_config {
 			$pa_config->{'warmup_unknown_interval'}= clean_blank($1);
 			$pa_config->{'warmup_unknown_on'} = 0 if ($pa_config->{'warmup_unknown_interval'} == 0); # On by default.
 		}
-		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
-		#	$pa_config->{'include_agents'}= clean_blank($1);
-		#}
 		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
 			$pa_config->{'enc_dir'} = clean_blank($1);
 		}
@@ -1283,6 +1265,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^autoconfigure_agents\s+([0-1])/i){
 			$pa_config->{'autoconfigure_agents'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^autoconfigure_agents_threshold\s+([0-1])/i){
+			$pa_config->{'autoconfigure_agents_threshold'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^snmp_extlog\s(.*)/i) { 
 			$pa_config->{'snmp_extlog'} = clean_blank($1); 
 		}
@@ -1297,6 +1282,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^alertserver_warn\s+([0-9]*)/i) {
 			$pa_config->{'alertserver_warn'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^alertserver_queue\s+([0-1]*)/i) {
+			$pa_config->{'alertserver_queue'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^ncmserver\s+([0-9]*)/i){
 			$pa_config->{'ncmserver'}= clean_blank($1);
@@ -1335,6 +1323,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^ha_max_splitbrain_retries\s+([0-9]*)/i) {
 			$pa_config->{'ha_max_splitbrain_retries'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^dataserver_smart_queue\s([0-1])/i) {
+			$pa_config->{'dataserver_smart_queue'} = clean_blank($1);
 		}
 		
 	} # end of loop for parameter #

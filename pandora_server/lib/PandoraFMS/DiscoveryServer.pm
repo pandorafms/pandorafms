@@ -273,6 +273,7 @@ sub data_consumer ($$) {
       snmp_security_level => $task->{'snmp_security_level'},
       snmp_timeout => $task->{'snmp_timeout'},
       snmp_version => $task->{'snmp_version'},
+      snmp_skip_non_enabled_ifs => $task->{'snmp_skip_non_enabled_ifs'},
       subnets => \@subnets,
       task_id => $task->{'id_rt'},
       vlan_cache_enabled => $task->{'vlan_enabled'},
@@ -536,9 +537,54 @@ sub PandoraFMS::Recon::Base::test_module($$) {
         # Column
         $test->{'tcp_port'}
       );
+    } elsif ($test->{'id_modulo'} == 4) {
+      # SNMP Bandwith plugin modules.
+      # Check if plugin is running.
+      if ($module->{'macros'} ne '') {
+
+      # Get Bandwidth plugin.
+      my $plugin = get_db_single_row(
+        $self->{'dbh'},
+        'SELECT * FROM tplugin WHERE name = "Network&#x20;bandwidth&#x20;SNMP"',
+      );
+
+      return 0 unless defined($plugin);
+        my $parameters =  safe_output($plugin->{'parameters'});
+        my $plugin_exec = $plugin->{'plugin_exec'};
+
+        # Decode macros.
+        my $macros = p_decode_json($self->{'config'}, safe_output($test->{'macros'}));
+
+        my %macros = %{$macros};
+        if(ref($macros) eq "HASH") {
+          foreach my $macro_id (keys(%macros))
+          {
+            my $macro_field = safe_output($macros{$macro_id}{'macro'});
+            my $macro_desc  = safe_output($macros{$macro_id}{'desc'});
+            my $macro_value = (defined($macros{$macro_id}{'hide'}) && $macros{$macro_id}{'hide'} eq '1') ?
+                              pandora_output_password($self->{'config'}, safe_output($macros{$macro_id}{'value'})) :
+                              safe_output($macros{$macro_id}{'value'});
+
+            # build parameters to invoke plugin
+            $parameters =~ s/\'$macros{$macro_id}{'macro'}\'/$macro_value/g;
+
+          }
+        }
+        my $command = safe_output($plugin_exec);
+
+        # Execute the plugin.
+        my $output = `$command 2>$DEVNULL`;
+        # Do not save the output if there was an error.
+        if ($? != 0) {
+          return 0;
+        } else {
+          $value = 1;
+        }
+     }
     } elsif(is_enabled($test->{'id_plugin'})) {
       # XXX TODO: Test plugins. How to identify arguments? and values?
       # Disabled until we can ensure result.
+      
       return 0;
     }
 
@@ -678,9 +724,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
   foreach my $if_index (@output) {
     next unless ($if_index =~ /^[0-9]+$/);
 
-    # Check the status of the interface.
-    my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
-    next unless $if_status == 1;
+    if ($self->{'task_data'}{'snmp_skip_non_enabled_ifs'} == 1) {
+      # Check the status of the interface.
+      my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
+
+      next unless $if_status == 1;
+    }
 
     # Fill the module description with the IP and MAC addresses.
     my $mac = $self->get_if_mac($device, $if_index);
@@ -702,7 +751,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
         'id_modulo' => 2,
         'name' => $if_name."_ifOperStatus",
         'descripcion' => safe_input(
-          $if_desc
+          'The current operational state of the interface: up(1), down(2), testing(3), unknown(4), dormant(5), notPresent(6), lowerLayerDown(7)',
         ),
         'ip_target' => $device,
         'tcp_send' => $self->{'task_data'}{'snmp_version'},
@@ -713,7 +762,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
         'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
         'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
         'snmp_community' => $community,
-        'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index"
+        'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index",
+        'unit'        => ''
+
       }
     );
 
@@ -741,7 +792,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
+
         }
       );
     } else {
@@ -766,7 +819,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
+
         }
       );
     }
@@ -784,7 +839,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'id_modulo' => 2,
           'name' => $if_name."_ifHCOutOctets",
           'descripcion' => safe_input(
-            'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifOutOctets.'
+            'The total number of octets transmitted out of the interface, including framing characters. This object is a 64-bit version of ifOutOctets.'
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
@@ -795,7 +850,9 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
+
         }
       );
     } else { 
@@ -809,7 +866,7 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'id_modulo' => 2,
           'name' => $if_name."_ifOutOctets",
           'descripcion' => safe_input(
-            'The total number of octets received on the interface, including framing characters.'
+            'The total number of octets transmitted out of the interface, including framing characters.'
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
@@ -820,10 +877,135 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
           'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
           'snmp_community' => $community,
-          'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index"
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index",
+          'unit' => safe_input('bytes/s')
         }
       );
     }
+
+    # Bandwidth plugin.
+    my $plugin = get_db_single_row(
+      $self->{'dbh'},
+      'SELECT id, macros FROM tplugin WHERE name = "Network&#x20;bandwidth&#x20;SNMP"',
+    );
+     next unless defined($plugin);
+
+      # Network Bandwidth is installed.
+			my $macros = p_decode_json($self->{'config'}, safe_output($plugin->{'macros'}));
+      my $id_plugin = $plugin->{'id'};
+
+      if(ref($macros) eq "HASH") {
+      
+          # SNMP Version.
+          $macros->{'1'}->{'value'} = $self->{'task_data'}->{'snmp_version'};
+          # Community.
+          $macros->{'2'}->{'value'} = $community;
+          # Host.
+          $macros->{'3'}->{'value'} = $device;
+          # Port.
+          $macros->{'4'}->{'value'} = 161;
+          # Interface index filter.
+          $macros->{'5'}->{'value'} = $if_index;
+          # SecurityName.
+          $macros->{'6'}->{'value'} = $self->{'task_data'}->{'snmp_auth_user'};
+          # SecurityContext.
+          $macros->{'7'}->{'value'} = $community;
+          # SecurityLevel.
+          $macros->{'8'}->{'value'} = $self->{'task_data'}->{'snmp_security_level'};
+          # AuthProtocol.
+          $macros->{'9'}->{'value'} = $self->{'task_data'}->{'snmp_auth_method'};
+          # AuthKey.
+          $macros->{'10'}->{'value'} = $self->{'task_data'}->{'snmp_auth_pass'};
+          # PrivProtocol.
+          $macros->{'11'}->{'value'} = $self->{'task_data'}->{'snmp_privacy_method'};
+          # PrivKey.
+          $macros->{'12'}->{'value'} = $self->{'task_data'}->{'snmp_privacy_pass'};
+          # Hash identifier.
+          $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
+          # Get input usage.
+          $macros->{'14'}->{'value'} = 0;
+          # Get output usage.
+          $macros->{'15'}->{'value'} = 0;
+
+          $self->call(
+            'add_module',
+            $device,
+            {
+              'id_tipo_modulo' => 1,
+              'id_modulo' => 4,
+              'name' => $if_name."_Bandwith",
+              'descripcion' => safe_input(
+			          'Amount of digital information sent and received from this interface over a particular time',
+              ),
+              'unit' => '%',
+              'macros' => p_encode_json($self->{'config'}, $macros),
+              'id_plugin' => $id_plugin,
+              'unit' => '%',
+              'min_warning'   => '0',
+              'max_warning'   => '0',
+              'min_critical'  => '85',
+              'max_critical'  => '0',
+            }
+          );
+
+          # inUsage
+          # Hash identifier.
+          $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
+          # Get input usage.
+          $macros->{'14'}->{'value'} = 1;
+          # Get output usage.
+          $macros->{'15'}->{'value'} = 0;
+          
+          $self->call(
+          'add_module',
+          $device,
+          {
+            'id_tipo_modulo' => 1,
+            'id_modulo' => 4,
+            'name' => $if_name."_inUsage",
+            'descripcion' => safe_input(
+			        'Bandwidth usage received into this interface over a particular time',
+            ),
+            'unit' => '%',
+            'macros' => p_encode_json($self->{'config'}, $macros),
+            'id_plugin' => $id_plugin,
+            'unit' => '%',
+            'min_warning'   => '0',
+            'max_warning'   => '0',
+            'min_critical'  => '85',
+            'max_critical'  => '0',
+          }
+        );
+
+          # OutUsage.
+          # Hash identifier.
+          $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
+          # Get input usage.
+          $macros->{'14'}->{'value'} = 0;
+          # Get output usage.
+          $macros->{'15'}->{'value'} = 1;
+
+          $self->call(
+          'add_module',
+          $device,
+          {
+            'id_tipo_modulo' => 1,
+            'id_modulo' => 4,
+            'name' => $if_name."_outUsage",
+            'descripcion' => safe_input(
+			        'Bandwidth usage sent from this interface over a particular time',
+            ),
+            'unit' => '%',
+            'macros' => p_encode_json($self->{'config'}, $macros),
+            'id_plugin' => $id_plugin,
+            'unit' => '%',
+            'min_warning'   => '0',
+            'max_warning'   => '0',
+            'min_critical'  => '85',
+            'max_critical'  => '0',
+          }
+        );
+      }
   }
 
 }
@@ -1253,8 +1435,12 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               $id_tipo_modulo = get_module_id($self->{'dbh'}, $module->{'type'})
                 if is_empty($id_tipo_modulo);
 
-              my $description = safe_output($module->{'description'});
+              my $description = safe_output($module->{'descripcion'});
               $description = '' if is_empty($description);
+
+              my $unit = safe_output($module->{'unit'});
+              $unit = '' if is_empty($unit);
+              
 
               if (is_enabled($module->{'__module_component'})) {
                 # Module from network component.
@@ -1275,6 +1461,11 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               } else {
                 # Create module - Direct.
                 my $name = $module->{'name'};
+                my $description = safe_output($module->{'descripcion'});
+
+                my $unit = safe_output($module->{'unit'});
+                $unit = '' if is_empty($unit);
+                
                 delete $module->{'name'};
                 delete $module->{'description'};
                 $agentmodule_id = pandora_create_module_from_hash(
@@ -1286,7 +1477,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
                     'nombre' => safe_input($name),
                     'descripcion' => safe_input($description),
                     'id_agente' => $agent_id,
-                    'ip_target' => $data->{'agent'}{'direccion'}
+                    'ip_target' => $data->{'agent'}{'direccion'},
+                    'unit' => safe_input($unit)
                   },
                   $self->{'dbh'}
                 );
@@ -1358,6 +1550,25 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       );
     }
 
+    # Update OS information.
+    foreach my $agent (@agents) {
+
+      # Avoid processing if does not exist.
+      next unless (defined($agent->{'agent_id'}));
+
+      # Make sure OS version information is available.
+      next unless (defined($agent->{'os_version'}));
+
+      # Is the agent in learning mode?
+      next unless ($agent->{'modo'} == 1);
+
+      # Set the OS version.
+      db_do($self->{'dbh'},
+        'UPDATE tagente SET os_version=? WHERE id_agente=?',
+        $agent->{'os_version'}, $agent->{'agent_id'}
+      );
+    }
+
     # Connect agents.
     my @connections = get_db_rows(
       $self->{'dbh'},
@@ -1407,8 +1618,11 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
 
       next if is_empty($label);
 
-      # Retrieve target agent OS version.
+      # Retrieve target agent OS.
       $self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
+
+      # Retrieve target agent OS version.
+      $self->{'agents_found'}->{$addr}{'agent'}{'os_version'} = $self->get_os_version($addr);
 
       $self->call('update_progress', $progress);
       $progress += $step;
@@ -1669,7 +1883,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
       $force_processing = 1;
 
     } else {
-      $agent_id = $current_agent->{'id_agente'};
+      if ($current_agent->{'disabled'} eq '0') {
+        $agent_id = $current_agent->{'id_agente'};
+      }
     }
 
     if (!defined($agent_id)) {

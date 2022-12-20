@@ -29,6 +29,7 @@
 namespace PandoraFMS\Dashboard;
 
 use PandoraFMS\Dashboard\Manager;
+use PandoraFMS\Enterprise\Metaconsole\Node;
 
 /**
  * Network map Widgets.
@@ -180,6 +181,42 @@ class NetworkMapWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['networkmapId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node = new Node($this->values['node']);
+                    $node->connect();
+                }
+
+                // Reports.
+                $check_exist = db_get_value(
+                    'id',
+                    'tmap',
+                    'id',
+                    $this->values['networkmapId']
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['node'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -312,8 +349,6 @@ class NetworkMapWidget extends Widget
                 $values['networkmapId']
             );
 
-            $fields[$selected] = $selected_networkmap;
-
             if ((bool) is_metaconsole() === true) {
                 metaconsole_restore_db();
             }
@@ -322,11 +357,13 @@ class NetworkMapWidget extends Widget
         $inputs[] = [
             'label'     => __('Map'),
             'arguments' => [
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'networkmapId',
-                'selected' => $selected,
-                'return'   => true,
+                'type'          => 'select',
+                'fields'        => $fields,
+                'name'          => 'networkmapId',
+                'selected'      => $selected,
+                'return'        => true,
+                'nothing'       => __('None'),
+                'nothing_value' => 0,
             ],
         ];
 
@@ -487,6 +524,22 @@ class NetworkMapWidget extends Widget
     public static function getName()
     {
         return 'network_map';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 430,
+        ];
+
+        return $size;
     }
 
 

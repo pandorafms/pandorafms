@@ -77,7 +77,8 @@ echo $output;
                 class: '<?php echo $class; ?>',
                 hash: '<?php echo $hash; ?>',
                 user: '<?php echo $config['id_user']; ?>'
-            }
+            },
+            title: '<?php echo __('New widget'); ?>',
         });
 
         // Mode for create new dashboard.

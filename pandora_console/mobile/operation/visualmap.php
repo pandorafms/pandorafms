@@ -216,6 +216,7 @@ class Visualmap
      */
     private function show_visualmap()
     {
+        global $config;
         $ui = Ui::getInstance();
         $system = System::getInstance();
 
@@ -279,6 +280,13 @@ class Visualmap
             'height' => $this->height,
         ];
 
+        if ((bool) $config['mobile_view_orientation_vc'] === true) {
+            $size = [
+                'width'  => $this->height,
+                'height' => $this->width,
+            ];
+        }
+
         $ratio_t = $visualConsole->adjustToViewport($size, 'mobile');
         $visualConsoleData = $visualConsole->toArray();
 
@@ -340,16 +348,18 @@ class Visualmap
 
         $settings = \json_encode(
             [
-                'props'   => $visualConsoleData,
-                'items'   => $visualConsoleItems,
-                'baseUrl' => ui_get_full_url('/', false, false, false),
-                'page'    => 'include/ajax/visual_console.ajax',
-                'ratio'   => $ratio_t,
-                'size'    => $size,
-                'cellId'  => $uniq,
-                'uniq'    => $uniq,
-                'mobile'  => true,
-                'vcId'    => $visualConsoleId,
+                'props'                      => $visualConsoleData,
+                'items'                      => $visualConsoleItems,
+                'baseUrl'                    => ui_get_full_url('/', false, false, false),
+                'page'                       => 'include/ajax/visual_console.ajax',
+                'ratio'                      => $ratio_t,
+                'size'                       => $size,
+                'cellId'                     => $uniq,
+                'uniq'                       => $uniq,
+                'mobile'                     => true,
+                'vcId'                       => $visualConsoleId,
+                'id_user'                    => $config['id_user'],
+                'mobile_view_orientation_vc' => (bool) !$config['mobile_view_orientation_vc'],
             ]
         );
 

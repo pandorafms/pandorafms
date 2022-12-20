@@ -232,27 +232,22 @@ function menu_print_menu(&$menu)
                 $menu_selected = true;
                 $selected = true;
                 $visible = true;
-            } else if (($sec2 == $subsec2 || $allsec2 == $subsec2 || $selected_submenu2) && !isset($sub[$subsec2]['options'])) {
+            } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false) {
                 $class .= 'submenu_selected selected';
                 $selected = true;
                 $menu_selected = true;
-                $hasExtensions = (array_key_exists('hasExtensions', $main)) ? $main['hasExtensions'] : false;
-                if (($extensionInMenuParameter != '') && ($hasExtensions)) {
+                $hasExtensions = (array_key_exists('hasExtensions', $main) === true) ? $main['hasExtensions'] : false;
+                if ((empty($extensionInMenuParameter) === false) && ((bool) $hasExtensions === true)) {
                     $visible = true;
                 } else {
                     $visible = false;
                 }
-            } else if (isset($sub['pages']) && (array_search($sec2, $sub['pages']) !== false)) {
-                $class .= 'submenu_selected selected';
-                $menu_selected = true;
-                $selected = true;
-                $visible = true;
             } else {
                 // Else it's not selected.
                 $class .= 'submenu_not_selected';
             }
 
-            if (! isset($sub['refr'])) {
+            if (isset($sub['refr']) === false) {
                 $sub['refr'] = 0;
             }
 
@@ -661,7 +656,7 @@ function menu_get_sec_pages($sec, $menu_hash=false)
         foreach ($menu[$sec]['sub'] as $k => $v) {
             // Avoid special cases of standalone windows.
             if (preg_match('/^javascript:/', $k) || preg_match('/\.php/', $k)) {
-                if ($sec !== 'links') {
+                if ($sec !== 'links' && $sec !== 'eventos') {
                     continue;
                 }
             }

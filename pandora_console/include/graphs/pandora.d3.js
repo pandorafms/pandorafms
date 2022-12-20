@@ -29,6 +29,12 @@ function chordDiagram(recipient, elements, matrix, width) {
     var width = 700;
     var margin = 150;
     var padding = 0.02;
+    var consoleStyle = document.getElementById("hidden-selected_style_theme")
+      .value;
+    var textColor =
+      consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)";
+    var tooltipColor =
+      consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)";
 
     function chart(selection) {
       selection.each(function(data) {
@@ -103,7 +109,6 @@ function chordDiagram(recipient, elements, matrix, width) {
               const chords = chord.chords();
               let aux = 0;
               $.each(chords, function(key, value) {
-                console.log(aux);
                 if (aux < 5) {
                   if (
                     (value.source.index == i && value.target.subindex == i) ||
@@ -159,6 +164,7 @@ function chordDiagram(recipient, elements, matrix, width) {
           .attr("text-anchor", function(d) {
             return d.angle > Math.PI ? "end" : null;
           })
+          .attr("style", "fill: " + textColor)
           .attr("transform", function(d) {
             return (
               "rotate(" +
@@ -266,7 +272,12 @@ function chordDiagram(recipient, elements, matrix, width) {
 
           $("#tooltip").attr(
             "style",
-            "background: #fff;" +
+            "background: " +
+              tooltipColor +
+              ";" +
+              "color: " +
+              textColor +
+              ";" +
               "position: absolute;" +
               "display: inline-block;" +
               "width: auto;" +
@@ -393,6 +404,16 @@ function treeMap(recipient, data, width, height) {
   var isIE = true;
   var chartWidth = width;
   var chartHeight = height;
+  var consoleStyle = document.getElementById("hidden-selected_style_theme")
+    .value;
+  $("#tooltip").css(
+    "color",
+    consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)"
+  );
+  $("#tooltip").css(
+    "background-color",
+    consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)"
+  );
   if (width === "auto") {
     chartWidth = $(recipient).innerWidth();
   }
@@ -761,6 +782,7 @@ function treeMap(recipient, data, width, height) {
     $("#tooltip").attr(
       "style",
       "background: #fff;" +
+        "color: #111;" +
         "position: absolute;" +
         "display: block;" +
         "width: 200px;" +
@@ -1023,6 +1045,7 @@ function sunburst(recipient, data, width, height, tooltip = true) {
     $("#tooltip").attr(
       "style",
       "background: #fff;" +
+        "color: #111;" +
         "position: absolute;" +
         "display: block;" +
         "width: 200px;" +
@@ -2846,7 +2869,7 @@ function donutNarrowGraph(
       arc = d3.svg
         .arc()
         .outerRadius(radius)
-        .innerRadius(radius - radius / 6);
+        .innerRadius(radius - radius / 4);
 
       svg = donutbody
         .append("svg")

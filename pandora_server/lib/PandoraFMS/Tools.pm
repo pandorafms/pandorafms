@@ -72,7 +72,6 @@ our @EXPORT = qw(
 	SNMPSERVER
 	SATELLITESERVER
 	MFSERVER
-	TRANSACTIONALSERVER
 	SYNCSERVER
 	SYSLOGSERVER
 	WUXSERVER
@@ -170,6 +169,12 @@ our @EXPORT = qw(
 	p_encode_json
 	p_decode_json
 	get_server_name
+	check_cron_syntax
+	check_cron_interval
+	check_cron_skips
+	check_cron_value
+	check_cron_element
+	cron_check
 );
 
 # ID of the different servers
@@ -2689,6 +2694,125 @@ sub p_decode_json {
 }
 
 ################################################################################
+# Verify cron syntax
+################################################################################
+sub check_cron_syntax ($) {
+	my ($cron) = @_;
+	
+	return 0 if !defined ($cron);
+	return ($cron =~ m/^(\d|\*|-|\/|,)+ (\d|\*|-|\/|,)+ (\d|\*|-|\/|,)+ (\d|\*|-|\/|,)+ (\d|\*|-|\/|,)+$/);
+}
+
+################################################################################
+# Check if rule is interval rule
+################################################################################
+sub check_cron_interval {
+	my ($elem, $elem_curr_time) = @_;
+
+	# Not a range
+	if ($elem !~ /(\d+)\-(\d+)/) {
+		return 0;
+	}
+	
+	my ($down, $up) = ($1, $2);
+
+	if ($elem_curr_time >= $down && $elem_curr_time <=$up) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+
+################################################################################
+# Check if rule is skip rule
+################################################################################
+sub check_cron_skips {
+	my ($elem, $elem_curr_time) = @_;
+
+	if ($elem !~ /(\d+|\*)\/(\d+)/) {
+		return 0;
+	}
+	
+	my ($init, $skip) = ($1, $2);
+
+	if ($init eq '*') {
+		$init = 0;
+	}
+
+	if ($elem_curr_time == $init || (($elem_curr_time - $init) % $skip == 0 && $elem_curr_time > $init)) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+################################################################################
+# Check if rule is value rule
+################################################################################
+sub check_cron_value {
+	my ($elem, $elem_curr_time) = @_;
+
+	if ($elem eq '*' || $elem eq $elem_curr_time) {
+		return 1;
+	} else {
+		return 0;
+	}
+
+}
+
+###############################################################################
+# Check if element match rules
+###############################################################################
+sub check_cron_element {
+	my ($elem_cron, $elem_curr_time) = @_;
+
+	my @elems = (split (/,/, $elem_cron));
+
+	my $elem_res = 0;
+	foreach my $elem (@elems) {
+
+		if (check_cron_interval($elem, $elem_curr_time) || check_cron_skips($elem, $elem_curr_time) || check_cron_value($elem, $elem_curr_time)) {
+			$elem_res = 1;
+
+			last;
+		}
+	}
+
+	return $elem_res;
+}
+
+###############################################################################
+# Check if timestamp matches cron command
+###############################################################################
+sub cron_check {
+	my ($cron, $utimestamp) = @_;
+
+	if (!check_cron_syntax($cron)) {
+		return 0;
+	}
+
+	my @time = localtime($utimestamp);
+
+	my ($minute, $hour, $mday, $month, $wday) = split (/\s/, $cron);
+
+	my $res = 0;
+
+	$res += check_cron_element($minute, $time[1]);
+	$res += check_cron_element($hour,   $time[2]);
+	$res += check_cron_element($mday,   $time[3]);
+	$res += check_cron_element($month,  $time[4]+1);
+	$res += check_cron_element($wday,   $time[6]);
+
+	if ($res < 5) {
+		return 0;
+	} else {
+		return 1;
+
+	}
+}
+
+################################################################################
 # String name for server type.
 ################################################################################
 sub get_server_name {
@@ -2712,7 +2836,6 @@ sub get_server_name {
 	return "ICMPSERVER" if ($server_type eq ICMPSERVER);
 	return "SNMPSERVER" if ($server_type eq SNMPSERVER);
 	return "SATELLITESERVER" if ($server_type eq SATELLITESERVER);
-	return "TRANSACTIONALSERVER" if ($server_type eq TRANSACTIONALSERVER);
 	return "MFSERVER" if ($server_type eq MFSERVER);
 	return "SYNCSERVER" if ($server_type eq SYNCSERVER);
 	return "WUXSERVER" if ($server_type eq WUXSERVER);

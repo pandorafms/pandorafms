@@ -539,6 +539,8 @@ function planned_downtimes_migrate_malformed_downtimes_copy_items($original_down
  */
 function planned_downtimes_stop($downtime)
 {
+    global $config;
+
     $result = false;
     $message = '';
 
@@ -670,6 +672,21 @@ function planned_downtimes_stop($downtime)
                         $count++;
                     }
                 }
+            break;
+
+            case 'disable_agent_modules':
+                $update_sql = sprintf(
+                    'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+                    SET tam.disabled = 0, ta.update_module_count = 1
+                    WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
+                    ta.id_agente = tam.id_agente AND
+                    tpdm.id_downtime = %d',
+                    $id_downtime
+                );
+
+                db_process_sql($update_sql);
+
+                $count = '';
             break;
 
             case 'disable_agents_alerts':

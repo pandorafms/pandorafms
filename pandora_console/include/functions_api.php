@@ -45,16 +45,26 @@ require_once $config['homedir'].'/include/functions_servers.php';
 require_once $config['homedir'].'/include/functions_planned_downtimes.php';
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_event_responses.php';
+require_once $config['homedir'].'/include/functions_tactical.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
+require_once $config['homedir'].'/include/functions_reporting_xml.php';
+require_once $config['homedir'].'/include/functions_reports.php';
 enterprise_include_once('include/functions_local_components.php');
 enterprise_include_once('include/functions_events.php');
 enterprise_include_once('include/functions_agents.php');
 enterprise_include_once('include/functions_modules.php');
 enterprise_include_once('include/functions_clusters.php');
 enterprise_include_once('include/functions_alerts.php');
+enterprise_include_once('include/functions_reporting_pdf.php');
+enterprise_include_once('include/functions_reporting_csv.php');
+enterprise_include_once('include/functions_cron.php');
 
 // Clases.
+use PandoraFMS\Agent;
 use PandoraFMS\Module;
 use PandoraFMS\Enterprise\Cluster;
+use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\Event;
 use PandoraFMS\SpecialDay;
 
 
@@ -386,23 +396,6 @@ function api_get_test_agent_cache()
 }
 
 
-// Returs the string OK if a connection to the event replication DB can be established.
-function api_get_test_event_replication_db()
-{
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    $status = enterprise_hook('events_test_replication_db', []);
-    if ($status === ENTERPRISE_NOT_HOOK) {
-        echo 'ERR';
-        return;
-    }
-
-    echo $status;
-}
-
-
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 
 
@@ -611,95 +604,6 @@ function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnT
 }
 
 
-/*
-    DB column mapping table used by tree_agents (and get module_properties)
-*/
-
-/*
- * Agent related field mappings (output field => column designation for 'tagente').
- * agent_id is not in this list (because it is mandatory).
- * agent_id_group is not in this list.
- */
-$agent_field_column_mapping = [
-    'agent_name'                      => 'nombre as agent_name',
-    'agent_direction'                 => 'direccion as agent_direction',
-    'agent_comentary'                 => 'comentarios as agent_comentary',
-    'agent_last_contant'              => 'ultimo_contacto as agent_last_contant',
-    'agent_mode'                      => 'modo as agent_mode',
-    'agent_interval'                  => 'intervalo as agent_interval',
-    'agent_id_os'                     => 'id_os as agent_id_os',
-    'agent_os_version'                => 'os_version as agent_os_version',
-    'agent_version'                   => 'agent_version as agent_version',
-    'agent_last_remote_contact'       => 'ultimo_contacto_remoto as agent_last_remote_contact',
-    'agent_disabled'                  => 'disabled as agent_disabled',
-    'agent_id_parent'                 => 'id_parent as agent_id_parent',
-    'agent_custom_id'                 => 'custom_id as agent_custom_id',
-    'agent_server_name'               => 'server_name as agent_server_name',
-    'agent_cascade_protection'        => 'cascade_protection as agent_cascade_protection',
-    'agent_cascade_protection_module' => 'cascade_protection_module as agent_cascade_protection_module',
-];
-
-// module related field mappings 1/2 (output field => column for 'tagente_modulo')
-// module_id_agent_modulo  is not in this list
-$module_field_column_mampping = [
-    'module_id_agent'          => 'id_agente as module_id_agent',
-    'module_id_module_type'    => 'id_tipo_modulo as module_id_module_type',
-    'module_description'       => 'descripcion as module_description',
-    'module_name'              => 'nombre as module_name',
-    'module_max'               => 'max as module_max',
-    'module_min'               => 'min as module_min',
-    'module_interval'          => 'module_interval',
-    'module_tcp_port'          => 'tcp_port as module_tcp_port',
-    'module_tcp_send'          => 'tcp_send as module_tcp_send',
-    'module_tcp_rcv'           => 'tcp_rcv as module_tcp_rcv',
-    'module_snmp_community'    => 'snmp_community as module_snmp_community',
-    'module_snmp_oid'          => 'snmp_oid as module_snmp_oid',
-    'module_ip_target'         => 'ip_target as module_ip_target',
-    'module_id_module_group'   => 'id_module_group as module_id_module_group',
-    'module_flag'              => 'flag as module_flag',
-    'module_id_module'         => 'id_modulo as module_id_module',
-    'module_disabled'          => 'disabled as module_disabled',
-    'module_id_export'         => 'id_export as module_id_export',
-    'module_plugin_user'       => 'plugin_user as module_plugin_user',
-    'module_plugin_pass'       => 'plugin_pass as module_plugin_pass',
-    'module_plugin_parameter'  => 'plugin_parameter as module_plugin_parameter',
-    'module_id_plugin'         => 'id_plugin as module_id_plugin',
-    'module_post_process'      => 'post_process as module_post_process',
-    'module_prediction_module' => 'prediction_module as module_prediction_module',
-    'module_max_timeout'       => 'max_timeout as module_max_timeout',
-    'module_max_retries'       => 'max_retries as module_max_retries',
-    'module_custom_id'         => 'custom_id as module_custom_id',
-    'module_history_data'      => 'history_data as module_history_data',
-    'module_min_warning'       => 'min_warning as module_min_warning',
-    'module_max_warning'       => 'max_warning as module_max_warning',
-    'module_str_warning'       => 'str_warning as module_str_warning',
-    'module_min_critical'      => 'min_critical as module_min_critical',
-    'module_max_critical'      => 'max_critical as module_max_critical',
-    'module_str_critical'      => 'str_critical as module_str_critical',
-    'module_min_ff_event'      => 'min_ff_event as module_min_ff_event',
-    'module_delete_pending'    => 'delete_pending as module_delete_pending',
-    'module_plugin_macros'     => 'macros as module_plugin_macros',
-    'module_macros'            => 'module_macros as module_macros',
-    'module_critical_inverse'  => 'critical_inverse as module_critical_inverse',
-    'module_warning_inverse'   => 'warning_inverse as module_warning_inverse',
-];
-
-// module related field mappings 2/2 (output field => column for 'tagente_estado')
-// module_id_agent_modulo  is not in this list
-$estado_fields_to_columns_mapping = [
-    'module_id_agent_state'     => 'id_agente_estado as module_id_agent_state',
-    'module_data'               => 'datos as module_data',
-    'module_timestamp'          => 'timestamp as module_timestamp',
-    'module_state'              => 'estado as module_state',
-    'module_last_try'           => 'last_try as module_last_try',
-    'module_utimestamp'         => 'utimestamp as module_utimestamp',
-    'module_current_interval'   => 'current_interval as module_current_interval',
-    'module_running_by'         => 'running_by as module_running_by',
-    'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
-    'module_status_changes'     => 'status_changes as module_status_changes',
-    'module_last_status'        => 'last_status as module_last_status',
-];
-
 /***
  * end of DB column mapping table
  ***/
@@ -813,9 +717,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         'module_id_module',
         'module_disabled',
         'module_id_export',
-        'module_plugin_user',
-        'module_plugin_pass',
         'module_plugin_parameter',
+        'module_plugin_pass',
+        'module_plugin_user',
         'module_id_plugin',
         'module_post_process',
         'module_prediction_module',
@@ -904,14 +808,88 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         'alert_actions_id_group',
     ];
 
-    // agent related field mappings (output field => column designation for 'tagente')
-    global $agent_field_column_mapping;
+    /*
+     * Agent related field mappings (output field => column designation for 'tagente').
+     * agent_id is not in this list (because it is mandatory).
+     * agent_id_group is not in this list.
+     */
+    $agent_field_column_mapping = [
+        'agent_name'                      => 'nombre as agent_name',
+        'agent_direction'                 => 'direccion as agent_direction',
+        'agent_comentary'                 => 'comentarios as agent_comentary',
+        'agent_last_contant'              => 'ultimo_contacto as agent_last_contant',
+        'agent_mode'                      => 'modo as agent_mode',
+        'agent_interval'                  => 'intervalo as agent_interval',
+        'agent_id_os'                     => 'id_os as agent_id_os',
+        'agent_os_version'                => 'os_version as agent_os_version',
+        'agent_version'                   => 'agent_version as agent_version',
+        'agent_last_remote_contact'       => 'ultimo_contacto_remoto as agent_last_remote_contact',
+        'agent_disabled'                  => 'disabled as agent_disabled',
+        'agent_id_parent'                 => 'id_parent as agent_id_parent',
+        'agent_custom_id'                 => 'custom_id as agent_custom_id',
+        'agent_server_name'               => 'server_name as agent_server_name',
+        'agent_cascade_protection'        => 'cascade_protection as agent_cascade_protection',
+        'agent_cascade_protection_module' => 'cascade_protection_module as agent_cascade_protection_module',
+    ];
 
     // module related field mappings 1/2 (output field => column for 'tagente_modulo')
-    global $module_field_column_mampping;
+    // module_id_agent_modulo  is not in this list
+    // module_plugin_user, module_plugin_pass, module_plugin_macros are not in this list due to security purposes.
+    $module_field_column_mapping = [
+        'module_id_agent'          => 'id_agente as module_id_agent',
+        'module_id_module_type'    => 'id_tipo_modulo as module_id_module_type',
+        'module_description'       => 'descripcion as module_description',
+        'module_name'              => 'nombre as module_name',
+        'module_max'               => 'max as module_max',
+        'module_min'               => 'min as module_min',
+        'module_interval'          => 'module_interval',
+        'module_tcp_port'          => 'tcp_port as module_tcp_port',
+        'module_tcp_send'          => 'tcp_send as module_tcp_send',
+        'module_tcp_rcv'           => 'tcp_rcv as module_tcp_rcv',
+        'module_snmp_community'    => 'snmp_community as module_snmp_community',
+        'module_snmp_oid'          => 'snmp_oid as module_snmp_oid',
+        'module_ip_target'         => 'ip_target as module_ip_target',
+        'module_id_module_group'   => 'id_module_group as module_id_module_group',
+        'module_flag'              => 'flag as module_flag',
+        'module_id_module'         => 'id_modulo as module_id_module',
+        'module_disabled'          => 'disabled as module_disabled',
+        'module_id_export'         => 'id_export as module_id_export',
+        'module_plugin_parameter'  => 'plugin_parameter as module_plugin_parameter',
+        'module_id_plugin'         => 'id_plugin as module_id_plugin',
+        'module_post_process'      => 'post_process as module_post_process',
+        'module_prediction_module' => 'prediction_module as module_prediction_module',
+        'module_max_timeout'       => 'max_timeout as module_max_timeout',
+        'module_max_retries'       => 'max_retries as module_max_retries',
+        'module_custom_id'         => 'custom_id as module_custom_id',
+        'module_history_data'      => 'history_data as module_history_data',
+        'module_min_warning'       => 'min_warning as module_min_warning',
+        'module_max_warning'       => 'max_warning as module_max_warning',
+        'module_str_warning'       => 'str_warning as module_str_warning',
+        'module_min_critical'      => 'min_critical as module_min_critical',
+        'module_max_critical'      => 'max_critical as module_max_critical',
+        'module_str_critical'      => 'str_critical as module_str_critical',
+        'module_min_ff_event'      => 'min_ff_event as module_min_ff_event',
+        'module_delete_pending'    => 'delete_pending as module_delete_pending',
+        'module_macros'            => 'module_macros as module_macros',
+        'module_critical_inverse'  => 'critical_inverse as module_critical_inverse',
+        'module_warning_inverse'   => 'warning_inverse as module_warning_inverse',
+    ];
 
     // module related field mappings 2/2 (output field => column for 'tagente_estado')
-    global    $estado_fields_to_columns_mapping;
+    // module_id_agent_modulo  is not in this list
+    $estado_fields_to_columns_mapping = [
+        'module_id_agent_state'     => 'id_agente_estado as module_id_agent_state',
+        'module_data'               => 'datos as module_data',
+        'module_timestamp'          => 'timestamp as module_timestamp',
+        'module_state'              => 'estado as module_state',
+        'module_last_try'           => 'last_try as module_last_try',
+        'module_utimestamp'         => 'utimestamp as module_utimestamp',
+        'module_current_interval'   => 'current_interval as module_current_interval',
+        'module_running_by'         => 'running_by as module_running_by',
+        'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
+        'module_status_changes'     => 'status_changes as module_status_changes',
+        'module_last_status'        => 'last_status as module_last_status',
+    ];
 
     // alert related field mappings (output field => column for 'talert_template_modules', ... )
     $alert_fields_to_columns_mapping = [
@@ -992,8 +970,8 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
             $agent_additional_columns .= (', '.$agent_field_column_mapping[$fld] );
         }
 
-        if (array_key_exists($fld, $module_field_column_mampping)) {
-            $module_additional_columns .= (', '.$module_field_column_mampping[$fld]);
+        if (array_key_exists($fld, $module_field_column_mapping)) {
+            $module_additional_columns .= (', '.$module_field_column_mapping[$fld]);
         }
 
         if (array_key_exists($fld, $estado_fields_to_columns_mapping)) {
@@ -1023,9 +1001,13 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         $groups = [];
     }
 
-    $groups = str_replace('\n', $returnReplace, $groups);
-
     foreach ($groups as &$group) {
+        if (check_acl($config['id_user'], $group['group_id'], 'AR') === false) {
+            continue;
+        }
+
+        $group = str_replace('\n', $returnReplace, $group);
+
         $group['type_row'] = 'group';
         $returnVar[] = $group;
 
@@ -1041,9 +1023,23 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
             $agents = [];
         }
 
-        $agents = str_replace('\n', $returnReplace, $agents);
+        if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true) {
+            if (array_search('module_plugin_user', $fields) !== false) {
+                $module_additional_columns .= ' ,plugin_user as module_plugin_user';
+            }
+
+            if (array_search('module_plugin_pass', $fields) !== false) {
+                $module_additional_columns .= ' ,plugin_pass as module_plugin_pass';
+            }
+
+            if (array_search('module_plugin_macros', $fields) !== false) {
+                $module_additional_columns .= ' ,macros as module_plugin_macros';
+            }
+        }
 
         foreach ($agents as $index => &$agent) {
+            $agent = str_replace('\n', $returnReplace, $agent);
+
             $agent['type_row']  = 'agent';
             $returnVar[] = $agent;
 
@@ -1055,24 +1051,26 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
                 // SKIP collecting MODULES and ALERTS
             }
 
+            $sql = 'SELECT *
+            FROM (SELECT id_agente_modulo as module_id_agent_modulo '.$module_additional_columns.'
+                    FROM tagente_modulo t1
+                    WHERE id_agente = '.$agent['agent_id'].') t1 
+                INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo '.$estado_additional_columns.'
+                    FROM tagente_estado
+                    WHERE id_agente = '.$agent['agent_id'].') t2
+                ON t1.module_id_agent_modulo = t2.module_id_agent_modulo';
+
             $modules = db_get_all_rows_sql(
-                'SELECT *
-                FROM (SELECT id_agente_modulo as module_id_agent_modulo '.$module_additional_columns.'
-                        FROM tagente_modulo 
-                        WHERE id_agente = '.$agent['agent_id'].') t1 
-                    INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo '.$estado_additional_columns.'
-                        FROM tagente_estado
-                        WHERE id_agente = '.$agent['agent_id'].') t2
-                    ON t1.module_id_agent_modulo = t2.module_id_agent_modulo'
+                $sql
             );
 
             if ($modules === false) {
                 $modules = [];
             }
 
-            $modules = str_replace('\n', $returnReplace, $modules);
-
             foreach ($modules as &$module) {
+                $module = str_replace('\n', $returnReplace, $module);
+
                 $module['type_row'] = 'module';
 
                 if ($module['module_macros']) {
@@ -1104,9 +1102,8 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
                     $alerts = [];
                 }
 
-                $alerts = str_replace('\n', $returnReplace, $alerts);
-
                 foreach ($alerts as &$alert) {
+                    $alert = str_replace('\n', $returnReplace, $alert);
                     $alert['type_row'] = 'alert';
                     $returnVar[] = $alert;
                 }
@@ -1373,10 +1370,66 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
     ];
 
     // module related field mappings 1/2 (output field => column for 'tagente_modulo')
-    global $module_field_column_mampping;
+    // module_id_agent_modulo  is not in this list
+    // module_plugin_user, module_plugin_pass, module_plugin_macros are not in this list due to security purposes.
+    $module_field_column_mapping = [
+        'module_id_agent'          => 'id_agente as module_id_agent',
+        'module_id_module_type'    => 'id_tipo_modulo as module_id_module_type',
+        'module_description'       => 'descripcion as module_description',
+        'module_name'              => 'nombre as module_name',
+        'module_max'               => 'max as module_max',
+        'module_min'               => 'min as module_min',
+        'module_interval'          => 'module_interval',
+        'module_tcp_port'          => 'tcp_port as module_tcp_port',
+        'module_tcp_send'          => 'tcp_send as module_tcp_send',
+        'module_tcp_rcv'           => 'tcp_rcv as module_tcp_rcv',
+        'module_snmp_community'    => 'snmp_community as module_snmp_community',
+        'module_snmp_oid'          => 'snmp_oid as module_snmp_oid',
+        'module_ip_target'         => 'ip_target as module_ip_target',
+        'module_id_module_group'   => 'id_module_group as module_id_module_group',
+        'module_flag'              => 'flag as module_flag',
+        'module_id_module'         => 'id_modulo as module_id_module',
+        'module_disabled'          => 'disabled as module_disabled',
+        'module_id_export'         => 'id_export as module_id_export',
+        'module_plugin_parameter'  => 'plugin_parameter as module_plugin_parameter',
+        'module_plugin_user'       => 'plugin_user as module_plugin_user',
+        'module_plugin_pass'       => 'plugin_pass as module_plugin_pass',
+        'module_plugin_macros'     => 'macros as module_plugin_macros',
+        'module_id_plugin'         => 'id_plugin as module_id_plugin',
+        'module_post_process'      => 'post_process as module_post_process',
+        'module_prediction_module' => 'prediction_module as module_prediction_module',
+        'module_max_timeout'       => 'max_timeout as module_max_timeout',
+        'module_max_retries'       => 'max_retries as module_max_retries',
+        'module_custom_id'         => 'custom_id as module_custom_id',
+        'module_history_data'      => 'history_data as module_history_data',
+        'module_min_warning'       => 'min_warning as module_min_warning',
+        'module_max_warning'       => 'max_warning as module_max_warning',
+        'module_str_warning'       => 'str_warning as module_str_warning',
+        'module_min_critical'      => 'min_critical as module_min_critical',
+        'module_max_critical'      => 'max_critical as module_max_critical',
+        'module_str_critical'      => 'str_critical as module_str_critical',
+        'module_min_ff_event'      => 'min_ff_event as module_min_ff_event',
+        'module_delete_pending'    => 'delete_pending as module_delete_pending',
+        'module_macros'            => 'module_macros as module_macros',
+        'module_critical_inverse'  => 'critical_inverse as module_critical_inverse',
+        'module_warning_inverse'   => 'warning_inverse as module_warning_inverse',
+    ];
 
     // module related field mappings 2/2 (output field => column for 'tagente_estado')
-    global $estado_fields_to_columns_mapping;
+    // module_id_agent_modulo  is not in this list
+    $estado_fields_to_columns_mapping = [
+        'module_id_agent_state'     => 'id_agente_estado as module_id_agent_state',
+        'module_data'               => 'datos as module_data',
+        'module_timestamp'          => 'timestamp as module_timestamp',
+        'module_state'              => 'estado as module_state',
+        'module_last_try'           => 'last_try as module_last_try',
+        'module_utimestamp'         => 'utimestamp as module_utimestamp',
+        'module_current_interval'   => 'current_interval as module_current_interval',
+        'module_running_by'         => 'running_by as module_running_by',
+        'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
+        'module_status_changes'     => 'status_changes as module_status_changes',
+        'module_last_status'        => 'last_status as module_last_status',
+    ];
 
     if ($fields == false) {
         $fields = $module_properties_master_fields;
@@ -1386,8 +1439,8 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
     $module_additional_columns = '';
     $estado_additional_columns = '';
     foreach ($fields as $fld) {
-        if (array_key_exists($fld, $module_field_column_mampping)) {
-            $module_additional_columns .= (', '.$module_field_column_mampping[$fld]);
+        if (array_key_exists($fld, $module_field_column_mapping)) {
+            $module_additional_columns .= (', '.$module_field_column_mapping[$fld]);
         }
 
         if (array_key_exists($fld, $estado_fields_to_columns_mapping)) {
@@ -1412,9 +1465,9 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
         $modules = [];
     }
 
-    $modules = str_replace('\n', $returnReplace, $modules);
-
     foreach ($modules as &$module) {
+        $module = str_replace('\n', $returnReplace, $module);
+
         $module['type_row'] = 'module';
 
         if ($module['module_macros']) {
@@ -1842,18 +1895,18 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
 /**
  * Create a new agent, and print the id for new agent.
  *
- * @param $thrash1 Don't use.
+ * @param $id_node Id_node target (if metaconsole)
  * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param is <agent_name>;<ip>;<id_parent>;<id_group>;
- *              <cascade_protection>;<interval_sec>;<id_os>;<id_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
- *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *              example:
+ * @param array                                   $other it's array, $other as param is <agent_name>;<ip>;<id_parent>;<id_group>;
+ *                                    <cascade_protection>;<interval_sec>;<id_os>;<id_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
+ *                                    and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *                                    example:
  *
- *              api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|10||0|0|nose%20nose&other_mode=url_encode_separator_|
+ *                                    api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|10||0|0|nose%20nose&other_mode=url_encode_separator_|
  *
  * @param $thrash3 Don't use.
  */
-function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
+function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
 {
     global $config;
 
@@ -1862,158 +1915,117 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
     if ((int) $other['data'][3] == 0) {
         returnError('For security reasons, the agent was not created. Use a group other than 0.');
         return;
     }
 
-    $alias                     = io_safe_input(
-        trim(
-            preg_replace(
-                '/[\/\\\|%#&$]/',
-                '',
-                preg_replace(
-                    '/x20;/',
-                    ' ',
-                    $other['data'][0]
+    try {
+        $agent = new Agent();
+
+        if (is_metaconsole() === true) {
+            if ($id_node <= 0) {
+                throw new Exception('No node id specified');
+            }
+
+            $node = new Node($id_node);
+            $id_agente = $node->callApi(
+                'new_agent',
+                'set',
+                null,
+                null,
+                $other['data'],
+                null
+            );
+        } else {
+            $alias                     = io_safe_input(
+                trim(
+                    preg_replace(
+                        '/[\/\\\|%#&$]/',
+                        '',
+                        preg_replace(
+                            '/x20;/',
+                            ' ',
+                            $other['data'][0]
+                        )
+                    )
                 )
-            )
-        )
-    );
-    $direccion_agente          = io_safe_input($other['data'][1]);
-    $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
-    $id_parent                 = (int) $other['data'][2];
-    $grupo                     = (int) $other['data'][3];
-    $cascade_protection        = (int) $other['data'][4];
-    $cascade_protection_module = (int) $other['data'][5];
-    $intervalo                 = (string) $other['data'][6];
-    $id_os                     = (int) $other['data'][7];
-    $server_name               = (string) $other['data'][8];
-    $custom_id                 = (string) $other['data'][9];
-    $modo                      = (int) $other['data'][10];
-    $disabled                  = (int) $other['data'][11];
-    $comentarios               = (string) $other['data'][12];
-    $alias_as_name             = (int) $other['data'][13];
-    $update_module_count       = (int) $config['metaconsole_agent_cache'] == 1;
-
-    if ($cascade_protection == 1) {
-        if (($id_parent != 0) && (db_get_value_sql(
-            'SELECT id_agente_modulo
-            FROM tagente_modulo
-            WHERE id_agente = '.$id_parent.' AND id_agente_modulo = '.$cascade_protection_module
-        ) === false)
-        ) {
-                returnError('Cascade protection is not applied because it is not a parent module.');
-                return;
-        }
-    } else {
-        $cascadeProtectionModule = 0;
-    }
-
-    $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$server_name.'"');
-
-    // Check if agent exists (BUG WC-50518-2).
-    if ($alias == '' && $alias_as_name === 0) {
-        returnError('No agent alias specified');
-    } else if (agents_get_agent_id($nombre_agente)) {
-        returnError('The agent name already exists in DB.');
-    } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
-        returnError('The group does not exist.');
-    } else if (group_allow_more_agents($grupo, true, 'create') === false) {
-        returnError('Agent cannot be created due to the maximum agent limit for this group');
-    } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
-        returnError('The OS does not exist.');
-    } else if ($server_name === false) {
-        returnError('The '.get_product_name().' Server does not exist.');
-    } else {
-        if ($alias_as_name === 1) {
-            $exists_alias  = db_get_row_sql('SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"');
-            $nombre_agente = $alias;
-        }
-
-        $exists_ip = false;
-
-        if ($config['unique_ip'] && $direccion_agente != '') {
-            $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
-        }
-
-        if (!$exists_alias && !$exists_ip) {
-            $id_agente = db_process_sql_insert(
-                'tagente',
-                [
-                    'nombre'                    => $nombre_agente,
-                    'alias'                     => $alias,
-                    'alias_as_name'             => $alias_as_name,
-                    'direccion'                 => $direccion_agente,
-                    'id_grupo'                  => $grupo,
-                    'intervalo'                 => $intervalo,
-                    'comentarios'               => $comentarios,
-                    'modo'                      => $modo,
-                    'id_os'                     => $id_os,
-                    'disabled'                  => $disabled,
-                    'cascade_protection'        => $cascade_protection,
-                    'cascade_protection_module' => $cascade_protection_module,
-                    'server_name'               => $server_name,
-                    'id_parent'                 => $id_parent,
-                    'custom_id'                 => $custom_id,
-                    'os_version'                => '',
-                    'agent_version'             => '',
-                    'timezone_offset'           => 0,
-                    'icon_path'                 => '',
-                    'url_address'               => '',
-                    'update_module_count'       => $update_module_count,
-                ]
             );
-            enterprise_hook('update_agent', [$id_agente]);
-        } else {
-            $id_agente = false;
-        }
 
-        if ($id_agente !== false) {
-            // Create address for this agent in taddress.
-            if ($direccion_agente != '') {
-                agents_add_address($id_agente, $direccion_agente);
+            $direccion_agente          = io_safe_input($other['data'][1]);
+            $id_parent                 = (int) $other['data'][2];
+            $grupo                     = (int) $other['data'][3];
+            $cascade_protection        = (int) $other['data'][4];
+            $cascade_protection_module = (int) $other['data'][5];
+            $intervalo                 = (string) $other['data'][6];
+            $id_os                     = (int) $other['data'][7];
+            $server_name               = (string) $other['data'][8];
+            $custom_id                 = (string) $other['data'][9];
+            $modo                      = (int) $other['data'][10];
+            $disabled                  = (int) $other['data'][11];
+            $comentarios               = (string) html_entity_decode($other['data'][12]);
+            $alias_as_name             = (int) $other['data'][13];
+            $update_module_count       = (int) $config['metaconsole_agent_cache'] == 1;
+
+            $agent->nombre($alias);
+            $agent->alias($alias);
+            $agent->alias_as_name($alias_as_name);
+            $agent->direccion($direccion_agente);
+            $agent->id_grupo($grupo);
+            $agent->intervalo($intervalo);
+            $agent->comentarios($comentarios);
+            $agent->modo($modo);
+            $agent->id_os($id_os);
+            $agent->disabled($disabled);
+            $agent->cascade_protection($cascade_protection);
+            $agent->cascade_protection_module($cascade_protection_module);
+            $agent->server_name($server_name);
+            $agent->id_parent($id_parent);
+            $agent->custom_id($custom_id);
+            $agent->timezone_offset(0);
+            $agent->update_module_count($update_module_count);
+
+            if ($cascade_protection == 1) {
+                if ($id_parent != 0) {
+                    try {
+                        $parent = new Agent($id_parent);
+                    } catch (\Exception $e) {
+                        returnError('Cascade protection is not applied because it is not a parent module.');
+                    }
+                }
             }
 
-            $info = '{"Name":"'.$nombre_agente.'",
-                "IP":"'.$direccion_agente.'",
-                "Group":"'.$grupo.'",
-                "Interval":"'.$intervalo.'",
-                "Comments":"'.$comentarios.'",
-                "Mode":"'.$modo.'",
-                "ID_parent:":"'.$id_parent.'",
-                "Server":"'.$server_name.'",
-                "ID os":"'.$id_os.'",
-                "Disabled":"'.$disabled.'",
-                "Custom ID":"'.$custom_id.'",
-                "Cascade protection":"'.$cascade_protection.'",
-                "Cascade protection module":"'.$cascade_protection_module.'"}';
+            $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$server_name.'"');
 
-            $unsafe_alias = io_safe_output($alias);
-            db_pandora_audit(
-                AUDIT_LOG_AGENT_MANAGEMENT,
-                'Created agent '.$unsafe_alias,
-                false,
-                true,
-                $info
-            );
-        } else {
-            $id_agente = 0;
-
-            if ($exists_alias) {
-                $agent_creation_error = 'Could not be created because name already exists';
-            } else if ($exists_ip) {
-                $agent_creation_error = 'Could not be created because IP already exists';
+            // Check if agent exists (BUG WC-50518-2).
+            if ($alias == '' && $alias_as_name === 0) {
+                returnError('No agent alias specified');
+            } else if (agents_get_agent_id($nombre_agente)) {
+                returnError('The agent name already exists in DB.');
+            } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
+                returnError('The group does not exist.');
+            } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+                returnError('Agent cannot be created due to the maximum agent limit for this group');
+            } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
+                returnError('The OS does not exist.');
+            } else if ($server_name === false) {
+                returnError('The '.get_product_name().' Server does not exist.');
             } else {
-                $agent_creation_error = 'Could not be created for unknown reason';
-            }
+                if ($alias_as_name === 1) {
+                    $exists_alias  = db_get_row_sql('SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"');
+                    $nombre_agente = $alias;
+                }
 
-            returnError($agent_creation_error);
-            return;
+                $exists_ip = false;
+
+                if ($config['unique_ip'] && $direccion_agente != '') {
+                    $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
+                }
+
+                $agent->save((bool) $alias_as_name);
+                $id_agente = $agent->id_agente();
+                $agent->updateFromCache();
+            }
         }
 
         returnData(
@@ -2023,6 +2035,9 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
                 'data' => $id_agente,
             ]
         );
+    } catch (\Exception $e) {
+        returnError($e->getMessage());
+        return;
     }
 }
 
@@ -2036,12 +2051,10 @@ function api_set_create_os($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [];
@@ -2076,12 +2089,10 @@ function api_set_update_os($id_os, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [];
@@ -2255,8 +2266,8 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
         }
     } else {
         // Delete only if the centralised mode is disabled.
-        $headers = getallheaders();
-        if (isset($headers['idk']) === false && is_management_allowed($headers['idk']) === false) {
+        $idk = get_header('idk');
+        if (is_management_allowed($idk) === false) {
             returnError('centralized');
             exit;
         }
@@ -3635,6 +3646,19 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
     if (! $values['module_macros']) {
         $values['module_macros'] = '';
         // Column 'module_macros' cannot be null.
+    }
+
+    $type_exist = db_get_value_filter(
+        'id_tipo',
+        'ttipo_modulo',
+        [
+            'id_tipo' => $values['id_tipo_modulo'],
+        ]
+    );
+
+    if ((bool) $type_exist === false) {
+        returnError('Module type does not exist');
+        return;
     }
 
     if ($agent_by_alias) {
@@ -5125,12 +5149,10 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -5227,12 +5249,10 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -5502,12 +5522,10 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -5674,12 +5692,10 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($name == '') {
@@ -5817,12 +5833,10 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id_template == '') {
@@ -5969,12 +5983,10 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id_template == '') {
@@ -7163,12 +7175,10 @@ function api_set_tag($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [];
@@ -7737,8 +7747,7 @@ function api_set_planned_downtimes_delete_agents($id, $thrash1, $other, $thrash3
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents WHERE id_agent = %d AND id_downtime = %d', $agent, $id)) !== false) {
@@ -7814,8 +7823,7 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = io_safe_input($other['data']);
-        $agents = explode(';', $agents);
+        $agents = $other['data'];
         $results = false;
         foreach ($agents as $agent) {
             if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
@@ -7873,12 +7881,10 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -7993,12 +7999,10 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8116,12 +8120,10 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8223,12 +8225,10 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8357,12 +8357,10 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8653,12 +8651,10 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8820,12 +8816,10 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -8985,12 +8979,10 @@ function api_set_remove_agent_from_policy_by_id($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['data'][0] == '' || !$other['data'][0]) {
@@ -9026,12 +9018,10 @@ function api_set_remove_agent_from_policy_by_name($id, $thrash1, $other, $thrash
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['data'][0] == '' || !$other['data'][0]) {
@@ -9070,12 +9060,10 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group_name = $id;
@@ -9193,12 +9181,10 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if (db_get_value('id_grupo', 'tgrupo', 'id_grupo', $id_group) === false) {
@@ -9270,12 +9256,10 @@ function api_set_delete_group($id_group, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group = db_get_row_filter('tgrupo', ['id_grupo' => $id_group]);
@@ -9587,20 +9571,20 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
 {
     global $config;
 
-    // if (defined ('METACONSOLE')) {
-    // return;
-    // }
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
-        returnError('centralized');
+    if (empty($id) === true) {
+        returnError('Id cannot be empty.');
         return;
+    }
+
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
+        returnError('centralized');
+        exit;
     }
 
     $values = [];
@@ -9617,6 +9601,11 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+
+    if (empty($password) === true) {
+        returnError('Password cannot be empty.');
+        return;
+    }
 
     if (!create_user($id, $password, $values)) {
         returnError('The user could not created');
@@ -9653,12 +9642,10 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $fields_user = [
@@ -9753,12 +9740,10 @@ function api_set_enable_disable_user($id, $thrash2, $other, $thrash3)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($id == '') {
@@ -10032,12 +10017,10 @@ function api_set_new_alert_template($id, $id2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['type'] == 'string') {
@@ -10226,7 +10209,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
     }
 
     if ($other['type'] == 'array') {
-        if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string', 'AW')) {
+        if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string')) {
             return;
         }
 
@@ -10258,7 +10241,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
                 $xmlTemplate,
                 io_safe_output(get_os_name($agent['id_os'])),
                 io_safe_output($agent['os_version']),
-                $agent['intervalo'],
+                $agentModule['module_interval'],
                 io_safe_output($agent['agent_version']),
                 date('Y/m/d H:i:s', $time),
                 io_safe_output($agent['nombre']),
@@ -10455,12 +10438,10 @@ function api_set_alert_actions($id, $id2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['type'] == 'string') {
@@ -10611,12 +10592,10 @@ function api_set_new_module_group($id, $thrash2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
@@ -10685,12 +10664,10 @@ function api_set_alert_commands($id, $thrash2, $other, $trash1)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $name = db_get_value('id', 'talert_commands', 'name', $id);
@@ -10928,11 +10905,6 @@ function api_set_event_validate_filter_pro($trash1, $trash2, $other, $trash3)
         return;
     }
 
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
-    }
-
     if ($other['type'] == 'string') {
         if ($other['data'] != '') {
             returnError('Parameter error.');
@@ -10998,7 +10970,7 @@ function api_set_event_validate_filter_pro($trash1, $trash2, $other, $trash3)
     }
 
     $count = db_process_sql_update(
-        $table_events,
+        'tevento',
         ['estado' => 1],
         $filterString
     );
@@ -11024,12 +10996,6 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
     }
 
     $simulate = false;
-
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
-    }
-
     if ($other['type'] == 'string') {
         if ($other['data'] != '') {
             returnError('Parameter error.');
@@ -11064,14 +11030,14 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
     }
 
     if ($simulate) {
-        $rows = db_get_all_rows_filter($table_events, $filterString);
+        $rows = db_get_all_rows_filter('tevento', $filterString);
         if ($rows !== false) {
             returnData('string', count($rows));
             return;
         }
     } else {
         $count = db_process_sql_update(
-            $table_events,
+            'tevento',
             ['estado' => 1],
             $filterString
         );
@@ -11336,461 +11302,6 @@ function api_set_gis_agent($id_agent, $trash1, $other, $return_type, $user_in_db
 }
 
 
-function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db)
-{
-    global $config;
-
-    $table_events = 'tevento';
-    if (is_metaconsole() === true) {
-        $table_events = 'tmetaconsole_event';
-    }
-
-    // By default.
-    $status = 3;
-    $search = '';
-    $event_type = '';
-    $severity = -1;
-    $id_agent = -1;
-    $id_agentmodule = -1;
-    $id_alert_am = -1;
-    $id_event = -1;
-    $id_user_ack = 0;
-    $event_view_hr = 0;
-    $tag = '';
-    $group_rep = 0;
-    $utimestamp_upper = 0;
-    $utimestamp_bottom = 0;
-    $id_alert_template = -1;
-
-    $use_agent_name = ($other['data'][16] === '1') ? true : false;
-
-    $filter = otherParameter2Filter($other, true, $use_agent_name);
-
-    if (isset($filter['criticity'])) {
-        $severity = $filter['criticity'];
-    }
-
-    if (isset($filter['id_agente'])) {
-        $id_agent = $filter['id_agente'];
-    }
-
-    if (isset($filter['id_agentmodule'])) {
-        $id_agentmodule = $filter['id_agentmodule'][0];
-    }
-
-    if (isset($filter['id_alert_am'])) {
-        $id_alert_am = $filter['id_alert_am'];
-    }
-
-    if (isset($filter['id_usuario'])) {
-        $id_user_ack = $filter['id_usuario'];
-    }
-
-    if (isset($filter['estado'])) {
-        $status = $filter['estado'];
-    }
-
-    if (isset($filter['evento'])) {
-        $search = $filter['evento'];
-    }
-
-    if (isset($filter['id_alert_template'])) {
-        $id_alert_template = $filter['id_alert_template'];
-    }
-
-    $id_group = (int) $filter['id_group'];
-
-    $user_groups = users_get_groups($user_in_db, 'ER');
-    $user_id_groups = [];
-    if (!empty($user_groups)) {
-        $user_id_groups = array_keys($user_groups);
-    }
-
-    $is_admin = (bool) db_get_value(
-        'is_admin',
-        'tusuario',
-        'id_user',
-        $user_in_db
-    );
-
-    if (isset($filter['id_group'])) {
-        // The admin can see all groups
-        if ($is_admin) {
-            if (($id_group !== -1) && ($id_group !== 0)) {
-                $id_groups = [$id_group];
-            }
-        } else {
-            if (empty($id_group)) {
-                $id_groups = $user_id_groups;
-            } else {
-                if (in_array($id_group, $user_id_groups)) {
-                    $id_groups = [$id_group];
-                } else {
-                    $id_groups = [];
-                }
-            }
-        }
-    } else {
-        if (!$is_admin) {
-            $id_groups = $user_id_groups;
-        }
-    }
-
-    if (isset($filter['tag'])) {
-        $tag = $filter['tag'];
-    }
-
-    if (isset($filter['event_type'])) {
-        $event_type = $filter['event_type'];
-    }
-
-    if ($filter['utimestamp']) {
-        if (isset($filter['utimestamp']['>'])) {
-            $utimestamp_upper = $filter['utimestamp']['>'];
-        }
-
-        if (isset($filter['utimestamp']['<'])) {
-            $utimestamp_bottom = $filter['utimestamp']['<'];
-        }
-    }
-
-    // TODO MOVE THIS CODE AND THE CODE IN pandora_console/operation/events/events_list.php
-    // to a function.
-    $sql_post = '';
-
-    if (!empty($id_groups)) {
-        $sql_post = ' AND id_grupo IN ('.implode(',', $id_groups).')';
-    } else {
-        // The admin can see all groups
-        if (!$is_admin) {
-            $sql_post = ' AND 1=0';
-        }
-    }
-
-    // Skip system messages if user is not PM
-    if (!check_acl($user_in_db, 0, 'PM')) {
-        $sql_post .= ' AND id_grupo != 0';
-    }
-
-    switch ($status) {
-        case 0:
-        case 1:
-        case 2:
-            $sql_post .= ' AND estado = '.$status;
-        break;
-
-        case 3:
-            $sql_post .= ' AND (estado = 0 OR estado = 2)';
-        break;
-    }
-
-    if ($search != '') {
-        $sql_post .= " AND evento LIKE '%".io_safe_input($search)."%'";
-    }
-
-    if ($event_type != '') {
-        // If normal, warning, could be several (going_up_warning, going_down_warning... too complex
-        // for the user so for him is presented only "warning, critical and normal"
-        if ($event_type == 'warning' || $event_type == 'critical' || $event_type == 'normal') {
-            $sql_post .= " AND event_type LIKE '%$event_type%' ";
-        } else if ($event_type == 'not_normal') {
-            $sql_post .= " AND ( event_type LIKE '%warning%'
-                OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
-        } else {
-            $sql_post .= " AND event_type = '".$event_type."'";
-        }
-    }
-
-    if ($severity != -1) {
-        $sql_post .= ' AND criticity = '.$severity;
-    }
-
-    if ($id_agent != -1) {
-        $sql_post .= ' AND id_agente = '.$id_agent;
-    }
-
-    if ($id_agentmodule != -1) {
-        $sql_post .= ' AND id_agentmodule = '.$id_agentmodule;
-    }
-
-    if ($id_event != -1) {
-        $sql_post .= ' AND id_evento = '.$id_event;
-    }
-
-    if ($id_user_ack != '0') {
-        $sql_post .= " AND id_usuario = '".$id_user_ack."'";
-    }
-
-    if ($utimestamp_upper != 0) {
-        $sql_post .= ' AND utimestamp >= '.$utimestamp_upper;
-    }
-
-    if ($utimestamp_bottom != 0) {
-        $sql_post .= ' AND utimestamp <= '.$utimestamp_bottom;
-    }
-
-    if ($event_view_hr > 0) {
-        // Put hours in seconds
-        $unixtime = (get_system_time() - ($event_view_hr * SECONDS_1HOUR));
-        $sql_post .= ' AND (utimestamp > '.$unixtime.' OR estado = 2)';
-    }
-
-    // Search by tag
-    if ($tag != '') {
-        $sql_post .= " AND tags LIKE '".io_safe_input($tag)."'";
-    }
-
-    // Inject the raw sql
-    if (isset($filter['sql'])) {
-        $sql_post .= ' AND ('.$filter['sql'].') ';
-    }
-
-    // Inject agent ID filter (it is set as the first numeric key in filter array).
-    if (isset($filter[0]) === true) {
-        $sql_post .= ' AND '.$filter[0];
-    }
-
-    if ($id_alert_template !== -1) {
-        $sql_post .= ' AND talert_template_modules.id_alert_template = '.$id_alert_template;
-    }
-
-    $alert_join = '';
-
-    if ($id_alert_template !== -1) {
-        $alert_join = ' INNER JOIN talert_template_modules ON '.$table_events.'.id_alert_am=talert_template_modules.id';
-    }
-
-    if ($group_rep == 0) {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                if ($filter['total']) {
-                    $sql = 'SELECT COUNT(*)
-                        FROM '.$table_events.'
-                        WHERE 1=1 '.$sql_post;
-                } else if ($filter['more_criticity']) {
-                    $sql = 'SELECT criticity
-                        FROM '.$table_events.'
-                        WHERE 1=1 '.$sql_post.'
-                        ORDER BY criticity DESC
-                        LIMIT 1';
-                } else {
-                    if (is_metaconsole() === true) {
-                        $sql = 'SELECT *,
-                            (SELECT t2.nombre
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_name,
-                            (SELECT t2.icon
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_icon
-                            FROM '.$table_events.$alert_join.'
-                            WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC';
-                    } else {
-                        $sql = 'SELECT *,
-                            (SELECT t1.alias
-                                FROM tagente t1
-                                WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-                            (SELECT t2.nombre
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-                            (SELECT t2.icon
-                                FROM tgrupo t2
-                                WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-                            (SELECT tmodule.name
-                                FROM tmodule
-                                WHERE id_module IN (
-                                    SELECT tagente_modulo.id_modulo
-                                    FROM tagente_modulo
-                                    WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                            FROM '.$table_events.$alert_join.'
-                            WHERE 1=1 '.$sql_post.'
-                            ORDER BY utimestamp DESC';
-                    }
-                }
-            break;
-
-            case 'postgresql':
-                // TODO TOTAL
-                $sql = 'SELECT *,
-                    (SELECT t1.alias
-                        FROM tagente t1
-                        WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-                    (SELECT t2.nombre
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-                    (SELECT t2.icon
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-                    (SELECT tmodule.name
-                        FROM tmodule
-                        WHERE id_module IN (
-                            SELECT tagente_modulo.id_modulo
-                            FROM tagente_modulo
-                            WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                    FROM tevento
-                    WHERE 1=1 '.$sql_post.'
-                    ORDER BY utimestamp DESC';
-            break;
-
-            case 'oracle':
-                // TODO TOTAL
-                $set = [];
-
-                $sql = 'SELECT *,
-                    (SELECT t1.alias
-                        FROM tagente t1
-                        WHERE t1.id_agente = tevento.id_agente) AS alias,
-                    (SELECT t1.nombre
-                        FROM tagente t1
-                        WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-                    (SELECT t2.nombre
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-                    (SELECT t2.icon
-                        FROM tgrupo t2
-                        WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-                    (SELECT tmodule.name
-                        FROM tmodule
-                        WHERE id_module IN (
-                            SELECT tagente_modulo.id_modulo
-                            FROM tagente_modulo
-                            WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-                    FROM tevento
-                    WHERE 1=1 '.$sql_post.' ORDER BY utimestamp DESC';
-                $sql = oracle_recode_query($sql, $set);
-            break;
-        }
-    } else {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                db_process_sql('SET group_concat_max_len = 9999999');
-
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                        GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-                    FROM ".$table_events.'
-                    WHERE 1=1 '.$sql_post.'
-                    GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC';
-            break;
-
-            case 'postgresql':
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-                        array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-                    FROM ".$table_events.'
-                    WHERE 1=1 '.$sql_post.'
-                    GROUP BY evento, id_agentmodule
-                    ORDER BY timestamp_rep DESC';
-            break;
-
-            case 'oracle':
-                $set = [];
-                // TODO: Remove duplicate user comments
-                $sql = 'SELECT a.*, b.event_rep, b.timestamp_rep
-                    FROM (SELECT *
-                        FROM tevento
-                        WHERE 1=1 '.$sql_post.") a, 
-                    (SELECT MAX (id_evento) AS id_evento,
-                        to_char(evento) AS evento, id_agentmodule,
-                        COUNT(*) AS event_rep, MIN(estado) AS min_estado,
-                        MAX(estado) AS max_estado,
-                        LISTAGG(user_comment, '') AS user_comment,
-                        MAX(utimestamp) AS timestamp_rep 
-                    FROM ".$table_events.' 
-                    WHERE 1=1 '.$sql_post.' 
-                    GROUP BY to_char(evento), id_agentmodule) b 
-                    WHERE a.id_evento=b.id_evento AND 
-                        to_char(a.evento)=to_char(b.evento) AND
-                        a.id_agentmodule=b.id_agentmodule';
-                $sql = oracle_recode_query($sql, $set);
-            break;
-        }
-    }
-
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('Parameter error.');
-            return;
-        } else {
-            // Default values
-            $separator = ';';
-        }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
-    }
-
-    $result = db_get_all_rows_sql($sql);
-
-    if (($result !== false)
-        && (!$filter['total'])
-        && (!$filter['more_criticity'])
-    ) {
-        $urlImage = ui_get_full_url(false);
-
-        // Add the description and image
-        foreach ($result as $key => $row) {
-            if (defined('METACONSOLE')) {
-                $row['agent_name'] = agents_meta_get_name(
-                    $row['id_agente'],
-                    'none',
-                    $row['server_id']
-                );
-
-                $row['module_name'] = meta_modules_get_name(
-                    $row['id_agentmodule'],
-                    $row['server_id']
-                );
-            }
-
-            // FOR THE TEST THE API IN THE ANDROID
-            // $row['evento'] = $row['id_evento'];
-            $row['description_event'] = events_print_type_description($row['event_type'], true);
-            $row['img_description'] = events_print_type_img($row['event_type'], true, true);
-            $row['criticity_name'] = get_priority_name($row['criticity']);
-
-            switch ($row['criticity']) {
-                default:
-                case EVENT_CRIT_MAINTENANCE:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_maintenance.png';
-                break;
-                case EVENT_CRIT_INFORMATIONAL:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_informational.png';
-                break;
-
-                case EVENT_CRIT_NORMAL:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_normal.png';
-                break;
-
-                case EVENT_CRIT_WARNING:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_warning.png';
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $img_sev = $urlImage.'/images/status_sets/default/severity_critical.png';
-                break;
-            }
-
-            $row['img_criticy'] = $img_sev;
-
-            $result[$key] = $row;
-        }
-    }
-
-    $data['type'] = 'array';
-    $data['data'] = $result;
-
-    returnData($returnType, $data, $separator);
-    if (empty($result)) {
-        return false;
-    }
-
-    return true;
-}
-
-
 /**
  * Update an event
  *
@@ -11838,17 +11349,9 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
         }
     }
 
-    // In meta or node.
-    if (is_metaconsole() === true) {
-        $table = 'tmetaconsole_event';
-    } else {
-        $table = 'tevento';
-    }
-
-    // TODO. Stablish security for prevent sql injection?
     // Update the row
     $result = db_process_sql_update(
-        $table,
+        'tevento',
         $paramsSerialize,
         [ 'id_evento' => $id_event ]
     );
@@ -11868,79 +11371,162 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
 
 
 /**
+ * Get events.
  *
  * @param $trash1
  * @param $trah2
  * @param $other
  * @param $returnType
- * @param $user_in_db
  */
-function api_get_events($node_id, $trash2, $other, $returnType, $user_in_db=null)
+function api_get_events($node_id, $trash2, $other, $returnType)
 {
-    if ($user_in_db !== null) {
-        $correct = get_events_with_user(
-            $trash1,
-            $trash2,
-            $other,
-            $returnType,
-            $user_in_db
-        );
+    $separator = (isset($other['data'][0]) === true && empty($other['data'][0]) === false) ? $other['data'][0] : ';';
 
-        $last_error = error_get_last();
-        if (!$correct && !empty($last_error)) {
-            $errors = [
-                E_ERROR,
-                E_WARNING,
-                E_USER_ERROR,
-                E_USER_WARNING,
-            ];
-            if (in_array($last_error['type'], $errors)) {
-                returnError('ERROR_API_PANDORAFMS', $returnType);
-            }
-        }
-
-        return;
-    }
-
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('Parameter error.');
-            return;
+    if (is_metaconsole() === true) {
+        if (empty($node_id) === true && $node_id != 0) {
+            $node_id = array_keys(metaconsole_get_names(['disabled' => 0]));
+            $node_id[] = 0;
         } else {
-            // Default values
-            $separator = ';';
+            $node_id = [(int) $node_id];
         }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
-
-        // By default it uses agent alias.
-        $use_agent_name = ($other['data'][16] === '1') ? true : false;
-
-        $filterString = otherParameter2Filter($other, false, $use_agent_name);
-    }
-
-    if (is_metaconsole()) {
-        if ((int) $node_id !== 0) {
-            $filterString .= ' AND server_id = '.$node_id;
-        }
-
-        $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
     } else {
-        $dataRows = db_get_all_rows_filter('tevento', $filterString);
+        $node_id = 0;
     }
 
-    $last_error = error_get_last();
-    if (empty($dataRows)) {
-        if (!empty($last_error)) {
-            returnError('ERROR_API_PANDORAFMS', $returnType);
+    $filters = [
+        'group_rep'         => EVENT_GROUP_REP_ALL,
+        'severity'          => (isset($other['data'][1]) === true) ? $other['data'][1] : null,
+        'agent_alias'       => (isset($other['data'][2]) === true) ? $other['data'][2] : null,
+        'module_search'     => (isset($other['data'][3]) === true) ? $other['data'][3] : null,
+        'filter_only_alert' => (isset($other['data'][4]) === true) ? $other['data'][4] : null,
+        'id_user_ack'       => (isset($other['data'][5]) === true) ? $other['data'][5] : null,
+        'date_from'         => (isset($other['data'][6]) === true && empty($other['data'][6]) === false) ? date('y-m-d', $other['data'][6]) : null,
+        'date_to'           => (isset($other['data'][7]) === true && empty($other['data'][7]) === false) ? date('y-m-d', $other['data'][7]) : null,
+        'time_from'         => (isset($other['data'][6]) === true && empty($other['data'][6]) === false) ? date('h:i:s', $other['data'][6]) : null,
+        'time_to'           => (isset($other['data'][7]) === true && empty($other['data'][7]) === false) ? date('h:i:s', $other['data'][7]) : null,
+        'status'            => (isset($other['data'][8]) === true) ? $other['data'][8] : null,
+        'search'            => (isset($other['data'][9]) === true) ? $other['data'][9] : null,
+        'id_group_filter'   => (isset($other['data'][13]) === true) ? $other['data'][13] : null,
+        'tag_with'          => (isset($other['data'][14]) === true) ? base64_encode(io_safe_output($other['data'][14])) : null,
+        'event_type'        => (isset($other['data'][15]) === true) ? $other['data'][15] : null,
+        'id_server'         => $node_id,
+    ];
 
-            return;
+    $limit = null;
+    if (isset($other['data'][10]) === true) {
+        if (empty($other['data'][10]) === true) {
+            $limit = 0;
+        } else {
+            $limit = $other['data'][10];
         }
     }
 
-    $data['type'] = 'array';
-    $data['data'] = $dataRows;
+    $offset = null;
+    if (isset($other['data'][11]) === true) {
+        if (empty($other['data'][11]) === true) {
+            $offset = 0;
+        } else {
+            $offset = $other['data'][11];
+        }
+    } else {
+        if (isset($other['data'][10]) === true) {
+            $offset = 0;
+        }
+    }
 
+    $fields = ['te.*'];
+    $order_direction = 'desc';
+    $order_field = 'te.utimestamp';
+    $filter_total = false;
+    if (isset($other['data'][12]) === true
+        && empty($other['data'][12]) === false
+    ) {
+        $filter_total = true;
+        if ($other['data'][12] === 'total') {
+            $fields = ['count'];
+            $limit = null;
+            $offset = null;
+        } else if ($other['data'][12] === 'more_criticity') {
+            $fields = ['te.criticity'];
+            $order_direction = 'desc';
+            $order_field = 'te.criticity';
+            $limit = 1;
+            $offset = 0;
+        }
+    }
+
+    $events = Event::search(
+        $fields,
+        $filters,
+        $offset,
+        $limit,
+        $order_direction,
+        $order_field
+    );
+
+    $result = $events;
+    if (is_metaconsole() === true && empty($limit) === false) {
+        $result = $events['data'];
+    }
+
+    if (is_array($result) === true && $filter_total === false) {
+        $urlImage = ui_get_full_url(false);
+
+        // Add the description and image.
+        foreach ($result as $key => $row) {
+            if (is_metaconsole() === true) {
+                if (empty($row['id_agente']) === false) {
+                    $row['agent_name'] = agents_meta_get_name(
+                        $row['id_agente'],
+                        'none',
+                        $row['server_id']
+                    );
+                }
+
+                if (empty($row['id_agentmodule']) === false) {
+                    $row['module_name'] = meta_modules_get_name(
+                        $row['id_agentmodule'],
+                        $row['server_id']
+                    );
+                }
+            }
+
+            // FOR THE TEST THE API IN THE ANDROID.
+            $row['description_event'] = events_print_type_description($row['event_type'], true);
+            $row['img_description'] = events_print_type_img($row['event_type'], true, true);
+            $row['criticity_name'] = get_priority_name($row['criticity']);
+
+            switch ($row['criticity']) {
+                default:
+                case EVENT_CRIT_MAINTENANCE:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_maintenance.png';
+                break;
+
+                case EVENT_CRIT_INFORMATIONAL:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_informational.png';
+                break;
+
+                case EVENT_CRIT_NORMAL:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_normal.png';
+                break;
+
+                case EVENT_CRIT_WARNING:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_warning.png';
+                break;
+
+                case EVENT_CRIT_CRITICAL:
+                    $img_sev = $urlImage.'/images/status_sets/default/severity_critical.png';
+                break;
+            }
+
+            $row['img_criticy'] = $img_sev;
+
+            $result[$key] = $row;
+        }
+    }
+
+    $data['type'] = $returnType;
+    $data['data'] = $result;
     returnData($returnType, $data, $separator);
     return;
 }
@@ -11958,20 +11544,20 @@ function api_set_delete_user($id, $thrash1, $thrash2, $thrash3)
 {
     global $config;
 
-    // if (defined ('METACONSOLE')) {
-    // return;
-    // }
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
-        returnError('centralized');
+    if (empty($id) === true) {
+        returnError('Id cannot be empty.');
         return;
+    }
+
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
+        returnError('centralized');
+        exit;
     }
 
     if (!delete_user($id)) {
@@ -12009,12 +11595,10 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group = (int) $other['data'][0];
@@ -12070,12 +11654,10 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $group = $other['data'][0];
@@ -12185,12 +11767,10 @@ function api_set_create_user_profile_info($thrash1, $thrash2, $other, $returnTyp
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $values = [
@@ -12246,12 +11826,10 @@ function api_set_update_user_profile_info($id_profile, $thrash1, $other, $return
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
@@ -12313,12 +11891,10 @@ function api_set_delete_user_profile_info($id_profile, $thrash1, $thrash2, $retu
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $profile = db_get_value('id_perfil', 'tperfil', 'id_perfil', $id_profile);
@@ -12881,7 +12457,7 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         return;
     }
 
@@ -12890,20 +12466,9 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
         return;
     }
 
-    $groups_clause = '1 = 1';
-    if (!users_is_admin($config['id_user'])) {
-        $user_groups = implode(',', array_keys(users_get_groups()));
-        $groups_clause = "(ta.id_grupo IN ($user_groups) OR tasg.id_group IN ($user_groups))";
-    }
+    $partial = tactical_status_modules_agents($config['id_user'], false, 'AR');
 
-    $sql = "SELECT COUNT(DISTINCT(id_agente_modulo))
-        FROM tagente_modulo tam, tagente ta
-        LEFT JOIN tagent_secondary_group tasg
-            ON ta.id_agente = tasg.id_agent
-        WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
-            AND delete_pending = 0 AND $groups_clause";
-
-    $total = db_get_value_sql($sql);
+    $total = (int) $partial['_monitor_total_'];
 
     $data = [
         'type' => 'string',
@@ -13144,18 +12709,20 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType)
 {
     global $config;
 
-    $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
-        $table_events = 'tmetaconsole_event';
-    }
+    $sql = sprintf(
+        'SELECT *
+        FROM tevento
+        WHERE id_evento= %d',
+        $id_event
+    );
 
-    $sql = 'SELECT *
-        FROM '.$table_events."
-        WHERE id_evento=$id_event";
     $event_data = db_get_row_sql($sql);
 
     // Check the access to group
-    if (!empty($event_data['id_grupo']) && $event_data['id_grupo'] > 0 && !$event_data['id_agente']) {
+    if (!empty($event_data['id_grupo'])
+        && $event_data['id_grupo'] > 0
+        && !$event_data['id_agente']
+    ) {
         if (!check_acl($config['id_user'], $event_data['id_grupo'], 'ER')) {
             returnError('forbidden', $returnType);
             return;
@@ -13163,8 +12730,14 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType)
     }
 
     // Check the access to agent
-    if (!empty($event_data['id_agente']) && $event_data['id_agente'] > 0) {
-        if (!util_api_check_agent_and_print_error($event_data['id_agente'], $returnType)) {
+    if (!empty($event_data['id_agente'])
+        && $event_data['id_agente'] > 0
+    ) {
+        if (!util_api_check_agent_and_print_error(
+            $event_data['id_agente'],
+            $returnType
+        )
+        ) {
             return;
         }
     }
@@ -13208,12 +12781,10 @@ function api_set_create_tag($id, $trash1, $other, $returnType)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $data = [];
@@ -13405,7 +12976,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         if ($other['data'][7] != '') {
             $values['id_agentmodule'] = $other['data'][7];
         } else {
-            $value['id_agentmodule'] = 0;
+            $values['id_agentmodule'] = 0;
         }
 
         if ($other['data'][8] != '') {
@@ -13452,13 +13023,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            if (is_metaconsole()) {
-                $table_event = 'tmetaconsole_event';
-            } else {
-                $table_event = 'tevento';
-            }
-
-            $sql_validation = 'SELECT id_evento FROM '.$table_event.' where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {
@@ -13500,9 +13065,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                 $res = events_comment(
                     $return,
                     $user_comment,
-                    'Added comment',
-                    is_metaconsole(),
-                    $config['history_db_enabled']
+                    'Added comment'
                 );
                 if ($other['data'][13] != '') {
                     // owner user
@@ -13512,9 +13075,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         events_change_owner(
                             $return,
                             $owner_user,
-                            true,
-                            is_metaconsole(),
-                            $config['history_db_enabled']
+                            true
                         );
                     }
                 }
@@ -13549,12 +13110,6 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
-        $meta = true;
-    } else {
-        $meta = $other['data'][1];
-    }
-
     if (!check_acl($config['id_user'], 0, 'EW')) {
         returnError('forbidden', 'string');
         return;
@@ -13565,15 +13120,46 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         return;
     } else if ($other['type'] == 'array') {
         $comment = $other['data'][0];
-        $history = $other['data'][2];
 
-        $status = events_comment(
-            $id,
-            $comment,
-            'Added comment',
-            $meta,
-            $history
-        );
+        $node_int = 0;
+        if (is_metaconsole() === true) {
+            if (isset($other['data'][1]) === true
+                && empty($other['data'][1]) === false
+            ) {
+                $node_int = $other['data'][1];
+            }
+        }
+
+        try {
+            if (is_metaconsole() === true
+                && (int) $node_int > 0
+            ) {
+                $node = new Node($node_int);
+                $node->connect();
+            }
+
+            $status = events_comment(
+                $id,
+                $comment,
+                'Added comment'
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $node_int > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $status = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $node_int > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+
         if (is_error($status)) {
             returnError(
                 'The event comment could not be added.'
@@ -13735,17 +13321,12 @@ function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnTy
         return;
     }
 
-    $table_events = 'tevento';
-    if (is_metaconsole()) {
-        $table_events = 'tmetaconsole_event';
-    }
-
     $data['type'] = 'string';
-    $check_id = db_get_value('id_evento', $table_events, 'id_evento', $id);
+    $check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
 
     if ($check_id) {
         // event exists
-        $status = db_get_value('estado', $table_events, 'id_evento', $id);
+        $status = db_get_value('estado', 'tevento', 'id_evento', $id);
         if ($status == 1) {
             // event already validated
             $data['data'] = 'Event already validated.';
@@ -13759,7 +13340,7 @@ function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnTy
                 'estado'         => 1,
             ];
 
-            $result = db_process_sql_update($table_events, $values, ['id_evento' => $id]);
+            $result = db_process_sql_update('tevento', $values, ['id_evento' => $id]);
 
             if ($result === false) {
                 $data['data'] = 'The event could not be validated.';
@@ -14883,7 +14464,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'type_graph'         => $config['type_module_charts'],
         'fullscale'          => false,
         'return_img_base_64' => true,
-        'image_treshold'     => $graph_threshold,
+        'image_threshold'    => $graph_threshold,
         'graph_font_size'    => $graph_font_size,
     ];
 
@@ -14943,6 +14524,11 @@ function api_set_metaconsole_license_file($key)
     if (empty($key) === true) {
         returnError('Key cannot be empty.');
         return;
+    }
+
+    $license_encryption_key = db_get_value('value', 'tupdate_settings', '`key`', 'license_encryption_key');
+    if (empty($license_encryption_key) === false) {
+        $key = openssl_blowfish_encrypt_hex($key, io_safe_output($license_encryption_key));
     }
 
     // Update the license file.
@@ -16141,7 +15727,7 @@ function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 
     $id_user_ack = (in_array($other['data'][9], $users)) ? $other['data'][9] : 0;
 
-    $group_rep = ($other['data'][10] == 0 || $other['data'][10] == 1) ? $other['data'][10] : 0;
+    $group_rep = ($other['data'][10] == EVENT_GROUP_REP_ALL || $other['data'][10] == EVENT_GROUP_REP_EVENTS) ? $other['data'][10] : EVENT_GROUP_REP_ALL;
 
     $date_from = (preg_match('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $other['data'][11])) ? $other['data'][11] : '0000-00-00';
 
@@ -16368,7 +15954,7 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                 break;
 
                 case 11:
-                    $values['group_rep'] = ($other['data'][11] == 0 || $other['data'][11] == 1) ? $other['data'][11] : 0;
+                    $values['group_rep'] = ($other['data'][11] == EVENT_GROUP_REP_ALL || $other['data'][11] == EVENT_GROUP_REP_EVENTS) ? $other['data'][11] : EVENT_GROUP_REP_ALL;
                 break;
 
                 case 12:
@@ -17313,12 +16899,10 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     if ($other['data'][0] != '') {
@@ -17374,12 +16958,10 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
         return;
     }
 
-    $headers = getallheaders();
-    if (isset($headers['idk']) === false
-        && is_management_allowed($headers['idk']) === false
-    ) {
+    $idk = get_header('idk');
+    if (is_management_allowed($idk) === false) {
         returnError('centralized');
-        return;
+        exit;
     }
 
     $sql = 'SELECT id_up 
@@ -17407,6 +16989,32 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
         'tags'         => '',
 
     ];
+
+    $group_exist = db_get_value_filter(
+        'id_grupo',
+        'tgrupo',
+        [
+            'id_grupo' => $values['id_grupo'],
+        ]
+    );
+
+    if ((bool) $group_exist === false) {
+        returnError('Selected group does not exist');
+        return;
+    }
+
+    $profile_exist = db_get_value_filter(
+        'id_perfil',
+        'tperfil',
+        [
+            'id_perfil' => $values['id_perfil'],
+        ]
+    );
+
+    if ((bool) $profile_exist === false) {
+        returnError('Selected profile does not exist');
+        return;
+    }
 
     $where_id_up = ['id_up' => $other['data'][4]];
     if ($exist_profile === $other['data'][4] && $where_id_up !== null) {
@@ -17526,7 +17134,7 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
  * Function for get event id and node id, then we get in return the Metaconsole event ID.
  *
  * @param [string] $server_id        id server (Node)
- * @param [string] $console_event_id console Id node event in tmetaconsole_event
+ * @param [string] $console_event_id console Id node event in tevent
  * @param [string] $trash2           don't use
  * @param [string] $returnType
  *
@@ -17537,19 +17145,54 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
  */
 function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
 {
-    global $config;
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
 
-    if (is_metaconsole()) {
-        $mc_event_id = db_get_all_rows_sql("SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ");
+        // Get grouped comments.
+        $mc_event_id = db_get_all_rows_sql(
+            sprintf(
+                'SELECT id_evento
+                FROM tevento
+                WHERE id_evento = %d
+                ',
+                $console_event_id
+            )
+        );
+
         if ($mc_event_id !== false) {
-            returnData($returnType, ['type' => 'string', 'data' => $mc_event_id]);
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => $mc_event_id,
+                ]
+            );
         } else {
             returnError('id_not_found', 'string');
         }
-    } else {
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
         returnError('forbidden', 'string');
-        return;
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
     }
+
+    return;
 }
 
 
@@ -17597,20 +17240,14 @@ function api_get_is_centralized($server_id, $thrash1, $thrash2, $returnType)
 function api_set_event_in_progress($event_id, $trash2, $returnType)
 {
     global $config;
-    if (is_metaconsole()) {
-        $table = 'tmetaconsole_event';
-    } else {
-        $table = 'tevento';
-    }
-
     $event = db_process_sql_update(
-        $table,
+        'tevento',
         ['estado' => 2],
         ['id_evento' => $event_id]
     );
 
     if ($event !== false) {
-            returnData('string', ['data' => $event]);
+        returnData('string', ['data' => $event]);
     } else {
         returnError('id_not_found', 'string');
     }
@@ -17722,5 +17359,304 @@ function api_token_check(string $token)
         return -1;
     } else {
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
+    }
+}
+
+
+/**
+ * Make report (PDF, CSV or XML) and send it via e-mail (this method is intended to be used by server's execution
+ * of alert actions that involve sending reports by e-mail).
+ *
+ * @param [string] $server_id        id server (Node)
+ * @param [string] $console_event_id console Id node event in tevent
+ * @param [string] $trash2           don't use
+ * @param [string] $returnType
+ *
+ * --Internal use--
+ *
+ * @return void
+ */
+function api_set_send_report($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    $id_item = (int) $other['data'][0];
+    $report_type = $other['data'][1];
+    $email = $other['data'][2];
+    $subject_email = $other['data'][3];
+    $body_email = $other['data'][4];
+    $make_report_from_template = (bool) $other['data'][5];
+    $template_regex_agents = $other['data'][6];
+
+    // Filter normal and metaconsole reports.
+    if (is_metaconsole() === true) {
+        $filter['metaconsole'] = 1;
+    } else {
+        $filter['metaconsole'] = 0;
+    }
+
+    $own_info = get_user_info($config['id_user']);
+    if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
+        $return_all_group = true;
+    } else {
+        $return_all_group = false;
+    }
+
+    if (is_user_admin($config['id_user']) === false) {
+        $filter[] = sprintf(
+            'private = 0 OR (private = 1 AND id_user = "%s")',
+            $config['id_user']
+        );
+    }
+
+    $date_today = date($config['date_format']);
+    $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
+    $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
+
+    if ($make_report_from_template === true) {
+        $filter['id_report'] = $id_item;
+
+        $template = reports_get_report_templates(
+            $filter,
+            ['description'],
+            $return_all_group,
+            'RR'
+        )[0];
+
+        $description = $template['description'];
+
+        // Report macros post-process.
+        $body_email = str_replace(
+            [
+                '_report_description_',
+                '_report_generated_date_',
+                '_report_date_',
+            ],
+            [
+                $description,
+                $date_today,
+                $date_today,
+            ],
+            $body_email
+        );
+
+        $report_type = strtoupper($report_type);
+        $body_email = io_safe_output(io_safe_output($body_email));
+
+        cron_task_generate_report_by_template(
+            $id_item,
+            '',
+            $template_regex_agents,
+            false,
+            '',
+            $email,
+            $subject_email,
+            $body_email,
+            $report_type,
+            ''
+        );
+    } else {
+        $report = reports_get_report($id_item);
+
+        if ($report === false) {
+            // User has no grant to access this report.
+            return;
+        }
+
+        // Report macros post-process.
+        $body_email = str_replace(
+            [
+                '_report_description_',
+                '_report_generated_date_',
+                '_report_date_',
+            ],
+            [
+                $report['description'],
+                $date_today,
+                $date_today,
+            ],
+            $body_email
+        );
+
+        $body_email = io_safe_output(io_safe_output($body_email));
+
+        // Set the languaje of user.
+        global $l10n;
+
+        if (isset($l10n) === false) {
+            $l10n = null;
+            $user_language = get_user_language($config['id_user']);
+            if (file_exists(
+                $config['homedir'].'/include/languages/'.$user_language.'.mo'
+            ) === true
+            ) {
+                $obj = new CachedFileReader(
+                    $config['homedir'].'/include/languages/'.$user_language.'.mo'
+                );
+                $l10n = new gettext_reader($obj);
+                $l10n->load_tables();
+            }
+        }
+
+        // Attachments.
+        $attachments = [];
+        // Set the datetime for the report.
+        $report['datetime'] = time();
+
+        $date = date('Y-m-j');
+        $time = date('h:iA');
+
+        $tmpfile = false;
+
+        switch ($report_type) {
+            case 'pdf':
+                $tmpfile = $config['homedir'].'/attachment/'.date('Ymd-His').'.pdf';
+
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'static',
+                    null,
+                    null,
+                    true
+                );
+                pdf_get_report($report, $tmpfile);
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'application/pdf',
+                ];
+            break;
+
+            case 'csv':
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'data'
+                );
+
+                $name = explode(' - ', $report['name']);
+                $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.csv';
+
+                // Remove unused fields.
+                unset($report['header']);
+                unset($report['first_page']);
+                unset($report['footer']);
+                unset($report['custom_font']);
+                unset($report['id_template']);
+                unset($report['id_group_edit']);
+                unset($report['metaconsole']);
+                unset($report['private']);
+                unset($report['custom_logo']);
+
+                ob_start();
+                csv_get_report($report, true);
+                $output = ob_get_clean();
+
+                file_put_contents($tmpfile, $output);
+                ob_end_clean();
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'text/csv',
+                ];
+            break;
+
+            case 'json':
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'data'
+                );
+
+                // Remove unused fields.
+                unset($report['header']);
+                unset($report['first_page']);
+                unset($report['footer']);
+                unset($report['custom_font']);
+                unset($report['id_template']);
+                unset($report['id_group_edit']);
+                unset($report['metaconsole']);
+                unset($report['private']);
+                unset($report['custom_logo']);
+
+                $name = explode(' - ', $report['name']);
+                $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.json';
+
+                file_put_contents($tmpfile, json_encode($report, JSON_PRETTY_PRINT));
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'text/json',
+                ];
+            break;
+
+            case 'xml':
+                $report = reporting_make_reporting_data(
+                    null,
+                    $id_item,
+                    $date,
+                    $time,
+                    null,
+                    'data'
+                );
+
+                $name = explode(' - ', $report['name']);
+                $tmpfile = $config['homedir'].'/attachment/'.$name[0].'.xml';
+
+                // Remove unused fields.
+                unset($report['header']);
+                unset($report['first_page']);
+                unset($report['footer']);
+                unset($report['custom_font']);
+                unset($report['id_template']);
+                unset($report['id_group_edit']);
+                unset($report['metaconsole']);
+                unset($report['private']);
+                unset($report['custom_logo']);
+
+                ob_start();
+                reporting_xml_get_report($report, true);
+                $output = ob_get_clean();
+
+                file_put_contents($tmpfile, $output);
+                ob_end_clean();
+
+                $attachments[0] = [
+                    'file'         => $tmpfile,
+                    'content_type' => 'text/xml',
+                ];
+            break;
+
+            default:
+            break;
+        }
+
+        reporting_email_template(
+            $subject_email,
+            $body_email,
+            '',
+            $report['name'],
+            $email,
+            $attachments
+        );
+
+        unlink($other['data'][0]);
+
+        $data = [
+            'type' => 'string',
+            'data' => '1',
+        ];
+
+        returnData($returnType, $data, ';');
     }
 }

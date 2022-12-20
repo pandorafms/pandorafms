@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 /**
@@ -183,6 +185,44 @@ class GraphModuleHistogramWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['moduleId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node = new Node($this->values['metaconsoleId']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_sql(
+                    sprintf(
+                        'SELECT id_agente_modulo
+                        FROM tagente_modulo
+                        WHERE id_agente_modulo = %s
+                            AND delete_pending = 0',
+                        $this->values['moduleId']
+                    )
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -304,7 +344,6 @@ class GraphModuleHistogramWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -312,7 +351,9 @@ class GraphModuleHistogramWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
-                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
+                'filter_modules' => (users_access_to_agent($values['agentId']) === false) ? [$values['moduleId']] : [],
+                'nothing'        => __('None'),
+                'nothing_value'  => 0,
             ],
         ];
 
@@ -440,6 +481,22 @@ class GraphModuleHistogramWidget extends Widget
     public static function getName()
     {
         return 'graph_module_histogram';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 480,
+        ];
+
+        return $size;
     }
 
 

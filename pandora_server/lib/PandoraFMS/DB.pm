@@ -19,6 +19,9 @@ package PandoraFMS::DB;
 
 use strict;
 use warnings;
+
+use threads;
+
 use DBI;
 use Carp qw/croak/;
 
@@ -72,8 +75,11 @@ our @EXPORT = qw(
 		get_alert_template_name
 		get_command_id
 		get_console_api_url
+		get_db_nodes
 		get_db_rows
 		get_db_rows_limit
+		get_db_rows_node
+		get_db_rows_parallel
 		get_db_single_row
 		get_db_value
 		get_db_value_limit
@@ -113,6 +119,10 @@ our @EXPORT = qw(
 		get_agentmodule_status_str
 		get_agentmodule_data
 		set_ssl_opts
+		db_synch_insert
+		db_synch_update
+		db_synch_delete
+		db_synch
 		$RDBMS
 		$RDBMS_QUOTE
 		$RDBMS_QUOTE_STRING
@@ -944,6 +954,37 @@ sub get_db_single_row ($$;@) {
 }
 
 ##########################################################################
+## Get DB information for all known Pandora FMS nodes.
+##########################################################################
+sub get_db_nodes ($$) {
+	my ($dbh, $pa_config) = @_;
+	my $dbh_nodes = [];
+
+	# Insert the current node first.
+	push(@{$dbh_nodes},
+	     {'dbengine' => $pa_config->{'dbengine'},
+	      'dbname'   => $pa_config->{'dbname'},
+	      'dbhost'   => $pa_config->{'dbhost'},
+	      'dbport'   => $pa_config->{'dbport'},
+	      'dbuser'   => $pa_config->{'dbuser'},
+	      'dbpass'   => $pa_config->{'dbpass'}});
+
+	# Look for additional nodes.
+	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup WHERE disabled = 0');
+	foreach my $node (@nodes) {
+		push(@{$dbh_nodes},
+		     {'dbengine' => $pa_config->{'dbengine'},
+		      'dbname'   => $node->{'dbname'},
+		      'dbhost'   => $node->{'dbhost'},
+		      'dbport'   => $node->{'dbport'},
+		      'dbuser'   => $node->{'dbuser'},
+		      'dbpass'   => $node->{'dbpass'}});
+	}
+
+	return $dbh_nodes;
+}
+
+##########################################################################
 ## Get all rows returned by an SQL query as a hash reference array.
 ##########################################################################
 sub get_db_rows ($$;@) {
@@ -957,16 +998,66 @@ sub get_db_rows ($$;@) {
 	
 	# Save returned rows
 	while (my $row = $sth->fetchrow_hashref()) {
-		if ($RDBMS eq 'oracle') {
-			push (@rows, {map { lc ($_) => $row->{$_} } keys (%{$row})});
-		}
-		else {
-			push (@rows, $row);
-		}
+		push (@rows, $row);
 	}
 	
 	$sth->finish();
 	return @rows;
+}
+
+##########################################################################
+## Connect to the given node and run get_db_rows.
+##########################################################################
+sub get_db_rows_node ($$;@) {
+	my ($node, $query, @values) = @_;
+	my $dbh;
+	my @rows;
+
+	eval {
+		$dbh = db_connect($node->{'dbengine'},
+		                  $node->{'dbname'},
+		                  $node->{'dbhost'},
+		                  $node->{'dbport'},
+		                  $node->{'dbuser'},
+		                  $node->{'dbpass'});
+		@rows = get_db_rows($dbh, $query, @values);
+	};
+
+	db_disconnect($dbh) if defined($dbh);
+
+	return \@rows;
+}
+
+##########################################################################
+## Run get_db_rows on all known Pandora FMS nodes in parallel.
+##########################################################################
+sub get_db_rows_parallel ($$;@) {
+	my ($nodes, $query, @values) = @_;
+
+	# Launch the queries.
+	my @threads;
+	{
+		# Calling DESTROY would make the server restart.
+		no warnings 'redefine';
+		local *PandoraFMS::ProducerConsumerServer::DESTROY = sub {};
+		local *PandoraFMS::BlockProducerConsumerServer::DESTROY = sub {};
+		local *PandoraFMS::SNMPServer::DESTROY = sub {};
+
+		# Query the nodes.
+		foreach my $node (@{$nodes}) {
+			my $thr = threads->create(\&get_db_rows_node, $node, $query, @values);
+			push(@threads, $thr) if defined($thr);
+		}
+	}
+
+	# Retrieve the results.
+	my @combined_res;
+	foreach my $thr (@threads) {
+		my $res = $thr->join();
+		push(@combined_res, @{$res}) if defined($res);
+	}
+
+	return @combined_res;
 }
 
 ########################################################################
@@ -1146,10 +1237,10 @@ sub db_update ($$;@) {
 ##########################################################################
 ## Return alert template-module ID given the module and template ids.
 ##########################################################################
-sub get_alert_template_module_id ($$$) {
-	my ($dbh, $id_module, $id_template) = @_;
+sub get_alert_template_module_id ($$$$) {
+	my ($dbh, $id_module, $id_template, $id_policy_alerts) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ?", $id_module, $id_template);
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ? AND id_policy_alerts = ?", $id_module, $id_template, $id_policy_alerts);
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -1543,18 +1634,44 @@ sub db_insert_get_values ($) {
 ########################################################################
 ## Try to obtain the given lock.
 ########################################################################
-sub db_get_lock($$;$) {
-	my ($dbh, $lock_name, $lock_timeout) = @_;
+sub db_get_lock($$;$$) {
+	my ($dbh, $lock_name, $lock_timeout, $do_not_wait_lock) = @_;
 
 	# Only supported in MySQL.
 	return 1 unless ($RDBMS eq 'mysql');
 
 	# Set a default lock timeout of 1 second
 	$lock_timeout = 1 if (! defined ($lock_timeout));
+
+	if ($do_not_wait_lock) {
+		if (!db_is_free_lock($dbh, $lock_name)) {
+			return 0;
+		}
+	}
 	
 	# Attempt to get the lock!
 	my $sth = $dbh->prepare('SELECT GET_LOCK(?, ?)');
 	$sth->execute($lock_name, $lock_timeout);
+	my ($lock) = $sth->fetchrow;
+	
+	# Something went wrong
+	return 0 if (! defined ($lock));
+	
+	return $lock;
+}
+
+########################################################################
+## Check is lock is free.
+########################################################################
+sub db_is_free_lock($$) {
+	my ($dbh, $lock_name) = @_;
+
+	# Only supported in MySQL.
+	return 1 unless ($RDBMS eq 'mysql');
+	
+	# Attempt to get the lock!
+	my $sth = $dbh->prepare('SELECT IS_FREE_LOCK(?)');
+	$sth->execute($lock_name);
 	my ($lock) = $sth->fetchrow;
 	
 	# Something went wrong
@@ -1635,14 +1752,89 @@ sub set_ssl_opts($) {
 	}
 
 	# Enable SSL.
-	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=1;mysql_ssl_verify_server_cert=1";
+	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=1";
 
 	# Set additional SSL options.
+	if (defined($pa_config->{'verify_mysql_ssl_cert'}) && $pa_config->{'verify_mysql_ssl_cert'} ne "") {
+		$SSL_OPTS .= ";mysql_ssl_verify_server_cert=" . $pa_config->{'verify_mysql_ssl_cert'};
+	}
 	if (defined($pa_config->{'dbsslcapath'}) && $pa_config->{'dbsslcapath'} ne "") {
 		$SSL_OPTS .= ";mysql_ssl_ca_path=" . $pa_config->{'dbsslcapath'};
 	}
 	if (defined($pa_config->{'dbsslcafile'}) && $pa_config->{'dbsslcafile'} ne "") {
 		$SSL_OPTS .= ";mysql_ssl_ca_file=" . $pa_config->{'dbsslcafile'};
+	}
+}
+
+########################################################################
+## Synch insert query with nodes.
+########################################################################
+sub db_synch_insert ($$$$$@) {
+	my ($dbh, $pa_config, $table, $query, $result, @values) = @_;
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+	my $query_string = sprintf($query, @values);
+
+	db_synch($dbh, $pa_config, 'INSERT INTO', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch update query with nodes.
+########################################################################
+sub db_synch_update ($$$$$@) {
+	my ($dbh, $pa_config, $table, $query, $result, @values) = @_;
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+	my $query_string = sprintf($query, @values);
+
+	db_synch($dbh, $pa_config, 'UPDATE', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch delete query with nodes.
+########################################################################
+sub db_synch_delete ($$$$@) {
+	my ($dbh, $pa_config, $table, $result, @parameters) = @_;
+
+	#Build query string.
+	my $query = $dbh->{Statement};
+
+	my $substr = "\"\%s\"";
+	$query =~ s/\?/$substr/g;
+
+	my $query_string = sprintf($query, @parameters);
+
+	db_synch($dbh, $pa_config, 'DELETE FROM', $table, $query_string, $result);
+}
+
+########################################################################
+## Synch queries with nodes.
+########################################################################
+sub db_synch ($$$$$$) {
+	my ($dbh, $pa_config, $type, $table, $query, $result) = @_;
+	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup');
+	foreach my $node (@nodes) {
+		eval {
+			local $SIG{__DIE__};
+			my @values_queue = (
+				safe_input($query),
+				$node->{'id'},
+				time(),
+				$type,
+				$table,
+				'',
+				$result
+			);
+			
+			my $query_queue = 'INSERT INTO tsync_queue (`sql`, `target`, `utimestamp`, `operation`, `table`, `error`, `result`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+			db_insert ($dbh, 'id', $query_queue, @values_queue);
+		};
+		if ($@) {
+			logger($pa_config, "Error add sync_queue: $@", 10);
+			return;
+		}
 	}
 }
 

@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -181,6 +183,44 @@ class ModuleValueWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['moduleId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node = new Node($this->values['metaconsoleId']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_sql(
+                    sprintf(
+                        'SELECT id_agente_modulo
+                        FROM tagente_modulo
+                        WHERE id_agente_modulo = %s
+                            AND delete_pending = 0',
+                        $this->values['moduleId']
+                    )
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -308,7 +348,6 @@ class ModuleValueWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -316,7 +355,9 @@ class ModuleValueWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
-                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
+                'filter_modules' => (users_access_to_agent($values['agentId']) === false) ? [$values['moduleId']] : [],
+                'nothing'        => __('None'),
+                'nothing_value'  => 0,
             ],
         ];
 
@@ -378,10 +419,7 @@ class ModuleValueWidget extends Widget
     {
         global $config;
 
-        $output .= '';
-
-        $id_agent = $this->values['agentId'];
-        $id_group = agents_get_agent_group($id_agent);
+        $output = '';
 
         $id_module = $this->values['moduleId'];
 
@@ -401,7 +439,9 @@ class ModuleValueWidget extends Widget
             $dataDatos = remove_right_zeros(
                 number_format(
                     $data_module,
-                    $config['graph_precision']
+                    $config['graph_precision'],
+                    $config['decimal_separator'],
+                    $config['thousand_separator']
                 )
             );
         } else {
@@ -442,6 +482,22 @@ class ModuleValueWidget extends Widget
     public static function getName()
     {
         return 'module_value';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 490,
+        ];
+
+        return $size;
     }
 
 

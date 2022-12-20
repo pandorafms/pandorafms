@@ -320,6 +320,17 @@ class MapsStatusWidget extends Widget
         $output = '';
         if (isset($maps) === true && empty($maps) === false) {
             foreach ($maps as $id_layout) {
+                $check_exist = db_get_value(
+                    'id',
+                    'tlayout',
+                    'id',
+                    $id_layout
+                );
+
+                if ($check_exist === false) {
+                    continue;
+                }
+
                 $data = [];
 
                 $url = $config['homeurl'];
@@ -366,12 +377,22 @@ class MapsStatusWidget extends Widget
                 array_push($table->data, $data);
             }
 
-            // 31 px for each map.
-            $minHeight = (count($maps) * 31);
-            $style = 'min-width:200px; min-height:'.$minHeight.'px';
-            $output = '<div class="container-center" style="'.$style.'">';
-            $output .= html_print_table($table, true);
-            $output .= '</div>';
+            if (empty($table->data) === false) {
+                // 31 px for each map.
+                $minHeight = (count($maps) * 31);
+                $style = 'min-width:200px; min-height:'.$minHeight.'px';
+                $output = '<div class="container-center" style="'.$style.'">';
+                $output .= html_print_table($table, true);
+                $output .= '</div>';
+            } else {
+                $output .= '<div class="container-center">';
+                $output .= \ui_print_error_message(
+                    __('Widget cannot be loaded').'. '.__('Please, configure the widget again to recover it'),
+                    '',
+                    true
+                );
+                $output .= '</div>';
+            }
         }
 
         return $output;
@@ -397,6 +418,22 @@ class MapsStatusWidget extends Widget
     public static function getName()
     {
         return 'maps_status';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 425,
+        ];
+
+        return $size;
     }
 
 

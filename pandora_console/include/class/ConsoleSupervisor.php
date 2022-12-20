@@ -679,7 +679,6 @@ class ConsoleSupervisor
                 $max_age = 0;
             break;
 
-            case 'NOTIF.LICENSE.EXPIRATION':
             case 'NOTIF.FILES.ATTACHMENT':
             case 'NOTIF.FILES.DATAIN':
             case 'NOTIF.FILES.DATAIN.BADXML':
@@ -846,7 +845,9 @@ class ConsoleSupervisor
         }
 
         // Expiry.
-        if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
+        if (($days_to_expiry <= 15) && ($days_to_expiry > 0)
+            && ((is_user_admin($config['id_user'])) || (check_acl($config['id_user'], 0, 'PM')))
+        ) {
             if ($config['license_mode'] == 1) {
                 $title = __('License is about to expire');
                 $msg = 'Your license will expire in %d days. Please, contact our sales department.';
@@ -867,7 +868,7 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
-        } else if ($days_to_expiry < 0) {
+        } else if (($days_to_expiry <= 0) && ((is_user_admin($config['id_user'])) || (check_acl($config['id_user'], 0, 'PM')))) {
             if ($config['license_mode'] == 1) {
                 $title = __('Expired license');
                 $msg = __('Your license has expired. Please, contact our sales department.');
@@ -1466,7 +1467,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.PHP.INPUT_TIME',
                     'title'   => sprintf(
-                        __("'%s' value in PHP configuration is not recommended"),
+                        __('%s value in PHP configuration is not recommended'),
                         'max_input_time'
                     ),
                     'message' => sprintf(
@@ -1528,7 +1529,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.UPLOAD_MAX_FILESIZE');
         }
 
-        if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+        if ($PHPmemory_limit < $PHPmemory_limit_min && (int) $PHPmemory_limit !== -1) {
             $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
             if ($config['language'] == 'es') {
                 $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
@@ -1593,17 +1594,21 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.PHANTOMJS');
         }
 
-        if ($php_version_array[0] < 7) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
+        if ($php_version_array[0] < 8) {
+            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
+                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
+            }
+
+            if ($config['language'] == 'ja') {
+                $url = 'https://pandorafms.com/manual/ja/documentation/07_technical_annexes/18_php_8';
             }
 
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
+                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 8.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );
@@ -2145,8 +2150,8 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
                     'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click <a class="bolder underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
-                    'url'     => 'javascript: force_run_register();',
+                    'message' => __('Click here to start the registration process'),
+                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                 ]
             );
         } else {
@@ -2166,7 +2171,7 @@ class ConsoleSupervisor
         // Check default password for "admin".
         $admin_with_default_pass = db_get_value_sql(
             'SELECT count(*) FROM tusuario
-            WHERE 
+            WHERE
                 id_user="admin"
                 AND password="1da7ee7d45b96d0e1f45ee4ee23da560"
                 AND is_admin=1
@@ -2215,7 +2220,9 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.MISC.FONTPATH',
                     'title'   => __('Default font doesn\'t exist'),
                     'message' => __('Your defined font doesn\'t exist or is not defined. Please, check font parameters in your config'),
-                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis',
+                    'url'     => is_metaconsole() === false
+                                    ? '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis'
+                                    : '__url__/index.php?sec=advanced&sec2=advanced/metasetup&tab=visual',
                 ]
             );
         } else {
@@ -2441,11 +2448,11 @@ class ConsoleSupervisor
         config_update_value('last_um_check', $future, true);
 
         $messages = update_manager_get_messages();
+
         if (is_array($messages) === true) {
             $source_id = get_notification_source_id(
                 'Official&#x20;communication'
             );
-
             foreach ($messages as $message) {
                 if (isset($message['url']) === false) {
                     $message['url'] = '#';
@@ -2476,21 +2483,19 @@ class ConsoleSupervisor
         // List all servers except satellite server.
         $server_version_list = db_get_all_rows_sql(
             sprintf(
-                'SELECT `name`, `version` 
-                FROM tserver 
+                'SELECT `name`, `version`
+                FROM tserver
                 WHERE server_type != %d
                 GROUP BY `version`',
                 SERVER_TYPE_ENTERPRISE_SATELLITE
             )
         );
-
         $missed = 0;
-
         if (is_array($server_version_list) === true) {
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    $config['current_package']
+                    (string) floor((int) $config['current_package'])
                 ) === false
                 ) {
                     $missed++;
@@ -2511,6 +2516,8 @@ class ConsoleSupervisor
                             'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                         ]
                     );
+
+                    break;
                 }
             }
         }
@@ -2741,7 +2748,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.%');
         }
 
-        $items_min = $config['sync_queue_items_max'];
+        $items_min = (isset($config['sync_queue_items_max']) === true) ? $config['sync_queue_items_max'] : 0;
         if (is_numeric($items_min) !== true && $items_min <= 0) {
             $items_min = self::MIN_SYNC_QUEUE_LENGTH;
         }

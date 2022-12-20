@@ -40,16 +40,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_servers.php';
 
-$search_string = io_safe_output(
-    urldecode(
-        trim(
-            get_parameter(
-                'search_string',
-                ''
-            )
-        )
-    )
-);
+$search_string = get_parameter('search_string');
 
 global $policy_page;
 
@@ -454,8 +445,6 @@ if ($module_action === 'delete') {
     }
 } else if ($module_action === 'disable') {
     $id_agent_modules_disable = (array) get_parameter('id_delete');
-
-    $count_correct_delete_modules = 0;
     $updated_count = 0;
 
     foreach ($id_agent_modules_disable as $id_agent_module_disable) {
@@ -466,7 +455,14 @@ if ($module_action === 'delete') {
             $id_agent_module_disable
         );
 
-        if (db_process_sql($sql)) {
+        $id_agent_changed[] = modules_get_agentmodule_agent($id_agent_module_disable);
+        $agent_update_result = db_process_sql_update(
+            'tagente',
+            ['update_module_count' => 1],
+            ['id_agente' => $id_agent_changed]
+        );
+
+        if (db_process_sql($sql) !== false && $agent_update_result !== false) {
             $updated_count++;
         }
     }
@@ -488,6 +484,52 @@ if ($module_action === 'delete') {
                     __('There was a problem completing the operation. Applied to %d/%d modules.'),
                     $updated_count,
                     $count_modules_to_disable
+                )
+            );
+        }
+    }
+} else if ($module_action === 'enable') {
+    $id_agent_modules_enable = (array) get_parameter('id_delete');
+    $updated_count = 0;
+
+    foreach ($id_agent_modules_enable as $id_agent_module_enable) {
+        $sql = sprintf(
+            'UPDATE tagente_modulo
+                SET disabled = 0
+                WHERE id_agente_modulo = %d',
+            $id_agent_module_enable
+        );
+
+        $id_agent_changed[] = modules_get_agentmodule_agent($id_agent_module_enable);
+        $agent_update_result = db_process_sql_update(
+            'tagente',
+            ['update_module_count' => 1],
+            ['id_agente' => $id_agent_changed]
+        );
+
+        if (db_process_sql($sql) !== false && $agent_update_result !== false) {
+            $updated_count++;
+        }
+    }
+
+    $count_modules_to_enable = count($id_agent_modules_enable);
+
+    if ($updated_count === 0) {
+        ui_print_error_message(
+            sprintf(
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
+                $count_modules_to_enable
+            )
+        );
+    } else {
+        if ($updated_count == $count_modules_to_enable) {
+            ui_print_success_message(__('Operation finished successfully.'));
+        } else {
+            ui_print_error_message(
+                sprintf(
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $updated_count,
+                    $count_modules_to_enable
                 )
             );
         }
@@ -993,6 +1035,24 @@ foreach ($modules as $module) {
     }
 
     if ($module['disabled']) {
+        $dt_disabled_icon = '';
+
+        $in_planned_downtime = db_get_sql(
+            'SELECT executed FROM tplanned_downtime 
+			INNER JOIN tplanned_downtime_modules ON tplanned_downtime.id = tplanned_downtime_modules.id_downtime
+			WHERE tplanned_downtime.executed = 1 
+            AND tplanned_downtime.type_downtime = "disable_agent_modules"
+            AND tplanned_downtime_modules.id_agent_module = '.$module['id_agente_modulo']
+        );
+
+        if ($in_planned_downtime !== false) {
+            $dt_disabled_icon = ui_print_help_tip(
+                __('Module in scheduled downtime'),
+                true,
+                'images/minireloj-16.png'
+            );
+        }
+
         $data[0] .= '<em class="disabled_module">'.ui_print_truncate_text(
             $module['nombre'],
             'module_medium',
@@ -1001,7 +1061,7 @@ foreach ($modules as $module) {
             true,
             '[&hellip;]',
             'font-size: 7.2pt'
-        ).'</em>';
+        ).$dt_disabled_icon.'</em>';
     } else {
         $data[0] .= ui_print_truncate_text(
             $module['nombre'],
@@ -1258,6 +1318,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     html_print_select(
         [
             'disable' => 'Disable selected modules',
+            'enable'  => 'Enable selected modules',
             'delete'  => 'Delete selected modules',
         ],
         'module_action',
@@ -1269,6 +1330,8 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         false,
         false
     );
+
+    echo '&nbsp&nbsp&nbsp&nbsp';
 
     html_print_submit_button(
         __('Execute action'),

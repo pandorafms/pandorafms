@@ -31,7 +31,9 @@ function mysql_connect_db(
     $user=null,
     $pass=null,
     $port=null,
-    $charset=null
+    $charset=null,
+    $ssl=null,
+    $verify=null
 ) {
     global $config;
 
@@ -55,6 +57,20 @@ function mysql_connect_db(
         $port = $config['dbport'];
     }
 
+    if ($ssl === null
+        && isset($config['dbssl']) === true
+        && (bool) $config['dbssl'] === true
+    ) {
+        $ssl = $config['dbsslcafile'];
+    }
+
+    if ($verify === null
+        && isset($config['sslverifyservercert']) === true
+        && (bool) $config['sslverifyservercert'] === true
+    ) {
+        $verify = 'verified';
+    }
+
     // Check if mysqli is available
     if (!isset($config['mysqli'])) {
         $config['mysqli'] = extension_loaded(mysqli);
@@ -63,22 +79,39 @@ function mysql_connect_db(
     // Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
     // If you want persistent connections change it to mysql_pconnect().
     if ($config['mysqli']) {
-        $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
-        if (mysqli_connect_errno() > 0) {
-            include 'general/mysqlerr.php';
-            return false;
+        if (empty($ssl)) {
+            $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
+            if (mysqli_connect_errno() > 0) {
+                include 'general/mysqlerr.php';
+                return false;
+            }
+
+            db_change_cache_id($db, $host);
+
+            if (isset($charset)) {
+                mysqli_set_charset($connect_id, $charset);
+            }
+
+            mysqli_select_db($connect_id, $db);
+        } else {
+            $connect_id = mysqli_init();
+
+            mysqli_ssl_set($connect_id, null, null, $ssl, null, null);
+
+            if ($verify === 'verified') {
+                mysqli_real_connect($connect_id, $host, $user, $pass, $db, $port, null, MYSQLI_CLIENT_SSL);
+            } else {
+                mysqli_real_connect($connect_id, $host, $user, $pass, $db, $port, null, MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT);
+            }
+
+            if (mysqli_connect_errno() > 0) {
+                include 'general/mysqlerr.php';
+                return false;
+            }
         }
-
-        db_change_cache_id($db, $host);
-
-        if (isset($charset)) {
-            mysqli_set_charset($connect_id, $charset);
-        }
-
-        mysqli_select_db($connect_id, $db);
     } else {
         $connect_id = @mysql_connect($host.':'.$port, $user, $pass, true);
-        if (! $connect_id) {
+        if (!$connect_id) {
             return false;
         }
 
@@ -117,7 +150,7 @@ function mysql_db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, 
         $history = false;
 
         // Connect to the history DB
-        if (! isset($config['history_db_connection']) || $config['history_db_connection'] === false) {
+        if (!isset($config['history_db_connection']) || $config['history_db_connection'] === false) {
             $config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
         }
 
@@ -142,13 +175,13 @@ function mysql_db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, 
     }
 
     // Append result to the history DB data
-    if (! empty($return)) {
+    if (!empty($return)) {
         foreach ($return as $row) {
             array_push($history, $row);
         }
     }
 
-    if (! empty($history)) {
+    if (!empty($history)) {
         return $history;
     }
 
@@ -240,7 +273,7 @@ function mysql_db_get_row($table, $field_search, $condition, $fields=false, $cac
     } else {
         if (is_array($fields)) {
             $fields = implode(',', $fields);
-        } else if (! is_string($fields)) {
+        } else if (!is_string($fields)) {
             return false;
         }
     }
@@ -326,10 +359,12 @@ function mysql_db_get_all_rows_in_table($table, $order_field='', $order='ASC')
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function mysql_db_process_sql_insert($table, $values)
+function mysql_db_process_sql_insert($table, $values, $sqltostring=false)
 {
-    // Empty rows or values not processed
-    if (empty($values)) {
+    global $config;
+
+    // Empty rows or values not processed.
+    if (empty($values) === true) {
         return false;
     }
 
@@ -341,7 +376,7 @@ function mysql_db_process_sql_insert($table, $values)
     $i = 1;
     $max = count($values);
     foreach ($values as $field => $value) {
-        // Add the correct escaping to values
+        // Add the correct escaping to values.
         if ($field[0] != '`') {
             $field = '`'.$field.'`';
         }
@@ -369,7 +404,30 @@ function mysql_db_process_sql_insert($table, $values)
 
     $query .= ' VALUES ('.$values_str.')';
 
-    return db_process_sql($query, 'insert_id');
+    $values_insert = [];
+    if (enterprise_hook('is_metaconsole') === true
+        && isset($config['centralized_management']) === true
+        && (bool) $config['centralized_management'] === true
+    ) {
+        $values_insert = [
+            'table'  => $table,
+            'values' => $values,
+        ];
+    }
+
+    if ($sqltostring === true) {
+        return $query;
+    }
+
+    return db_process_sql(
+        $query,
+        'insert_id',
+        '',
+        true,
+        $status,
+        true,
+        $values_insert
+    );
 }
 
 
@@ -403,7 +461,7 @@ function mysql_db_process_sql($sql, $rettype='affected_rows', $dbconnection='', 
         $cache = $config['dbcache'];
     }
 
-    if ($cache && ! empty($sql_cache[$sql_cache['id']][$sql])) {
+    if ($cache && !empty($sql_cache[$sql_cache['id']][$sql])) {
         $retval = $sql_cache[$sql_cache['id']][$sql];
         $sql_cache['saved'][$sql_cache['id']]++;
         db_add_database_debug_trace($sql);
@@ -518,7 +576,7 @@ function mysql_db_process_sql($sql, $rettype='affected_rows', $dbconnection='', 
         }
     }
 
-    if (! empty($retval)) {
+    if (!empty($retval)) {
         return $retval;
     }
 
@@ -594,7 +652,7 @@ function mysql_encapsule_fields_with_same_name_to_instructions($field)
  */
 function mysql_db_get_value_filter($field, $table, $filter, $where_join='AND', $search_history_db=false)
 {
-    if (! is_array($filter) || empty($filter)) {
+    if (!is_array($filter) || empty($filter)) {
         return false;
     }
 
@@ -693,7 +751,7 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
 {
     $fields = [];
 
-    if (! is_array($values)) {
+    if (!is_array($values)) {
         return '';
     }
 
@@ -863,7 +921,7 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
         $i++;
     }
 
-    return (! empty($query) ? $prefix : '').$query.$group.$order.$limit.$offset;
+    return (!empty($query) ? $prefix : '').$query.$group.$order.$limit.$offset;
 }
 
 
@@ -945,7 +1003,7 @@ function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AN
     } else {
         if (is_array($fields)) {
             $fields = implode(',', $fields);
-        } else if (! is_string($fields)) {
+        } else if (!is_string($fields)) {
             return false;
         }
     }
@@ -988,14 +1046,14 @@ function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AN
  *
  * @return mixed Array of the row or false in case of error.
  */
-function mysql_db_get_all_rows_filter($table, $filter=[], $fields=false, $where_join='AND', $search_history_db=false, $returnSQL=false)
+function mysql_db_get_all_rows_filter($table, $filter=[], $fields=false, $where_join='AND', $search_history_db=false, $returnSQL=false, $cache=true)
 {
     // TODO: Validate and clean fields
     if (empty($fields)) {
         $fields = '*';
     } else if (is_array($fields)) {
         $fields = implode(',', $fields);
-    } else if (! is_string($fields)) {
+    } else if (!is_string($fields)) {
         return false;
     }
 
@@ -1019,7 +1077,7 @@ function mysql_db_get_all_rows_filter($table, $filter=[], $fields=false, $where_
     if ($returnSQL) {
         return $sql;
     } else {
-        return db_get_all_rows_sql($sql, $search_history_db);
+        return db_get_all_rows_sql($sql, $search_history_db, $cache);
     }
 }
 

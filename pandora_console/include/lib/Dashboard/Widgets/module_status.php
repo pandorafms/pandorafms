@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 /**
@@ -181,6 +183,44 @@ class ModuleStatusWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['moduleId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node = new Node($this->values['metaconsoleId']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_sql(
+                    sprintf(
+                        'SELECT id_agente_modulo
+                        FROM tagente_modulo
+                        WHERE id_agente_modulo = %s
+                            AND delete_pending = 0',
+                        $this->values['moduleId']
+                    )
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -324,7 +364,6 @@ class ModuleStatusWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -332,7 +371,9 @@ class ModuleStatusWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
-                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
+                'filter_modules' => (users_access_to_agent($values['agentId']) === false) ? [$values['moduleId']] : [],
+                'nothing'        => __('None'),
+                'nothing_value'  => 0,
             ],
         ];
 
@@ -454,15 +495,8 @@ class ModuleStatusWidget extends Widget
      */
     public function load()
     {
-        global $config;
-
-        $output .= '';
-
-        $id_agent = $this->values['agentId'];
-        $id_group = agents_get_agent_group($id_agent);
-
+        $output = '';
         $id_module = $this->values['moduleId'];
-
         $icon = $this->values['imageSrc'];
         $label = $this->values['label'];
         $sizeLabel = (isset($this->values['sizeLabel']) === true) ? $this->values['sizeLabel'] : 30;
@@ -478,7 +512,7 @@ class ModuleStatusWidget extends Widget
 
             case 4:
                 // Critical (ALERT).
-                $icon = '4'.$icon.'_bad.png';
+                $icon = $icon.'_bad.png';
             break;
 
             case 0:
@@ -493,7 +527,7 @@ class ModuleStatusWidget extends Widget
 
             case 10:
                 // Warning (ALERT).
-                $icon = '4'.$icon.'_warning.png';
+                $icon = $icon.'_warning.png';
             break;
 
             case 3:
@@ -547,6 +581,22 @@ class ModuleStatusWidget extends Widget
     public static function getName()
     {
         return 'module_status';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 650,
+        ];
+
+        return $size;
     }
 
 

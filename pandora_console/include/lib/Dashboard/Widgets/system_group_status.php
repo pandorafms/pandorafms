@@ -239,6 +239,10 @@ class SystemGroupStatusWidget extends Widget
             $values['groupId'] = $decoder['groupId'];
         }
 
+        if (isset($decoder['groupRecursion']) === true) {
+            $values['groupRecursion'] = $decoder['groupRecursion'];
+        }
+
         return $values;
     }
 
@@ -326,6 +330,16 @@ class SystemGroupStatusWidget extends Widget
             ],
         ];
 
+        $inputs[] = [
+            'label'     => __('Group recursion'),
+            'arguments' => [
+                'name'  => 'groupRecursion',
+                'id'    => 'groupRecursion',
+                'type'  => 'switch',
+                'value' => $values['groupRecursion'],
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -342,6 +356,7 @@ class SystemGroupStatusWidget extends Widget
 
         $values['groupId'] = \get_parameter('groupId', []);
         $values['status'] = \get_parameter('status', []);
+        $values['groupRecursion'] = (bool) \get_parameter_switch('groupRecursion', 0);
 
         return $values;
     }
@@ -380,6 +395,14 @@ class SystemGroupStatusWidget extends Widget
         $user_groups = users_get_groups(false, 'AR', $return_all_group);
 
         $selected_groups = explode(',', $this->values['groupId'][0]);
+
+         // Recursion.
+        if ($this->values['groupRecursion'] === true) {
+            foreach ($selected_groups as $father) {
+                $children = \groups_get_children_ids($father);
+                $selected_groups = ($selected_groups + $children);
+            }
+        }
 
         if ($selected_groups[0] === '') {
             return false;
@@ -436,21 +459,22 @@ class SystemGroupStatusWidget extends Widget
         }
 
         $module_counters = groupview_get_modules_counters($selected_groups);
+        $result_groups = [];
+        if (empty($module_counters) === false) {
+            foreach ($module_counters as $key => $item) {
+                $module_counters[$key]['name'] = groups_get_name($item['g']);
+            }
 
-        foreach ($module_counters as $key => $item) {
-            $module_counters[$key]['name'] = groups_get_name($item['g']);
+            $keys = array_column($module_counters, 'g');
+            $values = array_values($module_counters);
+            $result_groups = array_combine($keys, $values);
+
+            if (empty($all_counters) === false) {
+                $result_groups[0] = $all_counters;
+            }
         }
 
-        $keys = array_column($module_counters, 'g');
-        $values = array_values($module_counters);
-
-        $result_groups = array_combine($keys, $values);
-
-        if (empty($all_counters) === false) {
-            $result_groups[0] = $all_counters;
-        }
-
-        $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
+        $this->values['groupId'] = $selected_groups;
         $this->values['status'] = explode(',', $this->values['status'][0]);
 
         $style = 'font-size: 12px; text-align: center;';
@@ -631,6 +655,22 @@ class SystemGroupStatusWidget extends Widget
     public static function getName()
     {
         return 'system_group_status';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 520,
+        ];
+
+        return $size;
     }
 
 

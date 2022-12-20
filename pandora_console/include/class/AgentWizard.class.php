@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 require_once $config['homedir'].'/include/functions_wmi.php';
+require_once $config['homedir'].'/include/class/CredentialStore.class.php';
 
 
 use PandoraFMS\Module;
@@ -278,6 +279,20 @@ class AgentWizard extends HTML
      */
     private $extraArguments = '';
 
+    /**
+     * Binary of wmic.
+     *
+     * @var string
+     */
+    private $wmiBinary = '';
+
+    /**
+     * Default values for SNMP Interfaces.
+     *
+     * @var string
+     */
+    private $defaultSNMPValues = [];
+
 
     /**
      * Constructor
@@ -291,7 +306,7 @@ class AgentWizard extends HTML
         // Check access.
         check_login();
 
-        if (!check_acl($config['id_user'], 0, 'AR')) {
+        if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access event viewer'
@@ -311,6 +326,8 @@ class AgentWizard extends HTML
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
+        $this->wmiBinary = $config['wmiBinary'];
+        $this->defaultSNMPValues = (array) json_decode(io_safe_output($config['agent_wizard_defaults']));
 
         if (empty($this->idAgent) === false) {
             $array_aux = db_get_all_rows_sql(
@@ -322,7 +339,7 @@ class AgentWizard extends HTML
                 )
             );
 
-            if (!empty($array_aux)) {
+            if (empty($array_aux) === false) {
                 $this->datalist = [];
                 foreach ($array_aux as $key => $value) {
                     $this->datalist[] = $value['ip'];
@@ -539,7 +556,7 @@ class AgentWizard extends HTML
         // Fill with servers to perform the discover.
         $fieldsServers = [];
         $fieldsServers[0] = __('Local console');
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             enterprise_include_once('include/functions_satellite.php');
             // Get the servers.
             $rows = get_proxy_servers();
@@ -599,7 +616,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        if (!empty($this->datalist)) {
+        if (empty($this->datalist) === false) {
             $inputs[] = [
                 'id'        => 'li_address_list',
                 'arguments' => [
@@ -680,6 +697,43 @@ class AgentWizard extends HTML
                     'return'      => true,
                 ],
             ];
+
+            $user_groups = users_get_groups(false, 'AR');
+            if (users_is_admin() === true || isset($user_groups[0]) === true) {
+                $credentials = db_get_all_rows_sql(
+                    'SELECT identifier FROM tcredential_store WHERE product LIKE "WMI"'
+                );
+            } else {
+                $credentials = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT identifier FROM tcredential_store WHERE product LIKE "WMI" AND id_group IN (%s)',
+                        implode(',', array_keys($user_groups))
+                    )
+                );
+            }
+
+            if (empty($credentials) === false) {
+                $fields = [];
+                foreach ($credentials as $key => $value) {
+                    $fields[$value['identifier']] = $value['identifier'];
+                }
+
+                $inputs[] = [
+                    'label'     => __('Credential store'),
+                    'id'        => 'slc-credential',
+                    'arguments' => [
+                        'name'          => 'credential',
+                        'input_class'   => 'flex-row',
+                        'type'          => 'select',
+                        'nothing'       => __('None'),
+                        'nothing_value' => 0,
+                        'fields'        => $fields,
+                        'class'         => '',
+                        'return'        => true,
+                        'sort'          => true,
+                    ],
+                ];
+            }
         }
 
         $hint_server = '&nbsp;';
@@ -700,6 +754,43 @@ class AgentWizard extends HTML
         ];
 
         if ($this->actionType === 'snmp') {
+            $user_groups = users_get_groups(false, 'AR');
+            if (users_is_admin() === true || isset($user_groups[0]) === true) {
+                $credentials = db_get_all_rows_sql(
+                    'SELECT identifier FROM tcredential_store WHERE product LIKE "SNMP"'
+                );
+            } else {
+                $credentials = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT identifier FROM tcredential_store WHERE product LIKE "SNMP" AND id_group IN (%s)',
+                        implode(',', array_keys($user_groups))
+                    )
+                );
+            }
+
+            if (empty($credentials) === false) {
+                $fields = [];
+                foreach ($credentials as $key => $value) {
+                    $fields[$value['identifier']] = $value['identifier'];
+                }
+
+                $inputs[] = [
+                    'label'     => __('Credential store'),
+                    'id'        => 'slc-credential',
+                    'arguments' => [
+                        'name'          => 'credential',
+                        'input_class'   => 'flex-row',
+                        'type'          => 'select',
+                        'nothing'       => __('None'),
+                        'nothing_value' => 0,
+                        'fields'        => $fields,
+                        'class'         => '',
+                        'return'        => true,
+                        'sort'          => true,
+                    ],
+                ];
+            }
+
             $inputs[] = [
                 'label'     => __('SNMP community'),
                 'id'        => 'txt-community',
@@ -1044,7 +1135,7 @@ class AgentWizard extends HTML
             $oidExplore = '.1.3.6.1.2.1.1.2.0';
         }
 
-        // Explore general or interfaces
+        // Explore general or interfaces.
         $receivedOid = $this->snmpWalkValues(
             $oidExplore,
             false,
@@ -1080,7 +1171,7 @@ class AgentWizard extends HTML
         // Capture the parameters.
         // Call WMI Explorer function.
         $this->wmiCommand = wmi_compose_query(
-            'wmic',
+            $this->wmiBinary,
             $this->usernameWMI,
             $this->passwordWMI,
             $this->targetIp,
@@ -1090,19 +1181,26 @@ class AgentWizard extends HTML
         // the host is Windows (and allow WMI).
         $commandQuery = $this->wmiCommand;
         $commandQuery .= ' "SELECT Caption FROM Win32_ComputerSystem"';
-        // Execute the wmic command.
+        // Declare the vars.
         $result = [];
-        exec($commandQuery, $result);
-        $execCorrect = true;
+        $returnVar = 0;
         $tmpError = '';
-
-        // Look for the response if we have ERROR messages.
-        foreach ($result as $info) {
-            if (preg_match('/ERROR:/', $info) !== 0) {
-                $execCorrect = false;
-                $tmpError = strrchr($info, 'ERROR:');
-                break;
+        $execCorrect = true;
+        // Execute the command.
+        exec($commandQuery, $result, $returnVar);
+        // Only is valid if return code is 0.
+        if ($returnVar === 0) {
+            // Look for the response if we have ERROR messages.
+            foreach ($result as $info) {
+                if (preg_match('/ERROR:/', $info) !== 0) {
+                    $execCorrect = false;
+                    $tmpError = strrchr($info, 'ERROR:');
+                    break;
+                }
             }
+        } else {
+            $tmpError = sprintf('Return Code %s', $returnVar);
+            $execCorrect = false;
         }
 
         // FOUND ERRORS: TIMEOUT.
@@ -1181,7 +1279,7 @@ class AgentWizard extends HTML
         $table->head[1] = '<b>'.__('Server').'</b>';
         $table->head[2] = '<b>'.__('Type').'</b>';
         $table->head[3] = '<b>'.__('Description').'</b>';
-        $table->head[4] = '<b>'.__('Treshold').'</b>';
+        $table->head[4] = '<b>'.__('Threshold').'</b>';
 
         $table->data = [];
 
@@ -1310,6 +1408,21 @@ class AgentWizard extends HTML
         $content .= html_print_table($table, true);
 
         echo $content;
+    }
+
+
+    /**
+     * Build an array with Product credentials.
+     *
+     * @return array with credentials (pass and id).
+     */
+    public function getCredentials(string $identifier='')
+    {
+        if (empty($identifier) === true) {
+            $identifier = get_parameter('identifier', '');
+        }
+
+        echo json_encode(credentialStore::getKey($identifier));
     }
 
 
@@ -1901,12 +2014,21 @@ class AgentWizard extends HTML
                         $values['configuration_data'] = io_safe_input($cfData);
                     } else {
                         $values['id_module'] = MODULE_PLUGIN;
-                        $fieldsPlugin = db_get_value_sql(
-                            sprintf(
-                                'SELECT macros FROM tplugin WHERE id=%d',
-                                (int) $infoMacros['server_plugin']
-                            )
-                        );
+                        if ((int) $infoMacros['server_plugin'] === 12) {
+                            // Search plugin by execute.
+                            $plugin_wmi = db_get_row_sql(
+                                'SELECT id, macros FROM tplugin WHERE execute like "%wizard_wmi_module%"'
+                            );
+                            $fieldsPlugin = $plugin_wmi['macros'];
+                            $infoMacros['server_plugin'] = $plugin_wmi['id'];
+                        } else {
+                            $fieldsPlugin = db_get_value_sql(
+                                sprintf(
+                                    'SELECT macros FROM tplugin WHERE id=%d',
+                                    (int) $infoMacros['server_plugin']
+                                )
+                            );
+                        }
 
                         if ($fieldsPlugin !== false) {
                             $fieldsPlugin = json_decode($fieldsPlugin, true);
@@ -2345,12 +2467,21 @@ class AgentWizard extends HTML
                         );
                     } else {
                         $tmp->id_modulo(MODULE_PLUGIN);
-                        $fieldsPlugin = db_get_value_sql(
-                            sprintf(
-                                'SELECT macros FROM tplugin WHERE id=%d',
-                                (int) $infoMacros['server_plugin']
-                            )
-                        );
+                        if ((int) $infoMacros['server_plugin'] === 12) {
+                            // Search plugin by execute.
+                            $plugin_wmi = db_get_row_sql(
+                                'SELECT id, macros FROM tplugin WHERE execute like "%wizard_wmi_module%"'
+                            );
+                            $fieldsPlugin = $plugin_wmi['macros'];
+                            $infoMacros['server_plugin'] = $plugin_wmi['id'];
+                        } else {
+                            $fieldsPlugin = db_get_value_sql(
+                                sprintf(
+                                    'SELECT macros FROM tplugin WHERE id=%d',
+                                    (int) $infoMacros['server_plugin']
+                                )
+                            );
+                        }
 
                         if ($fieldsPlugin !== false) {
                             $fieldsPlugin = json_decode($fieldsPlugin, true);
@@ -2505,6 +2636,8 @@ class AgentWizard extends HTML
      */
     private function resultsInterfaceWizard()
     {
+        global $config;
+
         $generalInterfaceModules = $this->getInterfacesModules();
         $generalInterfaceTables = [];
         $generalInterfaceModulesUpdated = [];
@@ -2718,7 +2851,12 @@ class AgentWizard extends HTML
                 // Format current value with thousands and decimals.
                 if (is_numeric($currentValue) === true) {
                     $decimals = (is_float($currentValue) === true) ? 2 : 0;
-                    $currentValue = number_format($currentValue, $decimals);
+                    $currentValue = number_format(
+                        $currentValue,
+                        $decimals,
+                        $config['decimal_separator'],
+                        $config['thousand_separator']
+                    );
                 }
 
                 // It unit of measure have data, attach to current value.
@@ -2806,7 +2944,7 @@ class AgentWizard extends HTML
             // Unpack the query filters.
             $queryFilters = json_decode($module['query_filters'], true);
             // Name of query filter field.
-            $fieldValueName = $fieldSet[$queryFilters['field']];
+            $fieldValueName = (empty($fieldSet[$queryFilters['field']]) === false) ? $fieldSet[$queryFilters['field']] : '1';
 
             // Evaluate type of scan and execution.
             if ($module['scan_type'] == SCAN_TYPE_FIXED) {
@@ -2841,13 +2979,13 @@ class AgentWizard extends HTML
 
                 // If name of the module have a macro.
                 $moduleBlocks[$k]['name'] = $this->macroFilter(
-                    $module['name'],
+                    io_safe_output($module['name']),
                     $columnsList,
                     $rowList
                 );
                 // Description can have macros too.
                 $moduleBlocks[$k]['description'] = $this->macroFilter(
-                    $module['description'],
+                    io_safe_output($module['description']),
                     $columnsList,
                     $rowList
                 );
@@ -2859,7 +2997,7 @@ class AgentWizard extends HTML
                 );
 
                 foreach ($columnsList as $columnKey => $columnValue) {
-                    $macros['macros']['_'.$columnValue.'_'] = $rowList[$columnKey];
+                    $macros['macros']['_'.trim($columnValue).'_'] = $rowList[trim($columnKey)];
                 }
 
                 $moduleBlocks[$k]['macros'] = json_encode($macros);
@@ -2892,6 +3030,7 @@ class AgentWizard extends HTML
                     $dataCombined = array_combine($columnsList, $rowList);
                     // Change the macros for values.
                     foreach ($dataCombined as $macroKey => $macroValue) {
+                        $macroKey = trim($macroKey);
                         if (preg_match('/_'.$macroKey.'_/', $valueOperation) !== 0) {
                             $valueOperation = preg_replace(
                                 '/_'.$macroKey.'_/',
@@ -2937,19 +3076,19 @@ class AgentWizard extends HTML
                         $rowList = explode('|', $rowContent);
                         // If name of the module have a macro.
                         $newModule['name'] = $this->macroFilter(
-                            $module['name'],
+                            io_safe_output($module['name']),
                             $columnsList,
                             $rowList
                         );
                         // Description can have macros too.
                         $newModule['description'] = $this->macroFilter(
-                            $module['description'],
+                            io_safe_output($module['description']),
                             $columnsList,
                             $rowList
                         );
 
                         $newModule['query_filters'] = $this->macroFilter(
-                            $module['query_filters'],
+                            io_safe_output($module['query_filters']),
                             $columnsList,
                             $rowList
                         );
@@ -2995,6 +3134,7 @@ class AgentWizard extends HTML
                             );
                             // Change the macros for values.
                             foreach ($dataCombined as $macroKey => $macroValue) {
+                                $macroKey = trim($macroKey);
                                 if (preg_match('/_'.$macroKey.'_/', $valueOperation) !== 0) {
                                     $valueOperation = preg_replace(
                                         '/_'.$macroKey.'_/',
@@ -3022,39 +3162,48 @@ class AgentWizard extends HTML
             }
         }
 
-        // Create the final table with all of data received.
-        foreach ($moduleBlocks as $module) {
-            // Prepare the blocks. If its new, create a new index.
-            if (key_exists($module['group'], $blockTables) === false) {
-                $blockTables[$module['group']] = [
-                    'name' => $module['group_name'],
-                    'data' => [],
-                ];
+        // If we not retrieve information (P.E. connection refused).
+        if (empty($moduleBlocks) === true) {
+            $this->message['type'][]    = 'warning';
+            $this->message['message'][] = __(
+                'No information could be retrieved.'
+            );
+            $this->showMessage();
+        } else {
+            // Create the final table with all of data received.
+            foreach ($moduleBlocks as $module) {
+                // Prepare the blocks. If its new, create a new index.
+                if (key_exists($module['group'], $blockTables) === false) {
+                    $blockTables[$module['group']] = [
+                        'name' => $module['group_name'],
+                        'data' => [],
+                    ];
+                }
+
+                // Add the module info in the block.
+                $blockTables[$module['group']]['data'][] = $module;
+                if (isset($blockTables[$module['group']]['activeModules']) === false
+                    && (int) $module['module_enabled'] === 1
+                ) {
+                    $blockTables[$module['group']]['activeModules'] = 2;
+                } else if (isset($blockTables[$module['group']]['activeModules']) === true
+                    && (int) $module['module_enabled'] === 0
+                ) {
+                    $blockTables[$module['group']]['activeModules'] = 1;
+                }
             }
 
-            // Add the module info in the block.
-            $blockTables[$module['group']]['data'][] = $module;
-            if (isset($blockTables[$module['group']]['activeModules']) === false
-                && (int) $module['module_enabled'] === 1
-            ) {
-                $blockTables[$module['group']]['activeModules'] = 2;
-            } else if (isset($blockTables[$module['group']]['activeModules']) === true
-                && (int) $module['module_enabled'] === 0
-            ) {
-                $blockTables[$module['group']]['activeModules'] = 1;
-            }
+            // General Default monitoring.
+            html_print_div(
+                [
+                    'class'   => 'wizard wizard-result',
+                    'style'   => 'margin-top: 20px;',
+                    'content' => $this->toggleTableModules($blockTables),
+                ]
+            );
+            // Add Create Modules form.
+            $this->createModulesForm();
         }
-
-        // General Default monitoring.
-        html_print_div(
-            [
-                'class'   => 'wizard wizard-result',
-                'style'   => 'margin-top: 20px;',
-                'content' => $this->toggleTableModules($blockTables),
-            ]
-        );
-        // Add Create Modules form.
-        $this->createModulesForm();
     }
 
 
@@ -3559,7 +3708,8 @@ class AgentWizard extends HTML
             $this->targetPort,
             $this->server,
             $this->extraArguments,
-            (($full_output === false) ? '-Oa -On' : '-Oa')
+            (($full_output === false) ? '-On' : '-Oa'),
+            ''
         );
 
         if ($pure === true) {
@@ -3572,7 +3722,12 @@ class AgentWizard extends HTML
                 if ($full_output === true) {
                     $output[] = $key.' = '.$oid_unit;
                 } else {
-                    preg_match('/\.\d+$/', $key, $index);
+                    $index = [];
+                    $index[] = preg_replace('/^'.$oid.'/', '', $key);
+                    if (empty($index) === true) {
+                        preg_match('/\.\d+$/', $key, $index);
+                    }
+
                     $tmp = explode(': ', $oid_unit);
                     $output[$index[0]] = str_replace('"', '', ($tmp[1] ?? ''));
                 }
@@ -4669,7 +4824,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.8.'.$value,
             'module_unit'        => '',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOperStatus'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => $min_warning,
@@ -4726,7 +4881,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.4.1.9.2.2.1.1.12.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['locIfInCRC'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -4780,7 +4935,7 @@ class AgentWizard extends HTML
                 'module_info'        => 'Indicates whether the port is operating in half-duplex, full-duplex, disagree or auto negotiation mode. If the port could not agree with the far end on port duplex, the port will be in disagree(3) mode.',
                 'execution_type'     => 'network',
                 'value'              => $duplexMismatchOID,
-                'default_enabled'    => true,
+                'default_enabled'    => (bool) $this->defaultSNMPValues['DuplexMismatch'],
                 'module_enabled'     => false,
                 'module_thresholds'  => [
                     'min_warning'   => '0',
@@ -4869,7 +5024,7 @@ class AgentWizard extends HTML
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
                     'macros'             => json_encode($macros),
-                    'default_enabled'    => true,
+                    'default_enabled'    => (bool) $this->defaultSNMPValues['Bandwidth'],
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
@@ -4908,7 +5063,7 @@ class AgentWizard extends HTML
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
                     'macros'             => json_encode($macros),
-                    'default_enabled'    => true,
+                    'default_enabled'    => (bool) $this->defaultSNMPValues['inUsage'],
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
@@ -4947,7 +5102,7 @@ class AgentWizard extends HTML
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
                     'macros'             => json_encode($macros),
-                    'default_enabled'    => true,
+                    'default_enabled'    => (bool) $this->defaultSNMPValues['outUsage'],
                     'module_enabled'     => false,
                     'module_unit'        => '%',
                     'module_thresholds'  => [
@@ -4979,7 +5134,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.7.'.$value,
             'module_unit'        => '',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifAdminStatus'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5006,7 +5161,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.13.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInDiscards'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5033,7 +5188,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.19.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutDiscards'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5060,7 +5215,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.14.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInErrors'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5087,7 +5242,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.20.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutErrors'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5157,7 +5312,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.10.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5185,7 +5340,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.16.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5213,7 +5368,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.11.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5240,7 +5395,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.17.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5267,7 +5422,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.12.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifInNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5294,7 +5449,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.18.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifOutNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5364,7 +5519,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.6.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCInOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5392,7 +5547,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.10.'.$value,
             'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCOutOctets'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5420,7 +5575,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.7.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCInUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5448,7 +5603,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.11.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCOutUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5475,7 +5630,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.7.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCInNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5502,7 +5657,7 @@ class AgentWizard extends HTML
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.31.1.1.1.11.'.$value,
             'module_unit'        => 'packets/s',
-            'default_enabled'    => false,
+            'default_enabled'    => (bool) $this->defaultSNMPValues['ifHCOutNUcastPkts'],
             'module_enabled'     => false,
             'module_thresholds'  => [
                 'min_warning'   => '0',
@@ -5536,13 +5691,13 @@ class AgentWizard extends HTML
         string $unit='',
         ?int $type=0
     ) {
+        $output = '';
         try {
             // Avoid non-numeric or arithmetic chars for security reasons.
             if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
                 throw new Exception(sprintf(__("The operation '%s' is not permitted. Review for remote components."), $operation));
             } else {
                 // Get the result of the operation and set it.
-                $output = '';
                 eval('$output = '.$operation.';');
                 // If this module has unit, attach to current value.
                 $output = $this->replacementUnit(
@@ -5717,7 +5872,7 @@ class AgentWizard extends HTML
                         $(this).removeClass('hidden');
                         return;
                     }
-                    
+
                     if (this.id.match(regex)) {
                         $(this).removeClass('hidden');
                     } else {
@@ -5729,7 +5884,7 @@ class AgentWizard extends HTML
                             $(this).addClass('hidden');
                         }
                     }
-                    
+
                     if (filter_up == true) {
                         if ($(this).attr('operstatus') != 1) {
                             $(this).addClass('hidden');
@@ -5753,6 +5908,58 @@ class AgentWizard extends HTML
                 // Filter search interfaces snmp.
                 $('#text-filter-search').keyup(function() {
                     filterInterfaces();
+                });
+
+                $('#credential').change(function() {
+                    if ($('#credential').val() !== '0') {
+                        $.ajax({
+                            method: "post",
+                            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                            data: {
+                                page: "<?php echo $this->ajaxController; ?>",
+                                method: "getCredentials",
+                                identifier: $('#credential').val()
+                            },
+                            datatype: "json",
+                            success: function(data) {
+                                data = JSON.parse(data);
+
+                                if ($('#text-namespaceWMI').length > 0) {
+                                    // WMI.
+                                    $('#text-namespaceWMI').val(data['extra_1']);
+                                    $('#text-usernameWMI').val(data['username']);
+                                    $('#password-passwordWMI').val(data['password']);
+                                } else {
+                                    // SNMP.
+                                    extra = JSON.parse(data['extra_1']);
+                                    $('#version').val(extra['version']);
+                                    $('#version').trigger('change');
+                                    $('#text-community').val(extra['community']);
+
+                                    if (extra['version'] === '3') {
+                                        $('#securityLevelV3').val(extra['securityLevelV3']);
+                                        $('#securityLevelV3').trigger('change');
+                                        $('#text-authUserV3').val(extra['authUserV3']);
+
+                                        if (extra['securityLevelV3'] === 'authNoPriv' || extra['securityLevelV3'] === 'authPriv') {
+                                            $('#authMethodV3').val(extra['authMethodV3']);
+                                            $('#authMethodV3').trigger('change');
+                                            $('#password-authPassV3').val(extra['authPassV3']);
+
+                                            if (extra['securityLevelV3'] === 'authPriv') {
+                                                $('#privacyMethodV3').val(extra['privacyMethodV3']);
+                                                $('#privacyMethodV3').trigger('change');
+                                                $('#password-privacyPassV3').val(extra['privacyPassV3']);
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            error: function(e) {
+                                showMsg(e);
+                            }
+                        });
+                    }
                 });
 
                 // Loading.

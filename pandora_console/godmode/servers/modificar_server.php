@@ -122,26 +122,52 @@ if (isset($_GET['server'])) {
 
     $buttons = '';
 
-    if ($server_type !== 13) {
-        // Buttons.
-        $buttons = [
-            'standard_editor' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=standard_editor&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('Standard editor')]).'</a>',
-            ],
-            'advanced_editor' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=advanced_editor&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Advanced editor')]).'</a>',
-            ],
+    // Buttons.
+    $buttons = [
+        'standard_editor' => [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=standard_editor&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('Standard editor')]).'</a>',
+        ],
+        'advanced_editor' => [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=advanced_editor&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Advanced editor')]).'</a>',
+        ],
+    ];
+
+    if ($server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+        $buttons['agent_editor'] = [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=agent_editor&pure='.$pure.'">'.html_print_image('images/agent.png', true, ['title' => __('Manage agents')]).'</a>',
+
         ];
 
-        $buttons[$tab]['active'] = true;
+        $buttons['collections'] = [
+            'active' => false,
+            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=collections&pure='.$pure.'">'.html_print_image('images/collection.png', true, ['title' => __('Collections')]).'</a>',
+
+        ];
     }
+
+    $buttons[$tab]['active'] = true;
 
     ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true, $buttons);
 
-    if ($server_type !== 13 && $tab == 'standard_editor') {
+    if ($tab === 'standard_editor') {
         $advanced_editor = false;
+
+        if ($server_type === 13) {
+            echo "<table cellpadding='4' cellspacing='4' class='databox filters font_bold margin-bottom-10' width='100%'>
+            <tr>";
+            echo '<td class="w100p">';
+            echo __('Dynamic search').'&nbsp;&nbsp;';
+            html_print_input_text('search_config_token', $search, '', 12);
+            echo '</td>';
+            echo '</tr></table>';
+        }
+    } else if ($tab === 'agent_editor' && $server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+        $advanced_editor = 'agent_editor';
+    } else if ($tab === 'collections' && $server_type === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+        $advanced_editor = 'collections';
     }
 
     enterprise_include('godmode/servers/server_disk_conf_editor.php');

@@ -1,8 +1,8 @@
 <?php
 /**
- * User definition.
+ * User creation / update.
  *
- * @category   Manage users
+ * @category   Users
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
-// Begin.
+// Load global vars.
 global $config;
 
 check_login();
@@ -34,8 +34,6 @@ check_login();
 require_once $config['homedir'].'/vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
-
-enterprise_hook('open_meta_frame');
 
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
@@ -126,6 +124,8 @@ if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
 
 if (is_ajax() === true) {
     $delete_profile = (bool) get_parameter('delete_profile');
+    $get_user_profile = (bool) get_parameter('get_user_profile');
+
     if ($delete_profile === true) {
         $id2 = (string) get_parameter('id_user');
         $id_up = (int) get_parameter('id_user_profile');
@@ -211,9 +211,64 @@ if (is_ajax() === true) {
 
         return;
     }
+
+    if ($get_user_profile === true) {
+        $profile_id = (int) get_parameter('profile_id');
+        $group_id = (int) get_parameter('group_id', -1);
+        $user_id = (string) get_parameter('user_id', '');
+        $no_hierarchy = (int) get_parameter('no_hierarchy', -1);
+        $assigned_by = (string) get_parameter('assigned_by', '');
+        $id_policy = (int) get_parameter('id_policy', -1);
+        $tags = (string) get_parameter('id_policy', '');
+
+        $filter = [];
+
+        if ($group_id > -1) {
+            $filter['id_perfil'] = $profile_id;
+        }
+
+        if ($group_id > -1) {
+            $filter['id_grupo'] = $group_id;
+        }
+
+        if ($user_id !== '') {
+            $filter['id_usuario'] = $user_id;
+        }
+
+        if ($no_hierarchy > -1) {
+            $filter['no_hierarchy'] = $no_hierarchy;
+        }
+
+        if ($assigned_by !== '') {
+            $filter['assigned_by'] = $assigned_by;
+        }
+
+        if ($id_policy > -1) {
+            $filter['id_policy'] = $id_policy;
+        }
+
+        if ($tags !== '') {
+            $filter['tags'] = $tags;
+        }
+
+        $profile = db_get_all_rows_filter(
+            'tusuario_perfil',
+            $filter
+        );
+
+        if ($profile !== false && count($profile) > 0) {
+            echo json_encode($profile);
+
+            return;
+        } else {
+            echo json_encode('');
+        }
+
+        return;
+    }
 }
 
-
+enterprise_hook('open_meta_frame');
 
 $tab = get_parameter('tab', 'user');
 
@@ -326,7 +381,6 @@ if ($new_user === true && (bool) $config['admin_can_add_user'] === true) {
 
     if (enterprise_installed() === true && is_metaconsole() === true) {
         $user_info['metaconsole_agents_manager'] = 0;
-        $user_info['metaconsole_assigned_server'] = '';
         $user_info['metaconsole_access_node'] = 0;
     }
 
@@ -349,7 +403,7 @@ if ($create_user === true) {
         return;
     }
 
-    $user_is_admin = (int) get_parameter('is_admin', 0);
+    $user_is_admin = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
 
     if (users_is_admin() === false && $user_is_admin !== 0) {
         db_pandora_audit(
@@ -371,6 +425,8 @@ if ($create_user === true) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
+    $values['allowed_ip_active'] = ((int) get_parameter_switch('allowed_ip_active', -1) === 0);
+    $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
     $values['is_admin'] = $user_is_admin;
     $values['language'] = get_parameter('language', 'default');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -396,13 +452,12 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
         if (is_metaconsole() === true) {
             $values['metaconsole_access'] = get_parameter('metaconsole_access', 'basic');
             $values['metaconsole_agents_manager'] = ($user_is_admin == 1 ? 1 : get_parameter('metaconsole_agents_manager', '0'));
-            $values['metaconsole_assigned_server'] = get_parameter('metaconsole_assigned_server', '');
             $values['metaconsole_access_node'] = ($user_is_admin == 1 ? 1 : get_parameter('metaconsole_access_node', '0'));
         }
     }
@@ -413,8 +468,8 @@ if ($create_user === true) {
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
 
-    // Ehorus user level conf.
-    if ($config['ehorus_user_level_conf']) {
+    // eHorus user level conf.
+    if ((bool) $config['ehorus_user_level_conf'] === true) {
         $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
         if ($values['ehorus_user_level_enabled'] === true) {
             $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
@@ -442,7 +497,7 @@ if ($create_user === true) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
-    } else if ($password_new == '') {
+    } else if (empty($password_new) === true) {
         $is_err = true;
         ui_print_error_message(__('Passwords cannot be empty'));
         $user_info = $values;
@@ -452,6 +507,13 @@ if ($create_user === true) {
     } else if ($password_new != $password_confirm) {
         $is_err = true;
         ui_print_error_message(__('Passwords didn\'t match'));
+        $user_info = $values;
+        $password_new = '';
+        $password_confirm = '';
+        $new_user = true;
+    } else if (enterprise_hook('excludedPassword', [$password_new]) === true) {
+        $is_err = true;
+        ui_print_error_message(__('The password provided is not valid. Please set another one.'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
@@ -469,6 +531,9 @@ if ($create_user === true) {
         }
 
         $info = '{"Id_user":"'.$values['id_user'].'","FullName":"'.$values['fullname'].'","Firstname":"'.$values['firstname'].'","Lastname":"'.$values['lastname'].'","Email":"'.$values['email'].'","Phone":"'.$values['phone'].'","Comments":"'.$values['comments'].'","Is_admin":"'.$values['is_admin'].'","Language":"'.$values['language'].'","Timezone":"'.$values['timezone'].'","Block size":"'.$values['block_size'].'"';
+        if ($values['allowed_ip_active'] === true) {
+            $info .= ',"IPS Allowed":"'.$values['allowed_ip_list'].'"';
+        }
 
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
             $info .= ',"Skin":"'.$values['id_skin'].'"}';
@@ -520,6 +585,10 @@ if ($create_user === true) {
             if (!empty($json_profile)) {
                 $json_profile = json_decode(io_safe_output($json_profile), true);
                 foreach ($json_profile as $key => $profile) {
+                    if (is_array($profile) === false) {
+                        $profile = json_decode($profile, true);
+                    }
+
                     if (!empty($profile)) {
                         $group2 = $profile['group'];
                         $profile2 = $profile['profile'];
@@ -542,6 +611,51 @@ if ($create_user === true) {
                         );
 
                         $result_profile = profile_create_user_profile($id, $profile2, $group2, false, $tags, $no_hierarchy);
+
+                        if ($result_profile === false) {
+                            $is_err = true;
+                            $user_info = $values;
+                            $password_new = '';
+                            $password_confirm = '';
+                            $new_user = true;
+                        } else {
+                            $pm = db_get_value_filter('pandora_management', 'tperfil', ['id_perfil' => $profile2]);
+
+                            if ((int) $pm === 1) {
+                                $user_source = db_get_value_filter(
+                                    'id_source',
+                                    'tnotification_source_user',
+                                    [
+                                        'id_source' => $notification['id'],
+                                        'id_user'   => $id,
+                                    ]
+                                );
+                                if ($user_source === false) {
+                                    $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+                                    foreach ($notificationSources as $notification) {
+                                        if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
+                                            $notification_user = db_get_value_filter(
+                                                'id_source',
+                                                'tnotification_source_user',
+                                                [
+                                                    'id_source' => $notification['id'],
+                                                    'id_user'   => $id,
+                                                ]
+                                            );
+                                            if ($notification_user === false) {
+                                                @db_process_sql_insert(
+                                                    'tnotification_source_user',
+                                                    [
+                                                        'id_source' => $notification['id'],
+                                                        'id_user'   => $id,
+                                                    ]
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         ui_print_result_message(
                             $result_profile,
@@ -571,7 +685,9 @@ if ($update_user) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
-    $values['is_admin'] = get_parameter('is_admin', 0);
+    $values['allowed_ip_active'] = ((int) get_parameter('allowed_ip_active', -1) === 0);
+    $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
+    $values['is_admin'] = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
@@ -620,7 +736,6 @@ if ($update_user) {
     if (enterprise_installed() === true && is_metaconsole() === true) {
         $values['metaconsole_access'] = get_parameter('metaconsole_access');
         $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
-        $values['metaconsole_assigned_server'] = get_parameter('metaconsole_assigned_server', '');
         $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
     }
 
@@ -646,9 +761,9 @@ if ($update_user) {
                 $correct_password = true;
             }
 
-            if ($password_confirm == $password_new) {
+            if ((string) $password_confirm === (string) $password_new) {
                 if ($correct_password === true || is_user_admin($config['id_user'])) {
-                    if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                    if ((is_user_admin($config['id_user']) === false || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
                         $pass_ok = login_validate_pass($password_new, $id, true);
                         if ($pass_ok != 1) {
                             ui_print_error_message($pass_ok);
@@ -739,6 +854,10 @@ if ($update_user) {
 				"Block size":"'.$values['block_size'].'",
 				"Section":"'.$values['section'].'"';
 
+            if ($values['allowed_ip_active'] === true) {
+                $info .= ',"IPS Allowed":"'.$values['allowed_ip_list'].'"';
+            }
+
             if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
                 $info .= ',"Skin":"'.$values['id_skin'].'"';
                 $has_skin = true;
@@ -747,11 +866,11 @@ if ($update_user) {
             if (enterprise_installed() === true && is_metaconsole() === true) {
                 $info .= ',"Wizard access":"'.$values['metaconsole_access'].'"}';
                 $has_wizard = true;
-            } else if ($has_skin) {
+            } else if ($has_skin === true) {
                 $info .= '}';
             }
 
-            if (!$has_skin && !$has_wizard) {
+            if ($has_skin === false && $has_wizard === false) {
                 $info .= '}';
             }
 
@@ -779,7 +898,7 @@ if ($update_user) {
     }
 
 
-    if ($values['strict_acl']) {
+    if ((bool) $values['strict_acl'] === true) {
         $count_groups = 0;
         $count_tags = 0;
 
@@ -818,7 +937,7 @@ if ($add_profile && empty($json_profile)) {
     $no_hierarchy = (int) get_parameter('no_hierarchy', 0);
 
     foreach ($tags as $k => $tag) {
-        if (empty($tag)) {
+        if (empty($tag) === true) {
             unset($tags[$k]);
         }
     }
@@ -833,6 +952,47 @@ if ($add_profile && empty($json_profile)) {
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
     );
     $return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
+    if ($return === false) {
+        $is_err = true;
+    } else {
+        $pm = db_get_value_filter('pandora_management', 'tperfil', ['id_perfil' => $profile2]);
+
+        if ((int) $pm === 1) {
+            $user_source = db_get_value_filter(
+                'id_source',
+                'tnotification_source_user',
+                [
+                    'id_source' => $notification['id'],
+                    'id_user'   => $id,
+                ]
+            );
+            if ($user_source === false) {
+                $notificationSources = db_get_all_rows_filter('tnotification_source', [], 'id');
+                foreach ($notificationSources as $notification) {
+                    if ((int) $notification['id'] === 1 || (int) $notification['id'] === 5) {
+                        $notification_user = db_get_value_filter(
+                            'id_source',
+                            'tnotification_source_user',
+                            [
+                                'id_source' => $notification['id'],
+                                'id_user'   => $id,
+                            ]
+                        );
+                        if ($notification_user === false) {
+                            @db_process_sql_insert(
+                                'tnotification_source_user',
+                                [
+                                    'id_source' => $notification['id'],
+                                    'id_user'   => $id,
+                                ]
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     ui_print_result_message(
         $return,
         __('Profile added successfully'),
@@ -861,7 +1021,7 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     );
 
     $result = db_get_all_rows_sql($sql);
-    if ($result == false && $user_info['is_admin'] == false) {
+    if ((bool) $result === false && (bool) $user_info['is_admin'] === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
@@ -876,7 +1036,7 @@ if (is_metaconsole() === true) {
     html_print_div(
         [
             'class'   => 'user_form_title',
-            'content' => (empty($id) === true) ? __('Create User') : __('Update User'),
+            'content' => ((bool) $id === true) ? __('Update User') : __('Create User'),
         ]
     );
 }
@@ -1048,39 +1208,23 @@ if ($config['user_can_update_password']) {
     }
 }
 
-$own_info = get_user_info($config['id_user']);
-$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" class"mrgn_0px">'.__('Global Profile').'</span>';
-$global_profile .= '<div class="switch_radio_button">';
-if (users_is_admin()) {
-    $global_profile .= html_print_radio_button_extended(
+if (users_is_admin() === true) {
+    $global_profile = '<div class="label_select_simple" style="display: flex;align-items: center;">';
+    $global_profile .= '<p class="edit_user_labels" style="margin-top: 0;">'.__('Administrator user').'</p>';
+    $global_profile .= html_print_checkbox_switch(
         'is_admin',
-        1,
-        [
-            'label'    => __('Administrator'),
-            'help_tip' => __('This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL.'),
-        ],
+        0,
         $user_info['is_admin'],
-        false,
-        '',
-        '',
+        true
+    );
+    $global_profile .= '</div>';
+} else {
+    $global_profile = html_print_input_hidden(
+        'is_admin_sent',
+        0,
         true
     );
 }
-
-$global_profile .= html_print_radio_button_extended(
-    'is_admin',
-    0,
-    [
-        'label'    => __('Standard User'),
-        'help_tip' => __('This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles'),
-    ],
-    $user_info['is_admin'],
-    false,
-    '',
-    '',
-    true
-);
-$global_profile .= '</div></div>';
 
 $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     'email',
@@ -1124,6 +1268,26 @@ $comments .= html_print_textarea(
     true
 );
 
+$allowedIP = '<p class="edit_user_labels">';
+$allowedIP .= __('Login allowed IP list').'&nbsp;';
+$allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'), true).'&nbsp;';
+$allowedIP .= html_print_checkbox_switch(
+    'allowed_ip_active',
+    0,
+    $user_info['allowed_ip_active'],
+    true
+);
+$allowedIP .= '</p>';
+$allowedIP .= html_print_textarea(
+    'allowed_ip_list',
+    2,
+    65,
+    $user_info['allowed_ip_list'],
+    (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
+    true
+);
+
+
 // If we want to create a new user, skins displayed are the skins of the creator's group. If we want to update, skins displayed are the skins of the modified user.
 $own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
@@ -1140,8 +1304,8 @@ if ($new_user) {
     $id_usr = $id;
 }
 
-if (!$meta) {
-    // User only can change skins if has more than one group
+if ((bool) $meta === false) {
+    // User only can change skins if has more than one group.
     if (count($usr_groups) > 1) {
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
             $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
@@ -1150,7 +1314,7 @@ if (!$meta) {
     }
 }
 
-if ($meta) {
+if ((bool) $meta === true) {
     $array_filters = get_filters_custom_fields_view(0, true);
 
     $search_custom_fields_view = '<div class="label_select"><p class="edit_user_labels">'.__('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true).'</p>';
@@ -1447,15 +1611,6 @@ if ($meta) {
         true
     ).'</div>';
 
-    $metaconsole_assigned_server = '<div class="label_select" id="metaconsole_assigned_server_div"><p class="edit_user_labels">'.__('Assigned node').ui_print_help_tip(__('Server where the agents created of this user will be placed'), true).'</p>';
-    $servers = metaconsole_get_servers();
-    $servers_for_select = [];
-    foreach ($servers as $server) {
-        $servers_for_select[$server['id']] = $server['server_name'];
-    }
-
-    $metaconsole_assigned_server .= html_print_select($servers_for_select, 'metaconsole_assigned_server', $user_info['metaconsole_assigned_server'], '', '', -1, true, false, false).'</div>';
-
     $metaconsole_access_node = '<div class="label_select_simple" id="metaconsole_access_node_div"><p class="edit_user_labels">'.__('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true).'</p>';
     $metaconsole_access_node .= html_print_checkbox(
         'metaconsole_access_node',
@@ -1506,7 +1661,7 @@ if (is_metaconsole() === false) {
                         <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
                     </div>';
 } else {
-    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_assigned_server.$metaconsole_access_node;
+    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
 }
 
 echo '</div>
@@ -1515,6 +1670,20 @@ echo '</div>
 <div class="user_edit_third_row white_box">
     <div class="edit_user_comments">'.$comments.'</div>
 </div>';
+
+html_print_div(
+    [
+        'class'   => 'user_edit_third_row white_box',
+        'content' => html_print_div(
+            [
+                'class'   => 'edit_user_allowed_ip',
+                'content' => $allowedIP,
+            ],
+            true
+        ),
+    ]
+);
+
 if (!empty($ehorus)) {
     echo '<div class="user_edit_third_row white_box">'.$ehorus.'</div>';
 }
@@ -1533,12 +1702,12 @@ if ($config['admin_can_add_user']) {
 
 echo '</div>';
 
-html_print_input_hidden('json_profile', '');
+html_print_input_hidden('json_profile', $json_profile);
 
 echo '</form>';
 
 
-profile_print_profile_table($id);
+profile_print_profile_table($id, io_safe_output($json_profile));
 
 echo '<br />';
 
@@ -1622,49 +1791,53 @@ $(document).ready (function () {
             } else {
                 show_double_auth_deactivation();
             }
-    }); 
+    });
 
-    $('input:radio[name="is_admin"]').change(function() {
-        if($('#radiobtn0002').prop('checked')) {     
-            $('#metaconsole_agents_manager_div').show();
-            $('#metaconsole_access_node_div').show();
-            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
-                $('#metaconsole_assigned_server_div').show();
-            }
-        }
-        else {            
+    $('#checkbox-is_admin').change(function() {
+        if ($('#checkbox-is_admin').is(':checked') == true) {
             $('#metaconsole_agents_manager_div').hide();
             $('#metaconsole_access_node_div').hide();
             $('#metaconsole_assigned_server_div').hide();
+        } else {
+            $('#metaconsole_agents_manager_div').show();
+            $('#metaconsole_access_node_div').show();
+            if ($('#checkbox-metaconsole_agents_manager').prop('checked')) {
+                $('#metaconsole_assigned_server_div').show();
+            }
         }
     });
-    
-    $('#checkbox-metaconsole_agents_manager').change(function() { 
-        if($('#checkbox-metaconsole_agents_manager').prop('checked')) {            
+
+    $('#checkbox-metaconsole_agents_manager').change(function() {
+        if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
             $('#metaconsole_assigned_server_div').show();
-        }
-        else {
+        } else {
             $('#metaconsole_assigned_server_div').hide();
         }
     });
-    
-    $('input:radio[name="is_admin"]').trigger('change');
+
+    $('#checkbox-is_admin').trigger('change');
     $('#checkbox-metaconsole_agents_manager').trigger('change');
-    
+
     show_data_section();
     $('#checkbox-ehorus_user_level_enabled').change(function () {
         switch_ehorus_conf();
     });
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
-
     var img_delete = '<?php echo $delete_image; ?>';
     var id_user = '<?php echo io_safe_output($id); ?>';
     var is_metaconsole = '<?php echo $meta; ?>';
     var user_is_global_admin = '<?php echo users_is_admin($id); ?>';
+    var is_err = '<?php echo $is_err; ?>';
     var data = [];
+    var aux = 0;
+    
+    function addProfile(form) {
+        try {
+            var data = JSON.parse(json_profile.val());
+        } catch {
+            var data = [];
+        }
 
-    $('input:image[name="add"]').click(function (e) {
-        e.preventDefault();
         var profile = $('#assign_profile').val();
         var profile_text = $('#assign_profile option:selected').text();
         var group = $('#assign_group').val();
@@ -1680,14 +1853,30 @@ $(document).ready (function () {
         }
 
         if (profile === '0' || group === '-1') {
-            alert('<?php echo __('please select profile and group'); ?>');
+            alert('<?php echo __('Please select profile and group'); ?>');
             return;
         }
 
-        if (id_user === '') {
+        if (id_user == '' || is_err == 1) {
             let new_json = `{"profile":${profile},"group":${group},"tags":[${tags}],"hierarchy":${hierarchy}}`;
-            data.push(new_json);
-            json_profile.val('['+data+']');
+
+            var profile_is_added = Object.entries(data).find(function(_data) {
+                return _data[1] === new_json;
+            });
+
+            if (typeof profile_is_added === 'undefined') {
+                data.push(new_json);
+            } else {
+                alert('<?php echo __('This profile is already defined'); ?>');
+                return;
+            }
+
+            json_profile.val(JSON.stringify(data));
+
+            profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
+            group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="bot forced_title" alt="${group_text}"/>`;
+            group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
+
             $('#table_profiles tr:last').before(
                 `<tr>
                     <td>${profile_text}</td>
@@ -1697,9 +1886,44 @@ $(document).ready (function () {
                     <td>${img_delete}</td>
                 </tr>`
             );
+
+            getGroupIcon(group, $(`#img_group_${aux}`));
+            aux++;
+
         } else {
-            this.form.submit();
+            form.submit();
         }
+    }
+
+    $('input:image[name="add"]').click(function (e) {
+        e.preventDefault();
+
+        if (id_user.length === 0) {
+            addProfile(this.form);
+            return;
+        }
+
+        var params = [];
+        params.push("get_user_profile=1");
+        params.push("profile_id=" + $('#assign_profile').val())
+        params.push("group_id=" + $('#assign_group').val());
+        params.push("user_id=" + id_user);
+        params.push("page=godmode/users/configure_user");
+        jQuery.ajax ({
+            data: params.join("&"),
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            form: this.form,
+            url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            success: function (data) {
+                if (data.length > 0) {
+                    alert('<?php echo __('This profile is already defined'); ?>');
+                } else {
+                    addProfile(this.form);
+                }
+            }
+        });
     });
 
     $('input:image[name="del"]').click(function (e) {
@@ -1739,7 +1963,7 @@ $(document).ready (function () {
 
     function checkProfiles(e) {
         e.preventDefault();
-        if ($('input[name="is_admin"]:checked').val() == 1) {
+        if ($('#checkbox-is_admin').is(':checked') == true) {
             // Admin does not require profiles.
             $('#user_profile_form').submit();
         } else {
@@ -1774,9 +1998,11 @@ function delete_profile(event, btn) {
 
     var json = json_profile.val();
     var test = JSON.parse(json);
-    delete test[position-1];
-    json_profile.val(JSON.stringify(test));
 
+    var position_offset = <?php echo (is_metaconsole() === true) ? 2 : 1; ?>;
+
+    test.splice(position-position_offset, 1);
+    json_profile.val(JSON.stringify(test));
 }
 
 function show_data_section () {
@@ -1978,7 +2204,7 @@ function show_double_auth_activation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -2056,7 +2282,7 @@ function show_double_auth_deactivation () {
             resizable: true,
             draggable: true,
             modal: true,
-            title: "<?php echo __('Double autentication activation'); ?>",
+            title: "<?php echo __('Double authentication activation'); ?>",
             overlay: {
                 opacity: 0.5,
                 background: "black"

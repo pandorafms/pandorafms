@@ -200,6 +200,17 @@ class ServiceMapWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['serviceId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            $check_exist = db_get_value(
+                'id',
+                'tservice',
+                'id',
+                $this->values['serviceId']
+            );
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -258,6 +269,9 @@ class ServiceMapWidget extends Widget
         $inputs = parent::getFormInputs();
 
         $services_res = services_get_services();
+        if ($services_res === false) {
+            $services_res = [];
+        }
 
         // If currently selected report is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
         // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
@@ -314,7 +328,7 @@ class ServiceMapWidget extends Widget
         ];
 
         $inputs[] = [
-            'label'     => __('Enable sunburst'),
+            'label'     => __('Show sunburst by default'),
             'arguments' => [
                 'type'   => 'switch',
                 'name'   => 'sunburst',
@@ -358,6 +372,7 @@ class ServiceMapWidget extends Widget
         $size = parent::getSize();
 
         $output = '';
+
         if (check_acl($config['id_user'], 0, 'AR') === 0) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_error_message(
@@ -446,6 +461,22 @@ class ServiceMapWidget extends Widget
     public static function getName()
     {
         return 'service_map';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 320,
+        ];
+
+        return $size;
     }
 
 

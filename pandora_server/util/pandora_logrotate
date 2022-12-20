@@ -49,11 +49,15 @@
 }
 
 /var/log/pandora/pandora_snmptrap.log {
+	su pandora apache
 	weekly
 	missingok
 	size 500000
 	rotate 1
 	maxage 30
 	notifempty
+	postrotate
+	pandora_manage /etc/pandora/pandora_server.conf --start_snmptrapd > /dev/null 2>/dev/null || true
+	endscript
 	copytruncate
 }

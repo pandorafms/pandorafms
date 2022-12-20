@@ -64,19 +64,37 @@ final class Config
             || $config['history_db_connection'] === false
         ) {
             ob_start();
-            $config['history_db_connection'] = db_connect(
+
+            $link = mysqli_init();
+            $link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
+            $rc = mysqli_real_connect(
+                $link,
                 $config['history_db_host'],
-                $config['history_db_name'],
                 $config['history_db_user'],
                 io_output_password($config['history_db_pass']),
-                $config['history_db_port'],
-                false
+                $config['history_db_name'],
+                (int) $config['history_db_port']
             );
+
+            if ($rc === false) {
+                $config['history_db_connection'] = false;
+            } else {
+                $config['history_db_connection'] = db_connect(
+                    $config['history_db_host'],
+                    $config['history_db_name'],
+                    $config['history_db_user'],
+                    io_output_password($config['history_db_pass']),
+                    (int) $config['history_db_port'],
+                    false
+                );
+            }
 
             ob_get_clean();
         }
 
-        if ($config['history_db_connection'] !== false) {
+        if (isset($config['history_db_connection']) === true
+            && $config['history_db_connection'] !== false
+        ) {
             $data = \db_get_all_rows_sql(
                 'SELECT * FROM `tconfig`',
                 false,

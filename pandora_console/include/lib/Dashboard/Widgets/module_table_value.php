@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 
@@ -183,6 +185,44 @@ class ModuleTableValueWidget extends Widget
         $this->configurationRequired = false;
         if (empty($this->values['moduleId']) === true) {
             $this->configurationRequired = true;
+        } else {
+            try {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node = new Node($this->values['metaconsoleId']);
+                    $node->connect();
+                }
+
+                $check_exist = db_get_sql(
+                    sprintf(
+                        'SELECT id_agente_modulo
+                        FROM tagente_modulo
+                        WHERE id_agente_modulo = %s
+                            AND delete_pending = 0',
+                        $this->values['moduleId']
+                    )
+                );
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+
+                $check_exist = false;
+            } finally {
+                if (is_metaconsole() === true
+                    && $this->values['metaconsoleId'] > 0
+                ) {
+                    $node->disconnect();
+                }
+            }
+
+            if ($check_exist === false) {
+                $this->loadError = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -293,6 +333,8 @@ class ModuleTableValueWidget extends Widget
                 'filter_modules' => users_access_to_agent(
                     ($values['agentId']) === false
                 ) ? [$values['moduleId']] : [],
+                'nothing'        => __('None'),
+                'nothing_value'  => 0,
             ],
         ];
 
@@ -406,6 +448,22 @@ class ModuleTableValueWidget extends Widget
     public static function getName()
     {
         return 'module_table_value';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 450,
+            'height' => 430,
+        ];
+
+        return $size;
     }
 
 

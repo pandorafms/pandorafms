@@ -2589,12 +2589,12 @@ function modules_get_agentmodule_data_for_humans($module)
                                     $salida = human_milliseconds_to_string($module['datos']);
                                 }
                             } else {
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                             }
                         break;
 
                         default:
-                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                         break;
                     }
                 break;
@@ -2613,12 +2613,12 @@ function modules_get_agentmodule_data_for_humans($module)
                             $salida = human_milliseconds_to_string($module['datos']);
                         }
                     } else {
-                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                     }
                 break;
 
                 default:
-                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                 break;
             }
         }
@@ -2821,6 +2821,40 @@ function modules_get_color_status($status, $force_module=false)
 
 
 /**
+ * Text color status.
+ *
+ * @param string $status Type status.
+ *
+ * @return string Color.
+ */
+function modules_get_textcolor_status($status)
+{
+    $result = '#ffffff';
+    switch ($status) {
+        case AGENT_MODULE_STATUS_WARNING:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            $result = '#000000';
+        break;
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        case AGENT_MODULE_STATUS_NOT_NORMAL:
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        case AGENT_MODULE_STATUS_ALL:
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        default:
+            $result = '#ffffff';
+        break;
+    }
+
+    return $result;
+}
+
+
+/**
  * Gets a module status an modify the status and title reference variables
  *
  * @param mixed The module data (Necessary $module['datos'] and $module['estado']
@@ -2866,7 +2900,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
     }
 
     if (is_numeric($data)) {
-        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision']));
+        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
     } else {
         $text = io_safe_output($data);
 
@@ -3573,8 +3607,26 @@ function modules_get_agentmodule_mininterval_no_async($id_agent)
 }
 
 
-function get_modules_agents($id_module_group, $id_agents, $selection, $select_mode=true, $useName=false)
-{
+/**
+ * Get modules agents.
+ *
+ * @param integer $id_module_group  ID module group.
+ * @param array   $id_agents        Array agents.
+ * @param boolean $selection        Selection.
+ * @param boolean $select_mode      Mode.
+ * @param boolean $useName          Use name.
+ * @param boolean $notStringModules Not string modules.
+ *
+ * @return array Modules for this agents.
+ */
+function get_modules_agents(
+    $id_module_group,
+    $id_agents,
+    $selection,
+    $select_mode=true,
+    $useName=false,
+    $notStringModules=false
+) {
     if ((bool) is_metaconsole() === true) {
         if ($select_mode === true) {
             $agents = array_reduce(
@@ -3622,15 +3674,16 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
                     $id_agents,
                     $selection,
                     false,
-                    false,
-                    true
+                    $useName,
+                    true,
+                    $notStringModules
                 );
 
                 metaconsole_restore_db();
             }
         }
 
-        if (!$selection) {
+        if (!$selection && $useName === true) {
             // Common modules.
             $final_modules = [];
             $nodes_consulted = count($modules);
@@ -3650,8 +3703,8 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
                 if ($occurrences === $nodes_consulted) {
                     // Module already present in ALL nodes.
                     $modules[] = [
-                        'id_agente_modulo' => $module_name,
-                        'nombre'           => $module_name,
+                        'id_agente_modulo' => io_safe_output($module_name),
+                        'nombre'           => io_safe_output($module_name),
                     ];
                 }
             }
@@ -3696,7 +3749,7 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             function ($carry, $item) use ($useName) {
                 // Only works in select mode.
                 if ($useName === true) {
-                    $carry[io_safe_input($item['nombre'])] = $item['nombre'];
+                    $carry[$item['id_node'].'|'.$item['nombre']] = $item['nombre'];
                 } else {
                     $carry[$item['id_node'].'|'.$item['id_agente_modulo']] = $item['nombre'];
                 }
@@ -3710,7 +3763,10 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
             $id_module_group,
             $id_agents,
             $selection,
-            false
+            false,
+            $useName,
+            false,
+            $notStringModules
         );
     }
 
@@ -3729,6 +3785,10 @@ function get_modules_agents($id_module_group, $id_agents, $selection, $select_mo
 function get_same_modules($agents, array $modules=[])
 {
     if (is_array($agents) === false || empty($agents) === true) {
+        return [];
+    }
+
+    if (is_array($modules) === false || empty($modules) === true) {
         return [];
     }
 
@@ -4153,6 +4213,11 @@ function modules_get_counter_by_states($state)
 
 function modules_get_state_condition($state, $prefix='tae')
 {
+    // Not  use empty state 0 -> AGENT_MODULE_STATUS_NORMAL.
+    if ($state === '') {
+        return '1=1';
+    }
+
     switch ($state) {
         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         case AGENT_MODULE_STATUS_CRITICAL_BAD:
@@ -4223,4 +4288,177 @@ function modules_get_min_max_data($id_agent_module, $time_init=0)
     }
 
     return $data;
+}
+
+
+/**
+ * Get modules match regex.
+ *
+ * @param string $regex_alias       Regex alias.
+ * @param string $regex_name_module Regex module name.
+ * @param string $server_name       Name server.
+ *
+ * @return array
+ */
+function modules_get_regex(
+    $regex_alias,
+    $regex_name_module='',
+    $server_name=''
+) {
+    $agent_regexp = sprintf('AND tagente.alias REGEXP "%s"', $regex_alias);
+    $module_regexp = '';
+    if (empty($regex_name_module) === false) {
+        $module_regexp = sprintf(
+            'AND tagente_modulo.nombre REGEXP "%s"',
+            $regex_name_module
+        );
+    }
+
+    $sql = sprintf(
+        'SELECT tagente_modulo.id_agente_modulo as id_agent_module,
+            "%s" as server_name
+        FROM tagente_modulo
+        INNER JOIN tagente
+            ON tagente.id_agente = tagente_modulo.id_agente
+        WHERE 1=1
+        %s
+        %s',
+        $server_name,
+        $agent_regexp,
+        $module_regexp
+    );
+
+    $result = db_get_all_rows_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    return $result;
+}
+
+
+/**
+ * Status for data thresholds modules.
+ *
+ * @param integer $id_module  Module ID.
+ * @param mixed   $data       Data int, bool, null, etc.
+ * @param array   $thresholds Array thresholds.
+ *
+ * @return array
+ */
+function get_status_data_modules(int $id_module, $data, $thresholds)
+{
+    // Check not init.
+    if ($data === false) {
+        return ['color' => COL_NOTINIT];
+    }
+
+    // Check boolean.
+    $is_bolean = modules_is_boolean($id_module);
+    if ($is_bolean === true) {
+        if ($data > 0) {
+            return ['color' => COL_CRITICAL];
+        } else {
+            return ['color' => COL_NORMAL];
+        }
+    }
+
+    $thresholds = calculateThreshold($thresholds);
+
+    foreach (getStatuses() as $status) {
+        if ($thresholds[$status]['min'] === null
+            && $thresholds[$status]['max'] === null
+        ) {
+            continue;
+        }
+
+        if (($thresholds[$status]['min'] === null
+            && $thresholds[$status]['max'] >= $data)
+            || ($thresholds[$status]['max'] === null
+            && $thresholds[$status]['min'] <= $data)
+            || ($thresholds[$status]['min'] <= $data
+            && $thresholds[$status]['max'] >= $data)
+        ) {
+            if ($status === 'critical') {
+                return ['color' => COL_CRITICAL];
+            } else if ($status === 'warning') {
+                return ['color' => COL_WARNING];
+            } else {
+                return ['color' => COL_NORMAL];
+            }
+        }
+    }
+
+    return ['color' => COL_NORMAL];
+}
+
+
+/**
+ * Calculate thresholds.
+ *
+ * @param array $thresholds_array
+ *
+ * @return array
+ */
+function calculateThreshold(array $thresholds_array)
+{
+    $nMax = null;
+    if ($thresholds_array['min_warning'] !== null) {
+        $nMax = $thresholds_array['min_warning'];
+    } else if ($thresholds_array['min_critical'] !== null) {
+        $nMax = $thresholds_array['min_critical'];
+    }
+
+    $wMin = null;
+    if ($thresholds_array['min_warning'] !== null) {
+        $wMin = $thresholds_array['min_warning'];
+    }
+
+    $wMax = null;
+    if ($thresholds_array['max_warning'] !== null) {
+        $wMax = $thresholds_array['max_warning'];
+    }
+
+    $cMin = null;
+    if ($thresholds_array['min_critical'] !== null) {
+        $cMin = $thresholds_array['min_critical'];
+    }
+
+    $cMax = null;
+    if ($thresholds_array['max_critical'] !== null) {
+        $cMax = $thresholds_array['max_critical'];
+    }
+
+    $thresholds = [
+        'normal'   => [
+            'min' => null,
+            'max' => $nMax,
+        ],
+        'warning'  => [
+            'min' => $wMin,
+            'max' => $wMax,
+        ],
+        'critical' => [
+            'min' => $cMin,
+            'max' => $cMax,
+        ],
+    ];
+
+    return $thresholds;
+}
+
+
+/**
+ * Get status.
+ *
+ * @return array
+ */
+function getStatuses()
+{
+    return [
+        'critical',
+        'warning',
+        'normal',
+    ];
 }

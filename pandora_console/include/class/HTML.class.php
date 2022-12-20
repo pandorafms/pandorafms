@@ -485,6 +485,10 @@ class HTML
             $class = '';
         }
 
+        if (empty($input['style']) === false) {
+            $style_li = $input['style'];
+        }
+
         if (isset($input['class']) === true) {
             $class = $input['class'].$class;
         }
@@ -498,7 +502,7 @@ class HTML
             }
 
             // Print independent block of inputs.
-            $output .= '<li id="li-'.($input['block_id'] ?? '').'" class="'.$class.'">';
+            $output .= '<li id="li-'.($input['block_id'] ?? '').'" class="'.$class.'" style="'.$style_li.'">';
 
             if (isset($input['wrapper']) === true) {
                 $output .= '<'.$input['wrapper'].' id="'.($input['block_id'] ?? '').'" class="'.$class.'">';
@@ -562,7 +566,7 @@ class HTML
                 }
 
                 if (!$direct) {
-                    $output .= '<li id="'.($input['id'] ?? '').'" class="'.$class.'">';
+                    $output .= '<li id="'.($input['id'] ?? '').'" class="'.$class.'" style="'.$style_li.'">';
                 }
 
                 if (isset($input['label']) === true) {
@@ -777,6 +781,7 @@ class HTML
     ) {
         $form = ($data['form'] ?? null);
         $inputs = ($data['inputs'] ?? []);
+        $blocks = ($data['blocks'] ?? []);
         $rawInputs = ($data['rawInputs'] ?? null);
         $js = ($data['js'] ?? null);
         $rawjs = ($data['js_block'] ?? null);
@@ -843,34 +848,59 @@ class HTML
         $output_submit = '';
         $output = '';
 
-        if ($print_white_box === true) {
-            $output .= '<div class="white_box">';
-        }
+        if (empty($blocks) === false) {
+            $output .= '<div class="container-block-column">';
+            foreach ($blocks as $valueblock) {
+                $output .= '<ul class="wizard">';
+                foreach ($inputs[$valueblock] as $input) {
+                    if (is_array(($input['arguments'] ?? null)) === true
+                        && isset($input['arguments']) === true
+                        && isset($input['arguments']['type']) === true
+                        && $input['arguments']['type'] === 'submit'
+                    ) {
+                        $output_submit .= self::printBlock($input, true);
+                    } else {
+                        $output .= self::printBlock($input, true);
+                    }
+                }
 
-        $output .= '<ul class="wizard">';
-
-        foreach ($inputs as $input) {
-            if (is_array(($input['arguments'] ?? null)) === true
-                && $input['arguments']['type'] === 'submit'
-            ) {
-                $output_submit .= self::printBlock($input, true);
-            } else {
-                $output .= self::printBlock($input, true);
+                $output .= '</ul>';
             }
-        }
 
-        $output .= '</ul>';
-
-        // There is possible add raw inputs for this form.
-        if (empty($rawInputs) === false) {
-            $output .= $rawInputs;
-        }
-
-        if ($print_white_box === true) {
             $output .= '</div>';
+        } else {
+            if ($print_white_box === true) {
+                $output .= '<div class="white_box">';
+            }
+
+            $output .= '<ul class="wizard">';
+
+            foreach ($inputs as $input) {
+                if (is_array(($input['arguments'] ?? null)) === true
+                    && isset($input['arguments']) === true
+                    && isset($input['arguments']['type']) === true
+                    && $input['arguments']['type'] === 'submit'
+                ) {
+                    $output_submit .= self::printBlock($input, true);
+                } else {
+                    $output .= self::printBlock($input, true);
+                }
+            }
+
+            $output .= '</ul>';
+
+            // There is possible add raw inputs for this form.
+            if (empty($rawInputs) === false) {
+                $output .= $rawInputs;
+            }
+
+            if ($print_white_box === true) {
+                $output .= '</div>';
+            }
+
+            $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         }
 
-        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
@@ -907,7 +937,13 @@ class HTML
         $cb_args = $data['cb_args'];
 
         $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output_head .= '" '.$form['extra'].'>';
+        $output_head .= '" id="'.$form['id'].'" '.$form['extra'].'>';
+
+        if (isset($form['title']) === true && empty($form['title']) === false) {
+            $output_head .= '<div class="form_title"">';
+            $output_head .= '<span>'.$form['title'].'</span>';
+            $output_head .= '</div>';
+        }
 
         if ($return === false) {
             echo $output_head;

@@ -102,10 +102,16 @@ if (isset($fb64) === true) {
     );
 }
 
+$id_group_filter = get_parameter(
+    'filter[id_group_filter]',
+    ($filter['id_group_filter'] ?? '')
+);
+
 $id_group = get_parameter(
     'filter[id_group]',
-    ($filter['id_group'] ?? '')
+    ($filter['id_group'] ?? $id_group_filter)
 );
+
 $event_type = get_parameter(
     'filter[event_type]',
     ($filter['event_type'] ?? '')
@@ -183,7 +189,7 @@ $search_secondary_groups = get_parameter(
 );
 $search_recursive_groups = get_parameter(
     'filter[search_recursive_groups]',
-    0
+    ($filter['search_recursive_groups'] ?? '')
 );
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',

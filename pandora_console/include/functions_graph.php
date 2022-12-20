@@ -2282,6 +2282,19 @@ function graphic_combined_module(
                 $options['axis'] = 'y';
             }
 
+            if ((bool) $params['pdf'] === true) {
+                $options['dataLabel'] = ['display' => 'auto'];
+                if ($params_combined['stacked'] == CUSTOM_GRAPH_HBARS) {
+                    $options['layout'] = [
+                        'padding' => ['right' => 35],
+                    ];
+                } else {
+                    $options['layout'] = [
+                        'padding' => ['top' => 35],
+                    ];
+                }
+            }
+
             $output = '<div style="display: flex; flex-direction:row; justify-content: center; align-items: center; align-content: center; width:100%; height:100%;">';
             $output .= '<div style="flex: 0 0 auto; width:99%; height:100%;">';
             $output .= vbar_graph($graph_values, $options);
@@ -2344,10 +2357,12 @@ function graphic_combined_module(
                     $label = io_safe_output($alias.': '.$data_module['nombre']);
                 }
 
-                $temp[$label] = [
-                    'value' => $value,
-                    'unit'  => $data_module['unit'],
-                ];
+                if ((bool) $params['pdf'] === true) {
+                    $value = (empty($value) === false) ? $value : 0;
+                    $label .= ' ('.$value.')';
+                }
+
+                $temp[$label] = $value;
 
                 if (is_metaconsole() === true) {
                     metaconsole_restore_db();
@@ -2363,7 +2378,6 @@ function graphic_combined_module(
                 $water_mark = false;
             }
 
-            // TODO: XXX chartjs.
             $color = color_graph_array();
             $width = null;
             $height = null;
@@ -2375,7 +2389,22 @@ function graphic_combined_module(
                 'ttl'        => $ttl,
                 'background' => $background_color,
                 'pdf'        => $params['pdf'],
+                'legend'     => [
+                    'display'  => (bool) $params['show_legend'],
+                    'position' => 'right',
+                    'align'    => 'center',
+                ],
             ];
+
+            if ((bool) $params['pdf'] === true) {
+                $options['dataLabel'] = ['display' => 'auto'];
+                $options['layout'] = [
+                    'padding' => [
+                        'top'    => 20,
+                        'bottom' => 20,
+                    ],
+                ];
+            }
 
             $output = '<div style="display: flex; flex-direction:row; justify-content: center; align-items: center; align-content: center; width:100%; height:100%;">';
             $output .= '<div style="flex: 0 0 auto; width:99%; height:100%;">';
@@ -3506,10 +3535,9 @@ function graph_custom_sql_graph(
     }
 
     $output = '';
+    $output .= '<div style="height:'.($height).'px; width: 99%; margin: 0 auto;">';
     if ((int) $ttl === 2) {
         $output .= '<img src="data:image/png;base64,';
-    } else {
-        $output .= '<div style="height:'.($height).'px; margin: 0 auto;">';
     }
 
     switch ($type) {
@@ -3561,8 +3589,8 @@ function graph_custom_sql_graph(
                 $options['dataLabel'] = ['display' => 'auto'];
                 $options['layout'] = [
                     'padding' => [
-                        'top'    => 12,
-                        'bottom' => 12,
+                        'top'    => 20,
+                        'bottom' => 20,
                     ],
                 ];
             }
@@ -3577,9 +3605,9 @@ function graph_custom_sql_graph(
 
     if ((int) $ttl === 2) {
         $output .= '" />';
-    } else {
-        $output .= '</div>';
     }
+
+    $output .= '</div>';
 
     return $output;
 }
@@ -4741,6 +4769,13 @@ function graph_nodata_image($options)
         $height = $options['height'];
     }
 
+    if ($options['base64'] === true) {
+        $dataImg = file_get_contents(
+            $config['homedir'].'/images/image_problem_area_150.png'
+        );
+        return base64_encode($dataImg);
+    }
+
     return html_print_image(
         'images/image_problem_area.png',
         true,
@@ -4749,46 +4784,6 @@ function graph_nodata_image($options)
             'style' => 'height:'.$height.'px;',
         ]
     );
-
-    /*
-        if ($base64 === true) {
-        $dataImg = file_get_contents(
-            $config['homedir'].'/images/image_problem_area_150.png'
-        );
-        return base64_encode($dataImg);
-        }
-
-        $image = ui_get_full_url(
-        'images/image_problem_area.png',
-        false,
-        false,
-        false
-        );
-
-        $style = 'text-align:center; padding: 30px 0; display:block; font-size:9.5pt;';
-        $text_div = '<div class="nodata_text" style="'.$style.'">';
-        $text_div .= $text;
-        $text_div .= '</div>';
-
-        $style = 'background-size: contain;background-image: url(\''.$image.'\');';
-        $image_div = '<div class="nodata_container" style="'.$style.'"></div>';
-
-        if ($percent === true) {
-        $div = $image_div;
-        } else {
-        if (strpos($width, '%') === false) {
-            $width = 'width: '.$width.'px;';
-        } else {
-            $width = 'width: '.$width.';';
-        }
-
-        $style = $width.' height:'.$height.'px;';
-        $style .= 'margin: 0 auto;';
-        $div = '<div style="'.$style.'">'.$image_div.'</div>';
-        }
-
-        return $div;
-    */
 }
 
 

@@ -4242,15 +4242,13 @@ function generator_chart_to_pdf(
     }
 
     try {
-        $browserFactory = new BrowserFactory('chromium-browser');
+        $browserFactory = new BrowserFactory($config['chromium_path']);
 
         // Starts headless chrome.
         $browser = $browserFactory->createBrowser(['noSandbox' => true]);
 
         // Creates a new page.
         $page = $browser->createPage();
-
-        hd($url.'?data='.urlencode(json_encode($data)), true);
 
         // Navigate to an URL.
         $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
@@ -4281,10 +4279,6 @@ function generator_chart_to_pdf(
             $dynamic_width = $params['options']['viewport']['width'];
         }
 
-        hd('Tomando el Clip', true);
-        hd('Width: ['.$dynamic_width.']', true);
-        hd('Height: ['.$dynamic_height.']', true);
-
         $clip = new Clip(0, 0, $dynamic_width, $dynamic_height);
 
         if ($params['return_img_base_64']) {
@@ -4298,7 +4292,7 @@ function generator_chart_to_pdf(
             return '<img src="'.$img_url.'" />';
         }
     } catch (\Throwable $th) {
-        hd($th, true);
+        error_log($th);
     } finally {
         $browser->close();
     }

@@ -162,12 +162,15 @@ function progressbar(
  */
 function vbar_graph(
     array $chart_data,
-    array $options,
-    int $ttl=1
+    array $options
 ) {
-    global $config;
-
     if (empty($chart_data) === true) {
+        if (isset($options['ttl']) === true
+            && (int) $options['ttl'] === 2
+        ) {
+            $options['base64'] = true;
+        }
+
         return graph_nodata_image($options);
     }
 
@@ -386,6 +389,12 @@ function pie_graph(
     $options
 ) {
     if (empty($chart_data) === true) {
+        if (isset($options['ttl']) === true
+            && (int) $options['ttl'] === 2
+        ) {
+            $options['base64'] = true;
+        }
+
         return graph_nodata_image($options);
     }
 
@@ -605,10 +614,11 @@ function get_build_setup_charts($type, $options, $data)
         $chart->setWidth($options['width']);
     }
 
-    // Fonts.
-    $chart->defaults()->getFonts()->setFamily($config['fontpath']);
+    // Fonts defaults.
+    $chart->defaults()->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
     $chart->defaults()->getFonts()->setStyle('normal');
-    $chart->defaults()->getFonts()->setSize(($config['font_size']) + 2);
+    $chart->defaults()->getFonts()->setWeight(600);
+    $chart->defaults()->getFonts()->setSize(((int) $config['font_size'] + 2));
 
     if (isset($options['waterMark']) === true
         && empty($options['waterMark']) === false
@@ -768,7 +778,11 @@ function get_build_setup_charts($type, $options, $data)
 
         $dataLabel->setFormatter($dataLabelFormatter);
 
-        $dataLabel->getFonts()->setSize(8);
+        // Defaults fonts datalabel.
+        $dataLabel->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $dataLabel->getFonts()->setStyle('normal');
+        $dataLabel->getFonts()->setWeight(600);
+        $dataLabel->getFonts()->setSize(((int) $config['font_size'] + 2));
 
         if (isset($options['dataLabel']['fonts']) === true
             && empty($options['dataLabel']['fonts']) === false
@@ -782,6 +796,10 @@ function get_build_setup_charts($type, $options, $data)
                 $dataLabel->getFonts()->setStyle($options['dataLabel']['fonts']['style']);
             }
 
+            if (isset($options['dataLabel']['fonts']['weight']) === true) {
+                $dataLabel->getFonts()->setWeight($options['dataLabel']['fonts']['weight']);
+            }
+
             if (isset($options['dataLabel']['fonts']['family']) === true) {
                 $dataLabel->getFonts()->setFamily($options['dataLabel']['fonts']['family']);
             }
@@ -793,48 +811,50 @@ function get_build_setup_charts($type, $options, $data)
         && empty($options['title']) === false
         && is_array($options['title']) === true
     ) {
+        $chartTitle = $chart->options()->getPlugins()->getTitle();
+
         $display = false;
         if (isset($options['title']['display']) === true) {
             $display = $options['title']['display'];
         }
 
-        $chart->options()->getPlugins()->getTitle()->setDisplay($display);
+        $chartTitle->setDisplay($display);
 
         $text = __('Title');
         if (isset($options['title']['text']) === true) {
             $text = $options['title']['text'];
         }
 
-        $chart->options()->getPlugins()->getTitle()->setText($text);
+        $chartTitle->setText($text);
 
         $position = 'top';
         if (isset($options['title']['position']) === true) {
             $position = $options['title']['position'];
         }
 
-        $chart->options()->getPlugins()->getTitle()->setPosition($position);
+        $chartTitle->setPosition($position);
 
         $color = 'top';
         if (isset($options['title']['color']) === true) {
             $color = $options['title']['color'];
         }
 
-        $chart->options()->getPlugins()->getTitle()->setColor($color);
+        $chartTitle->setColor($color);
 
         if (isset($options['title']['fonts']) === true
             && empty($options['title']['fonts']) === false
             && is_array($options['title']['fonts']) === true
         ) {
             if (isset($options['title']['fonts']['size']) === true) {
-                $chart->options()->getPlugins()->getTitle()->getFonts()->setSize($options['title']['fonts']['size']);
+                $chartTitle->getFonts()->setSize($options['title']['fonts']['size']);
             }
 
             if (isset($options['title']['fonts']['style']) === true) {
-                $chart->options()->getPlugins()->getTitle()->getFonts()->setStyle($options['title']['fonts']['style']);
+                $chartTitle->getFonts()->setStyle($options['title']['fonts']['style']);
             }
 
             if (isset($options['title']['fonts']['family']) === true) {
-                $chart->options()->getPlugins()->getTitle()->getFonts()->setFamily($options['title']['fonts']['family']);
+                $chartTitle->getFonts()->setFamily($options['title']['fonts']['family']);
             }
         }
     }
@@ -865,6 +885,21 @@ function get_build_setup_charts($type, $options, $data)
         && is_array($options['scales']) === true
     ) {
         $scales = $chart->options()->getScales();
+
+        // Defaults scalesFont X.
+        $scalesXFonts = $scales->getX()->ticks()->getFonts();
+        $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $scalesXFonts->setStyle('normal');
+        $scalesXFonts->setWeight(600);
+        $scalesXFonts->setSize(((int) $config['font_size'] + 2));
+
+        // Defaults scalesFont Y.
+        $scalesYFonts = $scales->getY()->ticks()->getFonts();
+        $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $scalesYFonts->setStyle('normal');
+        $scalesYFonts->setWeight(600);
+        $scalesYFonts->setSize(((int) $config['font_size'] + 2));
+
         if (isset($options['scales']['x']) === true
             && empty($options['scales']['x']) === false
             && is_array($options['scales']['x']) === true
@@ -1007,7 +1042,7 @@ function get_build_setup_charts($type, $options, $data)
         break;
 
         default:
-            // code...
+            // Not possible.
         break;
     }
 

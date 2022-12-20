@@ -258,6 +258,7 @@ console_dependencies=" \
     mod_ssl \
     libzstd \
     openldap-clients \
+    chromium \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 

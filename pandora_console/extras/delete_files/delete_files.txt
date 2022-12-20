@@ -1677,3 +1677,5 @@ enterprise/operation/agentes/manage_transmap.php
 enterprise/operation/agentes/manage_transmap_creation.php
 enterprise/operation/agentes/manage_transmap_creation_phases_data.php
 enterprise/operation/agentes/transactional_map.php
+include/test.js
+include/web2image.js

@@ -14891,8 +14891,6 @@ function api_set_delete_cluster($id, $thrash1, $thrast2, $thrash3)
 
     foreach ($tcluster_modules_delete_get as $key => $value) {
         $tcluster_modules_delete_get_values[] = $value['id_agente_modulo'];
-        // Before delete the main module, check and delete the childrens from the original module.
-        module_check_childrens_and_delete($value['id_agente_modulo']);
     }
 
     $tcluster_modules_delete = modules_delete_agent_module($tcluster_modules_delete_get_values);
@@ -14969,8 +14967,6 @@ function api_set_delete_cluster_item($id, $thrash1, $thrast2, $thrast3)
     }
 
     $delete_module_aa_get = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$id);
-    // Before delete the main module, check and delete the childrens from the original module.
-    module_check_childrens_and_delete($delete_module_aa_get[0]['id_agente_modulo']);
     $delete_module_aa_get_result = modules_delete_agent_module($delete_module_aa_get[0]['id_agente_modulo']);
     $delete_item = db_process_sql('delete from tcluster_item where id = '.$id);
 

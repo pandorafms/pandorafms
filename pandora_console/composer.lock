@@ -551,11 +551,11 @@
         },
         {
             "name": "artica/phpchartjs",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "dist": {
                 "type": "path",
                 "url": "../../../phpchartjs",
-                "reference": "7ec8ed26f31671a6fc0c91c294b48dc9625d7827"
+                "reference": "4957e7cd699e50cee8e0ba7304e1423aafb2cad2"
             },
             "require": {
                 "ext-dom": "*",

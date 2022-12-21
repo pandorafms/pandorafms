@@ -4,6 +4,7 @@ namespace Artica\PHPChartJS\Options\Legend;
 
 use Artica\PHPChartJS\ArraySerializableInterface;
 use Artica\PHPChartJS\Delegate\ArraySerializable;
+use Artica\PHPChartJS\Options\Fonts;
 use JsonSerializable;
 use Laminas\Json\Expr;
 
@@ -17,32 +18,17 @@ class Labels implements ArraySerializableInterface, JsonSerializable
     use ArraySerializable;
 
     /**
-     * @var int
+     * @var integer
      */
     private $boxWidth;
 
     /**
-     * @var int
+     * @var Fonts
      */
-    private $fontSize;
+    private $font;
 
     /**
-     * @var string
-     */
-    private $fontStyle;
-
-    /**
-     * @var string
-     */
-    private $fontColor;
-
-    /**
-     * @var string
-     */
-    private $fontFamily;
-
-    /**
-     * @var int
+     * @var integer
      */
     private $padding;
 
@@ -52,20 +38,22 @@ class Labels implements ArraySerializableInterface, JsonSerializable
     private $generateLabels;
 
     /**
-     * @var bool
+     * @var boolean
      */
     private $usePointStyle;
 
+
     /**
-     * @return int
+     * @return integer
      */
     public function getBoxWidth()
     {
         return $this->boxWidth;
     }
 
+
     /**
-     * @param int $boxWidth
+     * @param integer $boxWidth
      *
      * @return Labels
      */
@@ -76,96 +64,33 @@ class Labels implements ArraySerializableInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFontSize()
-    {
-        return $this->fontSize;
-    }
 
     /**
-     * @param int $fontSize
+     * Return Font.
      *
-     * @return Labels
+     * @return Font
      */
-    public function setFontSize($fontSize)
+    public function getFonts()
     {
-        $this->fontSize = intval($fontSize);
+        if (isset($this->font) === false) {
+            $this->font = new Fonts();
+        }
 
-        return $this;
+        return $this->font;
     }
 
-    /**
-     * @return string
-     */
-    public function getFontStyle()
-    {
-        return $this->fontStyle;
-    }
 
     /**
-     * @param string $fontStyle
-     *
-     * @return Labels
-     */
-    public function setFontStyle($fontStyle)
-    {
-        $this->fontStyle = strval($fontStyle);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFontColor()
-    {
-        return $this->fontColor;
-    }
-
-    /**
-     * @param string $fontColor
-     *
-     * @return Labels
-     */
-    public function setFontColor($fontColor)
-    {
-        $this->fontColor = strval($fontColor);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFontFamily()
-    {
-        return $this->fontFamily;
-    }
-
-    /**
-     * @param string $fontFamily
-     *
-     * @return Labels
-     */
-    public function setFontFamily($fontFamily)
-    {
-        $this->fontFamily = strval($fontFamily);
-
-        return $this;
-    }
-
-    /**
-     * @return int
+     * @return integer
      */
     public function getPadding()
     {
         return $this->padding;
     }
 
+
     /**
-     * @param int $padding
+     * @param integer $padding
      *
      * @return Labels
      */
@@ -176,6 +101,7 @@ class Labels implements ArraySerializableInterface, JsonSerializable
         return $this;
     }
 
+
     /**
      * @return Expr
      */
@@ -183,6 +109,7 @@ class Labels implements ArraySerializableInterface, JsonSerializable
     {
         return $this->generateLabels;
     }
+
 
     /**
      * @param string $generateLabels
@@ -196,25 +123,28 @@ class Labels implements ArraySerializableInterface, JsonSerializable
         return $this;
     }
 
+
     /**
-     * @return bool
+     * @return boolean
      */
     public function isUsePointStyle()
     {
         return $this->usePointStyle;
     }
 
+
     /**
-     * @param bool $usePointStyle
+     * @param boolean $usePointStyle
      *
      * @return Labels
      */
     public function setUsePointStyle($usePointStyle)
     {
-        $this->usePointStyle = ! ! $usePointStyle;
+        $this->usePointStyle = !!$usePointStyle;
 
         return $this;
     }
+
 
     /**
      * @return array
@@ -223,4 +153,6 @@ class Labels implements ArraySerializableInterface, JsonSerializable
     {
         return $this->getArrayCopy();
     }
+
+
 }

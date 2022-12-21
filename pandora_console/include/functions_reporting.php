@@ -2226,19 +2226,15 @@ function reporting_event_report_group(
     $return['chart']['validated_vs_unvalidated'] = null;
 
     $options_charts = [
-        'width'    => 500,
-        'height'   => 150,
-        'viewport' => [
-            'width'  => 500,
-            'height' => 0,
-        ],
-        'legend'   => [
+        'width'  => 500,
+        'height' => 150,
+        'legend' => [
             'display'  => true,
             'position' => 'right',
             'align'    => 'center',
         ],
-        'pdf'      => $pdf,
-        'ttl'      => $ttl,
+        'pdf'    => $pdf,
+        'ttl'    => $ttl,
     ];
 
     if ($pdf === true) {
@@ -4372,19 +4368,15 @@ function reporting_event_report_agent(
     $return['chart']['validated_vs_unvalidated'] = null;
 
     $options_charts = [
-        'width'    => 500,
-        'height'   => 150,
-        'radius'   => null,
-        'viewport' => [
-            'width'  => 500,
-            'height' => 0,
-        ],
-        'legend'   => [
+        'width'  => 500,
+        'height' => 150,
+        'radius' => null,
+        'legend' => [
             'display'  => true,
             'position' => 'right',
             'align'    => 'center',
         ],
-        'ttl'      => $ttl,
+        'ttl'    => $ttl,
     ];
 
     if ((int) $ttl === 2) {
@@ -11070,19 +11062,15 @@ function reporting_get_module_detailed_event(
         }
 
         $options_charts = [
-            'width'    => 500,
-            'height'   => 150,
-            'radius'   => null,
-            'viewport' => [
-                'width'  => 500,
-                'height' => 0,
-            ],
-            'legend'   => [
+            'width'  => 500,
+            'height' => 150,
+            'radius' => null,
+            'legend' => [
                 'display'  => true,
                 'position' => 'right',
                 'align'    => 'center',
             ],
-            'ttl'      => $ttl,
+            'ttl'    => $ttl,
         ];
 
         if ((int) $ttl === 2) {

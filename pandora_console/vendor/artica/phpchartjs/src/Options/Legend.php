@@ -4,7 +4,8 @@ namespace Artica\PHPChartJS\Options;
 
 use Artica\PHPChartJS\ArraySerializableInterface;
 use Artica\PHPChartJS\Delegate\ArraySerializable;
-use Artica\PHPChartJS\LabelsCollection;
+use Artica\PHPChartJS\Labels;
+use Artica\PHPChartJS\Options\Legend\Labels as LegendLabels;
 use JsonSerializable;
 use Laminas\Json\Expr;
 
@@ -43,7 +44,7 @@ class Legend implements ArraySerializableInterface, JsonSerializable
     private $onHover;
 
     /**
-     * @var LabelsCollection
+     * @var Labels
      */
     private $labels;
 
@@ -171,12 +172,12 @@ class Legend implements ArraySerializableInterface, JsonSerializable
 
 
     /**
-     * @return LabelsCollection
+     * @return Labels
      */
     public function labels()
     {
         if (is_null($this->labels)) {
-            $this->labels = new LabelsCollection();
+            $this->labels = new LegendLabels();
         }
 
         return $this->labels;

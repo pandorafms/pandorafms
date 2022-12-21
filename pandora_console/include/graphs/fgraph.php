@@ -693,10 +693,10 @@ function get_build_setup_charts($type, $options, $data)
         $legend->setAlign($legendAlign);
 
         // Defaults fonts legends.
-        // $legend->labels()->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
-        // $legend->labels()->getFonts()->setStyle('normal');
-        // $legend->labels()->getFonts()->setWeight(600);
-        // $legend->labels()->getFonts()->setSize(((int) $config['font_size'] + 2));
+        $legend->labels()->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $legend->labels()->getFonts()->setStyle('normal');
+        $legend->labels()->getFonts()->setWeight(600);
+        $legend->labels()->getFonts()->setSize(((int) $config['font_size'] + 2));
         if (isset($options['legend']['fonts']) === true
             && empty($options['legend']['fonts']) === false
             && is_array($options['legend']['fonts']) === true

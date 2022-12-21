@@ -6089,12 +6089,14 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <module>";
 			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Status</name>";
 			$xml_output .=" <type>generic_proc</type>";
+			$xml_output .=" <module_group>System</module_group>";
 			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
 			$xml_output .=" </module>";
 	
 			$xml_output .=" <module>";
 			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Processing Rate</name>";
 			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
 			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
 			$xml_output .=" <unit>tasks/second</unit>";
 			$xml_output .=" </module>";
@@ -6109,12 +6111,14 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <module>";
 			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Consumer #$idx Status</name>";
 			$xml_output .=" <type>generic_proc</type>";
+			$xml_output .=" <module_group>System</module_group>";
 			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
 			$xml_output .=" </module>";
 	
 			$xml_output .=" <module>";
 			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Consumer #$idx Processing Rate</name>";
 			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
 			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
 			$xml_output .=" <unit>tasks/second</unit>";
 			$xml_output .=" </module>";

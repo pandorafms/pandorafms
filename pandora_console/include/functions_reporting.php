@@ -2228,7 +2228,6 @@ function reporting_event_report_group(
     $options_charts = [
         'width'    => 500,
         'height'   => 150,
-        'radius'   => null,
         'viewport' => [
             'width'  => 500,
             'height' => 0,

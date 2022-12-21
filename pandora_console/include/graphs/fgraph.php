@@ -658,33 +658,67 @@ function get_build_setup_charts($type, $options, $data)
     $chart->options()->setResponsive($responsive);
 
     // LEGEND.
-    // Set Display legends.
-    $legendDisplay = true;
-    if (isset($options['legend']['display']) === true) {
-        $legendDisplay = $options['legend']['display'];
-    }
-
-    $chart->options()->getPlugins()->getLegend()->setDisplay($legendDisplay);
-
-    // Set Position legends.
-    $legendPosition = 'top';
-    if (isset($options['legend']['position']) === true
-        && empty($options['legend']['position']) === false
+    if (isset($options['legend']) === true
+        && empty($options['legend']) === false
+        && is_array($options['legend']) === true
     ) {
-        $legendPosition = $options['legend']['position'];
+        $legend = $chart->options()->getPlugins()->getLegend();
+
+        // Set Display legends.
+        $legendDisplay = true;
+        if (isset($options['legend']['display']) === true) {
+            $legendDisplay = $options['legend']['display'];
+        }
+
+        $legend->setDisplay($legendDisplay);
+
+        // Set Position legends.
+        $legendPosition = 'top';
+        if (isset($options['legend']['position']) === true
+            && empty($options['legend']['position']) === false
+        ) {
+            $legendPosition = $options['legend']['position'];
+        }
+
+        $legend->setPosition($legendPosition);
+
+        // Set Align legends.
+        $legendAlign = 'center';
+        if (isset($options['legend']['align']) === true
+            && empty($options['legend']['align']) === false
+        ) {
+            $legendAlign = $options['legend']['align'];
+        }
+
+        $legend->setAlign($legendAlign);
+
+        // Defaults fonts legends.
+        $legend->labels()->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $legend->labels()->getFonts()->setStyle('normal');
+        $legend->labels()->getFonts()->setWeight(600);
+        $legend->labels()->getFonts()->setSize(((int) $config['font_size'] + 2));
+
+        if (isset($options['legend']['fonts']) === true
+            && empty($options['legend']['fonts']) === false
+            && is_array($options['legend']['fonts']) === true
+        ) {
+            if (isset($options['legend']['fonts']['size']) === true) {
+                $legend->labels()->getFonts()->setSize($options['legend']['fonts']['size']);
+            }
+
+            if (isset($options['legend']['fonts']['style']) === true) {
+                $legend->labels()->getFonts()->setStyle($options['legend']['fonts']['style']);
+            }
+
+            if (isset($options['legend']['fonts']['weight']) === true) {
+                $legend->labels()->getFonts()->setWeight($options['legend']['fonts']['weight']);
+            }
+
+            if (isset($options['legend']['fonts']['family']) === true) {
+                $legend->labels()->getFonts()->setFamily($options['legend']['fonts']['family']);
+            }
+        }
     }
-
-    $chart->options()->getPlugins()->getLegend()->setPosition($legendPosition);
-
-    // Set Align legends.
-    $legendAlign = 'center';
-    if (isset($options['legend']['align']) === true
-        && empty($options['legend']['align']) === false
-    ) {
-        $legendAlign = $options['legend']['align'];
-    }
-
-    $chart->options()->getPlugins()->getLegend()->setAlign($legendAlign);
 
     if (isset($options['layout']) === true
         && empty($options['layout']) === false

@@ -2260,14 +2260,13 @@ function graphic_combined_module(
             }
 
             $options = [
-                'width'      => $width,
-                'height'     => $height,
-                'waterMark'  => $water_mark,
-                'ttl'        => $ttl,
-                'background' => $background_color,
-                'pdf'        => $params['pdf'],
-                'legend'     => ['display' => false],
-                'scales'     => [
+                'width'     => $width,
+                'height'    => $height,
+                'waterMark' => $water_mark,
+                'ttl'       => $ttl,
+                'pdf'       => $params['pdf'],
+                'legend'    => ['display' => false],
+                'scales'    => [
                     'x' => [
                         'bounds' => 'data',
                         'grid'   => ['display' => false],
@@ -2296,7 +2295,7 @@ function graphic_combined_module(
             }
 
             $output = '<div style="display: flex; flex-direction:row; justify-content: center; align-items: center; align-content: center; width:100%; height:100%;">';
-            $output .= '<div style="flex: 0 0 auto; width:99%; height:100%;">';
+            $output .= '<div style="flex: 0 0 auto; width:99%; height:100%; background-color:'.$background_color.'">';
             $output .= vbar_graph($graph_values, $options);
             $output .= '</div>';
             $output .= '</div>';
@@ -2383,13 +2382,12 @@ function graphic_combined_module(
             $height = null;
 
             $options = [
-                'width'      => $width,
-                'height'     => $height,
-                'waterMark'  => $water_mark,
-                'ttl'        => $ttl,
-                'background' => $background_color,
-                'pdf'        => $params['pdf'],
-                'legend'     => [
+                'width'     => $width,
+                'height'    => $height,
+                'waterMark' => $water_mark,
+                'ttl'       => $ttl,
+                'pdf'       => $params['pdf'],
+                'legend'    => [
                     'display'  => (bool) $params['show_legend'],
                     'position' => 'right',
                     'align'    => 'center',
@@ -2407,7 +2405,7 @@ function graphic_combined_module(
             }
 
             $output = '<div style="display: flex; flex-direction:row; justify-content: center; align-items: center; align-content: center; width:100%; height:100%;">';
-            $output .= '<div style="flex: 0 0 auto; width:99%; height:100%;">';
+            $output .= '<div style="flex: 0 0 auto; width:99%; height:100%; background-color:'.$background_color.'">';
             $output .= ring_graph($graph_values, $options);
             $output .= '</div>';
             $output .= '</div>';

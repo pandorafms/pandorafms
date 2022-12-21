@@ -4241,8 +4241,19 @@ function generator_chart_to_pdf(
         ];
     }
 
+    // If not install chromium avoid 500 convert tu images no data to show.
+    $chromium_dir = io_safe_output($config['chromium_path']);
+    $result_ejecution = exec($chromium_dir.' --version');
+    if (empty($result_ejecution) === true) {
+        if ($params['return_img_base_64']) {
+            $params['base64'] = true;
+        }
+
+        return graph_nodata_image($params);
+    }
+
     try {
-        $browserFactory = new BrowserFactory($config['chromium_path']);
+        $browserFactory = new BrowserFactory($chromium_dir);
 
         // Starts headless chrome.
         $browser = $browserFactory->createBrowser(['noSandbox' => true]);

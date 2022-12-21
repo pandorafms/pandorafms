@@ -62,7 +62,7 @@ enterprise_include_once('include/functions_cron.php');
 // Clases.
 use PandoraFMS\Agent;
 use PandoraFMS\Module;
-use PandoraFMS\Enterprise\Cluster;
+use PandoraFMS\Cluster;
 use PandoraFMS\Enterprise\Metaconsole\Node;
 use PandoraFMS\Event;
 use PandoraFMS\SpecialDay;

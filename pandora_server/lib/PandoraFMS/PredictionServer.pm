@@ -207,21 +207,21 @@ sub exec_prediction_module ($$$$) {
 	# Cluster status module.
 	if ($agent_module->{'prediction_module'} == 5) {
 		logger ($pa_config, "Executing cluster status module " . $agent_module->{'nombre'}, 10);
-		enterprise_hook ('exec_cluster_status_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		exec_cluster_status_module($pa_config, $agent_module, $server_id, $dbh);
 		return;
 	}
 
 	# Cluster active-active module.
 	if ($agent_module->{'prediction_module'} == 6) {
 		logger ($pa_config, "Executing cluster active-active module " . $agent_module->{'nombre'}, 10);
-		enterprise_hook ('exec_cluster_aa_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		exec_cluster_aa_module($pa_config, $agent_module, $server_id, $dbh);
 		return;
 	}
 
 	# Cluster active-passive module.
 	if ($agent_module->{'prediction_module'} == 7) {
 		logger ($pa_config, "Executing cluster active-passive module " . $agent_module->{'nombre'}, 10);
-		enterprise_hook ('exec_cluster_ap_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		exec_cluster_ap_module($pa_config, $agent_module, $server_id, $dbh);
 		return;
 	}
 

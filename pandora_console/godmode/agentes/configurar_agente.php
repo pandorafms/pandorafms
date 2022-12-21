@@ -2118,6 +2118,9 @@ if ($delete_module) {
         exit;
     }
 
+    // Before delete the main module, check and delete the childrens from the original module.
+    module_check_childrens_and_delete($id_borrar_modulo);
+
     // Also call base function to delete modules.
     modules_delete_agent_module($id_borrar_modulo);
 

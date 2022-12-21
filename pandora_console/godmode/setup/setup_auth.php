@@ -77,6 +77,7 @@ if (is_ajax()) {
                     true
                 ).'&nbsp;&nbsp;';
                 $table->data['autocreate_remote_users'] = $row;
+                $table->data['csrf_token'] = html_print_csrf_hidden();
 
                 add_enterprise_auth_autocreate_profiles($table, $type_auth);
             }
@@ -474,6 +475,8 @@ if (!is_metaconsole()) {
     html_print_input_hidden('action', 'save');
     html_print_input_hidden('hash_save_config', md5('save'.$config['dbpass']));
 }
+
+html_print_csrf_hidden();
 
 html_print_table($table);
 echo '<div id="table_auth_result"></div>';

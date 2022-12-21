@@ -1,8 +1,8 @@
 <?php
 /**
- * SNMP Console.
+ * Cluster view entrypoint.
  *
- * @category   SNMP
+ * @category   View
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,39 +29,23 @@
 // Begin.
 global $config;
 
-require_once $config['homedir'].'/include/class/SnmpConsole.class.php';
+require 'vendor/autoload.php';
 
-$ajaxPage = $config['homedir'].'/operation/snmpconsole/snmp_view';
+use PandoraFMS\ClusterViewer\ClusterManager;
 
-$filter_alert = get_parameter('filter_alert', -1);
-$filter_severity = get_parameter('filter_severity', -1);
-$filter_free_search = get_parameter('filter_free_search', '');
-$filter_status = get_parameter('filter_status', 0);
-$filter_group_by = get_parameter('filter_group_by', 0);
-$filter_hours_ago = get_parameter('filter_hours_ago', 8);
-$filter_trap_type = get_parameter('filter_trap_type', -1);
-$refr = get_parameter('refr', 300);
+$ajaxPage = 'operation/cluster/cluster';
 
 // Control call flow.
 try {
+
     // User access and validation is being processed on class constructor.
-    $controller = new SnmpConsole(
-        $ajaxPage,
-        $filter_alert,
-        $filter_severity,
-        $filter_free_search,
-        $filter_status,
-        $filter_group_by,
-        $filter_hours_ago,
-        $filter_trap_type,
-        $refr
-    );
+    $obj = new ClusterManager($ajaxPage);
 } catch (Exception $e) {
-    if ((bool) is_ajax() === true) {
-        echo json_encode(['error' => '[SnmpConsole]'.$e->getMessage() ]);
+    if (is_ajax()) {
+        echo json_encode(['error' => '[ClusterManager]'.$e->getMessage() ]);
         exit;
     } else {
-        echo '[SnmpConsole]'.$e->getMessage();
+        echo '[ClusterManager]'.$e->getMessage();
     }
 
     // Stop this execution, but continue 'globally'.
@@ -69,22 +53,18 @@ try {
 }
 
 // AJAX controller.
-if ((bool) is_ajax() === true) {
+if (is_ajax()) {
     $method = get_parameter('method');
 
-    if (method_exists($controller, $method) === true) {
-        if ($controller->ajaxMethod($method) === true) {
-            $controller->{$method}();
-        } else {
-            $controller->error('Unavailable method.');
-        }
+    if (method_exists($obj, $method) === true) {
+        $obj->{$method}();
     } else {
-        $controller->error('Method not found. ['.$method.']');
+        $obj->error('Method not found. [ClusterManager::'.$method.']');
     }
 
     // Stop any execution.
     exit;
 } else {
     // Run.
-    $controller->run();
+    $obj->run();
 }

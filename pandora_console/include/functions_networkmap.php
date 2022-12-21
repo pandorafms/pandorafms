@@ -3399,7 +3399,10 @@ function get_status_color_networkmap_fictional_point($id_networkmap, $parent='')
 
             if ($agent['source_data'] == -2) {
                 if (empty($parent) === true) {
-                    $option = json_decode($agent, true);
+                    if (is_array($agent) === false) {
+                        $option = json_decode($agent, true);
+                    }
+
                     if ($option['networkmap'] == 0) {
                         $status = 0;
                     } else {

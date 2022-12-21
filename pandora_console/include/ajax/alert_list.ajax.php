@@ -654,7 +654,7 @@ if ($get_agent_alerts_datatable === true) {
     }
 
     $idGroup = $filter_alert['ag_group'];
-    $tag_filter = $filter_alert['tag_filter'];
+    $tag_filter = $filter_alert['tag'];
     $action_filter = $filter_alert['action'];
 
     try {

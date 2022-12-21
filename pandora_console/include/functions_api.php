@@ -10157,6 +10157,8 @@ function api_set_delete_module($id, $id2, $other, $trash1)
             }
 
             if (!$simulate) {
+                // Before delete the main module, check and delete the childrens from the original module.
+                module_check_childrens_and_delete($idAgentModule);
                 $return = modules_delete_agent_module($idAgentModule);
             } else {
                 $return = true;
@@ -10182,6 +10184,8 @@ function api_set_delete_module($id, $id2, $other, $trash1)
         }
 
         if (!$simulate) {
+            // Before delete the main module, check and delete the childrens from the original module.
+            module_check_childrens_and_delete($idAgentModule);
             $return = modules_delete_agent_module($idAgentModule);
         } else {
             $return = true;

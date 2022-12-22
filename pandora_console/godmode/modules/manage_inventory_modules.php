@@ -151,7 +151,7 @@ if ($create_module_inventory === true) {
     );
 
     // Delete inventory module.
-} else if ($delete_inventory_module === true) {
+} else if ((bool) $delete_inventory_module === true) {
     $result = db_process_sql_delete(
         'tmodule_inventory',
         ['id_module_inventory' => $delete_inventory_module]

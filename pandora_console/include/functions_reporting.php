@@ -8330,14 +8330,17 @@ function reporting_advanced_sla(
 
                                         $sla_check_value_warning = false;
                                         if ($sla_check_value === true) {
-                                            // Warning SLA check.
-                                            $sla_check_value_warning = sla_check_value(
-                                                $current_data['datos'],
-                                                $min_value_warning,
-                                                $max_value_warning,
-                                                $inverse_interval_warning,
-                                                1
-                                            );
+                                            if ((isset($min_value_warning) === false
+                                                && isset($max_value_warning) === false) === false
+                                            ) {
+                                                // Warning SLA check.
+                                                $sla_check_value_warning = sla_check_value(
+                                                    $current_data['datos'],
+                                                    $min_value_warning,
+                                                    $max_value_warning,
+                                                    $inverse_interval_warning
+                                                );
+                                            }
                                         }
                                     }
 
@@ -14986,8 +14989,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $return = [];
 
-    $urlImage = ui_get_full_url(false, true, false, false);
-
     $return['type'] = $content['type'];
 
     $ttl = 1;
@@ -15096,10 +15097,24 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         return false;
     }
 
-    $uncompress_module = db_uncompress_module_data(
+    $module_interval = modules_get_interval(
+        $content['id_agent_module']
+    );
+    $slice = ($content['period'] / $module_interval);
+
+    $result_sla = reporting_advanced_sla(
         $content['id_agent_module'],
         ($report['datetime'] - $content['period']),
-        $report['datetime']
+        $report['datetime'],
+        null,
+        null,
+        0,
+        null,
+        null,
+        null,
+        $slice,
+        1,
+        true
     );
 
     // Select Warning and critical values.
@@ -15148,125 +15163,84 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $inverse_warning = $agentmodule_info['warning_inverse'];
 
-    // Initialize vars.
-    $tstart     = 0;
-    $tend       = 0;
-    $tacum      = 0;
-    $tacum_data = 0;
+    $data = [];
+    $data['time_total']      = 0;
+    $data['time_ok']         = 0;
+    $data['time_error']      = 0;
+    $data['time_warning']    = 0;
+    $data['time_unknown']    = 0;
+    $data['time_not_init']   = 0;
+    $data['time_downtime']   = 0;
+    $data['checks_total']    = 0;
+    $data['checks_ok']       = 0;
+    $data['checks_error']    = 0;
+    $data['checks_warning']  = 0;
+    $data['checks_unknown']  = 0;
+    $data['checks_not_init'] = 0;
 
     $array_graph = [];
+    $i = 0;
+    foreach ($result_sla as $value_sla) {
+        $data['time_total'] += $value_sla['time_total'];
+        $data['time_ok'] += $value_sla['time_ok'];
+        $data['time_error'] += $value_sla['time_error'];
+        $data['time_warning'] += $value_sla['time_warning'];
+        $data['time_unknown'] += $value_sla['time_unknown'];
+        $data['time_downtime'] += $value_sla['time_downtime'];
+        $data['time_not_init'] += $value_sla['time_not_init'];
+        $data['checks_total'] += $value_sla['checks_total'];
+        $data['checks_ok'] += $value_sla['checks_ok'];
+        $data['checks_error'] += $value_sla['checks_error'];
+        $data['checks_warning'] += $value_sla['checks_warning'];
+        $data['checks_unknown'] += $value_sla['checks_unknown'];
+        $data['checks_not_init'] += $value_sla['checks_not_init'];
 
-    $data_not_init = 0;
-    $data_unknown  = 0;
-    $data_critical = 0;
-    $data_warning  = 0;
-    $data_ok       = 0;
-    $data_total    = 0;
-
-    $time_not_init = 0;
-    $time_unknown  = 0;
-    $time_critical = 0;
-    $time_warning  = 0;
-    $time_ok       = 0;
-
-    $legend = [];
-    foreach ($uncompress_module as $data) {
-        foreach ($data['data'] as $key => $value) {
-            if ($tacum == 0) {
-                // Initialize the accumulators.
-                $tacum      = $value['utimestamp'];
-                $tacum_data = $value['datos'];
+        // Generate raw data for graph.
+        if ($value_sla['time_total'] != 0) {
+            if ($value_sla['time_error'] > 0) {
+                // ERR.
+                $array_graph[$i]['data'] = 3;
+            } else if ($value_sla['time_unknown'] > 0) {
+                // UNKNOWN.
+                $array_graph[$i]['data'] = 4;
+            } else if ($value_sla['time_warning'] > 0) {
+                // Warning.
+                $array_graph[$i]['data'] = 2;
+            } else if ($value_sla['time_not_init'] == $value_sla['time_total']) {
+                // NOT INIT.
+                $array_graph[$i]['data'] = 6;
             } else {
-                // Utimestand end and final.
-                $tstart     = $tacum;
-                $tend       = $value['utimestamp'];
-
-                // Module type isn't string.
-                $sla_check_value_critical = sla_check_value(
-                    $tacum_data,
-                    $min_value_critical,
-                    $max_value_critical,
-                    $inverse_critical
-                );
-                $sla_check_value_warning = sla_check_value(
-                    $tacum_data,
-                    $min_value_warning,
-                    $max_value_warning,
-                    $inverse_warning
-                );
-
-                // Module type is string.
-                $string_check_value_critical = preg_match('/'.$max_value_critical.'/', $tacum_data);
-                $string_check_value_warning = preg_match('/'.$max_value_warning.'/', $tacum_data);
-
-                if ($inverse_critical) {
-                    $string_check_value_critical = !preg_match('/'.$max_value_critical.'/', $tacum_data);
-                }
-
-                if ($string_check_value_warning) {
-                    $string_check_value_warning = !preg_match('/'.$max_value_warning.'/', $tacum_data);
-                }
-
-                // Contruct array period and data.
-                if ($tacum_data === false) {
-                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NOT_INIT;
-                    // NOT INIT.
-                    $time_not_init = ($time_not_init + ($tend - $tstart));
-                    $data_not_init++;
-                } else if ($tacum_data === null) {
-                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_UNKNOWN;
-                    // UNKNOWN.
-                    $time_unknown = ($time_unknown + ($tend - $tstart));
-                    $data_unknown++;
-                } else if (( (isset($min_value_critical) || isset($max_value_critical)) && ($modules_is_string === false) && ($sla_check_value_critical == true) )
-                    || ( isset($max_value_critical) && ($modules_is_string === true) && $string_check_value_critical )
-                ) {
-                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
-                    // CRITICAL.
-                    $time_critical = ($time_critical + ($tend - $tstart));
-                    $data_critical++;
-                } else if (( (isset($min_value_warning) || isset($max_value_warning)) && ($modules_is_string === false) && ($sla_check_value_warning == true) )
-                    || ( isset($max_value_warning) && ($modules_is_string === true) && $sla_check_value_warning )
-                ) {
-                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_WARNING;
-                    // WARNING.
-                    $time_warning = ($time_warning + ($tend - $tstart));
-                    $data_warning++;
-                } else {
-                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NORMAL;
-                    // OK.
-                    $time_ok = ($time_ok + ($tend - $tstart));
-                    $data_ok++;
-                }
-
-                $array_graph[$data_total]['utimestamp'] = ($tend - $tstart);
-                $array_graph[$data_total]['real_data']  = $tacum_data;
-
-                // Reassign accumulators.
-                $tacum        = $value['utimestamp'];
-                $tacum_data = $value['datos'];
-                $data_total++;
+                $array_graph[$i]['data'] = 1;
             }
+        } else {
+            $array_graph[$i]['data'] = 7;
         }
+
+        $array_graph[$i]['utimestamp'] = ($value_sla['date_to'] - $value_sla['date_from']);
+        $i++;
     }
+
+    $data['sla_value'] = reporting_sla_get_compliance_from_array(
+        $data
+    );
+
+    $data['sla_fixed'] = sla_truncate(
+        $data['sla_value'],
+        $config['graph_precision']
+    );
 
     $data_init = -1;
     $acum = 0;
     $sum = 0;
     $array_result = [];
     $i = 0;
-    foreach ($array_graph as $key => $value) {
+    foreach ($array_graph as $value) {
         if ($data_init == -1) {
             $data_init = $value['data'];
             $acum      = $value['utimestamp'];
         } else {
             if ($data_init == $value['data']) {
                 $acum = ($acum + $value['utimestamp']);
-                if ($modules_is_string === false) {
-                    $sum = ($sum + $value['real_data']);
-                } else {
-                    $sum = $value['real_data'];
-                }
             } else {
                 $array_result[$i]['data'] = $data_init;
                 $array_result[$i]['utimestamp'] = $acum;
@@ -15274,7 +15248,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
                 $i++;
                 $data_init = $value['data'];
                 $acum = $value['utimestamp'];
-                $sum = $value['real_data'];
             }
         }
     }
@@ -15287,39 +15260,42 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         $array_result[$i]['real_data'] = $sum;
     }
 
-    $time_total = ($time_not_init + $time_unknown + $time_critical + $time_warning + $time_ok);
+    $time_total = $data['time_total'];
     // Slice graphs calculation.
-    $return['agent']            = modules_get_agentmodule_agent_alias(
+    $return['agent'] = modules_get_agentmodule_agent_alias(
         $content['id_agent_module']
     );
-    $return['module']           = modules_get_agentmodule_name(
+    $return['module'] = modules_get_agentmodule_name(
         $content['id_agent_module']
     );
-    $return['max_critical']     = $max_value_critical;
-    $return['min_critical']     = $min_value_critical;
+
+    $return['max_critical'] = $max_value_critical;
+    $return['min_critical'] = $min_value_critical;
     $return['critical_inverse'] = $inverse_critical;
-    $return['max_warning']      = $max_value_warning;
-    $return['min_warning']      = $min_value_warning;
-    $return['warning_inverse']  = $inverse_warning;
-    $return['data_not_init']    = $data_not_init;
-    $return['data_unknown']     = $data_unknown;
-    $return['data_critical']    = $data_critical;
-    $return['data_warning']     = $data_warning;
-    $return['data_ok']          = $data_ok;
-    $return['data_total']       = $data_total;
-    $return['time_not_init']    = $time_not_init;
-    $return['time_unknown']     = $time_unknown;
-    $return['time_critical']    = $time_critical;
-    $return['time_warning']     = $time_warning;
-    $return['time_ok']          = $time_ok;
-    $return['percent_ok']       = (($data_ok * 100) / $data_total);
+    $return['max_warning'] = $max_value_warning;
+    $return['min_warning'] = $min_value_warning;
+    $return['warning_inverse'] = $inverse_warning;
+    $return['data_not_init'] = $data['checks_not_init'];
+    $return['data_unknown'] = $data['checks_unknown'];
+    $return['data_critical'] = $data['checks_error'];
+    $return['data_warning'] = $data['checks_warning'];
+    $return['data_ok'] = $data['checks_ok'];
+    $return['data_total'] = $data['checks_total'];
+    $return['time_not_init'] = $data['time_not_init'];
+    $return['time_unknown'] = $data['time_unknown'];
+    $return['time_critical'] = $data['time_error'];
+    $return['time_warning'] = $data['time_warning'];
+    $return['time_ok'] = $data['time_ok'];
+    $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
 
     $colors = [
-        AGENT_MODULE_STATUS_NORMAL       => COL_NORMAL,
-        AGENT_MODULE_STATUS_WARNING      => COL_WARNING,
-        AGENT_MODULE_STATUS_CRITICAL_BAD => COL_CRITICAL,
-        AGENT_MODULE_STATUS_UNKNOWN      => COL_UNKNOWN,
-        AGENT_MODULE_STATUS_NOT_INIT     => COL_NOTINIT,
+        1 => COL_NORMAL,
+        2 => COL_WARNING,
+        3 => COL_CRITICAL,
+        4 => COL_UNKNOWN,
+        5 => COL_DOWNTIME,
+        6 => COL_NOTINIT,
+        7 => COL_IGNORED,
     ];
 
     $width_graph  = 100;
@@ -15329,7 +15305,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             $time_total,
             $width_graph,
             $height_graph,
-            $legend,
+            [],
             $colors,
             $config['fontpath'],
             $config['round_corner'],

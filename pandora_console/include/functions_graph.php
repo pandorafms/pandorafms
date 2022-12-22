@@ -2249,18 +2249,13 @@ function graphic_combined_module(
             }
 
             $graph_values = $temp;
-
-            // TODO: XXX chartjs.
             $color = color_graph_array();
-            $width = null;
-            $height = null;
 
             if ($params['vconsole'] === true) {
                 $water_mark = '';
             }
 
             $options = [
-                'width'     => $width,
                 'height'    => $height,
                 'waterMark' => $water_mark,
                 'ttl'       => $ttl,

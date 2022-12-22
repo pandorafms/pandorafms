@@ -202,14 +202,14 @@ if ($access_console_node === true) {
         $sub['gmassive']['type'] = 'direct';
         $sub['gmassive']['subtype'] = 'nolink';
         $sub2 = [];
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_agents']['text'] = __('Agents operations');
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_modules']['text'] = __('Modules operations');
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_plugins']['text'] = __('Plugins operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_agents']['text'] = __('Agents operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_modules']['text'] = __('Modules operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_plugins']['text'] = __('Plugins operations');
         if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
-            $sub2['godmode/massive/massive_operations&amp;tab=massive_users']['text'] = __('Users operations');
+            $sub2['godmode/massive/massive_operations&tab=massive_users']['text'] = __('Users operations');
         }
 
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_alerts']['text'] = __('Alerts operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_alerts']['text'] = __('Alerts operations');
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');

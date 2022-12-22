@@ -523,6 +523,15 @@ function config_update_config()
                 break;
 
                 case 'auth':
+                    $validatedCSRF = validate_csrf_code();
+
+                    // CSRF Validation.
+                    if ($validatedCSRF === false) {
+                        include_once 'general/login_page.php';
+                        // Finish the execution.
+                        exit('</html>');
+                    }
+
                     // AUTHENTICATION SETUP.
                     if (config_update_value('auth', get_parameter('auth'), true) === false) {
                         $error_update[] = __('Authentication method');

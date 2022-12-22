@@ -151,7 +151,12 @@ if ($access_console_node === true) {
         $sub['snmpconsole']['subtype'] = 'nolink';
     }
 
-    enterprise_hook('cluster_menu');
+    if (check_acl($config['id_user'], 0, 'AR')) {
+        $sub['operation/cluster/cluster']['text'] = __('Cluster View');
+        $sub['operation/cluster/cluster']['id'] = 'cluster';
+        $sub['operation/cluster/cluster']['refr'] = 0;
+    }
+
     enterprise_hook('aws_menu');
     enterprise_hook('SAP_view');
 

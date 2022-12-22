@@ -1227,7 +1227,7 @@ function visual_map_print_item(
 
                 $module_data = get_bars_module_data(
                     $id_module,
-                    ($layoutData['type_graph'] !== 'horizontal')
+                    $layoutData['type_graph']
                 );
                 $options = [];
                 $options['generals']['rotate'] = true;
@@ -2344,7 +2344,7 @@ function get_if_module_is_image($id_module)
 }
 
 
-function get_bars_module_data($id_module)
+function get_bars_module_data($id_module, $typeGraph='horizontal')
 {
     // This charts is only serialize graphs.
     // In other string show image no data to show.
@@ -2364,18 +2364,25 @@ function get_bars_module_data($id_module)
         }
     }
 
-    $values_to_return = [];
-    $index = 0;
-    $color_index = 0;
-    $total = 0;
-
     if (!$values) {
         return false;
     }
 
+    $values_to_return = [];
     foreach ($values as $val) {
         $data = explode(',', $val);
-        $values_to_return[$data[0]] = $data[1];
+        $values_to_return['labels'][] = io_safe_output($data[0]);
+        if ($typeGraph === 'horizontal') {
+            $values_to_return['data'][] = [
+                'y' => io_safe_output($data[0]),
+                'x' => $data[1],
+            ];
+        } else {
+            $values_to_return['data'][] = [
+                'x' => io_safe_output($data[0]),
+                'y' => $data[1],
+            ];
+        }
     }
 
     return $values_to_return;

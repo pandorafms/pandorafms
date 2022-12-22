@@ -424,6 +424,7 @@ class TopNEventByGroupWidget extends Widget
                 return $output;
             } else {
                 $data_pie = [];
+                $labels = [];
                 foreach ($result as $row) {
                     if ($row['id_agente'] == 0) {
                         $name = __('System');
@@ -444,7 +445,8 @@ class TopNEventByGroupWidget extends Widget
 
                     $name .= ' ('.$row['count'].')';
 
-                    $data_pie[$name] = $row['count'];
+                    $labels[] = io_safe_output($name);
+                    $data_pie[] = $row['count'];
                 }
             }
 
@@ -480,6 +482,7 @@ class TopNEventByGroupWidget extends Widget
                         'position' => 'right',
                         'align'    => 'center',
                     ],
+                    'labels' => $labels,
                 ]
             );
         }

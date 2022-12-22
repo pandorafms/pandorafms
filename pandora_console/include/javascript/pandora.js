@@ -2202,10 +2202,41 @@ function loadPasswordConfig(id, value) {
 
 var formatterDataLabelPie = function(value, ctx) {
   let datasets = ctx.chart.data.datasets;
-  console.log(datasets[0].data);
   if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
     let sum = datasets[0].data.reduce((a, b) => parseInt(a) + parseInt(b), 0);
     let percentage = ((value * 100) / sum).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+var formatterDataHorizontalBar = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce(
+      (a, b) => {
+        if (a != undefined && b != undefined) {
+          return { x: parseInt(a.x) + parseInt(b.x) };
+        }
+      },
+      { x: 0 }
+    );
+    let percentage = ((value.x * 100) / sum.x).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+var formatterDataVerticalBar = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce(
+      (a, b) => {
+        if (a != undefined && b != undefined) {
+          return { y: parseInt(a.y) + parseInt(b.y) };
+        }
+      },
+      { y: 0 }
+    );
+    let percentage = ((value.y * 100) / sum.y).toFixed(1) + "%";
     return percentage;
   }
 };

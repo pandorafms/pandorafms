@@ -184,7 +184,7 @@ $table_source_data->head['num'] = __('Number');
 $table_source_data->data = [];
 
 $table_source_graph_data = [];
-
+$labels = [];
 foreach ($traps_generated_by_source as $trap) {
     $row = [];
 
@@ -202,7 +202,8 @@ foreach ($traps_generated_by_source as $trap) {
 
     $table_source_data->data[] = $row;
 
-    $table_source_graph_data[$trap['source']] = (int) $trap['num'];
+    $labels[] = io_safe_output($trap['source']);
+    $table_source_graph_data[] = (int) $trap['num'];
 }
 
 $table_source_row['table'] = html_print_table($table_source_data, true);
@@ -219,6 +220,7 @@ if (empty($table_source_graph_data)) {
             'position' => 'right',
             'align'    => 'center',
         ],
+        'labels'    => $labels,
     ];
 
     $table_source_graph = pie_graph(
@@ -255,14 +257,14 @@ $table_oid_data->head['num'] = __('Number');
 $table_oid_data->data = [];
 
 $table_oid_graph_data = [];
-
+$labels = [];
 foreach ($traps_generated_by_oid as $trap) {
     $table_oid_data->data[] = [
         'oid' => $trap['oid'],
         'num' => (int) $trap['num'],
     ];
-
-    $table_oid_graph_data[$trap['oid']] = (int) $trap['num'];
+    $labels[] = io_safe_output($trap['oid']);
+    $table_oid_graph_data[] = (int) $trap['num'];
 }
 
 $table_oid_row['table'] = html_print_table($table_oid_data, true);
@@ -279,6 +281,7 @@ if (empty($table_oid_graph_data)) {
             'position' => 'right',
             'align'    => 'center',
         ],
+        'labels'    => $labels,
     ];
 
     $table_oid_graph = pie_graph(

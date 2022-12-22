@@ -444,7 +444,7 @@ class TopNWidget extends Widget
                 metaconsole_restore_db();
             }
         } else {
-            $modules = @db_get_all_rows_sql(
+            $modules = db_get_all_rows_sql(
                 $sql,
                 $search_in_history_db
             );
@@ -462,6 +462,7 @@ class TopNWidget extends Widget
         }
 
         $data_hbar = [];
+        $labels = [];
         $valueMax = 0;
         $valueMin = 0;
         $booleanModulesCount = 0;
@@ -476,7 +477,12 @@ class TopNWidget extends Widget
         foreach ($modules as $module) {
             $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20, false, true, false);
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
-            $data_hbar[io_safe_output($item_name)] = $module[$display];
+            $labels[] = io_safe_output($item_name);
+
+            $data_hbar[] = [
+                'x' => $module[$display],
+                'y' => io_safe_output($item_name),
+            ];
             // Calculation of max-min values for show in graph.
             $calc = (ceil((5 * (float) $module[$display]) / 100) + $module[$display]);
             // Set of max-min values for graph.
@@ -510,6 +516,7 @@ class TopNWidget extends Widget
                     'grid' => ['display' => false],
                 ],
             ],
+            'labels' => $labels,
         ];
 
         $output .= vbar_graph(

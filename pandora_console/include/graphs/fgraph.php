@@ -398,36 +398,33 @@ function pie_graph(
         return graph_nodata_image($options);
     }
 
-    // Remove the html_entities.
-    $temp = [];
-    foreach ($chart_data as $key => $value) {
-        $temp[io_safe_output($key)] = $value;
-    }
-
-    $chart_data = $temp;
-
     // Number max elements.
-    $max_values = (isset($options['maxValues']) === true) ? $options['maxValues'] : 9;
+    $max_values = (isset($options['maxValues']) === true) ? $options['maxValues'] : 15;
     if (count($chart_data) > $max_values) {
         $others_str = (isset($options['otherStr']) === true) ? $options['otherStr'] : __('Others');
         $chart_data_trunc = [];
         $n = 1;
         foreach ($chart_data as $key => $value) {
-            if ($n < $max_values) {
+            if ($n <= $max_values) {
                 $chart_data_trunc[$key] = $value;
             } else {
-                if (isset($chart_data_trunc[$others_str]) === true) {
+                if (isset($options['labels'][$key]) === true) {
+                    unset($options['labels'][$key]);
+                }
+
+                if (isset($chart_data_trunc[$others_str]) === false) {
                     $chart_data_trunc[$others_str] = 0;
                 }
 
                 if (empty($value) === false) {
-                    $chart_data_trunc[$others_str] += $value;
+                    $chart_data_trunc[$others_str] += (float) $value;
                 }
             }
 
             $n++;
         }
 
+        $options['labels'][$max_values] = $others_str;
         $chart_data = $chart_data_trunc;
     }
 
@@ -804,7 +801,27 @@ function get_build_setup_charts($type, $options, $data)
 
         $dataLabel->setOffset($dataLabelOffset);
 
-        $dataLabelFormatter = 'formatterDataLabelPie';
+        switch ($type) {
+            case 'DOUGHNUT':
+            case 'PIE':
+                $dataLabelFormatter = 'formatterDataLabelPie';
+            break;
+
+            case 'BAR':
+                if (isset($options['axis']) === true
+                    && empty($options['axis']) === false
+                ) {
+                    $dataLabelFormatter = 'formatterDataHorizontalBar';
+                } else {
+                    $dataLabelFormatter = 'formatterDataVerticalBar';
+                }
+            break;
+
+            default:
+                // Not possible.
+            break;
+        }
+
         if (isset($options['dataLabel']['formatter']) === true) {
             $dataLabelFormatter = $options['dataLabel']['formatter'];
         }
@@ -1047,7 +1064,12 @@ function get_build_setup_charts($type, $options, $data)
     }
 
     // Set labels.
-    $chart->labels()->exchangeArray(array_keys($data));
+    if (isset($options['labels']) === true
+        && empty($options['labels']) === false
+        && is_array($options['labels']) === true
+    ) {
+        $chart->labels()->exchangeArray($options['labels']);
+    }
 
     // Add Datasets.
     $setData = $chart->createDataSet();

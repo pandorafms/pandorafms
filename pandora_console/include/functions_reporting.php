@@ -1781,7 +1781,9 @@ function reporting_event_top_n(
 
             if ($order_uptodown == 1 || $order_uptodown == 2) {
                 $i = 0;
-                $data_pie_graph = [];
+                $labels_pie = [];
+                $labels_hbar = [];
+                $data_pie = [];
                 $data_hbar = [];
                 foreach ($data_top as $key_dt => $dt) {
                     $item_name = ui_print_truncate_text(
@@ -1802,28 +1804,14 @@ function reporting_event_top_n(
                         '...'
                     );
 
-                    $item_name_key_pie = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_pie_graph[$item_name_key_pie])) {
-                            $item_name_key_pie .= ' ';
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
+                    $labels_hbar[] = io_safe_output($item_name);
+                    $data_hbar[] = [
+                        'y' => io_safe_output($item_name),
+                        'x' => $dt,
+                    ];
 
-                    $item_name_key_hbar = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_hbar[$item_name_key_hbar])) {
-                            $item_name_key_hbar = ' '.$item_name_key_hbar;
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
-
-                    $data_hbar[$item_name]['g'] = $dt;
-                    $data_pie_graph[$item_name] = $dt;
+                    $labels_pie[] = io_safe_output($item_name);
+                    $data_pie[] = $dt;
 
                     if ($show_graph == 0 || $show_graph == 1) {
                         $data = [];
@@ -1862,7 +1850,9 @@ function reporting_event_top_n(
                 }
             } else if ($order_uptodown == 0 || $order_uptodown == 3) {
                 $i = 0;
-                $data_pie_graph = [];
+                $labels_pie = [];
+                $labels_hbar = [];
+                $data_pie = [];
                 $data_hbar = [];
                 foreach ($agent_name as $key_an => $an) {
                     $item_name = '';
@@ -1882,16 +1872,6 @@ function reporting_event_top_n(
                         '...'
                     );
 
-                    $item_name_key_pie = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_pie_graph[$item_name_key_pie])) {
-                            $item_name_key_pie .= ' ';
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
-
                     $item_name_key_hbar = $item_name;
                     $exist_key = true;
                     while ($exist_key) {
@@ -1902,14 +1882,18 @@ function reporting_event_top_n(
                         }
                     }
 
-                    $data_hbar[io_safe_output($item_name)] = $data_top[$key_an];
-
+                    $labels_hbar[] = io_safe_output($item_name);
+                    $data_hbar[] = [
+                        'y' => io_safe_output($item_name),
+                        'x' => $data_top[$key_an],
+                    ];
                     if ((int) $ttl === 2) {
                         $data_top[$key_an] = (empty($data_top[$key_an]) === false) ? $data_top[$key_an] : 0;
                         $item_name .= ' ('.$data_top[$key_an].')';
                     }
 
-                    $data_pie_graph[$item_name] = $data_top[$key_an];
+                    $labels_pie[] = io_safe_output($item_name);
+                    $data_pie[] = $data_top[$key_an];
 
                     $divisor = get_data_multiplier($units[$key_an]);
 
@@ -1958,6 +1942,7 @@ function reporting_event_top_n(
                         'align'    => 'center',
                     ],
                     'ttl'    => $ttl,
+                    'labels' => $labels_pie,
                 ];
 
                 if ((int) $ttl === 2) {
@@ -1970,23 +1955,21 @@ function reporting_event_top_n(
                     ];
                 }
 
+                $return['charts']['pie'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
                 if ((int) $ttl === 2) {
-                    $return['charts']['pie'] = '<img src="data:image/png;base64,';
-                } else {
-                    $return['charts']['pie'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
+                    $return['charts']['pie'] .= '<img src="data:image/png;base64,';
                 }
 
-                arsort($data_pie_graph);
                 $return['charts']['pie'] .= pie_graph(
-                    $data_pie_graph,
+                    $data_pie,
                     $options_charts
                 );
 
                 if ((int) $ttl === 2) {
                     $return['charts']['pie'] .= '" />';
-                } else {
-                    $return['charts']['pie'] .= '</div>';
                 }
+
+                $return['charts']['pie'] .= '</div>';
 
                 $options = [
                     'height' => (count($data_hbar) * 30),
@@ -2001,6 +1984,7 @@ function reporting_event_top_n(
                             'grid' => ['display' => false],
                         ],
                     ],
+                    'labels' => $labels_hbar,
                 ];
 
                 if ((int) $ttl === 2) {
@@ -2010,10 +1994,9 @@ function reporting_event_top_n(
                     ];
                 }
 
+                $return['charts']['bars'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
                 if ((int) $ttl === 2) {
-                    $return['charts']['bars'] = '<img src="data:image/png;base64,';
-                } else {
-                    $return['charts']['bars'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
+                    $return['charts']['bars'] .= '<img src="data:image/png;base64,';
                 }
 
                 $return['charts']['bars'] .= vbar_graph(
@@ -2023,9 +2006,9 @@ function reporting_event_top_n(
 
                 if ((int) $ttl === 2) {
                     $return['charts']['bars'] .= '" />';
-                } else {
-                    $return['charts']['bars'] .= '</div>';
                 }
+
+                $return['charts']['bars'] .= '</div>';
             }
 
             $return['resume'] = null;
@@ -2256,6 +2239,8 @@ function reporting_event_report_group(
                     $k = '('.$value['server_name'].') '.$value['alias'];
                 }
 
+                $k = io_safe_output($k);
+
                 if (isset($data_graph_by_agent[$k]) === true) {
                     $data_graph_by_agent[$k]++;
                 } else {
@@ -2279,8 +2264,9 @@ function reporting_event_report_group(
             $return['chart']['by_agent'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_agent);
         $return['chart']['by_agent'] .= pie_graph(
-            $data_graph_by_agent,
+            array_values($data_graph_by_agent),
             $options_charts
         );
 
@@ -2308,8 +2294,9 @@ function reporting_event_report_group(
             $return['chart']['by_user_validator'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_user);
         $return['chart']['by_user_validator'] .= pie_graph(
-            $data_graph_by_user,
+            array_values($data_graph_by_user),
             $options_charts
         );
 
@@ -2324,7 +2311,7 @@ function reporting_event_report_group(
         $data_graph_by_criticity = [];
         if (empty($data) === false) {
             foreach ($data as $value) {
-                $k = get_priority_name($value['criticity']);
+                $k = io_safe_output(get_priority_name($value['criticity']));
                 if (isset($data_graph_by_criticity[$k]) === true) {
                     $data_graph_by_criticity[$k]++;
                 } else {
@@ -2351,8 +2338,9 @@ function reporting_event_report_group(
             $return['chart']['by_criticity'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_criticity);
         $return['chart']['by_criticity'] .= pie_graph(
-            $data_graph_by_criticity,
+            array_values($data_graph_by_criticity),
             $options_charts
         );
 
@@ -2397,8 +2385,9 @@ function reporting_event_report_group(
             $return['chart']['validated_vs_unvalidated'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_status);
         $return['chart']['validated_vs_unvalidated'] .= pie_graph(
-            $data_graph_by_status,
+            array_values($data_graph_by_status),
             $options_charts
         );
 
@@ -3927,18 +3916,32 @@ function reporting_exception(
                     $ttl
                 );
 
-                $data_pie_graph = [];
+                $data_pie = [];
+                $labels_pie = [];
                 $data_hbar = [];
+                $labels_hbar = [];
+
+                $other = 0;
                 foreach ($items as $key => $item) {
                     if ($show_graph == 1 || $show_graph == 2) {
-                        $label = $item['agent'].' - '.$item['operation'];
-                        $data_hbar[io_safe_output($label)] = $item['value'];
-                        if ((int) $ttl === 2) {
-                            $item['value'] = (empty($item['value']) === false) ? $item['value'] : 0;
-                            $label .= ' ('.$item['value'].')';
-                        }
+                        if ($key <= 10) {
+                            $label = $item['agent'].' - '.$item['operation'];
+                            $labels_hbar[] = io_safe_output($label);
+                            $data_hbar[] = [
+                                'x' => $item['value'],
+                                'y' => io_safe_output($label),
+                            ];
 
-                        $data_pie_graph[$label] = $item['value'];
+                            if ((int) $ttl === 2) {
+                                $item['value'] = (empty($item['value']) === false) ? $item['value'] : 0;
+                                $label .= ' ('.$item['value'].')';
+                            }
+
+                            $labels_pie[] = io_safe_output($label);
+                            $data_pie[] = $item['value'];
+                        } else {
+                            $other += $item['value'];
+                        }
                     }
 
                     if ($show_graph == 0 || $show_graph == 1) {
@@ -3950,6 +3953,22 @@ function reporting_exception(
                         $data['formated_value'] = format_for_graph($item['value'], 2).' '.$item['unit'];
                         $return['data'][] = $data;
                     }
+                }
+
+                if (empty($other) === false) {
+                    $label = __('Others');
+                    $labels_hbar[] = $label;
+                    $data_hbar[] = [
+                        'x' => $other,
+                        'y' => $label,
+                    ];
+
+                    if ((int) $ttl === 2) {
+                        $label .= ' ('.$other.')';
+                    }
+
+                    $labels_pie[] = $label;
+                    $data_pie[] = $other;
                 }
 
                 if (!empty($force_width_chart)) {
@@ -3967,6 +3986,7 @@ function reporting_exception(
                         'align'    => 'center',
                     ],
                     'ttl'    => $ttl,
+                    'labels' => $labels_pie,
                 ];
 
                 if ((int) $ttl === 2) {
@@ -3985,9 +4005,8 @@ function reporting_exception(
                     $return['chart']['pie'] = '<div style="margin: 0 auto; width:600px;">';
                 }
 
-                arsort($data_pie_graph);
                 $return['chart']['pie'] .= pie_graph(
-                    $data_pie_graph,
+                    $data_pie,
                     $options_charts
                 );
 
@@ -4016,6 +4035,7 @@ function reporting_exception(
                             'grid' => ['display' => false],
                         ],
                     ],
+                    'labels' => $labels_hbar,
                 ];
 
                 if ((int) $ttl === 2) {
@@ -4406,8 +4426,9 @@ function reporting_event_report_agent(
             $return['chart']['by_user_validator'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_user);
         $return['chart']['by_user_validator'] .= pie_graph(
-            $data_graph_by_user,
+            array_values($data_graph_by_user),
             $options_charts
         );
 
@@ -4422,7 +4443,7 @@ function reporting_event_report_agent(
         $data_graph_by_criticity = [];
         if (empty($return['data']) === false) {
             foreach ($return['data'] as $value) {
-                $k = get_priority_name($value['criticity']);
+                $k = io_safe_output(get_priority_name($value['criticity']));
                 if (isset($data_graph_by_criticity[$k]) === true) {
                     $data_graph_by_criticity[$k]++;
                 } else {
@@ -4449,8 +4470,9 @@ function reporting_event_report_agent(
             $return['chart']['by_criticity'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_criticity);
         $return['chart']['by_criticity'] .= pie_graph(
-            $data_graph_by_criticity,
+            array_values($data_graph_by_criticity),
             $options_charts
         );
 
@@ -4495,8 +4517,9 @@ function reporting_event_report_agent(
             $return['chart']['validated_vs_unvalidated'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
         }
 
+        $options_charts['labels'] = array_keys($data_graph_by_status);
         $return['chart']['validated_vs_unvalidated'] .= pie_graph(
-            $data_graph_by_status,
+            array_values($data_graph_by_status),
             $options_charts
         );
 
@@ -5401,10 +5424,12 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                     $data_query,
                                     function ($carry, $item) use ($pdf) {
                                         if ($pdf === true) {
-                                            $carry[$item['label'].' ('.$item['value'].')'] = $item['value'];
+                                            $carry['labels'][] = io_safe_output($item['label']).' ('.$item['value'].')';
                                         } else {
-                                            $carry[$item['label']] = $item['value'];
+                                            $carry['labels'][] = io_safe_output($item['label']);
                                         }
+
+                                        $carry['data'][] = $item['value'];
 
                                         return $carry;
                                     },
@@ -5416,8 +5441,9 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                     $value_query .= '<img src="data:image/png;base64,';
                                 }
 
+                                $options['labels'] = $data['labels'];
                                 $value_query .= pie_graph(
-                                    $data,
+                                    $data['data'],
                                     $options
                                 );
 
@@ -11100,8 +11126,9 @@ function reporting_get_module_detailed_event(
                 $event['chart']['by_user_validator'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
             }
 
+            $options_charts['labels'] = array_keys($data_graph_by_user);
             $event['chart']['by_user_validator'] .= pie_graph(
-                $data_graph_by_user,
+                array_values($data_graph_by_user),
                 $options_charts
             );
 
@@ -11116,7 +11143,7 @@ function reporting_get_module_detailed_event(
             $data_graph_by_criticity = [];
             if (empty($event['data']) === false) {
                 foreach ($event['data'] as $value) {
-                    $k = get_priority_name($value['criticity']);
+                    $k = io_safe_output(get_priority_name($value['criticity']));
                     if (isset($data_graph_by_criticity[$k]) === true) {
                         $data_graph_by_criticity[$k]++;
                     } else {
@@ -11143,8 +11170,9 @@ function reporting_get_module_detailed_event(
                 $event['chart']['by_criticity'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
             }
 
+            $options_charts['labels'] = array_keys($data_graph_by_criticity);
             $event['chart']['by_criticity'] .= pie_graph(
-                $data_graph_by_criticity,
+                array_values($data_graph_by_criticity),
                 $options_charts
             );
 
@@ -11189,8 +11217,9 @@ function reporting_get_module_detailed_event(
                 $event['chart']['validated_vs_unvalidated'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
             }
 
+            $options_charts['labels'] = array_keys($data_graph_by_status);
             $event['chart']['validated_vs_unvalidated'] .= pie_graph(
-                $data_graph_by_status,
+                array_values($data_graph_by_status),
                 $options_charts
             );
 

@@ -241,9 +241,10 @@ final class BarsGraph extends Item
             }
         }
 
-        $moduleData = \get_bars_module_data($moduleId);
+        $moduleData = \get_bars_module_data($moduleId, $typeGraph);
         if ($moduleData !== false && is_array($moduleData) === true) {
-            array_pop($moduleData);
+            array_pop($moduleData['labels']);
+            array_pop($moduleData['data']);
         }
 
         $waterMark = [
@@ -284,12 +285,11 @@ final class BarsGraph extends Item
             }
 
             $options = [
-                'width'      => $width,
-                'height'     => $height,
-                'background' => $backGroundColor,
-                'waterMark'  => $waterMark,
-                'legend'     => ['display' => false],
-                'scales'     => [
+                'width'     => $width,
+                'height'    => $height,
+                'waterMark' => $waterMark,
+                'legend'    => ['display' => false],
+                'scales'    => [
                     'x' => [
                         'grid'  => [
                             'display' => true,
@@ -309,13 +309,14 @@ final class BarsGraph extends Item
                         ],
                     ],
                 ],
+                'labels'    => $moduleData['labels'],
             ];
 
             if ($typeGraph === 'horizontal') {
                 $options['axis'] = 'y';
             }
 
-            $graph = vbar_graph($moduleData, $options);
+            $graph = vbar_graph($moduleData['data'], $options);
         }
 
         // Restore connection.

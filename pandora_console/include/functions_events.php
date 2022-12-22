@@ -5191,7 +5191,7 @@ function events_get_count_events_validated_by_user($data)
             ) {
                 foreach ($fullnames as $value) {
                     if (isset($data_graph_by_user[$value['id_user']]) === true) {
-                        $data_graph_by_user[$value['fullname']] = $data_graph_by_user[$value['id_user']];
+                        $data_graph_by_user[io_safe_output($value['fullname'])] = $data_graph_by_user[$value['id_user']];
                         unset($data_graph_by_user[$value['id_user']]);
                     }
                 }

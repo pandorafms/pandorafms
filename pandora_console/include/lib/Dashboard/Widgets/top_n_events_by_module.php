@@ -427,6 +427,7 @@ class TopNEventByModuleWidget extends Widget
                 $output .= '</div>';
                 return $output;
             } else {
+                $labels = [];
                 $data_pie = [];
                 foreach ($result as $row) {
                     if ($row['id_agentmodule'] == 0) {
@@ -479,7 +480,8 @@ class TopNEventByModuleWidget extends Widget
                         );
                     }
 
-                    $data_pie[$event_name.' [ '.$name.' ] ('.$row['count'].')'] = $row['count'];
+                    $labels[] = $event_name.' [ '.$name.' ] ('.$row['count'].')';
+                    $data_pie[] = $row['count'];
                 }
             }
 
@@ -515,6 +517,7 @@ class TopNEventByModuleWidget extends Widget
                         'position' => 'right',
                         'align'    => 'center',
                     ],
+                    'labels' => $labels,
                 ]
             );
         }

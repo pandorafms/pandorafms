@@ -295,7 +295,7 @@ if ($result === false) {
         $data = [];
         $begin = false;
         if ($management_allowed === true) {
-            $data[0] = '<strong><a href="index.php?sec='.$sec.'&sec2=enterprise/godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">'.$row['name'].'</a></strong>';
+            $data[0] = '<strong><a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">'.$row['name'].'</a></strong>';
         } else {
             $data[0] = '<strong>'.$row['name'].'</strong>';
         }

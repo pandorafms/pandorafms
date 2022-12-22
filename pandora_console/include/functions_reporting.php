@@ -8330,14 +8330,17 @@ function reporting_advanced_sla(
 
                                         $sla_check_value_warning = false;
                                         if ($sla_check_value === true) {
-                                            // Warning SLA check.
-                                            $sla_check_value_warning = sla_check_value(
-                                                $current_data['datos'],
-                                                $min_value_warning,
-                                                $max_value_warning,
-                                                $inverse_interval_warning,
-                                                1
-                                            );
+                                            if ((isset($min_value_warning) === false
+                                                && isset($max_value_warning) === false) === false
+                                            ) {
+                                                // Warning SLA check.
+                                                $sla_check_value_warning = sla_check_value(
+                                                    $current_data['datos'],
+                                                    $min_value_warning,
+                                                    $max_value_warning,
+                                                    $inverse_interval_warning
+                                                );
+                                            }
                                         }
                                     }
 
@@ -14986,8 +14989,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $return = [];
 
-    $urlImage = ui_get_full_url(false, true, false, false);
-
     $return['type'] = $content['type'];
 
     $ttl = 1;
@@ -15173,6 +15174,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     $data['checks_total']    = 0;
     $data['checks_ok']       = 0;
     $data['checks_error']    = 0;
+    $data['checks_warning']  = 0;
     $data['checks_unknown']  = 0;
     $data['checks_not_init'] = 0;
 
@@ -15198,14 +15200,13 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             if ($value_sla['time_error'] > 0) {
                 // ERR.
                 $array_graph[$i]['data'] = 3;
-            } else if ($value_sla['time_warning'] > 0) {
-                // Warning.
-                $array_graph[$i]['data'] = 2;
             } else if ($value_sla['time_unknown'] > 0) {
                 // UNKNOWN.
                 $array_graph[$i]['data'] = 4;
-            } else if ($value_sla['time_not_init'] == $value_sla['time_total']
-            ) {
+            } else if ($value_sla['time_warning'] > 0) {
+                // Warning.
+                $array_graph[$i]['data'] = 2;
+            } else if ($value_sla['time_not_init'] == $value_sla['time_total']) {
                 // NOT INIT.
                 $array_graph[$i]['data'] = 6;
             } else {
@@ -15215,21 +15216,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             $array_graph[$i]['data'] = 7;
         }
 
-        $array_graph[$i]['utimestamp'] = (
-            $value_sla['date_to'] - $value_sla['date_from']);
-
-        if (isset($planned_downtimes)) {
-            foreach ($planned_downtimes as $pd) {
-                if (($value_sla['date_from'] >= $pd['date_from'])
-                    && ($value_sla['date_to'] <= $pd['date_to'])
-                ) {
-                    $array_graph[$i]['data'] = 5;
-                    // In scheduled downtime.
-                    break;
-                }
-            }
-        }
-
+        $array_graph[$i]['utimestamp'] = ($value_sla['date_to'] - $value_sla['date_from']);
         $i++;
     }
 
@@ -15254,11 +15241,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         } else {
             if ($data_init == $value['data']) {
                 $acum = ($acum + $value['utimestamp']);
-                if ($modules_is_string === false) {
-                    $sum = ($sum + $value['real_data']);
-                } else {
-                    $sum = $value['real_data'];
-                }
             } else {
                 $array_result[$i]['data'] = $data_init;
                 $array_result[$i]['utimestamp'] = $acum;
@@ -15266,7 +15248,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
                 $i++;
                 $data_init = $value['data'];
                 $acum = $value['utimestamp'];
-                $sum = $value['real_data'];
             }
         }
     }

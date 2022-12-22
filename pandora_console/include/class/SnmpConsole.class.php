@@ -576,7 +576,8 @@ class SnmpConsole extends HTML
         // Catch post parameters.
         $start   = get_parameter('start', 0);
         $length  = get_parameter('length', $config['block_size']);
-
+        // There is a limit of (2^32)^2 (18446744073709551615) rows in a MyISAM table, show for show all use max nrows.
+        $length = ($length != '-1') ? $length : '18446744073709551615';
         $order   = get_datatable_order(true);
         $filters = get_parameter('filter', []);
 

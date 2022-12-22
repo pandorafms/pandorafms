@@ -2104,7 +2104,7 @@ function get_snmpwalk(
     }
 
     if (enterprise_installed()) {
-        if ($server_to_exec != 0) {
+        if (empty($server_to_exec) === false) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
 
             if (empty($server_data['port'])) {

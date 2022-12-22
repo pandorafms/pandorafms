@@ -252,9 +252,7 @@ function snmp_show_result_message(data) {
     // Stop waiting modal.
     waiting_modal(stop);
 
-    var dato = data.replace(/[^]+(?=\[)/, "");
-
-    dato = JSON.parse(dato);
+    var dato = JSON.parse(data);
     if (dato.length !== 0) {
       $("#error_text").text("");
 

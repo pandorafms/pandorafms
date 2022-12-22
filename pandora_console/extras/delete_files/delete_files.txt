@@ -1685,3 +1685,10 @@ enterprise/operation/agentes/manage_transmap.php
 enterprise/operation/agentes/manage_transmap_creation.php
 enterprise/operation/agentes/manage_transmap_creation_phases_data.php
 enterprise/operation/agentes/transactional_map.php
+enterprise/godmode/agentes/inventory_manager.php
+enterprise/operation/agentes/agent_inventory.php
+enterprise/godmode/modules/manage_inventory_modules.php
+enterprise/godmode/modules/manage_inventory_modules_form.php
+enterprise/operation/inventory/inventory.php
+
+

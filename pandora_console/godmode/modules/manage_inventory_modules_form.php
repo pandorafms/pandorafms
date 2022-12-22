@@ -153,7 +153,6 @@ $table->data[7][0] .= ui_print_help_tip(__("Here is placed the script for the RE
 
 $table->data[7][1] = html_print_textarea('code', 25, 80, base64_decode($code), '', true);
 
-
 echo '<form name="inventorymodule" id="inventorymodule_form" method="post" 
 	action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules">';
 

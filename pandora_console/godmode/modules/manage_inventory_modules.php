@@ -87,10 +87,12 @@ if ($id_os == 0) {
 }
 
 $interpreter = (string) get_parameter('interpreter');
+$script_mode = (string) get_parameter('script_mode');
 $code = (string) get_parameter('code');
 $code = base64_encode(str_replace("\r", '', html_entity_decode($code, ENT_QUOTES)));
 $format = (string) get_parameter('format');
 $block_mode = (int) get_parameter('block_mode', 0);
+$script_path = (string) get_parameter('script_path');
 
 // Create inventory module.
 if ($create_module_inventory === true) {
@@ -102,6 +104,8 @@ if ($create_module_inventory === true) {
         'code'        => $code,
         'data_format' => $format,
         'block_mode'  => $block_mode,
+        'script_mode' => $script_mode,
+        'script_path' => $script_path,
     ];
 
     $result = (bool) inventory_create_inventory_module($values);
@@ -128,6 +132,8 @@ if ($create_module_inventory === true) {
         'code'        => $code,
         'data_format' => $format,
         'block_mode'  => $block_mode,
+        'script_mode' => $script_mode,
+        'script_path' => $script_path,
     ];
 
     $result = inventory_update_inventory_module($id_module_inventory, $values);
@@ -289,7 +295,7 @@ if ($result === false) {
         $data = [];
         $begin = false;
         if ($management_allowed === true) {
-            $data[0] = '<strong><a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">'.$row['name'].'</a></strong>';
+            $data[0] = '<strong><a href="index.php?sec='.$sec.'&sec2=enterprise/godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">'.$row['name'].'</a></strong>';
         } else {
             $data[0] = '<strong>'.$row['name'].'</strong>';
         }

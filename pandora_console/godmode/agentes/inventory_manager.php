@@ -211,6 +211,7 @@ $result = db_process_sql($sql);
 if (db_get_num_rows($sql) == 0) {
     echo '&nbsp;</td></tr><tr><td>';
 } else {
+    $table = new stdClass();
     $table->width = '100%';
     $table->class = 'databox filters';
     $table->data = [];

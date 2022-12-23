@@ -5855,23 +5855,35 @@ div#bullets_modules div {
 }
 
 /* First row in agent view */
-#agent_details_first_row {
+.agent_details_first_row {
   display: flex;
-  margin-bottom: 20px;
+  margin: 20px 0;
   width: 100%;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
 }
 
+.agent_details_first_row * {
+  font-size: 11pt;
+}
+
+/*
 .agent_details_col {
   display: table-cell;
   background-color: #fff;
   border: 1px solid #e2e2e2;
   border-radius: 5px;
   flex: 0 1 auto;
+}*/
+.agent_details_col {
+  background-color: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 5px;
+  flex: 1 1 50%;
 }
 
+/*
 .agent_details_col_left {
   width: 49%;
   min-width: 450px;
@@ -5881,6 +5893,7 @@ div#bullets_modules div {
   width: 49%;
   min-width: 450px;
 }
+*/
 
 .agent_access_rate_events {
   display: flex;
@@ -5946,8 +5959,7 @@ div#status_pie {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  border-bottom: 1px solid #e2e2e2;
-  padding: 8px 20px;
+  padding: 10px 10px;
 }
 /*
 .agent_details_content {
@@ -5987,7 +5999,7 @@ div#status_pie {
 }
 */
 
-.agent_details_agent_name {
+.agent_details_agent_data {
   display: flex;
   align-items: center;
 }
@@ -10566,6 +10578,7 @@ tr.bring_next_field {
 .floating_form td {
   font-size: 11pt;
   min-height: 32px;
+  font-family: "Pandora-Bold";
 }
 
 .floating_form td.subinput {
@@ -10753,7 +10766,7 @@ pre.external_tools_output {
   padding: 5px 0 !important;
 }
 
-.floating_form .result_info_text {
+.result_info_text {
   font-size: 11pt;
   font-style: italic;
   color: #8a96a6;
@@ -10795,4 +10808,12 @@ pre.external_tools_output {
 .after_input_icon {
   width: 32px;
   margin-left: 10px;
+}
+
+.subsection_header_title {
+  font-size: 13pt;
+}
+
+.regular_font {
+  font-family: "Pandora-Regular" !important;
 }

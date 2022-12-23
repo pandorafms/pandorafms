@@ -2963,7 +2963,7 @@ function ui_progress(
 
     ui_require_css_file('progress');
     $output = '<span id="'.$id.'" class="progress_main" data-label="'.$text;
-    $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
+    $output .= '" style="width: '.$width.'; height: '.$height.'em; border-color: '.$color.'">';
     $output .= '<span id="'.$id.'_progress" class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
     $output .= '</span>';
 

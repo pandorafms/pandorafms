@@ -6,12 +6,8 @@ div#bullets_modules span {
   font-weight: 700;
 }
 
-div.agent_details_agent_alias {
+div.agent_details_agent_caption {
   flex: 1;
-}
-
-div.agent_details_agent_alias * {
-  font-weight: 700;
 }
 
 #module_list {

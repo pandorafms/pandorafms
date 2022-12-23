@@ -4815,6 +4815,13 @@ function graph_nodata_image($options)
         $height = $options['height'];
     }
 
+    $width_style = '';
+    if (isset($options['width']) === true
+        && empty($options['width']) === false
+    ) {
+        $width_style = 'width:'.$options['width'].'px';
+    }
+
     if ($options['base64'] === true) {
         $dataImg = file_get_contents(
             $config['homedir'].'/images/image_problem_area_150.png'
@@ -4827,7 +4834,7 @@ function graph_nodata_image($options)
         true,
         [
             'title' => __('No data'),
-            'style' => 'height:'.$height.'px;',
+            'style' => 'height:'.$height.'px;'.$width_style,
         ]
     );
 }

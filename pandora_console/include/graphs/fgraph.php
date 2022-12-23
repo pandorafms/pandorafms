@@ -461,6 +461,12 @@ function ring_graph(
     global $config;
 
     if (empty($chart_data) === true) {
+        if (isset($options['ttl']) === true
+            && (int) $options['ttl'] === 2
+        ) {
+            $options['base64'] = true;
+        }
+
         return graph_nodata_image($options);
     }
 

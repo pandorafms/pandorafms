@@ -241,82 +241,89 @@ final class BarsGraph extends Item
             }
         }
 
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
         $moduleData = \get_bars_module_data($moduleId, $typeGraph);
-        if ($moduleData !== false && is_array($moduleData) === true) {
-            array_pop($moduleData['labels']);
-            array_pop($moduleData['data']);
-        }
-
-        $waterMark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => \ui_get_full_url(
-                'images/logo_vertical_water.png',
-                false,
-                false,
-                false
-            ),
-        ];
-
-        if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-            $width = 400;
-            $height = 400;
-        } else {
-            $width = (int) $data['width'];
-            $height = (int) $data['height'];
-        }
 
         if (empty($moduleData) === true) {
-            $image = ui_get_full_url(
-                'images/image_problem_area.png',
-                false,
-                false,
-                false
-            );
-            $rc = file_get_contents($image);
-            if ($rc !== false) {
-                $graph = base64_encode($rc);
-            } else {
-                $graph = graph_nodata_image(['height' => $height]);
-            }
+            $graph = graph_nodata_image(['width' => $width, 'height' => $height]);
         } else {
-            $size = $config['font_size'];
-            if ($ratio != 0) {
-                $size = ($config['font_size'] * $ratio);
-            }
+            array_pop($moduleData['labels']);
+            array_pop($moduleData['data']);
 
-            $options = [
-                'width'     => $width,
-                'height'    => $height,
-                'waterMark' => $waterMark,
-                'legend'    => ['display' => false],
-                'scales'    => [
-                    'x' => [
-                        'grid'  => [
-                            'display' => true,
-                            'color'   => $gridColor,
-                        ],
-                        'ticks' => [
-                            'fonts' => ['size' => $size],
-                        ],
-                    ],
-                    'y' => [
-                        'grid'  => [
-                            'display' => true,
-                            'color'   => $gridColor,
-                        ],
-                        'ticks' => [
-                            'fonts' => ['size' => $size],
-                        ],
-                    ],
-                ],
-                'labels'    => $moduleData['labels'],
+            $waterMark = [
+                'file' => $config['homedir'].'/images/logo_vertical_water.png',
+                'url'  => \ui_get_full_url(
+                    'images/logo_vertical_water.png',
+                    false,
+                    false,
+                    false
+                ),
             ];
 
-            if ($typeGraph === 'horizontal') {
-                $options['axis'] = 'y';
+            if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
+                $width = 400;
+                $height = 400;
+            } else {
+                $width = (int) $data['width'];
+                $height = (int) $data['height'];
             }
 
-            $graph = vbar_graph($moduleData['data'], $options);
+            if (empty($moduleData) === true) {
+                $image = ui_get_full_url(
+                    'images/image_problem_area.png',
+                    false,
+                    false,
+                    false
+                );
+                $rc = file_get_contents($image);
+                if ($rc !== false) {
+                    $graph = base64_encode($rc);
+                } else {
+                    $graph = graph_nodata_image(['height' => $height]);
+                }
+            } else {
+                $size = $config['font_size'];
+                if ($ratio != 0) {
+                    $size = ($config['font_size'] * $ratio);
+                }
+
+                $options = [
+                    'width'     => $width,
+                    'height'    => $height,
+                    'waterMark' => $waterMark,
+                    'legend'    => ['display' => false],
+                    'scales'    => [
+                        'x' => [
+                            'grid'  => [
+                                'display' => true,
+                                'color'   => $gridColor,
+                            ],
+                            'ticks' => [
+                                'fonts' => ['size' => $size],
+                            ],
+                        ],
+                        'y' => [
+                            'grid'  => [
+                                'display' => true,
+                                'color'   => $gridColor,
+                            ],
+                            'ticks' => [
+                                'fonts' => ['size' => $size],
+                            ],
+                        ],
+                    ],
+                    'labels'    => $moduleData['labels'],
+                ];
+
+                if ($typeGraph === 'horizontal') {
+                    $options['axis'] = 'y';
+                }
+
+                $graph = '<div style="background-color:'.$backGroundColor.'">';
+                $graph .= vbar_graph($moduleData['data'], $options);
+                $graph .= '</div>';
+            }
         }
 
         // Restore connection.

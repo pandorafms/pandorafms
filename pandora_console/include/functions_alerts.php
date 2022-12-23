@@ -2255,7 +2255,7 @@ function get_group_alerts(
         $filter,
         $orderbyText
     );
-    hd($sql, true);
+
     $alerts = db_get_all_rows_sql($sql);
 
     if ($alerts === false) {

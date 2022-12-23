@@ -1,7 +1,7 @@
 #
 #Pandora FMS Linux Agent
 #
-%define name        pandorafms_agent_unix
+%define name        pandorafms_agent_linux
 %define version     7.0NG.767
 %define release     221223
 

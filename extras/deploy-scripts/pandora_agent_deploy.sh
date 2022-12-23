@@ -142,7 +142,7 @@ if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
     echo -e "${cyan}Installing agent dependencies...${reset}" ${green}OK${reset}
     
     # Insatall pandora agent  
-    $package_manager_cmd install -y http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm &>> $LOGFILE
+    $package_manager_cmd install -y http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm &>> $LOGFILE
     echo -en "${cyan}Installing Pandora FMS agent...${reset}"
     check_cmd_status 'Error installing Pandora FMS agent'
 
@@ -151,8 +151,8 @@ fi
 if [[ $OS_RELEASE == 'debian' ]]; then
     execute_cmd "apt update" 'Updating repos'
     execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies' 
-    execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Debian_Ubuntu/pandorafms.agent_unix_7.0NG.deb' 'Downloading Pandora FMS agent dependencies'
-    execute_cmd 'apt install -y ./pandorafms.agent_unix_7.0NG.deb' 'Installing Pandora FMS agent'
+    execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Debian_Ubuntu/pandorafms.agent_linux_7.0NG.deb' 'Downloading Pandora FMS agent dependencies'
+    execute_cmd 'apt install -y ./pandorafms.agent_linux_7.0NG.deb' 'Installing Pandora FMS agent'
 fi
 
 # Configuring Agente

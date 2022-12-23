@@ -415,11 +415,11 @@ execute_cmd "systemctl restart mysql" "Configuring and restarting database engin
 if [ "$PANDORA_BETA" -eq '0' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_unix-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
 elif [ "$PANDORA_BETA" -ne '0' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_unix-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
 fi
 
 # Downloading Pandora Packages
@@ -427,7 +427,7 @@ cd $WORKDIR &>> "$LOGFILE"
 
 curl -LSs --output pandorafms_console-7.0NG.tar.gz "${PANDORA_CONSOLE_PACKAGE}" &>> "$LOGFILE"
 curl -LSs --output pandorafms_server-7.0NG.tar.gz "${PANDORA_SERVER_PACKAGE}" &>> "$LOGFILE"
-curl -LSs --output pandorafms_agent_unix-7.0NG.tar.gz "${PANDORA_AGENT_PACKAGE}" &>> "$LOGFILE"
+curl -LSs --output pandorafms_agent_linux-7.0NG.tar.gz "${PANDORA_AGENT_PACKAGE}" &>> "$LOGFILE"
 
 # Install PandoraFMS Console
 echo -en "${cyan}Installing PandoraFMS Console...${reset}"
@@ -444,7 +444,7 @@ check_cmd_status "Error installing PandoraFMS  Server"
 #Install agent:
 execute_cmd "apt install -y libyaml-tiny-perl perl coreutils wget curl unzip procps python3 python3-pip" "Installing PandoraFMS Agent Dependencies"
 echo -en "${cyan}Installing PandoraFMS Agent...${reset}"
-    tar xvzf $WORKDIR/pandorafms_agent_unix-7.0NG.tar.gz &>> "$LOGFILE" && cd unix && ./pandora_agent_installer --install &>> $LOGFILE && cp -a tentacle_client /usr/local/bin/ &>> $LOGFILE && cd $WORKDIR
+    tar xvzf $WORKDIR/pandorafms_agent_linux-7.0NG.tar.gz &>> "$LOGFILE" && cd unix && ./pandora_agent_installer --install &>> $LOGFILE && cp -a tentacle_client /usr/local/bin/ &>> $LOGFILE && cd $WORKDIR
 check_cmd_status "Error installing PandoraFMS Agent"
 
 # Copy gotty utility

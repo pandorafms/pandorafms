@@ -350,6 +350,87 @@ $table->data[$i++][1] = html_print_textarea(
     true
 );
 
+// Inventory changes blacklist.
+$table->data[$i][0] = __('Inventory changes blacklist');
+
+$inventory_changes_blacklist_id = get_parameter(
+    'inventory_changes_blacklist',
+    $config['inventory_changes_blacklist']
+);
+
+if (!is_array($inventory_changes_blacklist_id)) {
+    $inventory_changes_blacklist_id = explode(
+        ',',
+        $inventory_changes_blacklist_id
+    );
+}
+
+$inventory_modules = db_get_all_rows_sql(
+    'SELECT mi.id_module_inventory, mi.name module_inventory_name, os.name os_name
+    FROM tmodule_inventory mi, tconfig_os os
+    WHERE os.id_os = mi.id_os'
+);
+
+$inventory_changes_blacklist = [];
+$inventory_changes_blacklist_out = [];
+
+foreach ($inventory_modules as $inventory_module) {
+    if (in_array($inventory_module['id_module_inventory'], $inventory_changes_blacklist_id)) {
+        $inventory_changes_blacklist[$inventory_module['id_module_inventory']] = $inventory_module['module_inventory_name'].' ('.$inventory_module['os_name'].')';
+    } else {
+        $inventory_changes_blacklist_out[$inventory_module['id_module_inventory']] = $inventory_module['module_inventory_name'].' ('.$inventory_module['os_name'].')';
+    }
+}
+
+$select_out = html_print_select(
+    $inventory_changes_blacklist_out,
+    'inventory_changes_blacklist_out[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:200px'
+);
+$arrows = ' ';
+$select_in = html_print_select(
+    $inventory_changes_blacklist,
+    'inventory_changes_blacklist[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:200px'
+);
+
+$table_ichanges = '<table>
+        <tr>
+            <td>'.__('Out of black list').'</td>
+            <td></td>
+            <td>'.__('In black list').'</td>
+        </tr>
+        <tr>
+            <td>'.$select_out.'</td>
+            <td>
+                <a href="javascript:">'.html_print_image('images/darrowright.png', true, ['id' => 'right_iblacklist', 'alt' => __('Push selected modules into blacklist'), 'title' => __('Push selected modules into blacklist'), 'class' => 'invert_filter']).'</a>
+                <br><br>
+                <a href="javascript:">'.html_print_image('images/darrowleft.png', true, ['id' => 'left_iblacklist', 'alt' => __('Pop selected modules out of blacklist'), 'title' => __('Pop selected modules out of blacklist'), 'class' => 'invert_filter']).'</a>
+            </td>
+            <td>'.$select_in.'</td>
+        </tr>
+    </table>';
+
+$table->data[$i++][1] = $table_ichanges;
+
 $table->data[$i][0] = __('Referer security');
 $table->data[$i++][1] = html_print_checkbox_switch(
     'referer_security',

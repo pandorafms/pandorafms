@@ -246,7 +246,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       serialized: serialized,
       id_server: id_server,
       status_module: module_status,
-      id_group: id_group
+      id_group: id_group,
+      pendingdelete: event.target.dataset.pendingdelete // Get pendingdelete attribute from target
     },
     function(data) {
       $("#module").empty();

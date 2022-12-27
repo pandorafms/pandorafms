@@ -72,7 +72,7 @@ final class DonutGraph extends Item
                     'border_color',
                 ]
             ),
-            '#000000'
+            '#ffffff'
         );
     }
 
@@ -103,13 +103,11 @@ final class DonutGraph extends Item
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_visual_map.php';
-        include_once $config['homedir'].'/include/graphs/functions_d3.php';
         if (is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
         // Extract needed properties.
-        $legendBackGroundColor = static::extractLegendBackgroundColor($data);
         // Get the linked agent and module Ids.
         $linkedModule = static::extractLinkedModule($data);
         $agentId = $linkedModule['agentId'];
@@ -158,32 +156,27 @@ final class DonutGraph extends Item
 
         if ($isString === true) {
             $graphData = \get_donut_module_data($moduleId);
-            if (empty($graphData) || $graphData === null) {
-                $aux = [];
-                $aux[0]['tag_name'] = 'No data to show';
-                $aux[0]['color'] = '#aa3333';
-                $aux[0]['value'] = 1;
-                $aux[0]['percent'] = 100;
-                $graphData = $aux;
-            }
 
-            $data['html'] = \d3_donut_graph(
-                (int) $data['id'],
-                $width,
-                $height,
-                $graphData,
-                $legendBackGroundColor
-            );
+            if (empty($graphData) === true) {
+                $data['html'] = graph_nodata_image(['width' => $width, 'height' => $height]);
+            } else {
+                array_pop($graphData['labels']);
+                array_pop($graphData['data']);
+
+                $options = [
+                    'waterMark' => false,
+                    'legend'    => [
+                        'display'  => true,
+                        'position' => 'right',
+                        'align'    => 'center',
+                    ],
+                    'labels'    => $graphData['labels'],
+                ];
+
+                $data['html'] = \ring_graph($graphData['data'], $options);
+            }
         } else {
-            $src = 'images/console/signes/wrong_donut_graph.png';
-            if (\is_metaconsole() === true) {
-                $src = '../../'.$src;
-            }
-
-            $src = ui_get_full_url($src);
-
-            $style = 'width:'.$width.'px; height:'.$height.'px;';
-            $data['html'] = '<img src="'.$src.'" style="'.$style.'">';
+            $data['html'] = graph_nodata_image(['width' => $width, 'height' => $height]);
         }
 
         // Restore connection.
@@ -255,12 +248,12 @@ final class DonutGraph extends Item
 
             // Resume data color.
             $inputs[] = [
-                'label'     => __('Resume data color'),
+                'label'     => __('Background color'),
                 'arguments' => [
                     'wrapper' => 'div',
                     'name'    => 'legendBackgroundColor',
                     'type'    => 'color',
-                    'value'   => $values['legendBackgroundColor'],
+                    'value'   => (($values['legendBackgroundColor']) ?? '#ffffff'),
                     'return'  => true,
                 ],
             ];

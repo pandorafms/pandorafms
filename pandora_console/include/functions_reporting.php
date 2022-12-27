@@ -844,7 +844,8 @@ function reporting_make_reporting_data(
                     $content,
                     $type,
                     $force_width_chart,
-                    $force_height_chart
+                    $force_height_chart,
+                    $pdf
                 );
                 if ($report_control['total_events'] == 0 && $content['hide_no_data'] == 1) {
                     break;
@@ -1780,7 +1781,9 @@ function reporting_event_top_n(
 
             if ($order_uptodown == 1 || $order_uptodown == 2) {
                 $i = 0;
-                $data_pie_graph = [];
+                $labels_pie = [];
+                $labels_hbar = [];
+                $data_pie = [];
                 $data_hbar = [];
                 foreach ($data_top as $key_dt => $dt) {
                     $item_name = ui_print_truncate_text(
@@ -1801,28 +1804,14 @@ function reporting_event_top_n(
                         '...'
                     );
 
-                    $item_name_key_pie = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_pie_graph[$item_name_key_pie])) {
-                            $item_name_key_pie .= ' ';
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
+                    $labels_hbar[] = io_safe_output($item_name);
+                    $data_hbar[] = [
+                        'y' => io_safe_output($item_name),
+                        'x' => $dt,
+                    ];
 
-                    $item_name_key_hbar = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_hbar[$item_name_key_hbar])) {
-                            $item_name_key_hbar = ' '.$item_name_key_hbar;
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
-
-                    $data_hbar[$item_name]['g'] = $dt;
-                    $data_pie_graph[$item_name] = $dt;
+                    $labels_pie[] = io_safe_output($item_name);
+                    $data_pie[] = $dt;
 
                     if ($show_graph == 0 || $show_graph == 1) {
                         $data = [];
@@ -1861,7 +1850,9 @@ function reporting_event_top_n(
                 }
             } else if ($order_uptodown == 0 || $order_uptodown == 3) {
                 $i = 0;
-                $data_pie_graph = [];
+                $labels_pie = [];
+                $labels_hbar = [];
+                $data_pie = [];
                 $data_hbar = [];
                 foreach ($agent_name as $key_an => $an) {
                     $item_name = '';
@@ -1881,16 +1872,6 @@ function reporting_event_top_n(
                         '...'
                     );
 
-                    $item_name_key_pie = $item_name;
-                    $exist_key = true;
-                    while ($exist_key) {
-                        if (isset($data_pie_graph[$item_name_key_pie])) {
-                            $item_name_key_pie .= ' ';
-                        } else {
-                            $exist_key = false;
-                        }
-                    }
-
                     $item_name_key_hbar = $item_name;
                     $exist_key = true;
                     while ($exist_key) {
@@ -1901,8 +1882,18 @@ function reporting_event_top_n(
                         }
                     }
 
-                    $data_pie_graph[$item_name] = $data_top[$key_an];
-                    $data_hbar[$item_name]['g'] = $data_top[$key_an];
+                    $labels_hbar[] = io_safe_output($item_name);
+                    $data_hbar[] = [
+                        'y' => io_safe_output($item_name),
+                        'x' => $data_top[$key_an],
+                    ];
+                    if ((int) $ttl === 2) {
+                        $data_top[$key_an] = (empty($data_top[$key_an]) === false) ? $data_top[$key_an] : 0;
+                        $item_name .= ' ('.$data_top[$key_an].')';
+                    }
+
+                    $labels_pie[] = io_safe_output($item_name);
+                    $data_pie[] = $data_top[$key_an];
 
                     $divisor = get_data_multiplier($units[$key_an]);
 
@@ -1944,39 +1935,80 @@ function reporting_event_top_n(
             $return['charts']['pie'] = null;
 
             if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
-                arsort($data_pie_graph);
-                $return['charts']['pie'] = pie_graph(
-                    $data_pie_graph,
-                    $width,
-                    $height,
-                    __('other'),
-                    ui_get_full_url(false, true, false, false).'/',
-                    ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-                    $config['fontpath'],
-                    $config['font_size'],
-                    $ttl
+                $options_charts = [
+                    'legend' => [
+                        'display'  => true,
+                        'position' => 'right',
+                        'align'    => 'center',
+                    ],
+                    'ttl'    => $ttl,
+                    'labels' => $labels_pie,
+                ];
+
+                if ((int) $ttl === 2) {
+                    $options_charts['dataLabel'] = ['display' => 'auto'];
+                    $options_charts['layout'] = [
+                        'padding' => [
+                            'top'    => 15,
+                            'bottom' => 15,
+                        ],
+                    ];
+                }
+
+                $return['charts']['pie'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
+                if ((int) $ttl === 2) {
+                    $return['charts']['pie'] .= '<img src="data:image/png;base64,';
+                }
+
+                $return['charts']['pie'] .= pie_graph(
+                    $data_pie,
+                    $options_charts
                 );
 
-                // Display bars graph.
-                $return['charts']['bars'] = hbar_graph(
+                if ((int) $ttl === 2) {
+                    $return['charts']['pie'] .= '" />';
+                }
+
+                $return['charts']['pie'] .= '</div>';
+
+                $options = [
+                    'height' => (count($data_hbar) * 30),
+                    'ttl'    => $ttl,
+                    'axis'   => 'y',
+                    'legend' => ['display' => false],
+                    'scales' => [
+                        'x' => [
+                            'grid' => ['display' => false],
+                        ],
+                        'y' => [
+                            'grid' => ['display' => false],
+                        ],
+                    ],
+                    'labels' => $labels_hbar,
+                ];
+
+                if ((int) $ttl === 2) {
+                    $options['dataLabel'] = ['display' => 'auto'];
+                    $options['layout'] = [
+                        'padding' => ['right' => 35],
+                    ];
+                }
+
+                $return['charts']['bars'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
+                if ((int) $ttl === 2) {
+                    $return['charts']['bars'] .= '<img src="data:image/png;base64,';
+                }
+
+                $return['charts']['bars'] .= vbar_graph(
                     $data_hbar,
-                    $width,
-                    (count($data_hbar) * 50),
-                    [],
-                    [],
-                    '',
-                    '',
-                    false,
-                    false,
-                    $config['homedir'].'/images/logo_vertical_water.png',
-                    $config['fontpath'],
-                    $config['font_size'],
-                    true,
-                    $ttl,
-                    $config['homeurl'],
-                    'white',
-                    '#DFDFDF'
+                    $options
                 );
+
+                if ((int) $ttl === 2) {
+                    $return['charts']['bars'] .= '" />';
+                }
+
+                $return['charts']['bars'] .= '</div>';
             }
 
             $return['resume'] = null;
@@ -2029,7 +2061,8 @@ function reporting_event_report_group(
     $content,
     $type='dinamic',
     $force_width_chart=null,
-    $force_height_chart=null
+    $force_height_chart=null,
+    $pdf=false
 ) {
     global $config;
 
@@ -2175,6 +2208,28 @@ function reporting_event_report_group(
     $return['chart']['by_criticity'] = null;
     $return['chart']['validated_vs_unvalidated'] = null;
 
+    $options_charts = [
+        'width'  => 500,
+        'height' => 150,
+        'legend' => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+        'pdf'    => $pdf,
+        'ttl'    => $ttl,
+    ];
+
+    if ($pdf === true) {
+        $options_charts['dataLabel'] = ['display' => 'auto'];
+        $options_charts['layout'] = [
+            'padding' => [
+                'top'    => 15,
+                'bottom' => 15,
+            ],
+        ];
+    }
+
     if ($event_graph_by_agent) {
         $data_graph_by_agent = [];
         if (empty($data) === false) {
@@ -2184,70 +2239,118 @@ function reporting_event_report_group(
                     $k = '('.$value['server_name'].') '.$value['alias'];
                 }
 
+                $k = io_safe_output($k);
+
                 if (isset($data_graph_by_agent[$k]) === true) {
                     $data_graph_by_agent[$k]++;
                 } else {
                     $data_graph_by_agent[$k] = 1;
                 }
             }
+
+            if ($pdf === true) {
+                $result_data_graph_by_agent = [];
+                foreach ($data_graph_by_agent as $key => $value) {
+                    $result_data_graph_by_agent[$key.' ('.$value.')'] = $value;
+                }
+
+                $data_graph_by_agent = $result_data_graph_by_agent;
+            }
         }
 
-        $return['chart']['by_agent'] = pie_graph(
-            $data_graph_by_agent,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
+        if ($pdf === true) {
+            $return['chart']['by_agent'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['by_agent'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
+
+        $options_charts['labels'] = array_keys($data_graph_by_agent);
+        $return['chart']['by_agent'] .= pie_graph(
+            array_values($data_graph_by_agent),
+            $options_charts
         );
+
+        if ($pdf === true) {
+            $return['chart']['by_agent'] .= '" />';
+        } else {
+            $return['chart']['by_agent'] .= '</div>';
+        }
     }
 
     if ($event_graph_by_user_validator) {
         $data_graph_by_user = events_get_count_events_validated_by_user($data);
-        $return['chart']['by_user_validator'] = pie_graph(
-            $data_graph_by_user,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
+        if ($pdf === true) {
+            $result_data_graph_by_user = [];
+            foreach ($data_graph_by_user as $key => $value) {
+                $result_data_graph_by_user[$key.' ('.$value.')'] = $value;
+            }
+
+            $data_graph_by_user = $result_data_graph_by_user;
+        }
+
+        if ($pdf === true) {
+            $return['chart']['by_user_validator'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['by_user_validator'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
+
+        $options_charts['labels'] = array_keys($data_graph_by_user);
+        $return['chart']['by_user_validator'] .= pie_graph(
+            array_values($data_graph_by_user),
+            $options_charts
         );
+
+        if ($pdf === true) {
+            $return['chart']['by_user_validator'] .= '" />';
+        } else {
+            $return['chart']['by_user_validator'] .= '</div>';
+        }
     }
 
     if ($event_graph_by_criticity) {
         $data_graph_by_criticity = [];
         if (empty($data) === false) {
             foreach ($data as $value) {
-                $k = get_priority_name($value['criticity']);
+                $k = io_safe_output(get_priority_name($value['criticity']));
                 if (isset($data_graph_by_criticity[$k]) === true) {
                     $data_graph_by_criticity[$k]++;
                 } else {
                     $data_graph_by_criticity[$k] = 1;
                 }
             }
+
+            $colors = get_criticity_pie_colors($data_graph_by_criticity);
+            $options_charts['colors'] = array_values($colors);
+
+            if ($pdf === true) {
+                $result_data_graph_by_criticity = [];
+                foreach ($data_graph_by_criticity as $key => $value) {
+                    $result_data_graph_by_criticity[$key.' ('.$value.')'] = $value;
+                }
+
+                $data_graph_by_criticity = $result_data_graph_by_criticity;
+            }
         }
 
-        $colors = get_criticity_pie_colors($data_graph_by_criticity);
+        if ($pdf === true) {
+            $return['chart']['by_criticity'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['by_criticity'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
 
-        $return['chart']['by_criticity'] = pie_graph(
-            $data_graph_by_criticity,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl,
-            false,
-            $colors
+        $options_charts['labels'] = array_keys($data_graph_by_criticity);
+        $return['chart']['by_criticity'] .= pie_graph(
+            array_values($data_graph_by_criticity),
+            $options_charts
         );
+
+        if ($pdf === true) {
+            $return['chart']['by_criticity'] .= '" />';
+        } else {
+            $return['chart']['by_criticity'] .= '</div>';
+        }
+
+        unset($options_charts['colors']);
     }
 
     if ($event_graph_validated_vs_unvalidated) {
@@ -2265,19 +2368,34 @@ function reporting_event_report_group(
                     $data_graph_by_status[$k] = 1;
                 }
             }
+
+            if ($pdf === true) {
+                $result_data_graph_by_status = [];
+                foreach ($data_graph_by_status as $key => $value) {
+                    $result_data_graph_by_status[$key.' ('.$value.')'] = $value;
+                }
+
+                $data_graph_by_status = $result_data_graph_by_status;
+            }
         }
 
-        $return['chart']['validated_vs_unvalidated'] = pie_graph(
-            $data_graph_by_status,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
+        if ($pdf === true) {
+            $return['chart']['validated_vs_unvalidated'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['validated_vs_unvalidated'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
+
+        $options_charts['labels'] = array_keys($data_graph_by_status);
+        $return['chart']['validated_vs_unvalidated'] .= pie_graph(
+            array_values($data_graph_by_status),
+            $options_charts
         );
+
+        if ($pdf === true) {
+            $return['chart']['validated_vs_unvalidated'] .= '" />';
+        } else {
+            $return['chart']['validated_vs_unvalidated'] .= '</div>';
+        }
     }
 
     // Total events.
@@ -3788,26 +3906,6 @@ function reporting_exception(
                 }
             );
 
-            $data_pie_graph = [];
-            $data_hbar = [];
-            foreach ($items as $key => $item) {
-                if ($show_graph == 1 || $show_graph == 2) {
-                    // TODO: Find a better way to show the graphs
-                    $data_hbar[$item['agent'].' - '.$item['operation']]['g'] = $item['value'];
-                    $data_pie_graph[$item['agent'].' - '.$item['operation']] = $item['value'];
-                }
-
-                if ($show_graph == 0 || $show_graph == 1) {
-                    $data = [];
-                    $data['agent'] = $item['agent'];
-                    $data['module'] = $item['module'];
-                    $data['operation'] = __($item['operation']);
-                    $data['value'] = $item['value'];
-                    $data['formated_value'] = format_for_graph($item['value'], 2).' '.$item['unit'];
-                    $return['data'][] = $data;
-                }
-            }
-
             if ($show_graph == 1 || $show_graph == 2) {
                 reporting_set_conf_charts(
                     $width,
@@ -3818,6 +3916,61 @@ function reporting_exception(
                     $ttl
                 );
 
+                $data_pie = [];
+                $labels_pie = [];
+                $data_hbar = [];
+                $labels_hbar = [];
+
+                $other = 0;
+                foreach ($items as $key => $item) {
+                    if ($show_graph == 1 || $show_graph == 2) {
+                        if ($key <= 10) {
+                            $label = $item['agent'].' - '.$item['operation'];
+                            $labels_hbar[] = io_safe_output($label);
+                            $data_hbar[] = [
+                                'x' => $item['value'],
+                                'y' => io_safe_output($label),
+                            ];
+
+                            if ((int) $ttl === 2) {
+                                $item['value'] = (empty($item['value']) === false) ? $item['value'] : 0;
+                                $label .= ' ('.$item['value'].')';
+                            }
+
+                            $labels_pie[] = io_safe_output($label);
+                            $data_pie[] = $item['value'];
+                        } else {
+                            $other += $item['value'];
+                        }
+                    }
+
+                    if ($show_graph == 0 || $show_graph == 1) {
+                        $data = [];
+                        $data['agent'] = $item['agent'];
+                        $data['module'] = $item['module'];
+                        $data['operation'] = __($item['operation']);
+                        $data['value'] = $item['value'];
+                        $data['formated_value'] = format_for_graph($item['value'], 2).' '.$item['unit'];
+                        $return['data'][] = $data;
+                    }
+                }
+
+                if (empty($other) === false) {
+                    $label = __('Others');
+                    $labels_hbar[] = $label;
+                    $data_hbar[] = [
+                        'x' => $other,
+                        'y' => $label,
+                    ];
+
+                    if ((int) $ttl === 2) {
+                        $label .= ' ('.$other.')';
+                    }
+
+                    $labels_pie[] = $label;
+                    $data_pie[] = $other;
+                }
+
                 if (!empty($force_width_chart)) {
                     $width = $force_width_chart;
                 }
@@ -3826,40 +3979,82 @@ function reporting_exception(
                     $height = $force_height_chart;
                 }
 
-                $return['chart']['pie'] = pie_graph(
-                    $data_pie_graph,
-                    600,
-                    150,
-                    __('other'),
-                    ui_get_full_url(false, false, false, false),
-                    ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-                    $config['fontpath'],
-                    $config['font_size'],
-                    $ttl
+                $options_charts = [
+                    'legend' => [
+                        'display'  => true,
+                        'position' => 'right',
+                        'align'    => 'center',
+                    ],
+                    'ttl'    => $ttl,
+                    'labels' => $labels_pie,
+                ];
+
+                if ((int) $ttl === 2) {
+                    $options_charts['dataLabel'] = ['display' => 'auto'];
+                    $options_charts['layout'] = [
+                        'padding' => [
+                            'top'    => 15,
+                            'bottom' => 15,
+                        ],
+                    ];
+                }
+
+                if ((int) $ttl === 2) {
+                    $return['chart']['pie'] = '<img src="data:image/png;base64,';
+                } else {
+                    $return['chart']['pie'] = '<div style="margin: 0 auto; width:600px;">';
+                }
+
+                $return['chart']['pie'] .= pie_graph(
+                    $data_pie,
+                    $options_charts
                 );
 
-                $params = [
-                    'chart_data'      => $data_hbar,
-                    'width'           => 600,
-                    'height'          => (25 * count($data_hbar)),
-                    'color'           => [],
-                    'legend'          => [],
-                    'long_index'      => [],
-                    'no_data_image'   => ui_get_full_url('images/image_problem_area_small.png', false, false, false),
-                    'xaxisname'       => '',
-                    'yaxisname'       => '',
-                    'water_mark'      => ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-                    'font'            => '',
-                    'font_size'       => '',
-                    'unit'            => '',
-                    'ttl'             => $ttl,
-                    'homeurl'         => ui_get_full_url(false, false, false, false),
-                    'backgroundColor' => 'white',
+                if ((int) $ttl === 2) {
+                    $return['chart']['pie'] .= '" />';
+                } else {
+                    $return['chart']['pie'] .= '</div>';
+                }
+
+                if ((int) $ttl === 2) {
+                    $return['chart']['hbar'] = '<img src="data:image/png;base64,';
+                } else {
+                    $return['chart']['hbar'] = '<div style="margin: 0 auto; width:'.$width.'px;">';
+                }
+
+                $options = [
+                    'height' => (count($data_hbar) * 30),
+                    'ttl'    => $ttl,
+                    'axis'   => 'y',
+                    'legend' => ['display' => false],
+                    'scales' => [
+                        'x' => [
+                            'grid' => ['display' => false],
+                        ],
+                        'y' => [
+                            'grid' => ['display' => false],
+                        ],
+                    ],
+                    'labels' => $labels_hbar,
                 ];
-                $return['chart']['hbar'] = call_user_func_array(
-                    'hbar_graph',
-                    array_values(($params ?? []))
+
+                if ((int) $ttl === 2) {
+                    $options['dataLabel'] = ['display' => 'auto'];
+                    $options['layout'] = [
+                        'padding' => ['right' => 35],
+                    ];
+                }
+
+                $return['chart']['hbar'] .= vbar_graph(
+                    $data_hbar,
+                    $options
                 );
+
+                if ((int) $ttl === 2) {
+                    $return['chart']['hbar'] .= '" />';
+                } else {
+                    $return['chart']['hbar'] .= '</div>';
+                }
             }
 
             if ($content['show_resume'] && $i > 0) {
@@ -4192,49 +4387,102 @@ function reporting_event_report_agent(
     $return['chart']['by_criticity'] = null;
     $return['chart']['validated_vs_unvalidated'] = null;
 
+    $options_charts = [
+        'width'  => 500,
+        'height' => 150,
+        'radius' => null,
+        'legend' => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+        'ttl'    => $ttl,
+    ];
+
+    if ((int) $ttl === 2) {
+        $options_charts['dataLabel'] = ['display' => 'auto'];
+        $options_charts['layout'] = [
+            'padding' => [
+                'top'    => 15,
+                'bottom' => 15,
+            ],
+        ];
+    }
+
     if ($event_graph_by_user_validator) {
         $data_graph_by_user = events_get_count_events_validated_by_user($return['data']);
-        $return['chart']['by_user_validator'] = pie_graph(
-            $data_graph_by_user,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
+        if ((int) $ttl === 2) {
+            $result_data_graph_by_user = [];
+            foreach ($data_graph_by_user as $key => $value) {
+                $result_data_graph_by_user[$key.' ('.$value.')'] = $value;
+            }
+
+            $data_graph_by_user = $result_data_graph_by_user;
+        }
+
+        if ((int) $ttl === 2) {
+            $return['chart']['by_user_validator'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['by_user_validator'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
+
+        $options_charts['labels'] = array_keys($data_graph_by_user);
+        $return['chart']['by_user_validator'] .= pie_graph(
+            array_values($data_graph_by_user),
+            $options_charts
         );
+
+        if ((int) $ttl === 2) {
+            $return['chart']['by_user_validator'] .= '" />';
+        } else {
+            $return['chart']['by_user_validator'] .= '</div>';
+        }
     }
 
     if ($event_graph_by_criticity) {
         $data_graph_by_criticity = [];
         if (empty($return['data']) === false) {
             foreach ($return['data'] as $value) {
-                $k = get_priority_name($value['criticity']);
+                $k = io_safe_output(get_priority_name($value['criticity']));
                 if (isset($data_graph_by_criticity[$k]) === true) {
                     $data_graph_by_criticity[$k]++;
                 } else {
                     $data_graph_by_criticity[$k] = 1;
                 }
             }
+
+            $colors = get_criticity_pie_colors($data_graph_by_criticity);
+            $options_charts['colors'] = array_values($colors);
+
+            if ((int) $ttl === 2) {
+                $result_data_graph_by_criticity = [];
+                foreach ($data_graph_by_criticity as $key => $value) {
+                    $result_data_graph_by_criticity[$key.' ('.$value.')'] = $value;
+                }
+
+                $data_graph_by_criticity = $result_data_graph_by_criticity;
+            }
         }
 
-        $colors = get_criticity_pie_colors($data_graph_by_criticity);
+        if ((int) $ttl === 2) {
+            $return['chart']['by_criticity'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['by_criticity'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
 
-        $return['chart']['by_criticity'] = pie_graph(
-            $data_graph_by_criticity,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl,
-            false,
-            $colors
+        $options_charts['labels'] = array_keys($data_graph_by_criticity);
+        $return['chart']['by_criticity'] .= pie_graph(
+            array_values($data_graph_by_criticity),
+            $options_charts
         );
+
+        if ((int) $ttl === 2) {
+            $return['chart']['by_criticity'] .= '" />';
+        } else {
+            $return['chart']['by_criticity'] .= '</div>';
+        }
+
+        unset($options_charts['colors']);
     }
 
     if ($event_graph_validated_vs_unvalidated) {
@@ -4245,26 +4493,41 @@ function reporting_event_report_agent(
                 0 => __('Not validated'),
             ];
             foreach ($return['data'] as $value) {
-                $k = $status[$value['estado']];
+                $k = $status[$value['status']];
                 if (isset($data_graph_by_status[$k]) === true) {
                     $data_graph_by_status[$k]++;
                 } else {
                     $data_graph_by_status[$k] = 1;
                 }
             }
+
+            if ((int) $ttl === 2) {
+                $result_data_graph_by_status = [];
+                foreach ($data_graph_by_status as $key => $value) {
+                    $result_data_graph_by_status[$key.' ('.$value.')'] = $value;
+                }
+
+                $data_graph_by_status = $result_data_graph_by_status;
+            }
         }
 
-        $return['chart']['validated_vs_unvalidated'] = pie_graph(
-            $data_graph_by_status,
-            500,
-            150,
-            __('other'),
-            ui_get_full_url(false, false, false, false),
-            ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
+        if ((int) $ttl === 2) {
+            $return['chart']['validated_vs_unvalidated'] = '<img src="data:image/png;base64,';
+        } else {
+            $return['chart']['validated_vs_unvalidated'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+        }
+
+        $options_charts['labels'] = array_keys($data_graph_by_status);
+        $return['chart']['validated_vs_unvalidated'] .= pie_graph(
+            array_values($data_graph_by_status),
+            $options_charts
         );
+
+        if ((int) $ttl === 2) {
+            $return['chart']['validated_vs_unvalidated'] .= '" />';
+        } else {
+            $return['chart']['validated_vs_unvalidated'] .= '</div>';
+        }
     }
 
     // Total events.
@@ -5136,111 +5399,59 @@ function reporting_custom_render($report, $content, $type='dinamic', $pdf=0)
                                     $height = $data_macro['height'];
                                 }
 
-                                // TODO: Allow to paint horizontal and vertical bar graphs for the moment only pie graphs.
-                                $type = 'sql_graph_pie';
+                                $options = [
+                                    'width'  => $width,
+                                    'height' => $height,
+                                    'ttl'    => ($pdf === true) ? 2 : 1,
+                                    'legend' => [
+                                        'display'  => true,
+                                        'position' => 'right',
+                                        'align'    => 'center',
+                                    ],
+                                ];
 
-                                $SQL_GRAPH_MAX_LABEL_SIZE = 5;
-
-                                $count = 0;
-                                $flagOther = false;
-                                foreach ($data_query as $data_item) {
-                                    $count++;
-                                    $value = 0;
-                                    if (empty($data_item['value']) === false) {
-                                        $value = $data_item['value'];
-                                    }
-
-                                    if ($count <= 5) {
-                                        $label = __('Data');
-                                        if (empty($data_item['label']) === false) {
-                                            $label = io_safe_output($data_item['label']);
-                                            if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
-                                                $first_label = $label;
-                                                $label = substr(
-                                                    $first_label,
-                                                    0,
-                                                    floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
-                                                );
-                                                $label .= '...<br>';
-                                                $label .= substr(
-                                                    $first_label,
-                                                    floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)
-                                                );
-                                            }
-                                        }
-
-                                        switch ($type) {
-                                            case 'sql_graph_vbar':
-                                            default:
-                                                // Vertical bar.
-                                                $data[] = [
-                                                    'tick' => $label.'_'.$count,
-                                                    'data' => $value,
-                                                ];
-                                            break;
-
-                                            case 'sql_graph_hbar':
-                                                // Horizontal bar.
-                                                $data[$label.'_'.$count]['g'] = $value;
-                                            break;
-
-                                            case 'sql_graph_pie':
-                                                // Pie.
-                                                $data[$label.'_'.$count] = $value;
-                                            break;
-                                        }
-                                    } else {
-                                        switch ($type) {
-                                            case 'sql_graph_vbar':
-                                            default:
-                                                // Vertical bar.
-                                                if ($flagOther === false) {
-                                                    $data[] = [
-                                                        'tick' => __('Other'),
-                                                        'data' => $value,
-                                                    ];
-
-                                                    $flagOther = true;
-                                                }
-
-                                                $data[(count($data) - 1)]['data'] += $value;
-                                            break;
-
-                                            case 'sql_graph_hbar':
-                                                // Horizontal bar.
-                                                if (isset($data[__('Other')]['g']) === false) {
-                                                    $data[__('Other')]['g'] = 0;
-                                                }
-
-                                                $data[__('Other')]['g'] += $value;
-                                            break;
-
-                                            case 'sql_graph_pie':
-                                                // Pie.
-                                                if (isset($data[__('Other')]) === false) {
-                                                    $data[__('Other')] = 0;
-                                                }
-
-                                                $data[__('Other')] += $value;
-                                            break;
-                                        }
-                                    }
+                                if ($pdf === true) {
+                                    $options['dataLabel'] = ['display' => 'auto'];
+                                    $options['layout'] = [
+                                        'padding' => [
+                                            'top'    => 15,
+                                            'bottom' => 15,
+                                        ],
+                                    ];
                                 }
 
-                                $value_query = pie_graph(
-                                    $data,
-                                    $width,
-                                    $height,
-                                    __('other'),
-                                    ui_get_full_url(false, false, false, false),
-                                    '',
-                                    $config['fontpath'],
-                                    $config['font_size'],
-                                    ($pdf === true) ? 2 : 1,
-                                    'hidden',
-                                    '',
-                                    true
+                                $data = array_reduce(
+                                    $data_query,
+                                    function ($carry, $item) use ($pdf) {
+                                        if ($pdf === true) {
+                                            $carry['labels'][] = io_safe_output($item['label']).' ('.$item['value'].')';
+                                        } else {
+                                            $carry['labels'][] = io_safe_output($item['label']);
+                                        }
+
+                                        $carry['data'][] = $item['value'];
+
+                                        return $carry;
+                                    },
+                                    []
                                 );
+
+                                $value_query = '<div style="width:'.$width.'px;">';
+                                if ($pdf === true) {
+                                    $value_query .= '<img src="data:image/png;base64,';
+                                }
+
+                                $options['labels'] = $data['labels'];
+                                $value_query .= pie_graph(
+                                    $data['data'],
+                                    $options
+                                );
+
+                                if ($pdf === true) {
+                                    $value_query .= '" />';
+                                }
+
+                                $value_query .= '</div>';
                             }
                         }
 
@@ -5352,6 +5563,10 @@ function agents_get_network_interfaces_array(
                 $row_data['agent'] = $agent['name'];
                 $row_data['interfaces'] = [];
                 foreach ($agent['interfaces'] as $interface_name => $interface) {
+                    if (isset($interface['traffic']) === false) {
+                        $interface['traffic'] = [];
+                    }
+
                     $row_interface = [];
                     $row_interface['name'] = $interface_name;
                     $row_interface['ip'] = $interface['ip'];
@@ -10875,49 +11090,102 @@ function reporting_get_module_detailed_event(
             $height = $force_height_chart;
         }
 
+        $options_charts = [
+            'width'  => 500,
+            'height' => 150,
+            'radius' => null,
+            'legend' => [
+                'display'  => true,
+                'position' => 'right',
+                'align'    => 'center',
+            ],
+            'ttl'    => $ttl,
+        ];
+
+        if ((int) $ttl === 2) {
+            $options_charts['dataLabel'] = ['display' => 'auto'];
+            $options_charts['layout'] = [
+                'padding' => [
+                    'top'    => 15,
+                    'bottom' => 15,
+                ],
+            ];
+        }
+
         if ($event_graph_by_user_validator) {
             $data_graph_by_user = events_get_count_events_validated_by_user($event['data']);
-            $event['chart']['by_user_validator'] = pie_graph(
-                $data_graph_by_user,
-                500,
-                150,
-                __('other'),
-                ui_get_full_url(false, false, false, false),
-                ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-                $config['fontpath'],
-                $config['font_size'],
-                $ttl
+            if ((int) $ttl === 2) {
+                $result_data_graph_by_user = [];
+                foreach ($data_graph_by_user as $key => $value) {
+                    $result_data_graph_by_user[$key.' ('.$value.')'] = $value;
+                }
+
+                $data_graph_by_user = $result_data_graph_by_user;
+            }
+
+            if ((int) $ttl === 2) {
+                $event['chart']['by_user_validator'] = '<img src="data:image/png;base64,';
+            } else {
+                $event['chart']['by_user_validator'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+            }
+
+            $options_charts['labels'] = array_keys($data_graph_by_user);
+            $event['chart']['by_user_validator'] .= pie_graph(
+                array_values($data_graph_by_user),
+                $options_charts
             );
+
+            if ((int) $ttl === 2) {
+                $event['chart']['by_user_validator'] .= '" />';
+            } else {
+                $event['chart']['by_user_validator'] .= '</div>';
+            }
         }
 
         if ($event_graph_by_criticity) {
             $data_graph_by_criticity = [];
             if (empty($event['data']) === false) {
                 foreach ($event['data'] as $value) {
-                    $k = get_priority_name($value['criticity']);
+                    $k = io_safe_output(get_priority_name($value['criticity']));
                     if (isset($data_graph_by_criticity[$k]) === true) {
                         $data_graph_by_criticity[$k]++;
                     } else {
                         $data_graph_by_criticity[$k] = 1;
                     }
                 }
+
+                $colors = get_criticity_pie_colors($data_graph_by_criticity);
+                $options_charts['colors'] = array_values($colors);
+
+                if ((int) $ttl === 2) {
+                    $result_data_graph_by_criticity = [];
+                    foreach ($data_graph_by_criticity as $key => $value) {
+                        $result_data_graph_by_criticity[$key.' ('.$value.')'] = $value;
+                    }
+
+                    $data_graph_by_criticity = $result_data_graph_by_criticity;
+                }
             }
 
-            $colors = get_criticity_pie_colors($data_graph_by_criticity);
+            if ((int) $ttl === 2) {
+                $event['chart']['by_criticity'] = '<img src="data:image/png;base64,';
+            } else {
+                $event['chart']['by_criticity'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+            }
 
-            $event['chart']['by_criticity'] = pie_graph(
-                $data_graph_by_criticity,
-                500,
-                150,
-                __('other'),
-                ui_get_full_url(false, false, false, false),
-                ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-                $config['fontpath'],
-                $config['font_size'],
-                $ttl,
-                false,
-                $colors
+            $options_charts['labels'] = array_keys($data_graph_by_criticity);
+            $event['chart']['by_criticity'] .= pie_graph(
+                array_values($data_graph_by_criticity),
+                $options_charts
             );
+
+            if ((int) $ttl === 2) {
+                $event['chart']['by_criticity'] .= '" />';
+            } else {
+                $event['chart']['by_criticity'] .= '</div>';
+            }
+
+            unset($options_charts['colors']);
         }
 
         if ($event_graph_validated_vs_unvalidated) {
@@ -10935,19 +11203,34 @@ function reporting_get_module_detailed_event(
                         $data_graph_by_status[$k] = 1;
                     }
                 }
+
+                if ((int) $ttl === 2) {
+                    $result_data_graph_by_status = [];
+                    foreach ($data_graph_by_status as $key => $value) {
+                        $result_data_graph_by_status[$key.' ('.$value.')'] = $value;
+                    }
+
+                    $data_graph_by_status = $result_data_graph_by_status;
+                }
             }
 
-            $event['chart']['validated_vs_unvalidated'] = pie_graph(
-                $data_graph_by_status,
-                500,
-                150,
-                __('other'),
-                ui_get_full_url(false, false, false, false),
-                ui_get_full_url(false, false, false, false).'/images/logo_vertical_water.png',
-                $config['fontpath'],
-                $config['font_size'],
-                $ttl
+            if ((int) $ttl === 2) {
+                $event['chart']['validated_vs_unvalidated'] = '<img src="data:image/png;base64,';
+            } else {
+                $event['chart']['validated_vs_unvalidated'] = '<div style="margin: 0 auto; width:'.$options_charts['width'].'px;">';
+            }
+
+            $options_charts['labels'] = array_keys($data_graph_by_status);
+            $event['chart']['validated_vs_unvalidated'] .= pie_graph(
+                array_values($data_graph_by_status),
+                $options_charts
             );
+
+            if ((int) $ttl === 2) {
+                $event['chart']['validated_vs_unvalidated'] .= '" />';
+            } else {
+                $event['chart']['validated_vs_unvalidated'] .= '</div>';
+            }
         }
 
         if (!empty($event)) {
@@ -15322,11 +15605,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
             $report['datetime']
         );
     } else {
-        $return['chart'] = graph_nodata_image(
-            $width_graph,
-            $height_graph,
-            'area'
-        );
+        $return['chart'] = graph_nodata_image(['height' => $height_graph]);
     }
 
     if ($metaconsole_on && $server_name != '') {

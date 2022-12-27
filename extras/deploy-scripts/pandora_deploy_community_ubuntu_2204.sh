@@ -271,6 +271,8 @@ echo -en "${cyan}Installing phantomjs...${reset}"
     /usr/bin/phantomjs --version &>> "$LOGFILE" 
 check_cmd_status "Error Installing phanromjs"
 
+# Chromium
+execute_cmd "apt install -y chromium-browser" "Instaling chromium browser"
 
 # SDK VMware perl dependencies
 vmware_dependencies=" \

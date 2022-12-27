@@ -95,11 +95,11 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Phantomjs bin directory');
+$table->data[$i][0] = __('Chromium path');
 $table->data[$i++][1] = html_print_input_text(
-    'phantomjs_bin',
+    'chromium_path',
     io_safe_output(
-        $config['phantomjs_bin']
+        $config['chromium_path']
     ),
     '',
     30,

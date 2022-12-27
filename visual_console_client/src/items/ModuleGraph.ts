@@ -98,18 +98,6 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
       element.style.opacity = "0.2";
     }
 
-    // Remove the overview graph.
-    const legendP = element.getElementsByTagName("p");
-    for (let i = 0; i < legendP.length; i++) {
-      legendP[i].style.margin = "0px";
-    }
-
-    // Remove the overview graph.
-    const overviewGraphs = element.getElementsByClassName("overview_graph");
-    for (let i = 0; i < overviewGraphs.length; i++) {
-      overviewGraphs[i].remove();
-    }
-
     // Hack to execute the JS after the HTML is added to the DOM.
     const scripts = element.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {
@@ -128,16 +116,11 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
   protected updateDomElement(element: HTMLElement): void {
     element.innerHTML = this.props.html;
 
-    // Remove the overview graph.
-    const legendP = element.getElementsByTagName("p");
-    for (let i = 0; i < legendP.length; i++) {
-      legendP[i].style.margin = "0px";
-    }
-
-    // Remove the overview graph.
-    const overviewGraphs = element.getElementsByClassName("overview_graph");
-    for (let i = 0; i < overviewGraphs.length; i++) {
-      overviewGraphs[i].remove();
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
     }
 
     // Hack to execute the JS after the HTML is added to the DOM.

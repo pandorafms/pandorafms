@@ -380,6 +380,7 @@ function configure_modules_form() {
         $("#text-snmp_oid").val(js_html_entity_decode(data["snmp_oid"]));
         $("#oid, img#edit_oid").hide();
         $("#id_module_group").val(data["id_module_group"]);
+        $("#id_module_group").trigger("change");
         $("#max_timeout").attr("value", data["max_timeout"]);
         $("#max_retries").attr("value", data["max_retries"]);
         if (data["id_plugin"] != undefined) {

@@ -896,5 +896,58 @@ $(document).ready (function () {
     })
 
     $('input#button-email_test').click(perform_email_test);
+
+    $("#right_iblacklist").click (function () {
+        jQuery.each($("select[name='inventory_changes_blacklist_out[]'] option:selected"), function (key, value) {
+            imodule_name = $(value).html();
+            if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                id_imodule = $(value).attr('value');
+                $("select[name='inventory_changes_blacklist[]']")
+                    .append(
+                        $("<option></option>")
+                            .val(id_imodule)
+                            .html('<i>' + imodule_name + '</i>')
+                    );
+                $("#inventory_changes_blacklist_out")
+                    .find("option[value='" + id_imodule + "']").remove();
+                $("#inventory_changes_blacklist")
+                    .find("option[value='']").remove();
+                if($("#inventory_changes_blacklist_out option").length == 0) {
+                    $("select[name='inventory_changes_blacklist_out[]']")
+                        .append(
+                            $("<option></option>")
+                                .val('')
+                                .html('<i><?php echo __('None'); ?></i>')
+                        );
+                }
+            }
+        });
+    });
+    $("#left_iblacklist").click (function () {
+        jQuery.each($("select[name='inventory_changes_blacklist[]'] option:selected"), function (key, value) {
+                imodule_name = $(value).html();
+                if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                    id_imodule = $(value).attr('value');
+                    $("select[name='inventory_changes_blacklist_out[]']")
+                        .append(
+                            $("<option><option>")
+                                .val(id_imodule)
+                                .html('<i>' + imodule_name + '</i>')
+                        );
+                    $("#inventory_changes_blacklist")
+                        .find("option[value='" + id_imodule + "']").remove();
+                    $("#inventory_changes_blacklist_out")
+                        .find("option[value='']").remove();
+                    if($("#inventory_changes_blacklist option").length == 0) {
+                        $("select[name='inventory_changes_blacklist[]']")
+                            .append(
+                                $("<option></option>")
+                                    .val('')
+                                    .html('<i><?php echo __('None'); ?></i>')
+                            );
+                    }
+                }
+        });
+    });
 });
 </script>

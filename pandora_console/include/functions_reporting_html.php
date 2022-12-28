@@ -962,7 +962,7 @@ function reporting_html_top_n($table, $item, $pdf=0)
             $table->data['top_n']['cell'] = html_print_table($table1, true);
         }
 
-        if (!empty($item['charts']['pie'])) {
+        if (empty($item['charts']['pie']) === false) {
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['pie'];
             } else {
@@ -971,16 +971,15 @@ function reporting_html_top_n($table, $item, $pdf=0)
             }
         }
 
-        if (!empty($item['charts']['bars'])) {
+        if (empty($item['charts']['bars']) === false) {
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['bars'];
             } else {
-                // $table->colspan['char_bars']['cell'] = 3;
                 $table->data['char_pie'][1] = $item['charts']['bars'];
             }
         }
 
-        if (!empty($item['resume'])) {
+        if (empty($item['resume']) === false) {
             $table1 = new stdClass();
             $table1->width = '99%';
 
@@ -5142,7 +5141,17 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         // Fixed width non interactive charts.
         $status_chart_width = $graph_width;
 
-        $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;"><div id="status_pie" style="margin: auto; width: '.$graph_width.'">'.graph_agent_status(false, $graph_width, $graph_height, true, true).'</div></div>';
+        $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;">';
+        $tdata[0] .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'">';
+        $tdata[0] .= graph_agent_status(
+            false,
+            $graph_width,
+            $graph_height,
+            true,
+            true
+        );
+        $tdata[0] .= '</div>';
+        $tdata[0] .= '</div>';
     } else {
         $tdata[2] = html_print_image(
             'images/image_problem_area_small.png',
@@ -5152,7 +5161,16 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
     }
 
     if ($data['monitor_alerts'] > 0) {
-        $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">'.graph_alert_status($data['monitor_alerts'], $data['monitor_alerts_fired'], $graph_width, $graph_height, true, true).'</div>';
+        $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">';
+        $tdata[2] .= graph_alert_status(
+            $data['monitor_alerts'],
+            $data['monitor_alerts_fired'],
+            $graph_width,
+            $graph_height,
+            true,
+            true
+        );
+        $tdata[2] .= '</div>';
     } else {
         $tdata[2] = html_print_image(
             'images/image_problem_area_small.png',
@@ -5161,8 +5179,8 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         );
     }
 
-        $table_sum->rowclass[] = '';
-        $table_sum->data[] = $tdata;
+    $table_sum->rowclass[] = '';
+    $table_sum->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
                 <legend>'.__('Summary').'</legend>'.html_print_table($table_sum, true).'</fieldset>';

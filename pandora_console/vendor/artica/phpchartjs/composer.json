@@ -1,0 +1,47 @@
+{
+  "name": "artica/phpchartjs",
+  "description": "PHP library for ChartJS",
+  "keywords": [
+    "chartjs",
+    "graph",
+    "php"
+  ],
+  "readme": "README.md",
+  "homepage": "https://artica.es/",
+  "type": "package",
+  "version": "v1.0.2",
+  "license": "AGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Bob Kruithof"
+    },
+    {
+      "name": "Daniel Barbero"
+    }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "ext-dom": "*",
+    "ext-json": "*",
+    "laminas/laminas-json": ">3.1.2",
+    "halfpastfouram/collection": "1.0.0",
+    "symfony/var-dumper": "^3.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "squizlabs/php_codesniffer": "3.5.3",
+    "friendsofphp/php-cs-fixer": "*",
+    "sensiolabs/security-checker": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Artica\\PHPChartJS\\": "src/",
+      "Test\\": "test/"
+    }
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit",
+    "cs-check": "./vendor/bin/phpcs",
+    "cs-fix": "./vendor/bin/phpcbf"
+  }
+}

@@ -43,7 +43,7 @@ export function donutGraphPropsDecoder(
       ? data.html
       : decodeBase64(data.encodedHtml),
     legendBackgroundColor: stringIsEmpty(data.legendBackgroundColor)
-      ? "#000000"
+      ? "#ffffff"
       : data.legendBackgroundColor,
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
@@ -55,6 +55,7 @@ export default class DonutGraph extends Item<DonutGraphProps> {
     const element = document.createElement("div");
     element.className = "donut-graph";
     element.innerHTML = this.props.html;
+    element.style.backgroundColor = this.props.legendBackgroundColor;
 
     if (
       this.props.agentDisabled === true ||
@@ -66,9 +67,13 @@ export default class DonutGraph extends Item<DonutGraphProps> {
     // Hack to execute the JS after the HTML is added to the DOM.
     const scripts = element.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {
-      setTimeout(() => {
-        if (scripts[i].src.length === 0) eval(scripts[i].innerHTML.trim());
-      }, 0);
+      if (scripts[i].src.length === 0) {
+        setTimeout(() => {
+          try {
+            eval(scripts[i].innerHTML.trim());
+          } catch (ignored) {} // eslint-disable-line no-empty
+        }, 0);
+      }
     }
 
     return element;
@@ -76,11 +81,17 @@ export default class DonutGraph extends Item<DonutGraphProps> {
 
   protected updateDomElement(element: HTMLElement): void {
     element.innerHTML = this.props.html;
+    element.style.backgroundColor = this.props.legendBackgroundColor;
+
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
 
     // Hack to execute the JS after the HTML is added to the DOM.
-    const aux = document.createElement("div");
-    aux.innerHTML = this.props.html;
-    const scripts = aux.getElementsByTagName("script");
+    const scripts = element.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {
       if (scripts[i].src.length === 0) {
         eval(scripts[i].innerHTML.trim());

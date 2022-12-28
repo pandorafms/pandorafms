@@ -1690,5 +1690,5 @@ enterprise/operation/agentes/agent_inventory.php
 enterprise/godmode/modules/manage_inventory_modules.php
 enterprise/godmode/modules/manage_inventory_modules_form.php
 enterprise/operation/inventory/inventory.php
-
-
+include/test.js
+include/web2image.js

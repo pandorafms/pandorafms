@@ -2031,8 +2031,10 @@ if ($total_event_graph) {
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    $prueba = grafico_eventos_total('', 280, 150, false, true);
-    echo $prueba;
+    $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+    $out .= grafico_eventos_total('', 0, 0, false, true);
+    $out .= '<div>';
+    echo $out;
     return;
 }
 
@@ -2041,8 +2043,10 @@ if ($graphic_event_group) {
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    $prueba = grafico_eventos_grupo(280, 150, '', false, true);
-    echo $prueba;
+    $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+    $out .= grafico_eventos_grupo(0, 0, '', false, true);
+    $out .= '<div>';
+    echo $out;
     return;
 }
 

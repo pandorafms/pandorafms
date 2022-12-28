@@ -858,6 +858,7 @@ sub main() {
 	
 	# Main loop
 	my $time_ref = time ();
+	my $thr_time_ref = 0;
 	my $test_remote_interval = ($Config{'keepalive'}/$Config{'server_threshold'});
 	my $test_remote = 0;
 	while ($RUN == 1) {
@@ -872,6 +873,15 @@ sub main() {
 	
 			# Make sure all server threads are running.
 			die("Server thread crashed.") unless (check_server_threads() == 1);
+
+			# Monitor server threads.
+			if (defined($Config{"self_monitoring"}) 
+				&& $Config{"self_monitoring"} == 1
+				&& !is_metaconsole(\%Config)
+				&& time() - $thr_time_ref > $Config{'self_monitoring_interval'}) {
+				$thr_time_ref = time();
+				pandora_thread_monitoring (\%Config, $DBH, \@Servers);
+			}
 
 			db_do ($DBH,
 				"UPDATE tserver SET status = -1

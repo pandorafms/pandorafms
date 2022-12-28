@@ -1393,7 +1393,11 @@ if ($searchPage) {
 
                 case 'External link':
                     $home_url = io_safe_output($home_url);
-                    echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
+                    if (strlen($home_url) !== 0) {
+                        echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
+                    } else {
+                        $_GET['sec2'] = 'general/logon_ok';
+                    }
                 break;
             }
 

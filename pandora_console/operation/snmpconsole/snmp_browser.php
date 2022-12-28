@@ -252,9 +252,7 @@ function snmp_show_result_message(data) {
     // Stop waiting modal.
     waiting_modal(stop);
 
-    var dato = data.replace(/[^]+(?=\[)/, "");
-
-    dato = JSON.parse(dato);
+    var dato = JSON.parse(data);
     if (dato.length !== 0) {
       $("#error_text").text("");
 
@@ -678,13 +676,16 @@ function show_add_module() {
                                     //Submit form to agent module url.
                                     $("#snmp_create_module").attr(
                                         "action",
-                                        "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="+id_agent+"&tab=module&edit_module=1");
+                                        "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
+                                        +id_agent+
+                                        "&tab=module&edit_module=1"
+                                    );
 
                                     $('#snmp_create_module').submit();
-
-
-                                        //Close dialog.
-                                        $('#dialog_create_module').dialog("close");
+                                },
+                                onDeny: function () {
+                                    $("#dialog_create_module").dialog("close");
+                                    return false;
                                 }
                             });
                     }

@@ -66,6 +66,7 @@ if (is_ajax()) {
     $agent_alias = get_parameter('alias', '');
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
+    $pendingdelete = (bool) get_parameter('pendingdelete');
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -735,6 +736,11 @@ if (is_ajax()) {
                         ($sql_tags_join === '') ? 'INNER JOIN tagente ON tagente.id_agente = t1.id_agente' : '',
                         (empty($where_tags)) ? '' : " WHERE 1=1 $where_tags"
                     );
+                    if ($pendingdelete == true) {
+                        $sql .= sprintf(
+                            ' AND delete_pending=0'
+                        );
+                    }
                 }
             } else {
                 $sql = sprintf(

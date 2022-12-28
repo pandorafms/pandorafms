@@ -967,6 +967,10 @@ function get_parameter($name, $default='')
         return get_parameter_get($name, $default);
     }
 
+    if (isset($_FILES[$name])) {
+        return get_parameter_file($name, $default);
+    }
+
     return $default;
 }
 
@@ -1001,6 +1005,24 @@ function get_parameter_post($name, $default='')
 {
     if ((isset($_POST[$name])) && ($_POST[$name] != '')) {
         return io_safe_input($_POST[$name]);
+    }
+
+    return $default;
+}
+
+
+/**
+ * Get a parameter from a post file request.
+ *
+ * @param string $name    key of the parameter in the $_FILES array
+ * @param mixed  $default default value if the key wasn't found
+ *
+ * @return mixed Whatever was in that parameter, cleaned however
+ */
+function get_parameter_file($name, $default='')
+{
+    if ((isset($_FILES[$name])) && !empty($_FILES[$name])) {
+        return io_safe_input($_FILES[$name]);
     }
 
     return $default;

@@ -949,5 +949,11 @@ $(document).ready (function () {
                 }
         });
     });
+
+    $("#submit-update_button").click(function () {
+        $('#inventory_changes_blacklist option').map(function(){
+            $(this).prop('selected', true);
+        });
+    });
 });
 </script>

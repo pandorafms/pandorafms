@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Godmode menu.
  *
@@ -578,6 +579,14 @@ if ($access_console_node === true) {
     }
 }
 
+if ($access_console_node === true) {
+    // About.
+    $menu_godmode['about']['text'] = __('About');
+    $menu_godmode['about']['id'] = 'about';
+}
+
 if ((bool) $config['pure'] === false) {
     menu_print_menu($menu_godmode);
 }
+
+echo '<div id="about-div"></div>';

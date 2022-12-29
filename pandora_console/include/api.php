@@ -74,7 +74,6 @@ $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
 $raw_decode = (bool) get_parameter('raw_decode', false);
-$apiToken = (string) get_parameter('token');
 
 $other = parseOtherParameter($otherSerialize, $otherMode, $raw_decode);
 $apiPassword = io_output_password(
@@ -85,7 +84,19 @@ $apiPassword = io_output_password(
     )
 );
 
-$apiTokenValid = (isset($_GET['token']) === true && (bool) api_token_check($apiToken));
+// Try getting bearer token from header.
+// TODO. Getting token from url will be removed.
+$apiToken = (string) getBearerToken();
+if ($apiToken === false) {
+    // Legacy token in GET.
+    // TODO. Revome in future.
+    $apiToken = (string) get_parameter('token');
+    $apiTokenValid = (isset($_GET['token']) === true && (bool) api_token_check($apiToken));
+} else {
+    $apiTokenValid = (bool) api_token_check($apiToken);
+}
+
+
 $correctLogin = false;
 $no_login_msg = '';
 

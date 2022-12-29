@@ -65,42 +65,58 @@ function api_execute(
     string $other_mode='',
     string $token=''
 ) {
+    $data = [];
+
     if (empty($url) === true) {
-        $url = 'http://'.$ip.$pandora_url.'/include/api.php';
-        $url .= '?';
-        $url .= '&op='.$op;
-        $url .= '&op2='.$op2;
+        $url = 'http://'.$ip.$pandora_url.'/include/api.php?';
+
+        if (empty($op) === false) {
+            $data['op'] = $op;
+        }
+
+        if (empty($op2) === false) {
+            $data['op2'] = $op2;
+        }
 
         if (empty($id) === false) {
-            $url .= '&id='.$id;
+            $data['id'] = $id;
         }
 
         if (empty($id2) === false) {
-            $url .= '&id2='.$id2;
+            $data['id2'] = $id2;
         }
 
         if (empty($return_type) === false) {
-            $url .= '&return_type='.$return_type;
+            $data['return_type'] = $return_type;
         }
 
         if (empty($other) === false) {
-            $url .= '&other_mode='.$other_mode;
-            $url .= '&other='.$other;
+            $data['other_mode'] = $other_mode;
+            $data['other'] = $other;
         }
 
-        // If token is reported, have priority.
-        if (empty($token) === false) {
-            $url .= 'token='.$token;
-        } else {
-            $url .= 'apipass='.$apipass;
-            $url .= '&user='.$user;
-            $url .= '&pass='.$password;
+        // If token is not reported,use old method.
+        if (empty($token) === true) {
+            $data['apipass'] = $apipass;
+            $data['user'] = $user;
+            $data['password'] = $password;
         }
     }
 
-    $curlObj = curl_init();
+    $curlObj = curl_init($url);
+    if (empty($data) === false) {
+        $url .= http_build_query($data);
+    }
+
+    // set the content type json
+    $headers = [
+        'Content-Type: application/json',
+        'Authorization: Bearer '.$token,
+    ];
+
     curl_setopt($curlObj, CURLOPT_URL, $url);
-    curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlObj, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curlObj);
     curl_close($curlObj);
 

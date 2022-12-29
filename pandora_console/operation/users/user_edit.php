@@ -290,6 +290,16 @@ $user_id .= html_print_anchor(
     true
 );
 
+// Check php conf for header auth.
+$lines = file('/etc/httpd/conf.d/php.conf');
+$http_authorization = false;
+
+foreach ($lines as $l) {
+    if (preg_match('/SetEnvIfNoCase \^Authorization\$ \"\(\.\+\)\" HTTP_AUTHORIZATION=\$1/', $l)) {
+        $http_authorization = true;
+    }
+}
+
 $user_id .= html_print_anchor(
     [
         'onClick' => sprintf(
@@ -309,8 +319,19 @@ $user_id .= html_print_anchor(
     ],
     true
 );
-$user_id .= '</div>';
 
+if ($http_authorization === false) {
+    $user_id .= ui_print_help_tip(
+        __('Directive HTTP_AUTHORIZATION=$1 is not set. Please, add it to /etc/httpd/conf.d/php.conf'),
+        true,
+        'images/warn.png',
+        false,
+        '',
+        true
+    );
+}
+
+$user_id .= '</div>';
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',
     $user_info['fullname'],

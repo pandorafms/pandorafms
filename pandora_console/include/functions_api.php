@@ -17347,23 +17347,6 @@ function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
 
 
 /**
- * Check if token is correct.
- *
- * @param string $token Token for check.
- *
- * @return mixed Id of user. If returns 0 there is not valid token.
- */
-function api_token_check(string $token)
-{
-    if (empty($token) === true) {
-        return -1;
-    } else {
-        return db_get_value('id_user', 'tusuario', 'api_token', $token);
-    }
-}
-
-
-/**
  * Make report (PDF, CSV or XML) and send it via e-mail (this method is intended to be used by server's execution
  * of alert actions that involve sending reports by e-mail).
  *
@@ -17658,5 +17641,22 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         ];
 
         returnData($returnType, $data, ';');
+    }
+}
+
+
+/**
+ * Check if token is correct.
+ *
+ * @param string $token Token for check.
+ *
+ * @return mixed Id of user. If returns 0 there is not valid token.
+ */
+function api_token_check(string $token)
+{
+    if (empty($token) === true) {
+        return 0;
+    } else {
+        return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
 }

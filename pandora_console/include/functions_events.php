@@ -2634,27 +2634,6 @@ function events_print_event_table(
         $events_table = html_print_table($table, true);
         $out = $events_table;
 
-        if (!$tactical_view) {
-            $out .= '<table width="100%"><tr><td class="w90p align-top pdd_t_0px">';
-            if ($agent_id != 0) {
-                $out .= '</td><td class="w200px align-top">';
-                $out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-                $out .= '<fieldset class="databox tactical_set">
-						<legend>'.__('Events -by module-').'</legend>'.graph_event_module(180, 100, $event['id_agente']).'</fieldset>';
-                $out .= '</td></tr></table>';
-            } else {
-                $out .= '</td><td class="w200px align-top">';
-                $out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-                $out .= '<fieldset class="databox tactical_set">
-						<legend>'.__('Event graph').'</legend>'.grafico_eventos_total('', 180, 60).'</fieldset>';
-                $out .= '<fieldset class="databox tactical_set">
-						<legend>'.__('Event graph by agent').'</legend>'.grafico_eventos_grupo(180, 60).'</fieldset>';
-                $out .= '</td></tr></table>';
-            }
-
-            $out .= '</td></tr></table>';
-        }
-
         unset($table);
 
         if ($return) {
@@ -5212,7 +5191,7 @@ function events_get_count_events_validated_by_user($data)
             ) {
                 foreach ($fullnames as $value) {
                     if (isset($data_graph_by_user[$value['id_user']]) === true) {
-                        $data_graph_by_user[$value['fullname']] = $data_graph_by_user[$value['id_user']];
+                        $data_graph_by_user[io_safe_output($value['fullname'])] = $data_graph_by_user[$value['id_user']];
                         unset($data_graph_by_user[$value['id_user']]);
                     }
                 }

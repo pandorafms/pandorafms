@@ -1275,7 +1275,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `firstname` VARCHAR(255) NOT NULL,
   `lastname` VARCHAR(255) NOT NULL,
   `middlename` VARCHAR(255) NOT NULL,
-  `password` VARCHAR(45) DEFAULT NULL,
+  `password` VARCHAR(60) DEFAULT NULL,
   `comments` VARCHAR(200) DEFAULT NULL,
   `last_connect` BIGINT NOT NULL DEFAULT 0,
   `registered` BIGINT NOT NULL DEFAULT 0,

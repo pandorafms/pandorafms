@@ -9179,3 +9179,16 @@ div#err_msg_centralised {
 .tag-editor .tag-editor-delete:hover i:before {
   color: #ccc !important;
 }
+
+.snmp-td {
+  padding: 0 !important;
+  height: 0;
+}
+
+.snmp-div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding-left: 10px;
+}

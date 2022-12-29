@@ -9,13 +9,24 @@
   ],
   "config": {
     "platform": {
-      "php": "7.2.0"
+      "php": "8.0.0"
     }
   },
   "require": {
     "mpdf/mpdf": "^8.0.15",
     "swiftmailer/swiftmailer": "^6.0",
-    "amphp/parallel-functions": "^1.0"
+    "amphp/parallel-functions": "^1.0",
+    "chrome-php/chrome": "^1.7.1",
+    "artica/phpchartjs": "^1.0"
+  },
+  "repositories": {
+    "phpchartjs": {
+      "type": "path",
+      "url": "../../../phpchartjs",
+      "options": {
+        "symlink": false
+      }
+    }
   },
   "autoload": {
     "psr-4": {

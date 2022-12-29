@@ -307,34 +307,6 @@ if ($view_graph) {
         return;
     }
 
-    if ($graph_return) {
-        echo "<table id='graph-container' class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
-        echo '<tr><td>';
-        if (!is_ajax()) {
-            echo '<div id="spinner_loading" class="loading invisible" style="display:flex;flex-direction:column-reverse;justify-content:center;align-items:center">';
-            echo html_print_image('images/spinner.gif', true, ['width' => '20px']);
-            echo __('Loading').'&hellip;';
-            echo '</div>';
-        }
-
-        if ($stacked == CUSTOM_GRAPH_VBARS) {
-            echo '<div class="w100p height_600px">';
-            echo '<div id="div-container" class="w100p height_600px">';
-        } else {
-            echo '<div id="div-container">';
-        }
-
-        echo $graph_return;
-        echo '</div>';
-        if ($stacked == CUSTOM_GRAPH_VBARS) {
-            echo '</div>';
-        }
-
-        echo '</td></tr></table>';
-    } else {
-        ui_print_info_message([ 'no_close' => true, 'message' => __('No data.') ]);
-    }
-
     if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD) {
         $stacked = 4;
     }
@@ -402,6 +374,31 @@ if ($view_graph) {
     echo '</tr>';
     echo '</table>';
     echo '</form>';
+
+    if ($graph_return) {
+        echo "<table id='graph-container' class='databox filters' cellpadding='0' cellspacing='0' style='height:100%;width:100%;overflow:hidden;'>";
+        echo '<tr><td>';
+        if (!is_ajax()) {
+            echo '<div id="spinner_loading" class="loading invisible" style="display:flex;flex-direction:column-reverse;justify-content:center;align-items:center">';
+            echo html_print_image('images/spinner.gif', true, ['width' => '20px']);
+            echo __('Loading').'&hellip;';
+            echo '</div>';
+        }
+
+        echo '<div id="div-container" class="w100p" style="height:100%;">';
+
+        echo '<div style="position: relative; display: flex; flex-direction:row; justify-content: center; align-items: center; align-content: center; width:100%; height:50vh;">';
+        echo '<div style="flex: 0 0 auto; width:99%; height:100%;">';
+        echo $graph_return;
+        echo '</div>';
+        echo '</div>';
+
+        echo '</div>';
+
+        echo '</td></tr></table>';
+    } else {
+        ui_print_info_message([ 'no_close' => true, 'message' => __('No data.') ]);
+    }
 
     /*
         We must add javascript here. Otherwise, the date picker won't

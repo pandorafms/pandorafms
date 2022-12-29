@@ -472,7 +472,7 @@ if (!$meta) {
     // User only can change skins if has more than one group.
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').': </p>';
             $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
@@ -481,7 +481,7 @@ if (!$meta) {
     // User only can change skins if has more than one group.
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').ui_print_help_tip(
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').ui_print_help_tip(
                 __('This change will only apply to nodes'),
                 true
             ).'</p>';

@@ -246,7 +246,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       serialized: serialized,
       id_server: id_server,
       status_module: module_status,
-      id_group: id_group
+      id_group: id_group,
+      pendingdelete: event.target.dataset.pendingdelete // Get pendingdelete attribute from target
     },
     function(data) {
       $("#module").empty();
@@ -2231,3 +2232,44 @@ function loadPasswordConfig(id, value) {
     }
   });
 }
+
+var formatterDataLabelPie = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+    let percentage = ((value * 100) / sum).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+var formatterDataHorizontalBar = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce(
+      (a, b) => {
+        if (a != undefined && b != undefined) {
+          return { x: parseInt(a.x) + parseInt(b.x) };
+        }
+      },
+      { x: 0 }
+    );
+    let percentage = ((value.x * 100) / sum.x).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+var formatterDataVerticalBar = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce(
+      (a, b) => {
+        if (a != undefined && b != undefined) {
+          return { y: parseInt(a.y) + parseInt(b.y) };
+        }
+      },
+      { y: 0 }
+    );
+    let percentage = ((value.y * 100) / sum.y).toFixed(1) + "%";
+    return percentage;
+  }
+};

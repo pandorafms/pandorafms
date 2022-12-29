@@ -113,13 +113,6 @@ define('SECONDS_1YEAR', 31536000);
 define('SECONDS_2YEARS', 63072000);
 define('SECONDS_3YEARS', 94608000);
 
-// PhantomJS Cache cleanup intervals.
-define('PHANTOM_CACHE_CLEANUP_ONCE', 0);
-define('PHANTOM_CACHE_CLEANUP_WEEKLY', SECONDS_1WEEK);
-define('PHANTOM_CACHE_CLEANUP_DAILY', SECONDS_1DAY);
-
-
-
 // Separator constats.
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10));

@@ -168,13 +168,17 @@ function process_user_login_local($login, $pass, $api=false, $passAlreadyEncrypt
 
     $row = db_get_row_sql($sql);
 
-    // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
-    if (strlen($row['password']) === 32) {
-        // MD5.
-        $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+    if ($passAlreadyEncrypted) {
+        $credentials_check = $pass === $row['password'];
     } else {
-        // Bcrypt.
-        $credentials_check = password_verify($pass, $row['password']);
+         // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
+        if (strlen($row['password']) === 32) {
+            // MD5.
+            $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+        } else {
+            // Bcrypt.
+            $credentials_check = password_verify($pass, $row['password']);
+        }
     }
 
     if ($credentials_check === true) {

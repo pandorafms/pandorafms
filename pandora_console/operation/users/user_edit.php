@@ -269,26 +269,29 @@ $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('U
 $user_id .= '<span>'.$id.'</span></div>';
 
 $user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').'</p>';
-$user_id .= html_print_anchor(
-    [
-        'onClick' => sprintf(
-            'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
-            __('Warning'),
-            __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
-            'user_profile_form',
-        ),
-        'content' => html_print_image(
-            'images/icono-refrescar.png',
-            true,
-            [
-                'class' => 'renew_api_token_image clickable',
-                'title' => __('Renew API Token'),
-            ]
-        ),
-        'class'   => 'renew_api_token_link',
-    ],
-    true
-);
+if (is_management_allowed()) {
+    $user_id .= html_print_anchor(
+        [
+            'onClick' => sprintf(
+                'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
+                __('Warning'),
+                __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
+                'user_profile_form',
+            ),
+            'content' => html_print_image(
+                'images/icono-refrescar.png',
+                true,
+                [
+                    'class' => 'renew_api_token_image clickable',
+                    'title' => __('Renew API Token'),
+                ]
+            ),
+            'class'   => 'renew_api_token_link',
+        ],
+        true
+    );
+}
+
 
 // Check php conf for header auth.
 $lines = file('/etc/httpd/conf.d/php.conf');

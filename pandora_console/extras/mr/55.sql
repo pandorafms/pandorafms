@@ -40,7 +40,6 @@ ALTER TABLE `tservice` ADD COLUMN `asynchronous` TINYINT NOT NULL DEFAULT 0;
 ALTER TABLE `tservice` ADD COLUMN `rca` TEXT;
 
 ALTER TABLE `tdashboard` MODIFY `name` TEXT NOT NULL DEFAULT '';
-ALTER TABLE `tusuario` ADD COLUMN `api_token` VARCHAR(255) NOT NULL DEFAULT '';
 
 ALTER TABLE `tevent_alert` ADD COLUMN `field1_recovery` TEXT AFTER `recovery_notify`;
 ALTER TABLE `tevent_alert` ADD COLUMN `field4_recovery` TEXT AFTER `field3_recovery`;

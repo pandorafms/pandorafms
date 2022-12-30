@@ -924,13 +924,14 @@ $(document).ready (function () {
         });
     });
     $("#left_iblacklist").click (function () {
+        debugger;
         jQuery.each($("select[name='inventory_changes_blacklist[]'] option:selected"), function (key, value) {
                 imodule_name = $(value).html();
                 if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
                     id_imodule = $(value).attr('value');
                     $("select[name='inventory_changes_blacklist_out[]']")
                         .append(
-                            $("<option><option>")
+                            $("<option></option>")
                                 .val(id_imodule)
                                 .html('<i>' + imodule_name + '</i>')
                         );

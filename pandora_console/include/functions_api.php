@@ -9601,6 +9601,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+    $values['metaconsole_access_node'] = $other['data'][13];
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');

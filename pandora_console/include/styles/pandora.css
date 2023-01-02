@@ -5794,12 +5794,12 @@ div.label_select_child_left > span {
   margin-right: 5px;
   margin-top: -2px;
 }
-
+/*
 div#bullets_modules {
   display: flex;
   margin-left: 2em;
 }
-
+*/
 div#bullets_modules div {
   display: flex;
   align-items: center;
@@ -5857,7 +5857,7 @@ div#bullets_modules div {
 /* First row in agent view */
 .agent_details_first_row {
   display: flex;
-  margin: 20px 0;
+  margin: 20px 0 0;
   width: 100%;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -5957,9 +5957,9 @@ div#status_pie {
 */
 .agent_details_header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
-  padding: 10px 10px;
+  padding: 15px;
 }
 /*
 .agent_details_content {
@@ -5979,12 +5979,17 @@ div#status_pie {
 .agent_details_content .agent_details_graph {
   text-align: center;
   flex: 0 1 30%;
+  display: flex;
+  min-width: 35%;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .agent_details_content .agent_details_info {
   flex: 1 1 70%;
   overflow: hidden;
-  min-width: 220px;
+  padding-left: 15px;
 }
 /*
 .agent_details_graph {
@@ -10575,6 +10580,11 @@ tr.bring_next_field {
 .floating_form {
   padding: 12px;
 }
+
+.floating_form tr {
+  height: 46px;
+}
+
 .floating_form td {
   font-size: 11pt;
   min-height: 32px;

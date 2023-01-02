@@ -232,7 +232,7 @@ sub prepare_tree {
     if (ref($duplex) eq "HASH") {
       if (! exists($duplex->{'data'}) || ($duplex->{'data'} ne '2' && $duplex->{'data'} ne '3')) {
         # Unknown duplex.
-        $duplex = 0;
+        $duplex = 1;
       } else {
         $duplex = int $duplex->{'data'};
       }

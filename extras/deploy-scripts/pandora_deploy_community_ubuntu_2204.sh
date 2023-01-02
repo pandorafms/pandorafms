@@ -18,6 +18,7 @@ WORKDIR=/opt/pandora/deploy
 
 S_VERSION='2022052501'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
+rm -f $LOGFILE &> /dev/null # remove last log before start
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
@@ -271,8 +272,10 @@ echo -en "${cyan}Installing phantomjs...${reset}"
     /usr/bin/phantomjs --version &>> "$LOGFILE" 
 check_cmd_status "Error Installing phanromjs"
 
-# Chromium
-execute_cmd "apt install -y chromium-browser" "Instaling chromium browser"
+# Chrome
+execute_cmd "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" "Downloading google chrome"
+execute_cmd "apt install -y ./google-chrome-stable_current_amd64.deb" "Intalling google chrome"
+execute_cmd "ln -s /usr/bin/google-chrome /usr/bin/chromium-browser" "Creating /usr/bin/chromium-browser Symlink"
 
 # SDK VMware perl dependencies
 vmware_dependencies=" \

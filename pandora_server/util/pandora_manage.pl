@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.767 Build 221216";
+my $version = "7.0NG.767 Build 230102";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1296,7 +1296,6 @@ sub help_screen_line($$$){
 
 sub check_values($) {
 	my ($check) = @_;
-	use experimental 'smartmatch';
 
 	my $arg_cont = 2;
 	my $cont = 0;
@@ -1316,7 +1315,7 @@ sub check_values($) {
 
 		# Check values.
 		if (defined($check->[$cont]->{'values'})) {
-			if (!($args[$arg_cont] ~~ $check->[$cont]->{'values'})) {
+			if (!(is_in_array($check->[$cont]->{'values'}, $args[$arg_cont]))) {
 				print "\nError: value `$args[$arg_cont]` is not valid for $check->[$cont]->{'name'}\n";
 				print "\tAvailable options: \t$check->[$cont]->{'values'}->[0]";
 				if (defined($check->[$cont]->{'text_extra'}->[0])) {

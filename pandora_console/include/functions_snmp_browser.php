@@ -460,7 +460,7 @@ function snmp_browser_get_oid(
             $snmptranslate_bin = $config['snmptranslate'];
         }
 
-        if ($server_to_exec != 0 && enterprise_installed()) {
+        if (empty($server_to_exec) === false && enterprise_installed()) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
             $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
 

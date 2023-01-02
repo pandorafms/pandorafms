@@ -62,7 +62,7 @@ enterprise_include_once('include/functions_cron.php');
 // Clases.
 use PandoraFMS\Agent;
 use PandoraFMS\Module;
-use PandoraFMS\Enterprise\Cluster;
+use PandoraFMS\Cluster;
 use PandoraFMS\Enterprise\Metaconsole\Node;
 use PandoraFMS\Event;
 use PandoraFMS\SpecialDay;
@@ -9601,6 +9601,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+    $values['metaconsole_access_node'] = $other['data'][13];
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');
@@ -10157,6 +10158,8 @@ function api_set_delete_module($id, $id2, $other, $trash1)
             }
 
             if (!$simulate) {
+                // Before delete the main module, check and delete the childrens from the original module.
+                module_check_childrens_and_delete($idAgentModule);
                 $return = modules_delete_agent_module($idAgentModule);
             } else {
                 $return = true;
@@ -10182,6 +10185,8 @@ function api_set_delete_module($id, $id2, $other, $trash1)
         }
 
         if (!$simulate) {
+            // Before delete the main module, check and delete the childrens from the original module.
+            module_check_childrens_and_delete($idAgentModule);
             $return = modules_delete_agent_module($idAgentModule);
         } else {
             $return = true;

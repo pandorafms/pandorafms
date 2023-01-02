@@ -68,7 +68,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no cluster
         if (check_acl($config['id_user'], 0, 'AW')) {
             ?>
         
-        <form action='index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&op=new' method="post">
+        <form action='index.php?sec=estado&sec2=operation/cluster/cluster&op=new' method="post">
             <input type="submit" class="button_task ui_toggle" value="<?php echo __('Create Cluster'); ?>" />
         </form>
         

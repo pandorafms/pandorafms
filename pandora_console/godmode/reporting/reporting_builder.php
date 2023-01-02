@@ -2182,6 +2182,8 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
+
+                            $values['server_name'] = get_parameter('combo_server');
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {

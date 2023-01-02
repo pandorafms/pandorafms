@@ -89,6 +89,15 @@ sub run ($$$$$) {
 
 	# Launch consumer threads
 	for (1..$self->getNumThreads ()) {
+
+		# Enable consumer stats
+		my $consumer_stats = shared_clone({
+			'tstamp'      => time(),
+			'rate'        => 0,
+			'rate_count'  => 0,
+			'rate_tstamp' => time()
+		});
+
 		my $thr = threads->create ({'exit' => 'thread_only'},
 			sub {
 				my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
@@ -98,12 +107,28 @@ sub run ($$$$$) {
 					$sem->up();
 					exit 0;
 				};
+
+				# Make consumer stats reachable from the thread
+				$self->{'_consumer_stats'}->{threads->tid()} = $consumer_stats;
+
 				PandoraFMS::ProducerConsumerServer::data_consumer->(@_);
 			}, $self, $task_queue, $pending_tasks, $sem, $task_sem
 		);
 		return unless defined ($thr);
 		$self->addThread ($thr->tid ());
+
+		# Make consumer stats reachable from the main program
+		$self->{'_consumer_stats'}->{$thr->tid()} = $consumer_stats;
 	}
+
+
+	# Enable producer stats
+	my $producer_stats = shared_clone({
+		'tstamp'      => time(),
+		'rate'        => 0,
+		'rate_count'  => 0,
+		'rate_tstamp' => time()
+	});
 
 	# Launch producer thread
 	my $thr = threads->create ({'exit' => 'thread_only'},
@@ -115,11 +140,18 @@ sub run ($$$$$) {
 				$sem->up();
 				exit 0;
 			};
+
+			# Make producer stats reachable from the thread
+			$self->{'_producer_stats'}->{threads->tid()} = $producer_stats;
+
 			PandoraFMS::ProducerConsumerServer::data_producer->(@_);
 		}, $self, $task_queue, $pending_tasks, $sem, $task_sem
 	);
 	return unless defined ($thr);
 	$self->addThread ($thr->tid ());
+
+	# Make producer stats reachable from the main program
+	$self->{'_producer_stats'}->{$thr->tid()} = $producer_stats;
 }
 
 ###############################################################################
@@ -130,46 +162,50 @@ sub data_producer ($$$$$) {
 	my $pa_config = $self->getConfig ();
 	my $dbh;
 
-	eval {
-		# Connect to the DB
-		$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
-							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
-		$self->setDBH ($dbh);
+	while ($RUN == 1) {
+		eval {
+			# Connect to the DB
+			$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
+								  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
+			$self->setDBH ($dbh);
 
-		while ($RUN == 1) {
+			while ($RUN == 1) {
 
-			# Get pending tasks
-			$self->logThread('[PRODUCER] Queuing tasks.');
-			my @tasks = &{$self->{'_producer'}}($self);
-			
-			foreach my $task (@tasks) {
-				$sem->down;
+				# Get pending tasks
+				$self->logThread('[PRODUCER] Queuing tasks.');
+				my @tasks = &{$self->{'_producer'}}($self);
 				
-				last if ($RUN == 0);
-				if (defined $pending_tasks->{$task}) {
-					$sem->up;
-					next;
-				}
+				foreach my $task (@tasks) {
+					$sem->down;
 					
-				# Queue task and signal consumers
-				$pending_tasks->{$task} = 0;
-				push (@{$task_queue}, $task);
-				$task_sem->up;
-				
-				$sem->up;
+					last if ($RUN == 0);
+					if (defined $pending_tasks->{$task}) {
+						$sem->up;
+						next;
+					}
+						
+					# Queue task and signal consumers
+					$pending_tasks->{$task} = 0;
+					push (@{$task_queue}, $task);
+					$task_sem->up;
+					
+					$sem->up;
+				}
+
+				last if ($RUN == 0);
+
+				# Update queue size and thread stats
+				$self->setQueueSize (scalar @{$task_queue});
+				$self->updateProducerStats(scalar(@tasks));
+
+				threads->yield;
+				usleep (int(1e6 * $self->getPeriod()));
 			}
-
-			last if ($RUN == 0);
-			# Update queue size for statistics
-			$self->setQueueSize (scalar @{$task_queue});
-
-			threads->yield;
-			usleep (int(1e6 * $self->getPeriod()));
+		};
+		
+		if ($@) {
+			print STDERR $@;
 		}
-	};
-	
-	if ($@) {
-		$self->setErrStr ($@);
 	}
 	
 	$task_sem->up($self->getNumThreads ());
@@ -185,40 +221,51 @@ sub data_consumer ($$$$$) {
 	my $pa_config = $self->getConfig ();
 
 	my $dbh;
-	eval {
-		# Connect to the DB
-		$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
-							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
-		$self->setDBH ($dbh);
+	my $sem_timeout = $pa_config->{'self_monitoring_interval'} > 0 ?
+	                  $pa_config->{'self_monitoring_interval'} :
+					  300;
+	while ($RUN == 1) {
+		eval {
+			# Connect to the DB
+			$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
+								  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
+			$self->setDBH ($dbh);
 
-		while ($RUN == 1) {
-			# Wait for data
-			$self->logThread('[CONSUMER] Waiting for data.');
-			$task_sem->down;
+			while ($RUN == 1) {
+				# Wait for data
+				$self->logThread('[CONSUMER] Waiting for data.');
+				while (!$task_sem->down_timed($sem_timeout)) {
+					$self->updateConsumerStats(0);
+				}
 
-			$sem->down;
-			last if ($RUN == 0);
-			my $task = shift (@{$task_queue});
-			$sem->up;
+				last if ($RUN == 0);
 
-			# The consumer was waiting for data when the producer exited
-			last if ($RUN == 0);
-			
-			# Execute task
-			$self->logThread("[CONSUMER] Executing task: $task");
-			&{$self->{'_consumer'}}($self, $task);
+				$sem->down;
+				my $task = shift (@{$task_queue});
+				$sem->up;
 
-			# Update task status
-			$sem->down;
-			delete ($pending_tasks->{$task});
-			$sem->up;
+				# The consumer was waiting for data when the producer exited
+				last if ($RUN == 0);
+				
+				# Execute task
+				$self->logThread("[CONSUMER] Executing task: $task");
+				&{$self->{'_consumer'}}($self, $task);
 
-			threads->yield;
+				# Update thread stats
+				$self->updateConsumerStats(1);
+
+				# Update task status
+				$sem->down;
+				delete ($pending_tasks->{$task});
+				$sem->up;
+
+				threads->yield;
+			}
+		};
+
+		if ($@) {
+			print STDERR $@;
 		}
-	};
-
-	if ($@) {
-		$self->setErrStr ($@);
 	}
 
 	db_disconnect ($dbh);

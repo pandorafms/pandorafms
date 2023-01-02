@@ -590,7 +590,7 @@ if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeM
     );
 }
 
-$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 320px;width: 100%';
+$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 340px;width: 100%';
 $table_simple->cellclass['thresholds_table'][0] = 'table_section half_section_left';
 $table_simple->data['thresholds_table'][0] = html_print_table($tableBasicThresholds, true);
 if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) {

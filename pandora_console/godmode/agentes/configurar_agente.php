@@ -573,8 +573,7 @@ if ($id_agente) {
 
 
     $total_incidents = agents_get_count_incidents($id_agente);
-    // TODO. OVERRIDE.
-    $total_incidents = 1;
+
     // Incident tab.
     if ($total_incidents > 0) {
         $incidenttab['text'] = html_print_menu_button(

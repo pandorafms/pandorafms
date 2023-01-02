@@ -182,25 +182,32 @@ echo html_print_div(
 
 $html_toggle = ob_get_clean();
 
-ui_toggle(
-    $html_toggle,
-    __('List of modules').$help_not_init.ui_print_help_tip(
-        __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
-        true
-    ).reporting_tiny_stats(
-        $agent,
-        true,
-        'modules',
-        ':',
-        true
-    ),
-    'status_monitor_agent',
-    false,
-    false,
-    '',
-    'white_table_graph_content no-padding-imp'
+html_print_div(
+    [
+        'class'   => 'agent_details_first_row agent_details_line',
+        'content' => ui_toggle(
+            $html_toggle,
+            '<span class="subsection_header_title">'.__('List of modules').'</span>'.$help_not_init.ui_print_help_tip(
+                __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
+                true
+            ).reporting_tiny_stats(
+                $agent,
+                true,
+                'modules',
+                ':',
+                true,
+            ),
+            'status_monitor_agent',
+            false,
+            false,
+            true,
+            'box-shadow agent_details_col',
+            // 'mrgn_lft_20px mrgn_right_20px',
+            'white-box-content',
+            'mrgn_lft_20px mrgn_right_20px width_available'
+        ),
+    ],
 );
-
 
 ?>
 <script type="text/javascript">

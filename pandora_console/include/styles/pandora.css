@@ -6082,6 +6082,7 @@ div#status_pie {
 }
 
 .white_table_graph_header div#bullets_modules {
+  display: flex;
   float: right;
 }
 
@@ -10344,7 +10345,7 @@ table#advanced > tbody > tr,
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: center;
-  /*min-height: 55px;*/
+  height: auto;
 }
 
 table#simple tr td:nth-child(even):not(:nth-child(2)),
@@ -10582,7 +10583,8 @@ tr.bring_next_field {
 }
 
 .floating_form tr {
-  height: 46px;
+  min-height: 46px;
+  height: auto;
 }
 
 .floating_form td {
@@ -10822,8 +10824,14 @@ pre.external_tools_output {
 
 .subsection_header_title {
   font-size: 13pt;
+  font-weight: initial;
 }
 
 .regular_font {
   font-family: "Pandora-Regular" !important;
+}
+
+.width_available {
+  width: -webkit-fill-available !important;
+  width: -moz-fill-available !important;
 }

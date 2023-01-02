@@ -444,15 +444,21 @@ if ($free_search != '') {
 
         if ($agent_view_page === true) {
             // Create controlled toggle content.
-            ui_toggle(
-                $html_content,
-                __('Full list of alerts'),
-                'status_monitor_agent',
-                !$alerts_defined,
-                false,
-                '',
-                'white_table_graph_content no-padding-imp',
-                'white_table_graph_content'
+            html_print_div(
+                [
+                    'class'   => 'agent_details_first_row agent_details_line',
+                    'content' => ui_toggle(
+                        $html_content,
+                        '<span class="subsection_header_title">'.__('Full list of alerts').'</span>',
+                        'status_monitor_agent',
+                        !$alerts_defined,
+                        false,
+                        true,
+                        'box-shadow agent_details_col',
+                        'white-box-content',
+                        'mrgn_lft_20px mrgn_right_20px width_available'
+                    ),
+                ],
             );
         } else {
             // Dump entire content.

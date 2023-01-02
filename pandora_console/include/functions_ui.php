@@ -4024,7 +4024,7 @@ function ui_toggle(
     );
 
     // Options.
-    $style = 'overflow:hidden;';
+    $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-fill-available;';
     if ($hidden_default) {
         $style .= 'height:0;position:absolute;';
         $original = $img_b;

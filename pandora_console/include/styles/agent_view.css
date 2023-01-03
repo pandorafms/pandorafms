@@ -15,7 +15,7 @@ div.agent_details_agent_caption {
 }
 
 #module_filter_agent_view tr td {
-  padding-bottom: 3em;
+  /*padding-bottom: 3em;*/
 }
 
 #div_all_events_24h {

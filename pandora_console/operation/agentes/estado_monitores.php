@@ -202,7 +202,6 @@ html_print_div(
             false,
             true,
             'box-shadow agent_details_col',
-            // 'mrgn_lft_20px mrgn_right_20px',
             'white-box-content',
             'mrgn_lft_20px mrgn_right_20px width_available'
         ),
@@ -515,20 +514,6 @@ function print_form_filter_monitors(
     $status_module_group=-1,
     $status_hierachy_mode=-1
 ) {
-    $form_text = '';
-    $table = new stdClass();
-    $table->class = 'info_table';
-    $table->id = 'module_filter_agent_view';
-    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
-    $table->width = '100%';
-    $table->style[0] = 'font-weight: bold;';
-    $table->style[2] = 'font-weight: bold;';
-    $table->style[4] = 'font-weight: bold;';
-    $table->style[6] = 'font-weight: bold;';
-    $table->style[6] = 'min-width: 150px;';
-    $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
-    $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
-    $table->data[0][0] .= __('Status:');
     $status_list = [
         -1                                 => __('All'),
         AGENT_MODULE_STATUS_CRITICAL_BAD   => __('Critical'),
@@ -538,31 +523,6 @@ function print_form_filter_monitors(
         AGENT_MODULE_STATUS_WARNING        => __('Warning'),
         AGENT_MODULE_STATUS_UNKNOWN        => __('Unknown'),
     ];
-
-    $table->data[0][1] = html_print_select(
-        $status_list,
-        'status_filter_monitor',
-        $status_filter_monitor,
-        '',
-        '',
-        0,
-        true
-    );
-
-    $table->data[0][2] = __('Free text for search (*):').ui_print_help_tip(
-        __('Search by module name, list matches.'),
-        true
-    );
-
-    $table->data[0][3] = html_print_input_text(
-        'status_text_monitor',
-        $status_text_monitor,
-        '',
-        '',
-        100,
-        true
-    );
-    $table->data[0][4] = __('Module group');
     $rows = db_get_all_rows_sql(
         sprintf(
             'SELECT * 
@@ -576,13 +536,47 @@ function print_form_filter_monitors(
     );
 
     $rows_select[-1] = __('All');
-    if (!empty($rows)) {
+    if (empty($rows) === false) {
         foreach ($rows as $module_group) {
             $rows_select[$module_group['id_mg']] = __($module_group['name']);
         }
     }
 
-    $table->data[0][5] = html_print_select(
+    $form_text = '';
+    $table = new stdClass();
+    $table->class = 'info_table';
+    $table->id = 'module_filter_agent_view';
+    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
+    $table->width = '100%';
+    // Captions.
+    $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
+    $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
+    $table->data[0][0] .= __('Status:');
+    $table->data[0][1] = __('Free text for search (*):').ui_print_help_tip(
+        __('Search by module name, list matches.'),
+        true
+    );
+    $table->data[0][2] = __('Module group');
+    $table->data[0][3] = __('Show in hierachy mode');
+    // Inputs.
+    $table->data[1][0] = html_print_select(
+        $status_list,
+        'status_filter_monitor',
+        $status_filter_monitor,
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[1][1] = html_print_input_text(
+        'status_text_monitor',
+        $status_text_monitor,
+        '',
+        '',
+        100,
+        true
+    );
+    $table->data[1][2] = html_print_select(
         $rows_select,
         'status_module_group',
         $status_module_group,
@@ -591,19 +585,15 @@ function print_form_filter_monitors(
         0,
         true
     );
-    $table->data[0][6] = '<div class="flex_center">';
-    $table->data[0][6] .= __('Show in hierachy mode');
-    $table->data[0][6] .= html_print_switch(
+    $table->data[1][3] = html_print_switch(
         [
             'name'     => 'status_hierachy_mode',
             'value'    => $all_events_24h,
             'onchange' => 'change_module_filter()',
             'id'       => 'checkbox-status_hierachy_mode',
-            'style'    => 'margin-left: 1em;',
         ]
     );
-    $table->data[0][6] .= '</div>';
-    $table->data[0][7] = html_print_button(
+    $table->data[1][4] = html_print_button(
         __('Filter'),
         'filter',
         false,
@@ -614,7 +604,7 @@ function print_form_filter_monitors(
         ],
         true
     );
-    $table->data[0][8] = html_print_button(
+    $table->data[1][5] = html_print_button(
         __('Reset'),
         'filter',
         false,
@@ -627,10 +617,11 @@ function print_form_filter_monitors(
     );
     $form_text .= html_print_table($table, true);
 
-    $filter_hidden = false;
-
-    if ($status_filter_monitor == -1 && $status_text_monitor == '' && $status_module_group == -1) {
+    // TODO. Unused code.
+    if ($status_filter_monitor === -1 && empty($status_text_monitor) === true && $status_module_group === -1) {
         $filter_hidden = true;
+    } else {
+        $filter_hidden = false;
     }
 
     echo $form_text;

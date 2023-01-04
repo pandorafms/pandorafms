@@ -2530,3 +2530,28 @@ function db_unlock_tables()
 
     return $result;
 }
+
+
+/**
+ * Get column type. Example: 'varchar(60)'.
+ *
+ * @param string $table  Table name.
+ * @param string $column Column name.
+ *
+ * @return array|boolean
+ */
+function db_get_column_type(string $table, string $column='')
+{
+    $sql = sprintf(
+        'SELECT column_type FROM information_schema.columns WHERE table_name = "%s"',
+        $table
+    );
+
+    if (empty($column) === false) {
+        $sql .= sprintf(' AND column_name="%s"', $column);
+    }
+
+    $result = db_process_sql($sql);
+
+    return $result;
+}

@@ -625,13 +625,13 @@ function create_user($id_user, $password, $user_info)
 
     $column_type = db_get_column_type('tusuario', 'password');
     if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
-        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(45)');
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
     } else {
         $column_type = false;
     }
 
     $values['id_user'] = $id_user;
-    $values['password'] = ($column_type === true) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
+    $values['password'] = ($column_type === false) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
     $values['last_connect'] = 0;
     $values['registered'] = get_system_time();
 
@@ -741,7 +741,7 @@ function update_user_password(string $user, string $password_new)
 
     $column_type = db_get_column_type('tusuario', 'password');
     if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
-        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(45)');
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
     } else {
         $column_type = false;
     }
@@ -749,7 +749,7 @@ function update_user_password(string $user, string $password_new)
     if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
             "UPDATE tusuario SET password = '%s', last_pass_change = '%s' WHERE id_user = '%s'",
-            ($column_type === true) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
+            ($column_type === false) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
             date('Y-m-d H:i:s', get_system_time()),
             $user
         );
@@ -771,7 +771,7 @@ function update_user_password(string $user, string $password_new)
     return db_process_sql_update(
         'tusuario',
         [
-            'password'         => ($column_type === true) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
+            'password'         => ($column_type === false) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
             'last_pass_change' => date('Y/m/d H:i:s', get_system_time()),
         ],
         ['id_user' => $user]
@@ -1037,12 +1037,12 @@ function create_user_and_permisions_ldap(
     if ($config['ldap_save_password'] || $config['ad_save_password']) {
         $column_type = db_get_column_type('tusuario', 'password');
         if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
-            $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(45)');
+            $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
         } else {
             $column_type = false;
         }
 
-        $values['password'] = ($column_type === true) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
+        $values['password'] = ($column_type === false) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
     }
 
     $values['last_connect'] = 0;
@@ -1477,14 +1477,14 @@ function change_local_user_pass_ldap($id_user, $password)
 
     $column_type = db_get_column_type('tusuario', 'password');
     if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
-        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(45)');
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
     } else {
         $column_type = false;
     }
 
     $values_update = [];
 
-    if ($column_type === true) {
+    if ($column_type === false) {
         if (md5($password) !== $local_user_pass) {
             $values_update['password'] = md5($password);
             $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);

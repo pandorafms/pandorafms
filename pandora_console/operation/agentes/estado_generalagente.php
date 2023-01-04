@@ -640,6 +640,19 @@ foreach ($fields as $field) {
 
         if ($custom_value[0]['is_password_type']) {
                 $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+        } else if ($field['is_link_enabled'] === '1') {
+            list($link_text, $link_url) = json_decode($custom_value[0]['description'], true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $link_text = '';
+                $link_url = '';
+            }
+
+            if ($link_text === '') {
+                $link_text = $link_url;
+            }
+
+            $data[1] = '<a href="'.$link_url.'">'.$link_text.'</a>';
         } else {
             $data[1] = $custom_value[0]['description'];
         }

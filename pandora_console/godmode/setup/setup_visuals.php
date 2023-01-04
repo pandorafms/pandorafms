@@ -1377,6 +1377,27 @@ $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_f
 $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
 $row++;
 
+$decimal_separators = [
+    ',' => ',',
+    '.' => '.',
+];
+
+$table_other->data[$row][0] = __('Decimal separator');
+$table_other->data[$row][1] = html_print_select(
+    $decimal_separators,
+    'decimal_separator',
+    $config['decimal_separator'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    false
+);
+
+
+$row++;
+
 if ($config['prominent_time'] === 'comparation') {
     $timestamp = false;
     $comparation = true;

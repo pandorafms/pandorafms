@@ -640,11 +640,13 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'status'
  *     'agent_alias'
  *     'search'
+ *     'not_search'
  *     'id_extra'
  *     'id_source_event'
  *     'user_comment'
  *     'source'
  *     'id_user_ack'
+ *     'owner_user'
  *     'tag_with'
  *     'tag_without'
  *     'filter_only_alert'
@@ -1058,16 +1060,40 @@ function events_get_all(
             $custom_data_search = 'te.custom_data';
         }
 
-        $sql_filters[] = vsprintf(
-            ' AND (lower(ta.alias) like lower("%%%s%%")
-                OR te.id_evento like "%%%s%%"
-                OR lower(te.evento) like lower("%%%s%%")
-                OR lower(te.user_comment) like lower("%%%s%%")
-                OR lower(te.id_extra) like lower("%%%s%%")
-                OR lower(te.source) like lower("%%%s%%")
-                OR lower('.$custom_data_search.') like lower("%%%s%%") )',
-            array_fill(0, 7, $filter['search'])
-        );
+        $not_search = '';
+        $nexo = 'OR';
+        $array_search = [
+            'te.id_evento',
+            'lower(te.evento)',
+            'lower(te.user_comment)',
+            'lower(te.id_extra)',
+            'lower(te.source)',
+            'lower('.$custom_data_search.')',
+        ];
+        if (isset($filter['not_search']) === true
+            && empty($filter['not_search']) === false
+        ) {
+            $not_search = 'NOT';
+            $nexo = 'AND';
+        } else {
+            $array_search[] = 'lower(ta.alias)';
+        }
+
+        $sql_search = ' AND (';
+        foreach ($array_search as $key => $field) {
+            $sql_search .= sprintf(
+                '%s %s %s like lower("%%%s%%")',
+                ($key === 0) ? '' : $nexo,
+                $field,
+                $not_search,
+                $filter['search']
+            );
+            $sql_search .= ' ';
+        }
+
+        $sql_search .= ' )';
+
+        $sql_filters[] = $sql_search;
     }
 
     // Free search exclude.
@@ -1152,8 +1178,16 @@ function events_get_all(
     // Validated or in process by.
     if (empty($filter['id_user_ack']) === false) {
         $sql_filters[] = sprintf(
-            ' AND te.owner_user like lower("%%%s%%") ',
+            ' AND te.id_usuario like lower("%%%s%%") ',
             $filter['id_user_ack']
+        );
+    }
+
+    // Owner by.
+    if (empty($filter['owner_user']) === false) {
+        $sql_filters[] = sprintf(
+            ' AND te.owner_user like lower("%%%s%%") ',
+            $filter['owner_user']
         );
     }
 
@@ -1840,11 +1874,14 @@ function events_get_all(
             );
 
             if (isset($limit, $offset) === true
-                && $limit !== 0
+                && (int) $limit !== 0
                 && isset($filter['csv_all']) === false
             ) {
                 $count = count($data);
-                $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
+                // -1 For pagination 'All'.
+                ((int) $limit === -1)
+                    ? $end = count($data)
+                    : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
                     'buffers' => $buffers,
@@ -3721,6 +3758,15 @@ function events_get_response_target(
         $target = str_replace(
             '_group_name_',
             io_safe_output(groups_get_name($event['id_grupo'], true)),
+            $target
+        );
+    }
+
+    if (strpos($target, '_group_contact_') !== false) {
+        $info_groups = groups_get_group_by_id($event['id_grupo']);
+        $target = str_replace(
+            '_group_contact_',
+            (isset($info_groups['contact']) === true) ? $info_groups['contact'] : 'N/A',
             $target
         );
     }

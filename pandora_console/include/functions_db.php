@@ -757,7 +757,8 @@ function db_uncompress_module_data(
     $id_agente_modulo,
     $tstart=false,
     $tend=false,
-    $slice_size=false
+    $slice_size=false,
+    $force_slice_not_data=false
 ) {
     global $config;
 
@@ -860,7 +861,10 @@ function db_uncompress_module_data(
 
     $module_interval = modules_get_interval($id_agente_modulo);
 
-    if (($raw_data === false) && ( $first_utimestamp === false )) {
+    if (($force_slice_not_data === false)
+        && ($raw_data === false)
+        && ( $first_utimestamp === false )
+    ) {
         // No data.
         return false;
     }
@@ -2313,7 +2317,13 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
         }
 
         if ($lock_status === false) {
-            return null;
+            db_pandora_audit(
+                AUDIT_LOG_SYSTEM,
+                'Issue in Database Lock',
+                'system'
+            );
+
+            return (int) null;
         }
 
         return (int) $lock_status;

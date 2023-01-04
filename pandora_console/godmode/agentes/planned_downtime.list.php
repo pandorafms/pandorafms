@@ -916,7 +916,7 @@ if ($downtimes === false && $filter_performed === false) {
             __('Export to CSV'),
             'csv_export',
             false,
-            'location.href="godmode/agentes/planned_downtime.export_csv.php?'.$filter_params_str.'"',
+            'blockResubmit($(this)); location.href=\'godmode/agentes/planned_downtime.export_csv.php?'.$filter_params_str.'\'',
             'class="sub next"'
         );
     echo '</div>';

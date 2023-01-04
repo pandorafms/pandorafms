@@ -427,9 +427,11 @@ ui_require_jquery_file('bgiframe');
         
         switch (type) {
             case 'csv':
+                blockResubmit($(this));
                 f.action = "operation/agentes/exportdata.csv.php";
                 break;
             case 'excel':
+                blockResubmit($(this));
                 f.action = "operation/agentes/exportdata.excel.php";
                 break;
             case 'avg':

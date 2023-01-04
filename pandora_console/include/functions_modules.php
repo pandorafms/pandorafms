@@ -2589,12 +2589,12 @@ function modules_get_agentmodule_data_for_humans($module)
                                     $salida = human_milliseconds_to_string($module['datos']);
                                 }
                             } else {
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                             }
                         break;
 
                         default:
-                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                         break;
                     }
                 break;
@@ -2613,12 +2613,12 @@ function modules_get_agentmodule_data_for_humans($module)
                             $salida = human_milliseconds_to_string($module['datos']);
                         }
                     } else {
-                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                     }
                 break;
 
                 default:
-                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                 break;
             }
         }
@@ -2900,7 +2900,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
     }
 
     if (is_numeric($data)) {
-        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision']));
+        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
     } else {
         $text = io_safe_output($data);
 
@@ -4335,4 +4335,130 @@ function modules_get_regex(
     }
 
     return $result;
+}
+
+
+/**
+ * Status for data thresholds modules.
+ *
+ * @param integer $id_module  Module ID.
+ * @param mixed   $data       Data int, bool, null, etc.
+ * @param array   $thresholds Array thresholds.
+ *
+ * @return array
+ */
+function get_status_data_modules(int $id_module, $data, $thresholds)
+{
+    // Check not init.
+    if ($data === false) {
+        return ['color' => COL_NOTINIT];
+    }
+
+    // Check boolean.
+    $is_bolean = modules_is_boolean($id_module);
+    if ($is_bolean === true) {
+        if ($data > 0) {
+            return ['color' => COL_CRITICAL];
+        } else {
+            return ['color' => COL_NORMAL];
+        }
+    }
+
+    $thresholds = calculateThreshold($thresholds);
+
+    foreach (getStatuses() as $status) {
+        if ($thresholds[$status]['min'] === null
+            && $thresholds[$status]['max'] === null
+        ) {
+            continue;
+        }
+
+        if (($thresholds[$status]['min'] === null
+            && $thresholds[$status]['max'] >= $data)
+            || ($thresholds[$status]['max'] === null
+            && $thresholds[$status]['min'] <= $data)
+            || ($thresholds[$status]['min'] <= $data
+            && $thresholds[$status]['max'] >= $data)
+        ) {
+            if ($status === 'critical') {
+                return ['color' => COL_CRITICAL];
+            } else if ($status === 'warning') {
+                return ['color' => COL_WARNING];
+            } else {
+                return ['color' => COL_NORMAL];
+            }
+        }
+    }
+
+    return ['color' => COL_NORMAL];
+}
+
+
+/**
+ * Calculate thresholds.
+ *
+ * @param array $thresholds_array
+ *
+ * @return array
+ */
+function calculateThreshold(array $thresholds_array)
+{
+    $nMax = null;
+    if ($thresholds_array['min_warning'] !== null) {
+        $nMax = $thresholds_array['min_warning'];
+    } else if ($thresholds_array['min_critical'] !== null) {
+        $nMax = $thresholds_array['min_critical'];
+    }
+
+    $wMin = null;
+    if ($thresholds_array['min_warning'] !== null) {
+        $wMin = $thresholds_array['min_warning'];
+    }
+
+    $wMax = null;
+    if ($thresholds_array['max_warning'] !== null) {
+        $wMax = $thresholds_array['max_warning'];
+    }
+
+    $cMin = null;
+    if ($thresholds_array['min_critical'] !== null) {
+        $cMin = $thresholds_array['min_critical'];
+    }
+
+    $cMax = null;
+    if ($thresholds_array['max_critical'] !== null) {
+        $cMax = $thresholds_array['max_critical'];
+    }
+
+    $thresholds = [
+        'normal'   => [
+            'min' => null,
+            'max' => $nMax,
+        ],
+        'warning'  => [
+            'min' => $wMin,
+            'max' => $wMax,
+        ],
+        'critical' => [
+            'min' => $cMin,
+            'max' => $cMax,
+        ],
+    ];
+
+    return $thresholds;
+}
+
+
+/**
+ * Get status.
+ *
+ * @return array
+ */
+function getStatuses()
+{
+    return [
+        'critical',
+        'warning',
+        'normal',
+    ];
 }

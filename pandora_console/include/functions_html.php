@@ -1952,7 +1952,7 @@ function html_print_extended_select_for_post_process(
     $found = false;
 
     if ($selected) {
-        if (array_key_exists(number_format($selected, 14, '.', ','), $fields)) {
+        if (array_key_exists(number_format($selected, 14, $config['decimal_separator'], $config['thousand_separator']), $fields)) {
             $found = true;
         }
     }

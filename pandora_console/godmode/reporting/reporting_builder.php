@@ -1055,7 +1055,7 @@ switch ($action) {
                         ]
                     );
                     $data[2] .= '</a>';
-                    $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
+                    $data[3] = '<a onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
                     $data[3] .= html_print_image(
                         'images/xml.png',
                         true,
@@ -1896,6 +1896,9 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
+                                );
                                 $good_format = true;
                             break;
 
@@ -1918,6 +1921,9 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
                                 );
                                 $good_format = true;
                             break;
@@ -2184,6 +2190,8 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
+
+                            $values['server_name'] = get_parameter('combo_server');
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {
@@ -2712,6 +2720,9 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
+                                );
                                 $good_format = true;
                             break;
 
@@ -2727,6 +2738,9 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['use_prefix_notation'] = get_parameter(
+                                    'use_prefix_notation'
                                 );
                                 $good_format = true;
                             break;

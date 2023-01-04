@@ -1247,9 +1247,6 @@ function servers_get_server_string_name(int $server)
         case SERVER_TYPE_ENTERPRISE_SATELLITE:
         return __('Satellite server');
 
-        case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
-        return __('Transactional server');
-
         case SERVER_TYPE_ALERT:
         return __('Alert server');
 

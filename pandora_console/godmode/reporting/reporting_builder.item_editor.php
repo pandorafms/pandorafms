@@ -169,6 +169,7 @@ $visual_format = 0;
 $filter_search = '';
 $filter_exclude = '';
 
+$use_prefix_notation = true;
 
 // Added for select fields.
 $total_time = true;
@@ -461,6 +462,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'max_value':
@@ -476,6 +478,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'min_value':
@@ -491,6 +494,7 @@ switch ($action) {
                     $lapse = $item['lapse'];
                     $lapse_calc = $item['lapse_calc'];
                     $visual_format = $item['visual_format'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'sumatory':
@@ -504,6 +508,7 @@ switch ($action) {
                     $idAgentModule = $item['id_agent_module'];
                     $period = $item['period'];
                     $uncompressed_module = $item['uncompressed_module'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
                 break;
 
                 case 'historical_data':
@@ -773,6 +778,7 @@ switch ($action) {
                     $show_resume = $item['show_resume'];
                     $show_graph = $item['show_graph'];
                     $order_uptodown = $item['order_uptodown'];
+                    $use_prefix_notation = $item['use_prefix_notation'];
 
                     $text_agent = '';
                     if (isset($style['text_agent']) === true
@@ -3400,6 +3406,22 @@ $class = 'databox filters';
                     '',
                     !$lapse_calc
                 );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_use_prefix_notation" class="datos advanced_elements">
+            <td class="bolder">
+                <?php
+                echo __('Use prefix notation');
+                ui_print_help_tip(
+                    __('Use prefix notation for numeric values (example: 20,8Kbytes/sec), otherwise full value will be displayed (example: 20.742 bytes/sec)')
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch('use_prefix_notation', 1, $use_prefix_notation);
                 ?>
             </td>
         </tr>
@@ -6367,6 +6389,7 @@ function chooseType() {
     $("#row_show_summary").hide();
     $("#row_group_by").hide();
     $("#row_type_show").hide();
+    $("#row_use_prefix_notation").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6561,6 +6584,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'max_value':
@@ -6572,6 +6596,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'min_value':
@@ -6583,6 +6608,7 @@ function chooseType() {
             $("#row_lapse").show();
             $("#row_visual_format").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'sumatory':
@@ -6592,6 +6618,7 @@ function chooseType() {
             $("#row_period").show();
             $("#row_historical_db_check").hide();
             $("#row_uncompressed_module").show();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'historical_data':
@@ -6879,6 +6906,7 @@ function chooseType() {
             $("#row_show_resume").show();
             $("#row_show_graph").show();
             $("#row_historical_db_check").hide();
+            $("#row_use_prefix_notation").show();
             break;
 
         case 'exception':

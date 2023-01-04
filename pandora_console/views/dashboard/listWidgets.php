@@ -90,7 +90,7 @@ foreach ($widgets as $widget) {
     );
     $output .= '</div>';
     $output .= '<div class="list-widgets-description">';
-    $output .= $widget['description'];
+    $output .= __($widget['description']);
     $output .= '</div>';
     $output .= '</div>';
 }

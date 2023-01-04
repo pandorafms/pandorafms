@@ -423,9 +423,9 @@ table.widget_agent_module tbody tr:first-child > th {
 }
 
 li#search_input_widget {
-  width: 50%;
+  width: 200px;
   position: absolute;
-  left: 150px;
+  left: 200px;
   top: 2px;
 }
 

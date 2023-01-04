@@ -10839,3 +10839,15 @@ pre.external_tools_output {
   width: -webkit-fill-available !important;
   width: -moz-fill-available !important;
 }
+.snmp-td {
+  padding: 0 !important;
+  height: 0;
+}
+
+.snmp-div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding-left: 10px;
+}

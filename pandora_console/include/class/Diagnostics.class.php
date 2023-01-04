@@ -1276,11 +1276,16 @@ class Diagnostics extends Wizard
             FROM tagente_datos'
         );
 
+        $modulesDataCount = db_get_value_sql(
+            'SELECT COUNT(*) * 300 as total FROM tmodule_inventory'
+        );
+        $modulesDataCount = ($modulesDataCount >= 500000) ? $modulesDataCount : 500000;
+
         $taMsg = __(
             'The tagente_datos table contains too much data. A historical database is recommended.'
         );
         $taStatus = 0;
-        if ($agentDataCount <= 3000000) {
+        if ($agentDataCount <= $modulesDataCount) {
             $taMsg = __(
                 'The tagente_datos table contains an acceptable amount of data.'
             );

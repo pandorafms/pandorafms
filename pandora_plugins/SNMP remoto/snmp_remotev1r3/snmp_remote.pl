@@ -256,7 +256,7 @@ if($memuseconf==1){
 		#printf("%.2f", $memuse);
 
 		push @modules, {
-			'name' => "memuse",
+			'name' => "Total RAM used (%)",
 			'type' => "generic_data",
 			'value' => $memuse,
 			'desc' => "Memory use % module",
@@ -306,7 +306,7 @@ if($diskuseconf==1){
 	#printf("%.2f", $diskuse);
 
 	push @modules, {
-		'name' => $disk.".diskuse",
+		'name' => "Storage Physical (%)",
 		'type' => "generic_data",
 		'value' => $diskuse,
 		'desc' => "Disk use % module",
@@ -332,7 +332,7 @@ if($processconf==1){
 		my $processname =$config->{'process'. $count};
 		if ($? == 0) {
 			push @modules, {
-			'name' => $processname.".Process",
+			'name' => 'Process "'.$processname.'"',
 			'type' => "generic_proc",
 			'value' => ($status =~ m/$processname/mi)?1:0,
 			'desc' => "Process Status module",
@@ -361,7 +361,7 @@ if($cpuloadconf==1){
 	
 	$cputotal = $sum/$counter;
 	push @modules, {
-			'name' => "cpuload",
+			'name' => "CPU Load (%)",
 			'type' => "generic_data",
 			'value' =>$cputotal,
 			'desc' => "CPU Load % module",
@@ -385,4 +385,4 @@ if (!transfer_xml($config, $xml)){
 	}
 	exit 0;
 	}
-
+#print $xml;

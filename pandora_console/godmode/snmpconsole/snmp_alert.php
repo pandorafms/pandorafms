@@ -1599,6 +1599,10 @@ $(document).ready (function () {
             name: "get_recovery_fields",
             value: "0"
         });
+        values.push({
+            name: "content_type",
+            value: "<?php echo $al_field4; ?>"
+        })
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
             function (data, status) {
@@ -1624,8 +1628,9 @@ $(document).ready (function () {
                         // The row provided has a predefined class. We delete it.
                         $('#table_macros-field' + i)
                             .removeAttr('class');
-
-                        $("[name=field" + i + "_value]").val(old_value).trigger('change');
+                        if(old_value && i != 4){
+                            $("[name=field" + i + "_value]").val(old_value).trigger('change');
+                        }
                         $('#table_macros-field').show();
                     }
                 }

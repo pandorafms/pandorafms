@@ -187,7 +187,7 @@ if ($disk_conf_delete === true) {
     @unlink($filename['conf']);
 }
 
-echo '<div class="max_floating_element_size">';
+echo '<div class="max_floating_element_size mrgn_20px">';
 echo '<form autocomplete="new-password" name="conf_agent" id="form_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 
 // Custom ID.
@@ -580,7 +580,7 @@ $tableAgent->data['description'][0] = html_print_textarea(
 
 html_print_div(
     [
-        'class'   => 'box-shadow white_table_graph white_box',
+        'class'   => 'box-shadow white_table_graph white_box agent_details_col',
         'style'   => 'display: flex; justify-content: space-between; align-items: flex-start;',
         'content' => html_print_table($tableAgent, true).$CodeQRTable,
     ]
@@ -835,7 +835,7 @@ $tableAdvancedAgent->data['safe_operation'][1] = html_print_select($safe_mode_mo
 if (enterprise_installed() === true) {
     ui_toggle(
         html_print_table($tableAdvancedAgent, true),
-        __('Advanced options'),
+        '<span class="subsection_header_title">'.__('Advanced options').'</span>',
         '',
         '',
         true,
@@ -935,7 +935,7 @@ foreach ($fields as $field) {
 if (empty($fields) === false) {
     ui_toggle(
         $customOutputData,
-        __('Custom fields'),
+        '<span class="subsection_header_title">'.__('Custom fields').'</span>',
         '',
         '',
         true,

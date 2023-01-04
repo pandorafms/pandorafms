@@ -516,31 +516,31 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
 
     // TODO: Add/use a javascript timer for the seconds so it automatically
     // updates as time passes by.
-    if (isset($option['html_attr'])) {
+    if (isset($option['html_attr']) === true) {
         $attributes = $option['html_attr'];
     } else {
         $attributes = '';
     }
 
-    if (isset($option['tag'])) {
+    if (isset($option['tag']) === true) {
         $tag = $option['tag'];
     } else {
         $tag = 'span';
     }
 
-    if (empty($option['style'])) {
-        $style = 'class="nowrap"';
+    if (empty($option['style']) === true) {
+        $style = 'class="'.($option['class'] ?? 'nowrap').'"';
     } else {
         $style = 'style="'.$option['style'].'"';
     }
 
-    if (!empty($option['prominent'])) {
+    if (empty($option['prominent']) === false) {
         $prominent = $option['prominent'];
     } else {
         $prominent = $config['prominent_time'];
     }
 
-    if (!is_numeric($unixtime)) {
+    if (is_numeric($unixtime) === false) {
         $unixtime = time_w_fixed_tz($unixtime);
     }
 
@@ -562,7 +562,7 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
     } else {
         $title = date($config['date_format'], $unixtime);
         $units = 'large';
-        if (isset($option['units'])) {
+        if (isset($option['units']) === true) {
             $units = $option['units'];
         }
 
@@ -584,11 +584,11 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         break;
     }
 
-    if ($return) {
+    if ($return === true) {
         return $output;
+    } else {
+        echo $output;
     }
-
-    echo $output;
 }
 
 
@@ -2578,6 +2578,7 @@ function ui_print_moduletype_icon(
  * @param float  $max_critical Max value for critical state.
  * @param float  $min_critical Min value for critical state.
  * @param string $str_critical String for critical state.
+ * @param string $attributes   String with raw format attributes for span.
  *
  * @return string HTML string
  */
@@ -2589,7 +2590,8 @@ function ui_print_module_warn_value(
     $min_critical,
     $str_critical,
     $warning_inverse=0,
-    $critical_inverse=0
+    $critical_inverse=0,
+    $attributes=''
 ) {
     $war_inv = '';
     $crit_inv = '';
@@ -2602,7 +2604,7 @@ function ui_print_module_warn_value(
         $crit_inv = ' (inv)';
     }
 
-    $data = "<span title='".__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.$war_inv.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical.$crit_inv."'>";
+    $data = '<span '.$attributes.' title="'.__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.$war_inv.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical.$crit_inv.'">';
 
     if ($max_warning != $min_warning) {
         $data .= format_for_graph($max_warning).'/'.format_for_graph($min_warning);

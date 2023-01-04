@@ -3865,7 +3865,13 @@ function html_print_table(&$table, $return=false)
         $output .= '</tr></thead>'."\n";
     }
 
-    $output .= '<tbody>'."\n";
+    $tbodyStyle = '';
+
+    if (empty($table->width) === false) {
+        $tbodyStyle .= 'width:'.$table->width.';';
+    }
+
+    $output .= '<tbody style="'.$tbodyStyle.'">'."\n";
     if (!empty($table->data)) {
         $oddeven = 1;
         foreach ($table->data as $keyrow => $row) {

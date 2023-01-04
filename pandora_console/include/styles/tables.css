@@ -88,7 +88,8 @@
   text-align: left;
 }
 
-.info_table {
+.info_table,
+.filter_table {
   background-color: #fff;
   /* margin-bottom: 10px; */
   border-spacing: 0;
@@ -103,12 +104,16 @@
 }
 
 .info_table tr > td:first-child,
-.info_table tr > th:first-child {
+.info_table tr > th:first-child,
+.filter_table tr > td:first-child,
+.filter_table tr > th:first-child {
   /*padding-left: 5px;*/
   padding-left: 10px;
 }
 .info_table tr > td:last-child,
-.info_table tr > th:last-child {
+.info_table tr > th:last-child,
+.filter_table tr > td:last-child,
+.filter_table tr > th:last-child {
   /*padding-right: 5px;*/
   padding-right: 10px;
 }
@@ -172,10 +177,27 @@
   -webkit-border-radius: 0px;
   border-radius: 0px;
   border: none;
+  padding: 7px 3px;
+  /*
   padding-left: 0px;
   padding-right: 9px;
   padding-top: 7px;
   padding-bottom: 7px;
+  */
+}
+
+.info_table .header_row .sort_arrow {
+  vertical-align: top;
+  visibility: hidden;
+}
+
+.info_table .header_row:hover .sort_arrow {
+  visibility: visible;
+}
+
+.info_table .inherited_text_data_for_humans,
+.info_table .inherited_text_data_for_humans i {
+  font-size: inherit;
 }
 
 .info_table.no-td-padding td {
@@ -194,7 +216,8 @@
 }
 
 .table_action_buttons > a,
-.table_action_buttons > img {
+.table_action_buttons > img,
+.table_action_buttons > button {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -204,7 +227,8 @@
 }
 
 .info_table > tbody > tr:hover .table_action_buttons > a,
-.info_table > tbody > tr:hover .table_action_buttons > img {
+.info_table > tbody > tr:hover .table_action_buttons > img,
+.info_table > tbody > tr:hover .table_action_buttons > button {
   visibility: visible;
 }
 

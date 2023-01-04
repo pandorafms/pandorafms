@@ -2579,8 +2579,8 @@ function modules_get_agentmodule_data_for_humans($module)
                     switch ($module['id_tipo_modulo']) {
                         case 15:
                             $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                            if (($value == '.1.3.6.1.2.1.1.3.0'
-                                || $value == '.1.3.6.1.2.1.25.1.1.0')
+                            if (($value === '.1.3.6.1.2.1.1.3.0'
+                                || $value === '.1.3.6.1.2.1.25.1.1.0')
                                 && modules_get_unit_macro($module['data'], $module['unit']) === true
                             ) {
                                 if ($module['post_process'] > 0) {
@@ -2603,8 +2603,8 @@ function modules_get_agentmodule_data_for_humans($module)
             switch ($module['id_tipo_modulo']) {
                 case 15:
                     $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                    if (($value == '.1.3.6.1.2.1.1.3.0'
-                        || $value == '.1.3.6.1.2.1.25.1.1.0')
+                    if (($value === '.1.3.6.1.2.1.1.3.0'
+                        || $value === '.1.3.6.1.2.1.25.1.1.0')
                         && modules_get_unit_macro($module['data'], $module['unit']) === true
                     ) {
                         if ($module['post_process'] > 0) {
@@ -2623,8 +2623,8 @@ function modules_get_agentmodule_data_for_humans($module)
             }
         }
 
-        // Show units ONLY in numeric data types
-        if (isset($module['unit'])) {
+        // Show units ONLY in numeric data types.
+        if (isset($module['unit']) === true) {
             $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
             if ($data_macro) {
                 $salida = $data_macro;

@@ -6289,10 +6289,10 @@ div#status_pie {
 }
 
 .status_rounded_rectangles {
-  width: 50px;
-  height: 2em;
+  width: 40px;
+  height: 20px;
   display: inline-block;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 .status_rounded_rectangles.text_inside {
@@ -6653,6 +6653,10 @@ div.graph div.legend table {
 
 .mrgn_5px {
   margin: 5px;
+}
+
+.mrgn_20px {
+  margin: 20px;
 }
 
 .mrgn_30px {

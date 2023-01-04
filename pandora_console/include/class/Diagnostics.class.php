@@ -1277,7 +1277,7 @@ class Diagnostics extends Wizard
         );
 
         $modulesDataCount = db_get_value_sql(
-            'SELECT COUNT(*) * 300 as total FROM tmodule_inventory'
+            'SELECT count(*) * 300 FROM (SELECT * FROM tagente_datos GROUP BY id_agente_modulo) AS totalmodules'
         );
         $modulesDataCount = ($modulesDataCount >= 500000) ? $modulesDataCount : 500000;
 

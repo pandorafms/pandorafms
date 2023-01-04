@@ -1214,7 +1214,7 @@ if (check_login()) {
                 }
 
                 if (is_snapshot_data($module['datos']) === false) {
-                    $link = 'winopeng_var(\'operation/agentes/stat_win.php?type='.$graph_type.'&amp;period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;draw_events='.$draw_events.', \'day_'.$win_handle.'\', 800, 480)';
+                    $link = 'winopeng_var(\'operation/agentes/stat_win.php?type='.$graph_type.'&amp;period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;draw_events='.$draw_events.'\', \'day_'.$win_handle.'\', 800, 480)';
                     $graphButtons[] = html_print_anchor(
                         [
                             'href'    => 'javascript:'.$link,

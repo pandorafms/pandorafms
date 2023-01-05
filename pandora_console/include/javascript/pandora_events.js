@@ -339,6 +339,19 @@ function event_change_status(event_ids, server_id) {
         // if (typeof dt_events !== "undefined") {
         //   dt_events.draw(false);
         // }
+        $.ajax({
+          type: "POST",
+          url: "ajax.php",
+          data: {
+            page: "include/ajax/events",
+            get_Acknowledged: 1,
+            event_id: event_ids
+          },
+          success: function(response) {
+            $("#table4-9-1").html(response);
+          }
+        });
+
         $("#table_events")
           .DataTable()
           .draw(false);

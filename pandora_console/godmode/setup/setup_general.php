@@ -924,7 +924,6 @@ $(document).ready (function () {
         });
     });
     $("#left_iblacklist").click (function () {
-        debugger;
         jQuery.each($("select[name='inventory_changes_blacklist[]'] option:selected"), function (key, value) {
                 imodule_name = $(value).html();
                 if (imodule_name != <?php echo "'".__('None')."'"; ?>) {

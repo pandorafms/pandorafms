@@ -850,9 +850,11 @@ if ($get_agent_alerts_datatable === true) {
         } else {
             $options_simple = [
                 'order'  => $order,
-                'limit'  => $length,
                 'offset' => $start,
             ];
+            if ($length > 0) {
+                $options_simple['limit'] = $length;
+            }
         }
 
         if ($idAgent !== 0) {

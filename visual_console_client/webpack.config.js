@@ -31,8 +31,16 @@ module.exports = {
     rules: [
       // Loader for the Typescript compiler.
       {
-        test: /\.ts$/,
-        use: [{ loader: "awesome-typescript-loader" }]
+        test: /\.(ts)x?$/,
+        exclude: /node_modules|\.d\.ts$/, // this line as well
+        use: {
+          loader: "ts-loader",
+          options: {
+            compilerOptions: {
+              noEmit: false
+            }
+          }
+        }
       },
       // This loader builds a main CSS file from all the CSS imports across the files.
       {

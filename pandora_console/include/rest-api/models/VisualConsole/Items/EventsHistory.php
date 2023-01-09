@@ -186,6 +186,11 @@ final class EventsHistory extends Item
      */
     protected static function buildLink(array $data)
     {
+        $link = parent::buildLink($data);
+        if ($link !== null) {
+            return $link;
+        }
+
         // Get the linked agent and module Ids.
         $linkedModule = static::extractLinkedModule($data);
         $agentId = static::parseIntOr($linkedModule['agentId'], null);

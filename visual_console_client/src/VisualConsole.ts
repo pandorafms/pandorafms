@@ -718,8 +718,6 @@ export default class VisualConsole {
         itemInstance.onResizeFinished(context.handleElementResizementFinished);
       }
 
-      console.log(context.containerRef);
-      console.log(itemInstance.elementRef);
       // Add the item to the DOM.
       context.containerRef.append(itemInstance.elementRef);
       return itemInstance;

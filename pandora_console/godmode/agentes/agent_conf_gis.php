@@ -59,6 +59,7 @@ ui_print_warning_message(
     ]
 );
 
+$table = new StdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->data = [];

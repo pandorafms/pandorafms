@@ -92,6 +92,7 @@ if (is_ajax() === true) {
     if ($get_group_agents === true) {
         ob_clean();
         $id_group = (int) get_parameter('id_group');
+        $id_os = (int) get_parameter('id_os', 0);
         $disabled = (int) get_parameter('disabled', 0);
         $search = (string) get_parameter('search', '');
         $recursion = (int) get_parameter('recursion', 0);
@@ -149,6 +150,10 @@ if (is_ajax() === true) {
 
         if ($status_agents != AGENT_STATUS_ALL) {
             $filter['status'] = $status_agents;
+        }
+
+        if ($id_os !== 0) {
+            $filter['id_os'] = $id_os;
         }
 
         $_sql_post = ' 1=1 ';
@@ -782,18 +787,18 @@ if ($tab == 'tree') {
 
     $form = "<form method='post' action=''>";
         $form .= "<table class='databox filters bolder' width='100%'>";
-            $form .= '<tr><td>'.__('Search').'&nbsp;';
+            $form .= '<tr><td>'.__('Search').'&nbsp;&nbsp;&nbsp;';
                 $form .= html_print_input_text(
                     'search',
                     $search,
                     '',
-                    100,
-                    100,
+                    30,
+                    30,
                     true
                 );
-            $form .= '</td><td>';
+            $form .= '</td><td style="text-align: right">';
                 $form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
-            $form .= '<td></tr>';
+            $form .= '</tr>';
         $form .= '</table>';
     $form .= '</form>';
 

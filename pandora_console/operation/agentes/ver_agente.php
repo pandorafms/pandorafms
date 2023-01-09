@@ -66,6 +66,7 @@ if (is_ajax()) {
     $agent_alias = get_parameter('alias', '');
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
+    $pendingdelete = (bool) get_parameter('pendingdelete');
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -735,6 +736,11 @@ if (is_ajax()) {
                         ($sql_tags_join === '') ? 'INNER JOIN tagente ON tagente.id_agente = t1.id_agente' : '',
                         (empty($where_tags)) ? '' : " WHERE 1=1 $where_tags"
                     );
+                    if ($pendingdelete == true) {
+                        $sql .= sprintf(
+                            ' AND delete_pending=0'
+                        );
+                    }
                 }
             } else {
                 $sql = sprintf(
@@ -2063,6 +2069,10 @@ switch ($tab) {
     // I do not understand, nor do I agree with this operation, but it is what it is.
     $(document).ready (function () {
         $('.ehorus_tab').hover(ehorus_tab_show, ehorus_tab_hide);
+        // #9587 Doble find on agent view List modules and list of alerts.
+        $('#button-filter').on('click',function(){
+            search_alerts_status();
+        });
     });
 
     function ehorus_tab_show() {
@@ -2073,5 +2083,10 @@ switch ($tab) {
         setTimeout(function() {
             $('.subsubmenu').hide("fast");
         },15000);
+    }
+
+    function search_alerts_status(){
+        $('#text-free_search_alert').val($('#text-status_text_monitor').val());
+        $('#form_alerts_status_datatable_search_bt').trigger('click');
     }
 </script>

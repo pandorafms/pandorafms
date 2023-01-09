@@ -924,7 +924,7 @@ function visual_map_print_item(
 
                 $value_text = format_for_graph($module_value, 2);
                 if ($value_text <= 0) {
-                    $value_text = remove_right_zeros(number_format($module_value, $config['graph_precision']));
+                    $value_text = remove_right_zeros(number_format($module_value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                 }
 
                 if (!empty($unit_text)) {
@@ -1227,7 +1227,7 @@ function visual_map_print_item(
 
                 $module_data = get_bars_module_data(
                     $id_module,
-                    ($layoutData['type_graph'] !== 'horizontal')
+                    $layoutData['type_graph']
                 );
                 $options = [];
                 $options['generals']['rotate'] = true;
@@ -1743,7 +1743,7 @@ function visual_map_print_item(
                                 || (modules_is_boolean($layoutData['id_agente_modulo']) && $layoutData['show_last_value'] != 0)
                             ) {
                                 if (is_numeric($value)) {
-                                    $img_style_title .= ' <br>'.__('Last value: ').remove_right_zeros(number_format($value, $config['graph_precision']));
+                                    $img_style_title .= ' <br>'.__('Last value: ').remove_right_zeros(number_format($value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                                 } else {
                                     $img_style_title .= ' <br>'.__('Last value: ').$value;
                                 }
@@ -1881,13 +1881,13 @@ function visual_map_print_item(
                             echo '</tr>';
                             echo "<tr class='bg_whitesmoke height_90p'>";
                                 echo '<td>';
-                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='critical_vm'>Critical</div>";
-                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
+                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='warning_vm'>Warning</div>";
-                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
+                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='normal_vm'>Normal</div>";
-                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
+                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2, $config['decimal_separator'], $config['thousand_separator'])).'%</div>';
                                     echo "<div class='unknown_vm'>Unknown</div>";
                                 echo '</td>';
                             echo '</tr>';
@@ -2344,7 +2344,7 @@ function get_if_module_is_image($id_module)
 }
 
 
-function get_bars_module_data($id_module, $vBars=false)
+function get_bars_module_data($id_module, $typeGraph='horizontal')
 {
     // This charts is only serialize graphs.
     // In other string show image no data to show.
@@ -2355,7 +2355,7 @@ function get_bars_module_data($id_module, $vBars=false)
     );
 
     $values = false;
-    // avoid showing the image type modules. WUX
+    // Avoid showing the image type modules. WUX.
     if (strpos($mod_values, 'data:image/png;base64') !== 0) {
         if (preg_match("/\r\n/", $mod_values)) {
             $values = explode("\r\n", $mod_values);
@@ -2364,26 +2364,28 @@ function get_bars_module_data($id_module, $vBars=false)
         }
     }
 
-    $values_to_return = [];
-    $index = 0;
-    $color_index = 0;
-    $total = 0;
-
     if (!$values) {
         return false;
     }
 
-    if ($vBars === false) {
-        foreach ($values as $val) {
-            $data = explode(',', $val);
-            $values_to_return[$data[0]] = ['g' => $data[1]];
+    $values_to_return = [];
+    foreach ($values as $val) {
+        $data = explode(',', $val);
+
+        if ($data[0] === $val) {
+            continue;
         }
-    } else {
-        foreach ($values as $val) {
-            $data = explode(',', $val);
-            $values_to_return[] = [
-                'tick' => $data[0],
-                'data' => $data[1],
+
+        $values_to_return['labels'][] = io_safe_output($data[0]);
+        if ($typeGraph === 'horizontal') {
+            $values_to_return['data'][] = [
+                'y' => io_safe_output($data[0]),
+                'x' => $data[1],
+            ];
+        } else {
+            $values_to_return['data'][] = [
+                'x' => io_safe_output($data[0]),
+                'y' => $data[1],
             ];
         }
     }
@@ -2462,7 +2464,7 @@ function visual_map_get_simple_value($type, $id_module, $period=SECONDS_1DAY)
                 } else {
                     if (is_numeric($value)) {
                         if ($config['simple_module_value']) {
-                            $value = remove_right_zeros(number_format($value, $config['graph_precision']));
+                            $value = remove_right_zeros(number_format($value, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
                         }
                     }
 
@@ -2842,73 +2844,22 @@ function get_donut_module_data($id_module)
         $no_data_to_show = true;
     }
 
-    $colors = [];
-    $colors[] = '#aa3333';
-    $colors[] = '#045FB4';
-    $colors[] = '#8181F7';
-    $colors[] = '#F78181';
-    $colors[] = '#D0A9F5';
-    $colors[] = '#BDBDBD';
-    $colors[] = '#6AB277';
-
-    $max_elements = 6;
     $values_to_return = [];
-    $index = 0;
-    $total = 0;
     foreach ($values as $val) {
-        if ($index < $max_elements) {
-            $data = explode(',', $val);
+        $data = explode(',', $val);
 
-            if ($no_data_to_show) {
-                $values_to_return[$index]['tag_name'] = $data[0];
-            } else {
-                $values_to_return[$index]['tag_name'] = $data[0].': '.$data[1];
-            }
+        if ($data[0] === $val) {
+            continue;
+        }
 
-            $values_to_return[$index]['color'] = $colors[$index];
-            $values_to_return[$index]['value'] = (int) $data[1];
-            $total += (int) $data[1];
-            $index++;
+        if ($no_data_to_show) {
+            $values_to_return['labels'][] = $data[0];
         } else {
-            $data = explode(',', $val);
-            $values_to_return[$index]['tag_name'] = __('Others').': '.$data[1];
-            $values_to_return[$index]['color'] = $colors[$index];
-            $values_to_return[$index]['value'] += (int) $data[1];
-            $total += (int) $data[1];
-        }
-    }
-
-    foreach ($values_to_return as $ind => $donut_data) {
-        $values_to_return[$ind]['percent'] = (($donut_data['value'] * 100) / $total);
-    }
-
-    // sort array
-    $new_values_to_return = [];
-    while (!empty($values_to_return)) {
-        $first = true;
-        $max_elem = 0;
-        $max_elem_array = [];
-        $index_to_del = 0;
-        foreach ($values_to_return as $i => $val) {
-            if ($first) {
-                $max_elem = $val['value'];
-                $max_elem_array = $val;
-                $index_to_del = $i;
-                $first = false;
-            } else {
-                if ($val['value'] > $max_elem) {
-                    $max_elem = $val['value'];
-                    $max_elem_array = $val;
-                    $index_to_del = $i;
-                }
-            }
+            $values_to_return['labels'][] = $data[0].': '.$data[1];
         }
 
-        $new_values_to_return[] = $max_elem_array;
-        unset($values_to_return[$index_to_del]);
+        $values_to_return['data'][] = (int) $data[1];
     }
-
-    $values_to_return = $new_values_to_return;
 
     return $values_to_return;
 }

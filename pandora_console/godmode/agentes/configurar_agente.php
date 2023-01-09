@@ -238,7 +238,15 @@ if ($create_agent) {
     $field_values = [];
 
     foreach ($fields as $field) {
-        $field_values[$field['id_field']] = (string) get_parameter_post('customvalue_'.$field['id_field'], '');
+        $field_value = get_parameter_post('customvalue_'.$field['id_field'], '');
+
+        if ($field['is_link_enabled']) {
+            $field_value = json_encode($field_value);
+        } else {
+            $field_value = (string) $field_value;
+        }
+
+        $field_values[$field['id_field']] = $field_value;
     }
 
     // Check if agent exists (BUG WC-50518-2).
@@ -999,7 +1007,22 @@ if ($update_agent) {
     $field_values = [];
 
     foreach ($fields as $field) {
-        $field_values[$field['id_field']] = (string) get_parameter_post('customvalue_'.$field['id_field'], '');
+        $field_value = get_parameter_post('customvalue_'.$field['id_field'], '');
+
+        if ($field['is_link_enabled']) {
+            if ($field_value[1] !== '') {
+                $parsed_url = parse_url($field_value[1]);
+                if (empty($parsed_url['scheme']) === true) {
+                    $field_value[1] = 'http://'.ltrim($field_value[1], '/');
+                }
+            }
+
+            $field_value = json_encode($field_value);
+        } else {
+            $field_value = (string) $field_value;
+        }
+
+        $field_values[$field['id_field']] = $field_value;
     }
 
     foreach ($field_values as $key => $value) {
@@ -2095,6 +2118,9 @@ if ($delete_module) {
         exit;
     }
 
+    // Before delete the main module, check and delete the childrens from the original module.
+    module_check_childrens_and_delete($id_borrar_modulo);
+
     // Also call base function to delete modules.
     modules_delete_agent_module($id_borrar_modulo);
 
@@ -2449,6 +2475,11 @@ switch ($tab) {
                     });
             }
     });
+    });
+
+    // Change description when edit port
+    $( "#text-tcp_port" ).change(function() {
+        $( "#textarea_description" ).text(`Checks port ${$( "#text-tcp_port" ).val()} is opened`);
     });
     
     // Set the position and width of the subtab

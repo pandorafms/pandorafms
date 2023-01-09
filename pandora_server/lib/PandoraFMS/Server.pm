@@ -47,7 +47,9 @@ sub new ($$$;$) {
 		_threads => [],
 		_queue_size => 0,
 		_errstr => '',
-		_period => 0
+		_period => 0,
+		_producer_stats => {},
+		_consumer_stats => {},
 	};
 	
 	# Share variables that may be set from different threads
@@ -174,6 +176,24 @@ sub getServerType ($) {
 	my $self = shift;
 	
 	return $self->{'_server_type'};
+}
+
+########################################################################################
+# Return consumer stats.
+########################################################################################
+sub getConsumerStats ($) {
+	my $self = shift;
+	
+	return $self->{'_consumer_stats'};
+}
+
+########################################################################################
+# Return producer stats.
+########################################################################################
+sub getProducerStats ($) {
+	my $self = shift;
+	
+	return $self->{'_producer_stats'};
 }
 
 ########################################################################################
@@ -335,6 +355,52 @@ sub stop ($) {
 
    	$thr->kill('KILL');
 	}
+}
+
+########################################################################################
+# Update stats for the current thread.
+########################################################################################
+sub updateStats ($$$) {
+	my ($self, $dest, $inc) = @_;
+	my $tid = threads->tid();
+	my $curr_time = time();
+
+	# Stats disabled for this thread.
+	if (!defined($dest->{$tid})) {
+		return;
+	}
+
+	# Update the timestamp and count.
+	$dest->{$tid}->{'tstamp'} = time();
+	$dest->{$tid}->{'rate_count'} += $inc;
+
+	# Compute the processing rate.
+	my $elapsed = $curr_time - $dest->{$tid}->{'rate_tstamp'};
+	if ($elapsed >= $self->{'_pa_config'}->{'self_monitoring_interval'}) {
+		$dest->{$tid}->{'rate'} = $dest->{$tid}->{'rate_count'} / $elapsed;
+		$dest->{$tid}->{'rate_count'} = 0;
+		$dest->{$tid}->{'rate_tstamp'} = $curr_time;
+		return;
+	}
+}
+
+
+########################################################################################
+# Update producer stats.
+########################################################################################
+sub updateProducerStats ($$) {
+	my ($self, $queued_tasks) = @_;
+
+	$self->updateStats($self->{'_producer_stats'}, $queued_tasks);
+}
+
+########################################################################################
+# Update consumer stats.
+########################################################################################
+sub updateConsumerStats ($$) {
+	my ($self, $processed_tasks) = @_;
+
+	$self->updateStats($self->{'_consumer_stats'}, $processed_tasks);
 }
 
 # End of function declaration

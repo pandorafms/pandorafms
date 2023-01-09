@@ -1015,7 +1015,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.767';
-use constant AGENT_BUILD => '221205';
+use constant AGENT_BUILD => '230105';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -2403,6 +2403,11 @@ sub check_collections () {
 			if (open (MD5_FILE, "< $ConfDir/collections/$collection_md5_file")) {
 				$local_collection_md5 = <MD5_FILE>;
 				close MD5_FILE;
+				if ( ! defined ($local_collection_md5) ) {
+					log_message ('Collection', "Size of $ConfDir/collections/$collection_md5_file is 0");
+					unlink ("$ConfDir/collections/$collection_md5_file");
+					$local_collection_md5 = "Size 0";
+				}
 			} else {
 				log_message ('Collection', "Could not open dir $ConfDir/collections/$collection_md5_file");
 				next;

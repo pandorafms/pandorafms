@@ -821,15 +821,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     prevProps: Props | null = null,
     prevMeta: ItemMeta | null = null
   ): void {
-    this.updateDomElement(this.childElementRef);
-
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {
       this.moveElement(this.props.x, this.props.y);
+      this.updateDomElement(this.childElementRef);
     }
     // Resize box.
     if (!prevProps || this.sizeChanged(prevProps, this.props)) {
       this.resizeElement(this.props.width, this.props.height);
+      this.updateDomElement(this.childElementRef);
     }
     // Change label.
     const oldLabelHtml = this.labelElementRef.innerHTML;
@@ -934,6 +934,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
           }
         }
       }
+
+      this.updateDomElement(this.childElementRef);
     }
     if (!prevMeta || prevMeta.isSelected !== this.meta.isSelected) {
       if (this.meta.isSelected) {

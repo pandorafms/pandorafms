@@ -98,6 +98,8 @@ Exported Functions:
 
 =item * C<pandora_self_monitoring>
 
+=item * C<pandora_thread_monitoring>
+
 =item * C<pandora_sample_agent>
 
 =back
@@ -258,6 +260,7 @@ our @EXPORT = qw(
 	pandora_group_statistics
 	pandora_server_statistics
 	pandora_self_monitoring
+	pandora_thread_monitoring
 	pandora_sample_agent
 	pandora_process_policy_queue
 	pandora_sync_agents_integria
@@ -280,6 +283,9 @@ our @EXPORT = qw(
 	notification_set_targets
 	notification_get_users
 	notification_get_groups
+	exec_cluster_aa_module
+	exec_cluster_ap_module
+	exec_cluster_status_module
 );
 
 # Some global variables
@@ -299,7 +305,6 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
-	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -6065,6 +6070,71 @@ sub pandora_self_monitoring ($$) {
 	print XMLFILE $xml_output;
 	close (XMLFILE);
 }
+
+##########################################################################
+=head2 C<< pandora_thread_monitoring (I<$pa_config>, I<$dbh>, I<$servers>) >>
+
+Generate stats for Pandora FMS threads.
+
+=cut
+##########################################################################
+
+sub pandora_thread_monitoring ($$$) {
+	my ($pa_config, $dbh, $servers) = @_;
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+
+	my $xml_output = "";
+	
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	foreach my $server (@{$servers}) {
+		while (my ($tid, $stats) = each(%{$server->getProducerStats()})) {
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Status</name>";
+			$xml_output .=" <type>generic_proc</type>";
+			$xml_output .=" <module_group>System</module_group>";
+			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" </module>";
+	
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Processing Rate</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
+			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
+			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" </module>";
+		}
+
+		my $idx = 0;
+		my $consumer_stats = $server->getConsumerStats();
+		foreach my $tid (sort(keys(%{$consumer_stats}))) {
+			my $stats = $consumer_stats->{$tid};
+
+			$idx += 1;
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Consumer #$idx Status</name>";
+			$xml_output .=" <type>generic_proc</type>";
+			$xml_output .=" <module_group>System</module_group>";
+			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" </module>";
+	
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Consumer #$idx Processing Rate</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
+			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
+			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" </module>";
+		}
+	}
+	$xml_output .= "</agent_data>";
+
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
+	print XMLFILE $xml_output;
+	close (XMLFILE);
+}
+
 ##########################################################################
 =head2 C<< xml_module_template (I<$module_name>, I<$module_type>, I<$module_data>) >>
 
@@ -7274,6 +7344,175 @@ sub pandora_snmptrapd_still_working ($$) {
 		}
 
 	}
+}
+
+
+################################################################################
+# Execute a cluster status module.
+################################################################################
+sub exec_cluster_status_module ($$$$) {
+	my ($pa_config, $module, $server_id, $dbh) = @_;
+
+	# Execute cluster modules.
+	my @modules = get_db_rows($dbh,
+		'SELECT *
+		FROM tagente_modulo
+		WHERE tagente_modulo.id_agente = ?
+		  AND tagente_modulo.disabled != 1
+			AND tagente_modulo.tcp_port = 1',
+		$module->{'id_agente'});
+	foreach my $agent_module (@modules) {
+	    # Cluster active-active module.
+	    if ($agent_module->{'prediction_module'} == 6) {
+	        logger ($pa_config, "Executing cluster active-active critical module " . $agent_module->{'nombre'}, 10);
+	        exec_cluster_aa_module($pa_config, $agent_module, $server_id, $dbh);
+	    }
+	    # Cluster active-passive module.
+	    elsif ($agent_module->{'prediction_module'} == 7) {
+	        logger ($pa_config, "Executing cluster active-passive critical module " . $agent_module->{'nombre'}, 10);
+	        exec_cluster_ap_module($pa_config, $agent_module, $server_id, $dbh);
+	    }
+	}
+	
+	# Get the status of cluster modules.
+	my $data = -1;
+	@modules = get_db_rows($dbh,
+		'SELECT tagente_modulo.id_agente_modulo, tagente_estado.estado
+		FROM tagente_estado, tagente_modulo
+		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled != 1
+			AND tagente_modulo.tcp_port = 1
+			AND tagente_modulo.id_agente = ?',
+		$module->{'id_agente'});
+	foreach my $cluster_module (@modules) {
+		next if ($cluster_module->{'id_agente_modulo'} == $module->{'id_agente_modulo'}); # Skip the current module.
+
+		# Critical.
+		if ($cluster_module->{'estado'} == MODULE_NORMAL && $data < 0) {
+			$data = 0;
+		} elsif ($cluster_module->{'estado'} == MODULE_WARNING && $data < 1) {
+			$data = 1;
+		} elsif (($cluster_module->{'estado'} == MODULE_CRITICAL || $cluster_module->{'estado'} == MODULE_UNKNOWN) && $data < 2) {
+			$data = 2;
+		}
+	}
+
+	# No data.
+	if ($data < 0) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+
+	# Get the current timestamp.
+	my $utimestamp = time ();
+	my $timestamp = strftime("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+	
+	# Update the module.
+	pandora_process_module($pa_config, {'data' => $data}, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
+	
+	pandora_update_agent($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
+}
+
+################################################################################
+# Execute a cluster active-active module.
+################################################################################
+sub exec_cluster_aa_module ($$$$) {
+	my ($pa_config, $module, $server_id, $dbh) = @_;
+
+	# Get the cluster item.
+	my $item = get_db_single_row($dbh, 'SELECT * FROM tcluster_item WHERE id=?', $module->{'custom_integer_2'});
+	if (!defined($item)) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+
+	# Get cluster agents and compute the item status.
+	my ($not_normal, $total) = (0, 0);
+	my @agents = get_db_rows($dbh, 'SELECT id_agent FROM tcluster_agent WHERE id_cluster = ?', $module->{'custom_integer_1'});
+	foreach my $agent_id (@agents) {
+		my $item_status = get_db_value($dbh,
+			'SELECT estado
+			FROM tagente_estado, tagente_modulo
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.id_agente = ?
+				AND tagente_modulo.nombre = ?',
+			$agent_id->{'id_agent'}, $item->{'name'});
+
+		# Count modules in a status other than normal.
+		if (!defined($item_status) || $item_status != MODULE_NORMAL) {
+			$not_normal += 1;
+		}
+
+		$total += 1;
+	}
+
+	# No data.
+	if ($total < 1) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+
+	# Convert $not_normal to a percentage.
+	$not_normal = 100 * $not_normal / $total;
+
+	# Get the current timestamp.
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+	
+	# Update module
+	pandora_process_module ($pa_config, {'data' => $not_normal}, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
+	
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
+}
+
+################################################################################
+# Execute a cluster active-pasive module.
+################################################################################
+sub exec_cluster_ap_module ($$$$) {
+	my ($pa_config, $module, $server_id, $dbh) = @_;
+
+	# Get the cluster item.
+	my $item = get_db_single_row($dbh, 'SELECT * FROM tcluster_item WHERE id=?', $module->{'custom_integer_2'});
+	if (!defined($item)) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+
+	# Get cluster agents and compute the item status.
+	my $data = undef;
+	my $utimestamp = 0;
+	my @agents = get_db_rows($dbh, 'SELECT id_agent FROM tcluster_agent WHERE id_cluster = ?', $module->{'custom_integer_1'});
+	foreach my $agent_id (@agents) {
+		my $status = get_db_single_row($dbh,
+			'SELECT datos, estado, utimestamp
+			FROM tagente_estado, tagente_modulo
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.id_agente = ?
+				AND tagente_modulo.nombre = ?',
+			$agent_id->{'id_agent'}, $item->{'name'});
+
+		# Get the most recent data.
+		if (defined($status) && $status->{'estado'} != MODULE_UNKNOWN && $status->{'utimestamp'} > $utimestamp) {
+			$utimestamp = $status->{'utimestamp'};
+			$data = $status->{'datos'};
+		}
+	}
+
+	# No data.
+	if ($utimestamp == 0) {
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+	
+	# Get the current timestamp.
+	$utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+	
+	# Update the module.
+	pandora_process_module ($pa_config, {'data' => $data }, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
+	
+	# Update the agent.
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
 }
 
 # End of function declaration

@@ -654,7 +654,7 @@ if ($get_agent_alerts_datatable === true) {
     }
 
     $idGroup = $filter_alert['ag_group'];
-    $tag_filter = $filter_alert['tag_filter'];
+    $tag_filter = $filter_alert['tag'];
     $action_filter = $filter_alert['action'];
 
     try {
@@ -884,9 +884,9 @@ if ($get_agent_alerts_datatable === true) {
                     users_get_groups($config['id_user'], $access, false)
                 );
 
-                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter, false);
 
-                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
+                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter, false);
             }
         }
 

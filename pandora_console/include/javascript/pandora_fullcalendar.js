@@ -388,12 +388,11 @@ function recalculate_events(calendar, newEvent, from, to, create) {
     }
   });
 
-  var title = "";
-  if (time_format(from) === "00:00:00" && time_format(to) === "00:00:00") {
-    title = "All day";
-  }
-
   if (create === true) {
+    var title = "";
+    if (time_format(from) === "00:00:00" && time_format(to) === "00:00:00") {
+      title = "All day";
+    }
     calendar.addEvent({
       title: title,
       start: from,
@@ -401,6 +400,12 @@ function recalculate_events(calendar, newEvent, from, to, create) {
       id: uniqId()
     });
   } else {
+    if (!$.isEmptyObject(newEvent)) {
+      newEvent._def.title = "";
+      if (time_format(from) === "00:00:00" && time_format(to) === "00:00:00") {
+        newEvent._def.title = "All day";
+      }
+    }
     // Update event.
     newEvent.setDates(from, to);
   }

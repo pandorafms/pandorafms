@@ -134,7 +134,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
             'NOTIF.PHP.MEMORY_LIMIT',
             'NOTIF.PHP.DISABLE_FUNCTIONS',
-            'NOTIF.PHP.PHANTOMJS',
+            'NOTIF.PHP.CHROMIUM',
             'NOTIF.PHP.VERSION',
             'NOTIF.HISTORYDB',
             'NOTIF.PANDORADB',

@@ -87,6 +87,6 @@ module.exports = {
   // Static server which runs the playground on npm start.
   devServer: {
     open: true,
-    contentBase: "playground"
+    static: path.join(__dirname, "playground")
   }
 };

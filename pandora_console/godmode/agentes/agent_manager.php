@@ -586,6 +586,7 @@ html_print_div(
     ]
 );
 /*
+    TODO REVIEW
     $table_satellite = '';
     if ($remote_agent === true) {
     // Satellite server selector.

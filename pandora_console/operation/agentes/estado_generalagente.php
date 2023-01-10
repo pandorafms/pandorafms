@@ -786,11 +786,11 @@ if ($last_incident != false) {
 $network_interfaces_by_agents = agents_get_network_interfaces([$agent]);
 
 $network_interfaces = [];
-if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agents[$id_agente])) {
+if (empty($network_interfaces_by_agents) === false && empty($network_interfaces_by_agents[$id_agente]) === false) {
     $network_interfaces = $network_interfaces_by_agents[$id_agente]['interfaces'];
 }
 
-if (!empty($network_interfaces)) {
+if (empty($network_interfaces) === false) {
     $table_interface = new stdClass();
     $table_interface->id = 'agent_interface_info';
     $table_interface->class = 'info_table';
@@ -818,7 +818,7 @@ if (!empty($network_interfaces)) {
     $event_text_cont = 0;
 
     foreach ($network_interfaces as $interface_name => $interface) {
-        if (!empty($interface['traffic'])) {
+        if (empty($interface['traffic']) === false) {
             $permission = check_acl_one_of_groups($config['id_user'], $all_groups, 'RR');
 
             if ($permission) {
@@ -852,13 +852,13 @@ if (!empty($network_interfaces)) {
         $events_limit = 5000;
         $user_groups = users_get_groups($config['id_user'], 'ER');
         $user_groups_ids = array_keys($user_groups);
-        if (empty($user_groups)) {
+        if (empty($user_groups) === true) {
             $groups_condition = ' 1 = 0 ';
         } else {
             $groups_condition = ' id_grupo IN ('.implode(',', $user_groups_ids).') ';
         }
 
-        if (!check_acl($config['id_user'], 0, 'PM')) {
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === false) {
             $groups_condition .= ' AND id_grupo != 0';
         }
 
@@ -966,7 +966,7 @@ if (!empty($network_interfaces)) {
                 close_table_white('#table_access_rate');
             })
             .css('cursor', 'pointer');
- 
+
             function close_table(id){
                 var arrow = $(id).find("thead").find("img");
                 if (arrow.hasClass("closed")) {
@@ -1055,55 +1055,22 @@ $agentEvents = html_print_div(
 );
 
 /*
-    $table_events = '<div class="white_table_graph" id="table_events">';
-    $table_events .= '<div class="white_table_graph_header">';
-    $table_events .= html_print_image(
-    'images/arrow_down_green.png',
-    true
-    );
-    $table_events .= '<span>';
-    $table_events .= __('Events (Last 24h)');
-    $table_events .= '</span>';
-    $table_events .= '</div>';
-
-    $table_events .= '<div class="white_table_graph_content white-table-graph-content">';
-    $table_events .= graph_graphic_agentevents(
-    $id_agente,
-    95,
-    70,
-    SECONDS_1DAY,
-    '',
-    true,
-    true,
-    500
-    );
-    $table_events .= '</div>';
-    $table_events .= '</div>';
-*/
-
-/*
  * EVENTS TABLE END.
  */
-if (empty($data_opcional) === true) {
+if (isset($data_opcional) === false || isset($data_opcional->data) === false || empty($data_opcional->data) === true) {
     $agentAdditionalInfo = '';
 } else {
-    // if (count($table_data->data) === 1 && (bool) $config['activate_gis'] === true && $dataPositionAgent === false) {
-    if (empty($data_opcional) === true && (bool) $config['activate_gis'] === true && $dataPositionAgent === false) {
-        $agentAdditionalInfo = '';
-    } else {
-        // $agentAdditionalInfo = html_print_table($table_data, true);$agentAdditionalContent
-        $agentAdditionalInfo = ui_toggle(
-            html_print_table($data_opcional, true),
-            '<span class="subsection_header_title">'.__('Agent data').'</span>',
-            'status_monitor_agent',
-            false,
-            false,
-            true,
-            'box-shadow agent_details_col agent_details_toggle agent_details_first_row w100p',
-            'mrgn_lft_20px mrgn_right_20px',
-            'mrgn_lft_20px mrgn_right_20px w100p'
-        );
-    }
+    $agentAdditionalInfo = ui_toggle(
+        html_print_table($data_opcional, true),
+        '<span class="subsection_header_title">'.__('Agent data').'</span>',
+        'status_monitor_agent',
+        false,
+        false,
+        true,
+        'box-shadow agent_details_col agent_details_toggle agent_details_first_row w100p',
+        'mrgn_lft_20px mrgn_right_20px',
+        'mrgn_lft_20px mrgn_right_20px w100p'
+    );
 }
 
 $agentIncidents = (isset($table_incident) === false) ? '' : html_print_table($table_incident, true);

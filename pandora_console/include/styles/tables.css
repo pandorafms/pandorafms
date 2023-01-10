@@ -115,17 +115,13 @@
 }
 
 .info_table tr > td:first-child,
-.info_table tr > th:first-child,
-.filter_table tr > td:first-child,
-.filter_table tr > th:first-child {
+.info_table tr > th:first-child {
   /*padding-left: 5px;*/
   padding-left: 10px;
   border-left: 1px solid #c0ccdc;
 }
 .info_table tr > td:last-child,
-.info_table tr > th:last-child,
-.filter_table tr > td:last-child,
-.filter_table tr > th:last-child {
+.info_table tr > th:last-child {
   /*padding-right: 5px;*/
   padding-right: 10px;
   border-right: 1px solid #c0ccdc;

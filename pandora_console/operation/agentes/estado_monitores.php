@@ -546,8 +546,11 @@ function print_form_filter_monitors(
     $table = new stdClass();
     $table->class = 'filter_table';
     $table->id = 'module_filter_agent_view';
-    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
+    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
     $table->width = '100%';
+    $table->cellstyle[0][0] = 'width: 0';
+    $table->cellstyle[0][1] = 'width: 0';
+    $table->cellstyle[0][2] = 'width: 0';
     // Captions.
     $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
     $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
@@ -593,7 +596,10 @@ function print_form_filter_monitors(
             'id'       => 'checkbox-status_hierachy_mode',
         ]
     );
-    $table->data[1][4] = html_print_button(
+
+    $filtersButtons = [];
+
+    $filtersButtons[] = html_print_button(
         __('Filter'),
         'filter',
         false,
@@ -604,7 +610,8 @@ function print_form_filter_monitors(
         ],
         true
     );
-    $table->data[1][5] = html_print_button(
+
+    $filtersButtons[] = html_print_button(
         __('Reset'),
         'filter',
         false,
@@ -615,6 +622,15 @@ function print_form_filter_monitors(
         ],
         true
     );
+
+    $table->data[1][4] = html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => implode('', $filtersButtons),
+        ],
+        true
+    );
+
     $form_text .= html_print_table($table, true);
 
     // TODO. Unused code.

@@ -356,7 +356,7 @@ if (check_login()) {
             ];
         }
 
-        if ($selection_mode == 'fromnow') {
+        if ($selection_mode === 'fromnow') {
             $date = get_system_time();
             $period = $period;
         } else {
@@ -958,7 +958,7 @@ if (check_login()) {
 
         $table = new stdClass();
         $table->width = '100%';
-        $table->styleTable = 'display:flex;border: 0;border-radius: 0;vertical-align: baseline;flex-direction: column;';
+        $table->styleTable = 'border: 0;border-radius: 0;vertical-align: baseline;';
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->class = 'tactical_table info_table';
@@ -976,41 +976,24 @@ if (check_login()) {
         $table->align[5] = 'left';
         $table->align[6] = 'left';
         $table->align[7] = 'center';
-        $table->align[8] = 'left';
-        $table->align[9] = 'right';
-        // Cell styles.
-        $table->style[0] = 'width: 5%;vertical-align: baseline';
-        $table->style[1] = 'width: 5%;vertical-align: baseline';
-        $table->style[2] = 'width: 20%;vertical-align: baseline';
-        $table->style[3] = 'width: 20%;vertical-align: baseline';
-        $table->style[4] = 'width: 5%;vertical-align: baseline';
-        $table->style[5] = 'width: 15%;vertical-align: baseline';
-        $table->style[6] = 'width: 10%;vertical-align: baseline;font-size: 9pt';
-        $table->style[7] = 'width: 10%;vertical-align: baseline';
-        $table->style[8] = 'width: 10%;vertical-align: baseline;font-size: 9pt';
-        $table->style[9] = 'width: 10%;vertical-align: baseline';
+        // Fixed styles.
+        $table->headstyle[0] = 'width: 4%;text-align: center;';
+        $table->headstyle[1] = 'width: 55px;text-align: left;';
+        $table->headstyle[4] = 'width: 100px; text-align: center';
+        $table->headstyle[7] = 'width: 130px; text-align: center';
+        $table->headstyle[8] = 'width: 10%; text-align: center';
+        $table->headstyle[9] = 'text-align: center';
         // Row class.
-        // $table->headclass[] = 'header_row';
         $table->head[0] = ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) ? '<span title="'.__('Policy').'">'.__('P').'</span>' : '';
-        $table->headstyle[0] = 'width: 5%;text-align: center;';
-        $table->head[1] = '<span>'.__('Type').'</span>'.ui_get_sorting_arrows($url_up_type, $url_down_type, $selectTypeUp, $selectTypeDown);
-        $table->headstyle[1] = 'width: 5%;text-align: left;';
+        $table->head[1] = '<span title="'.__('Module type').'">'.__('T').'</span>'.ui_get_sorting_arrows($url_up_type, $url_down_type, $selectTypeUp, $selectTypeDown);
         $table->head[2] = '<span>'.__('Module name').'</span>'.ui_get_sorting_arrows($url_up_name, $url_down_name, $selectNameUp, $selectNameDown);
-        $table->headstyle[2] = 'width: 20%;text-align: left;';
         $table->head[3] = '<span>'.__('Description').'</span>';
-        $table->headstyle[3] = 'width: 20%;text-align: left;';
         $table->head[4] = '<span>'.__('Status').'</span>'.ui_get_sorting_arrows($url_up_status, $url_down_status, $selectStatusUp, $selectStatusDown);
-        $table->headstyle[4] = 'width: 5%;text-align: center;';
         $table->head[5] = '<span>'.__('Thresholds').'</span>';
-        $table->headstyle[5] = 'width: 15%;text-align: left;';
         $table->head[6] = '<span>'.__('Data').'</span>';
-        $table->headstyle[6] = 'width: 10%;text-align: left;';
         $table->head[7] = '<span>'.__('Last contact').'</span>'.ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-        $table->headstyle[7] = 'width: 10%;';
         $table->head[8] = '<span>'.__('Graphs').'</span>';
-        $table->headstyle[8] = 'width: 10%;';
         $table->head[9] = '<span>'.__('Actions').'</span>';
-        $table->headstyle[8] = 'width: 10%;';
 
         $last_modulegroup = 0;
         $rowIndex = 0;
@@ -1039,7 +1022,7 @@ if (check_login()) {
             if ($hierachy_mode === 'false') {
                 // The code add the row of 1 cell with title of group for to be more organice the list.
                 if ($module['id_module_group'] != $last_modulegroup) {
-                    $table->colspan[$rowIndex][0] = count($table->style);
+                    $table->colspan[$rowIndex][0] = count($table->head);
                     $table->rowclass[$rowIndex] = 'datos4';
 
                     array_push($table->data, ['<b>'.$module['name'].'</b>']);
@@ -1051,10 +1034,9 @@ if (check_login()) {
                 // End of title of group.
             }
 
+            $table->rowstyle[$rowIndex] = 'vertical-align: baseline';
             $data = [];
-
             // Module policy.
-            // $table->cellstyle[$rowIndex][0] = 'width: 1%;';
             $data[0] = '';
             if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
                 if ((int) $module['id_policy_module'] !== 0) {

@@ -453,7 +453,7 @@ if ($free_search != '') {
                             false,
                             [
                                 'icon' => 'wand',
-                                'mode' => 'mini',
+                                'mode' => 'secondary mini',
                             ],
                             true
                         ),

@@ -1974,8 +1974,8 @@ if ($table_events) {
     include_once 'include/functions_events.php';
     include_once 'include/functions_graph.php';
 
-    $id_agente = (int) get_parameter('id_agente', 0);
-    $all_events_24h = (int) get_parameter('all_events_24h', 0);
+    $id_agente = (int) get_parameter('id_agente');
+    $all_events_24h = (int) get_parameter('all_events_24h');
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).
@@ -1988,19 +1988,28 @@ if ($table_events) {
         'event_condition',
         'AND'
     );
-    echo '<div class="flex" id="div_all_events_24h">';
-        echo '<label class="mrgn_1_2em"><b>'.__('Show all Events 24h').'</b></label>';
-        echo html_print_switch(
-            [
-                'name'  => 'all_events_24h',
-                'value' => $all_events_24h,
-                'id'    => 'checkbox-all_events_24h',
-            ]
-        );
-    echo '</div>';
+
+    $tableEvents24h = new stdClass();
+    $tableEvents24h->class = 'filter_table';
+    $tableEvents24h->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
+    $tableEvents24h->width = '100%';
+    $tableEvents24h->data = [];
+
+    $tableEvents24h->data[0] = __('Show all Events 24h');
+    $tableEvents24h->rowstyle[1] = 'height: 42px';
+    $tableEvents24h->data[1] = html_print_switch(
+        [
+            'name'  => 'all_events_24h',
+            'value' => $all_events_24h,
+            'id'    => 'checkbox-all_events_24h',
+        ]
+    );
+
+    html_print_table($tableEvents24h);
+
     $date_subtract_day = (time() - (24 * 60 * 60));
 
-    if ($all_events_24h) {
+    if ($all_events_24h !== 0) {
         events_print_event_table(
             'utimestamp > '.$date_subtract_day,
             200,

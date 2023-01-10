@@ -3673,6 +3673,9 @@ table#policy_modules td * {
   border: 0 !important;
 }
 
+.tactical_table > thead > tr span {
+  line-height: 26px;
+}
 .info_table thead th .sort_arrow,
 .tactical_table thead th .sort_arrow {
   vertical-align: top;

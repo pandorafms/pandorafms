@@ -268,12 +268,10 @@ html_print_div(
         parameters["status_text_monitor"] = filter_text;
         parameters["status_module_group"] = filter_group;
         parameters["page"] = "include/ajax/module";
-        
-        
+
         $("#module_list").empty();
         $("#module_list_loading").show();
-        
-        
+
         jQuery.ajax ({
             data: parameters,
             type: 'POST',
@@ -281,13 +279,12 @@ html_print_div(
             dataType: 'html',
             success: function (data) {
                 $("#module_list_loading").hide();
-                
                 $("#module_list").empty();
                 $("#module_list").html(data);
             }
         });
     }
-    
+
     function filter_modules() {
         filter_status = $("#status_filter_monitor").val();
         filter_group = $("#status_module_group").val();

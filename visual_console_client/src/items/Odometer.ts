@@ -226,7 +226,8 @@ export default class Odometer extends Item<OdometerProps> {
     script.onload = () => {
       odometerB.style.transform = `rotate(${rotate}turn)`;
     };
-    script.src = `${document.dir} /pandora_console/include/javascript/pandora_alerts.js`;
+    var url_pandora = window.location.pathname.split("/")[1];
+    script.src = `${document.dir}/${url_pandora}/include/javascript/pandora_alerts.js`;
     odometerA.appendChild(h1);
     odometerA.appendChild(h2);
     odometerContainer.appendChild(odometerB);

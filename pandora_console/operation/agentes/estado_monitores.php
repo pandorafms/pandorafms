@@ -184,7 +184,7 @@ $html_toggle = ob_get_clean();
 
 html_print_div(
     [
-        'class'   => 'agent_details_first_row agent_details_line',
+        'class'   => 'agent_details_line',
         'content' => ui_toggle(
             $html_toggle,
             '<span class="subsection_header_title">'.__('List of modules').'</span>'.$help_not_init.ui_print_help_tip(

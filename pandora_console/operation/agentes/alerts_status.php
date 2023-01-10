@@ -233,8 +233,9 @@ if ($free_search != '') {
 
         $column_names = [
             [
-                'title' => 'Standby',
-                'text'  => 'S.',
+                'title' => __('Standby'),
+                'text'  => __('Standby'),
+                'style' => 'max-width: 5%;',
             ],
         ];
 
@@ -242,8 +243,9 @@ if ($free_search != '') {
             array_unshift(
                 $column_names,
                 [
-                    'title' => 'Policy',
-                    'text'  => 'P.',
+                    'title' => __('Policy'),
+                    'text'  => __('Policy'),
+                    'style' => 'max-width: 5%;vertical-align: baseline;',
                 ]
             );
 
@@ -251,39 +253,6 @@ if ($free_search != '') {
                 ['policy'],
                 $columns
             );
-        }
-
-        if (is_metaconsole() === false) {
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                array_unshift(
-                    $column_names,
-                    [
-                        'title' => 'Validate',
-                        'text'  => html_print_checkbox('all_validate', 0, false, true, false),
-                        'class' => 'dt-left',
-                    ]
-                );
-
-                $columns = array_merge(
-                    ['validate'],
-                    $columns
-                );
-            }
-
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                array_push(
-                    $column_names,
-                    [
-                        'title' => 'Force execution',
-                        'text'  => 'F.',
-                    ]
-                );
-
-                $columns = array_merge(
-                    $columns,
-                    ['force']
-                );
-            }
         }
 
         if ($print_agent === true) {
@@ -300,23 +269,71 @@ if ($free_search != '') {
 
         array_push(
             $column_names,
-            ['text' => 'Module'],
-            ['text' => 'Template'],
-            ['text' => 'Action'],
-            ['text' => 'Last fired'],
-            ['text' => 'Status']
+            [
+                'text'  => 'Module',
+                'style' => 'min-width: 15%;vertical-align: baseline;',
+            ],
+            [
+                'text'  => 'Template',
+                'style' => 'min-width: 10%;vertical-align: baseline;',
+            ],
+            [
+                'text'  => 'Operation',
+                'style' => 'min-width: 15%;vertical-align: baseline;',
+            ],
+            [
+                'text'  => 'Last fired',
+                'style' => 'min-width: 15%;',
+            ],
+            [
+                'text'  => 'Status',
+                'style' => 'width: 5%;',
+            ]
         );
 
         $columns = array_merge(
             $columns,
             ['agent_module_name'],
             ['template_name'],
-            ['action'],
+            ['operation'],
             ['last_fired'],
             ['status']
         );
 
+        if (is_metaconsole() === false) {
+            if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+                array_unshift(
+                    $column_names,
+                    [
+                        'title' => __('Validate'),
+                        'text'  => html_print_checkbox('all_validate', 0, false, true, false),
+                        'class' => 'dt-left',
+                        'style' => 'max-width: 5%;',
+                    ]
+                );
 
+                $columns = array_merge(
+                    ['validate'],
+                    $columns
+                );
+            }
+
+            if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+                array_push(
+                    $column_names,
+                    [
+                        'title' => __('Actions'),
+                        'text'  => __('Actions'),
+                        'style' => 'min-width: 15%;',
+                    ]
+                );
+
+                $columns = array_merge(
+                    $columns,
+                    ['actions']
+                );
+            }
+        }
 
         if (is_metaconsole() === true) {
             $no_sortable_columns = [
@@ -426,18 +443,34 @@ if ($free_search != '') {
         }
 
         if ((is_metaconsole() === false) && ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
-            html_print_div(
-                [
-                    'class'   => 'action-buttons',
-                    'content' => html_print_submit_button(
+            if ($agent_view_page === true) {
+                html_print_div(
+                    [
+                        'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                        'content' => html_print_submit_button(
+                            __('Validate'),
+                            'alert_validate',
+                            false,
+                            [
+                                'icon' => 'wand',
+                                'mode' => 'mini',
+                            ],
+                            true
+                        ),
+                    ]
+                );
+            } else {
+                html_print_action_buttons(
+                    html_print_submit_button(
                         __('Validate'),
                         'alert_validate',
                         false,
                         [ 'icon' => 'wand' ],
                         true
                     ),
-                ]
-            );
+                    ['type' => 'form_action']
+                );
+            }
         }
 
         $html_content = ob_get_clean();
@@ -446,7 +479,7 @@ if ($free_search != '') {
             // Create controlled toggle content.
             html_print_div(
                 [
-                    'class'   => 'agent_details_first_row agent_details_line',
+                    'class'   => 'agent_details_line',
                     'content' => ui_toggle(
                         $html_content,
                         '<span class="subsection_header_title">'.__('Full list of alerts').'</span>',
@@ -483,11 +516,12 @@ if ($free_search != '') {
 
 function alerts_table_controls() {
     
-        $("a.template_details").cluetip ({
+        $("button.template_details").cluetip ({
             arrows: true,
             attribute: 'href',
             cluetipClass: 'default'
         }).click (function () {
+            console.log('click aqui');
             return false;
         });
 

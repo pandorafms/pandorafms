@@ -555,7 +555,7 @@ $data_opcional->style[1] = 'height: 46px; width: 75%; padding-left: 5px; font-fa
 $agentAdditionalContent = '';
 // Position Information.
 if ((bool) $config['activate_gis'] === true) {
-    $data_opcional->data['agent_position'][0] = '<span>'.__('Position (Long, Lat)').'</span>';
+    $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
@@ -581,7 +581,7 @@ if ((bool) $config['activate_gis'] === true) {
 
 // If the url description is set.
 if (empty($agent['url_address']) === false) {
-    $data_opcional->data['url_address'][0] = '<span>'.__('Url address').'</span>';
+    $data_opcional->data['url_address'][0] = __('Url address');
     $data_opcional->data['url_address'][1] = html_print_anchor(
         [
             'href'    => $agent['url_address'],
@@ -594,7 +594,7 @@ if (empty($agent['url_address']) === false) {
 
 // Other IP address and timezone offset.
 if (empty($addresses) === false) {
-    $data_opcional->data['other_ip_address'][0] = '<span>'.__('Other IP addresses').'</span>';
+    $data_opcional->data['other_ip_address'][0] = __('Other IP addresses');
     $data_opcional->data['other_ip_address'][1] = html_print_div(
         [
             'class'   => 'overflow-y mx_height50px',
@@ -606,7 +606,7 @@ if (empty($addresses) === false) {
 
 // Timezone Offset.
 if ((int) $agent['timezone_offset'] !== 0) {
-    $data_opcional->data['timezone_offset'][0] = '<span>'.__('Timezone Offset').'</span>';
+    $data_opcional->data['timezone_offset'][0] = __('Timezone Offset');
     $data_opcional->data['timezone_offset'][1] = $agent['timezone_offset'];
 }
 
@@ -1099,7 +1099,7 @@ if (empty($data_opcional) === true) {
             false,
             false,
             true,
-            'box-shadow agent_details_col w100p',
+            'box-shadow agent_details_col agent_details_toggle agent_details_first_row w100p',
             'mrgn_lft_20px mrgn_right_20px',
             'mrgn_lft_20px mrgn_right_20px w100p'
         );
@@ -1123,7 +1123,7 @@ html_print_div(
 
 html_print_div(
     [
-        'class'   => 'agent_details_first_row agent_details_line',
+        'class'   => 'agent_details_line',
         'content' => $agentEvents.$agentAccessRate,
     ]
 );
@@ -1131,7 +1131,7 @@ html_print_div(
 if (empty($agentAdditionalInfo) === false) {
     html_print_div(
         [
-            'class'   => 'agent_details_first_row agent_details_line',
+            'class'   => 'agent_details_line',
             'content' => $agentAdditionalInfo,
         ]
     );
@@ -1140,7 +1140,7 @@ if (empty($agentAdditionalInfo) === false) {
 if (empty($agentIncidents) === false) {
     html_print_div(
         [
-            'class'   => 'agent_details_first_row agent_details_line',
+            'class'   => 'agent_details_line',
             'content' => $agentIncidents,
         ]
     );

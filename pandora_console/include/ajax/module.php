@@ -958,10 +958,10 @@ if (check_login()) {
 
         $table = new stdClass();
         $table->width = '100%';
-        $table->styleTable = 'display:flex;border: 0;border-radius: 0;vertical-align: baseline;';
+        $table->styleTable = 'display:flex;border: 0;border-radius: 0;vertical-align: baseline;flex-direction: column;';
         $table->cellpadding = 0;
         $table->cellspacing = 0;
-        $table->class = 'info_table';
+        $table->class = 'tactical_table info_table';
         $table->align = [];
         $table->style = [];
         $table->head = [];
@@ -979,35 +979,41 @@ if (check_login()) {
         $table->align[8] = 'left';
         $table->align[9] = 'right';
         // Cell styles.
-        $table->style[0] = 'max-width: 45px;vertical-align: baseline';
-        $table->style[1] = 'min-width: 80px;vertical-align: baseline';
-        $table->style[2] = 'width: 8%;vertical-align: baseline';
-        $table->style[3] = 'width: 22%;vertical-align: baseline';
-        $table->style[4] = 'min-width: 80px;vertical-align: baseline';
-        $table->style[5] = 'width: 10%;vertical-align: baseline';
+        $table->style[0] = 'width: 5%;vertical-align: baseline';
+        $table->style[1] = 'width: 5%;vertical-align: baseline';
+        $table->style[2] = 'width: 20%;vertical-align: baseline';
+        $table->style[3] = 'width: 20%;vertical-align: baseline';
+        $table->style[4] = 'width: 5%;vertical-align: baseline';
+        $table->style[5] = 'width: 15%;vertical-align: baseline';
         $table->style[6] = 'width: 10%;vertical-align: baseline;font-size: 9pt';
         $table->style[7] = 'width: 10%;vertical-align: baseline';
-        $table->style[8] = 'min-width: 110px;vertical-align: baseline;font-size: 9pt';
+        $table->style[8] = 'width: 10%;vertical-align: baseline;font-size: 9pt';
         $table->style[9] = 'width: 10%;vertical-align: baseline';
         // Row class.
-        $table->rowclass[0] = 'header_row';
-
-        $data = [];
-        $data[0] = ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) ? '<span title="'.__('Policy').'">'.__('P').'</span>' : '';
-        $data[1] = '<span>'.__('Type').'</span>'.ui_get_sorting_arrows($url_up_type, $url_down_type, $selectTypeUp, $selectTypeDown);
-        $data[2] = '<span>'.__('Module name').'</span>'.ui_get_sorting_arrows($url_up_name, $url_down_name, $selectNameUp, $selectNameDown);
-        $data[3] = '<span>'.__('Description').'</span>';
-        $data[4] = '<span>'.__('Status').'</span>'.ui_get_sorting_arrows($url_up_status, $url_down_status, $selectStatusUp, $selectStatusDown);
-        $data[5] = '<span>'.__('Thresholds').'</span>';
-        $data[6] = '<span>'.__('Data').'</span>';
-        $data[7] = '<span>'.__('Graphs').'</span>';
-        $data[8] = '<span>'.__('Last contact').'</span>'.ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-        $data[9] = '<span>'.__('Actions').'</span>';
-
-        array_push($table->data, $data);
+        // $table->headclass[] = 'header_row';
+        $table->head[0] = ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) ? '<span title="'.__('Policy').'">'.__('P').'</span>' : '';
+        $table->headstyle[0] = 'width: 5%;text-align: center;';
+        $table->head[1] = '<span>'.__('Type').'</span>'.ui_get_sorting_arrows($url_up_type, $url_down_type, $selectTypeUp, $selectTypeDown);
+        $table->headstyle[1] = 'width: 5%;text-align: left;';
+        $table->head[2] = '<span>'.__('Module name').'</span>'.ui_get_sorting_arrows($url_up_name, $url_down_name, $selectNameUp, $selectNameDown);
+        $table->headstyle[2] = 'width: 20%;text-align: left;';
+        $table->head[3] = '<span>'.__('Description').'</span>';
+        $table->headstyle[3] = 'width: 20%;text-align: left;';
+        $table->head[4] = '<span>'.__('Status').'</span>'.ui_get_sorting_arrows($url_up_status, $url_down_status, $selectStatusUp, $selectStatusDown);
+        $table->headstyle[4] = 'width: 5%;text-align: center;';
+        $table->head[5] = '<span>'.__('Thresholds').'</span>';
+        $table->headstyle[5] = 'width: 15%;text-align: left;';
+        $table->head[6] = '<span>'.__('Data').'</span>';
+        $table->headstyle[6] = 'width: 10%;text-align: left;';
+        $table->head[7] = '<span>'.__('Last contact').'</span>'.ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
+        $table->headstyle[7] = 'width: 10%;';
+        $table->head[8] = '<span>'.__('Graphs').'</span>';
+        $table->headstyle[8] = 'width: 10%;';
+        $table->head[9] = '<span>'.__('Actions').'</span>';
+        $table->headstyle[8] = 'width: 10%;';
 
         $last_modulegroup = 0;
-        $rowIndex = 1;
+        $rowIndex = 0;
 
         $id_type_web_content_string = db_get_value(
             'id_tipo',
@@ -1017,8 +1023,7 @@ if (check_login()) {
         );
 
         $show_context_help_first_time = false;
-
-        $hierachy_mode = (string) get_parameter('hierachy_mode', false);
+        $hierachy_mode = (string) get_parameter('hierachy_mode');
 
         if ($hierachy_mode === 'true') {
             $modules_hierachy = [];
@@ -1031,7 +1036,7 @@ if (check_login()) {
 
         foreach ($modules as $module) {
             $idAgenteModulo = $module['id_agente_modulo'];
-            if ($hierachy_mode !== 'true') {
+            if ($hierachy_mode === 'false') {
                 // The code add the row of 1 cell with title of group for to be more organice the list.
                 if ($module['id_module_group'] != $last_modulegroup) {
                     $table->colspan[$rowIndex][0] = count($table->style);
@@ -1049,6 +1054,7 @@ if (check_login()) {
             $data = [];
 
             // Module policy.
+            // $table->cellstyle[$rowIndex][0] = 'width: 1%;';
             $data[0] = '';
             if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
                 if ((int) $module['id_policy_module'] !== 0) {
@@ -1063,7 +1069,7 @@ if (check_login()) {
                             $img = 'images/policies_brick.png';
                             $title = '('.__('Adopted').') '.$name_policy;
                         } else {
-                            $img = 'images/policies_mc.png';
+                            $img = 'images/policy@svg.svg';
                             $title = $name_policy;
                         }
                     } else {
@@ -1079,7 +1085,15 @@ if (check_login()) {
                     $data[0] .= html_print_anchor(
                         [
                             'href'    => ui_get_full_url('?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$id_policy),
-                            'content' => html_print_image($img, true, ['title' => $title]),
+                            'content' => html_print_image(
+                                $img,
+                                true,
+                                [
+                                    'title' => $title,
+                                    'style' => 'margin: 0 5px;',
+                                    'class' => 'main_menu_icon',
+                                ]
+                            ),
                         ],
                         true
                     );
@@ -1087,10 +1101,12 @@ if (check_login()) {
             }
 
             // Module server type.
+            // $table->cellstyle[$rowIndex][1] = 'width: 1%;';
             $data[1] = '';
             $data[1] .= ui_print_servertype_icon((int) $module['id_modulo']);
 
             // Module name.
+            // $table->cellstyle[$rowIndex][2] = 'width: 1%;';
             $data[2] = '';
             if (isset($module['deep']) === true && ((int) $module['deep'] !== 0)) {
                 $data[2] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
@@ -1129,6 +1145,7 @@ if (check_login()) {
             $data[3] .= ui_print_string_substr($module['descripcion'], 60, true, 9);
 
             // Module status.
+            // $table->cellstyle[$rowIndex][4] = 'width: 5%;';
             $data[4] = '';
             if ($module['datos'] !== strip_tags($module['datos'])) {
                 $module_value = io_safe_input($module['datos']);
@@ -1157,6 +1174,7 @@ if (check_login()) {
             }
 
             // Module thresholds.
+            // $table->cellstyle[$rowIndex][5] = 'width: 10%;';
             $data[5] = '';
             if ((int) $module['id_tipo_modulo'] !== 25) {
                 $data[5] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse'], 'class="font_9pt"');
@@ -1165,11 +1183,24 @@ if (check_login()) {
             }
 
             // Module last value.
+            // $table->cellstyle[$rowIndex][6] = 'width: 10%;';
             $data[6] = '';
             $data[6] .= '<span class="inherited_text_data_for_humans">'.modules_get_agentmodule_data_for_humans($module).'</span>';
 
-            // Graph buttons.
+            // Last contact.
+            // $table->cellstyle[$rowIndex][7] = 'width: 10%;';
             $data[7] = '';
+            if ((int) $module['estado'] === 3) {
+                $timestampClass = 'redb font_9pt';
+            } else {
+                $timestampClass = 'font_9pt';
+            }
+
+            $data[7] .= ui_print_timestamp($module['utimestamp'], true, ['class' => $timestampClass ]);
+
+            // Graph buttons.
+            // $table->cellstyle[$rowIndex][8] = 'width: 100px;';
+            $data[8] = '';
             if ((int) $module['history_data'] === 1) {
                 if (empty((float) $module['min_warning']) === true
                     && empty((float) $module['max_warning']) === true
@@ -1244,7 +1275,7 @@ if (check_login()) {
                     true
                 );
 
-                $data[7] = html_print_div(
+                $data[8] = html_print_div(
                     [
                         'class'   => 'table_action_buttons',
                         'content' => implode('', $graphButtons),
@@ -1253,15 +1284,6 @@ if (check_login()) {
                 );
             }
 
-            // Last contact.
-            $data[8] = '';
-            if ((int) $module['estado'] === 3) {
-                $timestampClass = 'redb font_9pt';
-            } else {
-                $timestampClass = 'font_9pt';
-            }
-
-            $data[8] .= ui_print_timestamp($module['utimestamp'], true, ['class' => $timestampClass ]);
             // Actions.
             $data[9] = '';
             $moduleActionButtons = [];

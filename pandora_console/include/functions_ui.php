@@ -1152,14 +1152,59 @@ function ui_format_alert_row(
 
     if (is_metaconsole() === false) {
         // Force alert execution.
-        if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-            if ($alert['force_execution'] == 0) {
-                $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;force_execution=1&refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force'), 'class' => 'invert_filter']).'</a>';
+        if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+            if ((int) $alert['force_execution'] === 0) {
+                $forceTitle = __('Force check');
+                $additionUrl = '&amp;force_execution=1';
             } else {
-                $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['class' => 'invert_filter']).'</a>';
+                $forceTitle = __('Refresh');
+                $additionUrl = '';
             }
+
+            $forceExecButtons[] = html_print_button(
+                $forceTitle,
+                'force_execution_'.$alert['id'],
+                false,
+                'window.location.assign(\''.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'\');',
+                [ 'mode' => 'link' ],
+                true
+            );
         }
+
+        $forceExecButtons[] = html_print_button(
+            __('View'),
+            'view_template_'.$alert['id'],
+            false,
+            '',
+            [
+                'mode'  => 'link',
+                'class' => 'template_details',
+                'href'  => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+            ],
+            true
+        );
+    } else {
+        $forceExecButtons[] = html_print_button(
+            __('View'),
+            'view_template_'.$alert['id'],
+            false,
+            '',
+            [
+                'mode'  => 'link',
+                'class' => 'template_details',
+                'href'  => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+            ],
+            true
+        );
     }
+
+    $data[$index['force_execution']] = html_print_div(
+        [
+            'class'   => 'table_action_buttons flex',
+            'content' => implode('', $forceExecButtons),
+        ],
+        true
+    );
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {
@@ -1177,16 +1222,24 @@ function ui_format_alert_row(
             // Do not show link if user cannot access node
             if ((bool) can_user_access_node() === true) {
                 $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'];
-                $data[$index['agent_name']] .= '<a href="'.$url.'">'.'<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b></a>';
+                $data[$index['agent_name']] .= html_print_anchor(
+                    [
+                        'href'    => $url,
+                        'content' => '<span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span>',
+                    ],
+                    true
+                );
             } else {
-                $data[$index['agent_name']] .= '<b><span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span></b>';
+                $data[$index['agent_name']] .= '<span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span>';
             }
         } else {
-            if ($agent_style !== false) {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
-            } else {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
-            }
+            $data[$index['agent_name']] .= html_print_anchor(
+                [
+                    'href'    => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent,
+                    'content' => '<span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span>',
+                ],
+                true
+            );
         }
 
         $data[$index['module_name']] = ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
@@ -1196,14 +1249,6 @@ function ui_format_alert_row(
 
     $data[$index['description']] = '';
 
-    if (is_metaconsole() === true) {
-        $data[$index['template']] .= '<a class="template_details" href="'.ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'].'">';
-    } else {
-        $data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
-    }
-
-    $data[$index['template']] .= html_print_image('images/zoom.png', true, ['class' => 'invert_filter']);
-    $data[$index['template']] .= '</a> ';
     $actionDefault = db_get_value_sql(
         'SELECT id_alert_action
 		FROM talert_templates WHERE id = '.$alert['id_alert_template']
@@ -2782,14 +2827,10 @@ function ui_print_module_status(
 function get_shape_status_set($type)
 {
     switch ($type) {
-        // Small rectangles.
+        // Rounded rectangles.
         case STATUS_ALERT_NOT_FIRED:
         case STATUS_ALERT_FIRED:
         case STATUS_ALERT_DISABLED:
-            $return = ['class' => 'status_small_rectangles'];
-        break;
-
-        // Rounded rectangles.
         case STATUS_MODULE_OK:
         case STATUS_AGENT_OK:
         case STATUS_MODULE_NO_DATA:
@@ -3483,6 +3524,7 @@ function ui_print_datatable(array $parameters)
     }
 
     foreach ($names as $column) {
+        hd($column, true);
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
             if (isset($column['title']) === true) {
@@ -3492,6 +3534,7 @@ function ui_print_datatable(array $parameters)
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
             $table .= $column['extra'];
             $table .= '</th>';
+            hd($table, true);
         } else {
             $table .= '<th>'.__($column).'</th>';
         }
@@ -3885,10 +3928,16 @@ function ui_print_event_type(
         break;
     }
 
-    if ($mini === false) {
-        $output = '<div class="criticity" style="background: '.$color.'">';
-        $output .= $text;
-        $output .= '</div>';
+    if ($mini === true) {
+        $output = html_print_div(
+            [
+                'class'   => 'status_rounded_rectangles',
+                'style'   => sprintf('display: inline-block; background: %s', $color),
+                'content' => '',
+                'title'   => $text,
+            ],
+            true
+        );
     } else {
         $output = '<div data-title="';
         $output .= $text;
@@ -3898,7 +3947,11 @@ function ui_print_event_type(
         $output .= '</div>';
     }
 
-    return $output;
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }
 
 
@@ -3963,7 +4016,7 @@ function ui_print_event_priority(
         break;
     }
 
-    if ($mini === false) {
+    if ($mini === true) {
         $output = '<div class="criticity" style="background: '.$color.'">';
         $output .= $criticity;
         $output .= '</div>';

@@ -103,12 +103,24 @@
   background-color: #f6f7fb;
 }
 
+/*.info_table tr > td,
+.info_table tr > th,
+.filter_table tr > td,
+.filter_table tr > th {
+  border-bottom: 1px solid #C0CCDC;
+}*/
+.info_table > tbody > tr > th,
+.info_table > thead > tr > th {
+  border-top: 1px solid #c0ccdc;
+}
+
 .info_table tr > td:first-child,
 .info_table tr > th:first-child,
 .filter_table tr > td:first-child,
 .filter_table tr > th:first-child {
   /*padding-left: 5px;*/
   padding-left: 10px;
+  border-left: 1px solid #c0ccdc;
 }
 .info_table tr > td:last-child,
 .info_table tr > th:last-child,
@@ -116,6 +128,7 @@
 .filter_table tr > th:last-child {
   /*padding-right: 5px;*/
   padding-right: 10px;
+  border-right: 1px solid #c0ccdc;
 }
 
 .info_table tr:first-child > th {
@@ -134,32 +147,41 @@
 }
 
 .info_table tr th {
-  border-bottom: 1px solid #e2e2e2;
+  /*border-bottom: 1px solid #e2e2e2;*/
 }
 
 .info_table > thead > tr {
   height: 3em;
   vertical-align: top;
+  border: 1px solid #c0ccdc;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.info_table > thead > tr * {
+  font-size: 10pt;
+  font-family: "Pandora-Regular";
 }
 
 /* Radius top */
 .info_table > thead > tr:first-child > th:first-child {
-  border-top-left-radius: 4px;
+  /*border-top-left-radius: 4px;*/
 }
 .info_table > thead > tr:first-child > th:last-child {
-  border-top-right-radius: 4px;
+  /*border-top-right-radius: 4px;*/
 }
 
 /* Radius bottom */
-.info_table > tbody > tr:last-child > td:first-child {
-  border-top-left-radius: 4px;
+.info_table > tbody > tr:last-child {
+  /*border-top-left-radius: 4px;*/
+  /*border-bottom-left-radius: 4px;*/
 }
 .info_table > tbody > tr:last-child > td:last-child {
-  border-top-right-radius: 4px;
+  /*border-top-right-radius: 4px;*/
 }
 
-.info_table > tbody > tr > th,
-.info_table > thead > tr > th,
+/*.info_table > tbody > tr > th,
+.info_table > thead > tr > th,*/
 .info_table > thead > tr > th a,
 .info_table > thead > tr > th > span {
   padding: 0.1em;
@@ -170,13 +192,19 @@
 
 .info_table > tbody > tr {
   /*border-bottom: 1px solid #e2e2e2;*/
+  border-top: 0;
+  border-bottom: 1px solid #c0ccdc;
+  border-left: 1px solid #c0ccdc;
+  border-right: 1px solid #c0ccdc;
 }
-
+.info_table > tbody > tr > th,
+.info_table > thead > tr > th,
 .info_table > tbody > tr > td {
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
   border-radius: 0px;
-  border: none;
+  /*border: none;*/
+  border-bottom: 1px solid #c0ccdc;
   padding: 7px 3px;
   /*
   padding-left: 0px;
@@ -287,6 +315,12 @@ tr.disabled_row_user * {
 /* Disable datatables border */
 table.dataTable.info_table.no-footer {
   border-bottom: none;
+}
+
+table.dataTable thead th,
+table.dataTable tfoot th {
+  font-size: 11pt;
+  font-weight: inherit !important;
 }
 
 /* Datatables pagination */

@@ -992,6 +992,7 @@ select:-internal-list-box {
 
 .box-shadow {
   box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
+  border: 1px solid #e2e2e2;
 }
 
 .align-top td {
@@ -3661,6 +3662,28 @@ table#policy_modules td * {
   margin: 5px;
 }
 
+.tactical_table {
+}
+
+.tactical_table tr {
+  justify-content: space-between;
+}
+
+.tactical_table > thead > tr {
+  border: 0 !important;
+}
+
+.info_table thead th .sort_arrow,
+.tactical_table thead th .sort_arrow {
+  vertical-align: top;
+  visibility: hidden;
+}
+
+.info_table thead th:hover .sort_arrow,
+.tactical_table thead th:hover .sort_arrow {
+  visibility: visible;
+}
+
 #sumary {
   color: #fff;
   margin: 2px;
@@ -5855,7 +5878,7 @@ div#bullets_modules div {
 }
 
 /* First row in agent view */
-.agent_details_first_row {
+.agent_details_line {
   display: flex;
   margin: 20px 0 0;
   width: 100%;
@@ -5878,7 +5901,7 @@ div#bullets_modules div {
 }*/
 .agent_details_col {
   background-color: #fff;
-  border: 1px solid #e2e2e2;
+  /*border: 1px solid #e2e2e2;*/
   border-radius: 5px;
   flex: 1 1 50%;
 }
@@ -5894,6 +5917,11 @@ div#bullets_modules div {
   min-width: 450px;
 }
 */
+
+.agent_details_toggle {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 
 .agent_access_rate_events {
   display: flex;
@@ -6110,7 +6138,7 @@ div#status_pie {
   height: 100%;
   background-color: #fff;
   box-sizing: border-box;
-  border: 1px solid #e2e2e2;
+  /*border: 1px solid #e2e2e2;*/
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -6169,8 +6197,10 @@ div#status_pie {
 
 .white-box-content form {
   width: 100%;
+  padding: 0 10px;
+  /*
   margin-bottom: 2em;
-  padding: 2em;
+  padding: 2em;*/
   min-width: fit-content;
 }
 
@@ -10549,6 +10579,7 @@ tr.bring_next_field {
 
 .dataTables_wrapper {
   overflow: auto;
+  width: 100%;
 }
 
 .dataTables_wrapper .dataTables_processing {

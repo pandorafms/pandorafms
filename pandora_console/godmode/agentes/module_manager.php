@@ -985,7 +985,7 @@ foreach ($modules as $module) {
             true,
             true,
             '[&hellip;]',
-            'font-size: 7.2pt'
+            ''
         ).$dt_disabled_icon.'</em>';
     } else {
         $data[0] .= ui_print_truncate_text(
@@ -995,7 +995,7 @@ foreach ($modules as $module) {
             true,
             true,
             '[&hellip;]',
-            'font-size: 7.2pt'
+            ''
         );
     }
 

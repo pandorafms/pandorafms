@@ -2463,13 +2463,9 @@ function events_print_event_table(
 
     ui_require_css_file('events');
 
-    if ($agent_id == 0) {
-        $agent_condition = '';
-    } else {
-        $agent_condition = ' id_agente = '.$agent_id.' AND ';
-    }
+    $agent_condition = ($agent_id === 0) ? '' : ' id_agente = '.$agent_id.' AND ';
 
-    if ($filter == '') {
+    if (empty($filter) === true) {
         $filter = '1 = 1';
     }
 
@@ -2489,7 +2485,7 @@ function events_print_event_table(
     $result = db_get_all_rows_sql($sql);
 
     if ($result === false) {
-        if ($return) {
+        if ($return === true) {
             $returned = ui_print_info_message(__('No events'), '', true);
             return $returned;
         } else {
@@ -2501,8 +2497,8 @@ function events_print_event_table(
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = $width;
-        $table->class = 'info_table no-td-padding';
-        if (!$tactical_view) {
+        $table->class = 'tactical_table info_table no-td-padding';
+        if ($tactical_view === false) {
             $table->title = __('Latest events');
         }
 
@@ -2517,31 +2513,28 @@ function events_print_event_table(
         $table->style = [];
 
         $i = 0;
-        $table->head[$i] = "<span title='".__('Severity')."'>".__('S.').'</span>';
-        $table->headstyle[$i] = 'width: 1%;text-align: center;';
-        $table->style[$i++] = 'text-align: center;';
 
-        $table->head[$i] = __('Type');
+        $table->head[$i] = '<span>'.__('Type').'</span>';
         $table->headstyle[$i] = 'width: 3%;text-align: center;';
         $table->style[$i++] = 'text-align: center;';
 
-        $table->head[$i] = __('Event name');
+        $table->head[$i] = '<span>'.__('Event name').'</span>';
         $table->headstyle[$i] = '';
-        $table->style[$i++] = 'word-break: break-word;';
+        $table->style[$i++] = 'padding: 0 5px;word-break: break-word';
 
-        if ($agent_id == 0) {
-            $table->head[$i] = __('Agent name');
+        if ($agent_id === 0) {
+            $table->head[$i] = '<span>'.__('Agent name').'</span>';
             $table->headstyle[$i] = '';
             $table->style[$i++] = 'word-break: break-all;';
         }
 
-        $table->head[$i] = __('Timestamp');
+        $table->head[$i] = '<span>'.__('Timestamp').'</span>';
         $table->headstyle[$i] = 'width: 150px;';
-        $table->style[$i++] = 'word-break: break-word;';
+        $table->style[$i++] = 'padding: 0 5px;word-break: break-word;';
 
-        $table->head[$i] = __('Status');
+        $table->head[$i] = '<span>'.__('Status').'</span>';
         $table->headstyle[$i] = 'width: 150px;text-align: center;';
-        $table->style[$i++] = 'text-align: center;';
+        $table->style[$i++] = 'padding: 0 5px;text-align: center;';
 
         $table->head[$i] = "<span title='".__('Validated')."'>".__('V.').'</span>';
         $table->headstyle[$i] = 'width: 1%;text-align: center;';
@@ -2556,7 +2549,7 @@ function events_print_event_table(
             // Copy all groups of the agent and append the event group.
             $check_events = $all_groups;
             $check_events[] = $event['id_grupo'];
-            if (! check_acl_one_of_groups($config['id_user'], $check_events, 'ER')) {
+            if ((bool) check_acl_one_of_groups($config['id_user'], $check_events, 'ER') === false) {
                 continue;
             }
 
@@ -2564,30 +2557,24 @@ function events_print_event_table(
 
             // Colored box.
             switch ($event['estado']) {
-                case 0:
-                    $img = 'images/star.png';
+                case EVENT_STATUS_NEW:
+                default:
+                    $img = 'images/star@svg.svg';
                     $title = __('New event');
                 break;
 
-                case 1:
-                    $img = 'images/tick.png';
+                case EVENT_STATUS_VALIDATED:
+                    $img = 'images/validate.svg';
                     $title = __('Event validated');
                 break;
 
-                case 2:
-                    $img = 'images/hourglass.png';
+                case EVENT_STATUS_INPROCESS:
+                    $img = 'images/clock.svg';
                     $title = __('Event in process');
-                break;
-
-                default:
-                    // Ignore.
                 break;
             }
 
             $i = 0;
-            // Criticity.
-            $data[$i++] = ui_print_event_priority($event['criticity'], true, true);
-
             // Event type.
             $data[$i++] = events_print_type_img($event['event_type'], true);
 
@@ -2596,14 +2583,19 @@ function events_print_event_table(
                 strip_tags(io_safe_output($event['evento'])),
                 75,
                 true,
-                '7.5'
             );
 
-            if ($agent_id == 0) {
+            if ($agent_id === 0) {
                 if ($event['id_agente'] > 0) {
                     // Agent name.
                     // Get class name, for the link color, etc.
-                    $data[$i] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
+                    $data[$i] = html_print_anchor(
+                        [
+                            'href'    => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$event['id_agente'],
+                            'content' => agents_get_alias($event['id_agente']),
+                        ],
+                        true
+                    );
                     // For System or SNMP generated alerts.
                 } else if ($event['event_type'] === 'system') {
                     $data[$i] = __('System');
@@ -2615,10 +2607,10 @@ function events_print_event_table(
             }
 
             // Timestamp.
-            $data[$i++] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
+            $data[$i++] = ui_print_timestamp($event['timestamp'], true, ['style' => 'letter-spacing: 0.3pt;']);
 
             // Status.
-            $data[$i++] = ui_print_event_type($event['event_type'], true);
+            $data[$i++] = ui_print_event_type($event['event_type'], true, true);
 
             $data[$i++] = html_print_image(
                 $img,
@@ -2634,7 +2626,7 @@ function events_print_event_table(
         $events_table = html_print_table($table, true);
         $out = $events_table;
 
-        if (!$tactical_view) {
+        if ($tactical_view === false) {
             $out .= '<table width="100%"><tr><td class="w90p align-top pdd_t_0px">';
             if ($agent_id != 0) {
                 $out .= '</td><td class="w200px align-top">';

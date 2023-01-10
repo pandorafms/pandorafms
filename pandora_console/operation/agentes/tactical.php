@@ -162,14 +162,30 @@ $table->data = [];
 $table->style = [$bg_color];
 
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
-$status = '<table class="status_tactical bg_white">';
-foreach ($stats as $stat) {
-    $status .= '<tr><td><b>'.$stat['title'].'</b>'.'</td><td>'.$stat['graph'].'</td></tr>';
+
+$statusTacticalTable = new stdClass();
+$statusTacticalTable->width = '100%';
+$statusTacticalTable->id = 'statusTacticalTable';
+$statusTacticalTable->class = 'status_tactical tactical_table bg_white';
+$statusTacticalTable->data = [];
+
+foreach ($stats as $key => $stat) {
+    $statusTacticalTable->cellstyle['line_'.$key][0] = 'width: 40%;';
+    $statusTacticalTable->style['line_'.$key][1] = 'width: 60%;';
+    $statusTacticalTable->data['line_'.$key][0] = '<span>'.$stat['title'].'</span>';
+    $statusTacticalTable->data['line_'.$key][1] = $stat['graph'];
 }
 
-$status .= '</table>';
+$status = html_print_table($statusTacticalTable, true);
+
+$table->rowclass = [];
+$table->rowclass[0] = 'w100p';
+$table->rowclass[1] = 'w100p';
+$table->rowclass[2] = 'w100p';
+$table->rowclass[3] = 'w100p';
+$table->rowclass[4] = 'w100p';
 $table->data[0][0] = $status;
-$table->rowclass[] = '';
+
 
 // ---------------------------------------------------------------------
 // Monitor checks
@@ -183,6 +199,7 @@ $data_agents = [
 ];
 
 $table->data[1][0] = reporting_get_stats_alerts($data);
+$table->rowclass[1] = 'w100p';
 $table->data[2][0] = reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
 $table->data[3][0] = reporting_get_stats_agents_monitors($data);
 

@@ -10764,6 +10764,7 @@ pre.external_tools_output {
   width: -moz-fill-available;
 }
 
+/*
 .fixed_filter_bar tr {
   display: flex;
   flex-direction: row;
@@ -10777,7 +10778,7 @@ pre.external_tools_output {
   align-self: center;
   justify-content: flex-start;
 }
-
+*/
 .fixed_filter_bar td > div {
   margin-right: 10px;
   font-size: 10pt;

@@ -55,26 +55,25 @@ $sec2 = (string) get_parameter('sec2');
 $filterTable = new stdClass();
 $filterTable->class = 'fixed_filter_bar';
 $filterTable->data = [];
-$filterTable->cellstyle[0][0] = 'flex: 0 1 20%;align-items: center;';
-$filterTable->data[0][0] = html_print_div([ 'content' => __('Search') ], true);
-$filterTable->data[0][0] .= html_print_input_text(
+$filterTable->cellstyle[0][0] = 'width:0';
+$filterTable->data[0][0] = __('Search');
+$filterTable->data[1][0] .= html_print_input_text(
     'search_string',
     $search_string,
     '',
-    0,
+    30,
     255,
     true,
     false,
     false,
     '',
-    'w100p'
+    ''
 );
 $filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
 
 if ((bool) $policy_page === false) {
-    $filterTable->cellstyle[0][1] = 'flex: 0 1 20%';
-    $filterTable->data[0][1] = html_print_div([ 'content' => __('Show in hierachy mode') ], true);
-    $filterTable->data[0][1] .= html_print_checkbox_switch(
+    $filterTable->data[0][1] = __('Show in hierachy mode');
+    $filterTable->data[1][1] = html_print_checkbox_switch(
         'status_hierachy_mode',
         '',
         ((string) $checked === 'true'),
@@ -84,8 +83,7 @@ if ((bool) $policy_page === false) {
     );
 }
 
-$filterTable->cellstyle[0][2] = 'flex: 0 1 60%; justify-content: flex-end;';
-$filterTable->data[0][2] .= html_print_submit_button(
+$filterTable->data[1][2] = html_print_submit_button(
     __('Filter'),
     'filter',
     false,
@@ -782,7 +780,7 @@ $url_interval = $url.'&sort_field=interval&sort=';
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'info_table';
+$table->class = 'tactical_table info_table';
 $table->head = [];
 $table->head['checkbox'] = html_print_checkbox(
     'all_delete',
@@ -791,7 +789,7 @@ $table->head['checkbox'] = html_print_checkbox(
     true,
     false
 );
-$table->head[0] = __('Name').ui_get_sorting_arrows(
+$table->head[0] = '<span>'.__('Name').'</span>'.ui_get_sorting_arrows(
     $url_name.'up',
     $url_name.'down',
     $selectNameUp,
@@ -799,40 +797,42 @@ $table->head[0] = __('Name').ui_get_sorting_arrows(
 );
 
 // The access to the policy is granted only with AW permission.
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl(
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && (bool) check_acl(
     $config['id_user'],
     $agent['id_grupo'],
     'AW'
-)
+) === true
 ) {
-    $table->head[1] = "<span title='".__('Policy')."'>".__('P.').'</span>';
+    $table->head[1] = "<span title='".__('Policy')."'>".__('P').'</span>';
+    $table->headstyle[1] = 'width: 4%';
 }
 
-$table->head[2] = "<span title='".__('Server')."'>".__('S.').'</span>'.ui_get_sorting_arrows(
+$table->head[2] = '<span title=\''.__('Server').'\'>'.__('S').'</span>'.ui_get_sorting_arrows(
     $url_server.'up',
     $url_server.'down',
     $selectServerUp,
     $selectServerDown
 );
-$table->head[3] = __('Type').ui_get_sorting_arrows(
+$table->headstyle[2] = 'width: 8%';
+$table->head[3] = '<span>'.__('Type').'</span>'.ui_get_sorting_arrows(
     $url_type.'up',
     $url_type.'down',
     $selectTypeUp,
     $selectTypeDown
 );
-$table->head[4] = __('Interval').ui_get_sorting_arrows(
+$table->headstyle[3] = 'width: 10%';
+$table->head[4] = '<span>'.__('Interval').'</span>'.ui_get_sorting_arrows(
     $url_interval.'up',
     $url_interval.'down',
     $selectIntervalUp,
     $selectIntervalDown
 );
-$table->head[5] = __('Description');
-$table->head[6] = __('Status');
-$table->head[7] = __('Warn');
-
-
-$table->head[8] = __('Action');
-$table->head[9] = '<span title="'.__('Delete').'">'.__('Del.').'</span>';
+$table->headstyle[4] = 'width: 100px';
+$table->head[5] = '<span>'.__('Description').'</span>';
+$table->head[6] = '<span>'.__('Status').'</span>';
+$table->head[7] = '<span>'.__('Warn').'</span>';
+$table->head[8] = '<span>'.__('Action').'</span>';
+$table->headstyle[8] = 'width: 15%';
 
 $table->rowstyle = [];
 $table->style = [];
@@ -860,7 +860,7 @@ foreach ($tempRows as $row) {
     $numericModules[$row['id_tipo']] = true;
 }
 
-if ($checked) {
+if ($checked === true) {
     $modules_hierachy = [];
     $modules_hierachy = get_hierachy_modules_tree($modules);
 
@@ -892,13 +892,13 @@ foreach ($modules as $module) {
     $module_interval2 = $module['module_interval'];
     $module_group2 = $module['id_module_group'];
 
-    if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
+    if ((int) $module['id_modulo'] === MODULE_DATA && (int) $module['id_policy_module'] !== 0) {
         $nombre_modulo = utf8_decode($module['nombre']);
     }
 
     $data = [];
 
-    if (!$checked) {
+    if ($checked === false) {
         if ($module['id_module_group'] != $last_modulegroup) {
             $last_modulegroup = $module['id_module_group'];
             $data[0] = '<strong>'.modules_get_modulegroup_name(
@@ -917,7 +917,7 @@ foreach ($modules as $module) {
         }
     }
 
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         $data['checkbox'] = html_print_checkbox(
             'id_delete[]',
             $module['id_agente_modulo'],
@@ -931,7 +931,7 @@ foreach ($modules as $module) {
 
     $data[0] = '';
 
-    if (isset($module['deep']) && ($module['deep'] != 0)) {
+    if (isset($module['deep']) === true && ((int) $module['deep'] !== 0)) {
         $data[0] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
         $data[0] .= html_print_image(
             'images/icono_escuadra.png',
@@ -943,7 +943,7 @@ foreach ($modules as $module) {
         ).'&nbsp;&nbsp;';
     }
 
-    if ($module['quiet']) {
+    if ((bool) $module['quiet'] === true) {
         $data[0] .= html_print_image(
             'images/dot_blue.png',
             true,
@@ -955,11 +955,11 @@ foreach ($modules as $module) {
         ).'&nbsp;';
     }
 
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
     }
 
-    if ($module['disabled']) {
+    if ((bool) $module['disabled'] === true) {
         $dt_disabled_icon = '';
 
         $in_planned_downtime = db_get_sql(
@@ -999,30 +999,26 @@ foreach ($modules as $module) {
         );
     }
 
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         $data[0] .= '</a>';
     }
 
     // The access to the policy is granted only with AW permission.
-    if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl(
+    if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && (bool) check_acl(
         $config['id_user'],
         $agent['id_grupo'],
         'AW'
-    )
+    ) === true
     ) {
         $policyInfo = policies_info_module_policy($module['id_agente_modulo']);
         if ($policyInfo === false) {
             $data[1] = '';
         } else {
             $linked = policies_is_module_linked($module['id_agente_modulo']);
+            $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-            $adopt = false;
-            if (policies_is_module_adopt($module['id_agente_modulo'])) {
-                $adopt = true;
-            }
-
-            if ($linked) {
-                if ($adopt) {
+            if ($linked !== false) {
+                if ($adopt === true) {
                     $img = 'images/policies_brick.png';
                     $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
                 } else {
@@ -1030,7 +1026,7 @@ foreach ($modules as $module) {
                     $title = $policyInfo['name_policy'];
                 }
             } else {
-                if ($adopt) {
+                if ($adopt === true) {
                     $img = 'images/policies_not_brick.png';
                     $title = '('.__('Unlinked').') ('.__('Adopted').') '.$policyInfo['name_policy'];
                 } else {
@@ -1064,7 +1060,7 @@ foreach ($modules as $module) {
     );
 
     // This module is initialized ? (has real data).
-    if ($status == STATUS_MODULE_NO_DATA) {
+    if ($status === STATUS_MODULE_NO_DATA) {
         $data[2] .= html_print_image(
             'images/error.png',
             true,
@@ -1085,7 +1081,7 @@ foreach ($modules as $module) {
         $data[4] = human_time_description_raw($agent_interval);
     }
 
-    if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
+    if ((int) $module['id_modulo'] === MODULE_DATA && (int) $module['id_policy_module'] !== 0) {
         $data[4] .= ui_print_help_tip(
             __('The policy modules of data type will only update their intervals when policy is applied.'),
             true
@@ -1152,32 +1148,6 @@ foreach ($modules as $module) {
         );
 
         // Make a data normalization.
-        /*
-            if (isset($numericModules[$type]) === true) {
-            if ($numericModules[$type] === true) {
-                $data[8] .= html_print_menu_button(
-                    [
-                        'href'        => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
-                        'onClick'     => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
-                        'image'       => 'images/module-graph.svg',
-                        'title'       => __('Normalize'),
-                        'image_class' => (isset($numericModules[$type]) === false || $numericModules[$type] === false) ? 'alpha50' : 'invert_filter main_menu_icon',
-                    ],
-                    true
-                );
-            }
-            } else {
-            $data[8] .= html_print_image(
-                'images/svg/module-graph.svg',
-                true,
-                [
-                    'title' => __('Normalize (Disabled)'),
-                    'image_class' => 'opacity: 0.5;',
-                ]
-            );
-            $data[8] .= '&nbsp;&nbsp;';
-            }
-        */
         $data[8] .= html_print_menu_button(
             [
                 'href'           => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
@@ -1191,30 +1161,6 @@ foreach ($modules as $module) {
         );
 
         // Create network component action.
-        /*
-            if ((is_user_admin($config['id_user']) === true)
-            && ((int) $module['id_modulo'] === MODULE_NETWORK)
-            ) {
-            $data[8] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
-                onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-            $data[8] .= html_print_image(
-                'images/op_network.png',
-                true,
-                [
-                    'title' => __('Create network component'),
-                    'class' => 'invert_filter',
-                ]
-            );
-            $data[8] .= '</a> ';
-            } else {
-            $data[8] .= html_print_image(
-                'images/network.disabled.png',
-                true,
-                ['title' => __('Create network component (Disabled)')]
-            );
-            $data[8] .= '&nbsp;&nbsp;';
-            }
-        */
         $data[8] .= html_print_menu_button(
             [
                 'href'           => 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'],
@@ -1230,7 +1176,7 @@ foreach ($modules as $module) {
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         // Delete module.
-        $data[9] = html_print_menu_button(
+        $data[8] .= html_print_menu_button(
             [
                 'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
                 'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
@@ -1241,15 +1187,10 @@ foreach ($modules as $module) {
         );
     }
 
-    $table->cellclass[] = [
-        8 => 'table_action_buttons',
-        9 => 'table_action_buttons',
-    ];
+    // TODO. REVIEW THIS ANNOYING BEHAVIOR.
+    $table->cellclass[] = [8 => 'table_action_buttons'];
     array_push($table->data, $data);
-    $table->cellclass[] = [
-        8 => 'table_action_buttons',
-        9 => 'table_action_buttons',
-    ];
+    $table->cellclass[] = [8 => 'table_action_buttons'];
 }
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {

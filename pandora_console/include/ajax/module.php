@@ -952,10 +952,9 @@ if (check_login()) {
         $url_down_status = $url.'&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
         $url_up_last = $url.'&sort_field=last_contact&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
         $url_down_last = $url.'&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
-
+        // Enterprise policies functions included.
         $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
-
-
+        // Table.
         $table = new stdClass();
         $table->width = '100%';
         $table->styleTable = 'border: 0;border-radius: 0;vertical-align: baseline;';
@@ -1083,12 +1082,10 @@ if (check_login()) {
             }
 
             // Module server type.
-            // $table->cellstyle[$rowIndex][1] = 'width: 1%;';
             $data[1] = '';
             $data[1] .= ui_print_servertype_icon((int) $module['id_modulo']);
 
             // Module name.
-            // $table->cellstyle[$rowIndex][2] = 'width: 1%;';
             $data[2] = '';
             if (isset($module['deep']) === true && ((int) $module['deep'] !== 0)) {
                 $data[2] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
@@ -1118,7 +1115,7 @@ if (check_login()) {
             }
 
             // Adds relations context information.
-            if (modules_relation_exists($module['id_agente_modulo'])) {
+            if (modules_relation_exists($module['id_agente_modulo']) === true) {
                 $data[2] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
@@ -1127,7 +1124,6 @@ if (check_login()) {
             $data[3] .= ui_print_string_substr($module['descripcion'], 60, true, 9);
 
             // Module status.
-            // $table->cellstyle[$rowIndex][4] = 'width: 5%;';
             $data[4] = '';
             if ($module['datos'] !== strip_tags($module['datos'])) {
                 $module_value = io_safe_input($module['datos']);
@@ -1156,7 +1152,6 @@ if (check_login()) {
             }
 
             // Module thresholds.
-            // $table->cellstyle[$rowIndex][5] = 'width: 10%;';
             $data[5] = '';
             if ((int) $module['id_tipo_modulo'] !== 25) {
                 $data[5] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse'], 'class="font_9pt"');
@@ -1165,12 +1160,10 @@ if (check_login()) {
             }
 
             // Module last value.
-            // $table->cellstyle[$rowIndex][6] = 'width: 10%;';
             $data[6] = '';
             $data[6] .= '<span class="inherited_text_data_for_humans">'.modules_get_agentmodule_data_for_humans($module).'</span>';
 
             // Last contact.
-            // $table->cellstyle[$rowIndex][7] = 'width: 10%;';
             $data[7] = '';
             if ((int) $module['estado'] === 3) {
                 $timestampClass = 'redb font_9pt';
@@ -1181,7 +1174,6 @@ if (check_login()) {
             $data[7] .= ui_print_timestamp($module['utimestamp'], true, ['class' => $timestampClass ]);
 
             // Graph buttons.
-            // $table->cellstyle[$rowIndex][8] = 'width: 100px;';
             $data[8] = '';
             if ((int) $module['history_data'] === 1) {
                 if (empty((float) $module['min_warning']) === true
@@ -1346,16 +1338,17 @@ if (check_login()) {
         /* ]]> */
     </script>
         <?php
-        if (empty($table->data)) {
-            if ($filter_monitors) {
-                ui_print_info_message([ 'no_close' => true, 'message' => __('Any monitors aren\'t with this filter.') ]);
-            } else {
-                ui_print_info_message([ 'no_close' => true, 'message' => __('This agent doesn\'t have any active monitors.') ]);
-            }
+        if (empty($table->data) === true) {
+            ui_print_info_message(
+                [
+                    'no_close' => true,
+                    'message'  => ($filter_monitors === true) ? __('Any monitors aren\'t with this filter.') : __('This agent doesn\'t have any active monitors.'),
+                ]
+            );
         } else {
             $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.'&status_text_monitor='.$status_text_monitor.'&status_module_group='.$status_module_group;
 
-            if ($paginate_module) {
+            if ($paginate_module === true) {
                 ui_pagination(
                     $count_modules,
                     false,
@@ -1375,7 +1368,7 @@ if (check_login()) {
 
             html_print_table($table);
 
-            if ($paginate_module) {
+            if ($paginate_module === true) {
                 ui_pagination(
                     $count_modules,
                     false,
@@ -1398,7 +1391,7 @@ if (check_login()) {
         unset($table_data);
     }
 
-    if ($get_type) {
+    if ($get_type === true) {
         $id_module = (int) get_parameter('id_module');
         $module = modules_get_agentmodule($id_module);
         $graph_type = return_graphtype($module['id_tipo_modulo']);
@@ -1652,7 +1645,7 @@ if (check_login()) {
 
         // If not valid it will throw an exception.
         json_decode($response);
-        if (json_last_error() == JSON_ERROR_NONE) {
+        if (json_last_error() === JSON_ERROR_NONE) {
             // If valid dump.
             echo $response;
         } else {

@@ -1,20 +1,35 @@
 <?php
+/**
+ * Agent Modules Templates.
+ *
+ * @category   Module
+ * @package    Pandora FMS
+ * @subpackage Agent Configuration
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
-// Load global vars
-if (!isset($id_agente)) {
+// Load global vars.
+if (isset($id_agente) === false) {
     die('Not Authorized');
 }
 
@@ -23,8 +38,8 @@ require_once $config['homedir'].'/include/functions_modules.php';
 // ==========================
 // TEMPLATE ASSIGMENT LOGIC
 // ==========================
-if (isset($_POST['template_id'])) {
-    // Take agent data
+if (isset($_POST['template_id']) === true) {
+    // Take agent data.
     $row = db_get_row('tagente', 'id_agente', $id_agente);
     if ($row !== false) {
         $intervalo = $row['intervalo'];
@@ -49,7 +64,8 @@ if (isset($_POST['template_id'])) {
         $npc = [];
     }
 
-    $success_count = $error_count = 0;
+    $success_count = 0;
+    $error_count = 0;
     $modules_already_added = [];
 
     foreach ($npc as $row) {
@@ -60,7 +76,7 @@ if (isset($_POST['template_id'])) {
         }
 
         foreach ($nc as $row2) {
-            // Insert each module from tnetwork_component into agent
+            // Insert each module from tnetwork_component into agent.
             $values = [
                 'id_agente'             => $id_agente,
                 'id_tipo_modulo'        => $row2['type'],
@@ -113,14 +129,14 @@ if (isset($_POST['template_id'])) {
 
             $name = $row2['name'];
 
-            // Put tags in array if the component has to add them later
-            if (!empty($row2['tags'])) {
+            // Put tags in array if the component has to add them later.
+            if (empty($row2['tags']) === false) {
                 $tags = explode(',', $row2['tags']);
             } else {
                 $tags = [];
             }
 
-            // Check if this module exists in the agent
+            // Check if this module exists in the agent.
             $module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['delete_pending' => 0, 'nombre' => $name, 'id_agente' => $id_agente]);
 
             if ($module_name_check !== false) {
@@ -132,13 +148,13 @@ if (isset($_POST['template_id'])) {
                 if ($id_agente_modulo === false) {
                     $error_count++;
                 } else {
-                    if (!empty($tags)) {
-                        // Creating tags
+                    if (empty($tags) === false) {
+                        // Creating tags.
                         $tag_ids = [];
                         foreach ($tags as $tag_name) {
                             $tag_id = tags_get_id($tag_name);
 
-                            // If tag exists in the system we store to create it
+                            // If tag exists in the system we store to create it.
                             $tag_ids[] = $tag_id;
                         }
 
@@ -152,7 +168,7 @@ if (isset($_POST['template_id'])) {
     }
 
     if ($error_count > 0) {
-        if (empty($modules_already_added)) {
+        if (empty($modules_already_added) === true) {
             ui_print_error_message(__('Error adding modules').sprintf(' (%s)', $error_count));
         } else {
             ui_print_error_message(__('Error adding modules. The following errors already exists: ').implode(', ', $modules_already_added));
@@ -168,7 +184,7 @@ if (isset($_POST['template_id'])) {
 // ==========================
 // TEMPLATE ASSIGMENT FORM
 // ==========================
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
+echo '<form style="margin: 10px" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
 
 $nps = db_get_all_fields_in_table('tnetwork_profile', 'name');
 if ($nps === false) {
@@ -194,7 +210,7 @@ html_print_div(
             false,
             [
                 'icon' => 'wand',
-                'mode' => 'mini',
+                'mode' => 'secondary mini',
             ],
             true
         ),
@@ -209,35 +225,20 @@ echo '</form>';
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
-switch ($config['dbtype']) {
-    case 'mysql':
-    case 'postgresql':
-        $sql = sprintf(
-            'SELECT *
-			FROM tagente_modulo
-			WHERE id_agente = %d AND delete_pending = false
-			ORDER BY id_module_group, nombre',
-            $id_agente
-        );
-    break;
-
-    case 'oracle':
-        $sql = sprintf(
-            'SELECT *
-			FROM tagente_modulo
-			WHERE id_agente = %d
-				AND (delete_pending <> 1 AND delete_pending IS NOT NULL)
-			ORDER BY id_module_group, dbms_lob.substr(nombre,4000,1)',
-            $id_agente
-        );
-    break;
-}
+$sql = sprintf(
+    'SELECT *
+    FROM tagente_modulo
+    WHERE id_agente = %d AND delete_pending = false
+    ORDER BY id_module_group, nombre',
+    $id_agente
+);
 
 $result = db_get_all_rows_sql($sql);
 if ($result === false) {
     $result = [];
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->cellpadding = 0;
 $table->cellspacing = 0;
@@ -246,10 +247,10 @@ $table->head = [];
 $table->data = [];
 $table->align = [];
 
-$table->head[0] = __('Module name');
-$table->head[1] = __('Type');
-$table->head[2] = __('Description');
-$table->head[3] = __('Action');
+$table->head[0] = '<span>'.__('Module name').'</span>';
+$table->head[1] = '<span>'.__('Type').'</span>';
+$table->head[2] = '<span>'.__('Description').'</span>';
+$table->head[3] = '<span>'.__('Action').'</span>';
 
 $table->align[1] = 'left';
 $table->align[3] = 'left';
@@ -258,25 +259,35 @@ $table->size[1] = '5%';
 $table->size[3] = '8%';
 
 foreach ($result as $row) {
+    $table->cellclass[][3] = 'table_action_buttons';
+
     $data = [];
 
     $data[0] = '<span>'.$row['nombre'];
-    if ($row['id_tipo_modulo'] > 0) {
-        $data[1] = html_print_image('images/'.modules_show_icon_type($row['id_tipo_modulo']), true, ['border' => '0', 'class' => 'invert_filter']);
-    } else {
-        $data[1] = '';
-    }
-
+    $data[1] = ($row['id_tipo_modulo'] > 0) ? ui_print_moduletype_icon($row['id_tipo_modulo'], true, false, true) : '';
     $data[2] = mb_substr($row['descripcion'], 0, 60);
-
-    $table->cellclass[][3] = 'table_action_buttons';
-    $data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row['id_agente_modulo'].'">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter', 'border' => '0', 'alt' => __('Delete'), 'onclick' => "if (!confirm('".__('Are you sure?')."')) return false;"]).'</a>';
-    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row['id_agente_modulo'].'">'.html_print_image('images/config.png', true, ['class' => 'invert_filter', 'border' => '0', 'alt' => __('Update')]).'</a>';
+    $data[3] = html_print_menu_button(
+        [
+            'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row['id_agente_modulo'],
+            'image'   => 'images/delete.svg',
+            'title'   => __('Delete'),
+            'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+        ],
+        true
+    );
+    $data[3] .= html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row['id_agente_modulo'],
+            'image' => 'images/edit.svg',
+            'title' => __('Edit'),
+        ],
+        true
+    );
 
     array_push($table->data, $data);
 }
 
-if (!empty($table->data)) {
+if (empty($table->data) === false) {
     html_print_table($table);
     unset($table);
 } else {

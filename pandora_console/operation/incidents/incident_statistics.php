@@ -26,16 +26,16 @@ if (!$config['integria_enabled']) {
 }
 
 echo '<table width="90%">
-	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';
+	<tr><td valign="top" style="width:50%;"><h3>'.__('Incidents by status').'</h3>';
 echo graph_incidents_status();
 
-echo '<td valign="top"><h3>'.__('Incidents by priority').'</h3>';
+echo '<td valign="top" style="width:50%;"><h3>'.__('Incidents by priority').'</h3>';
 echo grafico_incidente_prioridad();
 
-echo '<tr><td><h3>'.__('Incidents by group').'</h3>';
+echo '<tr><td style="width:50%;"><h3>'.__('Incidents by group').'</h3>';
 echo graphic_incident_group();
 
-echo '<td><h3>'.__('Incidents by user').'</h3>';
+echo '<td style="width:50%;"><h3>'.__('Incidents by user').'</h3>';
 echo graphic_incident_user();
 
 echo '</table>';

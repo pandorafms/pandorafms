@@ -2080,6 +2080,9 @@ if ($delete_module) {
         exit;
     }
 
+    // Before delete the main module, check and delete the childrens from the original module.
+    module_check_childrens_and_delete($id_borrar_modulo);
+
     // Also call base function to delete modules.
     modules_delete_agent_module($id_borrar_modulo);
 
@@ -2434,6 +2437,11 @@ switch ($tab) {
                     });
             }
     });
+    });
+
+    // Change description when edit port
+    $( "#text-tcp_port" ).change(function() {
+        $( "#textarea_description" ).text(`Checks port ${$( "#text-tcp_port" ).val()} is opened`);
     });
     
     // Set the position and width of the subtab

@@ -148,75 +148,37 @@ function process_user_login_local($login, $pass, $api=false)
 {
     global $config, $mysql_cache;
 
-    // Connect to Database
-    switch ($config['dbtype']) {
-        case 'mysql':
-            if (!$api) {
-                $sql = sprintf(
-                    "SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s' AND `not_login` = 0
-						AND `disabled` = 0",
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    "SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s'
-						AND `disabled` = 0",
-                    $login
-                );
-            }
-        break;
-
-        case 'postgresql':
-            if (!$api) {
-                $sql = sprintf(
-                    'SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\' AND "not_login" = 0
-						AND "disabled" = 0',
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\'
-						AND "disabled" = 0',
-                    $login
-                );
-            }
-        break;
-
-        case 'oracle':
-            if (!$api) {
-                $sql = sprintf(
-                    'SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\' AND not_login = 0
-						AND disabled = 0',
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\'
-						AND disabled = 0',
-                    $login
-                );
-            }
-        break;
+    // Connect to Database.
+    if (!$api) {
+        $sql = sprintf(
+            "SELECT `id_user`, `password`
+            FROM `tusuario`
+            WHERE `id_user` = '%s' AND `not_login` = 0
+                AND `disabled` = 0",
+            $login
+        );
+    } else {
+        $sql = sprintf(
+            "SELECT `id_user`, `password`
+            FROM `tusuario`
+            WHERE `id_user` = '%s'
+                AND `disabled` = 0",
+            $login
+        );
     }
 
     $row = db_get_row_sql($sql);
 
-    // Check that row exists, that password is not empty and that password is the same hash
-    if ($row !== false && $row['password'] !== md5('')
-        && $row['password'] == md5($pass)
-    ) {
+    // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
+    if (strlen($row['password']) === 32) {
+        // MD5.
+        $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+    } else {
+        // Bcrypt.
+        $credentials_check = password_verify($pass, $row['password']);
+    }
+
+    if ($credentials_check === true) {
         // Login OK
         // Nick could be uppercase or lowercase (select in MySQL
         // is not case sensitive)
@@ -229,6 +191,11 @@ function process_user_login_local($login, $pass, $api=false)
             $mysql_cache['auth_error'] = 'User does not have any profile';
             $config['auth_error'] = 'User does not have any profile';
             return false;
+        }
+
+        // Override password to use Bcrypt encryption.
+        if (strlen($row['password']) === 32) {
+            update_user_password($login, $pass);
         }
 
         return $row['id_user'];
@@ -655,8 +622,16 @@ function process_user_contact(string $id_user)
 function create_user($id_user, $password, $user_info)
 {
     $values = $user_info;
+
+    $column_type = db_get_column_type('tusuario', 'password');
+    if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+    } else {
+        $column_type = false;
+    }
+
     $values['id_user'] = $id_user;
-    $values['password'] = md5($password);
+    $values['password'] = ($column_type === false) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
     $values['last_connect'] = 0;
     $values['registered'] = get_system_time();
 
@@ -747,7 +722,7 @@ function delete_user(string $id_user)
 
 
 /**
- * Update the password in MD5 for user pass as id_user with
+ * Update the password using BCRYPT algorithm for specific id_user passing
  * password in plain text.
  *
  * @param string $user         User ID.
@@ -764,9 +739,19 @@ function update_user_password(string $user, string $password_new)
         return false;
     }
 
+    $column_type = db_get_column_type('tusuario', 'password');
+    if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+    } else {
+        $column_type = false;
+    }
+
     if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
-            "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
+            "UPDATE tusuario SET password = '%s', last_pass_change = '%s' WHERE id_user = '%s'",
+            ($column_type === false) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
+            date('Y-m-d H:i:s', get_system_time()),
+            $user
         );
 
         $connection = mysql_connect_db(
@@ -786,7 +771,7 @@ function update_user_password(string $user, string $password_new)
     return db_process_sql_update(
         'tusuario',
         [
-            'password'         => md5($password_new),
+            'password'         => ($column_type === false) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
             'last_pass_change' => date('Y/m/d H:i:s', get_system_time()),
         ],
         ['id_user' => $user]
@@ -1050,7 +1035,14 @@ function create_user_and_permisions_ldap(
     $values['id_user'] = $id_user;
 
     if ($config['ldap_save_password'] || $config['ad_save_password']) {
-        $values['password'] = md5($password);
+        $column_type = db_get_column_type('tusuario', 'password');
+        if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+            $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+        } else {
+            $column_type = false;
+        }
+
+        $values['password'] = ($column_type === false) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
     }
 
     $values['last_connect'] = 0;
@@ -1482,11 +1474,26 @@ function change_local_user_pass_ldap($id_user, $password)
     $local_user_pass = db_get_value_filter('password', 'tusuario', ['id_user' => $id_user]);
 
     $return = false;
-    if (md5($password) !== $local_user_pass) {
-        $values_update = [];
-        $values_update['password'] = md5($password);
 
-        $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
+    $column_type = db_get_column_type('tusuario', 'password');
+    if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+    } else {
+        $column_type = false;
+    }
+
+    $values_update = [];
+
+    if ($column_type === false) {
+        if (md5($password) !== $local_user_pass) {
+            $values_update['password'] = md5($password);
+            $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
+        }
+    } else {
+        if (password_hash($password, PASSWORD_BCRYPT) !== $local_user_pass) {
+            $values_update['password'] = password_hash($password, PASSWORD_BCRYPT);
+            $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
+        }
     }
 
     return $return;

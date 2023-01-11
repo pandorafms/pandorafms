@@ -55,6 +55,7 @@ if ($force_refresh == 1) {
     db_process_sql('UPDATE tgroup_stat SET utimestamp = 0');
 }
 
+$updated_time = '';
 if ($config['realtimestats'] == 0) {
     $updated_time = "<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
     $updated_time .= __('Last update').' : '.ui_print_timestamp(db_get_sql('SELECT min(utimestamp) FROM tgroup_stat'), true);
@@ -257,13 +258,15 @@ if ($is_admin) {
     include $config['homedir'].'/godmode/servers/servers.build_table.php';
 }
 
-$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td>';
-    $out .= '<fieldset class="padding-0 databox tactical_set" id="total_event_graph">
-			<legend>'.__('Event graph').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']).'</fieldset>';
-    $out .= '</td><td>';
-    $out .= '<fieldset class="padding-0 databox tactical_set" id="graphic_event_group">
-			<legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
-    $out .= '</td></tr></table>';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td style="width:50%;">';
+$out .= '<fieldset class="padding-0 databox tactical_set" id="total_event_graph">';
+$out .= '<legend>'.__('Event graph').'</legend>';
+$out .= html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']);
+$out .= '</fieldset>';
+$out .= '</td><td style="width:50%;">';
+$out .= '<fieldset class="padding-0 databox tactical_set" id="graphic_event_group">
+        <legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
+$out .= '</td></tr></table>';
 
 
 ui_toggle(

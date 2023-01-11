@@ -850,7 +850,7 @@ if ($get_agent_alerts_datatable === true) {
         } else {
             $options_simple = [
                 'order'  => $order,
-                'limit'  => $length,
+                'limit'  => ($length > 0) ? $length : 1844674407370955161,
                 'offset' => $start,
             ];
         }
@@ -884,9 +884,9 @@ if ($get_agent_alerts_datatable === true) {
                     users_get_groups($config['id_user'], $access, false)
                 );
 
-                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
+                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter, false);
 
-                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
+                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter, false);
             }
         }
 
@@ -915,7 +915,6 @@ if ($get_agent_alerts_datatable === true) {
                 $data[] = ui_format_alert_row($alert, true, $url, 'font-size: 7pt;');
             }
 
-
             $data = array_reduce(
                 $data,
                 function ($carry, $row) {
@@ -923,17 +922,29 @@ if ($get_agent_alerts_datatable === true) {
                     // of objects, making a post-process of certain fields.
                     $tmp = new stdClass();
 
-                    // Standby.
-                    $tmp->policy = $row[0];
-                    $tmp->standby = $row[1];
-                    $tmp->actions = $row[2];
-                    $tmp->agent_name = $row[3];
-                    $tmp->agent_module_name = $row[4];
-                    $tmp->template_name = $row[5];
-                    $tmp->action = $row[6];
-                    $tmp->last_fired = $row[7];
-                    $tmp->status = $row[8];
-                    $tmp->validate = $row[9];
+                    if (enterprise_installed() === true) {
+                        $tmp->policy = $row[0];
+                        $tmp->standby = $row[1];
+                        $tmp->force = $row[2];
+                        $tmp->agent_name = $row[3];
+                        $tmp->agent_module_name = $row[4];
+                        $tmp->template_name = $row[5];
+                        $tmp->action = $row[6];
+                        $tmp->last_fired = $row[7];
+                        $tmp->status = $row[8];
+                        $tmp->validate = $row[9];
+                    } else {
+                        // Open.
+                        $tmp->standby = $row[0];
+                        $tmp->force = $row[1];
+                        $tmp->agent_name = $row[2];
+                        $tmp->agent_module_name = $row[3];
+                        $tmp->template_name = $row[4];
+                        $tmp->action = $row[5];
+                        $tmp->last_fired = $row[6];
+                        $tmp->status = $row[7];
+                        $tmp->validate = $row[8];
+                    }
 
                     $carry[] = $tmp;
                     return $carry;

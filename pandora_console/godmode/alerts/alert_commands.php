@@ -40,6 +40,7 @@ $update_command = (bool) get_parameter('update_command');
 $create_command = (bool) get_parameter('create_command');
 $delete_command = (bool) get_parameter('delete_command');
 $copy_command = (bool) get_parameter('copy_command');
+$content_type = (string) get_parameter('content_type', 'text/plain');
 
 $url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands';
 
@@ -226,7 +227,7 @@ if (is_ajax()) {
                         'field'.$i.'_value',
                         'text/plain',
                         '',
-                        '',
+                        $content_type == 'text/plain',
                         $is_management_allowed,
                         '',
                         '',
@@ -238,7 +239,7 @@ if (is_ajax()) {
                         'field'.$i.'_value',
                         'text/html',
                         '',
-                        'text/html',
+                        $content_type == 'text/html',
                         $is_management_allowed,
                         '',
                         '',

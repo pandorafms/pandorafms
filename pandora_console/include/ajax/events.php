@@ -59,6 +59,7 @@ $drawConsoleSound = (bool) get_parameter('drawConsoleSound', false);
 $process_buffers = (bool) get_parameter('process_buffers', false);
 $get_extended_event = (bool) get_parameter('get_extended_event');
 $change_status = (bool) get_parameter('change_status');
+$get_Acknowledged = (bool) get_parameter('get_Acknowledged');
 $change_owner = (bool) get_parameter('change_owner');
 $add_comment = (bool) get_parameter('add_comment');
 $dialogue_event_response = (bool) get_parameter('dialogue_event_response');
@@ -1521,6 +1522,12 @@ if ($change_status === true) {
     return;
 }
 
+if ($get_Acknowledged === true) {
+    $event_id = get_parameter('event_id');
+    echo events_page_general_acknowledged($event_id);
+    return;
+}
+
 if ($change_owner === true) {
     $new_owner = get_parameter('new_owner', '');
     $event_id = (int) get_parameter('event_id', 0);
@@ -2048,8 +2055,10 @@ if ($total_event_graph) {
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    $prueba = grafico_eventos_total('', 280, 150, false, true);
-    echo $prueba;
+    $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+    $out .= grafico_eventos_total('', 0, 0, false, true);
+    $out .= '<div>';
+    echo $out;
     return;
 }
 
@@ -2058,8 +2067,10 @@ if ($graphic_event_group) {
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    $prueba = grafico_eventos_grupo(280, 150, '', false, true);
-    echo $prueba;
+    $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+    $out .= grafico_eventos_grupo(0, 0, '', false, true);
+    $out .= '<div>';
+    echo $out;
     return;
 }
 

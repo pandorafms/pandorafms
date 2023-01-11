@@ -84,7 +84,7 @@ if (empty($plugin_pass) === true && $id_agent_module !== 0) {
     $plugin_pass = 1;
 }
 
-if (empty($update_module_id) === true) {
+if (empty($edit_module) === true) {
     add_component_selection(ID_NETWORK_COMPONENT_TYPE);
 }
 

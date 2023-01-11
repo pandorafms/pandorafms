@@ -734,17 +734,15 @@ if ($agents !== false) {
         }
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
-            if (enterprise_installed()) {
-                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
-                    $agent['id_agente']
-                );
-                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
-                $url .= '/operation/cluster/cluster';
-                $url = ui_get_full_url(
-                    $url.'&op=update&id='.$cluster->id()
-                );
-                echo '<a href="'.$url.'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</a>';
-            }
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $url = 'index.php?sec=reporting&sec2=';
+            $url .= 'operation/cluster/cluster';
+            $url = ui_get_full_url(
+                $url.'&op=update&id='.$cluster->id()
+            );
+            echo '<a href="'.$url.'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</a>';
         } else {
             echo '<a alt ='.$agent['nombre']." href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
@@ -794,18 +792,16 @@ if ($agents !== false) {
         echo '</span><div class="left actions clear_left" style=" visibility: hidden">';
         if ($check_aw) {
             if ($agent['id_os'] == CLUSTER_OS_ID) {
-                if (enterprise_installed()) {
-                    $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
-                        $agent['id_agente']
-                    );
-                    $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
-                    $url .= '/operation/cluster/cluster';
-                    $url = ui_get_full_url(
-                        $url.'&op=update&id='.$cluster->id()
-                    );
-                    echo '<a href="'.$url.'">'.__('Edit').'</a>';
-                    echo ' | ';
-                }
+                $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                    $agent['id_agente']
+                );
+                $url = 'index.php?sec=reporting&sec2=';
+                $url .= 'operation/cluster/cluster';
+                $url = ui_get_full_url(
+                    $url.'&op=update&id='.$cluster->id()
+                );
+                echo '<a href="'.$url.'">'.__('Edit').'</a>';
+                echo ' | ';
             } else {
                 echo '<a href="index.php?sec=gagente&
 				sec2=godmode/agentes/configurar_agente&tab=main&
@@ -827,17 +823,15 @@ if ($agents !== false) {
         echo ' | ';
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
-            if (enterprise_installed() === true) {
-                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
-                    $agent['id_agente']
-                );
-                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
-                $url .= '/operation/cluster/cluster';
-                $url = ui_get_full_url(
-                    $url.'&op=view&id='.$cluster->id()
-                );
-                echo '<a href="'.$url.'">'.__('View').'</a>';
-            }
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $url = 'index.php?sec=reporting&sec2=';
+            $url .= 'operation/cluster/cluster';
+            $url = ui_get_full_url(
+                $url.'&op=view&id='.$cluster->id()
+            );
+            echo '<a href="'.$url.'">'.__('View').'</a>';
         } else {
             echo '<a href="index.php?sec=estado
 			&sec2=operation/agentes/ver_agente

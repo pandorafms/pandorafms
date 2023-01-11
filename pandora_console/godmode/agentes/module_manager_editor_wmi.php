@@ -34,7 +34,7 @@ $extra_title = __('WMI server module');
 
 define('ID_NETWORK_COMPONENT_TYPE', 6);
 
-if (empty($update_module_id)) {
+if (empty($edit_module)) {
     // Function in module_manager_editor_common.php
     add_component_selection(ID_NETWORK_COMPONENT_TYPE);
 } else {

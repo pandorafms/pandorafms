@@ -652,18 +652,18 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     $row[] = round($sla['sla_limit'], 2).'%';
 
                     if (reporting_sla_is_not_init_from_array($sla)) {
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_NOTINIT.';">'.__('N/A').'</span>';
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_NOTINIT.';">'.__('Not init').'</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_NOTINIT.';">'.__('N/A').'</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_NOTINIT.';">'.__('Not init').'</span>';
                     } else if (reporting_sla_is_ignored_from_array($sla)) {
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_IGNORED.';">'.__('N/A').'</span>';
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_IGNORED.';">'.__('No data').'</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_IGNORED.';">'.__('N/A').'</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_IGNORED.';">'.__('No data').'</span>';
                         // Normal calculation.
                     } else if ($sla['sla_status']) {
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_NORMAL.';">'.sla_truncate($sla['sla_value'], $config['graph_precision']).'%</span>';
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_NORMAL.';">'.__('OK').'</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_NORMAL.';">'.sla_truncate($sla['sla_value'], $config['graph_precision']).'%</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_NORMAL.';">'.__('OK').'</span>';
                     } else {
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_CRITICAL.';">'.sla_truncate($sla['sla_value'], $config['graph_precision']).'%</span>';
-                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_CRITICAL.';">'.__('Fail').'</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_CRITICAL.';">'.sla_truncate($sla['sla_value'], $config['graph_precision']).'%</span>';
+                        $row[] = '<span style="font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_CRITICAL.';">'.__('Fail').'</span>';
                     }
 
                     // Second table for time globals.
@@ -961,7 +961,7 @@ function reporting_html_top_n($table, $item, $pdf=0)
             $table->data['top_n']['cell'] = html_print_table($table1, true);
         }
 
-        if (!empty($item['charts']['pie'])) {
+        if (empty($item['charts']['pie']) === false) {
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['pie'];
             } else {
@@ -970,16 +970,15 @@ function reporting_html_top_n($table, $item, $pdf=0)
             }
         }
 
-        if (!empty($item['charts']['bars'])) {
+        if (empty($item['charts']['bars']) === false) {
             if ($pdf !== 0) {
                 $return_pdf .= $item['charts']['bars'];
             } else {
-                // $table->colspan['char_bars']['cell'] = 3;
                 $table->data['char_pie'][1] = $item['charts']['bars'];
             }
         }
 
-        if (!empty($item['resume'])) {
+        if (empty($item['resume']) === false) {
             $table1 = new stdClass();
             $table1->width = '99%';
 
@@ -3464,10 +3463,10 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
     $table1->head = [];
     $table1->data = [];
     if ($item['data']['unknown'] == 1) {
-        $table1->data['data']['unknown'] = '<p class="bolder" style="font-size: '.$font_size.' !important; color: '.COL_UNKNOWN.';">';
+        $table1->data['data']['unknown'] = '<p class="bolder" style="font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_UNKNOWN.';">';
         $table1->data['data']['unknown'] .= __('Unknown').'</p>';
     } else {
-        $table1->data['data']['ok'] = '<p class="bolder" style="font-size: '.$font_size.' !important; color: '.COL_NORMAL.';">';
+        $table1->data['data']['ok'] = '<p class="bolder" style="font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_NORMAL.';">';
         $table1->data['data']['ok'] .= html_print_image(
             'images/module_ok.png',
             true
@@ -3480,7 +3479,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
             )
         ).' %</p>';
 
-        $table1->data['data']['fail'] = '<p class="bolder" style="font-size: '.$font_size.' !important; color: '.COL_CRITICAL.';">';
+        $table1->data['data']['fail'] = '<p class="bolder" style="font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.COL_CRITICAL.';">';
         $table1->data['data']['fail'] .= html_print_image(
             'images/module_critical.png',
             true
@@ -4684,7 +4683,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 $checks_resume_text = '<span style = "font-size: '.$font_mini.';">';
                 $checks_resume_text .= $checks_resume;
                 $checks_resume_text .= '</span>';
-                $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.' !important; color: '.$color."'>".$sla_value.'</span>';
+                $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.$color."'>".$sla_value.'</span>';
                 switch ($item['data'][$k_chart]['failover']) {
                     case 'primary_compare':
                         $title = '<b>'.__('Primary').' (24x7)</b>';
@@ -4712,7 +4711,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
                     case 'result_compare':
                         $title = '<b>'.__('Result').' (24x7)</b>';
-                        $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.' !important; color: '.$color."'>".$sla_value.'</span>';
+                        $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.$color."'>".$sla_value.'</span>';
                         $checks_resume_text = '<span style = "font-size: '.$font_mini.';">';
                         $checks_resume_text .= $checks_resume;
                         $checks_resume_text .= '</span>';
@@ -4723,7 +4722,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                         $total_values += $sla_value;
                         $count_total_charts++;
                         $title = '<b>'.__('Result').'</b>';
-                        $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.' !important; color: '.$color."'>".$sla_value.'</span>';
+                        $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.$color."'>".$sla_value.'</span>';
                         $checks_resume_text = '<span style = "font-size: '.$font_mini.';">';
                         $checks_resume_text .= $checks_resume;
                         $checks_resume_text .= '</span>';
@@ -4757,7 +4756,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
         $table_summary->data = [];
         $table_summary->data[0][0] = '<b>'.__('Summary').'</b>';
-        $table_summary->data[0][1] = '<span style = "font-weight: bold; font-size: '.$font_size.' !important;">';
+        $table_summary->data[0][1] = '<span style = "font-weight: bold; font-size: '.$font_size.(($pdf === 0) ? ' !important' : '').';">';
         $table_summary->data[0][1] .= sla_truncate($total_values / $count_total_charts);
         $table_summary->data[0][1] .= ' %';
         $table_summary->data[0][1] .= '</span>';
@@ -5141,7 +5140,17 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         // Fixed width non interactive charts.
         $status_chart_width = $graph_width;
 
-        $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;"><div id="status_pie" style="margin: auto; width: '.$graph_width.'">'.graph_agent_status(false, $graph_width, $graph_height, true, true).'</div></div>';
+        $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;">';
+        $tdata[0] .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'">';
+        $tdata[0] .= graph_agent_status(
+            false,
+            $graph_width,
+            $graph_height,
+            true,
+            true
+        );
+        $tdata[0] .= '</div>';
+        $tdata[0] .= '</div>';
     } else {
         $tdata[2] = html_print_image(
             'images/image_problem_area_small.png',
@@ -5151,7 +5160,16 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
     }
 
     if ($data['monitor_alerts'] > 0) {
-        $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">'.graph_alert_status($data['monitor_alerts'], $data['monitor_alerts_fired'], $graph_width, $graph_height, true, true).'</div>';
+        $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">';
+        $tdata[2] .= graph_alert_status(
+            $data['monitor_alerts'],
+            $data['monitor_alerts_fired'],
+            $graph_width,
+            $graph_height,
+            true,
+            true
+        );
+        $tdata[2] .= '</div>';
     } else {
         $tdata[2] = html_print_image(
             'images/image_problem_area_small.png',
@@ -5160,8 +5178,8 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         );
     }
 
-        $table_sum->rowclass[] = '';
-        $table_sum->data[] = $tdata;
+    $table_sum->rowclass[] = '';
+    $table_sum->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
                 <legend>'.__('Summary').'</legend>'.html_print_table($table_sum, true).'</fieldset>';

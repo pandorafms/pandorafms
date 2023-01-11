@@ -66,6 +66,7 @@ export interface ItemProps extends Position, Size {
   cacheExpiration: number | null;
   colorStatus: string;
   cellId: number | null;
+  alertOutline: boolean;
 }
 
 export interface ItemClickEvent {
@@ -143,6 +144,7 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     cacheExpiration: parseIntOr(data.cacheExpiration, null),
     colorStatus: notEmptyStringOr(data.colorStatus, "#CCC"),
     cellId: parseIntOr(data.cellId, null),
+    alertOutline: parseBoolean(data.alertOutline),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -534,6 +536,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
 
+    if (this.props.alertOutline) {
+      box.classList.add("is-alert-triggered");
+    }
+
     // Init the click listeners.
     box.addEventListener("dblclick", e => {
       if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {
@@ -815,15 +821,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     prevProps: Props | null = null,
     prevMeta: ItemMeta | null = null
   ): void {
-    this.updateDomElement(this.childElementRef);
-
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {
       this.moveElement(this.props.x, this.props.y);
+      this.updateDomElement(this.childElementRef);
     }
     // Resize box.
     if (!prevProps || this.sizeChanged(prevProps, this.props)) {
       this.resizeElement(this.props.width, this.props.height);
+      this.updateDomElement(this.childElementRef);
     }
     // Change label.
     const oldLabelHtml = this.labelElementRef.innerHTML;
@@ -887,8 +893,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     ) {
       if (this.meta.editMode && this.meta.maintenanceMode === false) {
         this.elementRef.classList.add("is-editing");
+        this.elementRef.classList.remove("is-alert-triggered");
       } else {
         this.elementRef.classList.remove("is-editing");
+
+        if (this.props.alertOutline) {
+          this.elementRef.classList.add("is-alert-triggered");
+        }
       }
     }
 
@@ -923,6 +934,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
           }
         }
       }
+
+      this.updateDomElement(this.childElementRef);
     }
     if (!prevMeta || prevMeta.isSelected !== this.meta.isSelected) {
       if (this.meta.isSelected) {

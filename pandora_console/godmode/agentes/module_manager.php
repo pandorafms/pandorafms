@@ -247,6 +247,8 @@ if ($module_action === 'delete') {
     $print_result_msg = true;
     $count_correct_delete_modules = 0;
     foreach ($id_agent_modules_delete as $id_agent_module_del) {
+        // Before delete the main module, check and delete the childrens from the original module.
+        module_check_childrens_and_delete($id_agent_module_del);
         $id_grupo = (int) agents_get_agent_group($id_agente);
         $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 

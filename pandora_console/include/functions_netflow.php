@@ -1479,7 +1479,7 @@ function netflow_draw_item(
     }
 
     if ($output === 'HTML' || $output === 'PDF') {
-        return graph_nodata_image(300, 110, 'data');
+        return graph_nodata_image(['height' => 110]);
     }
 }
 

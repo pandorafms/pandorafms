@@ -401,30 +401,33 @@ sub pandora_server_tasks ($) {
 
 				# Update forced alerts
 				pandora_exec_forced_alerts ($pa_config, $dbh);
+
+				my @agents = get_db_rows ($dbh, 'SELECT id_agente, update_alert_count FROM tagente WHERE update_alert_count=1');
+				foreach my $agent (@agents) {
+					if ($agent->{'update_alert_count'} == 1) {
+						pandora_update_agent_alert_count ($pa_config, $dbh, $agent->{'id_agente'});
+					}
+				}
 			}
-			
+
 			# TASKS EXECUTED EVERY 30 SECONDS (Mid latency tasks)
 			# ---------------------------------------------------
 			if (($counter % 30) == 0) {
 
 				# Update module status and fired alert counts
-				my @agents = get_db_rows ($dbh, 'SELECT id_agente, nombre, update_module_count, update_alert_count, update_secondary_groups FROM tagente WHERE (update_module_count=1 OR update_alert_count=1 OR update_secondary_groups=1)');
+				my @agents = get_db_rows ($dbh, 'SELECT id_agente, nombre, update_module_count, update_secondary_groups FROM tagente WHERE (update_module_count=1 OR update_secondary_groups=1)');
 				foreach my $agent (@agents) {
 					logger ($pa_config, "Updating module status and fired alert counts for agent " . $agent->{'nombre'}, 10);
-					
+
 					if ($agent->{'update_module_count'} == 1) {
 						pandora_update_agent_module_count ($pa_config, $dbh, $agent->{'id_agente'});
-					}
-					
-					if ($agent->{'update_alert_count'} == 1) {
-						pandora_update_agent_alert_count ($pa_config, $dbh, $agent->{'id_agente'});
 					}
 
 					if ($agent->{'update_secondary_groups'} == 1) {
 						pandora_update_secondary_groups_cache ($pa_config, $dbh, $agent->{'id_agente'});
 					}
 				}
-	
+
 				# Keepalive module control.(very DB intensive, not run frecuently
 				pandora_module_keep_alive_nd ($pa_config, $dbh);
 				
@@ -855,6 +858,7 @@ sub main() {
 	
 	# Main loop
 	my $time_ref = time ();
+	my $thr_time_ref = 0;
 	my $test_remote_interval = ($Config{'keepalive'}/$Config{'server_threshold'});
 	my $test_remote = 0;
 	while ($RUN == 1) {
@@ -869,6 +873,15 @@ sub main() {
 	
 			# Make sure all server threads are running.
 			die("Server thread crashed.") unless (check_server_threads() == 1);
+
+			# Monitor server threads.
+			if (defined($Config{"self_monitoring"}) 
+				&& $Config{"self_monitoring"} == 1
+				&& !is_metaconsole(\%Config)
+				&& time() - $thr_time_ref > $Config{'self_monitoring_interval'}) {
+				$thr_time_ref = time();
+				pandora_thread_monitoring (\%Config, $DBH, \@Servers);
+			}
 
 			db_do ($DBH,
 				"UPDATE tserver SET status = -1

@@ -10886,3 +10886,92 @@ pre.external_tools_output {
   justify-content: start;
   padding-left: 10px;
 }
+
+/* Table about dialog */
+.table-about {
+  background-color: white !important;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-about th {
+  background-color: white !important;
+  width: 100%;
+}
+
+.table-about h1 {
+  text-transform: none !important;
+  font-size: 28px !important;
+  color: #454545;
+  margin-top: 34px;
+  margin-left: 9px;
+}
+
+.table-about h2 {
+  text-transform: none !important;
+  font-size: 15px !important;
+  margin-bottom: 5px;
+  margin-left: 9px;
+  color: #14524f;
+}
+
+.table-about h2 span {
+  color: #14524f;
+  font-size: large;
+  font-weight: bolder;
+}
+
+.table-about p {
+  color: #454545;
+  font-size: 15px;
+  font-weight: normal;
+  margin: 7px;
+  margin-left: 9px;
+}
+
+.table-about p span {
+  color: #454545;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 9px;
+  margin-left: 0px;
+}
+
+.table-about p.about-last-p {
+  padding-bottom: 17px;
+}
+
+.table-about .about-last-tr {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.about-copyright-div {
+  width: 100%;
+  height: 100%;
+}
+
+p.trademark-copyright {
+  width: 90%;
+  color: #8a96a6;
+  font-size: 13px;
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center !important;
+  position: absolute;
+  bottom: 0;
+}
+
+#about-tabs,
+#tab-general-view {
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+#about-tabs {
+  overflow: hidden;
+}
+
+#tab-database {
+  height: 80%;
+  overflow: auto;
+}

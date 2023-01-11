@@ -395,6 +395,8 @@ class AuditLog extends HTML
                     row.child(format(row.data())).show();
                     tr.addClass('shown');
                 }
+                $('#audit_logs').css('table-layout','fixed');
+                $('#audit_logs').css('width','95% !important');
             });
         });
     </script>

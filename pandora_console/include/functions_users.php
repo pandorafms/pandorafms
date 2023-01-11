@@ -811,6 +811,20 @@ function users_get_users_by_group($id_group, $um=false, $disabled=true)
 }
 
 
+/**
+ * Delete session user if exist
+ *
+ * @param string $id_user User id.
+ *
+ * @return boolean Return .
+ */
+function delete_session_user($id_user)
+{
+    $sql = "DELETE FROM tsessions_php where data like '%\"".$id_user."\"%'";
+    return db_process_sql($sql);
+}
+
+
 function users_has_profile_without_UM($id_user, $id_groups)
 {
     $sql = sprintf(

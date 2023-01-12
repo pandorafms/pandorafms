@@ -4041,7 +4041,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 	$custom_data = '' unless defined ($custom_data);
 	$server_id = 0 unless defined ($server_id);
 	$module_data = defined($module) ? $module->{'datos'} : '' unless defined ($module_data);
-	$module_status = defined($module) ? $module->{'estado'} : '' unless defined ($module_status);
+	$module_status = defined($module) ? $module->{'estado'} : 0 unless defined ($module_status);
 	
 	# If the event is created with validated status, assign ack_utimestamp
 	my $ack_utimestamp = $event_status == 1 ? time() : 0;

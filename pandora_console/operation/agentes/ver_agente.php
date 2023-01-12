@@ -1461,9 +1461,11 @@ if ($inventorytab == -1 || $inventoryCount === 0) {
 }
 
 // Collection.
-$collectiontab = enterprise_hook('collection_tab');
-if ($collectiontab == -1) {
-    $collectiontab = '';
+if ($config['license_nms'] !== 1) {
+    $collectiontab = enterprise_hook('collection_tab');
+    if ($collectiontab == -1) {
+        $collectiontab = '';
+    }
 }
 
 

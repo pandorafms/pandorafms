@@ -26,7 +26,8 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
+$config['license_nms'] = 1;
+// ! Eliminar!
 // Begin.
 require_once 'include/config.php';
 require_once 'include/functions_menu.php';

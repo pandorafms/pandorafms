@@ -6342,3 +6342,19 @@ function setDownloadCookieToken()
         );
     }
 }
+
+
+/**
+ * Check nms license on api.
+ *
+ * @return boolean
+ */
+function nms_check_api()
+{
+    global $config;
+
+    if ($config['license_nms'] === 1) {
+        returnError('license_error');
+        return true;
+    }
+}

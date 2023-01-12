@@ -485,10 +485,12 @@ if ($id_agente) {
     }
 
     // Collection.
-    $collectiontab = enterprise_hook('collection_tab');
+    if ($config['license_nms'] !== 1) {
+        $collectiontab = enterprise_hook('collection_tab');
 
-    if ($collectiontab == -1) {
-        $collectiontab = '';
+        if ($collectiontab == -1) {
+            $collectiontab = '';
+        }
     }
 
     // NetworkConfigManager tab.

@@ -1177,7 +1177,11 @@ foreach ($modules as $module) {
     $data[6] = ui_print_status_image(
         $status,
         htmlspecialchars($title),
-        true
+        true,
+        false,
+        false,
+        false,
+        ($module['ip_target']) ? 'IP: '.$module['ip_target'] : false
     );
 
     // MAX / MIN values.

@@ -82,7 +82,8 @@ if ($doLogin === true) {
     } else {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
-            'Trying to login using invalid credentials'
+            'Trying to login using invalid credentials with API Rest',
+            $id_user
         );
         http_response_code(403);
         return;

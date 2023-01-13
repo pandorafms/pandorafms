@@ -1176,8 +1176,8 @@ if (check_login()) {
                 $status,
                 $title
             );
-
-            $last_status_change_text = 'Time elapsed since last status change: ';
+            $last_status_change_text = ($module['ip_target']) ? 'IP: '.$module['ip_target'].'<br />' : '';
+            $last_status_change_text .= 'Time elapsed since last status change: ';
             $last_status_change_text .= !empty($module['last_status_change']) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
             $data[5] = ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $last_status_change_text);

@@ -59,6 +59,7 @@ $drawConsoleSound = (bool) get_parameter('drawConsoleSound', false);
 $process_buffers = (bool) get_parameter('process_buffers', false);
 $get_extended_event = (bool) get_parameter('get_extended_event');
 $change_status = (bool) get_parameter('change_status');
+$get_Acknowledged = (bool) get_parameter('get_Acknowledged');
 $change_owner = (bool) get_parameter('change_owner');
 $add_comment = (bool) get_parameter('add_comment');
 $dialogue_event_response = (bool) get_parameter('dialogue_event_response');
@@ -1510,6 +1511,12 @@ if ($change_status === true) {
         );
     }
 
+    return;
+}
+
+if ($get_Acknowledged === true) {
+    $event_id = get_parameter('event_id');
+    echo events_page_general_acknowledged($event_id);
     return;
 }
 

@@ -100,8 +100,6 @@ Exported Functions:
 
 =item * C<pandora_thread_monitoring>
 
-=item * C<pandora_sample_agent>
-
 =back
 
 =head1 METHODS
@@ -261,7 +259,6 @@ our @EXPORT = qw(
 	pandora_server_statistics
 	pandora_self_monitoring
 	pandora_thread_monitoring
-	pandora_sample_agent
 	pandora_process_policy_queue
 	pandora_sync_agents_integria
 	pandora_get_integria_ticket_types
@@ -6136,84 +6133,6 @@ sub pandora_thread_monitoring ($$$) {
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
-}
-
-##########################################################################
-=head2 C<< xml_module_template (I<$module_name>, I<$module_type>, I<$module_data>) >>
-
-Module template for sample agent
-
-=cut
-##########################################################################
-sub xml_module_template ($$$) {
-	my ($module_name, $module_type, $module_data) = @_;
-	my $output = "<module>\n";
-	
-	$module_name = "<![CDATA[".$module_name."]]>" if $module_name =~ /[\s+.]+/;
-	$module_data = "<![CDATA[".$module_data."]]>" if $module_data =~ /[\s+.]+/;
-
-	$output .= "\t<name>".$module_name."</name>\n";
-	$output .= "\t<type>".$module_type."</type>\n";
-	$output .= "\t<data>".$module_data."</data>\n";
-	$output .= "</module>\n";
-
-	return $output;
-}
-##########################################################################
-=head2 C<< pandora_sample_agent (I<$pa_config>) >>
-
-Pandora agent for make sample data
-
-=cut
-##########################################################################
-sub pandora_sample_agent ($) {
-	
-	my ($pa_config) = @_;
-
-	my $utimestamp = time ();
-	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-	# First line	
-	my $xml_output = "<?xml version='1.0' encoding='UTF-8'?>\n";
-	# Header
-	$xml_output = "<agent_data agent_name='Sample_Agent' agent_alias='Sample_Agent' description='Agent for sample generation purposes' group='Servers' os_name='$OS' os_version='$OS_VERSION' interval='".$pa_config->{'sample_agent_interval'}."' version='" . $pa_config->{'version'} . "' timestamp='".$timestamp."'>\n";
-	# Boolean ever return TRUE
-	$xml_output .= xml_module_template ("Boolean ever true", "generic_proc","1");
-	# Boolean return TRUE at 80% of times
-	my $sample_boolean_mostly_true = 1;
-	$sample_boolean_mostly_true = 0 if rand(9) > 7;
-	$xml_output .= xml_module_template ("Boolean mostly true", "generic_proc",$sample_boolean_mostly_true);
-	# Boolean return false at 80% of times
-	my $sample_boolean_mostly_false = 0;
-	$sample_boolean_mostly_false = 1 if rand(9) > 7;
-	$xml_output .= xml_module_template ("Boolean mostly false", "generic_proc", $sample_boolean_mostly_false);
-	# Boolean ever return FALSE
-	$xml_output .= xml_module_template ("Boolean ever false", "generic_proc","0");
-	# Random integer between 0 and 100
-	$xml_output .= xml_module_template ("Random integer values", "generic_data",int(rand(100)));
-	# Random values obtained with sinusoidal curves between 0 and 100 values
-	my $b = 1;
-	my $sample_serie_curve = 1 + cos(deg2rad($b));
-	$b = $b + rand(20)/10;
-	$b = 0 if ($b > 180);
-	$sample_serie_curve = $sample_serie_curve * $b * 10;
-	$sample_serie_curve =~ s/\,/\./g;
-	$xml_output .= xml_module_template ("Random serie curve", "generic_data", $sample_serie_curve);
-	# String with 10 random characters
-	my $sample_random_text = "";
-	my @characters = ('a'..'z','A'..'Z');
-	for (1...10){
-		$sample_random_text .= $characters[int(rand(@characters))];
-	}
-	$xml_output .= xml_module_template ("Random text", "generic_data_string", $sample_random_text);
-	# End of xml
-	$xml_output .= "</agent_data>";
-	# File path definition
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".sample.".$utimestamp.".data";
-	# Opening, Writing and closing of XML
-	open (my $xmlfile, ">", $filename) or die "[FATAL] Could not open sample XML file for deploying monitorization at '$filename'";
-	print $xmlfile $xml_output;
-	close ($xmlfile);
-
 }
 
 ##########################################################################

@@ -7509,7 +7509,7 @@ function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
     $bad_agents = [];
     $i = 0;
     foreach ($total_agents as $agent_id) {
-        $result_agent = agents_check_access_agent($agent_id, 'AD');
+        $result_agent = agents_check_access_agent($agent_id, 'AR');
         if (!$result_agent) {
             $bad_agents[] = $agent_id;
             unset($agents[$i]);
@@ -9601,6 +9601,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+    $values['metaconsole_access_node'] = $other['data'][13];
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');

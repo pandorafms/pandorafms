@@ -772,3 +772,292 @@ function menu_pepare_acl_select_data($pages, $sec)
 
     return $pages;
 }
+
+
+if (is_ajax()) {
+    $about = (bool) get_parameter('about');
+    if ($about) {
+        global $config;
+        global $pandora_version;
+        global $build_version;
+        $product_name = io_safe_output(get_product_name());
+
+        include_once $config['homedir'].'/include/class/Diagnostics.class.php';
+        $d = new Diagnostics;
+        $db_health = json_decode($d->getDatabaseHealthStatus());
+        $db_info = json_decode($d->getDatabaseStatusInfo());
+        $db_fragmentation = json_decode($d->getTablesFragmentation());
+        $sys_info = json_decode($d->getSystemInfo());
+        $php_sys = json_decode($d->getPHPSetup());
+
+        $fragmentation_status = '';
+        if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
+            $fragmentation_status = html_print_image(
+                'images/exito.png',
+                true,
+                [
+                    'title' => __('Successfully'),
+                    'style' => 'width:15px;',
+                ]
+            );
+        } else {
+            $fragmentation_status = html_print_image(
+                'images/error_1.png',
+                true,
+                [
+                    'title' => __('Error'),
+                    'style' => 'width:15px;',
+                ]
+            );
+        }
+
+        $dialog = '
+            <div id="about-tabs" class="invisible overflow-hidden">
+                <ul>
+                    <li><a href="#tab-general-view">'.__('Information').'</a></li>
+                    <li><a href="#tab-database">'.__('Database').'</a></li>
+                    <li><a href="#tab-system-info">'.__('System Info').'</a></li>
+                    <li><a href="#tab-php-system">'.__('PHP System').'</a></li>
+                    <li class="ui-tabs-close-button" style="float:right!important;">
+                        <img id="about-close" style="cursor: pointer;" src="'.ui_get_full_url('/include/styles/images/dialog-titlebar-close.png', false, false, false).'" alt="'.__('Close').'" title="'.__('Close').'" width="25px">
+                    </li>
+                </ul>
+                <div id="tab-general-view">
+                    <table class="table-about">
+                        <tbody>
+                            <tr>
+                                <th style="width: 40%;">
+                                    <img src="'.ui_get_full_url('/images/custom_logo/'.$config['custom_logo'], false, false, false).'" alt="logo" width="70%">
+                                </th>
+                                <th style="width: 60%; text-align: left;">
+                                    <h1>'.$product_name.'</h1>
+                                    <p><span>'.__('Version').' '.$pandora_version.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
+                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
+                                    <p><span>'.__('Build').'</span> '.$build_version.'</p>
+                                    <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span> 2023/04/26</p>';
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+            $dialog .= '
+                                    <div style="display: inline;">
+                                        <button class="sub" onclick="location.href=\''.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'\'">'.__('Update manager').'</button>
+                                        <button class="sub" onclick="location.href=\''.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'\'">'.__('System report').'</button>
+                                    </div>
+                                        ';
+        }
+
+        $dialog .= '</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' Pandora FMS. All rights reserved</p>
+                </div>
+                <div id="tab-database" class="div-scroll">
+                    <table class="table-about">
+                        <tbody style="text-align: left;">
+                            <tr>
+                                <th colspan="2">
+                                    <h2><span> - </span>'.__('Database health status').'</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_health->data->unknownAgents->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_health->data->unknownAgents->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_health->data->notInitAgents->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_health->data->notInitAgents->value.'</p>
+                                </th>
+                            </tr>
+                            <tr class="about-last-tr">
+                                <th style="width: 50%;">
+                                    <p class="about-last-p"><span>'.$db_health->data->pandoraDbLastRun->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p class="about-last-p">'.$db_health->data->pandoraDbLastRun->value.'</p>
+                                </th>
+                            </tr>
+
+                            <tr>
+                                <th colspan="2">
+                                    <h2><span> - </span>'.__('Database status info').'</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_info->data->dbSchemeFirstVersion->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_info->data->dbSchemeFirstVersion->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_info->data->dbSchemeVersion->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_info->data->dbSchemeVersion->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_info->data->dbSchemeBuild->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_info->data->dbSchemeBuild->value.'</p>
+                                </th>
+                            </tr>
+                            <tr class="about-last-tr">
+                                <th style="width: 50%;">
+                                    <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p class="about-last-p">'.$db_info->data->dbSize->value.'</p>
+                                </th>
+                            </tr>
+
+                            <tr>
+                                <th colspan="2">
+                                    <h2><span> - </span>'.__('Tables fragmentation in the %s database', $product_name).'</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_fragmentation->data->tablesFragmentationMax->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_fragmentation->data->tablesFragmentationValue->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%;">
+                                    <p><span>'.$db_fragmentation->data->tablesFragmentationStatus->name.'</span></p>
+                                </th>
+                                <th style="width: 50%;">
+                                    <p>'.$fragmentation_status.'</p>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tab-system-info">
+                    <table class="table-about">
+                        <tbody style="text-align: left;">
+                            <tr>
+                                <th colspan="2">
+                                    <h2><span> - </span>'.__('System Info').'</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$sys_info->data->cpuInfo->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$sys_info->data->cpuInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$sys_info->data->ramInfo->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$sys_info->data->ramInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$sys_info->data->osInfo->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$sys_info->data->osInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$sys_info->data->hostnameInfo->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$sys_info->data->hostnameInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$sys_info->data->ipInfo->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$sys_info->data->ipInfo->value.'</p>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tab-php-system">
+                    <table class="table-about">
+                        <tbody style="text-align: left;">
+                            <tr>
+                                <th colspan="2">
+                                    <h2><span> - </span>'.__('PHP system').'</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->phpVersion->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p>'.$php_sys->data->phpVersion->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->maxExecutionTime->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p>'.$php_sys->data->maxExecutionTime->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->maxInputTime->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p>'.$php_sys->data->maxInputTime->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->memoryLimit->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p>'.$php_sys->data->memoryLimit->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->sessionLifetime->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p>'.$php_sys->data->sessionLifetime->value.'</p>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        ';
+
+        echo $dialog;
+    }
+}

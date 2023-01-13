@@ -4922,11 +4922,45 @@ function events_page_general($event)
 
 
 /**
+ * Return Acknowledged by value
+ *
+ * @param integer $event_id Event_id to return Acknowledged.
+ *
+ * @return string String with user and date.
+ */
+function events_page_general_acknowledged($event_id)
+{
+    global $config;
+    $Acknowledged = '';
+    $event = db_get_all_rows_filter('tevento', 'id_evento', $event_id);
+
+    if ($event) {
+        $user_ack = db_get_value(
+            'fullname',
+            'tusuario',
+            'id_user',
+            $config['id_user']
+        );
+
+        if (empty($user_ack) === true) {
+            $user_ack = $config['id_user'];
+        }
+
+        $Acknowledged = $user_ack.'&nbsp;(&nbsp;'.date($config['date_format'], $event['ack_utimestamp_raw']).'&nbsp;)&nbsp;';
+    } else {
+        $Acknowledged = 'N/A';
+    }
+
+    return $Acknowledged;
+}
+
+
+/**
  * Generate 'comments' page for event viewer.
  *
- * @param array   $event   Event.
- * @param boolean $ajax    If the query come from AJAX.
- * @param boolean $grouped If the event must shown comments grouped.
+ * @param array   $event           Event.
+ * @param boolean $ajax            If the query come from AJAX.
+ * @param boolean $groupedComments If the event must shown comments grouped.
  *
  * @return string HTML.
  */

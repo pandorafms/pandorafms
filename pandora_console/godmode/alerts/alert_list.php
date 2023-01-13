@@ -353,8 +353,17 @@ if ($delete_action) {
 if ($enable_alert) {
     $searchFlag = true;
     $id_alert = (int) get_parameter('id_alert');
+    $id_agente = ($id_agente !== 0) ? $id_agente : alerts_get_agent_by_alert($id_alert);
 
     $result = alerts_agent_module_disable($id_alert, false);
+
+    if ($id_agente) {
+        db_process_sql(
+            'UPDATE tagente
+            SET update_alert_count = 1
+            WHERE id_agente = '.$id_agente
+        );
+    }
 
     if ($result) {
         db_pandora_audit(
@@ -380,8 +389,17 @@ if ($enable_alert) {
 if ($disable_alert) {
     $searchFlag = true;
     $id_alert = (int) get_parameter('id_alert');
+    $id_agente = ($id_agente !== 0) ? $id_agente : alerts_get_agent_by_alert($id_alert);
 
     $result = alerts_agent_module_disable($id_alert, true);
+
+    if ($id_agente) {
+        db_process_sql(
+            'UPDATE tagente
+            SET update_alert_count = 1
+            WHERE id_agente = '.$id_agente
+        );
+    }
 
     if ($result) {
         db_pandora_audit(

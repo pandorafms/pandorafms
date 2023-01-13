@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Godmode menu.
  *
@@ -424,10 +425,10 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
             if (is_user_admin($config['id_user']) === true) {
                 $sub['extensions/db_status']['text'] = __('DB Schema Check');
                 $sub['extensions/db_status']['id'] = 'DB Schema Check';
-                $sub['extensions/db_status']['sec'] = 'gbman';
+                $sub['extensions/db_status']['sec'] = 'gextensions';
                 $sub['extensions/dbmanager']['text'] = __('DB Interface');
                 $sub['extensions/dbmanager']['id'] = 'DB Interface';
-                $sub['extensions/dbmanager']['sec'] = 'gbman';
+                $sub['extensions/dbmanager']['sec'] = 'gextensions';
                 enterprise_hook('dbBackupManager');
                 enterprise_hook('elasticsearch_interface_menu');
             }
@@ -580,6 +581,14 @@ if ($access_console_node === true) {
     }
 }
 
+if ($access_console_node === true) {
+    // About.
+    $menu_godmode['about']['text'] = __('About');
+    $menu_godmode['about']['id'] = 'about';
+}
+
 if ((bool) $config['pure'] === false) {
     menu_print_menu($menu_godmode);
 }
+
+echo '<div id="about-div"></div>';

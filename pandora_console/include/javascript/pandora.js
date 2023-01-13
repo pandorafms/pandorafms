@@ -2273,3 +2273,58 @@ var formatterDataVerticalBar = function(value, ctx) {
     return percentage;
   }
 };
+
+// Show about section
+$(document).ready(function() {
+  $("#icon_about").click(function() {
+    $("#icon_about").addClass("selected");
+
+    jQuery.post(
+      "ajax.php",
+      {
+        page: "include/functions_menu",
+        about: "true"
+      },
+      function(data) {
+        $("div.ui-dialog").remove();
+        $("#about-div").html("");
+        if (data) {
+          $("#about-div").html(data);
+          openAbout();
+        }
+      },
+      "html"
+    );
+  });
+
+  function openAbout() {
+    $("#about-tabs").dialog({
+      // title: "About",
+      resizable: false,
+      draggable: false,
+      modal: true,
+      show: {
+        effect: "fade",
+        duration: 200
+      },
+      hide: {
+        effect: "fade",
+        duration: 200
+      },
+      closeOnEscape: true,
+      width: 700,
+      height: 450,
+
+      create: function() {
+        $("#about-tabs").tabs({});
+        $(".ui-dialog-titlebar").remove();
+
+        $("#about-close").click(function() {
+          $("#about-tabs").dialog("close");
+          $("div.ui-dialog").remove();
+          $("#icon_about").removeClass("selected");
+        });
+      }
+    });
+  }
+});

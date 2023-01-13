@@ -537,7 +537,7 @@ function print_form_filter_monitors(
     );
 
     $table->data[0][2] = __('Free text for search (*):').ui_print_help_tip(
-        __('Search by module name, list matches.'),
+        __('Search by module name or alert name, list matches.'),
         true
     );
 

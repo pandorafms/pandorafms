@@ -1701,13 +1701,18 @@ if ($config['admin_can_add_user']) {
 }
 
 echo '</div>';
+if ($new_user === true) {
+    html_print_input_hidden('json_profile', $json_profile);
+}
 
-html_print_input_hidden('json_profile', $json_profile);
 
 echo '</form>';
 
-
-profile_print_profile_table($id, io_safe_output($json_profile));
+if ($is_err === true && $new_user === true) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, true);
+} else {
+    profile_print_profile_table($id, io_safe_output($json_profile));
+}
 
 echo '<br />';
 
@@ -1927,6 +1932,8 @@ $(document).ready (function () {
     });
 
     $('input:image[name="del"]').click(function (e) {
+        if($(json_profile).length > 0) return;
+        if (!confirm ('Are you sure?')) return;
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
         if (((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) && user_is_global_admin !== '1') {

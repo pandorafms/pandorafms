@@ -2828,6 +2828,25 @@ function alerts_get_agent_modules(
 }
 
 
+/**
+ * Return the id_agent of the alert
+ *
+ * @param  integer $id_agent_module
+ * @return integer id_agent
+ */
+function alerts_get_agent_by_alert($id_agent_module)
+{
+    $sql = sprintf(
+        'SELECT id_agente FROM talert_template_modules atm INNER JOIN tagente_modulo am ON am.id_agente_modulo = atm.id_agent_module WHERE atm.id = %d
+        ',
+        $id_agent_module
+    );
+    $id_agente = db_get_row_sql($sql)['id_agente'];
+
+    return $id_agente;
+}
+
+
 function alerts_get_actions_names($actions, $reduce=false)
 {
     $where = '';

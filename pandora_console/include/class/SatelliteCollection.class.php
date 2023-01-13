@@ -84,6 +84,15 @@ class SatelliteCollection extends HTML
             return;
         }
 
+        if ($config['license_nms'] === 1) {
+            db_pandora_audit(
+                AUDIT_LOG_NMS_VIOLATION,
+                'Trying to access satellite collections'
+            );
+            include $config['homedir'].'/general/noaccess.php';
+            return;
+        }
+
         // Set the ajax controller.
         $this->ajaxController = $ajaxController;
         // Capture all parameters before start.

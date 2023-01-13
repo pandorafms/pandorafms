@@ -943,6 +943,10 @@ function config_update_config()
                         $error_update[] = __('Date format string');
                     }
 
+                    if (config_update_value('notification_autoclose_time', (string) get_parameter('notification_autoclose_time'), true) === false) {
+                        $error_update[] = __('Notification Autoclose time');
+                    }
+
                     if (config_update_value('prominent_time', (string) get_parameter('prominent_time'), true) === false) {
                         $error_update[] = __('Timestamp or time comparation');
                     }
@@ -3475,6 +3479,10 @@ function config_process_config()
 
     if (!isset($config['decimal_separator'])) {
         config_update_value('decimal_separator', '.');
+    }
+
+    if (isset($config['notification_autoclose_time']) === false) {
+        config_update_value('notification_autoclose_time', 5);
     }
 
     // Finally, check if any value was overwritten in a form.

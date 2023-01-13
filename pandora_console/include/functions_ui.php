@@ -244,32 +244,34 @@ function printSmallFont($string, $return=true)
  */
 function ui_print_message($message, $class='', $attributes='', $return=false, $tag='h3')
 {
-    static $first_execution = true;
+    global $config;
 
+    $first_execution = true;
     $text_title = '';
     $text_message = '';
     $icon_image = '';
     $no_close_bool = false;
     $force_style = '';
     $force_class = '';
-    if (is_array($message)) {
-        if (!empty($message['title'])) {
+    $autoclose = ($class === 'suc');
+    if (is_array($message) === true) {
+        if (empty($message['title']) === false) {
             $text_title = $message['title'];
         }
 
-        if (!empty($message['message'])) {
+        if (empty($message['message']) === false) {
             $text_message = $message['message'];
         }
 
-        if (!empty($message['icon'])) {
+        if (empty($message['icon']) === false) {
             $icon_image = $message['icon'];
         }
 
-        if (!empty($message['no_close'])) {
-            $no_close_bool = $message['no_close'];
+        if (empty($message['no_close']) === false) {
+            $no_close_bool = (bool) $message['no_close'];
         }
 
-        if (!empty($message['force_style'])) {
+        if (empty($message['force_style']) === false) {
             $force_style = $message['force_style'];
         }
 
@@ -328,46 +330,83 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         $class = $class.' '.$force_class;
     }
 
-    // Use the no_meta parameter because this image is only in the base console.
-    $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'
-		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
-		<tr>
-			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title font_16pt text_left"><b>'.$text_title.'</b></td>
-			<td class="icon right pdd_r_3px">';
-    if (!$no_close_bool) {
+    if ($no_close_bool === false) {
         // Use the no_meta parameter because this image is only in
         // the base console.
-        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/svg/fail.svg', true, false, false, false).'</a>';
+        $iconCloseButton = html_print_anchor(
+            [
+                'href'    => 'javascript: close_info_box(\''.$id.'\')',
+                'content' => html_print_image(
+                    'images/svg/fail.svg',
+                    true,
+                    false,
+                    false,
+                    false,
+                ),
+            ],
+            true
+        );
+
+        $closeButton = html_print_div(
+            [
+                'class'   => 'icon right pdd_r_3px',
+                'content' => $iconCloseButton,
+            ],
+            true
+        );
+    } else {
+        $closeButton = '';
     }
 
-    $output .= '</td>
-		</tr>
-		<tr>
-			<td class="black font_10pt invert_filter" style="color: #000">'.$text_message.'</td>
-			<td></td>
-		</tr>
-		</table>';
+    $messageTable = new stdClass();
+    $messageTable->cellpadding = 0;
+    $messageTable->cellspacing = 0;
+    $messageTable->id = 'info_box '.$id;
+    $messageTable->class = 'info_box '.$id.' '.$class.' textodialogo';
+    $messageTable->styleTable = $force_style;
 
-    if (($first_execution) && (!$no_close_bool)) {
+    $messageTable->rowclass = [];
+    $messageTable->rowclass[0] = 'title font_16pt text_left';
+    $messageTable->rowclass[1] = 'black font_10pt invert_filter';
+    $messageTable->colspan[1][0] = 2;
+
+    $messageTable->data = [];
+    $messageTable->data[0][0] = '<b>'.$text_title.'</b>';
+    $messageTable->data[0][1] = $closeButton;
+    $messageTable->data[1][0] = '<span style="color: #000;">'.$text_message.'</b>';
+
+    $messageCreated = html_print_table($messageTable, true);
+
+    $jsCode = '<script type="text/javascript">';
+
+    if (($first_execution === true) && ($no_close_bool === false)) {
         $first_execution = false;
-
-        $output .= '
-			<script type="text/javascript">
-				function close_info_box(id) {
-					$("." + id).hide();
-				}
-			</script>
-		';
+        $jsCode .= 'function close_info_box(id) { $("." + id).fadeOut(); }';
     }
 
-    if ($return) {
+    $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
+
+    if ($autoclose === true && $autocloseTime > 0) {
+        $jsCode .= '$(document).ready(function(){ setTimeout(() => { close_info_box(\''.$id.'\'); }, '.$autocloseTime.') })';
+    }
+
+    $jsCode .= '</script>';
+
+    $output = html_print_div(
+        [
+            'id'      => $id,
+            'class'   => '',
+            'style'   => 'width: 30%; position: fixed; top: 120px; right: 10px;',
+            'content' => $jsCode.$messageCreated,
+        ],
+        true
+    );
+
+    if ($return === true) {
         return $output;
     } else {
         echo $output;
     }
-
-    return '';
 }
 
 
@@ -461,15 +500,15 @@ function ui_print_empty_data($message, $attributes='', $return=false, $tag='h3')
  */
 function ui_print_result_message($result, $good='', $bad='', $attributes='', $return=false, $tag='h3')
 {
-    if ($good == '' || $good === false) {
+    if (empty($good) === false || $good === false) {
         $good = __('Request successfully processed');
     }
 
-    if ($bad == '' || $bad === false) {
+    if (empty($bad) === false || $bad === false) {
         $bad = __('Error processing request');
     }
 
-    if (empty($result)) {
+    if (empty($result) === true) {
         return ui_print_error_message($bad, $attributes, $return, $tag);
     } else {
         return ui_print_success_message($good, $attributes, $return, $tag);
@@ -856,11 +895,11 @@ function ui_print_type_agent_icon(
 ) {
     global $config;
 
-    if ($id_os == 19) {
+    if ((int) $id_os === SATELLITE_OS_ID) {
         // Satellite.
         $options['title'] = __('Satellite');
         $output = html_print_image('images/satellite@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
-    } else if ($remote_contact == $contact && $remote == 0 && $version == '') {
+    } else if ($remote_contact === $contact && $remote === 0 && empty($version) === true) {
         // Network.
         $options['title'] = __('Network');
         $output = html_print_image('images/network-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);

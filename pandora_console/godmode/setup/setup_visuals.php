@@ -1395,7 +1395,10 @@ $table_other->data[$row][1] = html_print_select(
     false
 );
 
+$row++;
 
+$table_other->data[$row][0] = __('Visible time of successful notifiations');
+$table_other->data[$row][1] .= html_print_input_text('notification_autoclose_time', $config['notification_autoclose_time'], '', 10, 10, true);
 $row++;
 
 if ($config['prominent_time'] === 'comparation') {

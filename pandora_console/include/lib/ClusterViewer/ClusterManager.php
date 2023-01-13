@@ -105,7 +105,6 @@ class ClusterManager
      */
     public function run()
     {
-
         $operation = get_parameter('op', '');
 
         switch ($operation) {
@@ -329,10 +328,8 @@ class ClusterManager
      */
     public function showClusterEditor(string $operation)
     {
-
         global $config;
         if (!check_acl($config['id_user'], 0, 'AW')) {
-
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to create clusters'

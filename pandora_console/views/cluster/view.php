@@ -87,7 +87,8 @@ ui_print_page_header(
         [
             'active' => false,
             'text'   => $main_page,
-        ],[
+        ],
+        [
             'active' => false,
             'text'   => $edit,
         ],

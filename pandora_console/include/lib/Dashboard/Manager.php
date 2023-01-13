@@ -818,9 +818,9 @@ class Manager implements PublicLogin
                 $string_groups = io_safe_output($string_groups);
 
                 $sql_dashboard = sprintf(
-                    "SELECT COUNT(*)
+                    'SELECT COUNT(*)
                     FROM tdashboard
-                    WHERE (id_group IN (%s))",
+                    WHERE (id_group IN (%s))',
                     $string_groups
                 );
             } else {

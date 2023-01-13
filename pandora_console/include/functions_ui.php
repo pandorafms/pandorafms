@@ -2370,13 +2370,17 @@ function ui_print_help_tip(
     $return=false,
     $img='images/tip_help.png',
     $is_relative=false,
-    $style=''
+    $style='',
+    $blink=false
 ) {
     $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
     $output .= html_print_image(
         $img,
         true,
-        ['title' => $text],
+        [
+            'title' => $text,
+            'class' => $blink === true ? 'blink' : '',
+        ],
         false,
         $is_relative && is_metaconsole()
     ).'</a>';

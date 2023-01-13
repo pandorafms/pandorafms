@@ -344,8 +344,8 @@ INSERT INTO `tmodule_inventory` (`id_module_inventory`, `id_os`, `name`, `descri
 --
 -- Dumping data for table `tusuario`
 --
-INSERT INTO `tusuario` (`id_user`, `fullname`, `firstname`, `lastname`, `middlename`, `password`, `comments`, `last_connect`, `registered`, `email`, `phone`, `is_admin`, `language`, `block_size`, `section`, `data_section`, `metaconsole_access`, `local_user`) VALUES
-('admin', 'Pandora', 'Pandora', 'Admin', '', '$2y$10$Wv/xoxjI2VAkthJhk/PzeeGIhBKYU/K.TMgUdmW7fEP2NQkdWlB9K', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, 'default', 0, 'Default', '', 'advanced', 1);
+INSERT INTO `tusuario` (`id_user`, `fullname`, `firstname`, `lastname`, `middlename`, `password`, `comments`, `last_connect`, `registered`, `email`, `phone`, `is_admin`, `language`, `block_size`, `section`, `data_section`, `metaconsole_access`, `local_user`, `api_token`) VALUES
+('admin', 'Pandora', 'Pandora', 'Admin', '', '$2y$10$Wv/xoxjI2VAkthJhk/PzeeGIhBKYU/K.TMgUdmW7fEP2NQkdWlB9K', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, 'default', 0, 'Default', '', 'advanced', 1, 'pandora1234');
 
 --
 -- Dumping data for table `tusuario_perfil`

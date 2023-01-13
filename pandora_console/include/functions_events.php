@@ -3358,7 +3358,7 @@ function events_page_responses($event)
             $event['owner_user'],
             '',
             __('None'),
-            -1,
+            'N/A',
             true,
             false,
             true,

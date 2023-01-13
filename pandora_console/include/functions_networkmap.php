@@ -3393,7 +3393,7 @@ function get_status_color_networkmap_fictional_point($id_networkmap, $parent='')
 
         $exit = false;
         foreach ($agents as $agent) {
-            if ($agent['source_data'] == -1) {
+            if ($agent['source_data'] == -1 || $agent['type'] == 2) {
                 continue;
             }
 

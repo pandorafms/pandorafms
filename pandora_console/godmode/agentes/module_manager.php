@@ -1064,9 +1064,12 @@ foreach ($modules as $module) {
     // This module is initialized ? (has real data).
     if ($status === STATUS_MODULE_NO_DATA) {
         $data[2] .= html_print_image(
-            'images/error.png',
+            'images/alert-yellow@svg.svg',
             true,
-            ['title' => __('Non initialized module')]
+            [
+                'title' => __('Non initialized module'),
+                'class' => 'main_menu_icon',
+            ]
         );
     }
 

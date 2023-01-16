@@ -2716,13 +2716,20 @@ td.cellBig {
 
 .info_box .title * {
   font-size: 14pt;
-  font-family: Pandora-Bold;
+  font-family: "Pandora-Bold";
 }
 
 .info_box .icon {
   width: 24px;
 }
 
+.info_box_container {
+  width: 30%;
+  position: fixed;
+  top: 120px;
+  right: 10px;
+  z-index: 100;
+}
 /* Standard styles for status colos (groups, events, backgrounds...) */
 .opacity_cell {
   filter: alpha(opacity=80);

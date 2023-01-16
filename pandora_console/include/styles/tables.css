@@ -183,7 +183,7 @@
   padding: 0.1em;
   font-weight: normal;
   color: #000;
-  margin-left: 0.5em;
+  /*margin-left: 0.5em;*/
 }
 
 .info_table > tbody > tr {

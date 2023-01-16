@@ -223,36 +223,15 @@ if ($pure) {
     $url .= '&pure='.$pure;
 }
 
-if ($free_search != '') {
+if (empty($free_search) === false) {
     $url .= '&free_search='.$free_search;
 }
 
-$columns = ['standby'];
-$column_names = [
-    [
-        'title' => 'Standby',
-        'text'  => 'S.',
-    ],
-];
-
-
-if (enterprise_installed() === true) {
-    array_unshift(
-        $column_names,
-        [
-            'title' => 'Policy',
-            'text'  => 'P.',
-        ]
-    );
-
-    $columns = array_merge(
-        ['policy'],
-        $columns
-    );
-}
+$columns = [];
+$column_names = [];
 
 if (is_metaconsole() === false) {
-    if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+    if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
         array_unshift(
             $column_names,
             [
@@ -260,6 +239,11 @@ if (is_metaconsole() === false) {
                 'text'  => __('Standby'),
                 'style' => 'max-width: 5%;',
             ],
+        );
+
+        $columns = array_merge(
+            ['standby'],
+            $columns
         );
 
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -291,7 +275,7 @@ if (is_metaconsole() === false) {
         }
     }
 
-    if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
+    if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
         array_push(
             $column_names,
             [
@@ -338,24 +322,6 @@ if ($print_agent === true) {
         ['agent_name']
     );
 }
-
-array_push(
-    $column_names,
-    ['text' => 'Module'],
-    ['text' => 'Template'],
-    ['text' => 'Action'],
-    ['text' => 'Last fired'],
-    ['text' => 'Status']
-);
-
-$columns = array_merge(
-    $columns,
-    ['agent_module_name'],
-    ['template_name'],
-    ['action'],
-    ['last_fired'],
-    ['status']
-);
 
 if (is_metaconsole() === false) {
     if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {

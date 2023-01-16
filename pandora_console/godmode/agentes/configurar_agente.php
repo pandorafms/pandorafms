@@ -858,7 +858,8 @@ if ($delete_conf_file) {
     ui_print_result_message(
         $correct,
         __('Conf file deleted successfully'),
-        __('Could not delete conf file')
+        __('Could not delete conf file'),
+        [ 'autoclose' => true ]
     );
 }
 

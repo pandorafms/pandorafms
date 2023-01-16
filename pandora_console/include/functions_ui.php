@@ -246,7 +246,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 {
     global $config;
 
-    $first_execution = true;
+    static $first_execution = true;
     $text_title = '';
     $text_message = '';
     $icon_image = '';
@@ -361,8 +361,8 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageTable = new stdClass();
     $messageTable->cellpadding = 0;
     $messageTable->cellspacing = 0;
-    $messageTable->id = 'info_box '.$id;
-    $messageTable->class = 'info_box '.$id.' '.$class.' textodialogo';
+    $messageTable->id = 'table_'.$id;
+    $messageTable->class = 'info_box '.$class.' textodialogo';
     $messageTable->styleTable = $force_style;
 
     $messageTable->rowclass = [];
@@ -375,28 +375,35 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageTable->data[0][1] = $closeButton;
     $messageTable->data[1][0] = '<span style="color: #000;">'.$text_message.'</b>';
 
+    // JavaScript help vars.
     $messageCreated = html_print_table($messageTable, true);
-
-    $jsCode = '<script type="text/javascript">';
-
-    if (($first_execution === true) && ($no_close_bool === false)) {
-        $first_execution = false;
-        $jsCode .= 'function close_info_box(id) { $("." + id).fadeOut(); }';
-    }
-
     $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
+    $definedMessageTop = '20';
+    ob_start();
+    ?>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var $definedTop = <?php echo $definedMessageTop; ?>;
+            var $listOfMessages = document.querySelectorAll('.info_box_container');
+            $("#<?php echo $id; ?>").css('top', (parseInt($definedTop) + (100*($listOfMessages.length)))+'px');
 
-    if ($autoclose === true && $autocloseTime > 0) {
-        $jsCode .= '$(document).ready(function(){ setTimeout(() => { close_info_box(\''.$id.'\'); }, '.$autocloseTime.') })';
-    }
+            <?php if (($autoclose === true) && ($autocloseTime > 0)) : ?>
+                setTimeout(() => { close_info_box('<?php echo $id; ?>'); }, <?php echo $autocloseTime; ?>);
+            <?php endif; ?>
+        });
 
-    $jsCode .= '</script>';
+        <?php if (($first_execution === true) && ($no_close_bool === false)) : ?>
+            function close_info_box(id) { $("#" + id).fadeOut('slow', function(){ $("#" + id).remove(); }); }
+        <?php endif; ?>
+    </script>
+    <?php
+    $jsCode = ob_get_clean();
 
     $output = html_print_div(
         [
             'id'      => $id,
-            'class'   => '',
-            'style'   => 'width: 30%; position: fixed; top: 120px; right: 10px;',
+            'style'   => 'top: 120px;',
+            'class'   => 'info_box_container',
             'content' => $jsCode.$messageCreated,
         ],
         true

@@ -776,7 +776,7 @@ class NetworkMap
         // Search.
         if ($this->idTask) {
             // Network map, based on discovery task.
-            return get_discovery_agents($this->idTask);
+            enterprise_hook('get_discovery_agents', [$this->idTask]);
         }
 
         if ($this->network) {

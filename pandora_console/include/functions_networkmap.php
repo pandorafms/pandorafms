@@ -4161,7 +4161,7 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
     }
 
     if ((int) $networkmap['source'] === SOURCE_TASK) {
-        $agents = get_discovery_agents($id_recon, true);
+        $agents = enterprise_hook('get_discovery_agents', [$id_recon, true]);
     } else if ((int) $networkmap['source'] === SOURCE_NETWORK) {
         // Network map, based on direct network.
         $agents = networkmap_get_nodes_from_ip_mask(

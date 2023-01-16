@@ -3504,6 +3504,8 @@ sub cli_agent_update() {
 	} else {
 		pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id_agent), 'tagente', $dbh);
 	}
+
+	enterprise_hook('update_agent_cache', [$conf, $dbh, $id_agent]) if ($conf->{'node_metaconsole'} == 1);
 }
 
 ##############################################################################

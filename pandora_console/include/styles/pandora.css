@@ -10691,8 +10691,9 @@ tr.bring_next_field {
 }
 
 .fixed_action_buttons_size {
-  /*width: 1064px;*/
-  width: 1116px;
+  width: -webkit-fill-available;
+  width: -moz-fill-available;
+  margin-right: 20px;
 }
 
 .action_buttons_background_mask {

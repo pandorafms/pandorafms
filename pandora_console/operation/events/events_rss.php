@@ -259,7 +259,7 @@ $fields = [
     'te.event_type',
     'te.utimestamp',
     'te.id_agente',
-    '"Prueba" as agent_name',
+    'ta.alias as agent_name',
     'te.id_usuario',
     'te.id_grupo',
     'te.id_agentmodule',

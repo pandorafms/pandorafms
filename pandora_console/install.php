@@ -170,10 +170,10 @@ function check_extension($ext, $label)
     echo "<span class='arr'> $label </span>";
     echo '</td><td>';
     if (!extension_loaded($ext)) {
-        echo "<img src='images/dot_red.png'>";
+        echo "<span class='incomplete'>incomplete</span>";
         return 1;
     } else {
-        echo "<img src='images/dot_green.png'>";
+        echo "<span class='checked'>checked</span>";
         return 0;
     }
 
@@ -186,10 +186,10 @@ function check_include($ext, $label)
     echo "<span class='arr'> $label </span>";
     echo '</td><td>';
     if (!include $ext) {
-        echo "<img src='images/dot_red.png'>";
+        echo "<span class='incomplete'>incomplete</span>";
         return 1;
     } else {
-        echo "<img src='images/dot_green.png'>";
+        echo "<span class='checked'>checked</span>";
         return 0;
     }
 
@@ -203,10 +203,10 @@ function check_exists($file, $label)
     echo "<span class='arr'> $label </span>";
     echo '</td><td>';
     if (!file_exists($file)) {
-        echo " <img src='images/dot_red.png'>";
+        echo " <span class='incomplete'>incomplete</span>";
         return 1;
     } else {
-        echo " <img src='images/dot_green.png'>";
+        echo " <span class='checked'>checked</span>";
         return 0;
     }
 
@@ -218,14 +218,14 @@ function check_generic($ok, $label)
 {
     echo "<tr><td style='width:10%'>";
     if ($ok == 0) {
-        echo " <img src='images/dot_red.png'>";
+        echo " <span class='incomplete'>incomplete</span>";
         echo '<td>';
         echo "<span class='arr'> $label </span>";
         echo '</td>';
         echo '</td></tr>';
         return 1;
     } else {
-        echo " <img src='images/dot_green.png'>";
+        echo " <span class='checked'>checked</span>";
         echo '<td>';
         echo "<span class='arr'> $label </span>";
         echo '</td>';
@@ -237,27 +237,29 @@ function check_generic($ok, $label)
 
 function check_writable($fullpath, $label)
 {
-    echo "<tr><td style='width:10%;'>";
+    echo '<tr><td>';
     if (file_exists($fullpath)) {
         if (is_writable($fullpath)) {
-            echo " <img style='margin-left:50px;' src='images/dot_green.png'>";
-            echo '<td>';
             echo "<span class='arr'> $label </span>";
             echo '</td>';
-            echo '</td></tr>';
+            echo '<td>';
+            echo "<span class='checked'>checked</span>";
+            echo '</td>';
+            echo '</tr>';
             return 0;
         } else {
-            echo " <img style='margin-left:50px;' src='images/dot_red.png'>";
-            echo '<td>';
             echo "<span class='arr'> $label </span>";
             echo '</td>';
-            echo '</td></tr>';
+            echo '<td>';
+            echo "<span class='incomplete'>incomplete</span>";
+            echo '</td>';
+            echo '</tr>';
             return 1;
         }
     } else {
-        echo " <img style='margin-left:50px;' src='images/dot_red.png'>";
-        echo '<td>';
         echo "<span class='arr'> $label </span>";
+        echo '<td>';
+        echo "<span class='incomplete'>incomplete</span>";
         echo '</td>';
         echo '</td></tr>';
         return 1;
@@ -272,17 +274,17 @@ function check_variable($var, $value, $label, $mode)
     echo '</td><td>';
     if ($mode == 1) {
         if ($var >= $value) {
-            echo " <img src='images/dot_green.png'>";
+            echo "<span class='checked'>checked</span>";
             return 0;
         } else {
-            echo " <img src='images/dot_red.png'>";
+            echo "<span class='incomplete'>incomplete</span>";
             return 1;
         }
     } else if ($var == $value) {
-        echo " <img src='images/dot_green.png'>";
+        echo "<span class='checked'>checked</span>";
         return 0;
     } else {
-        echo " <img src='images/dot_red.png'>";
+        echo "<span class='incomplete'>incomplete</span>";
         return 1;
     }
 
@@ -389,17 +391,27 @@ function print_logo_status($step, $step_total)
 {
     global $banner;
 
-    $header = "
-		<div id='logo_img' style='width: 100%;'>
-			<div style='width:100%; background-color:#333333;'>
-				<img src='images/logo_opensource.png' border='0'><br>
-				<span style='font-size: 9px;'>$banner</span>
-			</div>
-		</div>";
-    $header .= "
-		<div class='installation_step'>
-			<b>Install step $step of $step_total</b>
-		</div>";
+    $header = '
+        <div class="header">
+            <h3 class="title-pandora">Pandora FMS OpenSource Installer 
+                <span class="build-banner">'.$banner.'</span>
+            </h3>
+            <div class="steps">
+                <span class="step '.(($step === 11 || $step === 1) ? 'active' : '').'">1</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 2) ? 'active' : '').'">2</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 3) ? 'active' : '').'">3</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 4) ? 'active' : '').'">4</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 5) ? 'active' : '').'">5</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 6) ? 'active' : '').'">6</span>
+
+            </div>
+        </div>
+    ';
 
     return $header;
 }
@@ -463,57 +475,67 @@ function install_step1()
     echo "
 	<div id='install_container'>
 	<div id='wizard'>
-	".print_logo_status(1, 6)."
+    ".print_logo_status(1, 6)."
+        <div class='row'>
+        <div class='col-md-6'>
 		<div id='install_box'>
-			<h2>Welcome to Pandora FMS installation Wizard</h2>
-			<p>This wizard helps you to quick install Pandora FMS console and main database in your system.</p>
-			<p>In four steps, this installer will check all dependencies and will create your configuration, ready to use.</p>
-			<p>For more information, please refer to documentation.<br>
-			<i>Pandora FMS Development Team</i></p>
+			<h2 class='title'>Welcome to Pandora FMS installation Wizard</h2>
+			<p class'text'>This wizard helps you to quick install Pandora FMS console and main database in your system.
+			In four steps, this installer will check all dependencies and will create your configuration, ready to use.</p>
+			<p class='text'>For more information, please refer to <a class='link' href='https://pandorafms.com/en/documentation/' target='_blank'>documentation →</a></p>
 		";
     if (file_exists('include/config.php')) {
-        echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
+        echo "<div class='warn'> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
     }
 
         echo '<br>';
-        echo '<table width=100%>';
-        $writable = check_writable('include', 'Checking if ./include is writable');
+        echo '<table class="check-table">';
+        $writable = check_writable('include', './include is writable');
     if (file_exists('include/config.php')) {
-        $writable += check_writable('include/config.php', 'Checking if include/config.php is writable');
+        $writable += check_writable('include/config.php', 'include/config.php is writable');
     }
 
         echo '</table>';
 
-        echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> 
+        echo "<div class='warn'>This installer will <b>overwrite and destroy</b> 
 		your existing Pandora FMS configuration and <b>Database</b>. Before continue, 
 		please <b>be sure that you have no valuable Pandora FMS data in your Database</b>.<br>
 		</div>";
 
-        echo "<div class='info'><b>Upgrade</b>: 
+        echo "<div class='info'>
 		If you want to upgrade from Pandora FMS 4.x to 5.0 version, please use the migration tool inside /extras directory in this setup.
 		</div>";
 
-        echo '<br>';
-
-    if ($writable == 0) {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_install_next'><span class='btn_install_next_text'>Next</span></button></a>";
-        echo '</div>';
-    } else {
-        echo "<div class='err'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
+    if ($writable !== 0) {
+        echo "<div class='err'>You need to setup permissions to be able to write in ./include directory</div>";
     }
 
         echo '</div>';
 
         echo "<div style='clear:both;'></div>";
         echo "
-	</div>
-	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-	</div>";
+        </div>
+        <div class='col-md-6 hide-phone'>
+        <div class='content-animation'>
+        <div class='popuphero'>
+            <div class='popupgear1'><img src='https://pandorafms.com/wp-content/uploads/2023/01/Pandora-FMS-installer-gear.png'></div>
+            <div class='popupgear2'><img src='https://pandorafms.com/wp-content/uploads/2023/01/Pandora-FMS-installer-gear.png'></div>
+            <div class='popuplaptop'><img src='https://pandorafms.com/wp-content/uploads/2023/01/Pandora-FMS-installer.png'></div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div id='foot_install'>
+            <div class='content-footer'>
+            <span class='signature'>Pandora FMS is an OpenSource Software project registered at 
+            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+    if ($writable === 0) {
+        echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_primary'>Start installation</button></a>";
+    }
+
+        echo '</div></div></div>';
 }
 
 
@@ -524,9 +546,9 @@ function install_step1_licence()
 	<div id='wizard'>
 	".print_logo_status(2, 6)."
 		<div id='install_box'>
-			<h2>GPL2 Licence terms agreement</h2>
-			<p>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
-			<p>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
+			<h2 class='subtitle'>GPL2 Licence terms agreement</h2>
+			<p class='text'>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
+			<p class='text'>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
 <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
 
@@ -534,23 +556,25 @@ function install_step1_licence()
         echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
         echo '</div>';
     } else {
-        echo "<form method=post action='install.php?step=2'>";
         echo "<textarea name='gpl2' cols=52 rows=15 style='width: 100%;'>";
         echo file_get_contents('COPYING');
         echo '</textarea>';
         echo '<p>';
-        echo "<div style='text-align: right;'><button id='btn_accept' class='btn_install_next' type='submit'><span class='btn_install_next_text'>Yes, I accept licence terms</span></button></div>";
     }
 
     echo '</div>';
 
     echo "</div>
-	<div style='clear: both;height: 1px;'><!-- --></div>
 	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-	</div>";
+            <div class='content-footer'>
+            <a href='install.php'><button class='btn_primary outline'>Previous step</button></a>
+            <span class='signature'>Pandora FMS is an OpenSource Software project registered at
+            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+    if (file_exists('COPYING')) {
+        echo "<a href='install.php?step=2'><button id='btn_accept' class='btn_primary'>Yes, I accept licence terms</button></a>";
+    }
+
+    echo '</div></div></div>';
 }
 
 
@@ -561,8 +585,11 @@ function install_step2()
 	<div id='wizard'>
 	".print_logo_status(3, 6)."
 		<div id='install_box'>";
-        echo '<h2>Checking software dependencies</h2>';
-            echo '<table border=0 width=230>';
+        echo '<h2 class="subtitle">Checking software dependencies</h2>';
+            echo '
+            <div class="row reverse">
+            <div class="col-md-6">
+            <table class="check-table">';
             $res = 0;
             $res += check_variable(phpversion(), '7.0', 'PHP version >= 7.0', 1);
             $res += check_extension('gd', 'PHP GD extension');
@@ -593,10 +620,9 @@ function install_step2()
             echo '</td><td>';
             echo '</td></tr>';
             check_extension('mysqli', 'PHP MySQL(mysqli) extension');
-            echo '</table>';
-
+            echo '</table></div>';
     if ($res > 0) {
-        echo "
+        echo "<div class='col-md-6'>
 				<div class='err'>You have some incomplete 
 				dependencies. Please correct them or this installer 
 				will not be able to finish your installation.
@@ -607,27 +633,23 @@ function install_step2()
 					your HTTP/Apache server after it to use the new
 					modules.
 				</div>
-				<div style='text-align:right; width:100%;'>
-				Ignore it. <a id='step3' href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Force install Step #3</span></button></a>
-				</div>";
-    } else {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step3' href='install.php?step=3'>
-				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
-        echo '</div>';
+                </div>";
     }
 
             echo '</div>';
-            echo "<div style='clear: both;'><!-- --></div>";
-            echo "
-		</div>
-		<div style='clear: both;'><!-- --></div>
-	</div>
-	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-	</div>";
+            echo "</div></div>
+            <div id='foot_install'>
+                <div class='content-footer'>
+                <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
+                <span class='signature'>Pandora FMS is an OpenSource Software project registered at
+                <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+    if ($res > 0) {
+        echo "<span class='text' style='margin-right: 10px'>Ignore it.</span><a id='step3' href='install.php?step=3'><button class='btn_primary'>Force install</button></a>";
+    } else {
+        echo "<a id='step3' href='install.php?step=3'><button class='btn_primary'>Next Step</button></a>";
+    }
+
+            echo '</div></div>';
 }
 
 
@@ -652,24 +674,26 @@ function install_step3()
 	<div id='wizard'>
 	".print_logo_status(4, 6)."
 		<div id='install_box'>
-			<h2>Environment and database setup</h2>
-			<p>
+        <div class='row'>
+        <div class='col-md-6'>
+			<h2 class='subtitle'>Environment and database setup</h2>
+			<p class='text'>
 			This wizard will create your Pandora FMS database, 
 			and populate it with all the data needed to run for the first time.
 			</p>
-			<p>
+			<p class='text'>
 			You need a privileged user to create database schema, this is usually <b>root</b> user.
 			Information about <b>root</b> user will not be used or stored anymore.	
 			</p>
-			<p>
+			<p class='text'>
 			You can also deploy the scheme into an existing Database. 
 			In this case you need a privileged Database user and password of that instance. 
 			</p>
-			<p>
+			<p class='text'>
 			Now, please, complete all details to configure your database and environment setup.
 			</p>
 			<div class='warn'>
-			<b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing 
+			 This installer will <b>overwrite and destroy</b> your existing 
 			Pandora FMS configuration and <b>Database</b>. Before continue, 
 			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
@@ -683,6 +707,8 @@ function install_step3()
         echo "<form method='post' name='step2_form' action='install.php?step=4'>";
     }
 
+    echo '</div>';
+    echo '<div class="col-md-6">';
     echo "<table cellpadding=6 width=100% border=0 style='text-align: left;'>";
     echo '<tr><td>';
     echo 'DB Engine<br>';
@@ -690,7 +716,7 @@ function install_step3()
     if ($error) {
         echo "
 			<div class='warn'>
-			<b>Warning:</b> You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
+			 You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
 			</div>";
     } else {
         echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
@@ -746,11 +772,20 @@ function install_step3()
 			</table>
 			";
 
+    echo '</div>';
+
+    echo '</form>';
+    echo '</div></div>';
+    echo "<div style='clear:both;'></div>";
+    echo "<div id='foot_install'>
+    <div class='content-footer'>
+    <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
+    <span class='signature'>Pandora FMS is an OpenSource Software project registered at
+    <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
     if (!$error) {
-        echo "<div style='text-align:right; width:100%;'>";
         echo "<a id='step4' href='install.php?step=4'>
-					<button class='btn_install_next' type='submit' id='step4button'><span class='btn_install_next_text'>Next</span></button></a>";
-        echo '</div>';
+					<button class='btn_primary' type='submit' id='step4button'><span class='btn_install_next_text'>Next Step</span></button>";
+        echo '</a>';
         ?>
         <script type="text/javascript">
             var step3_form = document.getElementsByName('step2_form')[0];
@@ -759,17 +794,7 @@ function install_step3()
         <?php
     }
 
-    echo '</div>';
-
-    echo '</form>';
-
-    echo "<div style='clear:both;'></div>";
-    echo "</div>
-		<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
-			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-		</div>
-	</div>";
+    echo '</div></div></div>';
 }
 
 
@@ -1076,7 +1101,7 @@ function install_step4()
     if ($everything_ok == 1) {
         echo "<div style='text-align:right; width:100%;'>";
         echo "<a id='step5' href='install.php?step=5'>
-				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
+				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next Step</span></button></a>";
         echo '</div>';
     } else {
         $info = "<div class='err'><b>There were some problems.
@@ -1121,11 +1146,13 @@ function install_step4()
         echo '</div>';
         echo "<div style='clear: both;'></div>";
         echo "
-		</div>
 		<div id='foot_install'>
-			<i>Pandora FMS is an Open Source Software project registered at 
-			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-		</div>
+            <div class='content-footer'>
+                <span>Pandora FMS is an OpenSource Software project registered at 
+                <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>
+            </div>
+	    </div>
+        </div>
 	</div>";
 }
 
@@ -1157,8 +1184,10 @@ function install_step5()
 
     echo "</div>
 	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
+        <div class='content-footer'>
+            <span>Pandora FMS is an OpenSource Software project registered at 
+            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>
+        </div>
 	</div>
 </div>";
 }

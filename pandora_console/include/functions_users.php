@@ -142,7 +142,7 @@ function users_get_groups_for_select(
         null
     );
 
-    if ($id_groups !== null) {
+    if ($id_groups !== null && empty($id_groups) === false) {
         $children = groups_get_children($id_groups);
         foreach ($children as $child) {
             unset($user_groups[$child['id_grupo']]);

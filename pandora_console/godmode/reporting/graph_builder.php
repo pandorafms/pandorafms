@@ -229,7 +229,8 @@ if ($add_module === true) {
     // Safe output remove all entities.
     io_safe_output_array($id_modules, '');
 
-    $id_modules = array_map(function ($mod) {
+    $id_modules = array_map(
+        function ($mod) {
             return io_safe_input($mod);
         },
         $id_modules

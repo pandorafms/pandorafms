@@ -695,7 +695,7 @@ class Manager implements PublicLogin
 
         // Check ACl.
         if (\is_user_admin($config['id_user']) !== true) {
-            // User no admin see dashboards of him groups and profile 'AR'.
+            // Non-admin user can see dashboards of his groups and 'AR' profile.
             $group_list = \users_get_groups(
                 $config['id_user'],
                 'RR',
@@ -802,7 +802,7 @@ class Manager implements PublicLogin
         global $config;
 
         if (is_user_admin($config['id_user']) !== false) {
-            // User no admin see dashboards of him groups and profile 'AR'.
+            // Non-admin user can see dashboards of his groups and 'AR' profile.
             $group_list = \users_get_groups(
                 $config['id_user'],
                 'RR',
@@ -818,20 +818,13 @@ class Manager implements PublicLogin
                 $string_groups = io_safe_output($string_groups);
 
                 $sql_dashboard = sprintf(
-                    "SELECT COUNT(*)
+                    'SELECT COUNT(*)
                     FROM tdashboard
-                    WHERE (id_group IN (%s) AND id_user = '') OR
-                        id_user = '%s'",
-                    $string_groups,
-                    $config['id_user']
+                    WHERE (id_group IN (%s))',
+                    $string_groups
                 );
             } else {
-                $sql_dashboard = sprintf(
-                    "SELECT COUNT(*)
-                    FROM tdashboard
-                    WHERE id_group = 0 AND id_user = '%s'",
-                    $config['id_user']
-                );
+                $sql_dashboard = 'SELECT COUNT(*) FROM tdashboard WHERE id_group = 0';
             }
         } else {
             $sql_dashboard = 'SELECT COUNT(*) FROM tdashboard';

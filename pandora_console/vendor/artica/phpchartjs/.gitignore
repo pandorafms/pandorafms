@@ -1,0 +1,9 @@
+# Created by .ignore support plugin (hsz.mobi)
+/.idea/
+/composer.phar
+composer.phar
+/vendor/
+codeCoverage
+build
+*DS_Store
+.phpunit.result.cache

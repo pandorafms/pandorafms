@@ -881,7 +881,11 @@ if (is_ajax() === true) {
         $shape = get_parameter('shape', 0);
         $radious = (int) get_parameter('radious', 20);
         $color = get_parameter('color', 0);
+
         $networkmap = (int) get_parameter('networkmap', 0);
+        if (empty($networkmap) === false) {
+            $color = get_status_color_networkmap_fictional_point($networkmap);
+        }
 
         $return = [];
         $return['correct'] = false;
@@ -2048,7 +2052,12 @@ if (is_ajax() === true) {
 
         $array_filter = json_decode($networkmap['filter']);
         if (isset($array_filter->z_dash)) {
-            $array_filter->z_dash = number_format($scale, 2);
+            $array_filter->z_dash = number_format(
+                $scale,
+                2,
+                $config['decimal_separator'],
+                $config['thousand_separator']
+            );
         }
 
         $filter = json_encode($array_filter);

@@ -3393,13 +3393,16 @@ function get_status_color_networkmap_fictional_point($id_networkmap, $parent='')
 
         $exit = false;
         foreach ($agents as $agent) {
-            if ($agent['source_data'] == -1) {
+            if ($agent['source_data'] == -1 || $agent['type'] == 2) {
                 continue;
             }
 
             if ($agent['source_data'] == -2) {
                 if (empty($parent) === true) {
-                    $option = json_decode($agent, true);
+                    if (is_array($agent) === false) {
+                        $option = json_decode($agent, true);
+                    }
+
                     if ($option['networkmap'] == 0) {
                         $status = 0;
                     } else {
@@ -4158,7 +4161,7 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
     }
 
     if ((int) $networkmap['source'] === SOURCE_TASK) {
-        $agents = get_discovery_agents($id_recon, true);
+        $agents = enterprise_hook('get_discovery_agents', [$id_recon, true]);
 
         $relations_discovery = modules_get_relations(['id_rt' => $id_recon, 'distinct' => true]);
         $array_aux = $relations_discovery;

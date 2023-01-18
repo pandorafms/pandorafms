@@ -285,8 +285,6 @@ final class ModuleGraph extends Item
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
-        $imageOnly = false;
-
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
         $showLegend = static::extractShowLegend($data);
@@ -367,7 +365,7 @@ final class ModuleGraph extends Item
                 'title'              => '',
                 'unit_name'          => null,
                 'show_alerts'        => false,
-                'only_image'         => $imageOnly,
+                'only_image'         => false,
                 'vconsole'           => true,
                 'backgroundColor'    => $backgroundType,
                 'show_legend'        => $showLegend,
@@ -384,11 +382,7 @@ final class ModuleGraph extends Item
                 'modules_series' => $customGraph['modules_series'],
             ];
 
-            if ($imageOnly !== false) {
-                $imgbase64 = 'data:image/png;base64,';
-            }
-
-            $imgbase64 .= \graphic_combined_module(
+            $chart = \graphic_combined_module(
                 false,
                 $params,
                 $paramsCombined
@@ -417,7 +411,7 @@ final class ModuleGraph extends Item
                     $moduleId
                 ),
                 'unit'               => \modules_get_unit($moduleId),
-                'only_image'         => $imageOnly,
+                'only_image'         => false,
                 'menu'               => false,
                 'backgroundColor'    => $backgroundType,
                 'type_graph'         => $graphType,
@@ -429,14 +423,10 @@ final class ModuleGraph extends Item
                 'server_id'          => $metaconsoleId,
             ];
 
-            if ($imageOnly !== false) {
-                $imgbase64 = 'data:image/png;base64,';
-            }
-
-            $imgbase64 .= \grafico_modulo_sparse($params);
+            $chart = \grafico_modulo_sparse($params);
         }
 
-        $data['html'] = $imgbase64;
+        $data['html'] = $chart;
         // Restore connection.
         if ($nodeConnected === true) {
             \metaconsole_restore_db();

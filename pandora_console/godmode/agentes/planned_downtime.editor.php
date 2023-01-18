@@ -1842,6 +1842,10 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     $(document).ready (function () {
         populate_agents_selector();
 
+        // Add data-pendingdelete attribute to exclude delete_pending modules
+        document.querySelector("#id_agents").dataset.pendingdelete = true
+        document.querySelector("#modules_selection_mode").dataset.pendingdelete = true
+        
         $("#id_agents").change(agent_changed_by_multiple_agents);
         $("#modules_selection_mode").change(agent_changed_by_multiple_agents);
         

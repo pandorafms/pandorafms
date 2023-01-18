@@ -52,13 +52,13 @@ if (!isset($policy_page)) {
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 
 echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos bolder w20p'>";
-echo __('Search').' '.html_print_input_text(
+echo "<tr><td class='datos bolder w12p'><span class='mrgn_right_7px'>";
+echo __('Search').'</span>'.html_print_input_text(
     'search_string',
     $search_string,
     '',
-    15,
-    255,
+    5,
+    5,
     true
 );
 html_print_input_hidden('search', 1);
@@ -73,7 +73,6 @@ echo '</td>';
 echo "<td class='datos w10p'>";
 html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"');
 echo '</td>';
-echo "<td class='datos w10p'></td>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo.
@@ -179,7 +178,7 @@ if (($policy_page) || (isset($agent))) {
         // Create module/type combo.
         echo '<form id="create_module_type" method="post" action="'.$url.'">';
         if (!$policy_page) {
-            echo '<td class="datos w20p bolder">';
+            echo '<td class="datos w15p bolder">';
             echo __('Show in hierachy mode');
             if ($checked == 'true') {
                 $checked = true;
@@ -198,8 +197,8 @@ if (($policy_page) || (isset($agent))) {
             echo '</td>';
         }
 
-        echo '<td class="datos w20p bolder">';
-        echo __('<p>Type</p>');
+        echo '<td class="datos w20p bolder lign_right"><span class="mrgn_right_7px">';
+        echo __('Type').'</span>';
         html_print_select(
             $modules,
             'moduletype',
@@ -216,7 +215,7 @@ if (($policy_page) || (isset($agent))) {
         );
         html_print_input_hidden('edit_module', 1);
         echo '</td>';
-        echo '<td class="datos w10p">';
+        echo '<td class="datos w5p">';
         echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
         echo '</td>';
         echo '</tr>';
@@ -247,6 +246,8 @@ if ($module_action === 'delete') {
     $print_result_msg = true;
     $count_correct_delete_modules = 0;
     foreach ($id_agent_modules_delete as $id_agent_module_del) {
+        // Before delete the main module, check and delete the childrens from the original module.
+        module_check_childrens_and_delete($id_agent_module_del);
         $id_grupo = (int) agents_get_agent_group($id_agente);
         $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
@@ -445,8 +446,6 @@ if ($module_action === 'delete') {
     }
 } else if ($module_action === 'disable') {
     $id_agent_modules_disable = (array) get_parameter('id_delete');
-
-    $count_correct_delete_modules = 0;
     $updated_count = 0;
 
     foreach ($id_agent_modules_disable as $id_agent_module_disable) {
@@ -486,6 +485,52 @@ if ($module_action === 'delete') {
                     __('There was a problem completing the operation. Applied to %d/%d modules.'),
                     $updated_count,
                     $count_modules_to_disable
+                )
+            );
+        }
+    }
+} else if ($module_action === 'enable') {
+    $id_agent_modules_enable = (array) get_parameter('id_delete');
+    $updated_count = 0;
+
+    foreach ($id_agent_modules_enable as $id_agent_module_enable) {
+        $sql = sprintf(
+            'UPDATE tagente_modulo
+                SET disabled = 0
+                WHERE id_agente_modulo = %d',
+            $id_agent_module_enable
+        );
+
+        $id_agent_changed[] = modules_get_agentmodule_agent($id_agent_module_enable);
+        $agent_update_result = db_process_sql_update(
+            'tagente',
+            ['update_module_count' => 1],
+            ['id_agente' => $id_agent_changed]
+        );
+
+        if (db_process_sql($sql) !== false && $agent_update_result !== false) {
+            $updated_count++;
+        }
+    }
+
+    $count_modules_to_enable = count($id_agent_modules_enable);
+
+    if ($updated_count === 0) {
+        ui_print_error_message(
+            sprintf(
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
+                $count_modules_to_enable
+            )
+        );
+    } else {
+        if ($updated_count == $count_modules_to_enable) {
+            ui_print_success_message(__('Operation finished successfully.'));
+        } else {
+            ui_print_error_message(
+                sprintf(
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $updated_count,
+                    $count_modules_to_enable
                 )
             );
         }
@@ -1132,7 +1177,11 @@ foreach ($modules as $module) {
     $data[6] = ui_print_status_image(
         $status,
         htmlspecialchars($title),
-        true
+        true,
+        false,
+        false,
+        false,
+        ($module['ip_target']) ? 'IP: '.$module['ip_target'] : false
     );
 
     // MAX / MIN values.
@@ -1274,6 +1323,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     html_print_select(
         [
             'disable' => 'Disable selected modules',
+            'enable'  => 'Enable selected modules',
             'delete'  => 'Delete selected modules',
         ],
         'module_action',
@@ -1285,6 +1335,8 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         false,
         false
     );
+
+    echo '&nbsp&nbsp&nbsp&nbsp';
 
     html_print_submit_button(
         __('Execute action'),

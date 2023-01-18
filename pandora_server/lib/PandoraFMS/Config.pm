@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.767";
-my $pandora_build = "221207";
+my $pandora_build = "230118";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -256,8 +256,6 @@ sub pandora_load_config {
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
 	$pa_config->{"web_timeout"} = 60; # 6.0SP5
-	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
-	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
 	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"} = 3; # Fixed default
@@ -416,12 +414,6 @@ sub pandora_load_config {
 
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
-
-	# Sample Agent
-	$pa_config->{'sample_agent'} = 0; 
-	
-	# Sample agent interval
-	$pa_config->{'sample_agent_interval'} = 600;
 
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
@@ -776,12 +768,6 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^web_timeout\s+([0-9]*)/i) {
 			$pa_config->{'web_timeout'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
-			$pa_config->{'transactionalserver'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
-			$pa_config->{'transactional_threshold'}= clean_blank($1);
-		}
 		if ($parametro =~ m/^transactional_pool\s(.*)/i) {
 			$tbuf= clean_blank($1); 
 			if ($tbuf =~ m/^\.(.*)/){
@@ -1021,12 +1007,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
-		}
-		elsif ($parametro =~ m/^sample_agent\s+([0-1])/i) {
-			$pa_config->{'sample_agent'} = clean_blank($1);
-		}
-		elsif ($parametro =~ m/^sample_agent_interval\s+([0-9]*)/i) {
-			$pa_config->{'sample_agent_interval'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);

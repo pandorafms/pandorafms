@@ -396,8 +396,8 @@ final class Percentile extends Item
         $data['value'] = (float) \number_format(
             (float) $moduleValue,
             (int) $config['graph_precision'],
-            '.',
-            ''
+            $config['decimal_separator'],
+            $config['thousand_separator']
         );
         $unit = '';
         if ($moduleId !== null && $moduleId !== 0) {
@@ -457,7 +457,7 @@ final class Percentile extends Item
             $fields = [
                 'progress-bar'              => __('Percentile'),
                 'bubble'                    => __('Bubble'),
-                'circular-progress-bar'     => __('Circular porgress bar'),
+                'circular-progress-bar'     => __('Circular progress bar'),
                 'circular-progress-bar-alt' => __(
                     'Circular progress bar (interior)'
                 ),

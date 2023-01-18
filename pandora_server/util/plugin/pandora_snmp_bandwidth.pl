@@ -2,7 +2,7 @@
 #
 ################################################################################
 #
-# Bandwith usage plugin
+# Bandwidth usage plugin
 #
 # Requirements:
 #   snmpget
@@ -55,7 +55,7 @@ Where OPTIONS could be:
 
 [EXTRA]
     -ifIndex         Target interface to retrieve, if not specified, total
-                     bandwith will be reported.
+                     bandwidth will be reported.
     -uniqid          Use custom temporary file name.
     -inUsage         Show only input usage (in percentage) - 1, or not 0.
     -outUsage        Show only output usage (in percentage) - 1, or not 0.
@@ -66,7 +66,7 @@ e.g. -v is equal to -version, -c to -community, etc.
 EO_HELP
 
 use constant {
-  UNKNOWN_DUPLEX => 0,
+  UNKNOWN_DUPLEX => 1,
   HALF_DUPLEX => 2,
   FULL_DUPLEX => 3,
 };
@@ -133,9 +133,12 @@ sub update_config_key ($) {
   if ($arg eq 'inUsage') {
     return "inUsage";
   }
-	if ($arg eq 'outUsage') {
-		return "outUsage";
-	}
+  if ($arg eq 'outUsage') {
+    return "outUsage";
+  }
+  if ($arg eq 'f') {
+    return "unknown_fullduplex";
+  }
 }
 
 ################################################################################
@@ -188,7 +191,7 @@ sub prepare_tree {
 
     my $inOctets = snmp_get(\%inOctets_call);
     if (ref($inOctets) eq "HASH") {
-      if ($inOctets->{'data'} eq '') {
+      if (! exists($inOctets->{'data'}) || $inOctets->{'data'} eq '') {
         $inOctets = 0;
       } else {
         $inOctets = int $inOctets->{'data'};
@@ -198,18 +201,18 @@ sub prepare_tree {
       next;
     }
 
-		my %outOctets_call = %{$config};
-		if (is_enabled($config->{'use_x64'})) {
-			$outOctets_call{'oid'} = $config->{'oid_base'};
-			$outOctets_call{'oid'} .= $config->{'x64_indexes'}{'outOctets'}.$ifIndex;
-		} else {
-			$outOctets_call{'oid'} = $config->{'oid_base'};
-			$outOctets_call{'oid'} .= $config->{'x86_indexes'}{'outOctets'}.$ifIndex;
-		}
+    my %outOctets_call = %{$config};
+    if (is_enabled($config->{'use_x64'})) {
+      $outOctets_call{'oid'} = $config->{'oid_base'};
+      $outOctets_call{'oid'} .= $config->{'x64_indexes'}{'outOctets'}.$ifIndex;
+    } else {
+      $outOctets_call{'oid'} = $config->{'oid_base'};
+      $outOctets_call{'oid'} .= $config->{'x86_indexes'}{'outOctets'}.$ifIndex;
+    }
 
     my $outOctets = snmp_get(\%outOctets_call);
     if (ref($outOctets) eq "HASH") {
-      if ($outOctets->{'data'} eq '') {
+      if (! exists($outOctets->{'data'}) || $outOctets->{'data'} eq '') {
         $outOctets = 0;
       } else {
         $outOctets = int $outOctets->{'data'};
@@ -220,28 +223,32 @@ sub prepare_tree {
     }
 
     my %duplex_call = %{$config};
-		if (is_enabled($config->{'use_x64'})) {
-			$duplex_call{'oid'} = $config->{'oid_base'};
-			$duplex_call{'oid'} .= $config->{'x64_indexes'}{'duplex'}.$ifIndex;
-		} else {
-			$duplex_call{'oid'} = $config->{'oid_base'};
-			$duplex_call{'oid'} .= $config->{'x86_indexes'}{'duplex'}.$ifIndex;
-		}
+    if (is_enabled($config->{'use_x64'})) {
+      $duplex_call{'oid'} = $config->{'oid_base'};
+      $duplex_call{'oid'} .= $config->{'x64_indexes'}{'duplex'}.$ifIndex;
+    } else {
+      $duplex_call{'oid'} = $config->{'oid_base'};
+      $duplex_call{'oid'} .= $config->{'x86_indexes'}{'duplex'}.$ifIndex;
+    }
 
     my $duplex = snmp_get(\%duplex_call);
     if (ref($duplex) eq "HASH") {
-      if ($duplex->{'data'} eq '') {
-        $duplex = 0;
+      if (! exists($duplex->{'data'}) || ($duplex->{'data'} ne '2' && $duplex->{'data'} ne '3')) {
+        # Unknown duplex.
+        if (is_enabled($config->{'unknown_fullduplex'})) {
+          $duplex = 3;
+        } else {
+          $duplex = 1;
+        }
       } else {
         $duplex = int $duplex->{'data'};
       }
-
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
     }
 
-     my %speed = %{$config};
+    my %speed = %{$config};
     if (is_enabled($config->{'use_x64'})) {
       $speed{'oid'} = $config->{'oid_base'};
       $speed{'oid'} .= $config->{'x64_indexes'}{'ifSpeed'}.$ifIndex;
@@ -492,9 +499,9 @@ $config->{'tmp_separator'} = ';'  if empty($config->{'tmp_separator'});
 $config->{'tmp'}           = (($^O =~ /win/)?$ENV{'TMP'}:'/tmp')  if empty($config->{'tmp'});
 
 # Create unique name for tmp and log file for host
-my $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'host'};
+my $filename = $config->{'tmp'}.'/pandora_bandwidth_'.$config->{'host'};
 if (!empty($config->{'uniqid'})) {
-  $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'uniqid'};
+  $filename = $config->{'tmp'}.'/pandora_bandwidth_'.$config->{'uniqid'};
 }
 # Replace every dot for underscore
 $filename =~ tr/./_/;
@@ -511,7 +518,7 @@ if ( defined($sysobjectid->{'error'})  || $sysobjectid->{'data'} eq '' ) {
 
 # Check SNMP x64 interfaces
 my $walk64 = snmp_walk({%{$config}, 'oid' => '.1.3.6.1.2.1.31.1.1.1.6'});
-if ( $walk64 =~ 'No Such Instance currently exists at this OID' || $walk64 =~ 'No more variables left in this MIB View') {
+if ( $walk64 !~ /.*\.[0-9]+ = Counter64: [0-9]+/ ) {
   $config->{'use_x64'} = 0;
 } else {
   $config->{'use_x64'} = 1;
@@ -556,35 +563,35 @@ my $j = 0;
 my $k = 0;
 foreach my $iface (keys %{$analysis_tree}) {
   # Calculate summary;
-  if (is_enabled($analysis_tree->{$iface}{'bandwidth'})) {
-    $bandwidth = $analysis_tree->{$iface}{'bandwidth'};
+  if (is_enabled($analysis_tree->{$iface}{'bandwidth'}) || $analysis_tree->{$iface}{'bandwidth'} == 0) {
+    $bandwidth += $analysis_tree->{$iface}{'bandwidth'};
     $i++;
   }
-  if (is_enabled($analysis_tree->{$iface}{'inUsage'})) {
-    $inUsage = $analysis_tree->{$iface}{'inUsage'};
+  if (is_enabled($analysis_tree->{$iface}{'inUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
+    $inUsage += $analysis_tree->{$iface}{'inUsage'};
     $j++;
   }
-  if (is_enabled($analysis_tree->{$iface}{'outUsage'})) {
-    $outUsage = $analysis_tree->{$iface}{'outUsage'};
+  if (is_enabled($analysis_tree->{$iface}{'outUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
+    $outUsage += $analysis_tree->{$iface}{'outUsage'};
     $k++;
   }
 
 }
 
 if ($j > 0 && is_enabled($config->{'inUsage'})) {
-	$inUsage /= $j;
-	print sprintf("%.9f\n", $inUsage);
+  $inUsage /= $j;
+  print sprintf("%.9f\n", $inUsage);
 } elsif ($k > 0 && is_enabled($config->{'outUsage'})) {
-	$outUsage /= $k;
-	print sprintf("%.9f\n", $outUsage);
+  $outUsage /= $k;
+  print sprintf("%.9f\n", $outUsage);
 }
 
 if ($i > 0
   && !is_enabled($config->{'inUsage'})
   && !is_enabled($config->{'outUsage'})
 ) {
-	$bandwidth /= $i;
-	print sprintf("%.9f\n", $bandwidth);
+  $bandwidth /= $i;
+  print sprintf("%.9f\n", $bandwidth);
 }
 
 logger($config, 'info', "Plugin ends") if (is_enabled($config->{'debug'}));

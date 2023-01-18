@@ -130,6 +130,7 @@
   border-radius: 6px;
   padding: 10px 20px;
   cursor: pointer;
+  text-decoration: none;
 }
 .btn_primary.outline {
   background-color: transparent;
@@ -204,6 +205,7 @@
   padding: 10px;
   width: 100%;
   border-radius: 8px;
+  margin-top: 20px;
 }
 .check-table td {
   padding: 5px 0px;

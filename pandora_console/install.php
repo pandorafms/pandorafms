@@ -219,18 +219,18 @@ function check_exists($file, $label)
 
 function check_generic($ok, $label)
 {
-    echo "<tr><td style='width:10%'>";
+    echo '<tr><td>';
     if ($ok == 0) {
-        echo " <span class='incomplete'>incomplete</span>";
-        echo '<td>';
         echo "<span class='arr'> $label </span>";
+        echo '<td>';
+        echo " <span class='incomplete'>incomplete</span>";
         echo '</td>';
         echo '</td></tr>';
         return 1;
     } else {
-        echo " <span class='checked'>checked</span>";
-        echo '<td>';
         echo "<span class='arr'> $label </span>";
+        echo '<td>';
+        echo " <span class='checked'>checked</span>";
         echo '</td>';
         echo '</td></tr>';
         return 0;
@@ -724,7 +724,7 @@ function install_step3()
         echo '<p class="input-label">DB Engine</p>';
         echo html_print_select(
             $options,
-            'db',
+            'engine',
             '',
             '',
             '',
@@ -814,7 +814,7 @@ function install_step3()
     echo "<div style='clear:both;'></div>";
     echo "<div id='foot_install'>
     <div class='content-footer'>
-    <a href='install.php?step=2'><button class='btn_primary outline'>Previous step</button></a>
+    <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
     <span class='signature'>Pandora FMS is an OpenSource Software project registered at
     <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
     if (!$error) {
@@ -895,7 +895,9 @@ function install_step4()
 	".print_logo_status(5, 6)."
 		<div id='install_box'>
 			<h2>Creating database and default configuration file</h2>
-			<table width='100%'>";
+            <div class='row reverse'>
+            <div class='col-md-6'>
+			<table class='check-table'>";
     switch ($engine) {
         case 'mysql':
             if (! mysql_connect($dbhost, $dbuser, $dbpassword)) {
@@ -943,7 +945,7 @@ function install_step4()
 								IDENTIFIED BY '".$random_password."'"
                     );
                     mysql_query('FLUSH PRIVILEGES');
-                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><p>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</p>");
 
                     $step6 = is_writable('include');
                     check_generic($step6, "Write permissions to save config file in './include'");
@@ -1065,7 +1067,7 @@ function install_step4()
                         "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host"
                     );
                     mysqli_query($connection, 'FLUSH PRIVILEGES');
-                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><p>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</p>");
 
                     $step6 = is_writable('include');
                     check_generic($step6, "Write permissions to save config file in './include'");
@@ -1131,13 +1133,9 @@ function install_step4()
     }
 
         echo '</table>';
-
-    if ($everything_ok == 1) {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step5' href='install.php?step=5'>
-				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next Step</span></button></a>";
         echo '</div>';
-    } else {
+        echo '<div class="col-md-6">';
+    if ($everything_ok !== 1) {
         $info = "<div class='err'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
@@ -1164,7 +1162,7 @@ function install_step4()
             break;
 
             case 'mysqli':
-                if (mysqli_error($connection) != '') {
+                if ($connection && mysqli_error($connection) != '') {
                     echo "<div class='err'> <b>ERROR:</b> ".mysqli_error($connection).'.</div>';
                 }
 
@@ -1178,16 +1176,23 @@ function install_step4()
     }
 
         echo '</div>';
-        echo "<div style='clear: both;'></div>";
+        echo '</div></div>';
         echo "
 		<div id='foot_install'>
             <div class='content-footer'>
-                <span>Pandora FMS is an OpenSource Software project registered at 
-                <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>
-            </div>
+            <a href='install.php?step=3' class='btn_primary outline'>Previous step</a>
+            <span class='signature'>Pandora FMS is an OpenSource Software project registered at
+            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+    if ($everything_ok === 1) {
+        echo "<a id='step5' href='install.php?step=5'>
+                <button class='btn_primary' type='submit'>Next Step</button>
+              </a>";
+    }
+
+        echo '</div>
 	    </div>
         </div>
-	</div>";
+	</div>';
 }
 
 

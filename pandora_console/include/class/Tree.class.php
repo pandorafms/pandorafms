@@ -396,13 +396,13 @@ class Tree
         $processed_item['rootType'] = $this->rootType;
         $processed_item['searchChildren'] = 1;
 
-        if (isset($item['type'])) {
+        if (isset($item['type']) === true) {
             $processed_item['type'] = $item['type'];
         } else {
             $processed_item['type'] = $this->type;
         }
 
-        if (isset($item['rootType'])) {
+        if (isset($item['rootType']) === true) {
             $processed_item['rootType'] = $item['rootType'];
         } else {
             $processed_item['rootType'] = $this->rootType;
@@ -411,23 +411,23 @@ class Tree
         if ($processed_item['type'] == 'group') {
             $processed_item['parent'] = $item['parent'];
 
-            $processed_item['icon'] = empty($item['icon']) ? 'without_group.png' : $item['icon'].'.png';
+            $processed_item['icon'] = empty($item['icon']) === true ? 'unknown@groups.svg' : $item['icon'];
         }
 
-        if (isset($item['iconHTML'])) {
+        if (isset($item['iconHTML']) === true) {
             $processed_item['icon'] = $item['iconHTML'];
         }
 
-        if (is_metaconsole() && !empty($server)) {
+        if (is_metaconsole() === true && empty($server) === false) {
             $processed_item['serverID'] = $server['id'];
         }
 
         $counters = [];
-        if (isset($item['total_unknown_count'])) {
+        if (isset($item['total_unknown_count']) === true) {
             $counters['unknown'] = $item['total_unknown_count'];
         }
 
-        if (isset($item['total_critical_count'])) {
+        if (isset($item['total_critical_count']) === true) {
             $counters['critical'] = $item['total_critical_count'];
         }
 

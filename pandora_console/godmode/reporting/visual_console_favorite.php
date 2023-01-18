@@ -241,7 +241,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
                 echo "<a href='".$url."' title='Visual console".$favourite_v['name']."' alt='".$favourite_v['name']."'><li>";
                 echo "<div class='icon_img'>";
                     echo html_print_image(
-                        'images/groups_small/'.groups_get_icon($favourite_v['id_group']).'.png',
+                        'images/'.groups_get_icon($favourite_v['id_group']).'.png',
                         true,
                         ['style' => '']
                     );

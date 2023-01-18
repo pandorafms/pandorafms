@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -194,110 +194,15 @@ if (is_metaconsole() === false) {
 // --------------------- form filter -----------------------------------
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'filter_table';
+$table->cellstyle['captions_agent_row'][0] = 'width: 0';
+$table->cellstyle['captions_agent_row'][1] = 'width: 200px';
+$table->cellstyle['captions_agent_row'][2] = 'width: 200px';
 $table->data = [];
 $table->rowspan = [];
-$table->style[0] = 'font-weight: bold;';
-$table->style[2] = 'font-weight: bold;';
 $table->size = [];
-$table->size[0] = '10%';
-$table->size[1] = '20%';
-$table->size[2] = '10%';
-$table->size[3] = '5%';
-$table->size[4] = '10%';
-// Agent filter
-$agent_status_arr = [];
-$agent_status_arr[AGENT_STATUS_ALL] = __('All');
-// default
-$agent_status_arr[AGENT_STATUS_NORMAL] = __('Normal');
-$agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
-$agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
-$agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
-
-$row = [];
-$row[] = __('Search group');
-$row[] = html_print_input_text('search_group', $search_group, '', 25, 30, true);
-
-if (is_metaconsole()) {
-    $row[] = __('Show not init modules');
-    $row[] = html_print_checkbox('show_not_init_modules', $show_not_init_modules, true, true);
-}
-
-
-
-$table->data[] = $row;
-
-$row = [];
-$row[] = __('Search agent');
-$row[] = html_print_input_text('search_agent', $search_agent, '', 25, 30, true);
-
-$row[] = __('Show not init agents');
-$row[] = html_print_checkbox('show_not_init_agents', $show_not_init_agents, true, true);
 
 if (is_metaconsole() === true) {
-    $table->data[] = $row;
-    $row = [];
-}
-
-$row[] = __('Show full hirearchy');
-$row[] = html_print_checkbox('serach_hirearchy', $serach_hirearchy, false, true);
-
-$row[] = __('Agent status');
-$row[] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '', '', 0, true, false, true, '', false, 'width:10em');
-$row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
-
-// Button.
-if (is_metaconsole() === true) {
-    $table->data[] = $row;
-    $row = [];
-    $row[] = __('Show only disabled');
-    $row[] = html_print_checkbox('show_disabled', $show_disabled, false, true);
-    $table->data[] = $row;
-    $row = [];
-}
-
-$row[] = html_print_submit_button(
-    __('Filter'),
-    'uptbutton',
-    false,
-    [
-        'icon' => 'search',
-        'mode' => 'secondary mini',
-    ],
-    true
-);
-
-$table->data[] = $row;
-
-if (!is_metaconsole()) {
-    // Module filter
-    $module_status_arr = [];
-    $module_status_arr[-1] = __('All');
-    // default
-    $module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
-    $module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
-    $module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-    $module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
-    $module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
-
-    $row = [];
-    $row[] = __('Search module');
-    $row[] = html_print_input_text('search_module', $search_module, '', 25, 30, true);
-
-    $row[] = __('Show not init modules');
-    $row[] = html_print_checkbox('show_not_init_modules', $show_not_init_modules, true, true);
-
-    $row[] = '';
-    $row[] = '';
-
-    $row[] = __('Module status');
-    $row[] = html_print_select($module_status_arr, 'status_module', $status_module, '', '', 0, true);
-
-    $table->data[] = $row;
-}
-
-if (is_metaconsole()) {
     $table->width = '96%';
     $table->cellpadding = '0';
     $table->cellspacing = '0';
@@ -305,16 +210,96 @@ if (is_metaconsole()) {
     $table->styleTable = 'padding:0px;margin-bottom:0px; ';
 }
 
+// Agent filter.
+$agent_status_arr = [];
+$agent_status_arr[AGENT_STATUS_ALL] = __('All');
+// Default.
+$agent_status_arr[AGENT_STATUS_NORMAL] = __('Normal');
+$agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
+$agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
+$agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+$table->data['captions_group_row'][] = __('Search group');
+$table->data['inputs_group_row'][] = html_print_input_text('search_group', $search_group, '', 25, 30, true);
+
+if (is_metaconsole() === true) {
+    $table->data['captions_group_row'][] = __('Show not init modules');
+    $table->data['inputs_group_row'][] = html_print_checkbox('show_not_init_modules', $show_not_init_modules, true, true);
+}
+
+$table->data['captions_agent_row'][] = __('Search agent');
+$table->data['captions_agent_row'][] = __('Show not init agents');
+$table->data['captions_agent_row'][] = __('Show full hirearchy');
+$table->data['captions_agent_row'][] = __('Agent status');
+$table->data['inputs_agent_row'][] = html_print_input_text('search_agent', $search_agent, '', 25, 30, true);
+$table->data['inputs_agent_row'][] = html_print_checkbox_switch('show_not_init_agents', $show_not_init_agents, true, true);
+$table->data['inputs_agent_row'][] = html_print_checkbox_switch('serach_hirearchy', $serach_hirearchy, false, true);
+$table->data['inputs_agent_row'][] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '', '', 0, true, false, true, '', false, 'width:10em').html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
+
+// Button.
+if (is_metaconsole() === true) {
+    $table->data['captions_disabled_row'][] = __('Show only disabled');
+    $table->data['inputs_disabled_row'][] = html_print_checkbox('show_disabled', $show_disabled, false, true);
+}
+
+if (is_metaconsole() === false) {
+    // Module filter.
+    $module_status_arr = [];
+    $module_status_arr[-1] = __('All');
+    // Default.
+    $module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
+    $module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+    $module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+    $module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+    $module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+
+    $table->data['captions_last_row'][] = __('Search module');
+    $table->data['inputs_last_row'][] = html_print_input_text('search_module', $search_module, '', 25, 30, true);
+
+    $table->data['captions_last_row'][] = __('Show not init modules');
+    $table->data['inputs_last_row'][] = html_print_checkbox_switch('show_not_init_modules', $show_not_init_modules, true, true);
+
+    $table->data['captions_last_row'][] = __('Module status');
+    $table->data['inputs_last_row'][] = html_print_select($module_status_arr, 'status_module', $status_module, '', '', 0, true);
+}
+
+$table->data['inputs_last_row'][] = html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'uptbutton',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'secondary mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
+
 $form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
 $form_html .= html_print_table($table, true);
 $form_html .= '</form>';
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     echo "<div class='view_tree'>";
-    ui_toggle($form_html, __('Show Options'));
+    ui_toggle($form_html, '<span class="subsection_header_title">'.__('Show Options').'</span>');
     echo '<br>';
 } else {
-    // echo "<br>";
-    ui_toggle($form_html, __('Tree search'));
+    ui_toggle(
+        $form_html,
+        '<span class="subsection_header_title">'.__('Tree search').'</span>',
+        'tree_search',
+        false,
+        true,
+        false,
+        'box-shadow agent_details_col',
+        'white-box-content',
+        'mrgn_lft_20px mrgn_right_20px width_available'
+    );
 }
 
 html_print_input_hidden('group-id', $group_id);
@@ -335,8 +320,12 @@ html_print_image(
     ]
 );
 
-echo "<div id='tree-controller-recipient'>";
-echo '</div>';
+html_print_div(
+    [
+        'id'      => 'tree-controller-recipient',
+        'content' => '',
+    ]
+);
 
 if (is_metaconsole() === true) {
     echo '</div>';

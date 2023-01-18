@@ -184,8 +184,6 @@ if (isset($_POST['template_id']) === true) {
 // ==========================
 // TEMPLATE ASSIGMENT FORM
 // ==========================
-echo '<form style="margin: 10px" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
-
 $nps = db_get_all_fields_in_table('tnetwork_profile', 'name');
 if ($nps === false) {
     $nps = [];
@@ -196,12 +194,13 @@ foreach ($nps as $row) {
     $select[$row['id_np']] = $row['name'];
 }
 
-echo '<table width="100%" cellpadding="0" cellspacing="0" class="databox filters" >';
-echo "<tr><td class='datos w50p'>";
-html_print_select($select, 'template_id', '', '', '', 0, false, false, true, '', false, 'max-width: 200px !important');
-echo '</td>';
-echo '<td class="datos">';
-html_print_div(
+$filterTable = new stdClass();
+$filterTable->width = '100%';
+$filterTable->class = 'fixed_filter_bar';
+$filterTable->data = [];
+$filterTable->data[0][0] = __('Module templates');
+$filterTable->data[1][0] = html_print_select($select, 'template_id', '', '', '', 0, true, false, true, '', false, 'max-width: 200px !important');
+$filterTable->data[1][1] = html_print_div(
     [
         'class'   => 'action-buttons',
         'content' => html_print_submit_button(
@@ -214,13 +213,15 @@ html_print_div(
             ],
             true
         ),
-    ]
+    ],
+    true
 );
-echo '</td>';
-echo '</tr>';
-echo '</form>';
-echo '</table>';
-echo '</form>';
+
+$outputFilterTable = '<form style="border:0" class="fixed_filter_bar" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
+$outputFilterTable .= html_print_table($filterTable, true);
+$outputFilterTable .= '</form>';
+
+echo $outputFilterTable;
 
 // ==========================
 // MODULE VISUALIZATION TABLE
@@ -288,8 +289,14 @@ foreach ($result as $row) {
 }
 
 if (empty($table->data) === false) {
-    html_print_table($table);
-    unset($table);
+    $output = html_print_table($table, true);
 } else {
-    ui_print_empty_data(__('No modules'));
+    $output = ui_print_empty_data(__('No modules'), '', true);
 }
+
+html_print_div(
+    [
+        'class'   => 'datatable_form',
+        'content' => $output,
+    ]
+);

@@ -2029,7 +2029,7 @@ function group_get_data(
         }
 
         $stats_by_group = [];
-        if (!empty($data_stats)) {
+        if (empty($data_stats) === false) {
             foreach ($data_stats as $value) {
                 $group_id = (int) $value['id_grupo'];
 
@@ -2045,47 +2045,47 @@ function group_get_data(
                 $stats_by_group[$group_id] = $stats;
             }
 
-            if (!empty($stats_by_group)) {
-                if (!empty($data_stats_unknown)) {
+            if (empty($stats_by_group) === false) {
+                if (empty($data_stats_unknown) === false) {
                     foreach ($data_stats_unknown as $value) {
                         $group_id = (int) $value['id_grupo'];
-                        if (isset($stats_by_group[$group_id])) {
+                        if (isset($stats_by_group[$group_id]) === true) {
                             $stats_by_group[$group_id]['agents_unknown'] = (int) $value['agents_unknown'];
                         }
                     }
                 }
 
-                if (!empty($data_stats_not_init)) {
+                if (empty($data_stats_not_init) === false) {
                     foreach ($data_stats_not_init as $value) {
                         $group_id = (int) $value['id_grupo'];
-                        if (isset($stats_by_group[$group_id])) {
+                        if (isset($stats_by_group[$group_id]) === true) {
                             $stats_by_group[$group_id]['agents_not_init'] = (int) $value['agents_not_init'];
                         }
                     }
                 }
 
-                if (!empty($data_stats_ok)) {
+                if (empty($data_stats_ok) === false) {
                     foreach ($data_stats_ok as $value) {
                         $group_id = (int) $value['id_grupo'];
-                        if (isset($stats_by_group[$group_id])) {
+                        if (isset($stats_by_group[$group_id]) === true) {
                             $stats_by_group[$group_id]['agents_ok'] = (int) $value['agents_ok'];
                         }
                     }
                 }
 
-                if (!empty($data_stats_warning)) {
+                if (empty($data_stats_warning) === false) {
                     foreach ($data_stats_warning as $value) {
                         $group_id = (int) $value['id_grupo'];
-                        if (isset($stats_by_group[$group_id])) {
+                        if (isset($stats_by_group[$group_id]) === true) {
                             $stats_by_group[$group_id]['agents_warning'] = (int) $value['agents_warning'];
                         }
                     }
                 }
 
-                if (!empty($data_stats_critical)) {
+                if (empty($data_stats_critical) === false) {
                     foreach ($data_stats_critical as $value) {
                         $group_id = (int) $value['id_grupo'];
-                        if (isset($stats_by_group[$group_id])) {
+                        if (isset($stats_by_group[$group_id]) === true) {
                             $stats_by_group[$group_id]['agents_critical'] = (int) $value['agents_critical'];
                         }
                     }
@@ -2097,18 +2097,18 @@ function group_get_data(
     foreach ($list_groups as $key => $item) {
         $id = $item['id_grupo'];
 
-        if (is_metaconsole()) {
-            // Agent cache
+        if (is_metaconsole() === true) {
+            // Agent cache.
             $group_stat = [];
-            if (isset($stats_by_group[$id])) {
+            if (isset($stats_by_group[$id]) === true) {
                 $group_stat = $stats_by_group[$id];
             }
 
             $list[$i]['_id_'] = $id;
             $list[$i]['_name_'] = $item['nombre'];
-            $list[$i]['_iconImg_'] = html_print_image('images/groups_small/'.groups_get_icon($item['id_grupo']).'.png', true, ['style' => 'vertical-align: middle;']);
+            $list[$i]['_iconImg_'] = html_print_image('images/'.groups_get_icon($item['id_grupo']).'.png', true, ['style' => 'vertical-align: middle;']);
 
-            if ($mode == 'tree' && !empty($item['parent'])) {
+            if ($mode === 'tree' && empty($item['parent']) === false) {
                 $list[$i]['_parent_id_'] = $item['parent'];
             }
 
@@ -2116,7 +2116,7 @@ function group_get_data(
             $list[$i]['_monitors_alerts_fired_'] = isset($group_stat['alerts_fired']) ? $group_stat['alerts_fired'] : 0;
             $list[$i]['_total_agents_'] = isset($group_stat['agents_total']) ? $group_stat['agents_total'] : 0;
 
-            // This fields are not in database
+            // This fields are not in database.
             $list[$i]['_monitors_ok_'] = isset($group_stat['monitors_ok']) ? $group_stat['monitors_ok'] : 0;
             $list[$i]['_monitors_critical_'] = isset($group_stat['monitors_critical']) ? $group_stat['monitors_critical'] : 0;
             $list[$i]['_monitors_warning_'] = isset($group_stat['monitors_warning']) ? $group_stat['monitors_warning'] : 0;
@@ -2124,7 +2124,7 @@ function group_get_data(
             $list[$i]['_monitors_not_init_'] = isset($group_stat['monitors_not_init']) ? $group_stat['monitors_not_init'] : 0;
             $list[$i]['_agents_not_init_'] = isset($group_stat['agents_not_init']) ? $group_stat['agents_not_init'] : 0;
 
-            if ($mode == 'tactical' || $mode == 'tree') {
+            if ($mode === 'tactical' || $mode === 'tree') {
                 $list[$i]['_agents_ok_'] = isset($group_stat['agents_ok']) ? $group_stat['agents_ok'] : 0;
                 $list[$i]['_agents_warning_'] = isset($group_stat['agents_warning']) ? $group_stat['agents_warning'] : 0;
                 $list[$i]['_agents_critical_'] = isset($group_stat['agents_critical']) ? $group_stat['agents_critical'] : 0;
@@ -2136,11 +2136,11 @@ function group_get_data(
                 $list[$i]['_total_alerts_'] = $group_stat[0]['alerts'];
             }
 
-            if ($mode == 'tactical') {
+            if ($mode === 'tactical') {
                 // Get total count of monitors for this group, except disabled.
                 $list[$i]['_monitor_checks_'] = ($list[$i]['_monitors_not_init_'] + $list[$i]['_monitors_unknown_'] + $list[$i]['_monitors_warning_'] + $list[$i]['_monitors_critical_'] + $list[$i]['_monitors_ok_']);
 
-                // Calculate not_normal monitors
+                // Calculate not_normal monitors.
                 $list[$i]['_monitor_not_normal_'] = ($list[$i]['_monitor_checks_'] - $list[$i]['_monitors_ok_']);
 
                 if ($list[$i]['_monitor_not_normal_'] > 0 && $list[$i]['_monitor_checks_'] > 0) {
@@ -2155,7 +2155,7 @@ function group_get_data(
                     $list[$i]['_module_sanity_'] = 100;
                 }
 
-                if (isset($list[$i]['_alerts_'])) {
+                if (isset($list[$i]['_alerts_']) === true) {
                     if ($list[$i]['_monitors_alerts_fired_'] > 0 && $list[$i]['_alerts_'] > 0) {
                         $list[$i]['_alert_level_'] = format_numeric((100 - ($list[$i]['_monitors_alerts_fired_'] / ($list[$i]['_alerts_'] / 100))), 1);
                     } else {
@@ -2177,7 +2177,7 @@ function group_get_data(
                 $list[$i]['_server_sanity_'] = format_numeric((100 - $list[$i]['_module_sanity_']), 1);
             }
 
-            if ($returnAllGroup) {
+            if ($returnAllGroup === true) {
                 $list[0]['_agents_unknown_'] += $list[$i]['_agents_unknown_'];
                 $list[0]['_monitors_alerts_fired_'] += $list[$i]['_monitors_alerts_fired_'];
                 $list[0]['_total_agents_'] += $list[$i]['_total_agents_'];
@@ -2188,7 +2188,7 @@ function group_get_data(
                 $list[0]['_monitors_not_init_'] += $list[$i]['_monitors_not_init_'];
                 $list[0]['_agents_not_init_'] += $list[$i]['_agents_not_init_'];
 
-                if ($mode == 'tactical' || $mode == 'tree') {
+                if ($mode === 'tactical' || $mode === 'tree') {
                     $list[0]['_agents_ok_'] += $list[$i]['_agents_ok_'];
                     $list[0]['_agents_warning_'] += $list[$i]['_agents_warning_'];
                     $list[0]['_agents_critical_'] += $list[$i]['_agents_critical_'];
@@ -2196,7 +2196,7 @@ function group_get_data(
                 }
             }
 
-            if ($mode == 'group') {
+            if ($mode === 'group') {
                 if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0)
                     && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0)
                     && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)
@@ -2204,7 +2204,7 @@ function group_get_data(
                     unset($list[$i]);
                 }
             }
-        } else if (($config['realtimestats'] == 0)) {
+        } else if (((int) $config['realtimestats'] === 0)) {
             $group_stat = db_get_all_rows_sql(
                 "SELECT *
 				FROM tgroup_stat, tgrupo
@@ -2215,9 +2215,9 @@ function group_get_data(
 
             $list[$i]['_id_'] = $id;
             $list[$i]['_name_'] = $item['nombre'];
-            $list[$i]['_iconImg_'] = html_print_image('images/groups_small/'.groups_get_icon($item['id_grupo']).'.png', true, ['style' => 'vertical-align: middle;']);
+            $list[$i]['_iconImg_'] = html_print_image('images/'.groups_get_icon($item['id_grupo']).'.png', true, ['style' => 'vertical-align: middle;']);
 
-            if ($mode == 'tree' && !empty($item['parent'])) {
+            if ($mode === 'tree' && empty($item['parent']) === false) {
                 $list[$i]['_parent_id_'] = $item['parent'];
             }
 
@@ -2225,7 +2225,7 @@ function group_get_data(
             $list[$i]['_monitors_alerts_fired_'] = $group_stat[0]['alerts_fired'];
             $list[$i]['_total_agents_'] = $group_stat[0]['agents'];
 
-            // This fields are not in database
+            // This fields are not in database.
             $list[$i]['_monitors_ok_'] = (int) groups_get_normal_monitors($id);
             $list[$i]['_monitors_critical_'] = (int) groups_get_critical_monitors($id);
             $list[$i]['_monitors_warning_'] = (int) groups_get_warning_monitors($id);
@@ -2318,7 +2318,7 @@ function group_get_data(
         } else {
             $list[$i]['_id_'] = $id;
             $list[$i]['_name_'] = $item['nombre'];
-            $list[$i]['_iconImg_'] = html_print_image('images/groups_small/'.groups_get_icon($item['id_grupo']).'.png', true, ['style' => 'vertical-align: middle;']);
+            $list[$i]['_iconImg_'] = html_print_image('images/'.groups_get_icon($item['id_grupo']).'.png', true, ['style' => 'vertical-align: middle;']);
 
             if ($mode == 'tree' && !empty($item['parent'])) {
                 $list[$i]['_parent_id_'] = $item['parent'];

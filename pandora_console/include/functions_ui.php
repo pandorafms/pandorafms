@@ -765,7 +765,7 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_group_icon_path($id_group, $return=false, $path='images/groups_small', $style='', $link=true)
+function ui_print_group_icon_path($id_group, $return=false, $path='images', $style='', $link=true)
 {
     if ($id_group > 0) {
         $icon = (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);

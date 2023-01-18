@@ -648,11 +648,11 @@ var TreeController = {
                 element.icon.length > 0
               ) {
                 $content.append(
-                  '<img src="' +
+                  '<div class="node-icon" style="background-image: url(' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    "images/groups_small/" +
+                    "images/" +
                     element.icon +
-                    '" /> '
+                    ');" /> </div>'
                 );
               } else if (
                 typeof element.iconHTML != "undefined" &&
@@ -660,7 +660,9 @@ var TreeController = {
               ) {
                 $content.append(element.iconHTML + " ");
               }
-              $content.append(element.name);
+              $content.append(
+                '<div class="node-name">' + element.name + "</div>"
+              );
 
               if (typeof element.edit != "undefined") {
                 var url_edit =
@@ -670,7 +672,7 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/config.png" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
+                    'images/edit.svg" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
                 );
                 var $updatebtn = $('<a href = "' + url_edit + '"></a>').append(
                   $updateicon
@@ -686,7 +688,7 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/cross.png" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
+                    'images/delete.svg" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {
@@ -745,7 +747,7 @@ var TreeController = {
                       (controller.baseURL.length > 0
                         ? controller.baseURL
                         : "") +
-                      'images/tree_events.png" /> '
+                      'images/event.svg" /> '
                   );
                   $eventImage.addClass("agent-alerts-fired");
                   $eventImage
@@ -770,7 +772,7 @@ var TreeController = {
               var IPAMSupernetDetailImage = $(
                 '<img class="invert_filter" src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                  'images/transactional_map.png" /> '
+                  'images/server-transactions@svg.svg" /> '
               );
 
               if (typeof element.id !== "undefined") {
@@ -811,7 +813,7 @@ var TreeController = {
               var IPAMNetworkDetailImage = $(
                 '<img class="invert_filter" src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                  'images/list.png" /> '
+                  'images/logs@svg.svg" /> '
               );
 
               if (typeof element.id !== "undefined") {
@@ -862,7 +864,7 @@ var TreeController = {
                 (element.title ? element.title : element.name) +
                 '" data-use_title_for_force_title="1" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                'images/help.png" class="img_help" ' +
+                'images/info@svg.svg" class="img_help" ' +
                 ' alt="' +
                 element.name +
                 '"/></span> ';
@@ -870,7 +872,7 @@ var TreeController = {
               var $serviceDetailImage = $(
                 '<img class="invert_filter" src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                  'images/tree_service_map.png" /> '
+                  'images/snmp-trap@svg.svg" /> '
               );
 
               if (
@@ -931,7 +933,7 @@ var TreeController = {
                       (controller.baseURL.length > 0
                         ? controller.baseURL
                         : "") +
-                      'images/tree_events.png" /> '
+                      'images/event.svg" /> '
                   );
                   $moduleImage
                     .click(function(e) {
@@ -997,11 +999,12 @@ var TreeController = {
                       (controller.baseURL.length > 0
                         ? controller.baseURL
                         : "") +
-                      'images/histograma.png" /> '
+                      'images/event-history.svg" /> '
                   );
 
                   graphImageHistogram
                     .addClass("module-graph")
+                    .addClass("module-button")
                     .click(function(e) {
                       e.stopPropagation();
                       try {
@@ -1027,7 +1030,7 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/photo.png" /> '
+                        'images/item-icon.svg" /> '
                     );
                   } else {
                     var $graphImage = $(
@@ -1035,36 +1038,39 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/chart_curve.png" /> '
+                        'images/module-graph.svg" /> '
                     );
                   }
 
-                  $graphImage.addClass("module-graph").click(function(e) {
-                    e.stopPropagation();
-                    if (element.statusImageHTML.indexOf("data:image") != -1) {
-                      try {
-                        winopeng_var(
-                          decodeURI(element.snapshot[0]),
-                          element.snapshot[1],
-                          element.snapshot[2],
-                          element.snapshot[3]
-                        );
-                      } catch (error) {
-                        // console.log(error);
+                  $graphImage
+                    .addClass("module-graph")
+                    .addClass("module-button")
+                    .click(function(e) {
+                      e.stopPropagation();
+                      if (element.statusImageHTML.indexOf("data:image") != -1) {
+                        try {
+                          winopeng_var(
+                            decodeURI(element.snapshot[0]),
+                            element.snapshot[1],
+                            element.snapshot[2],
+                            element.snapshot[3]
+                          );
+                        } catch (error) {
+                          // console.log(error);
+                        }
+                      } else {
+                        try {
+                          winopeng_var(
+                            element.moduleGraph.url,
+                            element.moduleGraph.handle,
+                            800,
+                            480
+                          );
+                        } catch (error) {
+                          // console.log(error);
+                        }
                       }
-                    } else {
-                      try {
-                        winopeng_var(
-                          element.moduleGraph.url,
-                          element.moduleGraph.handle,
-                          800,
-                          480
-                        );
-                      } catch (error) {
-                        // console.log(error);
-                      }
-                    }
-                  });
+                    });
 
                   $content.append($graphImage);
                 }
@@ -1077,29 +1083,32 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/binary.png" /> '
+                        'images/simple-value.svg" /> '
                     );
-                    $dataImage.addClass("module-data").click(function(e) {
-                      e.stopPropagation();
+                    $dataImage
+                      .addClass("module-data")
+                      .addClass("module-button")
+                      .click(function(e) {
+                        e.stopPropagation();
 
-                      try {
-                        var serverName =
-                          element.serverName.length > 0
-                            ? element.serverName
-                            : "";
-                        if ($("#module_details_window").length > 0)
-                          show_module_detail_dialog(
-                            element.id,
-                            "",
-                            serverName,
-                            0,
-                            86400,
-                            element.name.replace(/&#x20;/g, " ")
-                          );
-                      } catch (error) {
-                        // console.log(error);
-                      }
-                    });
+                        try {
+                          var serverName =
+                            element.serverName.length > 0
+                              ? element.serverName
+                              : "";
+                          if ($("#module_details_window").length > 0)
+                            show_module_detail_dialog(
+                              element.id,
+                              "",
+                              serverName,
+                              0,
+                              86400,
+                              element.name.replace(/&#x20;/g, " ")
+                            );
+                        } catch (error) {
+                          // console.log(error);
+                        }
+                      });
 
                     $content.append($dataImage);
                   }
@@ -1148,7 +1157,7 @@ var TreeController = {
                 $content.append(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    "images/os_icons/" +
+                    "images/" +
                     element.icon +
                     '" /> '
                 );
@@ -1163,7 +1172,7 @@ var TreeController = {
                 $content.append(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    "images/os_icons/" +
+                    "images/" +
                     element.icon +
                     '" /> '
                 );

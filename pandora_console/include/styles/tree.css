@@ -1,6 +1,26 @@
 .tree-root {
+  border: 1px solid red;
   margin-top: 0px;
   margin-bottom: 0px;
+}
+
+.tree-node img {
+  padding: 10px;
+}
+
+.tree-node .node-icon {
+  background-position: 10px;
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 38px;
+  display: inline-block;
+  box-sizing: border-box;
+  border-right: 1px solid #aeaeae;
+}
+
+.tree-node .node-name {
+  position: relative;
+  top: -15px;
 }
 
 .tree-group {
@@ -30,7 +50,12 @@ div.tree-node span {
   background: 0 0;
 }
 .node-content {
-  height: 26px;
+  border: 1px solid #aeaeae;
+  border-radius: 8px;
+  width: calc(100% - 17px);
+  box-sizing: border-box;
+  height: 40px;
+  /*height: 26px;*/
   font-size: 1.2em;
   display: flex;
   flex-direction: row;
@@ -44,16 +69,17 @@ div.tree-node span {
 }
 
 .node-content:hover {
-  background-color: #fff;
+  background-color: #f5f5f5;
+}
 
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
+.node-content:active {
+  background-color: #dddddd;
 }
 
 .leaf-icon {
   width: 18px;
-  height: 20px;
+  /*height: 20px;*/
+  height: 35px;
 }
 
 .node-content,
@@ -105,6 +131,7 @@ div.tree-node span {
 .tree-node > .leaf-icon {
   background-position: 0px 0px;
   background-repeat: no-repeat;
+  width: 17px;
 }
 
 .tree-node > .node-content > img {
@@ -115,31 +142,38 @@ div.tree-node span {
 .tree-node > .node-content > img.module-data,
 .tree-node > .node-content > img.module-graph {
   cursor: pointer;
-  padding-right: 3px;
+  /*padding-right: 3px;*/
 }
 
 .tree-node > .node-content > .agent-status.status_balls,
 .tree-node > .node-content > .status_small_balls {
-  width: 0.6em;
-  height: 1.5em;
-  margin-bottom: -0.4em;
+  width: 1.5em;
   border-radius: 0;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  height: 39px;
+  position: relative;
+  top: -2px;
 }
 .tree-node > .node-content > .module-status.status_small_balls {
-  width: 0.4em;
+  top: -8px;
 }
 
 .tree-node > .node-content > .module-name {
   margin: 0 0 0 1em;
-  width: 250px;
+  /*width: 250px;*/
+  width: 60%;
   display: inline-block;
+  font-weight: bold;
 }
 
 .tree-node > .node-content > .module-value {
-  width: 120px;
+  /*width: 120px;*/
+  width: 130px;
   display: inline-block;
   text-align: right;
-  margin: 0 1em;
+  margin: 8px 1em;
+  float: right;
 }
 
 .tree-node > .node-content > img.module-server-type,
@@ -158,6 +192,10 @@ div.tree-node span {
 
 .tree-node > .node-content > .tree-node-counters {
   font-size: 1.2em;
+  float: right;
+  position: relative;
+  top: 8px;
+  right: 10px;
 }
 
 .tree-node > .node-content > img {
@@ -172,13 +210,15 @@ div.tree-node span {
 
 div#tree-controller-recipient {
   text-align: left;
-  width: 98%;
+  width: 65%;
+  /* width: 98%; */
   margin-top: 10px;
 }
 
 .tree-controller-recipient {
   text-align: left;
-  width: 98%;
+  width: 65%;
+  /* width: 98%; */
   margin-top: 10px;
 }
 
@@ -192,4 +232,24 @@ div#tree-controller-recipient {
 
 .ipam-network {
   font-size: 9pt;
+}
+
+.tree-group .node-content {
+  position: relative;
+  top: -10px;
+}
+
+.tree-group .node-content.module {
+  top: -12px;
+}
+
+.node-content .module-button {
+  margin-top: 5px;
+  padding: 6px;
+}
+
+.node-content .module-button:hover {
+  width: 20px;
+  background-color: #fff;
+  border-radius: 8px;
 }

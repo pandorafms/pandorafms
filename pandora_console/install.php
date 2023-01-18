@@ -26,7 +26,6 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-require_once 'include/functions_html.php';
 
 // Necesary for import js and css of html_print_select
 ?>

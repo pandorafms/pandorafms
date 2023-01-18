@@ -88,8 +88,6 @@
         }
         function popupShow(){
             document.getElementsByTagName('body')[0].style["margin"] = "0";
-            document.getElementById('install_container').style["padding-top"] = "45px";
-            document.getElementById('install_container').style["margin-top"] = "0";
             document.getElementById('add-lightbox').style["visibility"] = "visible";
             document.getElementById('open_popup').style["display"] = "block";
             document.getElementById('open_popup').style["visibility"] = "visible";
@@ -122,10 +120,11 @@
             </div>
             <div class='popup-inner' style='padding: 20px 40px;'>
             <?php
-            echo '<p><strong>Attention</strong>, you are going to <strong>overwrite the data</strong> of your current installation.</p><p>This means that if you do not have a backup <strong>you will irremissibly LOSE ALL THE STORED DATA</strong>, the configuration and everything relevant to your installation.</p><p><strong>Are you sure of what you are going to do?</strong></p>';
+            echo '<p><strong>Attention</strong>, you are going to <strong>overwrite the data</strong> of your current installation.</p>
+                  <p>This means that if you do not have a backup <strong>you will irremissibly LOSE ALL THE STORED DATA</strong>, the configuration and everything relevant to your installation.</p><p><strong>Are you sure of what you are going to do?</strong></p>';
                 echo "<div style='text-align:right;';>";
-                echo "<button type='button' class='btn_install_next' onclick='javascript:handleConfirmClick();'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button>";
-                echo "<button type='button' class='btn_install_next popup-button-green' onclick='javascript:popupClose();'><span class='btn_install_next_text'>Cancel</span></button>";
+                echo "<button type='button' class='btn_primary outline' onclick='javascript:handleConfirmClick();'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button>";
+                echo "<button type='button' class='btn_primary' onclick='javascript:popupClose();'><span class='btn_install_next_text'>Cancel</span></button>";
                 echo '</div>';
             ?>
             </div>
@@ -135,7 +134,6 @@
             $version = '7.0NG.767';
             $build = '230117';
             $banner = "v$version Build $build";
-
             error_reporting(0);
 
             // ---------------
@@ -508,10 +506,6 @@ function install_step1()
 		please <b>be sure that you have no valuable Pandora FMS data in your Database</b>.<br>
 		</div>";
 
-        echo "<div class='info'>
-		If you want to upgrade from Pandora FMS 4.x to 5.0 version, please use the migration tool inside /extras directory in this setup.
-		</div>";
-
     if ($writable !== 0) {
         echo "<div class='err'>You need to setup permissions to be able to write in ./include directory</div>";
     }
@@ -534,8 +528,8 @@ function install_step1()
         </div>
         <div id='foot_install'>
             <div class='content-footer'>
-            <span class='signature'>Pandora FMS is an OpenSource Software project registered at 
-            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a> 
+            </span>";
     if ($writable === 0) {
         echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_primary'>Start installation</button></a>";
     }
@@ -573,8 +567,8 @@ function install_step1_licence()
 	<div id='foot_install'>
             <div class='content-footer'>
             <a href='install.php'><button class='btn_primary outline'>Previous step</button></a>
-            <span class='signature'>Pandora FMS is an OpenSource Software project registered at
-            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+            </span>";
     if (file_exists('COPYING')) {
         echo "<a href='install.php?step=2'><button id='btn_accept' class='btn_primary'>Yes, I accept licence terms</button></a>";
     }
@@ -646,8 +640,8 @@ function install_step2()
             <div id='foot_install'>
                 <div class='content-footer'>
                 <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
-                <span class='signature'>Pandora FMS is an OpenSource Software project registered at
-                <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+                <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+                </span>";
     if ($res > 0) {
         echo "<span class='text' style='margin-right: 10px'>Ignore it.</span><a id='step3' href='install.php?step=3'><button class='btn_primary'>Force install</button></a>";
     } else {
@@ -816,8 +810,8 @@ function install_step3()
     echo "<div id='foot_install'>
     <div class='content-footer'>
     <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
-    <span class='signature'>Pandora FMS is an OpenSource Software project registered at
-    <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+    <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+    </span>";
     if (!$error) {
         echo "<button class='btn_primary' type='submit' id='step4button'>Next Step</button>";
         echo '</form>';
@@ -1165,6 +1159,10 @@ function install_step4()
             foreach ($errors as $key => $err) {
                 $info .= '<div class="err-sql">'.$err.'</div>';
             }
+
+            $info .= "<div class='err'>If you use MySQL 8 make sure to include the 
+                        following parameter in your installation's my.cnf configuration file<br />
+                        sql_mode=\"\"</div>";
         }
 
         $info .= "<div class='err'><b>There were some problems.
@@ -1185,7 +1183,10 @@ function install_step4()
         switch ($engine) {
             case 'mysql':
                 if (mysql_error() != '') {
-                    echo "<div class='err'> <b>ERROR:</b> ".mysql_error().'.</div>';
+                    echo "<div class='err'>".mysql_error().'.</div>';
+                    echo "<div class='err'>If you use MySQL 8 make sure to include the 
+                    following parameter in your installation's my.cnf configuration file<br />
+                    sql_mode=\"\"</div>";
                 }
 
                 if ($step1 == 1) {
@@ -1195,7 +1196,10 @@ function install_step4()
 
             case 'mysqli':
                 if ($connection && mysqli_error($connection) != '') {
-                    echo "<div class='err'> <b>ERROR:</b> ".mysqli_error($connection).'.</div>';
+                    echo "<div class='err'>".mysqli_error($connection).'.</div>';
+                    echo "<div class='err'>If you use MySQL 8 make sure to include the 
+                    following parameter in your installation's my.cnf configuration file<br />
+                    sql_mode=\"\"</div>";
                 }
 
                 if ($step1 == 1) {
@@ -1213,8 +1217,8 @@ function install_step4()
 		<div id='foot_install'>
             <div class='content-footer'>
             <a href='install.php?step=3' class='btn_primary outline'>Previous step</a>
-            <span class='signature'>Pandora FMS is an OpenSource Software project registered at
-            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
+            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+            </span>";
     if ($everything_ok === 1) {
         echo "<a id='step5' href='install.php?step=5'>
                 <button class='btn_primary' type='submit'>Next Step</button>
@@ -1255,8 +1259,8 @@ function install_step5()
     echo "</div>
 	<div id='foot_install'>
     <div class='content-footer'>
-            <span class='signature'>Pandora FMS is an OpenSource Software project registered at 
-            <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>
+            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a> 
+            </span>
             <a id='access_pandora' href='index.php'>
                 <button class='btn_primary'>Click here to access to your Pandora FMS console</button>
             </a>

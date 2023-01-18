@@ -30,7 +30,9 @@
   font-style: normal;
   font-display: swap;
 }
-
+html {
+  background-color: #959595;
+}
 #install_container {
   max-width: 1000px;
   margin: 0 auto;
@@ -397,6 +399,7 @@ input:checked + .slider:before {
   background-color: #000;
   opacity: 0.6;
   visibility: hidden;
+  top: 0;
 }
 
 .popup {
@@ -406,17 +409,22 @@ input:checked + .slider:before {
   top: 50%;
   transform: translate(-50%, -50%);
   -webkit-transform: translate(-50%, -50%);
-  background-color: #fff;
   z-index: 9999;
   display: none;
+  font-family: "Circular Std Book";
 }
-
+.popup .btn_primary.outline {
+  color: #14524f;
+  border-color: #14524f;
+  margin: 0px 20px;
+}
 .popup-title {
-  background-color: #82b92e;
+  background-color: #14524f;
   padding: 10px 20px;
   color: #fff;
   font-size: 12pt;
   text-align: center;
+  border-radius: 10px 10px 0px 0px;
 }
 
 .popup-inner {
@@ -425,10 +433,11 @@ input:checked + .slider:before {
   /*  overflow-y: scroll;*/
   padding: 25px 35px;
   font-size: 11pt;
+  border-radius: 0px 0px 10px 10px;
 }
 
 .popup-button-green {
-  background-color: #82b92e;
+  background-color: #14524f;
   border: 1px solid transparent;
   color: #fff;
 }
@@ -439,11 +448,11 @@ input:checked + .slider:before {
 
 .popup-button-green:hover {
   background-color: transparent;
-  border: 1px solid #82b92e;
-  color: #82b92e;
+  border: 1px solid #14524f;
+  color: #14524f;
 }
 
 .popup-button-green:hover span {
-  color: #82b92e;
+  color: #14524f;
 }
 /* POPUP -END */

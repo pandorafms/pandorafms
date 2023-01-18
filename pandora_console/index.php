@@ -227,6 +227,9 @@ ob_start('ui_process_page_head');
 // Enterprise main.
 enterprise_include_once('index.php');
 
+// Load event.css to display the about section dialog with correct styles.
+echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'" type="text/css" />';
+
 echo '<script type="text/javascript">';
 echo 'var dispositivo = navigator.userAgent.toLowerCase();';
 echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
@@ -1393,7 +1396,11 @@ if ($searchPage) {
 
                 case 'External link':
                     $home_url = io_safe_output($home_url);
-                    echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
+                    if (strlen($home_url) !== 0) {
+                        echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
+                    } else {
+                        $_GET['sec2'] = 'general/logon_ok';
+                    }
                 break;
             }
 
@@ -1468,9 +1475,6 @@ if ($config['pure'] == 0) {
     echo '</div>';
     echo '<div id="both"></div>';
     echo '</div>';
-
-    echo '<div id="foot">';
-    include 'general/footer.php';
 }
 
 // Clippy function.
@@ -1532,29 +1536,6 @@ require 'include/php_to_js_values.php';
             scrollTop: 0
         }, 500);
     }
-
-    // Initial load of page.
-    $(document).ready(adjustFooter);
-
-    // Every resize of window.
-    $(window).resize(adjustFooter);
-
-    // Every show/hide call may need footer re-layout.
-    (function() {
-        var oShow = jQuery.fn.show;
-        var oHide = jQuery.fn.hide;
-
-        jQuery.fn.show = function () {
-            var rv = oShow.apply(this, arguments);
-            adjustFooter();
-            return rv;
-        };
-        jQuery.fn.hide = function() {
-            var rv = oHide.apply(this, arguments);
-            adjustFooter();
-            return rv;
-        };
-    })();
 
     function first_time_identification() {
         jQuery.post("ajax.php", {
@@ -1641,31 +1622,6 @@ require 'include/php_to_js_values.php';
             "html"
         );
     }
-
-        //Dynamically assign footer position and width.
-        function adjustFooter() {
-            /*
-            if (document.readyState !== 'complete' || $('#container').position() == undefined) {
-                return;
-            }
-            // minimum top value (upper limit) for div#foot
-            var ulim = $('#container').position().top + $('#container').outerHeight(true);
-            // window height. $(window).height() returns wrong value on Opera and Google Chrome.
-            var wh = document.documentElement.clientHeight;
-            // save div#foot's height for latter use
-            var h = $('#foot').height();
-            // new top value for div#foot
-            var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
-            /*
-            if ($('#foot').position().top != t) {
-                $('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
-                $('#foot').height(h);
-            }
-            if ($('#foot').width() !=  $(window).width()) {
-                $('#foot').width($(window).width());
-            }
-            */
-        }
 </script>
 <?php
 if (__PAN_XHPROF__ === 1) {

@@ -95,11 +95,11 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Phantomjs bin directory');
+$table->data[$i][0] = __('Chromium path');
 $table->data[$i++][1] = html_print_input_text(
-    'phantomjs_bin',
+    'chromium_path',
     io_safe_output(
-        $config['phantomjs_bin']
+        $config['chromium_path']
     ),
     '',
     30,
@@ -349,6 +349,87 @@ $table->data[$i++][1] = html_print_textarea(
     'class="height_50px w300px"',
     true
 );
+
+// Inventory changes blacklist.
+$table->data[$i][0] = __('Inventory changes blacklist');
+
+$inventory_changes_blacklist_id = get_parameter(
+    'inventory_changes_blacklist',
+    $config['inventory_changes_blacklist']
+);
+
+if (!is_array($inventory_changes_blacklist_id)) {
+    $inventory_changes_blacklist_id = explode(
+        ',',
+        $inventory_changes_blacklist_id
+    );
+}
+
+$inventory_modules = db_get_all_rows_sql(
+    'SELECT mi.id_module_inventory, mi.name module_inventory_name, os.name os_name
+    FROM tmodule_inventory mi, tconfig_os os
+    WHERE os.id_os = mi.id_os'
+);
+
+$inventory_changes_blacklist = [];
+$inventory_changes_blacklist_out = [];
+
+foreach ($inventory_modules as $inventory_module) {
+    if (in_array($inventory_module['id_module_inventory'], $inventory_changes_blacklist_id)) {
+        $inventory_changes_blacklist[$inventory_module['id_module_inventory']] = $inventory_module['module_inventory_name'].' ('.$inventory_module['os_name'].')';
+    } else {
+        $inventory_changes_blacklist_out[$inventory_module['id_module_inventory']] = $inventory_module['module_inventory_name'].' ('.$inventory_module['os_name'].')';
+    }
+}
+
+$select_out = html_print_select(
+    $inventory_changes_blacklist_out,
+    'inventory_changes_blacklist_out[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:200px'
+);
+$arrows = ' ';
+$select_in = html_print_select(
+    $inventory_changes_blacklist,
+    'inventory_changes_blacklist[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:200px'
+);
+
+$table_ichanges = '<table>
+        <tr>
+            <td>'.__('Out of black list').'</td>
+            <td></td>
+            <td>'.__('In black list').'</td>
+        </tr>
+        <tr>
+            <td>'.$select_out.'</td>
+            <td>
+                <a href="javascript:">'.html_print_image('images/darrowright.png', true, ['id' => 'right_iblacklist', 'alt' => __('Push selected modules into blacklist'), 'title' => __('Push selected modules into blacklist'), 'class' => 'invert_filter']).'</a>
+                <br><br>
+                <a href="javascript:">'.html_print_image('images/darrowleft.png', true, ['id' => 'left_iblacklist', 'alt' => __('Pop selected modules out of blacklist'), 'title' => __('Pop selected modules out of blacklist'), 'class' => 'invert_filter']).'</a>
+            </td>
+            <td>'.$select_in.'</td>
+        </tr>
+    </table>';
+
+$table->data[$i++][1] = $table_ichanges;
 
 $table->data[$i][0] = __('Referer security');
 $table->data[$i++][1] = html_print_checkbox_switch(
@@ -815,5 +896,64 @@ $(document).ready (function () {
     })
 
     $('input#button-email_test').click(perform_email_test);
+
+    $("#right_iblacklist").click (function () {
+        jQuery.each($("select[name='inventory_changes_blacklist_out[]'] option:selected"), function (key, value) {
+            imodule_name = $(value).html();
+            if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                id_imodule = $(value).attr('value');
+                $("select[name='inventory_changes_blacklist[]']")
+                    .append(
+                        $("<option></option>")
+                            .val(id_imodule)
+                            .html('<i>' + imodule_name + '</i>')
+                    );
+                $("#inventory_changes_blacklist_out")
+                    .find("option[value='" + id_imodule + "']").remove();
+                $("#inventory_changes_blacklist")
+                    .find("option[value='']").remove();
+                if($("#inventory_changes_blacklist_out option").length == 0) {
+                    $("select[name='inventory_changes_blacklist_out[]']")
+                        .append(
+                            $("<option></option>")
+                                .val('')
+                                .html('<i><?php echo __('None'); ?></i>')
+                        );
+                }
+            }
+        });
+    });
+    $("#left_iblacklist").click (function () {
+        jQuery.each($("select[name='inventory_changes_blacklist[]'] option:selected"), function (key, value) {
+                imodule_name = $(value).html();
+                if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                    id_imodule = $(value).attr('value');
+                    $("select[name='inventory_changes_blacklist_out[]']")
+                        .append(
+                            $("<option></option>")
+                                .val(id_imodule)
+                                .html('<i>' + imodule_name + '</i>')
+                        );
+                    $("#inventory_changes_blacklist")
+                        .find("option[value='" + id_imodule + "']").remove();
+                    $("#inventory_changes_blacklist_out")
+                        .find("option[value='']").remove();
+                    if($("#inventory_changes_blacklist option").length == 0) {
+                        $("select[name='inventory_changes_blacklist[]']")
+                            .append(
+                                $("<option></option>")
+                                    .val('')
+                                    .html('<i><?php echo __('None'); ?></i>')
+                            );
+                    }
+                }
+        });
+    });
+
+    $("#submit-update_button").click(function () {
+        $('#inventory_changes_blacklist option').map(function(){
+            $(this).prop('selected', true);
+        });
+    });
 });
 </script>

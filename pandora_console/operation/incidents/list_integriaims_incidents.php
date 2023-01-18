@@ -428,7 +428,7 @@ $integria_incidents_form .= '<div class="float-right mrgn_lft_5px">'.html_print_
     __('Export to CSV'),
     'csv_export',
     false,
-    "location.href='operation/incidents/integriaims_export_csv.php?tickets_filters=$decode_csv'",
+    "blockResubmit($(this)); location.href='operation/incidents/integriaims_export_csv.php?tickets_filters=$decode_csv'",
     'class="sub next"',
     true
 ).'</div>';

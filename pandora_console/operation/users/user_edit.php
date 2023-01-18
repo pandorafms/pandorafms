@@ -83,9 +83,12 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
+    // API Token information.
+    $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
+    $upd_info['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($config['id_user']);
 
     $default_block_size = get_parameter('default_block_size', 0);
-    if ($default_block_size) {
+    if ($default_block_size > 0) {
         $upd_info['block_size'] = 0;
     }
 
@@ -161,16 +164,16 @@ if (isset($_GET['modified']) && !$view_mode) {
         } else if ($password_new !== 'NON-INIT') {
             $error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
         }
-    } else if (empty($password_new) && empty($password_confirm)) {
+    } else if (empty($password_new) === true && empty($password_confirm) === true) {
         $return = true;
-    } else if (empty($password_new) || empty($password_confirm)) {
+    } else if (empty($password_new) === true || empty($password_confirm) === true) {
         $return = false;
     }
 
     // No need to display "error" here, because when no update is needed
     // (no changes in data) SQL function returns 0 (FALSE), but is not an error,
     // just no change. Previous error message could be confussing to the user.
-    if ($return) {
+    if ($return !== false) {
         if (empty($password_new) === false && empty($password_confirm) === false) {
             $success_msg = __('Password successfully updated');
         }
@@ -184,7 +187,11 @@ if (isset($_GET['modified']) && !$view_mode) {
             if ($return_update_user === false) {
                 $error_msg = __('Error updating user info');
             } else if ($return_update_user == true) {
-                $success_msg = __('User info successfully updated');
+                if ($apiTokenRenewed === true) {
+                    $success_msg = __('You have generated a new API Token.');
+                } else {
+                    $success_msg = __('User info successfully updated');
+                }
             } else {
                 if (empty($password_new) === false && empty($password_confirm) === false) {
                     $success_msg = __('Password successfully updated');
@@ -226,7 +233,7 @@ if (isset($_GET['modified']) && !$view_mode) {
 }
 
 // Prints action status for current message.
-if ($status != -1) {
+if ((int) $status !== -1) {
     ui_print_result_message(
         $status,
         __('User info successfully updated'),
@@ -261,6 +268,73 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
 $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
 $user_id .= '<span>'.$id.'</span></div>';
 
+$user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').'</p>';
+if (is_management_allowed()) {
+    $user_id .= html_print_anchor(
+        [
+            'onClick' => sprintf(
+                'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
+                __('Warning'),
+                __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
+                'user_profile_form',
+            ),
+            'content' => html_print_image(
+                'images/icono-refrescar.png',
+                true,
+                [
+                    'class' => 'renew_api_token_image clickable',
+                    'title' => __('Renew API Token'),
+                ]
+            ),
+            'class'   => 'renew_api_token_link',
+        ],
+        true
+    );
+}
+
+
+// Check php conf for header auth.
+$lines = file('/etc/httpd/conf.d/php.conf');
+$http_authorization = false;
+
+foreach ($lines as $l) {
+    if (preg_match('/SetEnvIfNoCase \^Authorization\$ \"\(\.\+\)\" HTTP_AUTHORIZATION=\$1/', $l)) {
+        $http_authorization = true;
+    }
+}
+
+$user_id .= html_print_anchor(
+    [
+        'onClick' => sprintf(
+            'javascript:showAPIToken(\'%s\', \'%s\')',
+            __('API Token'),
+            base64_encode(__('Your API Token is:').'<br><span class="font_12pt bolder">'.users_get_API_token($config['id_user']).'</span><br>'.__('Please, avoid share this string with others.')),
+        ),
+        'content' => html_print_image(
+            'images/eye_show.png',
+            true,
+            [
+                'class' => 'renew_api_token_image clickable',
+                'title' => __('Show API Token'),
+            ]
+        ),
+        'class'   => 'renew_api_token_link',
+    ],
+    true
+);
+
+if ($http_authorization === false) {
+    $user_id .= ui_print_help_tip(
+        __('Directive HTTP_AUTHORIZATION=$1 is not set. Please, add it to /etc/httpd/conf.d/php.conf'),
+        true,
+        'images/warn.png',
+        false,
+        '',
+        true
+    );
+}
+
+$user_id .= '</div>';
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',
     $user_info['fullname'],
@@ -278,7 +352,7 @@ $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended
 ).'</div>';
 
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
-if (is_user_admin($id)) {
+if (is_user_admin($id) === true) {
     $avatar = html_print_image('images/people_1.png', true, ['class' => 'user_avatar']);
 } else {
     $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
@@ -401,7 +475,7 @@ if (!$meta) {
     // User only can change skins if has more than one group.
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').': </p>';
             $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
@@ -410,7 +484,7 @@ if (!$meta) {
     // User only can change skins if has more than one group.
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').ui_print_help_tip(
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').ui_print_help_tip(
                 __('This change will only apply to nodes'),
                 true
             ).'</p>';
@@ -654,10 +728,10 @@ foreach ($timezones as $timezone_name => $tz) {
     }
 }
 
-if (is_metaconsole()) {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
+if (is_metaconsole() === true) {
+    echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
 } else {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
+    echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
 }
 
     html_print_input_hidden('id', $id, false, false, false, 'id');

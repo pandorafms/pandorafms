@@ -1289,6 +1289,37 @@ class HostDevices extends Wizard
                         ],
                     ],
                     [
+                        'label'     => '<b>'.__('Security level').'</b>',
+                        'arguments' => [
+                            'name'     => 'snmp_security_level',
+                            'type'     => 'select',
+                            'fields'   => [
+                                'noAuthNoPriv' => __('Not auth and not privacy method'),
+                                'authNoPriv'   => __('Auth and not privacy method'),
+                                'authPriv'     => __('Auth and privacy method'),
+                            ],
+                            'selected' => $this->task['snmp_security_level'],
+                            'size'     => 15,
+                            'return'   => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Auth method').'</b>',
+                        'arguments' => [
+                            'name'     => 'snmp_auth_method',
+                            'type'     => 'select',
+                            'fields'   => [
+                                'MD5' => __('MD5'),
+                                'SHA' => __('SHA'),
+                            ],
+                            'selected' => $this->task['snmp_auth_method'],
+                            'size'     => 15,
+                            'return'   => true,
+
+                        ],
+                    ],
+                    [
                         'label'     => '<b>'.__('Auth password').'</b>'.ui_print_help_tip(
                             __(
                                 'The pass length must be eight character minimum.'
@@ -1335,38 +1366,6 @@ class HostDevices extends Wizard
 
                         ],
                     ],
-                    [
-                        'label'     => '<b>'.__('Auth method').'</b>',
-                        'arguments' => [
-                            'name'     => 'snmp_auth_method',
-                            'type'     => 'select',
-                            'fields'   => [
-                                'MD5' => __('MD5'),
-                                'SHA' => __('SHA'),
-                            ],
-                            'selected' => $this->task['snmp_auth_method'],
-                            'size'     => 15,
-                            'return'   => true,
-
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Security level').'</b>',
-                        'arguments' => [
-                            'name'     => 'snmp_security_level',
-                            'type'     => 'select',
-                            'fields'   => [
-                                'noAuthNoPriv' => __('Not auth and not privacy method'),
-                                'authNoPriv'   => __('Auth and not privacy method'),
-                                'authPriv'     => __('Auth and privacy method'),
-                            ],
-                            'selected' => $this->task['snmp_security_level'],
-                            'size'     => 15,
-                            'return'   => true,
-
-                        ],
-                    ],
-
                 ],
             ];
 

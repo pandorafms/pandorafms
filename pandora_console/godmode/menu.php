@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Godmode menu.
  *
@@ -180,7 +181,9 @@ if ($access_console_node === true) {
         $sub2['godmode/modules/manage_network_components']['id'] = 'Network components';
         $sub['templates']['sub2'] = $sub2;
 
-        enterprise_hook('inventory_submenu');
+        $sub['godmode/modules/manage_inventory_modules']['text'] = __('Inventory modules');
+        $sub['godmode/modules/manage_inventory_modules']['id'] = 'Inventory modules';
+
         enterprise_hook('autoconfiguration_menu');
         enterprise_hook('agent_repository_menu');
     }
@@ -200,14 +203,14 @@ if ($access_console_node === true) {
         $sub['gmassive']['type'] = 'direct';
         $sub['gmassive']['subtype'] = 'nolink';
         $sub2 = [];
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_agents']['text'] = __('Agents operations');
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_modules']['text'] = __('Modules operations');
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_plugins']['text'] = __('Plugins operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_agents']['text'] = __('Agents operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_modules']['text'] = __('Modules operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_plugins']['text'] = __('Plugins operations');
         if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
-            $sub2['godmode/massive/massive_operations&amp;tab=massive_users']['text'] = __('Users operations');
+            $sub2['godmode/massive/massive_operations&tab=massive_users']['text'] = __('Users operations');
         }
 
-        $sub2['godmode/massive/massive_operations&amp;tab=massive_alerts']['text'] = __('Alerts operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_alerts']['text'] = __('Alerts operations');
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');
@@ -422,10 +425,10 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
             if (is_user_admin($config['id_user']) === true) {
                 $sub['extensions/db_status']['text'] = __('DB Schema Check');
                 $sub['extensions/db_status']['id'] = 'DB Schema Check';
-                $sub['extensions/db_status']['sec'] = 'gbman';
+                $sub['extensions/db_status']['sec'] = 'gextensions';
                 $sub['extensions/dbmanager']['text'] = __('DB Interface');
                 $sub['extensions/dbmanager']['id'] = 'DB Interface';
-                $sub['extensions/dbmanager']['sec'] = 'gbman';
+                $sub['extensions/dbmanager']['sec'] = 'gextensions';
                 enterprise_hook('dbBackupManager');
                 enterprise_hook('elasticsearch_interface_menu');
             }
@@ -578,6 +581,14 @@ if ($access_console_node === true) {
     }
 }
 
+if ($access_console_node === true) {
+    // About.
+    $menu_godmode['about']['text'] = __('About');
+    $menu_godmode['about']['id'] = 'about';
+}
+
 if ((bool) $config['pure'] === false) {
     menu_print_menu($menu_godmode);
 }
+
+echo '<div id="about-div"></div>';

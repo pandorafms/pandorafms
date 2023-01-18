@@ -538,7 +538,7 @@ final class Container extends Model
             'OR'
         );
 
-        if ($rows === false) {
+        if ($row === false) {
             return '';
         }
 

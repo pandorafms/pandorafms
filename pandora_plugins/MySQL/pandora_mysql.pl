@@ -303,6 +303,10 @@ sub parse_config {
 			if ($parametro =~ m/^check\_name\s(.*)/i) { 
 				$checks[$plugin_setup{"numchecks"}]{'check_name'} = trim($1);					
 			}	
+
+			if ($parametro =~ m/^check\_type\s(.*)/i) { 
+				$checks[$plugin_setup{"numchecks"}]{'check_type'} = trim($1);					
+			}
 			
 			if ($parametro =~ m/^check\_schema\s(.*)/i) { 
 				$checks[$plugin_setup{"numchecks"}]{'check_schema'} = trim($1);					
@@ -1015,6 +1019,7 @@ foreach (@checks) {
 	my $check_show = $_->{'show'};
 	my $return_type = $_->{'return_type'};
 	my $check_name = $_->{'check_name'};
+	my $check_type = $_->{'check_type'};
 	
 	$result_check = 0;
 	# Process check (System parameters)
@@ -1156,7 +1161,7 @@ foreach (@checks) {
 					print_module("MySQL_" . $type . '_' . $check_show, $module_type, $result_check, '', $check_status);
 				} else {
 					if (defined($check_name)) {
-						print_module("MySQL_" . $type . "_" . $check_name, $module_type, $result_check, '', $check_status);					
+						print_module("MySQL_" . $type . "_" . $check_name, $check_type, $result_check, '', $check_status);					
 					} else {
 						print_module("MySQL_" . $type, $module_type, $result_check, '', $check_status);
 					}
@@ -1186,3 +1191,4 @@ foreach (@checks) {
 		
 	} # type ne 'unknown'
 }
+

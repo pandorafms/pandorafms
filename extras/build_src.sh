@@ -24,7 +24,7 @@ cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_server-$LOCAL_VERSION.tar.g
 cd $CODEHOME/pandora_agents/shellscript && tar zcvf $RPMHOME/SOURCES/pandorafms_agent-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn --exclude nohup linux || exit 1
 
 # Unix agent
-cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn --exclude nohup --exclude NT4 --exclude Darwin/dmg unix || exit 1
+cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_linux-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn --exclude nohup --exclude NT4 --exclude Darwin/dmg unix || exit 1
 
 # Enterprise console
 cd $PANDHOME_ENT/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn enterprise/* || exit 1
@@ -37,7 +37,7 @@ if [ "$1" == "nightly" ]; then
 	ln -s $RPMHOME/SOURCES/pandorafms_console-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_server-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_server-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_agent-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz || exit 1
-	ln -s $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz || exit 1
+	ln -s $RPMHOME/SOURCES/pandorafms_agent_linux-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent_linux-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_console_enterprise-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz || exit 1
 fi

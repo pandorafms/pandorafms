@@ -181,7 +181,7 @@ function profile_delete_profile_and_clean_users($id_profile)
  * @param int User id
  * @param bool Show the tags select or not
  */
-function profile_print_profile_table($id, $json_profile=false, $return=false)
+function profile_print_profile_table($id, $json_profile=false, $return=false, $create_user=false)
 {
     global $config;
 
@@ -296,12 +296,26 @@ function profile_print_profile_table($id, $json_profile=false, $return=false)
 
         $data['hierarchy'] = $profile['no_hierarchy'] ? __('Yes') : __('No');
 
-        $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-        $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, ['class' => 'invert_filter'], true);
-        $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
-        $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
-        $data['actions'] .= html_print_input_hidden('id_user', $id, true);
-        $data['actions'] .= '</form>';
+        if ($create_user) {
+            $data['actions'] .= html_print_input_image(
+                'del',
+                'images/cross.png',
+                1,
+                '',
+                true,
+                [
+                    'onclick' => 'delete_profile(event, this)',
+                    'class'   => 'invert_filter',
+                ]
+            );
+        } else {
+            $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+            $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, ['class' => 'invert_filter'], true);
+            $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
+            $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
+            $data['actions'] .= html_print_input_hidden('id_user', $id, true);
+            $data['actions'] .= '</form>';
+        }
 
         array_push($table->data, $data);
     }

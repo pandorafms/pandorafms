@@ -9478,6 +9478,8 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 	function Output($name = '', $dest = '')
 	{
 		$this->logger->debug(sprintf('PDF generated in %.6F seconds', microtime(true) - $this->time0), ['context' => LogContext::STATISTICS]);
+		// Set cokie token to indicate download is ready.
+		setDownloadCookieToken();
 
 		// Finish document if necessary
 		if ($this->state < 3) {

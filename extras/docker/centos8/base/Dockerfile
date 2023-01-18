@@ -262,13 +262,11 @@ RUN dnf install -y  --setopt=tsflags=nodocs \
         http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm
 
 # Install utils
-RUN dnf install -y supervisor crontabs http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm --setopt=tsflags=nodocs
+RUN dnf install -y supervisor chromium crontabs http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm --setopt=tsflags=nodocs
 # SDK VMware perl dependencies
 RUN dnf install -y http://firefly.artica.es/centos8/perl-Crypt-OpenSSL-AES-0.02-1.el8.x86_64.rpm http://firefly.artica.es/centos8/perl-Crypt-SSLeay-0.73_07-1.gf.el8.x86_64.rpm perl-Net-HTTP perl-libwww-perl openssl-devel perl-Crypt-CBC perl-Bytes-Random-Secure perl-Crypt-Random-Seed perl-Math-Random-ISAAC perl-JSON http://firefly.artica.es/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm
 # Instant client Oracle
 RUN dnf install -y https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-basic-19.8.0.0.0-1.x86_64.rpm https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-sqlplus-19.8.0.0.0-1.x86_64.rpm
-# Install Phantom
-RUN dnf install -y supervisor crontabs http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm --setopt=tsflags=nodocs
 
 
 EXPOSE 80 443 41121 162/udp

@@ -226,85 +226,6 @@ final class BarsGraph extends Item
         $moduleId = $linkedModule['moduleId'];
         $metaconsoleId = $linkedModule['metaconsoleId'];
 
-        // Add colors that will use the graphics.
-        $color = [];
-
-        $color[0] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color1'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[1] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color2'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[2] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color3'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[3] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color4'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[4] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color5'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[5] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color6'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[6] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color7'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[7] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color8'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[8] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color9'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[9] = [
-            'border' => '#000000',
-            'color'  => $config['graph_color10'],
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[11] = [
-            'border' => '#000000',
-            'color'  => COL_GRAPH9,
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[12] = [
-            'border' => '#000000',
-            'color'  => COL_GRAPH10,
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[13] = [
-            'border' => '#000000',
-            'color'  => COL_GRAPH11,
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[14] = [
-            'border' => '#000000',
-            'color'  => COL_GRAPH12,
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-        $color[15] = [
-            'border' => '#000000',
-            'color'  => COL_GRAPH13,
-            'alpha'  => CHART_DEFAULT_ALPHA,
-        ];
-
         // Maybe connect to node.
         $nodeConnected = false;
         if (\is_metaconsole() === true && $metaconsoleId !== null) {
@@ -320,103 +241,88 @@ final class BarsGraph extends Item
             }
         }
 
-        $moduleData = \get_bars_module_data(
-            $moduleId,
-            ($typeGraph !== 'horizontal')
-        );
-        if ($moduleData !== false && is_array($moduleData) === true) {
-            array_pop($moduleData);
-        }
-
-        $waterMark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => \ui_get_full_url(
-                'images/logo_vertical_water.png',
-                false,
-                false,
-                false
-            ),
-        ];
-
-        if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-            $width = 400;
-            $height = 400;
-        } else {
-            $width = (int) $data['width'];
-            $height = (int) $data['height'];
-        }
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
+        $moduleData = \get_bars_module_data($moduleId, $typeGraph);
 
         if (empty($moduleData) === true) {
-            $image = ui_get_full_url(
-                'images/image_problem_area.png',
-                false,
-                false,
-                false
-            );
-            $rc = file_get_contents($image);
-            if ($rc !== false) {
-                $graph = base64_encode($rc);
-            } else {
-                $graph = graph_nodata_image(
-                    // Width.
-                    $width,
-                    // Height.
-                    $height,
-                    // Type.
-                    'hbar',
-                    // Text.
-                    '',
-                    // Percent.
-                    false,
-                    // Base64.
-                    true
-                );
-            }
+            $graph = graph_nodata_image(['width' => $width, 'height' => $height]);
         } else {
-            if ($typeGraph === 'horizontal') {
-                $graph = \hbar_graph(
-                    $moduleData,
-                    $width,
-                    $height,
-                    $color,
-                    [],
-                    [],
-                    'images/image_problem_area.png',
-                    '',
-                    '',
-                    $waterMark,
-                    $config['fontpath'],
-                    $config['fontsize'],
-                    '',
-                    2,
-                    $config['homeurl'],
-                    $backGroundColor,
-                    $gridColor,
-                    null,
-                    null,
-                    true
-                );
-            } else {
-                $options = [];
-                $options['generals']['rotate'] = true;
-                $options['generals']['forceTicks'] = true;
-                $options['generals']['arrayColors'] = $color;
-                $options['grid']['backgroundColor'] = $backGroundColor;
-                $options['y']['color'] = $backGroundColor;
-                $options['x']['color'] = $backGroundColor;
+            array_pop($moduleData['labels']);
+            array_pop($moduleData['data']);
 
+            $waterMark = [
+                'file' => $config['homedir'].'/images/logo_vertical_water.png',
+                'url'  => \ui_get_full_url(
+                    'images/logo_vertical_water.png',
+                    false,
+                    false,
+                    false
+                ),
+            ];
+
+            if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
+                $width = 400;
+                $height = 400;
+            } else {
+                $width = (int) $data['width'];
+                $height = (int) $data['height'];
+            }
+
+            if (empty($moduleData) === true) {
+                $image = ui_get_full_url(
+                    'images/image_problem_area.png',
+                    false,
+                    false,
+                    false
+                );
+                $rc = file_get_contents($image);
+                if ($rc !== false) {
+                    $graph = base64_encode($rc);
+                } else {
+                    $graph = graph_nodata_image(['height' => $height]);
+                }
+            } else {
+                $size = $config['font_size'];
                 if ($ratio != 0) {
-                    $options['x']['font']['size'] = (($config['font_size'] * $ratio) + 1);
-                    $options['x']['font']['color'] = $gridColor;
-                    $options['y']['font']['size'] = (($config['font_size'] * $ratio) + 1);
-                    $options['y']['font']['color'] = $gridColor;
+                    $size = ($config['font_size'] * $ratio);
                 }
 
-                $options['generals']['pdf']['width'] = $width;
-                $options['generals']['pdf']['width'] = $width;
-                $options['generals']['pdf']['height'] = $height;
-                $options['x']['labelWidth'] = $sizeLabelTickWidth;
-                $graph = vbar_graph($moduleData, $options, 2);
+                $options = [
+                    'width'     => $width,
+                    'height'    => $height,
+                    'waterMark' => $waterMark,
+                    'legend'    => ['display' => false],
+                    'scales'    => [
+                        'x' => [
+                            'grid'  => [
+                                'display' => true,
+                                'color'   => $gridColor,
+                            ],
+                            'ticks' => [
+                                'fonts' => ['size' => $size],
+                            ],
+                        ],
+                        'y' => [
+                            'grid'  => [
+                                'display' => true,
+                                'color'   => $gridColor,
+                            ],
+                            'ticks' => [
+                                'fonts' => ['size' => $size],
+                            ],
+                        ],
+                    ],
+                    'labels'    => $moduleData['labels'],
+                ];
+
+                if ($typeGraph === 'horizontal') {
+                    $options['axis'] = 'y';
+                }
+
+                $graph = '<div style="background-color:'.$backGroundColor.'">';
+                $graph .= vbar_graph($moduleData['data'], $options);
+                $graph .= '</div>';
             }
         }
 
@@ -425,10 +331,7 @@ final class BarsGraph extends Item
             \metaconsole_restore_db();
         }
 
-        $imgbase64 = 'data:image/png;base64,';
-        $imgbase64 .= $graph;
-
-        $data['html'] = $imgbase64;
+        $data['html'] = $graph;
 
         return $data;
     }

@@ -206,7 +206,7 @@ class Widget
 
         $sql_search = '';
         if (empty($search) === false) {
-            $sql_search = 'AND description LIKE "%'.$search.'%" ';
+            $sql_search = 'AND description LIKE "%'.addslashes($search).'%" ';
         }
 
         // User admin view all dashboards.
@@ -419,6 +419,7 @@ class Widget
                 case 'GroupedMeterGraphs':
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
+                case 'DataMatrix':
                     $className .= '\\'.$name;
                 break;
 

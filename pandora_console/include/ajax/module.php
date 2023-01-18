@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 if (check_login()) {
     global $config;
@@ -56,6 +58,11 @@ if (check_login()) {
     $get_graph_module = (bool) get_parameter('get_graph_module', 0);
     $get_graph_module_interfaces = (bool) get_parameter(
         'get_graph_module_interfaces',
+        0
+    );
+
+    $get_data_dataMatrix = (bool) get_parameter(
+        'get_data_dataMatrix',
         0
     );
 
@@ -499,7 +506,9 @@ if (check_login()) {
                                         $data[] = remove_right_zeros(
                                             number_format(
                                                 $row[$attr[0]],
-                                                $config['graph_precision']
+                                                $config['graph_precision'],
+                                                $config['decimal_separator'],
+                                                $config['thousand_separator']
                                             )
                                         );
                                     }
@@ -507,7 +516,9 @@ if (check_login()) {
                                     $data[] = remove_right_zeros(
                                         number_format(
                                             $row[$attr[0]],
-                                            $config['graph_precision']
+                                            $config['graph_precision'],
+                                            $config['decimal_separator'],
+                                            $config['thousand_separator']
                                         )
                                     );
                                 }
@@ -524,7 +535,9 @@ if (check_login()) {
                                     $data[] = remove_right_zeros(
                                         number_format(
                                             $row[$attr[0]],
-                                            $config['graph_precision']
+                                            $config['graph_precision'],
+                                            $config['decimal_separator'],
+                                            $config['thousand_separator']
                                         )
                                     );
                                 }
@@ -1163,8 +1176,8 @@ if (check_login()) {
                 $status,
                 $title
             );
-
-            $last_status_change_text = 'Time elapsed since last status change: ';
+            $last_status_change_text = ($module['ip_target']) ? 'IP: '.$module['ip_target'].'<br />' : '';
+            $last_status_change_text .= 'Time elapsed since last status change: ';
             $last_status_change_text .= !empty($module['last_status_change']) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
             $data[5] = ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $last_status_change_text);
@@ -1427,6 +1440,192 @@ if (check_login()) {
             $params_combined
         );
         echo $output;
+
+        return;
+    }
+
+    if ($get_data_dataMatrix === true) {
+        global $config;
+
+        $table_id = get_parameter('table_id', '');
+        $modules = json_decode(
+            io_safe_output(
+                get_parameter('modules', '')
+            ),
+            true
+        );
+        $period = get_parameter('period', 0);
+        $slice = get_parameter('slice', 0);
+
+        // Datatables offset, limit.
+        $start = get_parameter('start', 0);
+        $formatData = (bool) get_parameter('formatData', 0);
+        $length = get_parameter(
+            'length',
+            $config['block_size']
+        );
+
+        $order = get_datatable_order(true);
+
+        // Total time per page.
+        $time_all_box = ($length * $slice);
+
+        // Total number of boxes.
+        $total_box = ceil($period / $slice);
+
+        if ($start > 0) {
+            $start = ($start / $length);
+        }
+
+        // Uncompress.
+        try {
+            ob_start();
+            $dateNow = get_system_time();
+            $final = ($dateNow - $period);
+            $date = ($dateNow - ($time_all_box * $start));
+
+            if (($date - $time_all_box) > $final) {
+                $datelimit = ($date - $time_all_box);
+            } else {
+                $datelimit = $final;
+            }
+
+            foreach ($modules as $key => $value) {
+                if (is_metaconsole() === true) {
+                    try {
+                        $node = new Node((int) $value['id_node']);
+                        $node->connect();
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        $node->disconnect();
+                    }
+                }
+
+                $value['thresholds'] = [
+                    'min_critical' => (empty($value['c_min']) === true) ? null : $value['c_min'],
+                    'max_critical' => (empty($value['c_max']) === true) ? null : $value['c_max'],
+                    'min_warning'  => (empty($value['w_min']) === true) ? null : $value['w_min'],
+                    'max_warning'  => (empty($value['w_max']) === true) ? null : $value['w_max'],
+                ];
+
+                $module_data = db_uncompress_module_data(
+                    $value['id'],
+                    $datelimit,
+                    $date,
+                    $slice,
+                    true
+                );
+
+                $uncompressData[] = array_reduce(
+                    $module_data,
+                    function ($carry, $item) use ($value, $config, $formatData) {
+                        // Last value.
+                        $vdata = null;
+                        if (is_array($item['data']) === true) {
+                            foreach ($item['data'] as $v) {
+                                $vdata = $v['datos'];
+                            }
+                        }
+
+                        $status = get_status_data_modules(
+                            $value['id'],
+                            $vdata,
+                            $value['thresholds']
+                        );
+
+                        $resultData = '<span style="color:'.$status['color'].'">';
+                        if ($vdata !== null && $vdata !== '' && $vdata !== false) {
+                            if (isset($formatData) === true
+                                && (bool) $formatData === true
+                            ) {
+                                $resultData .= format_for_graph(
+                                    $vdata,
+                                    $config['graph_precision']
+                                );
+                            } else {
+                                $resultData .= sla_truncate(
+                                    $vdata,
+                                    $config['graph_precision']
+                                );
+                            }
+
+                            $resultData .= ' '.$value['unit'];
+                        } else {
+                            $resultData .= '--';
+                        }
+
+                        $resultData .= '</span>';
+                        $carry[] = [
+                            'utimestamp'           => $item['utimestamp'],
+                            'Column-'.$value['id'] => $resultData,
+                        ];
+
+                        return $carry;
+                    },
+                    []
+                );
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
+            }
+
+            if (empty($uncompressData) === false) {
+                $data = array_reduce(
+                    $uncompressData,
+                    function ($carry, $item) {
+                        foreach ($item as $data_module) {
+                            foreach ($data_module as $key => $value) {
+                                if ($key === 'utimestamp') {
+                                    $carry[$data_module['utimestamp']]['date'] = date('Y-m-d H:i', (int) $value);
+                                } else {
+                                    $carry[$data_module['utimestamp']][$key] = $value;
+                                }
+                            }
+                        }
+
+                        return $carry;
+                    }
+                );
+            }
+
+            if (empty($data) === false) {
+                $data = array_reverse(array_values($data));
+            } else {
+                $data = [];
+            }
+
+            // RecordsTotal && recordsfiltered resultados totales.
+            echo json_encode(
+                [
+                    'data'            => $data,
+                    'recordsTotal'    => $total_box,
+                    'recordsFiltered' => $total_box,
+                ]
+            );
+
+            $response = ob_get_clean();
+
+            // Clean output buffer.
+            while (ob_get_level() !== 0) {
+                ob_end_clean();
+            }
+        } catch (Exception $e) {
+            echo json_encode(
+                ['error' => $e->getMessage()]
+            );
+        }
+
+        // If not valid it will throw an exception.
+        json_decode($response);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            // If valid dump.
+            echo $response;
+        } else {
+            echo json_encode(
+                ['error' => $response]
+            );
+        }
 
         return;
     }

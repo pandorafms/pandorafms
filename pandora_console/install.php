@@ -27,7 +27,7 @@
  * ============================================================================
  */
 require_once 'include/functions_html.php';
-define('AJAX', true);
+
 // Necesary for import js and css of html_print_select
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -44,6 +44,8 @@ define('AJAX', true);
         <meta name="robots" content="index, follow">
         <link rel="icon" href="images/pandora.ico" type="image/ico">
         <script type="text/javascript" src="include/javascript/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="include/javascript/select2.min.js"></script>
+        <link rel="stylesheet" href="include/styles/select2.min.css" type="text/css">
         <link rel="stylesheet" href="include/styles/install.css" type="text/css">
     </head>
     <script type="text/javascript">
@@ -723,40 +725,39 @@ function install_step3()
     if (!$error) {
         echo '<tr><td>';
         echo '<p class="input-label">DB Engine</p>';
-        echo html_print_select(
-            $options,
-            'engine',
-            '',
-            '',
-            '',
-            '',
-            true,
-            false,
-            true,
-            '',
-            false,
-            'width: 100%'
-        );
+
+        echo '<select id="engine" name="engine"
+                style="width:
+                100%"
+                data-select2-id="engine"
+                tabindex="-1"
+                class="select2-hidden-accessible"
+                aria-hidden="true">';
+
+        foreach ($options as $key => $value) {
+            echo '<option value="'.$key.'">'.$value.'</option>';
+        }
+
+        echo '</select>';
+
+        echo '<script type="text/javascript">$("#engine").select2({closeOnSelect: true});</script>';
 
         echo '<td>';
         echo '<p class="input-label">Installation in </p>';
-        echo html_print_select(
-            [
-                'db_new'   => 'A new Database',
-                'db_exist' => 'An existing Database',
-            ],
-            'db_action',
-            '',
-            '',
-            '',
-            '',
-            true,
-            false,
-            true,
-            '',
-            false,
-            'width: 100%'
-        );
+
+        echo '<select id="db_action"
+                      name="db_action"
+                      style="width:
+                      100%"
+                      data-select2-id="db_action"
+                      tabindex="-1"
+                      class="select2-hidden-accessible"
+                      aria-hidden="true">
+            <option value="db_new">A new Database</option>
+            <option value="db_exist">An existing Database</option>
+            </select>';
+
+        echo '<script type="text/javascript">$("#db_action").select2({closeOnSelect: true});</script>';
     }
 
     echo "		<tr><td><p class='input-label'>DB User with privileges</p>
@@ -1236,29 +1237,31 @@ function install_step5()
 	<div id='wizard'>
 	".print_logo_status(6, 6)."
 		<div id='install_box'>
-			<h2>Installation complete</h2>
-			<p>For security, you now must manually delete this installer 
+			<h2 class='subtitle'>Installation complete</h2>
+			<p class='text'>For security, you now must manually delete this installer 
 			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
-			<p>You should also install Pandora FMS Servers before trying to monitor anything;
+			<p class='text'>You should also install Pandora FMS Servers before trying to monitor anything;
 			please read documentation on how to install it.</p>
-			<p>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
+			<p class='text'>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
 			please change it both as soon as possible.</p>
-			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
+			<p class='text'>Don't forget to check <a href='http://pandorafms.com' class='link'>http://pandorafms.com</a> 
 			for updates.
-			<p>Select if you want to rename '<i>install.php</i>'.</p>
+			<p class='text'>Select if you want to rename '<i>install.php</i>'.</p>
 			<form method='post' action='index.php'>
-				<button class='btn_install_next' type='submit' name='rn_file'><span class='btn_install_next_text'>Yes, rename the file</span></button>
+				<button class='btn_primary outline' type='submit' name='rn_file'><span class='btn_install_next_text'>Yes, rename the file</span></button>
 				<input type='hidden' name='rename_file' value='1'>
 			</form>
-			<p><br><b><a id='access_pandora' href='index.php'><button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Click here to access to your Pandora FMS console</span></button></a>.</b>
 			</p>
 		</div>";
 
     echo "</div>
 	<div id='foot_install'>
-        <div class='content-footer'>
-            <span>Pandora FMS is an OpenSource Software project registered at 
+    <div class='content-footer'>
+            <span class='signature'>Pandora FMS is an OpenSource Software project registered at 
             <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>
+            <a id='access_pandora' href='index.php'>
+                <button class='btn_primary'>Click here to access to your Pandora FMS console</button>
+            </a>
         </div>
 	</div>
 </div>";

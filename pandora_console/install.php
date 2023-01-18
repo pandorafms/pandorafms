@@ -614,8 +614,7 @@ function install_step2()
     }
 
             echo '<tr><td>';
-            echo "<span style='display: block; font-family: verdana,arial,sans;
-				font-size: 8.5pt;margin-top: 2px; font-weight: bolder;'>DB Engines</span>";
+            echo "<span style='display: block; margin-top: 2px; font-weight: bolder; color: white; font-size: 22px;'>DB Engines</span>";
             echo '</td><td>';
             echo '</td></tr>';
             check_extension('mysqli', 'PHP MySQL(mysqli) extension');

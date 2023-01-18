@@ -26,7 +26,9 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
+require_once 'include/functions_html.php';
+define('AJAX', true);
+// Necesary for import js and css of html_print_select
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -41,6 +43,7 @@
         <meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
         <meta name="robots" content="index, follow">
         <link rel="icon" href="images/pandora.ico" type="image/ico">
+        <script type="text/javascript" src="include/javascript/jquery-3.3.1.min.js"></script>
         <link rel="stylesheet" href="include/styles/install.css" type="text/css">
     </head>
     <script type="text/javascript">
@@ -76,7 +79,7 @@
         }
         function CheckDBhost(value){
             if (( value != "localhost") && ( value != "127.0.0.1")) {
-                document.getElementById('tr_dbgrant').style["display"] = "block";
+                document.getElementById('tr_dbgrant').style["display"] = "table-row";
             }
             else {
                 document.getElementById('tr_dbgrant').style["display"] = "none";
@@ -126,7 +129,7 @@
             ?>
             </div>
         </div>
-        <div style='height: 10px'>
+        <div style='padding-bottom: 50px'>
             <?php
             $version = '7.0NG.767';
             $build = '230117';
@@ -655,13 +658,13 @@ function install_step2()
 
 function install_step3()
 {
-    $options = '';
+    $options = [];
     if (extension_loaded('mysql')) {
-        $options .= "<option value='mysql'>MySQL</option>";
+        $options['mysql'] = 'MySQL';
     }
 
     if (extension_loaded('mysqli')) {
-        $options .= "<option value='mysqli'>MySQL(mysqli)</option>";
+        $options['mysqli'] = 'MySQL(mysqli)';
     }
 
     $error = false;
@@ -698,94 +701,125 @@ function install_step3()
 			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
 			</div>";
+    if ($error) {
+        echo "<div class='warn'>
+			    You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
+			</div>";
+    }
 
     if (extension_loaded('oci8')) {
         echo " <div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
     }
 
+    echo '</div>';
+    echo '<div class="col-md-6">';
     if (!$error) {
         echo "<form method='post' name='step2_form' action='install.php?step=4'>";
     }
 
-    echo '</div>';
-    echo '<div class="col-md-6">';
-    echo "<table cellpadding=6 width=100% border=0 style='text-align: left;'>";
-    echo '<tr><td>';
-    echo 'DB Engine<br>';
+    echo "<table class='table-config-database' cellpadding=6 width=100% border=0 style='text-align: left;'>";
 
-    if ($error) {
-        echo "
-			<div class='warn'>
-			 You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
-			</div>";
-    } else {
-        echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
-        echo $options;
-        echo '</select>';
+    if (!$error) {
+        echo '<tr><td>';
+        echo '<p class="input-label">DB Engine</p>';
+        echo html_print_select(
+            $options,
+            'db',
+            '',
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%'
+        );
 
         echo '<td>';
-        echo ' Installation in <br>';
-        echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
-        echo "<option value='db_new'>A new Database</option>";
-        echo "<option value='db_exist'>An existing Database</option>";
-        echo '</select>';
+        echo '<p class="input-label">Installation in </p>';
+        echo html_print_select(
+            [
+                'db_new'   => 'A new Database',
+                'db_exist' => 'An existing Database',
+            ],
+            'db_action',
+            '',
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%'
+        );
     }
 
-    echo "		<tr><td>DB User with privileges<br>
+    echo "		<tr><td><p class='input-label'>DB User with privileges</p>
 				<input class='login' type='text' name='user' value='root' size=20>
 				
-				<td>DB Password for this user<br>
+				<td><p class='input-label'>DB Password for this user</p>
 				<input class='login' type='password' name='pass' value='' size=20>
 				
-				<tr><td>DB Hostname<br>
+				<tr><td><p class='input-label'>DB Hostname</p>
 				<input class='login' type='text' name='host' value='localhost' onkeyup='CheckDBhost(this.value);'size=20>
 				
-				<td>DB Name (pandora by default)<br>
+				<td><p class='input-label'>DB Name (pandora by default)</p>
 				<input class='login' type='text' name='dbname' value='pandora' size=20>
 				
 				<tr>";
 
     // the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
-    echo "<tr id='tr_dbgrant' style='display:none;'>
-                            <td colspan=\"2\">DB Host Access <img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/><br>
-                            <input class='login' type='text' name='dbgrant' value='".$_SERVER['SERVER_ADDR']."' size=20>
+    echo "<tr id='tr_dbgrant' style='display: none;'>
+            <td colspan=\"2\">
+            <p class='input-label'>DB Host Access<img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/></p>
+            <input class='login' type='text' name='dbgrant' value='".$_SERVER['SERVER_ADDR']."'>
                         </td>
                     </tr>";
 
-    echo "   <td valign=top>Drop Database if exists<br>
-			        <input class='login' type='checkbox' name='drop' id='drop' value=1>
-			    </td>";
+    echo "<tr>
+            <td colspan='2'>
+            <p class='input-label'>Full path to HTTP publication directory</p>
+			<p class='example-message'>For example /var/www/pandora_console/</p>
+            <input class='login' type='text' name='path'  value='".dirname(__FILE__)."'>
+          </tr>";
+    echo "
+        <tr>
+            <td colspan='2'>
+                <p class='input-label'>URL path to Pandora FMS Console</p>
+                <p class='example-message'>For example '/pandora_console'</p>
+				<input class='login' type='text' name='url'
+                value='".dirname($_SERVER['SCRIPT_NAME'])."'>
+            </td>
+        </tr>";
 
-    echo "<td>Full path to HTTP publication directory<br>
-					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
-				<br>
-				<input class='login' type='text' name='path' style='width: 240px;' 
-				value='".dirname(__FILE__)."'>
-				
-				<tr>";
-    echo '<td>';
-    echo "<td>URL path to Pandora FMS Console<br>
-				<span style='font-size: 9px'>For example '/pandora_console'</span>
-				</br>
-				<input class='login' type='text' name='url' style='width: 250px;' 
-				value='".dirname($_SERVER['SCRIPT_NAME'])."'>
-			</table>
-			";
+    echo "<tr>
+            <td colspan='2' class='inline'>
+                <label class='switch'>
+                    <input type='checkbox' name='drop' id='drop' value=1>
+                    <span class='slider round'></span>
+                </label>
+                <p class='input-label'>Drop Database if exists</p>
+            </td>
+        </tr>";
+
+    echo '</table>';
 
     echo '</div>';
 
-    echo '</form>';
     echo '</div></div>';
     echo "<div style='clear:both;'></div>";
     echo "<div id='foot_install'>
     <div class='content-footer'>
-    <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
+    <a href='install.php?step=2'><button class='btn_primary outline'>Previous step</button></a>
     <span class='signature'>Pandora FMS is an OpenSource Software project registered at
     <a target='_new' href='http://pandora.sourceforge.net'>SourceForge →</a></span>";
     if (!$error) {
-        echo "<a id='step4' href='install.php?step=4'>
-					<button class='btn_primary' type='submit' id='step4button'><span class='btn_install_next_text'>Next Step</span></button>";
-        echo '</a>';
+        echo "<button class='btn_primary' type='submit' id='step4button'>Next Step</button>";
+        echo '</form>';
         ?>
         <script type="text/javascript">
             var step3_form = document.getElementsByName('step2_form')[0];

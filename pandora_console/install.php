@@ -333,9 +333,10 @@ function parse_mysqli_dump($connection, $url)
                 $query .= $sql_line;
                 if (preg_match("/;[\040]*\$/", $sql_line)) {
                     if (!$result = mysqli_query($connection, $query)) {
-                        echo mysqli_error($connection);
-                        // Uncomment for debug
-                        echo "<i><br>$query<br></i>";
+                        if (mysqli_error($connection)) {
+                            return mysqli_error($connection).'<i><br>'.$query.'<br></i>';
+                        }
+
                         return 0;
                     }
 
@@ -888,7 +889,7 @@ function install_step4()
     $step5 = 0;
     $step6 = 0;
     $step7 = 0;
-
+    $errors = [];
     echo "
 	<div id='install_container'>
 	<div id='wizard'>
@@ -1036,13 +1037,21 @@ function install_step4()
                 if ($step1 == 1) {
                     $step2 = mysqli_select_db($connection, $dbname);
                     check_generic($step2, "Opening database '$dbname'");
-                    echo '<div class="err-sql">';
+
                     $step3 = parse_mysqli_dump($connection, 'pandoradb.sql');
-                    echo '</div>';
+
+                    if ($step3 !== 0) {
+                        $errors[] = $step3;
+                    }
+
                     check_generic($step3, 'Creating schema');
-                    echo '<div class="err-sql">';
+
                     $step4 = parse_mysqli_dump($connection, 'pandoradb_data.sql');
-                    echo '</div>';
+
+                    if ($step4 !== 0) {
+                        $errors[] = $step4;
+                    }
+
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
                         $step_freebsd = adjust_paths_for_freebsd($engine, $connection);

@@ -919,14 +919,16 @@ function install_step4()
                 }
 
                 if ($step1 == 1) {
-                    echo '<div class="err-sql">';
                     $step2 = mysql_select_db($dbname);
                     check_generic($step2, "Opening database '$dbname'");
 
+                    echo '<div class="err-sql">';
                     $step3 = parse_mysql_dump('pandoradb.sql');
+                    echo '</div>';
                     check_generic($step3, 'Creating schema');
-
+                    echo '<div class="err-sql">';
                     $step4 = parse_mysql_dump('pandoradb_data.sql');
+                    echo '</div>';
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
                         $step_freebsd = adjust_paths_for_freebsd($engine);
@@ -1003,7 +1005,6 @@ function install_step4()
                     fclose($cfgout);
                     chmod($pandora_config, 0600);
                     check_generic($step7, "Created new config file at '".$pandora_config."'");
-                    echo '</div>';
                 }
             }
 
@@ -1033,13 +1034,15 @@ function install_step4()
                 }
 
                 if ($step1 == 1) {
-                    echo '<div class="err-sql">';
                     $step2 = mysqli_select_db($connection, $dbname);
                     check_generic($step2, "Opening database '$dbname'");
-
+                    echo '<div class="err-sql">';
                     $step3 = parse_mysqli_dump($connection, 'pandoradb.sql');
+                    echo '</div>';
                     check_generic($step3, 'Creating schema');
+                    echo '<div class="err-sql">';
                     $step4 = parse_mysqli_dump($connection, 'pandoradb_data.sql');
+                    echo '</div>';
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
                         $step_freebsd = adjust_paths_for_freebsd($engine, $connection);
@@ -1125,7 +1128,6 @@ function install_step4()
                     fclose($cfgout);
                     chmod($pandora_config, 0600);
                     check_generic($step7, "Created new config file at '".$pandora_config."'");
-                    echo '</div>';
                 }
             }
 

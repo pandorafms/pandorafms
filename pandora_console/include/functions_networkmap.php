@@ -4161,32 +4161,90 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
         $agents = get_discovery_agents($id_recon, true);
 
         $relations_discovery = modules_get_relations(['id_rt' => $id_recon, 'distinct' => true]);
-        $relations_maps = db_get_all_rows_sql(
-            sprintf(
-                'SELECT * FROM trel_item WHERE id_map = %s AND parent_type = 1 AND child_type = 1',
-                $id_networkmap
-            )
-        );
+        $array_aux = $relations_discovery;
+        $target_aux = $relations_discovery;
 
-        $id_recon = $id_networkmap;
+        foreach ($relations_discovery as $key => $rel) {
+            foreach ($array_aux as $key2 => $rel2) {
+                if ($key2 <= $key) {
+                    continue;
+                }
 
-        foreach ($relations_discovery as $key => $discovery) {
-            foreach ($relations_maps as $key2 => $map) {
-                if ($map['id_parent_source_data'] == $discovery['module_a']
-                    && $map['id_child_source_data'] == $discovery['module_b']
-                ) {
-                    unset($relations_discovery[$key]);
-                    unset($relations_maps[$key2]);
-                    continue 2;
-                } else if ($map['id_parent_source_data'] == $discovery['module_b']
-                    && $map['id_child_source_data'] == $discovery['module_a']
-                ) {
-                    unset($relations_discovery[$key]);
-                    unset($relations_maps[$key2]);
-                    continue 2;
+                if ($rel['module_a'] === $rel2['module_a']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_b']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_b']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_b']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_b']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+
+                if ($rel['module_b'] === $rel2['module_b']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_a']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_a']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_a']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_a']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+
+                if ($rel['module_a'] === $rel2['module_b']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_b']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_a']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_b']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_a']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+
+                if ($rel['module_b'] === $rel2['module_a']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_a']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_b']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_a']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_b']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
                 }
             }
         }
+
+        $relations_discovery = $target_aux;
+
+        db_process_sql_delete('trel_item', ['id_map' => $id_networkmap, 'parent_type' => 1, 'child_type' => 1]);
+
+        $id_recon = $id_networkmap;
 
         // Relations Module <-> Module.
         foreach ($relations_discovery as $key => $relation) {
@@ -4350,8 +4408,6 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
 			 AND deleted = 0
 		GROUP BY source_data';
     $nodes = db_get_all_rows_sql($sql);
-
-    hd($nodes, true);
 
     foreach ($nodes as $node) {
         // First the relation parents without l2 interfaces.

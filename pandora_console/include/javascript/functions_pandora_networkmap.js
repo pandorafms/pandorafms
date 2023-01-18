@@ -2505,7 +2505,7 @@ function refresh() {
         if (array_nodes.length === 0 && array_links.length === 0) {
           update_networkmap();
           $("#spinner_networkmap").css("display", "none");
-          startCountDown(refresh_time);
+          window.location = location;
         } else {
           if (array_nodes.length > 0) {
             $.ajax({
@@ -2531,6 +2531,7 @@ function refresh() {
     },
     error: function(e) {
       $("#spinner_networkmap").css("display", "none");
+      window.location = location;
     }
   });
 }

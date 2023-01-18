@@ -486,7 +486,7 @@ function install_step1()
         <div class='col-md-6'>
 		<div id='install_box'>
 			<h2 class='title'>Welcome to Pandora FMS installation Wizard</h2>
-			<p class'text'>This wizard helps you to quick install Pandora FMS console and main database in your system.
+			<p class='text'>This wizard helps you to quick install Pandora FMS console and main database in your system.
 			In four steps, this installer will check all dependencies and will create your configuration, ready to use.</p>
 			<p class='text'>For more information, please refer to <a class='link' href='https://pandorafms.com/en/documentation/' target='_blank'>documentation →</a></p>
 		";
@@ -896,7 +896,6 @@ function install_step4()
 	<div id='wizard'>
 	".print_logo_status(5, 6)."
 		<div id='install_box'>
-			<h2>Creating database and default configuration file</h2>
             <div class='row reverse'>
             <div class='col-md-6'>
 			<table class='check-table'>";
@@ -1159,7 +1158,7 @@ function install_step4()
         echo '</table>';
         echo '</div>';
         echo '<div class="col-md-6" id="content-errors">';
-
+        echo "<h2 class='subtitle'>Creating database and default configuration file</h2>";
     if ($everything_ok !== 1) {
         $info = '';
 

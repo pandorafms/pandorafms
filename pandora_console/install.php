@@ -923,13 +923,21 @@ function install_step4()
                     $step2 = mysql_select_db($dbname);
                     check_generic($step2, "Opening database '$dbname'");
 
-                    echo '<div class="err-sql">';
                     $step3 = parse_mysql_dump('pandoradb.sql');
-                    echo '</div>';
+
+                    if ($step3 !== 0 && $step3 !== 1) {
+                        $errors[] = $step3;
+                        $step3 = 0;
+                    }
+
                     check_generic($step3, 'Creating schema');
-                    echo '<div class="err-sql">';
                     $step4 = parse_mysql_dump('pandoradb_data.sql');
-                    echo '</div>';
+
+                    if ($step4 !== 0 && $step4 !== 1) {
+                        $errors[] = $step4;
+                        $step4 = 0;
+                    }
+
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
                         $step_freebsd = adjust_paths_for_freebsd($engine);
@@ -1039,17 +1047,18 @@ function install_step4()
                     check_generic($step2, "Opening database '$dbname'");
 
                     $step3 = parse_mysqli_dump($connection, 'pandoradb.sql');
-
-                    if ($step3 !== 0) {
+                    if ($step3 !== 0 && $step3 !== 1) {
                         $errors[] = $step3;
+                        $step3 = 0;
                     }
 
                     check_generic($step3, 'Creating schema');
 
                     $step4 = parse_mysqli_dump($connection, 'pandoradb_data.sql');
 
-                    if ($step4 !== 0) {
+                    if ($step4 !== 0 && $step4 !== 1) {
                         $errors[] = $step4;
+                        $step4 = 0;
                     }
 
                     check_generic($step4, 'Populating database');
@@ -1149,11 +1158,21 @@ function install_step4()
         echo '</table>';
         echo '</div>';
         echo '<div class="col-md-6" id="content-errors">';
+
     if ($everything_ok !== 1) {
-        $info = "<div class='err'><b>There were some problems.
+        $info = '';
+
+        if (!empty($errors)) {
+            foreach ($errors as $key => $err) {
+                $info .= '<div class="err-sql">'.$err.'</div>';
+            }
+        }
+
+        $info .= "<div class='err'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
 				All database ";
+
         if ($engine == 'oracle') {
             $info .= 'objects ';
         } else {

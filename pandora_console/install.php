@@ -919,6 +919,7 @@ function install_step4()
                 }
 
                 if ($step1 == 1) {
+                    echo '<div class="err-sql">';
                     $step2 = mysql_select_db($dbname);
                     check_generic($step2, "Opening database '$dbname'");
 
@@ -1002,6 +1003,7 @@ function install_step4()
                     fclose($cfgout);
                     chmod($pandora_config, 0600);
                     check_generic($step7, "Created new config file at '".$pandora_config."'");
+                    echo '</div>';
                 }
             }
 
@@ -1031,12 +1033,12 @@ function install_step4()
                 }
 
                 if ($step1 == 1) {
+                    echo '<div class="err-sql">';
                     $step2 = mysqli_select_db($connection, $dbname);
                     check_generic($step2, "Opening database '$dbname'");
 
                     $step3 = parse_mysqli_dump($connection, 'pandoradb.sql');
                     check_generic($step3, 'Creating schema');
-
                     $step4 = parse_mysqli_dump($connection, 'pandoradb_data.sql');
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
@@ -1123,6 +1125,7 @@ function install_step4()
                     fclose($cfgout);
                     chmod($pandora_config, 0600);
                     check_generic($step7, "Created new config file at '".$pandora_config."'");
+                    echo '</div>';
                 }
             }
 
@@ -1134,7 +1137,7 @@ function install_step4()
 
         echo '</table>';
         echo '</div>';
-        echo '<div class="col-md-6">';
+        echo '<div class="col-md-6" id="content-errors">';
     if ($everything_ok !== 1) {
         $info = "<div class='err'><b>There were some problems.
 				Installation was not completed.</b> 

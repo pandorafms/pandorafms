@@ -27,7 +27,6 @@
  * ============================================================================
  */
 
-// Necesary for import js and css of html_print_select
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -812,7 +811,7 @@ function install_step3()
     <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
     </span>";
     if (!$error) {
-        echo "<button class='btn_primary' type='submit' id='step4button'>Next Step</button>";
+        echo "<button class='btn_primary' type='submit' id='step4'>Next Step</button>";
         echo '</form>';
         ?>
         <script type="text/javascript">

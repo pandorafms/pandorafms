@@ -3112,7 +3112,7 @@ function modules_get_relations($params=[])
     }
 
     $distinct = '';
-    if (empty($params)) {
+    if (empty($params) || isset($params['distinct'])) {
         $distinct = 'DISTINCT';
     }
 
@@ -3136,6 +3136,11 @@ function modules_get_relations($params=[])
         );
     }
 
+    $id_rt_filter = '';
+    if (isset($params['id_rt'])) {
+        $id_rt_filter = sprintf('AND tmr.id_rt = %d', $params['id_rt']);
+    }
+
     $sql = sprintf(
         'SELECT %s tmr.id, tmr.module_a, tmr.module_b,
         tmr.disable_update, tmr.type 
@@ -3153,7 +3158,8 @@ function modules_get_relations($params=[])
         $module_type,
         $agent_filter,
         $disabled_update_filter,
-        $modules_type_filter
+        $modules_type_filter,
+        $id_rt_filter
     );
 
     return db_get_all_rows_sql($sql);

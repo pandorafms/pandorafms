@@ -1283,9 +1283,14 @@ foreach ($modules as $module) {
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+        // Check module relatonships to show warning message.
+        $module_children = json_encode(get_children_module($module['id_agente_modulo'], 'nombre'));
+        $url = htmlentities('index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo']);
+
         // Delete module.
-        $data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+        $data[9] = '<a href="#"
+			onClick="delete_module_warning(\''.htmlentities($module_children).'\',\''.$url.'\')">';
+
         $data[9] .= html_print_image(
             'images/cross.png',
             true,
@@ -1393,5 +1398,31 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         else {
             window.location = window.location + "&checked=true";
         }
+    }
+
+    function delete_module_warning(children_json, url) {
+        var message = '<?php echo __('Are you sure?'); ?>';
+        var children = JSON.parse(children_json);
+        var ret = false;
+
+        if(children != false) {
+            message += '<br><strong>' + '<?php echo __('This module has children modules. Following modules will be also deleted: '); ?>' + '</strong><ul>';
+            $.each(children, function (key, value) {
+                message += '<li>' + value['nombre'] + '</li>';
+            });
+            message += '</ul>';
+        }
+
+        ret = confirmDialog({
+                title: "<?php echo __('Delete module'); ?>",
+                message: message,
+                onAccept: function() {
+                        window.location.href = url;
+                    }
+            });
+
+        return false;
+        
+        
     }
 </script>

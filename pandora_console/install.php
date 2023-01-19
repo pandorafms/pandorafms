@@ -518,9 +518,9 @@ function install_step1()
         <div class='col-md-6 hide-phone'>
         <div class='content-animation'>
         <div class='popuphero'>
-            <div class='popupgear1'><img src='https://pandorafms.com/wp-content/uploads/2023/01/Pandora-FMS-installer-gear.png'></div>
-            <div class='popupgear2'><img src='https://pandorafms.com/wp-content/uploads/2023/01/Pandora-FMS-installer-gear.png'></div>
-            <div class='popuplaptop'><img src='https://pandorafms.com/wp-content/uploads/2023/01/Pandora-FMS-installer.png'></div>
+            <div class='popupgear1'><img src='images/Pandora-FMS-installer-gear.png'></div>
+            <div class='popupgear2'><img src='images/Pandora-FMS-installer-gear.png'></div>
+            <div class='popuplaptop'><img src='images/Pandora-FMS-installer.png'></div>
             </div>
         </div>
         </div>

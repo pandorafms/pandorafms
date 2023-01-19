@@ -804,7 +804,7 @@ function install_step3()
     echo '</div>';
 
     echo '</div></div>';
-    echo "<div style='clear:both;'></div>";
+    echo '</div>';
     echo "<div id='foot_install'>
     <div class='content-footer'>
     <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
@@ -821,7 +821,7 @@ function install_step3()
         <?php
     }
 
-    echo '</div></div></div>';
+    echo '</div></div>';
 }
 
 
@@ -1205,10 +1205,9 @@ function install_step4()
                 }
             break;
         }
-
-        echo '</div>';
     }
 
+        echo '</div>';
         echo '</div>';
         echo '</div></div>';
         echo "
@@ -1223,10 +1222,7 @@ function install_step4()
               </a>";
     }
 
-        echo '</div>
-	    </div>
-        </div>
-	</div>';
+        echo '</div></div>';
 }
 
 

@@ -77,7 +77,7 @@ var TreeController = {
               .addClass("tree-root")
               .hide()
               .prepend(
-                '<div class="tree-node flex-row-vcenter">' +
+                '<div class="tree-node tree-node-header">' +
                   '<img src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
                   'images/pandora.png" />' +
@@ -648,11 +648,11 @@ var TreeController = {
                 element.icon.length > 0
               ) {
                 $content.append(
-                  '<div class="node-icon" style="background-image: url(' +
+                  '<div class="node-icon"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     "images/" +
                     element.icon +
-                    ');" /> </div>'
+                    '" /></div>'
                 );
               } else if (
                 typeof element.iconHTML != "undefined" &&
@@ -661,7 +661,9 @@ var TreeController = {
                 $content.append(element.iconHTML + " ");
               }
               $content.append(
-                '<div class="node-name">' + element.name + "</div>"
+                '<div class="module-name module-name-parent">' +
+                  element.name +
+                  "</div>"
               );
 
               if (typeof element.edit != "undefined") {
@@ -766,7 +768,11 @@ var TreeController = {
                 }
               }
 
-              $content.append(" " + element.alias);
+              $content.append(
+                '<span class="module-name module-name-alias">' +
+                  element.alias +
+                  "</span>"
+              );
               break;
             case "IPAM_supernets":
               var IPAMSupernetDetailImage = $(
@@ -803,6 +809,8 @@ var TreeController = {
               }
 
               if (element.name !== null) {
+                console.log(element.name);
+                console.log("2");
                 $content.append("&nbsp;&nbsp;&nbsp;" + element.name);
               }
 
@@ -845,6 +853,8 @@ var TreeController = {
               }
 
               if (element.name !== null) {
+                console.log(element.name);
+                console.log("3");
                 $content.append("&nbsp;&nbsp;&nbsp;" + element.name);
               }
 
@@ -900,7 +910,7 @@ var TreeController = {
                 ) {
                   $content.append(" " + element.description);
                 } else {
-                  $content.append(" " + element.name);
+                  $content.append('<span class="">' + element.name + "</span>");
                 }
               } else {
                 $content.remove($node);
@@ -951,7 +961,7 @@ var TreeController = {
                 }
               }
 
-              $content.append(" " + element.name);
+              $content.append('<span class="">' + element.name + "</span>");
               break;
             case "module":
               $content.addClass("module");
@@ -988,6 +998,9 @@ var TreeController = {
                 '<span class="module-value">' + element.value + "</span>"
               );
 
+              var actionButtons = $("<div></div>");
+              actionButtons.addClass("module-action-buttons");
+
               if (
                 typeof element.showGraphs != "undefined" &&
                 element.showGraphs != 0
@@ -1019,7 +1032,8 @@ var TreeController = {
                       }
                     });
 
-                  $content.append(graphImageHistogram);
+                  actionButtons.append(graphImageHistogram);
+                  //$content.append(graphImageHistogram);
                 }
 
                 // Graph pop-up
@@ -1072,7 +1086,8 @@ var TreeController = {
                       }
                     });
 
-                  $content.append($graphImage);
+                  actionButtons.append($graphImage);
+                  //$content.append($graphImage);
                 }
 
                 // Data pop-up
@@ -1110,7 +1125,8 @@ var TreeController = {
                         }
                       });
 
-                    $content.append($dataImage);
+                    actionButtons.append($dataImage);
+                    //$content.append($dataImage);
                   }
                 }
               }
@@ -1145,8 +1161,11 @@ var TreeController = {
                   })
                   .css("cursor", "pointer");
 
-                $content.append($alertsImage);
+                actionButtons.append($alertsImage);
+                //$content.append($alertsImage);
               }
+
+              $content.append(actionButtons);
 
               break;
             case "os":
@@ -1155,14 +1174,18 @@ var TreeController = {
                 element.icon.length > 0
               ) {
                 $content.append(
-                  '<img src="' +
+                  '<div class="node-icon"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     "images/" +
                     element.icon +
-                    '" /> '
+                    '" /></div>'
                 );
               }
-              $content.append(element.name);
+              $content.append(
+                '<span class="module-name module-name-parent">' +
+                  element.name +
+                  "</span>"
+              );
               break;
             case "tag":
               if (
@@ -1183,7 +1206,11 @@ var TreeController = {
                     'images/tag_red.png" /> '
                 );
               }
-              $content.append(element.name);
+              $content.append(
+                '<span class="module-name module-name-parent">' +
+                  element.name +
+                  "</span>"
+              );
               break;
             case "services":
               // Status image
@@ -1196,10 +1223,18 @@ var TreeController = {
 
                 $content.append($statusImage);
               }
-              $content.append(element.name);
+              $content.append(
+                '<span class="module-name module-name-parent">' +
+                  element.name +
+                  "</span>"
+              );
               break;
             default:
-              $content.append(element.name);
+              $content.append(
+                '<span class="module-name module-name-parent">' +
+                  element.name +
+                  "</span>"
+              );
               break;
           }
 
@@ -1232,6 +1267,8 @@ var TreeController = {
                         if (error) {
                           // console.error(error);
                         } else {
+                          console.log(element.name);
+                          console.log("1");
                           controller.detailRecipient
                             .render(element.name, data)
                             .open();

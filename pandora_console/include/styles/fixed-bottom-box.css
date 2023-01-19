@@ -1,6 +1,7 @@
 div.fixed-bottom-box {
   background: #fff;
-
+  height: -webkit-fill-available;
+  height: -moz-fill-available;
   border-radius: 10px 10px 0 0;
   -moz-border-radius: 10px 10px 0 0;
   -webkit-border-radius: 10px 10px 0 0;
@@ -11,7 +12,7 @@ div.fixed-bottom-box {
 
 /* Overrides */
 .left_align {
-  border: 1px solid #e1e1e1;
+  /*border: 1px solid #e1e1e1;*/
 }
 .white_table_graph_header {
   border-top-left-radius: 0px;
@@ -24,17 +25,20 @@ div.fixed-bottom-box {
 /* Overrides end */
 
 div.fixed-bottom-box > div.fixed-bottom-box-head {
+  width: 20px !important;
   height: 30px;
   line-height: 30px;
   vertical-align: middle;
-  background-color: #3f3f3f;
-
-  border-radius: 10px 10px 0 0;
-  -moz-border-radius: 10px 10px 0 0;
-  -webkit-border-radius: 10px 10px 0 0;
-  -o-border-radius: 10px 10px 0 0;
-  -ms-border-radius: 10px 10px 0 0;
-  -khtml-border-radius: 10px 10px 0 0;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  /* background-color: #3f3f3f; */
+  /* border-radius: 10px 10px 0 0; */
+  /* -moz-border-radius: 10px 10px 0 0; */
+  /* -webkit-border-radius: 10px 10px 0 0; */
+  /* -o-border-radius: 10px 10px 0 0; */
+  /* -ms-border-radius: 10px 10px 0 0; */
+  /* -khtml-border-radius: 10px 10px 0 0; */
 }
 
 div.fixed-bottom-box
@@ -51,9 +55,9 @@ div.fixed-bottom-box
 div.fixed-bottom-box
   > div.fixed-bottom-box-head
   > span.fixed-bottom-box-head-close {
-  height: 30px;
-  width: 30px;
-  background-image: url(../../images/input_cross.png);
+  height: 20px;
+  width: 20px;
+  background-image: url(../../images/close@svg.svg);
   background-repeat: no-repeat;
   background-position: center;
   float: right;
@@ -63,6 +67,7 @@ div.fixed-bottom-box
   > div.fixed-bottom-box-head
   > div.fixed-bottom-box-head-body:hover {
   cursor: pointer;
+  /*
   background-color: #747474;
 
   border-radius: inherit;
@@ -71,12 +76,14 @@ div.fixed-bottom-box
   -o-border-radius: inherit;
   -ms-border-radius: inherit;
   -khtml-border-radius: inherit;
+  */
 }
 
 div.fixed-bottom-box
   > div.fixed-bottom-box-head
   > span.fixed-bottom-box-head-close:hover {
   cursor: pointer;
+  /*
   background-color: #747474;
 
   border-radius: 0 10px 0 0;
@@ -85,6 +92,7 @@ div.fixed-bottom-box
   -o-border-radius: 0 10px 0 0;
   -ms-border-radius: 0 10px 0 0;
   -khtml-border-radius: 0 10px 0 0;
+  */
 }
 
 div.fixed-bottom-box.fixed-bottom-box-hided
@@ -106,5 +114,10 @@ div.fixed-bottom-box.fixed-bottom-box-opened
 div.fixed-bottom-box > div.fixed-bottom-box-content {
   vertical-align: top;
   text-align: center;
-  overflow: auto;
+  /*overflow: auto;*/
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100% !important;
+  border-left: 1px solid #aeaeae;
 }

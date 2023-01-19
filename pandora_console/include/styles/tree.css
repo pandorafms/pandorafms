@@ -1,7 +1,22 @@
 .tree-root {
-  border: 1px solid red;
   margin-top: 0px;
   margin-bottom: 0px;
+}
+
+.tree-node.tree-node-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  width: calc(100% - 25px);
+  border: 1px solid #aeaeae;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.tree-node .module-action-buttons img {
+  width: 20px;
+  float: right;
 }
 
 .tree-node img {
@@ -30,11 +45,11 @@
 
 .tree-node {
   white-space: nowrap;
-
+  /*
   background-image: url(../../images/tree/branch.png);
   background-position: 0px 0px;
   background-repeat: repeat-y;
-
+*/
   min-height: 26px;
 }
 
@@ -52,7 +67,7 @@ div.tree-node span {
 .node-content {
   border: 1px solid #aeaeae;
   border-radius: 8px;
-  width: calc(100% - 17px);
+  width: calc(100% - 40px);
   box-sizing: border-box;
   height: 40px;
   /*height: 26px;*/
@@ -151,9 +166,9 @@ div.tree-node span {
   border-radius: 0;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
-  height: 39px;
+  height: 38px;
   position: relative;
-  top: -2px;
+  top: -1px;
 }
 .tree-node > .node-content > .module-status.status_small_balls {
   top: -8px;
@@ -162,18 +177,38 @@ div.tree-node span {
 .tree-node > .node-content > .module-name {
   margin: 0 0 0 1em;
   /*width: 250px;*/
-  width: 60%;
+  width: 55%;
   display: inline-block;
+  position: relative;
   font-weight: bold;
+}
+
+.tree-node > .node-content > .module-name-alias {
+  font-size: 12pt;
+  font-weight: normal;
+  top: 8px;
+}
+
+.tree-node > .node-content > .module-name-parent {
+  font-size: 12pt;
+  margin-left: 0.5em;
+  top: -14px;
 }
 
 .tree-node > .node-content > .module-value {
   /*width: 120px;*/
-  width: 130px;
+  /*width: 130px;*/
   display: inline-block;
   text-align: right;
   margin: 8px 1em;
+  /*float: right;*/
+}
+
+.tree-node > .node-content > .module-action-buttons {
   float: right;
+  min-width: 105px;
+  position: relative;
+  /* top: 5px; */
 }
 
 .tree-node > .node-content > img.module-server-type,
@@ -213,6 +248,7 @@ div#tree-controller-recipient {
   width: 65%;
   /* width: 98%; */
   margin-top: 10px;
+  margin-left: 10px;
 }
 
 .tree-controller-recipient {
@@ -223,7 +259,7 @@ div#tree-controller-recipient {
 }
 
 .tree-node > .node-content > div + div:not(.tree-node-counters) {
-  margin-left: 3px;
+  /*margin-left: 3px;*/
 }
 
 .tree-node .disabled {

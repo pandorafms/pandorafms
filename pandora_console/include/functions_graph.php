@@ -3489,8 +3489,9 @@ function graph_custom_sql_graph(
         $data_result = [];
     }
 
-    $data = [];
-    $labels = [];
+    $data_bar = [];
+    $labels_pie = [];
+    $data_pie = [];
     $count = 0;
     $other = 0;
     foreach ($data_result as $data_item) {

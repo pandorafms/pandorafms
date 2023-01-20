@@ -1157,6 +1157,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `stat_utimestamp` BIGINT NOT NULL DEFAULT 0,
   `exec_proxy` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `port` INT UNSIGNED NOT NULL DEFAULT 0,
+  `server_keepalive_utimestamp` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_server`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

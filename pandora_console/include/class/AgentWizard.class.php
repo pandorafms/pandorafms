@@ -5476,6 +5476,19 @@ class AgentWizard extends HTML
      */
     private function getInterfacesModulesx64(array $data=[])
     {
+        $equivalencies_x86 = [
+            'ifHCInOctets'      => 'ifInOctets',
+            'ifHCOutOctets'     => 'ifOutOctets',
+            'ifHCInUcastPkts'   => 'ifInUcastPkts',
+            'ifHCOutUcastPkts'  => 'ifOutUcastPkts',
+            'ifHCInNUcastPkts'  => 'ifInNUcastPkts',
+            'ifHCOutNUcastPkts' => 'ifOutNUcastPkts',
+        ];
+
+        foreach ($equivalencies_x86 as $key => $equivalencie) {
+            $this->defaultSNMPValues[$key] = $this->defaultSNMPValues[$equivalencie];
+        }
+
         $moduleDescription  = '';
         $name               = '';
         $value              = '1';

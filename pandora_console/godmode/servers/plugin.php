@@ -275,7 +275,7 @@ if ($filemanager) {
                         'label' => __('Servers'),
                     ],
                     [
-                        'link'  => '&filemanager=1',
+                        'link'  => '',
                         'label' => __('Plugins'),
                     ],
                 ]
@@ -456,7 +456,7 @@ if (($create != '') || ($view != '')) {
     $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
     $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf text_input" size=100 value="'.$form_execute.'" >';
 
-    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" class="bot">';
+    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&tab=Attachments&id_plugin='.$form_id.'" class="bot">';
     $data[1] .= html_print_image('images/file.png', true, ['class' => 'invert_filter'], false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
@@ -702,7 +702,7 @@ if (($create != '') || ($view != '')) {
                     'label' => __('Servers'),
                 ],
                 [
-                    'link'  => '&filemanager=1',
+                    'link'  => '',
                     'label' => __('Plugins'),
                 ],
             ]

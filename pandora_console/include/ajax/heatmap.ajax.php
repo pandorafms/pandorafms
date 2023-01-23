@@ -340,7 +340,7 @@ if (is_ajax() === true) {
 
                 // Group.
                 $secondary_groups = '';
-                $secondary = agents_get_secondary_groups($data['id_agente']);
+                $secondary = enterprise_hook('agents_get_secondary_groups', [$data['id_agente']]);
                 if (isset($secondary['for_select']) === true && empty($secondary['for_select']) === false) {
                     $secondary_groups = implode(', ', $secondary['for_select']);
                     $secondary_groups = ', '.$secondary_groups;
@@ -353,19 +353,26 @@ if (is_ajax() === true) {
 
 
                 // Events.
-                echo '<div class="div-dialog">';
-                echo graph_graphic_agentevents(
-                    $id,
-                    100,
-                    40,
-                    SECONDS_1DAY,
-                    '',
-                    true,
-                    false,
-                    false,
-                    1
+                $result_graph_event = enterprise_hook(
+                    'graph_graphic_agentevents',
+                    [
+                        $id,
+                        100,
+                        40,
+                        SECONDS_1DAY,
+                        '',
+                        true,
+                        false,
+                        false,
+                        1,
+                    ]
                 );
-                echo '</div>';
+
+                if ($result_graph_event !== -1) {
+                    echo '<div class="div-dialog">';
+                    echo $result_graph_event;
+                    echo '</div>';
+                }
             break;
         }
     }

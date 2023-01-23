@@ -242,7 +242,7 @@ if ($filemanager) {
                 ],
                 'options' => [
                     'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                        'images/setup.png',
+                        'images/collection.png',
                         true,
                         [
                             'title' => __('Attachments'),
@@ -669,7 +669,7 @@ if (($create != '') || ($view != '')) {
             ],
             'options' => [
                 'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                    'images/setup.png',
+                    'images/collection.png',
                     true,
                     [
                         'title' => __('Attachments'),

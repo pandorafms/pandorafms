@@ -141,7 +141,7 @@ if (isset($_GET['server'])) {
 
         ];
 
-        if ($config['license_nms'] !== 1) {
+        if ((int) $config['license_nms'] !== 1) {
             $buttons['collections'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=collections&pure='.$pure.'">'.html_print_image('images/collection.png', true, ['title' => __('Collections')]).'</a>',

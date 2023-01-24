@@ -6398,7 +6398,7 @@ function nms_check_api()
 {
     global $config;
 
-    if ($config['license_nms'] === 1) {
+    if ((int) $config['license_nms'] === 1) {
         returnError('license_error');
         return true;
     }

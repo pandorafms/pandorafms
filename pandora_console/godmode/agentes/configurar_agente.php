@@ -498,7 +498,7 @@ if ($id_agente) {
     }
 
     // Collection.
-    if ($config['license_nms'] !== 1) {
+    if ((int) $config['license_nms'] !== 1) {
         $collectiontab = enterprise_hook('collection_tab');
 
         if ($collectiontab == -1) {

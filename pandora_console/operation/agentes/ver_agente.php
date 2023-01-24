@@ -1473,7 +1473,7 @@ if ($tab == 'inventory') {
 }
 
 // Collection.
-if ($config['license_nms'] !== 1) {
+if ((int) $config['license_nms'] !== 1) {
     $collectiontab = enterprise_hook('collection_tab');
     if ($collectiontab == -1) {
         $collectiontab = '';

@@ -461,20 +461,18 @@ if ($is_metaconsole === false) {
 
     $agents_ids = array_keys($agents);
     if (count($agents_ids) > 0) {
-        $inventory_data = inventory_get_data(
+        $rows = inventory_get_datatable(
             $agents_ids,
             $inventory_module,
             $utimestamp,
             $inventory_search_string,
             $export,
             false,
-            $order_by_agent,
-            '',
-            $pagination_url_parameters
+            $order_by_agent
         );
     }
 
-    if (count($agents_ids) === 0 || (int) $inventory_data === ERR_NODATA) {
+    if (count($agents_ids) === 0 || (int) $rows === ERR_NODATA) {
         ui_print_info_message(['no_close' => true, 'message' => __('No data found.') ]);
         echo '&nbsp;</td></tr><tr><td>';
 
@@ -515,7 +513,213 @@ if ($is_metaconsole === false) {
         }
     </script>
     <?php
-    echo $inventory_data;
+    if ($inventory_module !== 'basic') {
+        if ($order_by_agent === true) {
+            foreach ($rows as $agent_rows) {
+                foreach ($agent_rows['row'] as $row) {
+                    $data = [];
+
+                    $columns = explode(';', io_safe_output($row['data_format']));
+                    array_push($columns, 'Timestamp');
+
+                    $data_rows = explode(PHP_EOL, $row['data']);
+                    foreach ($data_rows as $data_row) {
+                        // Exclude results don't match filter.
+                        if ($inventory_search_string && preg_match('/'.io_safe_output($inventory_search_string).'/', ($data_row)) == 0) {
+                            continue;
+                        }
+
+                        $column_data = explode(';', io_safe_output($data_row));
+
+                        if ($column_data[0] !== '') {
+                            $row_tmp = [];
+                            foreach ($column_data as $key => $value) {
+                                $row_tmp[$columns[$key]] = $value;
+                            }
+
+                            $row_tmp['Timestamp'] = $row['timestamp'];
+                            array_push($data, (object) $row_tmp);
+                        }
+                    }
+
+                    $id_table = 'id_'.$row['id_module_inventory'];
+
+                    $table = ui_print_datatable(
+                        [
+                            'id'                  => $id_table,
+                            'class'               => 'info_table w100p',
+                            'style'               => 'width: 100%',
+                            'columns'             => $columns,
+                            'column_names'        => $columns,
+                            'no_sortable_columns' => [],
+                            'data_element'        => $data,
+                            'searching'           => true,
+                            'dom_elements'        => 'lftipB',
+                            'order'               => [
+                                'field'     => $columns[0],
+                                'direction' => 'asc',
+                            ],
+                            'zeroRecords'         => __('No inventory found'),
+                            'emptyTable'          => __('No inventory found'),
+                            'return'              => true,
+                            'default_pagination'  => 10,
+                            'no_sortable_columns' => [-1],
+                        ]
+                    );
+
+                    $modules .= ui_toggle(
+                        $table,
+                        '<span class="title-blue">'.$row['name'].'</span>',
+                        '',
+                        '',
+                        true,
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
+                        'images/arrow_down_green.png',
+                        'images/arrow_right_green.png',
+                        false,
+                        false,
+                        false,
+                        '',
+                        '',
+                        null,
+                        null,
+                        $id_table
+                    );
+                }
+
+                ui_toggle(
+                    $modules,
+                    $agent_rows['agent'],
+                    '',
+                    '',
+                    false,
+                    false
+                );
+            }
+        } else {
+            foreach ($rows as $module_rows) {
+                $agent = '';
+                foreach ($module_rows as $row) {
+                    $columns = explode(';', io_safe_output($row['data_format']));
+                    array_push($columns, 'Timestamp');
+                    $data = [];
+
+                    $data_explode = explode(PHP_EOL, $row['data']);
+                    foreach ($data_explode as $values) {
+                        // Exclude results don't match filter.
+                        if ($inventory_search_string && preg_match('/'.io_safe_output($inventory_search_string).'/', ($values)) == 0) {
+                            continue;
+                        }
+
+                        $data_tmp = [];
+                        if ($values !== '') {
+                            $values_explode = explode(';', io_safe_output($values));
+
+                            foreach ($values_explode as $key => $value) {
+                                $data_tmp[$columns[$key]] = $value;
+                            }
+
+                            $data_tmp['Timestamp'] = $row['timestamp'];
+                            array_push($data, $data_tmp);
+                        }
+                    }
+
+
+                    $id_table = 'id_'.$row['id_module_inventory'];
+
+                    $table = ui_print_datatable(
+                        [
+                            'id'                  => $id_table,
+                            'class'               => 'info_table w100p',
+                            'style'               => 'width: 100%',
+                            'columns'             => $columns,
+                            'column_names'        => $columns,
+                            'no_sortable_columns' => [],
+                            'data_element'        => $data,
+                            'searching'           => true,
+                            'dom_elements'        => 'lftipB',
+                            'order'               => [
+                                'field'     => $columns[0],
+                                'direction' => 'asc',
+                            ],
+                            'zeroRecords'         => __('No inventory found'),
+                            'emptyTable'          => __('No inventory found'),
+                            'return'              => true,
+                            'default_pagination'  => 10,
+                            'no_sortable_columns' => [-1],
+                        ]
+                    );
+
+                    $agent .= ui_toggle(
+                        $table,
+                        '<span class="title-blue">'.$row['name_agent'].'</span>',
+                        '',
+                        '',
+                        true,
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
+                        'images/arrow_down_green.png',
+                        'images/arrow_right_green.png',
+                        false,
+                        false,
+                        false,
+                        '',
+                        '',
+                        null,
+                        null,
+                        $id_table
+                    );
+                }
+
+                ui_toggle(
+                    $agent,
+                    $module_rows[0]['name'],
+                    '',
+                    '',
+                    false,
+                    false
+                );
+            }
+        }
+    } else {
+        $result = [];
+
+        $sql = 'SELECT alias, direccion, nombre
+                FROM tagente 
+                WHERE id_agente = '.$inventory_id_agent;
+        $results = db_get_all_rows_sql($sql);
+
+        foreach ($results as $result) {
+            hd($result);
+        }
+
+        ui_print_datatable(
+            [
+                'id'                  => 'basic_info',
+                'class'               => 'info_table w100p',
+                'style'               => 'width: 100%',
+                'columns'             => $columns,
+                'column_names'        => $columns,
+                'no_sortable_columns' => [],
+                'data_element'        => $data,
+                'searching'           => true,
+                'dom_elements'        => 'lftipB',
+                'order'               => [
+                    'field'     => $columns[0],
+                    'direction' => 'asc',
+                ],
+                'zeroRecords'         => __('No inventory found'),
+                'emptyTable'          => __('No inventory found'),
+                'default_pagination'  => 10,
+                'no_sortable_columns' => [-1],
+            ]
+        );
+    }
 } else {
     if (empty($inventory_data) === true) {
         ui_print_info_message(['no_close' => true, 'message' => __('No data found.') ]);
@@ -546,6 +750,10 @@ ui_require_jquery_file('bgiframe');
         $("#id_group").blur (function () {
             $(this).css ("width", "180px");
         });
+
+        // Reduce margins between table and pagination.
+        $('.dataTables_paginate.paging_simple_numbers').css('margin-top', 10);
+        $('.dataTables_paginate.paging_simple_numbers').css('margin-bottom', 10);
     });
 /* ]]> */
 </script>

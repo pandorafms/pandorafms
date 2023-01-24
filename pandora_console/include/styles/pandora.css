@@ -9306,3 +9306,11 @@ form#satellite_conf_edit > fieldset.full-column {
   flex: none;
   margin: 0 0 20px;
 }
+
+.title-blue {
+  text-transform: none !important;
+  font-size: 1em !important;
+  margin: 0px !important;
+  padding: 0px !important;
+  color: #14524f;
+}

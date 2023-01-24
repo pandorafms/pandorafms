@@ -699,7 +699,7 @@ class Manager implements PublicLogin
         }
 
         // Check ACl.
-        if (\is_user_admin($config['id_user']) !== true) {
+        if (\is_user_admin($id_user) !== true) {
             // Non-admin user can see dashboards of his groups and 'AR' profile.
             $group_list = \users_get_groups(
                 $id_user,

@@ -1210,3 +1210,92 @@ input[type="image"] {
 .mono {
   font-family: source-code, mono, monospace;
 }
+
+* table about dialog */ .table-about {
+  background-color: #222 !important;
+  width: 100%;
+  border-collapse: collapse;
+  border-color: #222 !important;
+}
+
+.table-about th {
+  background-color: #222 !important;
+  width: 100%;
+}
+
+.table-about h1 {
+  text-transform: none !important;
+  font-size: 28px !important;
+  color: white;
+  margin-top: 34px;
+  margin-left: 9px;
+}
+
+.table-about h2 {
+  text-transform: none !important;
+  font-size: 15px !important;
+  margin-bottom: 5px;
+  margin-left: 9px;
+  color: #95a3bf;
+}
+
+.table-about h2 span {
+  color: #95a3bf;
+  font-size: large;
+  font-weight: bolder;
+}
+
+.table-about p {
+  color: white;
+  font-size: 15px;
+  font-weight: normal;
+  margin: 7px;
+  margin-left: 9px;
+}
+
+.table-about p span {
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 9px;
+  margin-left: 0px;
+}
+
+.table-about p.about-last-p {
+  padding-bottom: 17px;
+}
+
+.table-about .about-last-tr {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.about-copyright-div {
+  width: 100%;
+  height: 100%;
+}
+
+p.trademark-copyright {
+  width: 90%;
+  color: #8a96a6;
+  font-size: 13px;
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center !important;
+  position: absolute;
+  bottom: 0;
+}
+
+#about-tabs,
+#tab-general-view {
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+#about-tabs {
+  overflow: hidden;
+}
+
+#tab-database {
+  height: 80%;
+  overflow: auto;
+}

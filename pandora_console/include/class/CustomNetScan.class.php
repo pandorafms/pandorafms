@@ -606,15 +606,13 @@ class CustomNetScan extends Wizard
         }
 
         if (isset($this->page) === true && $this->page === 1) {
-            $name_ipam = 'IPAM Recon';
             // Recon script.
             $form['inputs'][] = [
                 'label'     => __('Recon script'),
                 'arguments' => [
                     'type'     => 'select_from_sql',
                     'sql'      => sprintf(
-                        'SELECT id_recon_script, name FROM trecon_script WHERE name <> "%s" ORDER BY name',
-                        $name_ipam
+                        'SELECT id_recon_script, name FROM trecon_script ORDER BY name'
                     ),
                     'name'     => 'id_recon_script',
                     'selected' => $this->task['id_recon_script'],

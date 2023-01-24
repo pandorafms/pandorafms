@@ -280,6 +280,8 @@ our @EXPORT = qw(
 	notification_set_targets
 	notification_get_users
 	notification_get_groups
+	process_inventory_data
+	process_inventory_module_diff
 	exec_cluster_aa_module
 	exec_cluster_ap_module
 	exec_cluster_status_module
@@ -4041,7 +4043,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 	$custom_data = '' unless defined ($custom_data);
 	$server_id = 0 unless defined ($server_id);
 	$module_data = defined($module) ? $module->{'datos'} : '' unless defined ($module_data);
-	$module_status = defined($module) ? $module->{'estado'} : '' unless defined ($module_status);
+	$module_status = defined($module) ? $module->{'estado'} : 0 unless defined ($module_status);
 	
 	# If the event is created with validated status, assign ack_utimestamp
 	my $ack_utimestamp = $event_status == 1 ? time() : 0;
@@ -5067,6 +5069,7 @@ sub process_inc_abs_data ($$$$$$) {
 
 	return $diff;
 }
+
 
 sub log4x_get_severity_num($) {
 	my ($data_object) = @_;
@@ -7188,6 +7191,278 @@ sub notification_get_groups {
 	} @results;
 
 	return @results;
+}
+
+################################################################################
+################################################################################
+## Inventory XML data
+################################################################################
+################################################################################
+
+
+################################################################################
+# Process inventory data, creating the module if necessary.
+################################################################################
+sub process_inventory_data ($$$$$$$) {
+	my ($pa_config, $data, $server_id, $agent_name,
+		$interval, $timestamp, $dbh) = @_;
+	
+	foreach my $inventory (@{$data->{'inventory'}}) {
+		
+		# Process inventory modules
+		foreach my $module_data (@{$inventory->{'inventory_module'}}) {
+			
+			my $module_name = get_tag_value ($module_data, 'name', '');
+			
+			# Unnamed module
+			next if ($module_name eq '');
+			
+			# Process inventory data
+			my $data_list = '';
+			foreach my $list (@{$module_data->{'datalist'}}) {
+				
+				# Empty list
+				next unless defined ($list->{'data'});
+				
+				foreach my $data (@{$list->{'data'}}) {
+					$data_list .= $data . "\n";
+				}
+			}
+			
+			next if ($data_list eq '');
+			process_inventory_module_data ($pa_config, $data_list, $server_id, $agent_name, $module_name, $interval, $timestamp, $dbh);
+		}
+	}
+}
+
+################################################################################
+# Process inventory module data, creating the module if necessary.
+################################################################################
+sub process_inventory_module_data ($$$$$$$$) {
+	my ($pa_config, $data, $server_id, $agent_name,
+		$module_name, $interval, $timestamp, $dbh) = @_;
+	
+	logger ($pa_config, "Processing inventory module '$module_name' for agent '$agent_name'.", 10);
+	
+	# Get agent data
+	my $agent = get_db_single_row ($dbh,
+		'SELECT * FROM tagente WHERE nombre = ?', safe_input($agent_name));
+	if (! defined ($agent)) {
+		logger ($pa_config, "Agent '$agent_name' not found for inventory module '$module_name'.", 3);
+		return;
+	}
+	
+	# Parse the timestamp and process the module
+	if ($timestamp !~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ &&
+		$timestamp !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
+		return;
+	}
+	my $utimestamp;
+	eval {
+		$utimestamp = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
+	};
+	if ($@) {
+		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
+		return;
+	}
+	
+	# Get module data or create it if it does not exist
+	my $inventory_module = get_db_single_row ($dbh,
+		'SELECT tagent_module_inventory.*, tmodule_inventory.name
+		FROM tagent_module_inventory, tmodule_inventory
+		WHERE tagent_module_inventory.id_module_inventory = tmodule_inventory.id_module_inventory
+			AND id_agente = ? AND name = ?',
+		$agent->{'id_agente'}, safe_input($module_name));
+
+
+	
+	if (! defined ($inventory_module)) {
+		# Get the module
+		my $module_id = get_db_value ($dbh,
+			'SELECT id_module_inventory FROM tmodule_inventory WHERE name = ? AND id_os = ?',
+			safe_input($module_name), $agent->{'id_os'});
+		return unless defined ($module_id);
+		
+		my $id_agent_module_inventory = 0;
+		# Update the module data
+		
+		$id_agent_module_inventory = db_insert ($dbh, 'id_agent_module_inventory',
+			"INSERT INTO tagent_module_inventory (id_agente, id_module_inventory, 
+				${RDBMS_QUOTE}interval${RDBMS_QUOTE}, data, timestamp, utimestamp, flag)
+			VALUES (?, ?, ?, ?, ?, ?, ?)",
+			$agent->{'id_agente'}, $module_id, $interval, safe_input($data), $timestamp, $utimestamp, 0);
+		
+		
+		return unless ($id_agent_module_inventory > 0);
+		
+		db_do ($dbh,
+			'INSERT INTO tagente_datos_inventory (id_agent_module_inventory, data, timestamp, utimestamp)
+			VALUES (?, ?, ?, ?)',
+			$id_agent_module_inventory, safe_input($data), $timestamp, $utimestamp);
+		
+		return;
+	}
+	
+	process_inventory_module_diff($pa_config, safe_input($data), 
+		$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
+}
+
+################################################################################
+# Searching differences between incoming module and stored module,
+# creating/updating module and event
+################################################################################
+sub process_inventory_module_diff ($$$$$$;$) {
+	my ($pa_config, $incoming_data,	$inventory_module, $timestamp, $utimestamp, $dbh, $interval) = @_;
+	
+	my $stored_data = $inventory_module->{'data'};
+	my $agent_id = $inventory_module->{'id_agente'};
+	my $stored_utimestamp = $inventory_module->{'utimestamp'};
+	my $agent_module_inventory_id = $inventory_module->{'id_agent_module_inventory'};
+	my $module_inventory_id = $inventory_module->{'id_module_inventory'};
+
+
+	enterprise_hook('process_inventory_alerts', [$pa_config, $incoming_data, 
+		$inventory_module, $timestamp, $utimestamp, $dbh, $interval]);
+
+	# If there were any changes generate an event and save the new data
+	if (decode('UTF-8', $stored_data) ne $incoming_data) {
+		my $inventory_db = $stored_data;
+		my $inventory_new = $incoming_data;
+		my @inventory = split('\n', $inventory_new);
+		my $diff_new = "";
+		my $diff_delete = "";
+		
+		foreach my $inv (@inventory) {
+			my $inv_clean = quotemeta($inv);
+			if($inventory_db =~ m/$inv_clean/) {
+				$inventory_db =~ s/$inv_clean//g;
+				$inventory_new =~ s/$inv_clean//g;
+			}
+			else {
+				$diff_new .= "$inv\n";
+			}
+		}
+		
+		# If any register is in the stored yet, we store as deleted
+		$inventory_db =~ s/\n\n*/\n/g;
+		$inventory_db =~ s/^\n//g;
+		
+		$diff_delete = $inventory_db;
+		
+		if($diff_new ne "") {
+			$diff_new = " NEW: '$diff_new' ";
+		}
+		if($diff_delete ne "") {
+			$diff_delete = " DELETED: '$diff_delete' ";				
+		}
+		
+		db_do ($dbh, 'INSERT INTO tagente_datos_inventory (id_agent_module_inventory, data, timestamp, utimestamp) VALUES (?, ?, ?, ?)',
+			$agent_module_inventory_id, $incoming_data, $timestamp, $utimestamp);
+		
+		# Do not generate an event the first time the module runs
+		if ($stored_utimestamp != 0) {
+			my $inventory_changes_blacklist = pandora_get_config_value ($dbh, 'inventory_changes_blacklist');
+			my $inventory_module_blocked = 0;
+			
+			if($inventory_changes_blacklist ne "") {
+				foreach my $inventory_id_excluded (split (',', $inventory_changes_blacklist)) {
+					# If the inventory_module_id is in the blacklist, the change will not be processed
+					if($inventory_module->{'id_module_inventory'} == $inventory_id_excluded) {
+						logger ($pa_config, "Inventory change omitted on inventory #$inventory_id_excluded due be on the changes blacklist", 10);
+						$inventory_module_blocked = 1;
+					}
+				}
+			}
+
+			# If the inventory_module_id is in the blacklist, the change will not be processed
+			if ($inventory_module_blocked == 0) {
+				my $inventory_module_name = get_db_value ($dbh, "SELECT name FROM tmodule_inventory WHERE id_module_inventory = ?", $module_inventory_id);
+				return unless defined ($inventory_module_name);
+				
+				my $agent_name = get_agent_name ($dbh, $agent_id);
+				return unless defined ($agent_name);
+				
+				my $agent_alias = get_agent_alias ($dbh, $agent_id);
+				return unless defined ($agent_alias);
+				
+				my $group_id = get_agent_group ($dbh, $agent_id);
+				
+				
+				
+				$stored_data =~ s/&amp;#x20;/ /g;
+				$incoming_data =~ s/&amp;#x20;/ /g;
+				
+				my @values_stored = split('&#x0a;', $stored_data);
+				my @finalc_stored = ();
+				my @values_incoming = split('&#x0a;', $incoming_data);
+				my @finalc_incoming = ();
+				my @finalc_compare_added = ();
+				my @finalc_compare_deleted = ();
+				my @finalc_compare_updated = ();
+				my @finalc_compare_updated_del = ();
+				my @finalc_compare_updated_add = ();
+				my $temp_compare = ();
+				my $final_d = '';
+				my $final_a = '';
+				my $final_u = '';
+				
+				
+				
+				foreach my $i (0 .. $#values_stored) {
+					$finalc_stored[$i] = $values_stored[$i];
+					
+					if ( grep $_ eq $values_stored[$i], @values_incoming ) {
+					
+					} else {
+						# Use 'safe_output' to avoid double encode the entities when creating the event with 'pandora_event'
+						$final_d .= "DELETED RECORD: ".safe_output($values_stored[$i])."\n";
+					}
+				}
+					
+				foreach my $i (0 .. $#values_incoming) {
+					$finalc_incoming[$i] = $values_incoming[$i];
+				
+					if ( grep $_ eq $values_incoming[$i], @values_stored ) {
+							
+					} else {
+						# Use 'safe_output' to avoid double encode the entities when creating the event with 'pandora_event'
+						$final_a .= "NEW RECORD: ".safe_output($values_incoming[$i])."\n";
+					}
+				}
+				
+				# foreach my $i (0 .. $#finalc_compare_deleted) {
+				# 	$finalc_compare_updated_del[$i] = split(';', $finalc_compare_deleted[$i]);
+				# 	$finalc_compare_updated_add[$i] = split(';', $finalc_compare_added[$i]);
+				# 	if($finalc_compare_updated_del[$i] ~~ @finalc_compare_updated_add){
+				# 		$finalc_compare_updated[$i] = $finalc_compare_updated_del[$i];
+				# 	}
+				# 	$finalc_compare_updated[$i] =~ s/DELETED RECORD:/UPDATED RECORD:/g;
+				# 	$finalc_compare_updated[$i] =~ s/NEW RECORD://g;											
+				# }
+			
+				
+				pandora_event ($pa_config, "Configuration change:\n".$final_d.$final_a." for agent '" . safe_output($agent_alias) . "' module '" . safe_output($inventory_module_name) . "'.", $group_id, $agent_id, 0, 0, 0, "configuration_change", 0, $dbh);
+			}
+		}
+	}
+	
+	# Update the module data
+	if (defined($interval)) {
+			db_do ($dbh, 'UPDATE tagent_module_inventory 
+			SET'. $RDBMS_QUOTE . 'interval' . 
+				$RDBMS_QUOTE . '=?, data=?, timestamp=?, utimestamp=? 
+			WHERE id_agent_module_inventory=?',
+			$interval, $incoming_data, $timestamp, 
+				$utimestamp, $agent_module_inventory_id);
+		
+	}
+	else {
+		db_do ($dbh, 'UPDATE tagent_module_inventory
+			SET data = ?, timestamp = ?, utimestamp = ?
+			WHERE id_agent_module_inventory = ?',
+			$incoming_data, $timestamp, $utimestamp, $agent_module_inventory_id);
+	}
 }
 
 ##########################################################################

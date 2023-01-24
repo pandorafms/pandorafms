@@ -40,6 +40,7 @@ use PandoraFMS::WMIServer;
 use PandoraFMS::PluginServer;
 use PandoraFMS::PredictionServer;
 use PandoraFMS::WebServer;
+use PandoraFMS::InventoryServer;
 
 # Constants for Win32 services.
 use constant WIN32_SERVICE_STOPPED => 0x01;
@@ -157,6 +158,8 @@ sub pandora_startup () {
 		push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::WebServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::InventoryServer (\%Config, $DBH));
+
 	} else {
 		# Metaconsole service modules are run by the prediction server
 		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));

@@ -31,6 +31,7 @@ global $config;
 $headerTitle = __('User detail editor');
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
+use PandoraFMS\Dashboard\Manager;
 
 if (is_metaconsole() === false) {
     include 'include/javascript/timezonepicker/includes/parser.inc';
@@ -442,7 +443,13 @@ if (!$meta) {
 
     $home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
 
-    $dashboards = get_user_dashboards($config['id_user']);
+    $dashboards = Manager::getDashboards(
+        -1,
+        -1,
+        false,
+        false,
+        $config['id_user']
+    );
 
     $dashboards_aux = [];
     if ($dashboards === false) {

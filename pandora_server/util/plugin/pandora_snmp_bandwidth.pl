@@ -136,6 +136,9 @@ sub update_config_key ($) {
   if ($arg eq 'outUsage') {
     return "outUsage";
   }
+  if ($arg eq 'f') {
+    return "unknown_fullduplex";
+  }
 }
 
 ################################################################################
@@ -230,8 +233,13 @@ sub prepare_tree {
 
     my $duplex = snmp_get(\%duplex_call);
     if (ref($duplex) eq "HASH") {
-      if (! exists($duplex->{'data'}) || $duplex->{'data'} eq '') {
-        $duplex = 0;
+      if (! exists($duplex->{'data'}) || ($duplex->{'data'} ne '2' && $duplex->{'data'} ne '3')) {
+        # Unknown duplex.
+        if (is_enabled($config->{'unknown_fullduplex'})) {
+          $duplex = 3;
+        } else {
+          $duplex = 1;
+        }
       } else {
         $duplex = int $duplex->{'data'};
       }

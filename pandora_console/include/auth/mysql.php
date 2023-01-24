@@ -94,7 +94,7 @@ $config['admin_can_make_admin'] = true;
  * @return mixed False in case of error or invalid credentials, the username in
  * case it's correct.
  */
-function process_user_login($login, $pass, $api=false)
+function process_user_login($login, $pass, $api=false, $passAlreadyEncrypted=false)
 {
     global $config;
 
@@ -130,10 +130,10 @@ function process_user_login($login, $pass, $api=false)
         if ($config['fallback_local_auth']
             || is_user_admin($login)
             || $local_user === true
-            || strtolower($config['auth']) == 'mysql'
+            || strtolower($config['auth']) === 'mysql'
             || (bool) $user_not_login === true
         ) {
-            return process_user_login_local($login, $pass, $api);
+            return process_user_login_local($login, $pass, $api, $passAlreadyEncrypted);
         } else {
             return false;
         }
@@ -144,12 +144,11 @@ function process_user_login($login, $pass, $api=false)
 }
 
 
-function process_user_login_local($login, $pass, $api=false)
+function process_user_login_local($login, $pass, $api=false, $passAlreadyEncrypted=false)
 {
     global $config, $mysql_cache;
 
-    // Connect to Database.
-    if (!$api) {
+    if ((bool) $api === false) {
         $sql = sprintf(
             "SELECT `id_user`, `password`
             FROM `tusuario`
@@ -169,13 +168,17 @@ function process_user_login_local($login, $pass, $api=false)
 
     $row = db_get_row_sql($sql);
 
-    // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
-    if (strlen($row['password']) === 32) {
-        // MD5.
-        $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+    if ($passAlreadyEncrypted) {
+        $credentials_check = $pass === $row['password'];
     } else {
-        // Bcrypt.
-        $credentials_check = password_verify($pass, $row['password']);
+         // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
+        if (strlen($row['password']) === 32) {
+            // MD5.
+            $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+        } else {
+            // Bcrypt.
+            $credentials_check = password_verify($pass, $row['password']);
+        }
     }
 
     if ($credentials_check === true) {
@@ -184,10 +187,10 @@ function process_user_login_local($login, $pass, $api=false)
         // is not case sensitive)
         // We get DB nick to put in PHP Session variable,
         // to avoid problems with case-sensitive usernames.
-        // Thanks to David Muñiz for Bug discovery :)
+        // Thanks to David Muñiz for Bug discovery :).
         $filter = ['id_usuario' => $login];
         $user_profile = db_get_row_filter('tusuario_perfil', $filter);
-        if (!users_is_admin($login) && !$user_profile) {
+        if ((bool) users_is_admin($login) === false && (bool) $user_profile === false) {
             $mysql_cache['auth_error'] = 'User does not have any profile';
             $config['auth_error'] = 'User does not have any profile';
             return false;
@@ -200,7 +203,7 @@ function process_user_login_local($login, $pass, $api=false)
 
         return $row['id_user'];
     } else {
-        if (!user_can_login($login)) {
+        if (user_can_login($login) === false) {
             $mysql_cache['auth_error'] = 'User only can use the API.';
             $config['auth_error'] = 'User only can use the API.';
         } else {

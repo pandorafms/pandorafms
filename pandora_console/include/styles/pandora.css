@@ -4678,6 +4678,21 @@ input:checked + .p-slider:before {
   animation: fadein 0.5s, fadeout 0.5s 7.5s;
 }
 
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
 .snackbar p,
 .snackbar h3 {
   text-align: left;
@@ -9065,6 +9080,14 @@ div#err_msg_centralised {
   width: 75%;
 }
 
+.renew_api_token_link {
+  margin: 3px 0.5em 0 0;
+  float: right;
+}
+
+.renew_api_token_image {
+  width: 16px;
+}
 @media screen and (max-width: 1369px) {
   .div-col {
     width: 50%;

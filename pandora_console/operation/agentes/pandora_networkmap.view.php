@@ -881,7 +881,11 @@ if (is_ajax() === true) {
         $shape = get_parameter('shape', 0);
         $radious = (int) get_parameter('radious', 20);
         $color = get_parameter('color', 0);
+
         $networkmap = (int) get_parameter('networkmap', 0);
+        if (empty($networkmap) === false) {
+            $color = get_status_color_networkmap_fictional_point($networkmap);
+        }
 
         $return = [];
         $return['correct'] = false;
@@ -1057,7 +1061,7 @@ if (is_ajax() === true) {
 
             if (preg_match('/(.+)_ifOperStatus$/', (string) $source_text, $matches)) {
                 if ($matches[1]) {
-                        $source_text = $matches[1];
+                    $source_text = $matches[1];
                 }
             }
         } else {

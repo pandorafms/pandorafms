@@ -154,14 +154,14 @@ function progressbar(
 /**
  * Draw vertical bars graph.
  *
- * @param array   $chart_data Data chart.
- * @param array   $params     Params draw chart.
- * @param integer $ttl        Pdf option.
+ * @param array|null $chart_data Data chart.
+ * @param array      $params     Params draw chart.
+ * @param integer    $ttl        Pdf option.
  *
  * @return mixed
  */
 function vbar_graph(
-    array $chart_data,
+    array|null $chart_data,
     array $options
 ) {
     if (empty($chart_data) === true) {

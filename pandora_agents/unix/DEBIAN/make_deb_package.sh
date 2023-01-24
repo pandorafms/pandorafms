@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.767-230111"
+pandora_version="7.0NG.768-230124"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -61,7 +61,7 @@ chmod 755 -R temp_package/DEBIAN
 #cp -aRf * temp_package/usr/share/pandora_agent/
 #but don't copy recursive the temp_package into temp_package
 
-for item in `ls | grep -v NT4 | grep -v AIX | grep -v FreeBSD | grep -v NetBSD | grep -v HP-UX | grep -v SunOS | grep -v Darwin | grep -v OpenWRT | grep -v pandorafms.agent_unix | grep -v temp_package`
+for item in `ls | grep -v NT4 | grep -v AIX | grep -v FreeBSD | grep -v NetBSD | grep -v HP-UX | grep -v SunOS | grep -v Darwin | grep -v OpenWRT | grep -v pandorafms.agent_linux | grep -v temp_package`
 do
 	#if  [ \( $item != 'temp_package' \) -a \( $item != 'NT4' \) ]
 	#then
@@ -137,7 +137,7 @@ if [ "$USE_DOCKER_APP" == "1" ]; then
 else
 	dpkg-deb --root-owner-group --build temp_package
 fi
-mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb
+mv temp_package.deb pandorafms.agent_linux_$pandora_version.deb
 
 echo "Delete the \"temp_package\" temp dir for job."
 rm -rf temp_package

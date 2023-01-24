@@ -156,6 +156,26 @@ class AuditLog extends HTML
                 open_meta_frame();
             }
 
+            $buttons = [];
+
+            $buttons[] = [
+                'id'      => 'load-filter',
+                'class'   => 'float-left margin-right-2 margin-left-2 sub config',
+                'text'    => __('Load filter'),
+                'onclick' => '',
+            ];
+
+            $buttons[] = [
+                'id'      => 'save-filter',
+                'class'   => 'float-left margin-right-2 sub wand',
+                'text'    => __('Save filter'),
+                'onclick' => '',
+            ];
+
+            // Modal for save/load filters.
+            echo '<div id="save-modal-filter" style="display:none"></div>';
+            echo '<div id="load-modal-filter" style="display:none"></div>';
+
             // Load datatables user interface.
             ui_print_datatable(
                 [
@@ -174,9 +194,10 @@ class AuditLog extends HTML
                     ],
                     'search_button_class' => 'sub filter float-right',
                     'form'                => [
-                        'inputs' => [
+                        'extra_buttons' => $buttons,
+                        'inputs'        => [
                             [
-                                'label' => __('Search'),
+                                'label' => __('Free search').ui_print_help_tip(__('Search filter by User, Action, Date, Source IP or Comments fields content'), true),
                                 'type'  => 'text',
                                 'class' => 'w200px',
                                 'id'    => 'filter_text',
@@ -211,7 +232,9 @@ class AuditLog extends HTML
                                 'type'          => 'select_from_sql',
                                 'nothing'       => __('All'),
                                 'nothing_value' => '-1',
-                                'sql'           => 'SELECT id_user, id_user AS text FROM tusuario',
+                                'sql'           => 'SELECT id_user, id_user AS text FROM tusuario UNION SELECT "SYSTEM"
+                                                    AS id_user, "SYSTEM" AS text UNION SELECT "N/A"
+                                                    AS id_user, "N/A" AS text',
                                 'class'         => 'mw250px',
                                 'id'            => 'filter_user',
                                 'name'          => 'filter_user',
@@ -269,7 +292,10 @@ class AuditLog extends HTML
 
         if (empty($this->filterText) === false) {
             $filter .= sprintf(
-                " AND (accion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')",
+                " AND (accion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR id_usuario LIKE '%%%s%%' OR fecha LIKE '%%%s%%' OR ip_origen LIKE '%%%s%%')",
+                $this->filterText,
+                $this->filterText,
+                $this->filterText,
                 $this->filterText,
                 $this->filterText
             );
@@ -366,40 +392,149 @@ class AuditLog extends HTML
 
         // Javascript content.
         ?>
-    <script type="text/javascript">
-        function format(d) {
-            var output = '';
+        <script type="text/javascript">
+            var loading = 0;
 
-            if (d.extendedInfo === '') {
-                output = "<?php echo __('There is no additional information to display'); ?>";
-            } else {
-                output = d.extendedInfo;
+            function format(d) {
+                var output = '';
+
+                if (d.extendedInfo === '') {
+                    output = "<?php echo __('There is no additional information to display'); ?>";
+                } else {
+                    output = d.extendedInfo;
+                }
+
+                return output;
             }
 
-            return output;
-        }
+            $(document).ready(function() {
+                // Add event listener for opening and closing details
+                $('#audit_logs tbody').on('click', 'td.show_extended_info', function() {
+                    var tr = $(this).closest('tr');
+                    var table = $("#<?php echo $this->tableId; ?>").DataTable();
+                    var row = table.row(tr);
 
-        $(document).ready(function() {
-            // Add event listener for opening and closing details
-            $('#audit_logs tbody').on('click', 'td.show_extended_info', function() {
-                var tr = $(this).closest('tr');
-                var table = $("#<?php echo $this->tableId; ?>").DataTable();
-                var row = table.row(tr);
-
-                if (row.child.isShown()) {
+                    if (row.child.isShown()) {
                     // This row is already open - close it
-                    row.child.hide();
-                    tr.removeClass('shown');
-                } else {
-                    // Open this row
-                    row.child(format(row.data())).show();
-                    tr.addClass('shown');
-                }
-                $('#audit_logs').css('table-layout','fixed');
-                $('#audit_logs').css('width','95% !important');
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        // Open this row
+                        row.child(format(row.data())).show();
+                        tr.addClass('shown');
+                    }
+                    $('#audit_logs').css('table-layout','fixed');
+                    $('#audit_logs').css('width','95% !important');
+                });
+
+                $('#save-filter').click(function() {
+                    if ($('#save-filter-select').length) {
+                        $('#save-filter-select').dialog({
+                            width: "20%",
+                            maxWidth: "25%",
+                            title: "<?php echo __('Save filter'); ?>"
+                        });
+                        $('#info_box').html("");
+                        $('#text-id_name').val("");
+                        $.ajax({
+                            method: 'POST',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: {
+                                page: 'include/ajax/audit_log',
+                                recover_aduit_log_select: 1
+                            },
+                            success: function(data) {
+                                var options = "";
+                                $.each(data,function(key,value){
+                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                });
+                                $('#overwrite_filter').html(options);
+                                $('#overwrite_filter').select2();
+                            }
+                        });
+                    } else {
+                        if (loading == 0) {
+                            loading = 1
+                            $.ajax({
+                                method: 'POST',
+                                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                                data: {
+                                    page: 'include/ajax/audit_log',
+                                    save_filter_modal: 1,
+                                    current_filter: $('#latest_filter_id').val()
+                                },
+                                success: function(data) {
+                                    $('#save-modal-filter')
+                                        .empty()
+                                        .html(data);
+                                    loading = 0;
+                                    $('#save-filter-select').dialog({
+                                        width: "20%",
+                                        maxWidth: "25%",
+                                        title: "<?php echo __('Save filter'); ?>"
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
+
+                $('#save_filter_form-0-1, #radiobtn0002').click(function(){
+                    $('#overwrite_filter').select2();
+                });
+
+                /* Filter management */
+                $('#load-filter').click(function (){
+                    if($('#load-filter-select').length) {
+                        $('#load-filter-select').dialog({width: "20%",
+                            maxWidth: "25%",
+                            title: "<?php echo __('Load filter'); ?>"
+                        });
+                        $.ajax({
+                            method: 'POST',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: {
+                                page: 'include/ajax/audit_log',
+                                recover_aduit_log_select: 1
+                            },
+                            success: function(data) {
+                                var options = "";
+                                $.each(data,function(key,value){
+                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                });
+                                $('#filter_id').html(options);
+                                $('#filter_id').select2();
+                            }
+                        });
+                    } else {
+                        if (loading == 0) {
+                            loading = 1
+                            $.ajax({
+                                method: 'POST',
+                                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                                data: {
+                                    page: 'include/ajax/audit_log',
+                                    load_filter_modal: 1
+                                },
+                                success: function (data){
+                                    $('#load-modal-filter')
+                                    .empty()
+                                    .html(data);
+                                    loading = 0;
+                                    $('#load-filter-select').dialog({
+                                        width: "20%",
+                                        maxWidth: "25%",
+                                        title: "<?php echo __('Load filter'); ?>"
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
             });
-        });
-    </script>
+        </script>
         <?php
         // EOF Javascript content.
         return ob_get_clean();

@@ -109,6 +109,8 @@ if ($id) {
             $text_agent = '';
         }
     }
+
+    $server_id = ($filter['server_id'] ?? '');
 } else {
     $id_group = '';
     $id_group_filter = '';
@@ -134,6 +136,7 @@ if ($id) {
     $filter_only_alert = '';
     $search_secondary_groups = 0;
     $search_recursive_groups = 0;
+    $server_id = '';
 }
 
 if ($update || $create) {
@@ -183,6 +186,12 @@ if ($update || $create) {
     $custom_data = get_parameter('custom_data', '');
     $custom_data_filter_type = get_parameter('custom_data_filter_type', '');
 
+    $server_id = '';
+    if (is_metaconsole() === true) {
+        $servers_array = get_parameter('server_id', []);
+        $server_id = implode(',', $servers_array);
+    }
+
     $values = [
         'id_name'                 => $id_name,
         'id_group_filter'         => $id_group_filter,
@@ -212,6 +221,7 @@ if ($update || $create) {
         'search_recursive_groups' => $search_recursive_groups,
         'custom_data'             => $custom_data,
         'custom_data_filter_type' => $custom_data_filter_type,
+        'server_id'               => $server_id,
     ];
 
     $severity = explode(',', $severity);
@@ -705,6 +715,55 @@ if (is_metaconsole()) {
         35,
         255,
         true
+    );
+}
+
+if (is_metaconsole() === true) {
+    $servers = metaconsole_get_servers();
+    if (is_array($servers) === true) {
+        $servers = array_reduce(
+            $servers,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['server_name'];
+                return $carry;
+            }
+        );
+    } else {
+        $servers = [];
+    }
+
+    $servers[0] = __('Metaconsola');
+
+    if ($server_id === '') {
+        $server_id = array_keys($servers);
+    } else {
+        if (is_array($server_id) === false) {
+            if (is_numeric($server_id) === true) {
+                if ($server_id !== 0) {
+                    $server_id = [$server_id];
+                } else {
+                    $server_id = array_keys($servers);
+                }
+            } else {
+                $server_id = explode(',', $server_id);
+            }
+        }
+    }
+
+    $table->data[29][0] = '<b>'.__('Server').'</b>';
+    $table->data[29][1] = html_print_select(
+        $servers,
+        'server_id[]',
+        $server_id,
+        '',
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'height: 60px;'
     );
 }
 

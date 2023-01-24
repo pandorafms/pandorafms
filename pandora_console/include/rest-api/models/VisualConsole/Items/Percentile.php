@@ -457,7 +457,7 @@ final class Percentile extends Item
             $fields = [
                 'progress-bar'              => __('Percentile'),
                 'bubble'                    => __('Bubble'),
-                'circular-progress-bar'     => __('Circular porgress bar'),
+                'circular-progress-bar'     => __('Circular progress bar'),
                 'circular-progress-bar-alt' => __(
                     'Circular progress bar (interior)'
                 ),

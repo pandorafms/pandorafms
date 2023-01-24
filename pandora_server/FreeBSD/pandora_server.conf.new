@@ -348,15 +348,6 @@ self_monitoring 1
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
 
-# Pandora Sample Agent. If enabled, every 10 minutes, this embedded agent 
-# will make sample data. Disabled by default.
-
-sample_agent 0
-
-# Pandora Sample Agent interval (in seconds).
-
-sample_agent_interval 600
-
 # Update parent from the agent xml
 
 #update_parent 1
@@ -387,11 +378,11 @@ web_threads 1
 # Uncomment to perform web checks with LWP instead of CURL.
 #web_engine lwp
 
-# Enable (1) or disable (0) Pandora FMS Inventory Server (PANDORA FMS ENTERPRISE ONLY).
+# Enable (1) or disable (0) Pandora FMS Inventory Server.
 
 inventoryserver 1
 
-# Number of threads for the Web Server (PANDORA FMS ENTERPRISE ONLY).
+# Number of threads for the Inventory Server.
 
 inventory_threads 1
 

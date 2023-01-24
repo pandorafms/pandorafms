@@ -722,7 +722,7 @@ export default class VisualConsole {
       context.containerRef.append(itemInstance.elementRef);
       return itemInstance;
     } catch (error) {
-      console.error("Error creating a new element:", error.message);
+      console.error("Error creating a new element:", (error as Error).message);
     }
     return;
   }
@@ -759,7 +759,10 @@ export default class VisualConsole {
           try {
             this.elementsById[item.id].props = decodeProps(item);
           } catch (error) {
-            console.error("Error updating an element:", error.message);
+            console.error(
+              "Error updating an element:",
+              (error as Error).message
+            );
           }
         }
       }
@@ -780,7 +783,7 @@ export default class VisualConsole {
         ...decodeProps(item)
       };
     } catch (error) {
-      console.error("Error updating element:", error.message);
+      console.error("Error updating element:", (error as Error).message);
     }
 
     // Re-build relations.

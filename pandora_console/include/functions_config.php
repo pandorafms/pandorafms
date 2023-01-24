@@ -395,6 +395,11 @@ function config_update_config()
                     if (config_update_value('email_password', io_input_password(get_parameter('email_password')), true) === false) {
                         $error_update[] = __('Email password');
                     }
+
+                    $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
+                    if (config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist), true) === false) {
+                        $error_update[] = __('Inventory changes blacklist');
+                    }
                 break;
 
                 case 'enterprise':
@@ -457,11 +462,6 @@ function config_update_config()
 
                         if (config_update_value('sap_license', get_parameter('sap_license'), true) === false) {
                             $error_update[] = __('SAP/R3 Plugin Licence');
-                        }
-
-                        $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
-                        if (config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist), true) === false) {
-                            $error_update[] = __('Inventory changes blacklist');
                         }
                     }
                 break;

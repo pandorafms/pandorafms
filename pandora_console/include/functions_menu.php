@@ -487,7 +487,7 @@ function menu_add_extras(&$menu)
     $menu_extra['gusuarios']['sub']['godmode/users/configure_profile']['text'] = __('Configure profile');
 
     $menu_extra['gmodules']['sub']['godmode/modules/manage_network_templates_form']['text'] = __('Module templates management');
-    $menu_extra['gmodules']['sub']['enterprise/godmode/modules/manage_inventory_modules_form']['text'] = __('Inventory modules management');
+    $menu_extra['gmodules']['sub']['godmode/modules/manage_inventory_modules_form']['text'] = __('Inventory modules management');
 
     $menu_extra['gagente']['sub']['godmode/agentes/configurar_agente']['text'] = __('Agents management');
 

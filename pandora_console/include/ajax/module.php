@@ -1816,9 +1816,7 @@ if (check_login()) {
 
     if ($save_filter_modal) {
         echo '<div id="save-filter-select">';
-        if (check_acl($config['id_user'], 0, 'EW')
-            || check_acl($config['id_user'], 0, 'EM')
-        ) {
+        if (check_acl($config['id_user'], 0, 'AW')) {
             echo '<div id="#info_box"></div>';
             $table = new StdClass;
             $table->id = 'save_filter_form';
@@ -1870,7 +1868,7 @@ if (check_login()) {
 
             $user_groups_array = users_get_groups_for_select(
                 $config['id_user'],
-                'EW',
+                'AW',
                 users_can_manage_group_all(),
                 true
             );

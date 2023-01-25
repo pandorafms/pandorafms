@@ -1640,13 +1640,13 @@ if (check_login()) {
             $children_selected = false;
         } else {
             foreach ($parent_modules as $parent) {
-                $child_modules = get_children_module($parent_modules, ['nombre', 'id_agente_modulo']);
+                $child_modules = get_children_module($parent_modules, ['nombre', 'id_agente_modulo'], true);
                 if ((bool) $child_modules === false) {
                     continue;
                 }
 
                 foreach ($child_modules as $child) {
-                    $module_exist = in_array($child['id_agente_modulo'], $children_selected);
+                    $module_exist = in_array($child['id_agente_modulo'], $parent_modules);
                     $child_exist = in_array($child, $children_selected);
 
                     if ($module_exist === false && $child_exist === false) {

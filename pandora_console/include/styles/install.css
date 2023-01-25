@@ -31,7 +31,9 @@
   font-display: swap;
 }
 html {
-  background-color: #959595;
+  background-image: url("../../images/installer-background.jpg");
+  background-position: center;
+  background-size: cover;
 }
 #install_container {
   max-width: 1000px;

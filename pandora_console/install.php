@@ -165,6 +165,15 @@
 </html>
 
 <?php
+/**
+ * Check the php extension and print a
+ * new row in the table with the result
+ *
+ * @param string $ext   Extension.
+ * @param string $label Label extension.
+ *
+ * @return integer status
+ */
 function check_extension($ext, $label)
 {
     echo '<tr><td>';
@@ -181,23 +190,15 @@ function check_extension($ext, $label)
     echo '</td></tr>';
 }
 
-function check_include($ext, $label)
-{
-    echo '<tr><td>';
-    echo "<span class='arr'> $label </span>";
-    echo '</td><td>';
-    if (!include $ext) {
-        echo "<span class='incomplete'>incomplete</span>";
-        return 1;
-    } else {
-        echo "<span class='checked'>checked</span>";
-        return 0;
-    }
-
-    echo '</td></tr>';
-}
-
-
+/**
+ * Check if file exist and print a
+ * new row in the table with the result
+ *
+ * @param string $file  File.
+ * @param string $label Label file.
+ *
+ * @return integer status
+ */
 function check_exists($file, $label)
 {
     echo '<tr><td>';
@@ -215,6 +216,15 @@ function check_exists($file, $label)
 }
 
 
+/**
+ * Check variable ok and return row
+ * with 'checked' if is 1 or 'incomplete' if is 0
+ *
+ * @param integer $ok    Status.
+ * @param string  $label Label to show.
+ *
+ * @return integer status
+ */
 function check_generic($ok, $label)
 {
     echo '<tr><td>';
@@ -236,6 +246,15 @@ function check_generic($ok, $label)
 }
 
 
+/**
+ * Check if path is writable and print a
+ * new row in the table with the result.
+ *
+ * @param string $fullpath Path folder or file.
+ * @param string $label    Label to show.
+ *
+ * @return integer status
+ */
 function check_writable($fullpath, $label)
 {
     echo '<tr><td>';
@@ -268,6 +287,17 @@ function check_writable($fullpath, $label)
 }
 
 
+/**
+ * Check if $var is equal to $value and
+ * print result in a row.
+ *
+ * @param string  $var   Variable.
+ * @param string  $value Value to check.
+ * @param string  $label Label to show.
+ * @param integer $mode  Mode.
+ *
+ * @return integer status
+ */
 function check_variable($var, $value, $label, $mode)
 {
     echo '<tr><td>';
@@ -321,6 +351,15 @@ function parse_mysql_dump($url)
 }
 
 
+/**
+ * Parse sql to script dump, execute it
+ * and return if exist error.
+ *
+ * @param object $connection Connection sql.
+ * @param string $url        Path file sql script.
+ *
+ * @return integer status
+ */
 function parse_mysqli_dump($connection, $url)
 {
     if (file_exists($url)) {
@@ -389,7 +428,14 @@ function random_name(int $size)
 }
 
 
-function print_logo_status($step, $step_total)
+/**
+ * Print the header installation
+ *
+ * @param integer $step Number of step.
+ *
+ * @return string Html output.
+ */
+function print_logo_status($step)
 {
     global $banner;
 
@@ -419,13 +465,17 @@ function print_logo_status($step, $step_total)
 }
 
 
-//
-// This function adjusts path settings in pandora db for FreeBSD.
-//
-// All packages and configuration files except operating system's base files
-// are installed under /usr/local in FreeBSD. So, path settings in pandora db
-// for some programs should be changed from the Linux default.
-//
+/**
+ * This function adjusts path settings in pandora db for FreeBSD.
+ * All packages and configuration files except operating system's base files
+ * are installed under /usr/local in FreeBSD. So, path settings in pandora db
+ * for some programs should be changed from the Linux default.
+ *
+ * @param string $engine     Type of engine.
+ * @param object $connection Connection database.
+ *
+ * @return integer Status.
+ */
 function adjust_paths_for_freebsd($engine, $connection=false)
 {
     $adjust_sql = [
@@ -470,10 +520,13 @@ function adjust_paths_for_freebsd($engine, $connection=false)
 }
 
 
+/**
+ * Print all step 1
+ *
+ * @return void
+ */
 function install_step1()
 {
-    global $banner;
-
     echo "
 	<div id='install_container'>
 	<div id='wizard'>
@@ -520,7 +573,7 @@ function install_step1()
             <div class='popupgear1'><img src='images/Pandora-FMS-installer-gear.png'></div>
             <div class='popupgear2'><img src='images/Pandora-FMS-installer-gear.png'></div>
             <div class='popuplaptop'><img src='images/Pandora-FMS-installer.png'></div>
-            </div>
+        </div>
         </div>
         </div>
         </div>
@@ -537,6 +590,11 @@ function install_step1()
 }
 
 
+/**
+ * Print license content
+ *
+ * @return void
+ */
 function install_step1_licence()
 {
     echo "
@@ -547,7 +605,7 @@ function install_step1_licence()
 			<h2 class='subtitle'>GPL2 Licence terms agreement</h2>
 			<p class='text'>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
 			<p class='text'>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
-<p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
+            <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
 
     if (!file_exists('COPYING')) {
@@ -563,7 +621,7 @@ function install_step1_licence()
     echo '</div>';
 
     echo "</div>
-	<div id='foot_install'>
+	    <div id='foot_install'>
             <div class='content-footer'>
             <a href='install.php'><button class='btn_primary outline'>Previous step</button></a>
             <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
@@ -576,6 +634,11 @@ function install_step1_licence()
 }
 
 
+/**
+ * Print all step 2
+ *
+ * @return void
+ */
 function install_step2()
 {
     echo "
@@ -620,21 +683,21 @@ function install_step2()
             echo '</table></div>';
     if ($res > 0) {
         echo "<div class='col-md-6'>
-				<div class='err'>You have some incomplete 
-				dependencies. Please correct them or this installer 
-				will not be able to finish your installation.
-				</div>
-				<div class='err'>
-					Remember, if you install any PHP module to comply
-					with these dependences, you <b>need to restart</b>
-					your HTTP/Apache server after it to use the new
-					modules.
-				</div>
+			  <div class='err'>You have some incomplete
+                    dependencies. Please correct them or this installer
+                    will not be able to finish your installation.
+			   </div>
+			   <div class='err'>
+                    Remember, if you install any PHP module to comply
+                    with these dependences, you <b>need to restart</b>
+                    your HTTP/Apache server after it to use the new
+                    modules.
+			    </div>
                 </div>";
     }
 
-            echo '</div>';
-            echo "</div></div>
+        echo '</div>';
+        echo "</div></div>
             <div id='foot_install'>
                 <div class='content-footer'>
                 <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
@@ -646,10 +709,15 @@ function install_step2()
         echo "<a id='step3' href='install.php?step=3'><button class='btn_primary'>Next Step</button></a>";
     }
 
-            echo '</div></div>';
+        echo '</div></div>';
 }
 
 
+/**
+ * Print all step 3
+ *
+ * @return void
+ */
 function install_step3()
 {
     $options = [];
@@ -675,24 +743,24 @@ function install_step3()
         <div class='col-md-6'>
 			<h2 class='subtitle'>Environment and database setup</h2>
 			<p class='text'>
-			This wizard will create your Pandora FMS database, 
-			and populate it with all the data needed to run for the first time.
+                This wizard will create your Pandora FMS database, 
+                and populate it with all the data needed to run for the first time.
 			</p>
 			<p class='text'>
-			You need a privileged user to create database schema, this is usually <b>root</b> user.
-			Information about <b>root</b> user will not be used or stored anymore.	
+			    You need a privileged user to create database schema, this is usually <b>root</b> user.
+			    Information about <b>root</b> user will not be used or stored anymore.	
 			</p>
 			<p class='text'>
-			You can also deploy the scheme into an existing Database. 
-			In this case you need a privileged Database user and password of that instance. 
+			    You can also deploy the scheme into an existing Database. 
+			    In this case you need a privileged Database user and password of that instance. 
 			</p>
 			<p class='text'>
-			Now, please, complete all details to configure your database and environment setup.
+			    Now, please, complete all details to configure your database and environment setup.
 			</p>
 			<div class='warn'>
-			 This installer will <b>overwrite and destroy</b> your existing 
-			Pandora FMS configuration and <b>Database</b>. Before continue, 
-			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
+			    This installer will <b>overwrite and destroy</b> your existing 
+			    Pandora FMS configuration and <b>Database</b>. Before continue, 
+			    please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
 			</div>";
     if ($error) {
@@ -702,7 +770,7 @@ function install_step3()
     }
 
     if (extension_loaded('oci8')) {
-        echo " <div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
+        echo "<div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
     }
 
     echo '</div>';
@@ -751,41 +819,49 @@ function install_step3()
         echo '<script type="text/javascript">$("#db_action").select2({closeOnSelect: true});</script>';
     }
 
-    echo "		<tr><td><p class='input-label'>DB User with privileges</p>
-				<input class='login' type='text' name='user' value='root' size=20>
-				
-				<td><p class='input-label'>DB Password for this user</p>
+    echo "<tr>
+            <td>
+                <p class='input-label'>DB User with privileges</p>
+                <input class='login' type='text' name='user' value='root' size=20>
+            </td>
+            <td>
+			<td>
+                <p class='input-label'>DB Password for this user</p>
 				<input class='login' type='password' name='pass' value='' size=20>
-				
-				<tr><td><p class='input-label'>DB Hostname</p>
+			</td>
+         </tr>
+	     <tr>
+            <td>
+                <p class='input-label'>DB Hostname</p>
 				<input class='login' type='text' name='host' value='localhost' onkeyup='CheckDBhost(this.value);'size=20>
-				
-				<td><p class='input-label'>DB Name (pandora by default)</p>
+			</td>
+            <td>
+                <p class='input-label'>DB Name (pandora by default)</p>
 				<input class='login' type='text' name='dbname' value='pandora' size=20>
-				
-				<tr>";
+			</td>
+         </tr>";
 
     // the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
     echo "<tr id='tr_dbgrant' style='display: none;'>
             <td colspan=\"2\">
-            <p class='input-label'>DB Host Access<img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/></p>
-            <input class='login' type='text' name='dbgrant' value='".$_SERVER['SERVER_ADDR']."'>
-                        </td>
-                    </tr>";
+                <p class='input-label'>DB Host Access<img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/></p>
+                <input class='login' type='text' name='dbgrant' value='".$_SERVER['SERVER_ADDR']."'>
+            </td>
+           </tr>";
 
     echo "<tr>
             <td colspan='2'>
-            <p class='input-label'>Full path to HTTP publication directory</p>
-			<p class='example-message'>For example /var/www/pandora_console/</p>
-            <input class='login' type='text' name='path'  value='".dirname(__FILE__)."'>
+                <p class='input-label'>Full path to HTTP publication directory</p>
+                <p class='example-message'>For example /var/www/pandora_console/</p>
+                <input class='login' type='text' name='path'  value='".dirname(__FILE__)."'>
+            </td>
           </tr>";
     echo "
         <tr>
             <td colspan='2'>
                 <p class='input-label'>URL path to Pandora FMS Console</p>
                 <p class='example-message'>For example '/pandora_console'</p>
-				<input class='login' type='text' name='url'
-                value='".dirname($_SERVER['SCRIPT_NAME'])."'>
+				<input class='login' type='text' name='url' value='".dirname($_SERVER['SCRIPT_NAME'])."'>
             </td>
         </tr>";
 
@@ -797,7 +873,7 @@ function install_step3()
                 </label>
                 <p class='input-label'>Drop Database if exists</p>
             </td>
-        </tr>";
+         </tr>";
 
     echo '</table>';
 
@@ -806,10 +882,11 @@ function install_step3()
     echo '</div></div>';
     echo '</div>';
     echo "<div id='foot_install'>
-    <div class='content-footer'>
-    <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
-    <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
-    </span>";
+            <div class='content-footer'>
+            <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
+            <span class='signature'>© ".date('Y')." 
+                <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+            </span>";
     if (!$error) {
         echo "<button class='btn_primary' type='submit' id='step4'>Next Step</button>";
         echo '</form>';
@@ -825,6 +902,11 @@ function install_step3()
 }
 
 
+/**
+ * Print all step 4
+ *
+ * @return void
+ */
 function install_step4()
 {
     $pandora_config = 'include/config.php';
@@ -1226,6 +1308,11 @@ function install_step4()
 }
 
 
+/**
+ * Print all step 5
+ *
+ * @return void
+ */
 function install_step5()
 {
     echo "
@@ -1233,32 +1320,31 @@ function install_step5()
 	<div id='wizard'>
 	".print_logo_status(6, 6)."
 		<div id='install_box'>
-			<h2 class='subtitle'>Installation complete</h2>
+		    <h2 class='subtitle'>Installation complete</h2>
 			<p class='text'>For security, you now must manually delete this installer 
-			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
+			    ('<i>install.php</i>') file before trying to access to your Pandora FMS console.
 			<p class='text'>You should also install Pandora FMS Servers before trying to monitor anything;
-			please read documentation on how to install it.</p>
+			    please read documentation on how to install it.</p>
 			<p class='text'>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
-			please change it both as soon as possible.</p>
+			    please change it both as soon as possible.</p>
 			<p class='text'>Don't forget to check <a href='http://pandorafms.com' class='link'>http://pandorafms.com</a> 
-			for updates.
+			    for updates.
 			<p class='text'>Select if you want to rename '<i>install.php</i>'.</p>
 			<form method='post' action='index.php'>
 				<button class='btn_primary outline' type='submit' name='rn_file'><span class='btn_install_next_text'>Yes, rename the file</span></button>
 				<input type='hidden' name='rename_file' value='1'>
 			</form>
 			</p>
-		</div>";
-
-    echo "</div>
+		</div>
+    </div>
 	<div id='foot_install'>
-    <div class='content-footer'>
-            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a> 
-            </span>
-            <a id='access_pandora' href='index.php'>
-                <button class='btn_primary'>Click here to access to your Pandora FMS console</button>
-            </a>
+        <div class='content-footer'>
+                <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a> 
+                </span>
+                <a id='access_pandora' href='index.php'>
+                    <button class='btn_primary'>Click here to access to your Pandora FMS console</button>
+                </a>
+            </div>
         </div>
-	</div>
-</div>";
+    </div>";
 }

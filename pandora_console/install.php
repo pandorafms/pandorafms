@@ -824,7 +824,6 @@ function install_step3()
                 <p class='input-label'>DB User with privileges</p>
                 <input class='login' type='text' name='user' value='root' size=20>
             </td>
-            <td>
 			<td>
                 <p class='input-label'>DB Password for this user</p>
 				<input class='login' type='password' name='pass' value='' size=20>

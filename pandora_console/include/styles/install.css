@@ -127,7 +127,7 @@ html {
 }
 .btn_primary {
   color: white;
-  background-color: #14524f;
+  background-color: #82b92e;
   border: 20px;
   font-size: 15px;
   border-radius: 6px;
@@ -415,12 +415,12 @@ input:checked + .slider:before {
   font-family: "Circular Std Book";
 }
 .popup .btn_primary.outline {
-  color: #14524f;
-  border-color: #14524f;
+  color: #82b92e;
+  border-color: #82b92e;
   margin: 0px 20px;
 }
 .popup-title {
-  background-color: #14524f;
+  background-color: #82b92e;
   padding: 10px 20px;
   color: #fff;
   font-size: 12pt;
@@ -438,7 +438,7 @@ input:checked + .slider:before {
 }
 
 .popup-button-green {
-  background-color: #14524f;
+  background-color: #82b92e;
   border: 1px solid transparent;
   color: #fff;
 }
@@ -449,11 +449,11 @@ input:checked + .slider:before {
 
 .popup-button-green:hover {
   background-color: transparent;
-  border: 1px solid #14524f;
-  color: #14524f;
+  border: 1px solid #82b92e;
+  color: #82b92e;
 }
 
 .popup-button-green:hover span {
-  color: #14524f;
+  color: #82b92e;
 }
 /* POPUP -END */

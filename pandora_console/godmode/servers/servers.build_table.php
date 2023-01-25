@@ -110,6 +110,13 @@ foreach ($servers as $server) {
     ];
     $data[0] = '<span title="'.$server['version'].'">'.strip_tags($server['name']).'</span>';
 
+    $server_keepalive = time_w_fixed_tz($server['keepalive']);
+
+    if ($server['server_keepalive_utimestamp'] > 0) {
+        $server_keepalive = $server['server_keepalive_utimestamp'];
+    }
+    
+
     // Status.
     $data[1] = ui_print_status_image(STATUS_SERVER_OK, '', true);
     if ($server['status'] == -1) {
@@ -119,7 +126,7 @@ foreach ($servers as $server) {
             true
         );
     } else if ((int) ($server['status'] === 0)
-        || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)
+        || (($date - $server_keepalive) > ($server['server_keepalive']) * 2)
     ) {
         $data[1] = ui_print_status_image(
             STATUS_SERVER_DOWN,

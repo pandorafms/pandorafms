@@ -580,7 +580,7 @@ function install_step1()
         </div>
         <div id='foot_install'>
             <div class='content-footer'>
-            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a> 
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
             </span>";
     if ($writable === 0) {
         echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_primary'>Start installation</button></a>";
@@ -624,7 +624,7 @@ function install_step1_licence()
 	    <div id='foot_install'>
             <div class='content-footer'>
             <a href='install.php'><button class='btn_primary outline'>Previous step</button></a>
-            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
             </span>";
     if (file_exists('COPYING')) {
         echo "<a href='install.php?step=2'><button id='btn_accept' class='btn_primary'>Yes, I accept licence terms</button></a>";
@@ -701,7 +701,7 @@ function install_step2()
             <div id='foot_install'>
                 <div class='content-footer'>
                 <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
-                <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+                <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
                 </span>";
     if ($res > 0) {
         echo "<span class='text' style='margin-right: 10px'>Ignore it.</span><a id='step3' href='install.php?step=3'><button class='btn_primary'>Force install</button></a>";
@@ -883,8 +883,7 @@ function install_step3()
     echo "<div id='foot_install'>
             <div class='content-footer'>
             <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
-            <span class='signature'>© ".date('Y')." 
-                <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
             </span>";
     if (!$error) {
         echo "<button class='btn_primary' type='submit' id='step4'>Next Step</button>";
@@ -1295,7 +1294,7 @@ function install_step4()
 		<div id='foot_install'>
             <div class='content-footer'>
             <a href='install.php?step=3' class='btn_primary outline'>Previous step</a>
-            <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
             </span>";
     if ($everything_ok === 1) {
         echo "<a id='step5' href='install.php?step=5'>
@@ -1338,7 +1337,7 @@ function install_step5()
     </div>
 	<div id='foot_install'>
         <div class='content-footer'>
-                <span class='signature'>© ".date('Y')." <a href='https://pandorafms.com' target='_blank'>Pandora FMS</a> 
+                <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
                 </span>
                 <a id='access_pandora' href='index.php'>
                     <button class='btn_primary'>Click here to access to your Pandora FMS console</button>

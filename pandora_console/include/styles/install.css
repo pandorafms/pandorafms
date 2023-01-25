@@ -115,7 +115,8 @@ html {
   color: #8a96a6;
   font-size: 13px;
   font-weight: 300;
-  margin: 0 auto;
+  margin-right: auto;
+  margin-left: 10px;
 }
 .link {
   color: #82b92e;

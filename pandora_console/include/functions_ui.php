@@ -3631,8 +3631,13 @@ function ui_print_datatable(array $parameters)
     }
 
     $searching = 'false';
-    if (isset($parameters['searching'])) {
+    if (isset($parameters['searching']) && $parameters['searching'] === true) {
         $searching = 'true';
+    }
+
+    $ordering = 'true';
+    if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
+        $ordering = 'false';
     }
 
     $js .= '},';
@@ -3680,6 +3685,7 @@ function ui_print_datatable(array $parameters)
                 { className: "no-class", targets: "_all" },
                 { bSortable: false, targets: '.$no_sortable_columns.' }
             ],
+            ordering: '.$ordering.',
             columns: [';
 
     foreach ($parameters['datacolumns'] as $data) {

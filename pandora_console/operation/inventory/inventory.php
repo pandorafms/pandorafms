@@ -360,7 +360,7 @@ $table->data[0][1] .= '</div>';
 $table->data[0][2] = '<strong>'.__('Module').'</strong>';
 
 if ($is_metaconsole === true) {
-    $table->data[0][3] = html_print_select($fields, 'module_inventory_general_view', $inventory_module, $filteringFunction, __('All'), 0, true, false, true, '', false, 'min-width: 194px; max-width: 200px;');
+    $table->data[0][3] = html_print_select($fields, 'module_inventory_general_view', $inventory_module, $filteringFunction, __('Basic info'), 0, true, false, true, '', false, 'min-width: 194px; max-width: 200px;');
 } else {
     $sql = 'SELECT name as indexname, name
 	FROM tmodule_inventory, tagent_module_inventory
@@ -369,7 +369,20 @@ if ($is_metaconsole === true) {
         $sql .= ' AND id_agente = '.$inventory_id_agent;
     }
 
-    $table->data[0][3] = html_print_select_from_sql($sql, 'module_inventory_general_view', $inventory_module, '', __('All'), 'all', true, false, false);
+    $fields = [];
+    $result = db_get_all_rows_sql($sql);
+    if ($result === false) {
+        $result = [];
+    }
+
+    foreach ($result as $row) {
+        $id = array_shift($row);
+        $value = array_shift($row);
+        $fields[$id] = $value;
+    }
+
+    array_unshift($fields, 'All');
+    $table->data[0][3] = html_print_select($fields, 'module_inventory_general_view', $inventory_module, '', __('Basic info'), 'basic', true, false, false);
 }
 
 
@@ -687,38 +700,152 @@ if ($is_metaconsole === false) {
             }
         }
     } else {
-        $result = [];
-
-        $sql = 'SELECT alias, direccion, nombre
-                FROM tagente 
-                WHERE id_agente = '.$inventory_id_agent;
-        $results = db_get_all_rows_sql($sql);
-
-        foreach ($results as $result) {
-            hd($result);
+        $id_agente = $inventory_id_agent;
+        $agentes = [];
+        $data = [];
+        $class = 'info_table w100p';
+        $style = 'width: 100%';
+        $ordering = false;
+        $searching = false;
+        $dom = 't';
+        $columns = [
+            __('Alias'),
+            __('IP'),
+            __("IP's Secondary"),
+            __('Group'),
+            __('Secondary groups'),
+            __('Description'),
+            __('OS'),
+            __('Interval'),
+            __('Last contact'),
+            __('Last status change'),
+            __('Custom fields'),
+            __('Values Custom Fields'),
+        ];
+        if ((int) $id_agente === 0) {
+            $class = 'databox info_table w100p';
+            $style = 'width: 99%';
+            $ordering = true;
+            $searching = true;
+            $dom = 'lftipB';
+            $agentes = db_get_all_rows_sql('SELECT id_agente FROM tagente');
+        } else {
+            array_push($agentes, $id_agente);
         }
 
-        ui_print_datatable(
+        foreach ($agentes as $id) {
+            if ((int) $id_agente === 0) {
+                $id = $id['id_agente'];
+            }
+
+            $agent = db_get_row('tagente', 'id_agente', $id);
+
+            $ip = '<em>'.__('N/A').'</em>';
+            if (empty($agent['direccion']) === false) {
+                $ip = $agent['direccion'];
+            }
+
+
+            $secondary_ips = '';
+            foreach (agents_get_addresses($id) as $ip) {
+                if ($ip !== $agent['direccion']) {
+                    $secondary_ips .= '<span class="left" style="height: 1.3em !important">'.$ip.'</span>';
+                }
+            }
+
+            $group = groups_get_name($agent['id_grupo']);
+            $secondary_groups = enterprise_hook('agents_get_secondary_groups', [$id]);
+
+            if (empty($secondary_groups['for_select']) === true) {
+                $sec_group_data = '<em>'.__('N/A').'</em>';
+            } else {
+                $sec_group = [];
+                foreach ($secondary_groups['for_select'] as $name) {
+                    $sec_group[] = $name;
+                }
+
+                $sec_group_data = implode(', ', $sec_group);
+            }
+
+            $os = ui_print_os_icon($agent['id_os'], false, true).' ';
+            $os .= io_safe_output(get_os_name($agent['id_os'])).' '.io_safe_output($agent['os_version']);
+            $interval = human_time_description_raw($agent['intervalo'], false, 'large');
+            $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true);
+            // $last_contact .= ' / '.date_w_fixed_tz($agent['ultimo_contacto_remoto']);
+            $last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+            $time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
+
+            $sql_fields = 'SELECT tcf.name, tcd.description, tcf.is_password_type
+                            FROM tagent_custom_fields tcf
+                            INNER JOIN tagent_custom_data tcd ON tcd.id_field=tcf.id_field
+                            WHERE tcd.id_agent='.$id.' AND tcd.description!=""';
+            $field_result = db_get_all_rows_sql($sql_fields);
+
+            $custom_fields_names = '';
+            $custom_fields_values = '';
+            foreach ($field_result as $field) {
+                $field_name = str_replace(' ', '&nbsp;', io_safe_output($field['name']));
+                $custom_fields_names .= '<span class="right" style="height: 1.3em !important">'.$field_name.'</span>';
+
+                $description = $field['description'];
+                $password_length = strlen(io_safe_output($field['description']));
+                $asterisks = '';
+
+                if ((int) $field['is_password_type'] === 1) {
+                    for ($i = 0; $i < $password_length; $i++) {
+                        $asterisks .= '&#9679;';
+                    }
+
+                    $description = $asterisks;
+                }
+
+                $custom_fields_values .= '<span class="left" style="height: 1.3em !important">'.$description.'</span>';
+            }
+
+            $data_tmp = [
+                __('Alias')                => $agent['alias'],
+                __('IP')                   => $ip,
+                __("IP's Secondary")       => $secondary_ips,
+                __('Group')                => $group,
+                __('Secondary groups')     => $sec_group_data,
+                __('Description')          => $agent['comentarios'],
+                __('OS')                   => $os,
+                __('Interval')             => $interval,
+                __('Last contact')         => $last_contact,
+                __('Last status change')   => $time_elapsed,
+                __('Custom fields')        => $custom_fields_names,
+                __('Values Custom Fields') => $custom_fields_values,
+            ];
+
+            array_push($data, $data_tmp);
+        }
+
+        $table = ui_print_datatable(
             [
-                'id'                  => 'basic_info',
-                'class'               => 'info_table w100p',
-                'style'               => 'width: 100%',
-                'columns'             => $columns,
-                'column_names'        => $columns,
-                'no_sortable_columns' => [],
-                'data_element'        => $data,
-                'searching'           => true,
-                'dom_elements'        => 'lftipB',
-                'order'               => [
+                'id'                 => 'basic_info',
+                'class'              => $class,
+                'style'              => $style,
+                'columns'            => $columns,
+                'column_names'       => $columns,
+                'ordering'           => $ordering,
+                'data_element'       => $data,
+                'searching'          => $searching,
+                'dom_elements'       => $dom,
+                'order'              => [
                     'field'     => $columns[0],
                     'direction' => 'asc',
                 ],
-                'zeroRecords'         => __('No inventory found'),
-                'emptyTable'          => __('No inventory found'),
-                'default_pagination'  => 10,
-                'no_sortable_columns' => [-1],
+                'zeroRecords'        => __('Agent info not found'),
+                'emptyTable'         => __('Agent info not found'),
+                'default_pagination' => 10,
+                'return'             => true,
             ]
         );
+        if ((int) $id_agente === 0) {
+            echo $table;
+        } else {
+            echo '<div class="databox">'.$table.'</div>';
+        }
     }
 } else {
     if (empty($inventory_data) === true) {

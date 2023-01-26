@@ -669,6 +669,7 @@ class Tree
         }
 
         $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
+        $module['statusImageHTML'] = 'cipote';
 
         // HTML of the server type image.
         $module['serverTypeHTML'] = ui_print_servertype_icon((int) $module['server_type']);

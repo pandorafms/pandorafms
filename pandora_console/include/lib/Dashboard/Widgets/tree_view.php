@@ -571,15 +571,17 @@ class TreeViewWidget extends Widget
         $base_url = \ui_get_full_url('/');
 
         // Spinner.
-        $output .= \html_print_image(
+        $output .= ui_print_spinner(__('Loading'), true);
+        /*
+            $output .= \html_print_image(
             'images/spinner.gif',
             true,
             [
                 'class' => 'loading_tree',
                 'style' => 'display: none;',
             ]
-        );
-
+            );
+        */
         // Container tree.
         $style = 'height:'.$height.'px; width:'.$width.'px;';
         $style .= 'text-align: left; padding:10px;';

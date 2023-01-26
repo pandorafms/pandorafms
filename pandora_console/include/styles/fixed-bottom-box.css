@@ -25,20 +25,12 @@ div.fixed-bottom-box {
 /* Overrides end */
 
 div.fixed-bottom-box > div.fixed-bottom-box-head {
-  width: 20px !important;
-  height: 30px;
+  width: 100% !important;
+  height: 40px;
   line-height: 30px;
   vertical-align: middle;
   position: absolute;
-  top: 10px;
-  right: 20px;
-  /* background-color: #3f3f3f; */
-  /* border-radius: 10px 10px 0 0; */
-  /* -moz-border-radius: 10px 10px 0 0; */
-  /* -webkit-border-radius: 10px 10px 0 0; */
-  /* -o-border-radius: 10px 10px 0 0; */
-  /* -ms-border-radius: 10px 10px 0 0; */
-  /* -khtml-border-radius: 10px 10px 0 0; */
+  border-bottom: 1px solid #aeaeae;
 }
 
 div.fixed-bottom-box
@@ -60,39 +52,21 @@ div.fixed-bottom-box
   background-image: url(../../images/close@svg.svg);
   background-repeat: no-repeat;
   background-position: center;
-  float: right;
+  position: absolute;
+  top: 10px;
+  right: 20px;
 }
 
 div.fixed-bottom-box
   > div.fixed-bottom-box-head
   > div.fixed-bottom-box-head-body:hover {
   cursor: pointer;
-  /*
-  background-color: #747474;
-
-  border-radius: inherit;
-  -moz-border-radius: inherit;
-  -webkit-border-radius: inherit;
-  -o-border-radius: inherit;
-  -ms-border-radius: inherit;
-  -khtml-border-radius: inherit;
-  */
 }
 
 div.fixed-bottom-box
   > div.fixed-bottom-box-head
   > span.fixed-bottom-box-head-close:hover {
   cursor: pointer;
-  /*
-  background-color: #747474;
-
-  border-radius: 0 10px 0 0;
-  -moz-border-radius: 0 10px 0 0;
-  -webkit-border-radius: 0 10px 0 0;
-  -o-border-radius: 0 10px 0 0;
-  -ms-border-radius: 0 10px 0 0;
-  -khtml-border-radius: 0 10px 0 0;
-  */
 }
 
 div.fixed-bottom-box.fixed-bottom-box-hided
@@ -119,5 +93,6 @@ div.fixed-bottom-box > div.fixed-bottom-box-content {
   box-sizing: border-box;
   width: 100% !important;
   height: 100% !important;
+  max-height: 100% !important;
   border-left: 1px solid #aeaeae;
 }

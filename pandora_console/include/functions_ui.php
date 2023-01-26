@@ -2813,6 +2813,7 @@ function ui_print_status_image(
 
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
+        $shape_status['is_tree_view'] = true;
         return ui_print_status_sets($type, $title, $return, $shape_status, $extra_info);
     } else {
         $imagepath .= '/'.$type;
@@ -2970,7 +2971,9 @@ function ui_print_status_sets(
         $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
-    if (isset($options['class']) === true) {
+    if (isset($options['is_tree_view']) === true) {
+        $options['class'] = 'item_status_tree_view';
+    } else if (isset($options['class']) === true) {
         $options['class'] = $options['class'];
     }
 
@@ -2992,6 +2995,16 @@ function ui_print_status_sets(
 
     $output .= '>&nbsp;</div>';
 
+    if (isset($options['is_tree_view']) === true) {
+        $output = html_print_div(
+            [
+                'class'   => '',
+                'content' => $output,
+            ],
+            true
+        );
+    }
+
     if ($return === false) {
         echo $output;
     } else {
@@ -3004,13 +3017,13 @@ function ui_print_status_sets(
  * Generates a progress bar CSS based.
  * Requires css progress.css
  *
- * @param integer $progress Progress.
- * @param string  $width    Width.
- * @param integer $height   Height in 'em'.
- * @param string  $color    Color.
- * @param boolean $return   Return or paint (if false).
- * @param boolean $text     Text to be displayed,by default progress %.
- * @param array   $ajax     Ajax: [ 'page' => 'page', 'data' => 'data' ] Sample:
+ * @param integer $progress    Progress.
+ * @param string  $width       Width.
+ * @param integer $height      Height in 'em'.
+ * @param string  $color       Color.
+ * @param boolean $return      Return or paint (if false).
+ * @param boolean $text        Text to be displayed,by default progress %.
+ * @param array   $ajax        Ajax: [ 'page' => 'page', 'data' => 'data' ] Sample:
  *   [
  *       'page'     => 'operation/agentes/ver_agente', Target page.
  *       'interval' => 100 / $agent["intervalo"], Ask every interval seconds.
@@ -3021,6 +3034,8 @@ function ui_print_status_sets(
  *       ],
  *   ].
  *
+ * @param string  $otherStyles Raw styles for control.
+ *
  * @return string HTML code.
  */
 function ui_progress(
@@ -3030,7 +3045,8 @@ function ui_progress(
     $color='#82b92e',
     $return=true,
     $text='',
-    $ajax=false
+    $ajax=false,
+    $otherStyles=''
 ) {
     if (!$progress) {
         $progress = 0;
@@ -3052,7 +3068,7 @@ function ui_progress(
 
     ui_require_css_file('progress');
     $output = '<span id="'.$id.'" class="progress_main" data-label="'.$text;
-    $output .= '" style="width: '.$width.'; height: '.$height.'em; border-color: '.$color.'">';
+    $output .= '" style="width: '.$width.'; height: '.$height.'em; border-color: '.$color.'; '.$otherStyles.'">';
     $output .= '<span id="'.$id.'_progress" class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
     $output .= '</span>';
 
@@ -4100,6 +4116,7 @@ function ui_print_event_priority(
  * @param string       $toggl_attr        Main box extra attributes.
  * @param boolean|null $switch_on         Switch enabled disabled or depending on hidden_Default.
  * @param string|null  $switch_name       Use custom switch input name or generate one.
+ * @param boolean|null $disableToggle     If True, the toggle is disabled.
  *
  * @return string HTML.
  */
@@ -4121,23 +4138,33 @@ function ui_toggle(
     $attributes_switch='',
     $toggl_attr='',
     $switch_on=null,
-    $switch_name=null
+    $switch_name=null,
+    $disableToggle=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image(
-        $img_a,
-        true,
-        [ 'style' => 'object-fit: contain;' ],
-        true
-    );
-    $image_b = html_print_image(
-        $img_b,
-        true,
-        [ 'style' => 'object-fit: contain;' ],
-        true
-    );
+    if (empty($img_a) === false) {
+        $image_a = html_print_image(
+            $img_a,
+            true,
+            [ 'style' => 'object-fit: contain;' ],
+            true
+        );
+    } else {
+        $image_a = '';
+    }
+
+    if (empty($img_b) === false) {
+        $image_b = html_print_image(
+            $img_b,
+            true,
+            [ 'style' => 'object-fit: contain;' ],
+            true
+        );
+    } else {
+        $image_b = '';
+    }
 
     // Options.
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-fill-available;';
@@ -4165,7 +4192,7 @@ function ui_toggle(
 
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
-    $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
+    $output .= '<div class="'.$header_class.'" '.(($disableToggle === false) ? 'style="cursor: pointer;" ' : '').' id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
             if (empty($switch_name) === true) {
@@ -4241,45 +4268,48 @@ function ui_toggle(
     $output .= '</div>';
     $output .= '</div>';
 
-    // JQuery Toggle.
-    $output .= '<script type="text/javascript">'."\n";
-    $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
-    $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
-    $output .= '	/* <![CDATA[ */'."\n";
-    $output .= "	$(document).ready (function () {\n";
-    $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-    $output .= '            if (is_metaconsole == 0) {';
-    $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
-    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-    $output .= "			    }\n";
-    $output .= "			    else {\n";
-    $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
-    $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-    $output .= "			    }\n";
-    $output .= "		    }\n";
-    $output .= "		});\n";
-    $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-    $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-    $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
-    $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
-    $output .= "			}\n";
-    $output .= "			else {\n";
-    $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-    $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
-    $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-    $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
-    $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
-    $output .= "			}\n";
-    $output .= "		});\n";
-    $output .= "	});\n";
-    $output .= '/* ]]> */';
-    $output .= '</script>';
+    if ($disableToggle === false) {
+        // JQuery Toggle.
+        $output .= '<script type="text/javascript">'."\n";
+        $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
+        $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
+        $output .= '	/* <![CDATA[ */'."\n";
+        $output .= "	$(document).ready (function () {\n";
+        $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
+        $output .= '            if (is_metaconsole == 0) {';
+        $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "			    }\n";
+        $output .= "			    else {\n";
+        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "			    }\n";
+        $output .= "		    }\n";
+        $output .= "		});\n";
+        $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
+        $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= "			}\n";
+        $output .= "			else {\n";
+        $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
+        $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= "			}\n";
+        $output .= "		});\n";
+        $output .= "	});\n";
+        $output .= '/* ]]> */';
+        $output .= '</script>';
+    }
+
     $output .= '</div>';
 
     if (!$return) {

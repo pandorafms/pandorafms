@@ -310,16 +310,17 @@ ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
 ui_require_javascript_file('TreeController', 'include/javascript/tree/');
-
-html_print_image(
+ui_print_spinner(__('Loading'));
+/*
+    html_print_image(
     'images/spinner.gif',
     false,
     [
         'class' => 'loading_tree',
         'style' => 'display: none;',
     ]
-);
-
+    );
+*/
 html_print_div(
     [
         'id'      => 'tree-controller-recipient',
@@ -356,7 +357,8 @@ enterprise_hook('close_meta_frame');
         if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();
 
-        $(".loading_tree").show();
+        showSpinner();
+        //$(".loading_tree").show();
 
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
@@ -407,7 +409,8 @@ enterprise_hook('close_meta_frame');
             data: parameters,
             success: function(data) {
                 if (data.success) {
-                    $(".loading_tree").hide();
+                    hideSpinner();
+                    //$(".loading_tree").hide();
                     var foundMessage = '';
                     if (data.tree.length === 0) {
                         foundMessage = "<?php echo __('No data found'); ?>";

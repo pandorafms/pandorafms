@@ -101,13 +101,17 @@
     self._renderHead = function(head) {
       head = head || self._head;
 
+      var headBody = $("<div></div>");
+      headBody.addClass("fixed-bottom-box-head-body");
       var headClose = $("<span></span>");
       headClose.addClass("fixed-bottom-box-head-close").click(function(event) {
         self.close();
       });
 
       self._box.head = $("<div></div>");
-      self._box.head.addClass("fixed-bottom-box-head").append(headClose);
+      self._box.head
+        .addClass("fixed-bottom-box-head")
+        .append(headClose, headBody);
       self._box.append(self._box.head);
 
       self.emit("head-rendered", {

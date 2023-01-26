@@ -55,29 +55,19 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     $table = new StdClass();
     $table->width = '100%';
-    $table->class = 'floating_form';
+    $table->class = 'floating_form margin-top-10';
     $table->id = 'tree_view_module_data';
     $table->style = [];
-    $table->style['title'] = 'height: 46px; width: 30%; padding-right: 5px; text-align: end;';
-    $table->style['data'] = 'height: 46px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+    $table->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
+    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
     $table->data = [];
 
     // Module name.
-    if ($module['disabled']) {
-        $cellName = '<em>'.ui_print_truncate_text($module['nombre'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;').ui_print_help_tip(__('Disabled'), true).'<em>';
-    } else {
-        $cellName = ui_print_truncate_text($module['nombre'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;');
-    }
+    $cellName = ((bool) $module['disabled'] === true) ? '<em>'.$module['nombre'].'</em>'.ui_print_help_tip(__('Disabled'), true) : $module['nombre'];
 
     $row = [];
     $row['title'] = __('Name');
-    $row['data'] = html_print_anchor(
-        [
-            'href'    => $console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash,
-            'content' => $cellName,
-        ],
-        true
-    );
+    $row['data'] = $cellName;
     $table->data['name'] = $row;
 
     // Interval.
@@ -126,14 +116,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     $row = [];
     $row['title'] = __('Description');
-    $row['data'] = ui_print_truncate_text(
-        $module['descripcion'],
-        'description',
-        true,
-        true,
-        true,
-        '[&hellip;]'
-    );
+    $row['data'] = $module['descripcion'];
     $table->data['description'] = $row;
 
     // Tags.
@@ -321,6 +304,18 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['data'] = $time_elapsed;
     $table->data['tags'] = $row;
 
+    // Edit module button.
+    $row = [];
+    $row['title'] = html_print_button(
+        __('Edit module'),
+        'edit_module_link',
+        false,
+        'window.location.assign(\''.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'\')',
+        [ 'mode' => 'link' ],
+        true
+    );
+    $table->data['edit_button'] = $row;
+    $table->colspan['edit_button'] = 2;
     // Title.
     echo '<span style="position: relative; top: 12px; left: 12px;" class="subsection_header_title">'.__('Module information').'</span>';
     // End of table.
@@ -570,19 +565,15 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->class = 'floating_form';
     $table->id = 'tree_view_agent_detail';
     $table->style = [];
-    $table->style['title'] = 'height: 46px; width: 30%; padding-right: 5px; text-align: end;';
-    $table->style['data'] = 'height: 46px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+    $table->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
+    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
     $table->head = [];
     $table->data = [];
 
     // Agent name.
-    if ($agent['disabled']) {
-        $cellName = '<em>';
-    } else {
-        $cellName = '';
-    }
+    $cellName = ((bool) $agent['disabled'] === true) ? '<em>' : '';
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $pwd = $server_data['auth_token'];
         // Create HASH login info.
         $user = $config['id_user'];
@@ -592,28 +583,18 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $hashdata = $user.$pwd_deserialiced['auth_token'];
 
         $hashdata = md5($hashdata);
-        $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'];
-
-        if ($grants_on_node && (bool) $user_access_node !== false) {
-            $cellName .= html_print_anchor(
-                [
-                    'onClick' => 'sendHash(\''.$url.'\')',
-                    'content' => '<span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span>',
-                ],
-                true
-            );
+        if ((bool) $grants_on_node === true && (bool) $user_access_node !== false) {
+            $urlAgent = 'sendHash(\''.$server_data['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'\')';
         } else {
-            $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
+            $urlAgent = '';
         }
     } else {
-        $url = ui_get_full_url(
-            'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente']
-        );
-        $cellName .= '<a href="'.$url.'">';
-        $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+        $urlAgent = 'window.location.assign(\'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente'].'\')';
     }
 
-    if ($agent['disabled']) {
+    $cellName = $agent['alias'];
+
+    if ((bool) $agent['disabled'] === true) {
         $cellName .= ui_print_help_tip(__('Disabled'), true).'</em>';
     }
 
@@ -640,6 +621,10 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         );
     }
 
+    if (empty($address) === true) {
+        $address = __('N/A');
+    }
+
     $row = [];
     $row['title'] = __('IP Address');
     $row['data'] = $address;
@@ -660,7 +645,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     // Last contact.
     $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['class' => 'font_11']);
 
-    if ($agent['ultimo_contacto_remoto'] == '01-01-1970 00:00:00') {
+    if ($agent['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
     } else {
         $last_remote_contact = date_w_fixed_tz(
@@ -669,9 +654,14 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     }
 
     $row = [];
-    $row['title'] = __('Last contact').' / '.__('Remote');
-    $row['data'] = "$last_contact / $last_remote_contact";
-    $table->data['contact'] = $row;
+    $row['title'] = __('Last contact');
+    $row['data'] = $last_contact;
+    $table->data['last_contact'] = $row;
+
+    $row = [];
+    $row['title'] = __('Remote contact');
+    $row['data'] = $last_remote_contact;
+    $table->data['remote_contact'] = $row;
 
     // Next contact (agent).
     $progress = agents_get_next_contact($id_agente);
@@ -681,11 +671,27 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = ui_progress(
         $progress,
         '100%',
-        '1.5',
-        '#82b92e',
-        true
+        '1.2',
+        '#ececec',
+        true,
+        '',
+        false,
+        'line-height: 13px;'
     );
     $table->data['next_contact'] = $row;
+
+    // Edit agent button.
+    $row = [];
+    $row['title'] = html_print_button(
+        __('Edit agent'),
+        'edit_agent_link',
+        false,
+        $urlAgent,
+        [ 'mode' => 'link' ],
+        true
+    );
+    $table->data['edit_button'] = $row;
+    $table->colspan['edit_button'] = 2;
 
     // End of table.
     $agent_table = html_print_table($table, true);
@@ -711,7 +717,27 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     */
     // Print agent data toggle.
-    ui_toggle($agent_table, '<span class="subsection_header_title">'.__('Agent data').'</span>', '', '', false, false, '', 'white-box-content', 'white_table_graph');
+    ui_toggle(
+        $agent_table,
+        '<span class="subsection_header_title">'.__('Agent data').'</span>',
+        '',
+        '',
+        false,
+        false,
+        '',
+        'white-box-content',
+        'white_table_graph',
+        '',
+        '',
+        false,
+        false,
+        false,
+        '',
+        '',
+        null,
+        null,
+        true
+    );
 
     // Advanced data.
     $table = new StdClass();
@@ -719,8 +745,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->class = 'floating_form';
     $table->id = 'tree_view_agent_advanced';
     $table->style = [];
-    $table->style['title'] = 'height: 46px; width: 30%; padding-right: 5px; text-align: end;';
-    $table->style['data'] = 'height: 46px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+    $table->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
+    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
     $table->head = [];
     $table->data = [];
 
@@ -803,8 +829,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     // End of table advanced.
     $table_advanced = html_print_table($table, true);
-    $table_advanced .= '<br>';
-
+    echo '<hr>';
     ui_toggle(
         $table_advanced,
         '<span class="subsection_header_title">'.__('Advanced information').'</span>',
@@ -814,7 +839,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         '',
         'white-box-content',
-        'white_table_graph'
+        'white_table_graph margin-top-20'
     );
 
     if ($config['agentaccess']) {
@@ -825,7 +850,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             false
         );
         $access_graph .= '</div>';
-
+        echo '<hr>';
         ui_toggle(
             $access_graph,
             '<span class="subsection_header_title">'.__('Agent access rate (24h)').'</span>',
@@ -835,7 +860,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             false,
             '',
             'white-box-content',
-            'white_table_graph'
+            'white_table_graph margin-top-20'
         );
     }
 
@@ -853,7 +878,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $server_id
     );
     $events_graph .= '</div><br>';
-
+    echo '<hr>';
     ui_toggle(
         $events_graph,
         '<span class="subsection_header_title">'.__('Events (24h)').'</span>',
@@ -863,7 +888,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         '',
         'white-box-content',
-        'white_table_graph'
+        'white_table_graph margin-top-20'
     );
 
     // Table network interfaces

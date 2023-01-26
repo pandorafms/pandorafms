@@ -1123,6 +1123,9 @@ p.center {
   margin-bottom: 10px;
 }
 
+.margin-top-20 {
+  margin-top: 20px;
+}
 .margin-bottom-20 {
   margin-bottom: 20px;
 }
@@ -11006,4 +11009,12 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+}
+
+.item_status_tree_view {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  width: 24px;
+  height: 24px;
 }

@@ -3004,7 +3004,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_NO_MONITORS_BALL,
             __('No Monitors'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3016,7 +3019,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_ALERT_FIRED_BALL,
             __('Alert fired on agent'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3028,7 +3034,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_CRITICAL_BALL,
             __('At least one module in CRITICAL status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3038,7 +3047,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_WARNING_BALL,
             __('At least one module in WARNING status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3048,7 +3060,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_DOWN_BALL,
             __('At least one module is in UKNOWN status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3058,7 +3073,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_OK_BALL,
             __('All Monitors OK'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true

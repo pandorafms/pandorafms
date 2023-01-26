@@ -239,8 +239,10 @@ var TreeController = {
             }
 
             if (type == "services") {
-              var $counters = $("<div></div>");
-              $counters.addClass("tree-node-counters");
+              var $counters = $("<span></span>");
+              $counters
+                .addClass("tree-node-counters")
+                .addClass("tree-node-service-counters");
 
               if (
                 counters.total_services +
@@ -648,11 +650,11 @@ var TreeController = {
                 element.icon.length > 0
               ) {
                 $content.append(
-                  '<div class="node-icon"><img src="' +
+                  '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     "images/" +
                     element.icon +
-                    '" /></div>'
+                    '" /></div></div>'
                 );
               } else if (
                 typeof element.iconHTML != "undefined" &&
@@ -728,8 +730,11 @@ var TreeController = {
                 typeof element.statusImageHTML != "undefined" &&
                 element.statusImageHTML.length > 0
               ) {
+                console.log("es aqui pollito agente");
                 var $statusImage = $(element.statusImageHTML);
-                $statusImage.addClass("agent-status");
+                $statusImage.addClass("node-icon");
+                $statusImage.addClass("node-status");
+                //$statusImage.addClass("agent-status");
 
                 $content.append($statusImage);
               }
@@ -809,8 +814,6 @@ var TreeController = {
               }
 
               if (element.name !== null) {
-                console.log(element.name);
-                console.log("2");
                 $content.append("&nbsp;&nbsp;&nbsp;" + element.name);
               }
 
@@ -853,13 +856,12 @@ var TreeController = {
               }
 
               if (element.name !== null) {
-                console.log(element.name);
-                console.log("3");
                 $content.append("&nbsp;&nbsp;&nbsp;" + element.name);
               }
 
               break;
             case "services":
+              $content.addClass("node-service");
               if (
                 typeof element.statusImageHTML != "undefined" &&
                 element.statusImageHTML.length > 0
@@ -874,7 +876,7 @@ var TreeController = {
                 (element.title ? element.title : element.name) +
                 '" data-use_title_for_force_title="1" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                'images/info@svg.svg" class="img_help" ' +
+                'images/info@svg.svg" style="width: 16px" class="img_help" ' +
                 ' alt="' +
                 element.name +
                 '"/></span> ';
@@ -903,14 +905,24 @@ var TreeController = {
                   typeof element.elementDescription !== "undefined" &&
                   element.elementDescription != ""
                 ) {
-                  $content.append(" " + element.elementDescription);
+                  $content.append(
+                    '<span style="flex: 1 1 50%;">' +
+                      element.elementDescription +
+                      "</span>"
+                  );
                 } else if (
                   typeof element.description !== "undefined" &&
                   element.description != ""
                 ) {
-                  $content.append(" " + element.description);
+                  $content.append(
+                    '<span style="flex: 1 1 50%;">' +
+                      element.description +
+                      "</span>"
+                  );
                 } else {
-                  $content.append('<span class="">' + element.name + "</span>");
+                  $content.append(
+                    '<span style="flex: 1 1 50%;">' + element.name + "</span>"
+                  );
                 }
               } else {
                 $content.remove($node);
@@ -975,6 +987,8 @@ var TreeController = {
                 $statusImage.addClass("module-status");
 
                 $content.append($statusImage);
+              } else {
+                $content.addClass("module-only-caption");
               }
 
               element.name = htmlDecode(element.name);
@@ -1174,7 +1188,7 @@ var TreeController = {
                 element.icon.length > 0
               ) {
                 $content.append(
-                  '<div class="node-icon"><img src="' +
+                  '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     "images/" +
                     element.icon +
@@ -1231,7 +1245,7 @@ var TreeController = {
               break;
             default:
               $content.append(
-                '<span class="module-name module-name-parent">' +
+                '<span class="module-name module-name-parent module-only-caption">' +
                   element.name +
                   "</span>"
               );

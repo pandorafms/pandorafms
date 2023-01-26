@@ -2723,7 +2723,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-filter-interfaces',
             'method' => 'POST',
-            'class'  => 'modal flex flex-row searchbox',
+            'class'  => 'modal searchbox',
             'extra'  => '',
         ];
 

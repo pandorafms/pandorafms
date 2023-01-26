@@ -10797,14 +10797,20 @@ pre.external_tools_output {
 }
 
 .fixed_filter_bar input,
-.fixed_filter_bar .select2-container .select2-selection--single {
+.filter_table input,
+.fixed_filter_bar .select2-container .select2-selection--single,
+.filter_table .select2-container .select2-selection--single {
   height: 32px !important;
 }
 
-.fixed_filter_bar .select2-selection__arrow {
+.fixed_filter_bar .select2-selection__arrow,
+.filter_table .select2-selection__arrow {
   top: -4px !important;
 }
-
+.filter_table
+  .select2-container
+  .select2-selection--single
+  .select2-selection__rendered,
 .fixed_filter_bar
   .select2-container
   .select2-selection--single
@@ -10813,6 +10819,10 @@ pre.external_tools_output {
 }
 
 .fixed_filter_bar
+  .select2-container--default
+  .select2-search--dropdown
+  .select2-search__field,
+.filter_table
   .select2-container--default
   .select2-search--dropdown
   .select2-search__field {

@@ -42,6 +42,11 @@ if (__PAN_XHPROF__ === 1) {
     }
 }
 
+// Needed for InfoBox count.
+if (isset($_SESSION['info_box_count']) === true) {
+    $_SESSION['info_box_count'] = 0;
+}
+
 // Set character encoding to UTF-8
 // fixes a lot of multibyte character issues.
 if (function_exists('mb_internal_encoding') === true) {
@@ -1674,6 +1679,17 @@ require 'include/php_to_js_values.php';
             "html"
         );
     }
+
+    // Info messages action.
+    $(document).ready(function() {
+        var $autocloseTime = <?php echo ((int) $config['notification_autoclose_time'] * 1000); ?>;
+        var $listOfMessages = document.querySelectorAll('.info_box_autoclose');
+        $listOfMessages.forEach(
+            function(item) {
+                autoclose_info_box(item.id, $autocloseTime)
+            }
+        );
+    });
 </script>
 <?php
 if (__PAN_XHPROF__ === 1) {

@@ -2296,3 +2296,15 @@ $(document).ready(function() {
     });
   }
 });
+
+function close_info_box(id) {
+  $("#" + id).fadeOut("slow", function() {
+    $("#" + id).remove();
+  });
+}
+
+function autoclose_info_box(id, autoCloseTime) {
+  setTimeout(() => {
+    close_info_box(id);
+  }, autoCloseTime);
+}

@@ -378,33 +378,25 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     // JavaScript help vars.
     $messageCreated = html_print_table($messageTable, true);
     $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
-    $definedMessageTop = '20';
-    ob_start();
-    ?>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            var $definedTop = <?php echo $definedMessageTop; ?>;
-            var $listOfMessages = document.querySelectorAll('.info_box_container');
-            $("#<?php echo $id; ?>").css('top', (parseInt($definedTop) + (100*($listOfMessages.length)))+'px');
 
-            <?php if (($autoclose === true) && ($autocloseTime > 0)) : ?>
-                setTimeout(() => { close_info_box('<?php echo $id; ?>'); }, <?php echo $autocloseTime; ?>);
-            <?php endif; ?>
-        });
+    $classes = 'info_box_container';
+    $classes .= (($autoclose === true) && ($autocloseTime > 0)) ? ' info_box_autoclose' : '';
 
-        <?php if (($first_execution === true) && ($no_close_bool === false)) : ?>
-            function close_info_box(id) { $("#" + id).fadeOut('slow', function(){ $("#" + id).remove(); }); }
-        <?php endif; ?>
-    </script>
-    <?php
-    $jsCode = ob_get_clean();
+    // This session var is defined in index.
+    if (isset($_SESSION['info_box_count']) === false) {
+        $_SESSION['info_box_count'] = 1;
+    } else {
+        $_SESSION['info_box_count']++;
+    }
+
+    $position = (20 + ((int) $_SESSION['info_box_count'] * 100));
 
     $output = html_print_div(
         [
             'id'      => $id,
-            'style'   => 'top: 120px;',
-            'class'   => 'info_box_container',
-            'content' => $jsCode.$messageCreated,
+            'style'   => 'top: '.$position.'px;',
+            'class'   => $classes,
+            'content' => $messageCreated,
         ],
         true
     );

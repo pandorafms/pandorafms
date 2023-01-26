@@ -61,6 +61,8 @@ if (check_login()) {
         0
     );
 
+    $get_children_modules = (bool) get_parameter('get_children_modules', false);
+
     $get_data_dataMatrix = (bool) get_parameter(
         'get_data_dataMatrix',
         0
@@ -1627,6 +1629,38 @@ if (check_login()) {
             );
         }
 
+        return;
+    }
+
+    if ($get_children_modules === true) {
+        $parent_modules = get_parameter('parent_modulues', false);
+        $children_selected = [];
+
+        if ($parent_modules === false) {
+            $children_selected = false;
+        } else {
+            foreach ($parent_modules as $parent) {
+                $child_modules = get_children_module($parent_modules, ['nombre', 'id_agente_modulo'], true);
+                if ((bool) $child_modules === false) {
+                    continue;
+                }
+
+                foreach ($child_modules as $child) {
+                    $module_exist = in_array($child['id_agente_modulo'], $parent_modules);
+                    $child_exist = in_array($child, $children_selected);
+
+                    if ($module_exist === false && $child_exist === false) {
+                        array_push($children_selected, $child);
+                    }
+                }
+            }
+        }
+
+        if (empty($children_selected) === true) {
+            $children_selected = false;
+        }
+
+        echo json_encode($children_selected);
         return;
     }
 }

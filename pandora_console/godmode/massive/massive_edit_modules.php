@@ -550,7 +550,22 @@ $table->data['form_agents_3'][3] = html_print_select(
 
 
 $table->data['edit0'][0] = __('Dynamic Interval');
-$table->data['edit0'][1] = html_print_extended_select_for_time('dynamic_interval', '', '', 'None', '0', 10, true, 'width:150px', false);
+$table->data['edit0'][1] = html_print_extended_select_for_time(
+    'dynamic_interval',
+    -2,
+    '',
+    'None',
+    '0',
+    10,
+    true,
+    'width:150px',
+    false,
+    '',
+    false,
+    false,
+    '',
+    true
+);
 $table->data['edit0'][2] = '<table width="100%"><tr><td><em>'.__('Dynamic Min.').'</em></td>';
 $table->data['edit0'][2] .= '<td align="right">'.html_print_input_text('dynamic_min', '', '', 10, 255, true).'</td></tr>';
 $table->data['edit0'][2] .= '<tr><td><em>'.__('Dynamic Max.').'</em></td>';

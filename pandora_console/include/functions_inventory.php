@@ -770,8 +770,6 @@ function inventory_get_datatable(
             }
         }
 
-        // hd($module_rows);
-        // echo '<script>console.log('.json_encode($module_rows).');</script>';
         return $module_rows;
     } else {
         $agents_rows = [];

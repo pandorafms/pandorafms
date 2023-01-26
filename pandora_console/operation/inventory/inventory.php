@@ -360,7 +360,8 @@ $table->data[0][1] .= '</div>';
 $table->data[0][2] = '<strong>'.__('Module').'</strong>';
 
 if ($is_metaconsole === true) {
-    $table->data[0][3] = html_print_select($fields, 'module_inventory_general_view', $inventory_module, $filteringFunction, __('Basic info'), 0, true, false, true, '', false, 'min-width: 194px; max-width: 200px;');
+    // array_unshift($fields, __('All'));
+    $table->data[0][3] = html_print_select($fields, 'module_inventory_general_view', $inventory_module, $filteringFunction, __('All'), 0, true, false, true, '', false, 'min-width: 194px; max-width: 200px;');
 } else {
     $sql = 'SELECT name as indexname, name
 	FROM tmodule_inventory, tagent_module_inventory
@@ -381,7 +382,7 @@ if ($is_metaconsole === true) {
         $fields[$id] = $value;
     }
 
-    array_unshift($fields, 'All');
+    array_unshift($fields, __('All'));
     $table->data[0][3] = html_print_select($fields, 'module_inventory_general_view', $inventory_module, '', __('Basic info'), 'basic', true, false, false);
 }
 

@@ -142,13 +142,21 @@ function users_get_groups_for_select(
         null
     );
 
-    if ($id_groups !== null) {
-        $children = groups_get_children($id_groups);
-        foreach ($children as $child) {
-            unset($user_groups[$child['id_grupo']]);
+    if ($id_groups !== null && empty($id_groups) === false) {
+        $children = [];
+        foreach ($id_groups as $key => $id_group) {
+            $children[] = groups_get_children($id_group);
         }
 
-        unset($user_groups[$id_groups]);
+        if (empty($children) === false) {
+            foreach ($children as $child) {
+                unset($user_groups[$child['id_grupo']]);
+            }
+        }
+
+        foreach ($id_groups as $key => $id_group) {
+            unset($user_groups[$id_group]);
+        }
     }
 
     if (empty($user_groups)) {

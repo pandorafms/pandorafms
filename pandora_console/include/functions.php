@@ -226,7 +226,7 @@ function format_numeric($number, $decimals=1)
     global $config;
 
     // Translate to float in case there are characters in the string so
-    // fmod doesn't throw a notice
+    // fmod doesn't throw a notice.
     $number = (float) $number;
 
     if ($number == 0) {
@@ -234,10 +234,20 @@ function format_numeric($number, $decimals=1)
     }
 
     if (fmod($number, 1) > 0) {
-        return number_format($number, $decimals, $config['decimal_separator'], $config['thousand_separator']);
+        return number_format(
+            $number,
+            $decimals,
+            $config['decimal_separator'],
+            ($config['thousand_separator'] ?? ',')
+        );
     }
 
-    return number_format($number, 0, $config['decimal_separator'], $config['thousand_separator']);
+    return number_format(
+        $number,
+        0,
+        $config['decimal_separator'],
+        ($config['thousand_separator'] ?? ',')
+    );
 }
 
 

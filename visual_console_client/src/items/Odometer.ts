@@ -223,16 +223,11 @@ export default class Odometer extends Item<OdometerProps> {
 
     let script = document.createElement("script");
     script.type = "text/javascript";
-    script.onload = function() {
+    script.onload = () => {
       odometerB.style.transform = `rotate(${rotate}turn)`;
     };
-
-    if (typeof this.props.metaconsoleId !== "undefined") {
-      script.src = "./../../include/javascript/pandora_alerts.js";
-    } else {
-      script.src = "./include/javascript/pandora_alerts.js";
-    }
-
+    var url_pandora = window.location.pathname.split("/")[1];
+    script.src = `${document.dir}/${url_pandora}/include/javascript/pandora_alerts.js`;
     odometerA.appendChild(h1);
     odometerA.appendChild(h2);
     odometerContainer.appendChild(odometerB);
@@ -325,9 +320,7 @@ export default class Odometer extends Item<OdometerProps> {
   }
 
   private getCoords(percent: number, radio: number): string {
-    if (this.props.minMaxValue === "") {
-      percent = percent;
-    } else {
+    if (this.props.minMaxValue !== "") {
       const minMax = JSON.parse(this.props.minMaxValue);
       if (minMax["min"] === percent) {
         percent = 0;

@@ -721,7 +721,7 @@ if ($get_agent_alerts_datatable === true) {
                 }
             break;
 
-            case 'lastFired':
+            case 'last_fired':
                 switch ($sort) {
                     case 'asc':
                         $selectLastFiredasc = $selected;

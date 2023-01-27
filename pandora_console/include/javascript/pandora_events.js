@@ -1030,8 +1030,10 @@ function openSoundEventModal(settings) {
 
 function test_sound_button(test_sound, urlSound) {
   if (test_sound === true) {
+    $("#button-melody_sound").addClass("blink-image");
     add_audio(urlSound);
   } else {
+    $("#button-melody_sound").removeClass("blink-image");
     remove_audio();
   }
 }

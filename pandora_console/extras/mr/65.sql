@@ -1,0 +1,10 @@
+START TRANSACTION;
+
+CREATE TABLE `tevent_sound` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `name` TEXT NULL,
+    `sound` TEXT NULL,
+    `active` TINYINT NOT NULL DEFAULT '1',
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+COMMIT;

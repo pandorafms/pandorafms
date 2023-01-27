@@ -477,6 +477,10 @@ if ($access_console_node === true) {
     }
     </script>
         <?php
+        $sub['godmode/events/configuration_sounds']['text'] = __('Configuration Sounds');
+        $sub['godmode/events/configuration_sounds']['id'] = 'Configuration Sounds';
+        $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
+
         $menu_operation['eventos']['sub'] = $sub;
     }
 }

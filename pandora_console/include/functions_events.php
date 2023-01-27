@@ -4736,7 +4736,7 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Owner');
-    if (empty($event['owner_user']) === true) {
+    if ($event['owner_user'] == -1) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $user_owner = db_get_value(

@@ -2129,7 +2129,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             break;
 
             case 'dynamic_interval':
-                if ($value !== -2) {
+                if ($value !== '-2') {
                     $values[$field] = $value;
                 }
             break;

@@ -225,66 +225,66 @@ if ($filemanager) {
         $directory = (string) get_parameter('directory');
         if (empty($directory) === true) {
             $directory = $fallback_directory;
-            $base_url = 'index.php?sec=gservers&sec2=godmode/servers/plugin';
-            $setup_url = $base_url.'&filemanager=1&tab=Attachments';
-            $tab = get_parameter('tab', null);
-            $tabs = [
-                'list'    => [
-                    'text'   => '<a href="'.$base_url.'">'.html_print_image(
-                        'images/eye_show.png',
-                        true,
-                        [
-                            'title' => __('Plugins'),
-                            'class' => 'invert_filter',
-                        ]
-                    ).'</a>',
-                    'active' => (bool) ($tab != 'Attachments'),
-                ],
-                'options' => [
-                    'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                        'images/collection.png',
-                        true,
-                        [
-                            'title' => __('Attachments'),
-                            'class' => 'invert_filter',
-                        ]
-                    ).'</a>',
-                    'active' => (bool) ($tab == 'Attachments'),
-                ],
-            ];
-
-            if ($tab === 'Attachments') {
-                $helpHeader  = '';
-                $titleHeader = __('Index of attachment/plugin');
-            } else {
-                $helpHeader  = 'servers_ha_clusters_tab';
-                $titleHeader = __('Plug-ins registered on %s', get_product_name());
-            }
-
-            // Header.
-            ui_print_standard_header(
-                $titleHeader,
-                'images/gm_servers.png',
-                false,
-                $helpHeader,
-                false,
-                $tabs,
-                [
-                    [
-                        'link'  => '',
-                        'label' => __('Servers'),
-                    ],
-                    [
-                        'link'  => '',
-                        'label' => __('Plugins'),
-                    ],
-                ]
-            );
         } else {
             $directory = str_replace('\\', '/', $directory);
             $directory = filemanager_safe_directory($directory, $fallback_directory);
-            echo '<h4>'.__('Index of %s', $directory).'</h4>';
         }
+
+        $base_url = 'index.php?sec=gservers&sec2=godmode/servers/plugin';
+        $setup_url = $base_url.'&filemanager=1&tab=Attachments';
+        $tab = get_parameter('tab', null);
+        $tabs = [
+            'list'    => [
+                'text'   => '<a href="'.$base_url.'">'.html_print_image(
+                    'images/eye_show.png',
+                    true,
+                    [
+                        'title' => __('Plugins'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab != 'Attachments'),
+            ],
+            'options' => [
+                'text'   => '<a href="'.$setup_url.'">'.html_print_image(
+                    'images/collection.png',
+                    true,
+                    [
+                        'title' => __('Attachments'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab == 'Attachments'),
+            ],
+        ];
+
+        if ($tab === 'Attachments') {
+            $helpHeader  = '';
+            $titleHeader = __('Index of attachment/plugin');
+        } else {
+            $helpHeader  = 'servers_ha_clusters_tab';
+            $titleHeader = __('Plug-ins registered on %s', get_product_name());
+        }
+
+        // Header.
+        ui_print_standard_header(
+            $titleHeader,
+            'images/gm_servers.png',
+            false,
+            $helpHeader,
+            false,
+            $tabs,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Plugins'),
+                ],
+            ]
+        );
 
         $real_directory = realpath($config['homedir'].'/'.$directory);
 
@@ -310,7 +310,7 @@ if ($filemanager) {
         filemanager_file_explorer(
             $real_directory,
             $directory,
-            'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$id_plugin,
+            'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$id_plugin.'&tab=Attachments',
             $fallback_directory,
             true,
             false,

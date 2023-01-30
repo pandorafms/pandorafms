@@ -1937,15 +1937,6 @@ $(document).ready (function () {
 
     $('.switch_radio_button label').on('click', function(){
         var thisLabel = $(this).attr('for');
-        /*
-        console.log(thisLabel);
-        console.log($('#'+thisLabel).attr('name'));
-        console.log($('#'+thisLabel).attr('value'));
-        console.log($('[name='+$('#'+thisLabel).attr('name')+']'));
-        */
-        //console.log($('#'+$('#'+thisLabel).attr('name')).val());
-        //$('[name='+$('#'+thisLabel).attr('name')+']').val($('#'+thisLabel).attr('value'));
-        //$('[name='+$('#'+thisLabel).attr('name')+']').prop('checked', true);
         $('#'+thisLabel).attr('checked', 'checked');
         $('#'+thisLabel).siblings().attr('checked', false);
         

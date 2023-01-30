@@ -500,7 +500,6 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['operation/reporting/graph_viewer']['text'] = __('Graph viewer');
 
     $menu_extra['reporting']['sub']['godmode/reporting/graph_builder']['text'] = __('Manage custom graphs');
-    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Manage custom reports');
     $menu_extra['reporting']['sub']['godmode/reporting/graph_container']['text'] = __('View graph containers');
     $menu_extra['reporting']['sub']['godmode/reporting/create_container']['text'] = __('Manage graph containers');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_list']['text'] = __('View graph templates');
@@ -509,6 +508,14 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Edit custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=list_items&action=edit']['text'] = __('List items');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=item_editor&action=new']['text'] = __('Edit item');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=edit']['text'] = __('Wizard');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard_sla&action=edit']['text'] = __('Wizard sla');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=global&action=edit']['text'] = __('Global custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=advanced&action=edit']['text'] = __('Avanced options');
+
     if ($config['activate_gis']) {
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
     }

@@ -139,8 +139,25 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
                 $nombre_archivo = sprintf('%s/%s', $real_directory, $filename);
                 try {
                     $mimeContentType = mime_content_type($_FILES['file']['tmp_name']);
+                    $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
-                    if (empty($filterFilesType) === true || in_array($mimeContentType, $filterFilesType) === true) {
+                    $validFileExtension = true;
+
+                    if (empty($fileExtension) === false) {
+                        $filtered_types = array_filter(
+                            $filterFilesType,
+                            function ($value) use ($fileExtension) {
+                                $mimeTypeExtensionName = explode('/', $value)[1];
+                                return $mimeTypeExtensionName === $fileExtension;
+                            }
+                        );
+
+                        if (empty($filtered_types) === true) {
+                            $validFileExtension = false;
+                        }
+                    }
+
+                    if ($validFileExtension === true && (empty($filterFilesType) === true || in_array($mimeContentType, $filterFilesType) === true)) {
                         $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
                     } else {
                         $error_message = 'The uploaded file is not allowed. Only gif, png or jpg files can be uploaded.';

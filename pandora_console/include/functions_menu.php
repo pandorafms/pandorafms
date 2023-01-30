@@ -500,6 +500,7 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['operation/reporting/graph_viewer']['text'] = __('Graph viewer');
 
     $menu_extra['reporting']['sub']['godmode/reporting/graph_builder']['text'] = __('Manage custom graphs');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Manage custom reports');
     $menu_extra['reporting']['sub']['godmode/reporting/graph_container']['text'] = __('View graph containers');
     $menu_extra['reporting']['sub']['godmode/reporting/create_container']['text'] = __('Manage graph containers');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_list']['text'] = __('View graph templates');

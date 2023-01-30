@@ -1,7 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import gspread
-import argparse
+import argparse,json,sys
 from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
+from os import remove
+
+import base64
 
 __author__ = "Alejandro Sánchez Carrion"
 __copyright__ = "Copyright 2022, PandoraFMS"
@@ -15,33 +21,63 @@ Version = {__version__}
 
 Manual execution
 
-python3 pandora_googlesheets.py --cred <file credentials> --row <number-row> --column <number-column>
+python3 pandora_googlesheets.py --creds_json/creds_base64 <file credentials> --row <number-row> --column <number-column>
 
 """
 
 parser = argparse.ArgumentParser(description= info, formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('--cred', help='')
-parser.add_argument('--name', help='')
-parser.add_argument('--row', help='',type=int)
-parser.add_argument('--column', help='',type=int)
+parser.add_argument('--creds_json', help='To authenticate with a json file.')
+parser.add_argument('--creds_base64', help='To authenticate with a file that includes the credentials for base64 authentication.')
+parser.add_argument('--name', help='Name of the google sheets document.')
+parser.add_argument('--cell', help='To collect the value of a cell.')
+parser.add_argument('--row', help='To collect the value of a row.',type=int)
+parser.add_argument('--column', help='To collect the value of a column.',type=int)
+parser.add_argument('--sheet', help='To indicate the name of the document sheet, put it in quotation marks and count spaces and capital letters.',type=str)
 
 args = parser.parse_args()
 
 scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(args.cred, scope)
+
+
+
+
+## authenticate with file json input
+if args.creds_json is not None and args.creds_base64 == None:
+    creds = ServiceAccountCredentials.from_json_keyfile_name(args.creds_json, scope)
+## authenticate with base64 input
+elif args.creds_base64 is not None and args.creds_json== None:
+    ## base64 to json
+    with open(args.creds_base64, 'r') as file:
+        data = file.read().replace('\n', '')
+    text=base64.b64decode(data).decode('utf-8')
+    with open("cred.json", "w") as outfile:
+        outfile.write(text)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("cred.json", scope)
+    remove("cred.json")
+else:
+    print("You need to use the --creds_json or creds_base 64 parameter to authenticate. You can only select one.")
+    sys.exit()
 
 client = gspread.authorize(creds)
 
-sheet = client.open(args.name).sheet1  # Open the spreadhseet
+sheet = client.open(args.name) # Open the spreadhseet
+worksheet = sheet.worksheet(args.sheet) # Open worksheet
 
-data = sheet.get_all_records()  # Get a list of all records
+if args.cell is not None and args.row==None and args.column==None :
 
-if args.row is not None and args.column==None:
-    row = sheet.row_values(args.row)  # Get a specific row
-    print(row)
-elif args.row ==None and args.column is not None:
-    col = sheet.col_values(args.column)  # Get a specific column
-    print(col)
-elif args.row is not None and args.column is not None:
-    cell = sheet.cell(args.row,args.column).value  # Get the value of a specific cell
-    print(cell)
+    val = worksheet.acell(args.cell).value
+    
+elif args.row is not None and args.column==None and args.cell == None:
+
+    val = worksheet.row_values(args.row)  # Get a specific row
+
+elif args.column is not None and args.row== None and args.cell == None:
+
+    val = worksheet.col_values(args.column)  # Get a specific column
+
+else:
+    print("To search for data in a cell use the --cell parameter, for data in a column --column and in a row --row, only one of these parameters can be used at a time.")
+    sys.exit()
+
+
+print(val)

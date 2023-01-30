@@ -80,13 +80,24 @@ if (is_metaconsole() === false) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(
-        __('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()),
+    // Header.
+    ui_print_standard_header(
+        __('User Profile management'),
         'images/gm_users.png',
         false,
         'profile_tab',
-        true,
-        $buttons
+        false,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage users'),
+            ],
+        ]
     );
     $sec = 'gusuarios';
 } else {

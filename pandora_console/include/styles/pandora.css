@@ -4302,8 +4302,8 @@ span.log_zone_line_error {
   width: 50%;
 }
 
-.rowPair:hover,
-.rowOdd:hover {
+tr.rowPair:hover,
+tr.rowOdd:hover {
   background-color: #eee;
 }
 
@@ -10769,6 +10769,7 @@ pre.external_tools_output {
 .fixed_filter_bar {
   position: sticky;
   top: 114px;
+  margin-bottom: 10px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
   z-index: 1;

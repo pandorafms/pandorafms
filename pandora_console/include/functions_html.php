@@ -3950,7 +3950,7 @@ function html_print_table(&$table, $return=false)
     }
 
     $output .= '</tbody></table>'."\n";
-
+    hd($output, true);
     if ($return) {
         return $output;
     }

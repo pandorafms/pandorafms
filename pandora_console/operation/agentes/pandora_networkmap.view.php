@@ -1265,16 +1265,20 @@ if (is_ajax() === true) {
                 $permission = check_acl($config['id_user'], $agent['id_grupo'], 'RR');
 
                 if ($permission) {
-                    $params = [
-                        'interface_name'     => $interface_name,
-                        'agent_id'           => $id_agent,
-                        'traffic_module_in'  => $interface['traffic']['in'],
-                        'traffic_module_out' => $interface['traffic']['out'],
-                    ];
-                    $params_json = json_encode($params);
-                    $params_encoded = base64_encode($params_json);
-                    $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-                    $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 800, 480)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                    if ($interface['traffic']['in'] > 0 && $interface['traffic']['out'] > 0) {
+                        $params = [
+                            'interface_name'     => $interface_name,
+                            'agent_id'           => $id_agent,
+                            'traffic_module_in'  => $interface['traffic']['in'],
+                            'traffic_module_out' => $interface['traffic']['out'],
+                        ];
+                        $params_json = json_encode($params);
+                        $params_encoded = base64_encode($params_json);
+                        $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+                        $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 800, 480)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                    } else {
+                        $graph_link = __('inOctets and outOctets must be enabled.');
+                    }
                 } else {
                     $graph_link = '';
                 }

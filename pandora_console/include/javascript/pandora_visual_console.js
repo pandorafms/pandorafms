@@ -117,10 +117,7 @@ function createVisualConsole(
                   visualConsole.updateElements(items);
                 }
 
-                if (
-                  visualConsole.props.maintenanceMode != null &&
-                  visualConsole.props.maintenanceMode.user !== id_user
-                ) {
+                if (visualConsole.props.maintenanceMode != null) {
                   visualConsole.enableMaintenanceMode();
                 } else {
                   visualConsole.disableMaintenanceMode();

@@ -623,7 +623,7 @@ sub get_agent_status ($$$) {
 					} 
 					elsif ($module_status != 3) {
 							if ($m_status == 0) {
-							$module_status = 0;
+								$module_status = 0;
 						} 
 					}
 				}

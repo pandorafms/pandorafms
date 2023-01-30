@@ -2917,6 +2917,7 @@ function get_shape_status_set($type)
         case STATUS_ALERT_NOT_FIRED_BALL:
         case STATUS_ALERT_DISABLED_BALL:
             $return = ['class' => 'status_small_balls'];
+            // $return = ['class' => 'status_balls'];
         break;
 
         default:

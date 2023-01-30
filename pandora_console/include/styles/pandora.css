@@ -10986,6 +10986,7 @@ pre.external_tools_output {
   padding-bottom: 17px;
 }
 
+.border-bottom-gray,
 .table-about .about-last-tr {
   border-bottom: 1px solid #eaeaea;
 }

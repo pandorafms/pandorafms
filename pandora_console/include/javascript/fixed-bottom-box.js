@@ -44,6 +44,7 @@
 
     self._width = params.width || 300;
     self._height = params.height || 400;
+    self._headTitle = params.headTitle || "";
 
     self.setWidth = function(width) {
       if (typeof width !== "number" || width <= 0)
@@ -103,6 +104,11 @@
 
       var headBody = $("<div></div>");
       headBody.addClass("fixed-bottom-box-head-body");
+      headBody.append(
+        $(
+          '<span id="fixed-bottom-box-head-title" class="subsection_header_title"></span>'
+        )
+      );
       var headClose = $("<span></span>");
       headClose.addClass("fixed-bottom-box-head-close").click(function(event) {
         self.close();

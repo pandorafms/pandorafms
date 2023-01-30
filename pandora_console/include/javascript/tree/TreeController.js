@@ -622,6 +622,10 @@ var TreeController = {
               data: postData,
               success: function(data, textStatus, xhr) {
                 callback(null, data);
+                console.log(data);
+                $("#fixed-bottom-box-head-title").html(
+                  $("#fixedBottomHeadTitle").html()
+                );
               },
               error: function(xhr, textStatus, errorThrown) {
                 callback(errorThrown);
@@ -730,11 +734,9 @@ var TreeController = {
                 typeof element.statusImageHTML != "undefined" &&
                 element.statusImageHTML.length > 0
               ) {
-                console.log("es aqui pollito agente");
                 var $statusImage = $(element.statusImageHTML);
                 $statusImage.addClass("node-icon");
                 $statusImage.addClass("node-status");
-                //$statusImage.addClass("agent-status");
 
                 $content.append($statusImage);
               }
@@ -906,7 +908,7 @@ var TreeController = {
                   element.elementDescription != ""
                 ) {
                   $content.append(
-                    '<span style="flex: 1 1 50%;">' +
+                    '<span class="node-service-name" style="">' +
                       element.elementDescription +
                       "</span>"
                   );
@@ -915,13 +917,15 @@ var TreeController = {
                   element.description != ""
                 ) {
                   $content.append(
-                    '<span style="flex: 1 1 50%;">' +
+                    '<span class="node-service-name" style="flex: 1 1 50%;">' +
                       element.description +
                       "</span>"
                   );
                 } else {
                   $content.append(
-                    '<span style="flex: 1 1 50%;">' + element.name + "</span>"
+                    '<span class="node-service-name" style="flex: 1 1 50%;">' +
+                      element.name +
+                      "</span>"
                   );
                 }
               } else {
@@ -977,14 +981,14 @@ var TreeController = {
               break;
             case "module":
               $content.addClass("module");
-
+              //console.log(element);                $statusImage.addClass("node-status");
               // Status image
               if (
                 typeof element.statusImageHTML != "undefined" &&
                 element.statusImageHTML.length > 0
               ) {
                 var $statusImage = $(element.statusImageHTML);
-                $statusImage.addClass("module-status");
+                $statusImage.addClass("node-icon").addClass("node-status");
 
                 $content.append($statusImage);
               } else {
@@ -1047,7 +1051,6 @@ var TreeController = {
                     });
 
                   actionButtons.append(graphImageHistogram);
-                  //$content.append(graphImageHistogram);
                 }
 
                 // Graph pop-up
@@ -1101,7 +1104,6 @@ var TreeController = {
                     });
 
                   actionButtons.append($graphImage);
-                  //$content.append($graphImage);
                 }
 
                 // Data pop-up
@@ -1140,7 +1142,6 @@ var TreeController = {
                       });
 
                     actionButtons.append($dataImage);
-                    //$content.append($dataImage);
                   }
                 }
               }
@@ -1176,7 +1177,6 @@ var TreeController = {
                   .css("cursor", "pointer");
 
                 actionButtons.append($alertsImage);
-                //$content.append($alertsImage);
               }
 
               $content.append(actionButtons);

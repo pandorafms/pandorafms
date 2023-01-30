@@ -8,9 +8,10 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  width: calc(100% - 25px);
-  border: 1px solid #aeaeae;
-  border-radius: 8px;
+  width: calc(100% - 24px);
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  background-color: #fff;
   margin-bottom: 8px;
 }
 
@@ -33,7 +34,7 @@
   width: 40px;
   display: inline-block;
   box-sizing: border-box;
-  border-right: 1px solid #aeaeae;
+  border-right: 1px solid #eaeaea;
 }
 
 .tree-node .node-icon .node-icon-container {
@@ -62,7 +63,7 @@
 
 .tree-group {
   margin-left: 24px;
-  padding-top: 1px;
+  /*padding-top: 1px;*/
 }
 
 .tree-node {
@@ -73,7 +74,7 @@
   background-repeat: repeat-y;
 */
   min-height: 26px;
-  margin-top: 8px;
+  margin-top: 1px;
 }
 
 div.tree-node {
@@ -88,8 +89,9 @@ div.tree-node span {
   background: 0 0;
 }
 .node-content {
-  border: 1px solid #aeaeae;
-  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  background-color: #fff;
+  border-radius: 4px;
   width: calc(100% - 50px);
   box-sizing: border-box;
   height: 40px;
@@ -190,19 +192,30 @@ div.tree-node span {
   flex: 1 1 80%;
   position: relative;
   font-weight: bold;
+  font-size: 11pt;
 }
 
 .tree-node > .node-content > .module-name-parent.module-only-caption {
   top: 9px;
 }
 
+.node-service > .node-service-name {
+  flex: 1 1 50%;
+  font-size: 11pt;
+  font-weight: bold;
+}
 .tree-node > .node-content.module-only-caption > .module-name {
   top: 7px;
 }
 
+.node-content.module:not(.module-only-caption) .module-name {
+  margin-left: 3.5em;
+  font-weight: normal;
+}
 /*.node-content.module.module-only-caption:not(:first-of-type) {
   margin-top: 8px;
 }*/
+
 .tree-node > .node-content > .module-name-alias {
   font-size: 12pt;
   font-weight: normal;
@@ -210,6 +223,9 @@ div.tree-node span {
   margin-left: 3.3em;
 }
 
+.tree-node > .node-content.module-only-caption > .module-name-alias {
+  margin-left: 1em;
+}
 .tree-node > .node-content > .module-name-parent {
   font-size: 12pt;
   margin-left: 0.5em;
@@ -269,10 +285,9 @@ div.tree-node span {
 
 div#tree-controller-recipient {
   text-align: left;
-  width: 65%;
-  /* width: 98%; */
+  width: calc((100% - 34%) - 20px);
   margin-top: 10px;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 
 .tree-controller-recipient {
@@ -307,7 +322,7 @@ div#tree-controller-recipient {
   flex-direction: row;
   align-items: center;
   width: calc(100% - 50px);
-  margin: 8px 0 0 8px;
+  margin: 1px 0 0 8px;
 }
 
 .node-content .module-button {
@@ -331,5 +346,5 @@ div#tree-controller-recipient {
 
 .tree-root > .tree-node {
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
 }

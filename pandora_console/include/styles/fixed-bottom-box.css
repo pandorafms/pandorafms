@@ -2,12 +2,7 @@ div.fixed-bottom-box {
   background: #fff;
   height: -webkit-fill-available;
   height: -moz-fill-available;
-  border-radius: 10px 10px 0 0;
-  -moz-border-radius: 10px 10px 0 0;
-  -webkit-border-radius: 10px 10px 0 0;
-  -o-border-radius: 10px 10px 0 0;
-  -ms-border-radius: 10px 10px 0 0;
-  -khtml-border-radius: 10px 10px 0 0;
+  border-left: 1px solid #aeaeae;
 }
 
 /* Overrides */
@@ -29,8 +24,8 @@ div.fixed-bottom-box > div.fixed-bottom-box-head {
   height: 40px;
   line-height: 30px;
   vertical-align: middle;
-  position: absolute;
-  border-bottom: 1px solid #aeaeae;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eaeaea;
 }
 
 div.fixed-bottom-box
@@ -38,10 +33,10 @@ div.fixed-bottom-box
   > div.fixed-bottom-box-head-body {
   height: inherit;
   line-height: inherit;
-  color: #ffffff;
+  background-color: #fff;
   font-weight: bold;
   vertical-align: middle;
-  text-align: center;
+  border-bottom: 1px solid #eaeaea;
 }
 
 div.fixed-bottom-box
@@ -54,7 +49,7 @@ div.fixed-bottom-box
   background-position: center;
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 10px;
 }
 
 div.fixed-bottom-box
@@ -94,5 +89,10 @@ div.fixed-bottom-box > div.fixed-bottom-box-content {
   width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;
-  border-left: 1px solid #aeaeae;
+}
+
+#fixed-bottom-box-head-title {
+  position: absolute;
+  top: 10px;
+  left: 20px;
 }

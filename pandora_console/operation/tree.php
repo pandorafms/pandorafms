@@ -333,7 +333,7 @@ if (is_metaconsole() === true) {
 }
 
 enterprise_hook('close_meta_frame');
-
+$infoHeadTitle = 'Sombra oscura';
 ?>
 
 <?php if (is_metaconsole() === false) { ?>
@@ -438,11 +438,10 @@ enterprise_hook('close_meta_frame');
                                 break;
                         }
                     }
-                    
 
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),
-                        detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
+                        detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9, headTitle: "<?php echo $infoHeadTitle; ?>" }),
                         page: parameters['page'],
                         emptyMessage: "<?php echo __('No data found'); ?>",
                         foundMessage: foundMessage,

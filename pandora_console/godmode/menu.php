@@ -435,6 +435,10 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
         }
     }
 
+    $sub['godmode/events/configuration_sounds']['text'] = __('Configuration Sounds');
+    $sub['godmode/events/configuration_sounds']['id'] = 'Configuration Sounds';
+    $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
+
     $menu_godmode['gextensions']['sub'] = $sub;
 }
 

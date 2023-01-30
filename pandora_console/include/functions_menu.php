@@ -811,6 +811,27 @@ if (is_ajax()) {
             );
         }
 
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
+        if (enterprise_installed() === false) {
+            if ($config['style'] === 'pandora_black') {
+                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
+            } else if ($config['style'] === 'pandora') {
+                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
+            }
+        } else {
+            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
+                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
+            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
+                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
+            }
+
+            $image_about = 'images/custom_logo/'.$config['custom_logo'];
+
+            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
+                $image_about = ENTERPRISE_DIR.'/'.$image_about;
+            }
+        }
+
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
                 <ul>
@@ -827,7 +848,7 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%;">
-                                    <img src="'.ui_get_full_url('/images/custom_logo/'.$config['custom_logo'], false, false, false).'" alt="logo" width="70%">
+                                    <img src="'.$image_about.'" alt="logo" width="70%">
                                 </th>
                                 <th style="width: 60%; text-align: left;">
                                     <h1>'.$product_name.'</h1>

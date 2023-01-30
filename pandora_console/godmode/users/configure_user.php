@@ -1353,11 +1353,8 @@ $values = [
     'Alert detail'   => __('Alert detail'),
     'External link'  => __('External link'),
     'Other'          => __('Other'),
+    'Dashboard'      => __('Dashboard'),
 ];
-if (!is_metaconsole()) {
-    $values['Dashboard'] = __('Dashboard');
-}
-
 
 $home_screen .= html_print_select(
     $values,

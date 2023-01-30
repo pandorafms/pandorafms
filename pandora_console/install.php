@@ -41,6 +41,9 @@
         <meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
         <meta name="robots" content="index, follow">
         <link rel="icon" href="images/pandora.ico" type="image/ico">
+        <script type="text/javascript" src="include/javascript/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="include/javascript/select2.min.js"></script>
+        <link rel="stylesheet" href="include/styles/select2.min.css" type="text/css">
         <link rel="stylesheet" href="include/styles/install.css" type="text/css">
     </head>
     <script type="text/javascript">
@@ -76,7 +79,7 @@
         }
         function CheckDBhost(value){
             if (( value != "localhost") && ( value != "127.0.0.1")) {
-                document.getElementById('tr_dbgrant').style["display"] = "block";
+                document.getElementById('tr_dbgrant').style["display"] = "table-row";
             }
             else {
                 document.getElementById('tr_dbgrant').style["display"] = "none";
@@ -84,8 +87,6 @@
         }
         function popupShow(){
             document.getElementsByTagName('body')[0].style["margin"] = "0";
-            document.getElementById('install_container').style["padding-top"] = "45px";
-            document.getElementById('install_container').style["margin-top"] = "0";
             document.getElementById('add-lightbox').style["visibility"] = "visible";
             document.getElementById('open_popup').style["display"] = "block";
             document.getElementById('open_popup').style["visibility"] = "visible";
@@ -118,20 +119,20 @@
             </div>
             <div class='popup-inner' style='padding: 20px 40px;'>
             <?php
-            echo '<p><strong>Attention</strong>, you are going to <strong>overwrite the data</strong> of your current installation.</p><p>This means that if you do not have a backup <strong>you will irremissibly LOSE ALL THE STORED DATA</strong>, the configuration and everything relevant to your installation.</p><p><strong>Are you sure of what you are going to do?</strong></p>';
+            echo '<p><strong>Attention</strong>, you are going to <strong>overwrite the data</strong> of your current installation.</p>
+                  <p>This means that if you do not have a backup <strong>you will irremissibly LOSE ALL THE STORED DATA</strong>, the configuration and everything relevant to your installation.</p><p><strong>Are you sure of what you are going to do?</strong></p>';
                 echo "<div style='text-align:right;';>";
-                echo "<button type='button' class='btn_install_next' onclick='javascript:handleConfirmClick();'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button>";
-                echo "<button type='button' class='btn_install_next popup-button-green' onclick='javascript:popupClose();'><span class='btn_install_next_text'>Cancel</span></button>";
+                echo "<button type='button' class='btn_primary outline' onclick='javascript:handleConfirmClick();'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button>";
+                echo "<button type='button' class='btn_primary' onclick='javascript:popupClose();'><span class='btn_install_next_text'>Cancel</span></button>";
                 echo '</div>';
             ?>
             </div>
         </div>
-        <div style='height: 10px'>
+        <div style='padding-bottom: 50px'>
             <?php
             $version = '7.0NG.768';
-            $build = '230124';
+            $build = '230130';
             $banner = "v$version Build $build";
-
             error_reporting(0);
 
             // ---------------
@@ -164,49 +165,50 @@
 </html>
 
 <?php
+/**
+ * Check the php extension and print a
+ * new row in the table with the result
+ *
+ * @param string $ext   Extension.
+ * @param string $label Label extension.
+ *
+ * @return integer status
+ */
 function check_extension($ext, $label)
 {
     echo '<tr><td>';
     echo "<span class='arr'> $label </span>";
     echo '</td><td>';
     if (!extension_loaded($ext)) {
-        echo "<img src='images/dot_red.png'>";
+        echo "<span class='incomplete'>incomplete</span>";
         return 1;
     } else {
-        echo "<img src='images/dot_green.png'>";
+        echo "<span class='checked'>checked</span>";
         return 0;
     }
 
     echo '</td></tr>';
 }
 
-function check_include($ext, $label)
-{
-    echo '<tr><td>';
-    echo "<span class='arr'> $label </span>";
-    echo '</td><td>';
-    if (!include $ext) {
-        echo "<img src='images/dot_red.png'>";
-        return 1;
-    } else {
-        echo "<img src='images/dot_green.png'>";
-        return 0;
-    }
-
-    echo '</td></tr>';
-}
-
-
+/**
+ * Check if file exist and print a
+ * new row in the table with the result
+ *
+ * @param string $file  File.
+ * @param string $label Label file.
+ *
+ * @return integer status
+ */
 function check_exists($file, $label)
 {
     echo '<tr><td>';
     echo "<span class='arr'> $label </span>";
     echo '</td><td>';
     if (!file_exists($file)) {
-        echo " <img src='images/dot_red.png'>";
+        echo " <span class='incomplete'>incomplete</span>";
         return 1;
     } else {
-        echo " <img src='images/dot_green.png'>";
+        echo " <span class='checked'>checked</span>";
         return 0;
     }
 
@@ -214,20 +216,29 @@ function check_exists($file, $label)
 }
 
 
+/**
+ * Check variable ok and return row
+ * with 'checked' if is 1 or 'incomplete' if is 0
+ *
+ * @param integer $ok    Status.
+ * @param string  $label Label to show.
+ *
+ * @return integer status
+ */
 function check_generic($ok, $label)
 {
-    echo "<tr><td style='width:10%'>";
+    echo '<tr><td>';
     if ($ok == 0) {
-        echo " <img src='images/dot_red.png'>";
-        echo '<td>';
         echo "<span class='arr'> $label </span>";
+        echo '<td>';
+        echo " <span class='incomplete'>incomplete</span>";
         echo '</td>';
         echo '</td></tr>';
         return 1;
     } else {
-        echo " <img src='images/dot_green.png'>";
-        echo '<td>';
         echo "<span class='arr'> $label </span>";
+        echo '<td>';
+        echo " <span class='checked'>checked</span>";
         echo '</td>';
         echo '</td></tr>';
         return 0;
@@ -235,29 +246,40 @@ function check_generic($ok, $label)
 }
 
 
+/**
+ * Check if path is writable and print a
+ * new row in the table with the result.
+ *
+ * @param string $fullpath Path folder or file.
+ * @param string $label    Label to show.
+ *
+ * @return integer status
+ */
 function check_writable($fullpath, $label)
 {
-    echo "<tr><td style='width:10%;'>";
+    echo '<tr><td>';
     if (file_exists($fullpath)) {
         if (is_writable($fullpath)) {
-            echo " <img style='margin-left:50px;' src='images/dot_green.png'>";
-            echo '<td>';
             echo "<span class='arr'> $label </span>";
             echo '</td>';
-            echo '</td></tr>';
+            echo '<td>';
+            echo "<span class='checked'>checked</span>";
+            echo '</td>';
+            echo '</tr>';
             return 0;
         } else {
-            echo " <img style='margin-left:50px;' src='images/dot_red.png'>";
-            echo '<td>';
             echo "<span class='arr'> $label </span>";
             echo '</td>';
-            echo '</td></tr>';
+            echo '<td>';
+            echo "<span class='incomplete'>incomplete</span>";
+            echo '</td>';
+            echo '</tr>';
             return 1;
         }
     } else {
-        echo " <img style='margin-left:50px;' src='images/dot_red.png'>";
-        echo '<td>';
         echo "<span class='arr'> $label </span>";
+        echo '<td>';
+        echo "<span class='incomplete'>incomplete</span>";
         echo '</td>';
         echo '</td></tr>';
         return 1;
@@ -265,6 +287,17 @@ function check_writable($fullpath, $label)
 }
 
 
+/**
+ * Check if $var is equal to $value and
+ * print result in a row.
+ *
+ * @param string  $var   Variable.
+ * @param string  $value Value to check.
+ * @param string  $label Label to show.
+ * @param integer $mode  Mode.
+ *
+ * @return integer status
+ */
 function check_variable($var, $value, $label, $mode)
 {
     echo '<tr><td>';
@@ -272,17 +305,17 @@ function check_variable($var, $value, $label, $mode)
     echo '</td><td>';
     if ($mode == 1) {
         if ($var >= $value) {
-            echo " <img src='images/dot_green.png'>";
+            echo "<span class='checked'>checked</span>";
             return 0;
         } else {
-            echo " <img src='images/dot_red.png'>";
+            echo "<span class='incomplete'>incomplete</span>";
             return 1;
         }
     } else if ($var == $value) {
-        echo " <img src='images/dot_green.png'>";
+        echo "<span class='checked'>checked</span>";
         return 0;
     } else {
-        echo " <img src='images/dot_red.png'>";
+        echo "<span class='incomplete'>incomplete</span>";
         return 1;
     }
 
@@ -318,6 +351,15 @@ function parse_mysql_dump($url)
 }
 
 
+/**
+ * Parse sql to script dump, execute it
+ * and return if exist error.
+ *
+ * @param object $connection Connection sql.
+ * @param string $url        Path file sql script.
+ *
+ * @return integer status
+ */
 function parse_mysqli_dump($connection, $url)
 {
     if (file_exists($url)) {
@@ -328,9 +370,10 @@ function parse_mysqli_dump($connection, $url)
                 $query .= $sql_line;
                 if (preg_match("/;[\040]*\$/", $sql_line)) {
                     if (!$result = mysqli_query($connection, $query)) {
-                        echo mysqli_error($connection);
-                        // Uncomment for debug
-                        echo "<i><br>$query<br></i>";
+                        if (mysqli_error($connection)) {
+                            return mysqli_error($connection).'<i><br>'.$query.'<br></i>';
+                        }
+
                         return 0;
                     }
 
@@ -385,33 +428,54 @@ function random_name(int $size)
 }
 
 
-function print_logo_status($step, $step_total)
+/**
+ * Print the header installation
+ *
+ * @param integer $step Number of step.
+ *
+ * @return string Html output.
+ */
+function print_logo_status($step)
 {
     global $banner;
 
-    $header = "
-		<div id='logo_img' style='width: 100%;'>
-			<div style='width:100%; background-color:#333333;'>
-				<img src='images/logo_opensource.png' border='0'><br>
-				<span style='font-size: 9px;'>$banner</span>
-			</div>
-		</div>";
-    $header .= "
-		<div class='installation_step'>
-			<b>Install step $step of $step_total</b>
-		</div>";
+    $header = '
+        <div class="header">
+            <h3 class="title-pandora">Pandora FMS OpenSource Installer 
+                <span class="build-banner">'.$banner.'</span>
+            </h3>
+            <div class="steps">
+                <span class="step '.(($step === 11 || $step === 1) ? 'active' : '').'">1</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 2) ? 'active' : '').'">2</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 3) ? 'active' : '').'">3</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 4) ? 'active' : '').'">4</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 5) ? 'active' : '').'">5</span>
+                <hr class="step-separator"/>
+                <span class="step '.(($step === 6) ? 'active' : '').'">6</span>
+
+            </div>
+        </div>
+    ';
 
     return $header;
 }
 
 
-//
-// This function adjusts path settings in pandora db for FreeBSD.
-//
-// All packages and configuration files except operating system's base files
-// are installed under /usr/local in FreeBSD. So, path settings in pandora db
-// for some programs should be changed from the Linux default.
-//
+/**
+ * This function adjusts path settings in pandora db for FreeBSD.
+ * All packages and configuration files except operating system's base files
+ * are installed under /usr/local in FreeBSD. So, path settings in pandora db
+ * for some programs should be changed from the Linux default.
+ *
+ * @param string $engine     Type of engine.
+ * @param object $connection Connection database.
+ *
+ * @return integer Status.
+ */
 function adjust_paths_for_freebsd($engine, $connection=false)
 {
     $adjust_sql = [
@@ -456,67 +520,81 @@ function adjust_paths_for_freebsd($engine, $connection=false)
 }
 
 
+/**
+ * Print all step 1
+ *
+ * @return void
+ */
 function install_step1()
 {
-    global $banner;
-
     echo "
 	<div id='install_container'>
 	<div id='wizard'>
-	".print_logo_status(1, 6)."
+    ".print_logo_status(1, 6)."
+        <div class='row'>
+        <div class='col-md-6'>
 		<div id='install_box'>
-			<h2>Welcome to Pandora FMS installation Wizard</h2>
-			<p>This wizard helps you to quick install Pandora FMS console and main database in your system.</p>
-			<p>In four steps, this installer will check all dependencies and will create your configuration, ready to use.</p>
-			<p>For more information, please refer to documentation.<br>
-			<i>Pandora FMS Development Team</i></p>
+			<h2 class='title'>Welcome to Pandora FMS installation Wizard</h2>
+			<p class='text'>This wizard helps you to quick install Pandora FMS console and main database in your system.
+			In four steps, this installer will check all dependencies and will create your configuration, ready to use.</p>
+			<p class='text'>For more information, please refer to <a class='link' href='https://pandorafms.com/en/documentation/' target='_blank'>documentation →</a></p>
 		";
     if (file_exists('include/config.php')) {
-        echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
+        echo "<div class='warn'> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
     }
 
         echo '<br>';
-        echo '<table width=100%>';
-        $writable = check_writable('include', 'Checking if ./include is writable');
+        echo '<table class="check-table">';
+        $writable = check_writable('include', './include is writable');
     if (file_exists('include/config.php')) {
-        $writable += check_writable('include/config.php', 'Checking if include/config.php is writable');
+        $writable += check_writable('include/config.php', 'include/config.php is writable');
     }
 
         echo '</table>';
 
-        echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> 
+        echo "<div class='warn'>This installer will <b>overwrite and destroy</b> 
 		your existing Pandora FMS configuration and <b>Database</b>. Before continue, 
 		please <b>be sure that you have no valuable Pandora FMS data in your Database</b>.<br>
 		</div>";
 
-        echo "<div class='info'><b>Upgrade</b>: 
-		If you want to upgrade from Pandora FMS 4.x to 5.0 version, please use the migration tool inside /extras directory in this setup.
-		</div>";
-
-        echo '<br>';
-
-    if ($writable == 0) {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_install_next'><span class='btn_install_next_text'>Next</span></button></a>";
-        echo '</div>';
-    } else {
-        echo "<div class='err'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
+    if ($writable !== 0) {
+        echo "<div class='err'>You need to setup permissions to be able to write in ./include directory</div>";
     }
 
         echo '</div>';
 
         echo "<div style='clear:both;'></div>";
         echo "
-	</div>
-	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-	</div>";
+        </div>
+        <div class='col-md-6 hide-phone'>
+        <div class='content-animation'>
+        <div class='popuphero'>
+            <div class='popupgear1'><img src='images/Pandora-FMS-installer-gear.png'></div>
+            <div class='popupgear2'><img src='images/Pandora-FMS-installer-gear.png'></div>
+            <div class='popuplaptop'><img src='images/Pandora-FMS-installer.png'></div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div id='foot_install'>
+            <div class='content-footer'>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
+            </span>";
+    if ($writable === 0) {
+        echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_primary'>Start installation</button></a>";
+    }
+
+        echo '</div></div></div>';
 }
 
 
+/**
+ * Print license content
+ *
+ * @return void
+ */
 function install_step1_licence()
 {
     echo "
@@ -524,36 +602,43 @@ function install_step1_licence()
 	<div id='wizard'>
 	".print_logo_status(2, 6)."
 		<div id='install_box'>
-			<h2>GPL2 Licence terms agreement</h2>
-			<p>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
-			<p>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
-<p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
+			<h2 class='subtitle'>GPL2 Licence terms agreement</h2>
+			<p class='text'>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
+			<p class='text'>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
+            <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
 
     if (!file_exists('COPYING')) {
         echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
         echo '</div>';
     } else {
-        echo "<form method=post action='install.php?step=2'>";
         echo "<textarea name='gpl2' cols=52 rows=15 style='width: 100%;'>";
         echo file_get_contents('COPYING');
         echo '</textarea>';
         echo '<p>';
-        echo "<div style='text-align: right;'><button id='btn_accept' class='btn_install_next' type='submit'><span class='btn_install_next_text'>Yes, I accept licence terms</span></button></div>";
     }
 
     echo '</div>';
 
     echo "</div>
-	<div style='clear: both;height: 1px;'><!-- --></div>
-	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-	</div>";
+	    <div id='foot_install'>
+            <div class='content-footer'>
+            <a href='install.php'><button class='btn_primary outline'>Previous step</button></a>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
+            </span>";
+    if (file_exists('COPYING')) {
+        echo "<a href='install.php?step=2'><button id='btn_accept' class='btn_primary'>Yes, I accept licence terms</button></a>";
+    }
+
+    echo '</div></div></div>';
 }
 
 
+/**
+ * Print all step 2
+ *
+ * @return void
+ */
 function install_step2()
 {
     echo "
@@ -561,8 +646,11 @@ function install_step2()
 	<div id='wizard'>
 	".print_logo_status(3, 6)."
 		<div id='install_box'>";
-        echo '<h2>Checking software dependencies</h2>';
-            echo '<table border=0 width=230>';
+        echo '<h2 class="subtitle">Checking software dependencies</h2>';
+            echo '
+            <div class="row reverse">
+            <div class="col-md-6">
+            <table class="check-table">';
             $res = 0;
             $res += check_variable(phpversion(), '7.0', 'PHP version >= 7.0', 1);
             $res += check_extension('gd', 'PHP GD extension');
@@ -588,58 +676,57 @@ function install_step2()
     }
 
             echo '<tr><td>';
-            echo "<span style='display: block; font-family: verdana,arial,sans;
-				font-size: 8.5pt;margin-top: 2px; font-weight: bolder;'>DB Engines</span>";
+            echo "<span style='display: block; margin-top: 2px; font-weight: bolder; color: white; font-size: 22px;'>DB Engines</span>";
             echo '</td><td>';
             echo '</td></tr>';
             check_extension('mysqli', 'PHP MySQL(mysqli) extension');
-            echo '</table>';
-
+            echo '</table></div>';
     if ($res > 0) {
-        echo "
-				<div class='err'>You have some incomplete 
-				dependencies. Please correct them or this installer 
-				will not be able to finish your installation.
-				</div>
-				<div class='err'>
-					Remember, if you install any PHP module to comply
-					with these dependences, you <b>need to restart</b>
-					your HTTP/Apache server after it to use the new
-					modules.
-				</div>
-				<div style='text-align:right; width:100%;'>
-				Ignore it. <a id='step3' href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Force install Step #3</span></button></a>
-				</div>";
-    } else {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step3' href='install.php?step=3'>
-				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
-        echo '</div>';
+        echo "<div class='col-md-6'>
+			  <div class='err'>You have some incomplete
+                    dependencies. Please correct them or this installer
+                    will not be able to finish your installation.
+			   </div>
+			   <div class='err'>
+                    Remember, if you install any PHP module to comply
+                    with these dependences, you <b>need to restart</b>
+                    your HTTP/Apache server after it to use the new
+                    modules.
+			    </div>
+                </div>";
     }
 
-            echo '</div>';
-            echo "<div style='clear: both;'><!-- --></div>";
-            echo "
-		</div>
-		<div style='clear: both;'><!-- --></div>
-	</div>
-	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-	</div>";
+        echo '</div>';
+        echo "</div></div>
+            <div id='foot_install'>
+                <div class='content-footer'>
+                <a href='install.php?step=11'><button class='btn_primary outline'>Previous step</button></a>
+                <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
+                </span>";
+    if ($res > 0) {
+        echo "<span class='text' style='margin-right: 10px'>Ignore it.</span><a id='step3' href='install.php?step=3'><button class='btn_primary'>Force install</button></a>";
+    } else {
+        echo "<a id='step3' href='install.php?step=3'><button class='btn_primary'>Next Step</button></a>";
+    }
+
+        echo '</div></div>';
 }
 
 
+/**
+ * Print all step 3
+ *
+ * @return void
+ */
 function install_step3()
 {
-    $options = '';
+    $options = [];
     if (extension_loaded('mysql')) {
-        $options .= "<option value='mysql'>MySQL</option>";
+        $options['mysql'] = 'MySQL';
     }
 
     if (extension_loaded('mysqli')) {
-        $options .= "<option value='mysqli'>MySQL(mysqli)</option>";
+        $options['mysqli'] = 'MySQL(mysqli)';
     }
 
     $error = false;
@@ -652,105 +739,155 @@ function install_step3()
 	<div id='wizard'>
 	".print_logo_status(4, 6)."
 		<div id='install_box'>
-			<h2>Environment and database setup</h2>
-			<p>
-			This wizard will create your Pandora FMS database, 
-			and populate it with all the data needed to run for the first time.
+        <div class='row'>
+        <div class='col-md-6'>
+			<h2 class='subtitle'>Environment and database setup</h2>
+			<p class='text'>
+                This wizard will create your Pandora FMS database, 
+                and populate it with all the data needed to run for the first time.
 			</p>
-			<p>
-			You need a privileged user to create database schema, this is usually <b>root</b> user.
-			Information about <b>root</b> user will not be used or stored anymore.	
+			<p class='text'>
+			    You need a privileged user to create database schema, this is usually <b>root</b> user.
+			    Information about <b>root</b> user will not be used or stored anymore.	
 			</p>
-			<p>
-			You can also deploy the scheme into an existing Database. 
-			In this case you need a privileged Database user and password of that instance. 
+			<p class='text'>
+			    You can also deploy the scheme into an existing Database. 
+			    In this case you need a privileged Database user and password of that instance. 
 			</p>
-			<p>
-			Now, please, complete all details to configure your database and environment setup.
+			<p class='text'>
+			    Now, please, complete all details to configure your database and environment setup.
 			</p>
 			<div class='warn'>
-			<b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing 
-			Pandora FMS configuration and <b>Database</b>. Before continue, 
-			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
+			    This installer will <b>overwrite and destroy</b> your existing 
+			    Pandora FMS configuration and <b>Database</b>. Before continue, 
+			    please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
 			</div>";
-
-    if (extension_loaded('oci8')) {
-        echo " <div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
+    if ($error) {
+        echo "<div class='warn'>
+			    You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
+			</div>";
     }
 
+    if (extension_loaded('oci8')) {
+        echo "<div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
+    }
+
+    echo '</div>';
+    echo '<div class="col-md-6">';
     if (!$error) {
         echo "<form method='post' name='step2_form' action='install.php?step=4'>";
     }
 
-    echo "<table cellpadding=6 width=100% border=0 style='text-align: left;'>";
-    echo '<tr><td>';
-    echo 'DB Engine<br>';
-
-    if ($error) {
-        echo "
-			<div class='warn'>
-			<b>Warning:</b> You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
-			</div>";
-    } else {
-        echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
-        echo $options;
-        echo '</select>';
-
-        echo '<td>';
-        echo ' Installation in <br>';
-        echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
-        echo "<option value='db_new'>A new Database</option>";
-        echo "<option value='db_exist'>An existing Database</option>";
-        echo '</select>';
-    }
-
-    echo "		<tr><td>DB User with privileges<br>
-				<input class='login' type='text' name='user' value='root' size=20>
-				
-				<td>DB Password for this user<br>
-				<input class='login' type='password' name='pass' value='' size=20>
-				
-				<tr><td>DB Hostname<br>
-				<input class='login' type='text' name='host' value='localhost' onkeyup='CheckDBhost(this.value);'size=20>
-				
-				<td>DB Name (pandora by default)<br>
-				<input class='login' type='text' name='dbname' value='pandora' size=20>
-				
-				<tr>";
-
-    // the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
-    echo "<tr id='tr_dbgrant' style='display:none;'>
-                            <td colspan=\"2\">DB Host Access <img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/><br>
-                            <input class='login' type='text' name='dbgrant' value='".$_SERVER['SERVER_ADDR']."' size=20>
-                        </td>
-                    </tr>";
-
-    echo "   <td valign=top>Drop Database if exists<br>
-			        <input class='login' type='checkbox' name='drop' id='drop' value=1>
-			    </td>";
-
-    echo "<td>Full path to HTTP publication directory<br>
-					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
-				<br>
-				<input class='login' type='text' name='path' style='width: 240px;' 
-				value='".dirname(__FILE__)."'>
-				
-				<tr>";
-    echo '<td>';
-    echo "<td>URL path to Pandora FMS Console<br>
-				<span style='font-size: 9px'>For example '/pandora_console'</span>
-				</br>
-				<input class='login' type='text' name='url' style='width: 250px;' 
-				value='".dirname($_SERVER['SCRIPT_NAME'])."'>
-			</table>
-			";
+    echo "<table class='table-config-database' cellpadding=6 width=100% border=0 style='text-align: left;'>";
 
     if (!$error) {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step4' href='install.php?step=4'>
-					<button class='btn_install_next' type='submit' id='step4button'><span class='btn_install_next_text'>Next</span></button></a>";
-        echo '</div>';
+        echo '<tr><td>';
+        echo '<p class="input-label">DB Engine</p>';
+
+        echo '<select id="engine" name="engine"
+                style="width:
+                100%"
+                data-select2-id="engine"
+                tabindex="-1"
+                class="select2-hidden-accessible"
+                aria-hidden="true">';
+
+        foreach ($options as $key => $value) {
+            echo '<option value="'.$key.'">'.$value.'</option>';
+        }
+
+        echo '</select>';
+
+        echo '<script type="text/javascript">$("#engine").select2({closeOnSelect: true});</script>';
+
+        echo '<td>';
+        echo '<p class="input-label">Installation in </p>';
+
+        echo '<select id="db_action"
+                      name="db_action"
+                      style="width:
+                      100%"
+                      data-select2-id="db_action"
+                      tabindex="-1"
+                      class="select2-hidden-accessible"
+                      aria-hidden="true">
+            <option value="db_new">A new Database</option>
+            <option value="db_exist">An existing Database</option>
+            </select>';
+
+        echo '<script type="text/javascript">$("#db_action").select2({closeOnSelect: true});</script>';
+    }
+
+    echo "<tr>
+            <td>
+                <p class='input-label'>DB User with privileges</p>
+                <input class='login' type='text' name='user' value='root' size=20>
+            </td>
+			<td>
+                <p class='input-label'>DB Password for this user</p>
+				<input class='login' type='password' name='pass' value='' size=20>
+			</td>
+         </tr>
+	     <tr>
+            <td>
+                <p class='input-label'>DB Hostname</p>
+				<input class='login' type='text' name='host' value='localhost' onkeyup='CheckDBhost(this.value);'size=20>
+			</td>
+            <td>
+                <p class='input-label'>DB Name (pandora by default)</p>
+				<input class='login' type='text' name='dbname' value='pandora' size=20>
+			</td>
+         </tr>";
+
+    // the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
+    echo "<tr id='tr_dbgrant' style='display: none;'>
+            <td colspan=\"2\">
+                <p class='input-label'>DB Host Access<img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/></p>
+                <input class='login' type='text' name='dbgrant' value='".$_SERVER['SERVER_ADDR']."'>
+            </td>
+           </tr>";
+
+    echo "<tr>
+            <td colspan='2'>
+                <p class='input-label'>Full path to HTTP publication directory</p>
+                <p class='example-message'>For example /var/www/pandora_console/</p>
+                <input class='login' type='text' name='path'  value='".dirname(__FILE__)."'>
+            </td>
+          </tr>";
+    echo "
+        <tr>
+            <td colspan='2'>
+                <p class='input-label'>URL path to Pandora FMS Console</p>
+                <p class='example-message'>For example '/pandora_console'</p>
+				<input class='login' type='text' name='url' value='".dirname($_SERVER['SCRIPT_NAME'])."'>
+            </td>
+        </tr>";
+
+    echo "<tr>
+            <td colspan='2' class='inline'>
+                <label class='switch'>
+                    <input type='checkbox' name='drop' id='drop' value=1>
+                    <span class='slider round'></span>
+                </label>
+                <p class='input-label'>Drop Database if exists</p>
+            </td>
+         </tr>";
+
+    echo '</table>';
+
+    echo '</div>';
+
+    echo '</div></div>';
+    echo '</div>';
+    echo "<div id='foot_install'>
+            <div class='content-footer'>
+            <a href='install.php?step=2' class='btn_primary outline'>Previous step</a>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
+            </span>";
+    if (!$error) {
+        echo "<button class='btn_primary' type='submit' id='step4'>Next Step</button>";
+        echo '</form>';
         ?>
         <script type="text/javascript">
             var step3_form = document.getElementsByName('step2_form')[0];
@@ -759,20 +896,15 @@ function install_step3()
         <?php
     }
 
-    echo '</div>';
-
-    echo '</form>';
-
-    echo "<div style='clear:both;'></div>";
-    echo "</div>
-		<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
-			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-		</div>
-	</div>";
+    echo '</div></div>';
 }
 
 
+/**
+ * Print all step 4
+ *
+ * @return void
+ */
 function install_step4()
 {
     $pandora_config = 'include/config.php';
@@ -829,14 +961,15 @@ function install_step4()
     $step5 = 0;
     $step6 = 0;
     $step7 = 0;
-
+    $errors = [];
     echo "
 	<div id='install_container'>
 	<div id='wizard'>
 	".print_logo_status(5, 6)."
 		<div id='install_box'>
-			<h2>Creating database and default configuration file</h2>
-			<table width='100%'>";
+            <div class='row reverse'>
+            <div class='col-md-6'>
+			<table class='check-table'>";
     switch ($engine) {
         case 'mysql':
             if (! mysql_connect($dbhost, $dbuser, $dbpassword)) {
@@ -862,9 +995,20 @@ function install_step4()
                     check_generic($step2, "Opening database '$dbname'");
 
                     $step3 = parse_mysql_dump('pandoradb.sql');
-                    check_generic($step3, 'Creating schema');
 
+                    if ($step3 !== 0 && $step3 !== 1) {
+                        $errors[] = $step3;
+                        $step3 = 0;
+                    }
+
+                    check_generic($step3, 'Creating schema');
                     $step4 = parse_mysql_dump('pandoradb_data.sql');
+
+                    if ($step4 !== 0 && $step4 !== 1) {
+                        $errors[] = $step4;
+                        $step4 = 0;
+                    }
+
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
                         $step_freebsd = adjust_paths_for_freebsd($engine);
@@ -884,7 +1028,7 @@ function install_step4()
 								IDENTIFIED BY '".$random_password."'"
                     );
                     mysql_query('FLUSH PRIVILEGES');
-                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><p>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</p>");
 
                     $step6 = is_writable('include');
                     check_generic($step6, "Write permissions to save config file in './include'");
@@ -974,9 +1118,20 @@ function install_step4()
                     check_generic($step2, "Opening database '$dbname'");
 
                     $step3 = parse_mysqli_dump($connection, 'pandoradb.sql');
+                    if ($step3 !== 0 && $step3 !== 1) {
+                        $errors[] = $step3;
+                        $step3 = 0;
+                    }
+
                     check_generic($step3, 'Creating schema');
 
                     $step4 = parse_mysqli_dump($connection, 'pandoradb_data.sql');
+
+                    if ($step4 !== 0 && $step4 !== 1) {
+                        $errors[] = $step4;
+                        $step4 = 0;
+                    }
+
                     check_generic($step4, 'Populating database');
                     if (PHP_OS == 'FreeBSD') {
                         $step_freebsd = adjust_paths_for_freebsd($engine, $connection);
@@ -1006,7 +1161,7 @@ function install_step4()
                         "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host"
                     );
                     mysqli_query($connection, 'FLUSH PRIVILEGES');
-                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+                    check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><p>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</p>");
 
                     $step6 = is_writable('include');
                     check_generic($step6, "Write permissions to save config file in './include'");
@@ -1072,17 +1227,27 @@ function install_step4()
     }
 
         echo '</table>';
-
-    if ($everything_ok == 1) {
-        echo "<div style='text-align:right; width:100%;'>";
-        echo "<a id='step5' href='install.php?step=5'>
-				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
         echo '</div>';
-    } else {
-        $info = "<div class='err'><b>There were some problems.
+        echo '<div class="col-md-6" id="content-errors">';
+        echo "<h2 class='subtitle'>Creating database and default configuration file</h2>";
+    if ($everything_ok !== 1) {
+        $info = '';
+
+        if (!empty($errors)) {
+            foreach ($errors as $key => $err) {
+                $info .= '<div class="err-sql">'.$err.'</div>';
+            }
+
+            $info .= "<div class='err'>If you use MySQL 8 make sure to include the 
+                        following parameter in your installation's my.cnf configuration file<br />
+                        sql_mode=\"\"</div>";
+        }
+
+        $info .= "<div class='err'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
 				All database ";
+
         if ($engine == 'oracle') {
             $info .= 'objects ';
         } else {
@@ -1096,7 +1261,10 @@ function install_step4()
         switch ($engine) {
             case 'mysql':
                 if (mysql_error() != '') {
-                    echo "<div class='err'> <b>ERROR:</b> ".mysql_error().'.</div>';
+                    echo "<div class='err'>".mysql_error().'.</div>';
+                    echo "<div class='err'>If you use MySQL 8 make sure to include the 
+                    following parameter in your installation's my.cnf configuration file<br />
+                    sql_mode=\"\"</div>";
                 }
 
                 if ($step1 == 1) {
@@ -1105,8 +1273,11 @@ function install_step4()
             break;
 
             case 'mysqli':
-                if (mysqli_error($connection) != '') {
-                    echo "<div class='err'> <b>ERROR:</b> ".mysqli_error($connection).'.</div>';
+                if ($connection && mysqli_error($connection) != '') {
+                    echo "<div class='err'>".mysqli_error($connection).'.</div>';
+                    echo "<div class='err'>If you use MySQL 8 make sure to include the 
+                    following parameter in your installation's my.cnf configuration file<br />
+                    sql_mode=\"\"</div>";
                 }
 
                 if ($step1 == 1) {
@@ -1114,22 +1285,32 @@ function install_step4()
                 }
             break;
         }
-
-        echo '</div>';
     }
 
         echo '</div>';
-        echo "<div style='clear: both;'></div>";
+        echo '</div>';
+        echo '</div></div>';
         echo "
-		</div>
 		<div id='foot_install'>
-			<i>Pandora FMS is an Open Source Software project registered at 
-			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-		</div>
-	</div>";
+            <div class='content-footer'>
+            <a href='install.php?step=3' class='btn_primary outline'>Previous step</a>
+            <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
+            </span>";
+    if ($everything_ok === 1) {
+        echo "<a id='step5' href='install.php?step=5'>
+                <button class='btn_primary' type='submit'>Next Step</button>
+              </a>";
+    }
+
+        echo '</div></div>';
 }
 
 
+/**
+ * Print all step 5
+ *
+ * @return void
+ */
 function install_step5()
 {
     echo "
@@ -1137,28 +1318,31 @@ function install_step5()
 	<div id='wizard'>
 	".print_logo_status(6, 6)."
 		<div id='install_box'>
-			<h2>Installation complete</h2>
-			<p>For security, you now must manually delete this installer 
-			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
-			<p>You should also install Pandora FMS Servers before trying to monitor anything;
-			please read documentation on how to install it.</p>
-			<p>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
-			please change it both as soon as possible.</p>
-			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
-			for updates.
-			<p>Select if you want to rename '<i>install.php</i>'.</p>
+		    <h2 class='subtitle'>Installation complete</h2>
+			<p class='text'>For security, you now must manually delete this installer 
+			    ('<i>install.php</i>') file before trying to access to your Pandora FMS console.
+			<p class='text'>You should also install Pandora FMS Servers before trying to monitor anything;
+			    please read documentation on how to install it.</p>
+			<p class='text'>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
+			    please change it both as soon as possible.</p>
+			<p class='text'>Don't forget to check <a href='http://pandorafms.com' class='link'>http://pandorafms.com</a> 
+			    for updates.
+			<p class='text'>Select if you want to rename '<i>install.php</i>'.</p>
 			<form method='post' action='index.php'>
-				<button class='btn_install_next' type='submit' name='rn_file'><span class='btn_install_next_text'>Yes, rename the file</span></button>
+				<button class='btn_primary outline' type='submit' name='rn_file'><span class='btn_install_next_text'>Yes, rename the file</span></button>
 				<input type='hidden' name='rename_file' value='1'>
 			</form>
-			<p><br><b><a id='access_pandora' href='index.php'><button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Click here to access to your Pandora FMS console</span></button></a>.</b>
 			</p>
-		</div>";
-
-    echo "</div>
+		</div>
+    </div>
 	<div id='foot_install'>
-		<i>Pandora FMS is an OpenSource Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-</div>";
+        <div class='content-footer'>
+                <span class='signature'>Pandora FMS is an OpenSource software project registered at <a target='_blank' href='http://pandora.sourceforge.net'>SourceForge →</a>
+                </span>
+                <a id='access_pandora' href='index.php'>
+                    <button class='btn_primary'>Click here to access to your Pandora FMS console</button>
+                </a>
+            </div>
+        </div>
+    </div>";
 }

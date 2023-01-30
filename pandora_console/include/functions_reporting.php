@@ -257,6 +257,10 @@ function reporting_make_reporting_data(
 
         $content['style'] = json_decode(io_safe_output($content['style']), true);
 
+        if (!empty($content['style']['event_filter_search'])) {
+            $content['style']['event_filter_search'] = io_safe_input($content['style']['event_filter_search']);
+        }
+
         $graphs_to_macro = db_get_all_rows_field_filter(
             'tgraph_source',
             'id_graph',

@@ -558,6 +558,20 @@ export default class VisualConsole {
               delete this.lineLinks[i];
             }
           }
+
+          if (
+            (this.lineLinks[i][line].start != itemAtStart &&
+              this.lineLinks[i][line].end == itemAtEnd) ||
+            (this.lineLinks[i][line].start == itemAtStart &&
+              this.lineLinks[i][line].end != itemAtEnd)
+          ) {
+            // Object not connected to a line.
+            delete this.lineLinks[i][line];
+
+            if (Object.keys(this.lineLinks[i]).length === 0) {
+              delete this.lineLinks[i];
+            }
+          }
         }
       }
     } catch (error) {

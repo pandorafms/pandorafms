@@ -85,6 +85,8 @@ $table_simple->rowstyle['macro_field'] = 'display:none';
 
 push_table_simple($data, 'macro_field');
 
+$password_fields = [];
+
 // If there are $macros, we create the form fields
 if (!empty($macros)) {
     $macros = json_decode($macros, true);
@@ -102,7 +104,8 @@ if (!empty($macros)) {
         }
 
         if ($m_hide) {
-            $data[1] = html_print_input_password($m['macro'], io_output_password($m['value']), '', 100, 1024, true);
+            $data[1] = html_print_input_password($m['macro'], '', '', 100, 1024, true);
+            array_push($password_fields, $m);
         } else {
             $data[1] = html_print_input_text(
                 $m['macro'],
@@ -125,6 +128,17 @@ if (!empty($macros)) {
     }
 }
 
+// Add input password values with js to hide it in browser inspector.
+foreach ($password_fields as $k => $p) {
+    echo "
+        <script>
+            $(document).ready(() => {
+                $('input[name=\"".$p['macro']."\"]').val('".$p['value']."');
+            });
+        </script>
+    ";
+}
+
 ?>
 <script type="text/javascript">
     function changePluginSelect() {
@@ -140,4 +154,8 @@ if (!empty($macros)) {
         
         forced_title_callback();
     }
+
+    $(document).ready(function () {
+        observerInputPassword();
+    });
 </script>

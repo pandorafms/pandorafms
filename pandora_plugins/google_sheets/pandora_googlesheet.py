@@ -21,7 +21,7 @@ Version = {__version__}
 
 Manual execution
 
-python3 pandora_googlesheets.py --creds_json/creds_base64 <file credentials> --row <number-row> --column <number-column>
+python3 pandora_googlesheets.py --creds_json/creds_base64 <file credentials> --name <name document> --sheet <name-sheet> --cell <Number cell> --row <number-row> --column <number-column>
 
 """
 
@@ -47,9 +47,7 @@ if args.creds_json is not None and args.creds_base64 == None:
 ## authenticate with base64 input
 elif args.creds_base64 is not None and args.creds_json== None:
     ## base64 to json
-    with open(args.creds_base64, 'r') as file:
-        data = file.read().replace('\n', '')
-    text=base64.b64decode(data).decode('utf-8')
+    text=base64.b64decode(args.creds_base64).decode('utf-8')
     with open("cred.json", "w") as outfile:
         outfile.write(text)
     creds = ServiceAccountCredentials.from_json_keyfile_name("cred.json", scope)

@@ -843,6 +843,7 @@ class AgentWizard extends HTML
         html_print_div(
             [
                 'class'   => 'white_box',
+                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,

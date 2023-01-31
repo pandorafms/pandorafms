@@ -209,7 +209,7 @@ class EventSound extends HTML
             $titleHeader = __('Add new sound');
         } else {
             $helpHeader  = 'servers_ha_clusters_tab';
-            $titleHeader = __('Events sound list');
+            $titleHeader = __('Accoustic console sound list');
         }
 
         // Header.
@@ -223,11 +223,11 @@ class EventSound extends HTML
             [
                 [
                     'link'  => '',
-                    'label' => __('Events'),
+                    'label' => __('Admin tools'),
                 ],
                 [
                     'link'  => '',
-                    'label' => __('Configuration Sounds'),
+                    'label' => __('Accoustic console setup'),
                 ],
             ]
         );

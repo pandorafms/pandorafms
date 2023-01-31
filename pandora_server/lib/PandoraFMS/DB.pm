@@ -653,8 +653,6 @@ sub get_agent_status ($$$) {
 		}
 	}
 
-	print "MS ::::::::::::::".Dumper($module_status);
-	
 	return $module_status;
 }
 

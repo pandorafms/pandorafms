@@ -1277,7 +1277,11 @@ if (is_ajax() === true) {
                         $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
                         $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 800, 480)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
                     } else {
-                        $graph_link = __('inOctets and outOctets must be enabled.');
+                        $graph_link = html_print_image(
+                            'images/chart_curve.disabled.png',
+                            true,
+                            ['title' => __('inOctets and outOctets must be enabled.')]
+                        );
                     }
                 } else {
                     $graph_link = '';

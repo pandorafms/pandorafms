@@ -873,7 +873,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                         );
                         $graph_link .= '</a>';
                     } else {
-                        $graph_link = __('inOctets and outOctets must be enabled.');
+                        $graph_link = html_print_image(
+                            'images/chart_curve.disabled.png',
+                            true,
+                            ['title' => __('inOctets and outOctets must be enabled.')]
+                        );
                     }
                 } else {
                     $graph_link = '';

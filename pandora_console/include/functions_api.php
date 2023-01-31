@@ -14430,7 +14430,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
 
         // Graph width (optional).
-        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
+        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : 600;
 
         // If recive value its from mail call.
         $graph_font_size = $other['data'][5];

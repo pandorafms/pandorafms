@@ -117,7 +117,7 @@ function createVisualConsole(
                   visualConsole.updateElements(items);
                 }
 
-                if (window.location.pathname.indexOf("index.php") == 0) {
+                if (window.location.pathname.indexOf("index.php") <= 0) {
                   if (visualConsole.props.maintenanceMode != null) {
                     visualConsole.enableMaintenanceMode();
                   } else {

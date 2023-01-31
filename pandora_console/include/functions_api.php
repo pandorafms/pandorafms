@@ -14430,7 +14430,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
 
         // Graph width (optional).
-        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
+        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : 600;
 
         // If recive value its from mail call.
         $graph_font_size = $other['data'][5];
@@ -17646,5 +17646,22 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         ];
 
         returnData($returnType, $data, ';');
+    }
+}
+
+
+/**
+ * Check if token is correct.
+ *
+ * @param string $token Token for check.
+ *
+ * @return mixed Id of user. If returns 0 there is not valid token.
+ */
+function api_token_check(string $token)
+{
+    if (empty($token) === true) {
+        return 0;
+    } else {
+        return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
 }

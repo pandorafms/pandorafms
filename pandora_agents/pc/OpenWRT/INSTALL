@@ -31,14 +31,14 @@ Install procedure
 
 Step 1 - Get the latest package and copy to /tmp, you can get the latest package at:
 
-  http://sourceforge.net/projects/pandora/files/Pandora%20FMS%203.2/Stable%20release/Unix%20%28Tarball%29/pandorafms_agent_unix-3.2.tar.gz/download
+  http://sourceforge.net/projects/pandora/files/Pandora%20FMS%203.2/Stable%20release/Unix%20%28Tarball%29/pandorafms_agent_linux-3.2.tar.gz/download
 
 Note: You will get a special version of the launcher, you can get it from our SVN repository and replace the perl daemon launcher with this special version for OpenWRT. Just replace it after do the package install for the Unix/Perl generic agent.
 
 Step 2 - Install it
 
  cd /tmp
- tar xvzf pandorafms_agent_unix-3.2.tar.gz
+ tar xvzf pandorafms_agent_linux-3.2.tar.gz
  cd unix
  ./pandora_agent --install 
 

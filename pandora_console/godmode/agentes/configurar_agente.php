@@ -461,6 +461,21 @@ if ($id_agente) {
     $templatetab['active'] = ($tab === 'template');
 
     // Inventory.
+    $inventorytab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
+        'images/page_white_text.png',
+        true,
+        [
+            'title' => __('Inventory'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+
+    if ($tab == 'inventory') {
+        $inventorytab['active'] = true;
+    } else {
+        $inventorytab['active'] = false;
+    }
+
     $inventorytab = enterprise_hook('inventory_tab');
     if ($inventorytab === ENTERPRISE_NOT_HOOK) {
         $inventorytab = '';
@@ -2345,6 +2360,10 @@ switch ($tab) {
 
     case 'agent_wizard':
         include 'agent_wizard.php';
+    break;
+
+    case 'inventory':
+        include 'inventory_manager.php';
     break;
 
     default:

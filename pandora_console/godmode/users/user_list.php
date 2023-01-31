@@ -344,6 +344,7 @@ if ($delete_user === true) {
             $result = delete_user($id_user);
 
             if ($result) {
+                delete_session_user($id_user);
                 db_pandora_audit(
                     AUDIT_LOG_USER_MANAGEMENT,
                     __('Deleted user %s', io_safe_output($id_user))

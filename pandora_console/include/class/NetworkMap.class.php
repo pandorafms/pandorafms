@@ -776,7 +776,7 @@ class NetworkMap
         // Search.
         if ($this->idTask) {
             // Network map, based on discovery task.
-            return get_discovery_agents($this->idTask);
+            enterprise_hook('get_discovery_agents', [$this->idTask]);
         }
 
         if ($this->network) {
@@ -1672,7 +1672,7 @@ class NetworkMap
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
-                        if (empty($node['status']) && empty($node['id_module']) && !empty($node['style']['id_networkmap'])) {
+                        if (empty($node['style']['id_networkmap']) === false) {
                             $status_aux = get_status_color_networkmap_fictional_point($node['style']['id_networkmap']);
                             $item['color'] = $status_aux;
                         } else {

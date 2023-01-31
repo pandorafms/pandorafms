@@ -290,7 +290,7 @@ $search_text = (string) get_parameter('search_text');
 $date_from = (string) get_parameter('date_from');
 $date_to = (string) get_parameter('date_to');
 $execution_type = (string) get_parameter('execution_type');
-$show_archived = (bool) get_parameter('archived');
+$show_archived = (bool) get_parameter_switch('archived', false);
 $agent_id = (int) get_parameter('agent_id');
 $agent_name = (string) ((empty($agent_id) === false) ? get_parameter('agent_name') : '');
 $module_id = (int) get_parameter('module_name_hidden');
@@ -313,12 +313,20 @@ $table_form = new StdClass();
 $table_form->class = 'databox filters';
 $table_form->width = '100%';
 $table_form->rowstyle = [];
+$table_form->cellstyle[0] = ['width: 100px;'];
+$table_form->cellstyle[1] = ['width: 100px;'];
+$table_form->cellstyle[1][2] = 'display: flex; align-items: center;';
+$table_form->cellstyle[2] = ['width: 100px;'];
+$table_form->cellstyle[3] = ['text-align: right;'];
+$table_form->colspan[3][0] = 3;
 $table_form->data = [];
 
 $row = [];
 
 // Search text.
-$row[] = __('Search').'&nbsp;'.html_print_input_text(
+$row[] = __('Search');
+
+$row[] = html_print_input_text(
     'search_text',
     $search_text,
     '',
@@ -356,7 +364,8 @@ $execution_type_fields = [
     'periodically' => __('Periodically'),
     'cron'         => __('Cron'),
 ];
-$row[] = __('Execution type').'&nbsp;'.html_print_select(
+$row[] = __('Execution type');
+$row[] = html_print_select(
     $execution_type_fields,
     'execution_type',
     $execution_type,
@@ -368,11 +377,11 @@ $row[] = __('Execution type').'&nbsp;'.html_print_select(
     false
 );
 // Show past downtimes.
-$row[] = __('Show past downtimes').'&nbsp;'.html_print_checkbox(
-    'archived',
-    1,
-    $show_archived,
-    true
+$row[] = __('Show past downtimes').'&nbsp;&nbsp;&nbsp;&nbsp;'.html_print_switch(
+    [
+        'name'  => 'archived',
+        'value' => $show_archived,
+    ]
 );
 
 $table_form->data[] = $row;
@@ -388,8 +397,8 @@ $params['return'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'agent_id';
 $params['hidden_input_idagent_value'] = $agent_id;
-$agent_input = __('Agent').'&nbsp;'.ui_print_agent_autocomplete_input($params);
-$row[] = $agent_input;
+$row[] = __('Agent');
+$row[] = ui_print_agent_autocomplete_input($params);
 
 // Module.
 $row[] = __('Module').'&nbsp;'.html_print_autocomplete_modules(
@@ -401,6 +410,10 @@ $row[] = __('Module').'&nbsp;'.html_print_autocomplete_modules(
     [],
     true
 );
+
+$table_form->data[] = $row;
+
+$row = [];
 
 $row[] = html_print_submit_button(
     __('Search'),

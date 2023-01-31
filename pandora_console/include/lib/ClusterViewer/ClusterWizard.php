@@ -1027,6 +1027,7 @@ class ClusterWizard extends \HTML
             foreach ($aa_modules as $module) {
                 $inputs[] = [
                     'block_id'      => 'from-to-threshold',
+                    'label'         => '<b>'.$module->name().'</b>',
                     'class'         => 'flex-row line w100p',
                     'direct'        => 1,
                     'block_content' => [

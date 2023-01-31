@@ -1126,6 +1126,7 @@ p.center {
 .margin-top-20 {
   margin-top: 20px;
 }
+
 .margin-bottom-20 {
   margin-bottom: 20px;
 }
@@ -1780,6 +1781,7 @@ div.title_line {
 #menu_tab {
   margin-right: 20px;
 }
+
 #menu_tab .mn,
 #menu_tab ul,
 #menu_tab .mn ul {
@@ -2733,6 +2735,7 @@ td.cellBig {
   right: 10px;
   z-index: 100;
 }
+
 /* Standard styles for status colos (groups, events, backgrounds...) */
 .opacity_cell {
   filter: alpha(opacity=80);
@@ -3686,6 +3689,7 @@ table#policy_modules td * {
 .tactical_table > thead > tr span {
   line-height: 26px;
 }
+
 .info_table thead th .sort_arrow,
 .tactical_table thead th .sort_arrow {
   vertical-align: top;
@@ -3822,6 +3826,7 @@ div.div_groups_status {
 .tab_operation img {
   width: 20px;
 }
+
 .agents_modules_table {
   border: 1px solid #e2e2e2;
   border-spacing: 0px;
@@ -4988,6 +4993,23 @@ input:checked + .p-slider:before {
   animation: fadein 0.5s, fadeout 0.5s 7.5s;
 }
 
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
 .snackbar p,
 .snackbar h3 {
   text-align: left;
@@ -5760,6 +5782,7 @@ div.label_select_child_left > span {
   box-shadow: none;
   color: #fff !important;
 }
+
 /*
 .switch_radio_button .custom_checkbox_show {
   display: none;
@@ -5831,6 +5854,7 @@ div.label_select_child_left > span {
   margin-right: 5px;
   margin-top: -2px;
 }
+
 /*
 div#bullets_modules {
   display: flex;
@@ -5988,6 +6012,7 @@ div#status_pie path {
 div#status_pie {
   margin-bottom: 2em;
 }
+
 /*
 .agent_details_header {
   display: flex;
@@ -6003,6 +6028,7 @@ div#status_pie {
   align-items: center;
   padding: 15px;
 }
+
 /*
 .agent_details_content {
   display: flex;
@@ -6033,6 +6059,7 @@ div#status_pie {
   overflow: hidden;
   padding-left: 15px;
 }
+
 /*
 .agent_details_graph {
   text-align: center;
@@ -6101,6 +6128,7 @@ div#status_pie {
   margin: 0;
   padding: 0 5px;
 }
+
 .white_table_graph_header {
   padding: 10px 20px;
   background-color: #fff;
@@ -6564,7 +6592,7 @@ div.text_message_dialog p {
 }
 
 form#form-filter-interfaces {
-  margin-left: -30px;
+  margin-left: 20px;
 }
 
 form#form-filter-interfaces ul {
@@ -6581,7 +6609,7 @@ form#form-filter-interfaces ul li {
   align-items: center;
   flex-direction: row;
   justify-content: flex-start;
-  max-width: 35%;
+  max-width: 45%;
 }
 
 form#form-filter-interfaces ul li.select-interfaces {
@@ -9806,6 +9834,15 @@ div#err_msg_centralised {
   width: 75%;
 }
 
+.renew_api_token_link {
+  margin: 3px 0.5em 0 0;
+  float: right;
+}
+
+.renew_api_token_image {
+  width: 16px;
+}
+
 @media screen and (max-width: 1369px) {
   .div-col {
     width: 50%;
@@ -9965,6 +10002,7 @@ button.submitButton > div.mini {
   width: 1.5rem;
   height: 1.5rem;
 }
+
 button.buttonButton:not(.secondary):not(.link),
 button.submitButton:not(.secondary):not(.link) {
   background: linear-gradient(
@@ -10258,6 +10296,7 @@ button div.back {
   mask: url(../../images/go-back@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/go-back@svg.svg) no-repeat center / contain;
 }
+
 button div.cog {
   mask: url(../../images/configuration@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/configuration@svg.svg) no-repeat center /
@@ -10654,6 +10693,7 @@ tr.bring_next_field {
   height: 32px;
   margin: 0;
 }
+
 .floating_form .field_half_width td {
   width: 50%;
 }
@@ -10674,6 +10714,7 @@ tr.bring_next_field {
   span.select2.select2-container.select2-container--default {
   width: 100% !important;
 }
+
 .fixed_action_buttons {
   position: fixed;
   padding: 0px;
@@ -10808,6 +10849,7 @@ pre.external_tools_output {
 .filter_table .select2-selection__arrow {
   top: -4px !important;
 }
+
 .filter_table
   .select2-container
   .select2-selection--single
@@ -10875,6 +10917,7 @@ pre.external_tools_output {
   border: 1px solid #e5e9ed;
   height: 100%;
 }
+
 /*
 #basic_thresholds {
   padding: 0;
@@ -10920,6 +10963,7 @@ pre.external_tools_output {
   width: -webkit-fill-available !important;
   width: -moz-fill-available !important;
 }
+
 .snmp-td {
   padding: 0 !important;
   height: 0;
@@ -11029,4 +11073,29 @@ p.trademark-copyright {
   left: 8px;
   width: 24px;
   height: 24px;
+}
+
+form#satellite_conf_edit {
+  display: flex;
+  flex-direction: row;
+  justify-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+form#satellite_conf_edit > fieldset {
+  background-color: #fff;
+  // border: 1px solid #e2e2e2;
+  padding: 0.5em;
+  margin: 0px 1em;
+  margin-bottom: 20px;
+  position: relative;
+  border-radius: 5px;
+  flex: 1 1 700px;
+}
+
+form#satellite_conf_edit > fieldset.full-column {
+  width: 100%;
+  flex: none;
+  margin: 0 0 20px;
 }

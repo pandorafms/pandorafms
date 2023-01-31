@@ -3393,7 +3393,7 @@ function get_status_color_networkmap_fictional_point($id_networkmap, $parent='')
 
         $exit = false;
         foreach ($agents as $agent) {
-            if ($agent['source_data'] == -1) {
+            if ($agent['source_data'] == -1 || $agent['type'] == 2) {
                 continue;
             }
 
@@ -4161,7 +4161,149 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
     }
 
     if ((int) $networkmap['source'] === SOURCE_TASK) {
-        $agents = get_discovery_agents($id_recon, true);
+        $agents = enterprise_hook('get_discovery_agents', [$id_recon, true]);
+
+        $relations_discovery = modules_get_relations(['id_rt' => $id_recon, 'distinct' => true]);
+        $array_aux = $relations_discovery;
+        $target_aux = $relations_discovery;
+
+        foreach ($relations_discovery as $key => $rel) {
+            foreach ($array_aux as $key2 => $rel2) {
+                if ($key2 <= $key) {
+                    continue;
+                }
+
+                if ($rel['module_a'] === $rel2['module_a']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_b']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_b']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_b']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_b']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+
+                if ($rel['module_b'] === $rel2['module_b']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_a']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_a']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_a']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_a']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+
+                if ($rel['module_a'] === $rel2['module_b']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_b']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_a']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_b']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_a']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+
+                if ($rel['module_b'] === $rel2['module_a']) {
+                    $agent1 = modules_get_agentmodule_agent($rel['module_a']);
+                    $agent2 = modules_get_agentmodule_agent($rel2['module_b']);
+
+                    if ($agent1 === $agent2) {
+                        $name1 = modules_get_agentmodule_name($rel['module_a']);
+                        $name2 = modules_get_agentmodule_name($rel2['module_b']);
+                        if ($name1 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key]);
+                        } else if ($name2 == 'Host&#x20;Alive') {
+                            unset($target_aux[$key2]);
+                        }
+
+                        continue;
+                    }
+                }
+            }
+        }
+
+        $relations_discovery = $target_aux;
+
+        db_process_sql_delete('trel_item', ['id_map' => $id_networkmap, 'parent_type' => 1, 'child_type' => 1]);
+
+        $id_recon = $id_networkmap;
+
+        // Relations Module <-> Module.
+        foreach ($relations_discovery as $key => $relation) {
+            $module_a = $relation['module_a'];
+            $agent_a = modules_get_agentmodule_agent($module_a);
+            $module_b = $relation['module_b'];
+            $agent_b = modules_get_agentmodule_agent($module_b);
+
+            $exist = db_get_row_filter(
+                'trel_item',
+                [
+                    'id_map'                => $id_networkmap,
+                    'id_parent_source_data' => $module_a,
+                    'id_child_source_data'  => $module_b,
+                    'deleted'               => 0,
+                ]
+            );
+            $exist_reverse = db_get_row_filter(
+                'trel_item',
+                [
+                    'id_map'                => $id_networkmap,
+                    'id_parent_source_data' => $module_b,
+                    'id_child_source_data'  => $module_a,
+                    'deleted'               => 0,
+                ]
+            );
+
+            if (empty($exist) === true && empty($exist_reverse) === true) {
+                $item_a = db_get_value(
+                    'id',
+                    'titem',
+                    'source_data',
+                    $agent_a
+                );
+
+                $item_b = db_get_value(
+                    'id',
+                    'titem',
+                    'source_data',
+                    $agent_b
+                );
+
+                db_process_sql_insert(
+                    'trel_item',
+                    [
+                        'id_map'                => $id_networkmap,
+                        'id_parent'             => $item_a,
+                        'id_child'              => $item_b,
+                        'id_parent_source_data' => $module_a,
+                        'id_child_source_data'  => $module_b,
+                        'parent_type'           => 1,
+                        'child_type'            => 1,
+                    ]
+                );
+            }
+        }
     } else if ((int) $networkmap['source'] === SOURCE_NETWORK) {
         // Network map, based on direct network.
         $agents = networkmap_get_nodes_from_ip_mask(
@@ -4375,280 +4517,6 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
             }
         }
 
-        // foreach ($interfaces as $interface) {
-        // $relations = modules_get_relations(
-        // ['id_module' => $interface['id_agente_modulo']]
-        // );
-        // if (empty($relations) === true) {
-        // $relations = [];
-        // }
-        // foreach ($relations as $relation) {
-        // Get the links althought they are deleted (for to
-        // avoid to add)
-        // Check if the module is ping.
-        // if (modules_get_agentmodule_type($relation['module_a']) === '6') {
-        // The pings modules are not exist as interface
-        // the link is with the agent.
-        // $node_a = db_get_value_filter(
-        // 'id',
-        // 'titem',
-        // [
-        // 'source_data' => modules_get_agentmodule_agent(
-        // $relation['module_a']
-        // ),
-        // 'id_map'      => $id_networkmap,
-        // ]
-        // );
-        // } else {
-        // $node_a = db_get_value_filter(
-        // 'id',
-        // 'titem',
-        // [
-        // 'source_data' => $relation['module_a'],
-        // 'type'        => 1,
-        // 'id_map'      => $id_networkmap,
-        // ]
-        // );
-        // }
-        // Check if the module is ping.
-        // if (modules_get_agentmodule_type($relation['module_b']) == 6) {
-        // The pings modules are not exist as interface
-        // the link is with the agent.
-        // $node_b = db_get_value_filter(
-        // 'id',
-        // 'titem',
-        // [
-        // 'source_data' => modules_get_agentmodule_agent(
-        // $relation['module_b']
-        // ),
-        // 'id_map'      => $id_networkmap,
-        // ]
-        // );
-        // } else {
-        // $node_b = db_get_value_filter(
-        // 'id',
-        // 'titem',
-        // [
-        // 'source_data' => $relation['module_b'],
-        // 'type'        => 1,
-        // 'id_map'      => $id_networkmap,
-        // ]
-        // );
-        // }
-        // $exist = db_get_row_filter(
-        // 'trel_item',
-        // [
-        // 'id_map'                => $id_networkmap,
-        // 'id_parent_source_data' => $relation['module_a'],
-        // 'id_child_source_data'  => $relation['module_b'],
-        // 'deleted'               => 0,
-        // ]
-        // );
-        // $exist_reverse = db_get_row_filter(
-        // 'trel_item',
-        // [
-        // 'id_map'                => $id_networkmap,
-        // 'id_parent_source_data' => $relation['module_b'],
-        // 'id_child_source_data'  => $relation['module_a'],
-        // 'deleted'               => 0,
-        // ]
-        // );
-        // if (empty($exist) && empty($exist_reverse)) {
-        // Create the nodes for interfaces
-        // Ag1 ----- I1 ------ I2 ----- Ag2
-        // * 2 interfaces nodes
-        // * 3 relations
-        // * I1 between I2
-        // * Ag1 between I1
-        // * Ag2 between I2
-        //
-        // But check if it exists the relations
-        // agent between interface.
-        // if ($interface['id_agente_modulo'] == $relation['module_a']) {
-        // $agent_a = $interface['id_agente'];
-        // $agent_b = modules_get_agentmodule_agent(
-        // $relation['module_b']
-        // );
-        // } else {
-        // $agent_a = modules_get_agentmodule_agent(
-        // $relation['module_a']
-        // );
-        // $agent_b = $interface['id_agente'];
-        // }
-        // $item_a = db_get_value(
-        // 'id',
-        // 'titem',
-        // 'source_data',
-        // $agent_a
-        // );
-        // $item_b = db_get_value(
-        // 'id',
-        // 'titem',
-        // 'source_data',
-        // $agent_b
-        // );
-        // hd('----------------------', true);
-        // hd($agent_a, true);
-        // hd($agent_b, true);
-        // foreach ($interfaces as $interface) {
-        // $relations = modules_get_relations(
-        // ['id_module' => $interface['id_agente_modulo']]
-        // );
-        // if (empty($relations) === true) {
-        // $relations = [];
-        // }
-        // foreach ($relations as $relation) {hd($item_a. '<->'. $item_b, true);
-        // hd('----------------------', true);
-        // continue;
-        // $exist_node_interface1 = db_get_row_filter(
-        // 'titem',
-        // [
-        // 'id_map'      => $id_networkmap,
-        // 'type'        => 0,
-        // 'source_data' => $relation['module_a'],
-        // ]
-        // );
-        // if (empty($exist_node_interface1) === true) {
-        // Crete the interface node
-        // and create the relation between agent and
-        // interface.
-        // $style = [];
-        // $style['id_agent'] = $agent_a;
-        // $style['shape'] = 'circle';
-        // $style['image'] = 'images/mod_snmp_proc.png';
-        // $style['width'] = 50;
-        // $style['height'] = 16;
-        // $style['label'] = modules_get_agentmodule_name($relation['module_a']);
-        // $id_int1 = db_process_sql_insert(
-        // 'titem',
-        // [
-        // 'id_map'      => $id_networkmap,
-        // 'x'           => 666,
-        // 'y'           => 666,
-        // 'z'           => 0,
-        // 'deleted'     => 0,
-        // 'type'        => 1,
-        // 'refresh'     => 0,
-        // 'source'      => 0,
-        // 'source_data' => $relation['module_a'],
-        // 'style'       => json_encode($style),
-        // ]
-        // );
-        // $node_interface1 = db_get_row_filter(
-        // 'titem',
-        // [
-        // 'id_map' => $id_networkmap,
-        // 'type'   => 1,
-        // 'id'     => $id_int1,
-        // ]
-        // );
-        // $node_agent1 = db_get_value(
-        // 'id',
-        // 'titem',
-        // 'source_data',
-        // $agent_a
-        // );
-        // db_process_sql_insert(
-        // 'trel_item',
-        // [
-        // 'id_map'                => $id_networkmap,
-        // 'id_parent'             => $node_agent1,
-        // 'id_child'              => $node_interface1,
-        // 'id_parent-source_data' => $agent_a,
-        // 'id_child-source_data'  => $relation['module_a'],
-        // 'parent_type'           => 0,
-        // 'child_type'            => 1,
-        // ]
-        // );
-        // } else {
-        // $node_interface1 = $exist_node_interface1;
-        // }
-        // $exist_node_interface2 = db_get_row_filter(
-        // 'titem',
-        // [
-        // 'id_map'      => $id_networkmap,
-        // 'type'        => 1,
-        // 'source_data' => $relation['module_b'],
-        // ]
-        // );
-        // if (empty($exist_node_interface2) === true) {
-        // Crete the interface node
-        // and create the relation between agent and
-        // interface.
-        // $style = [];
-        // $style['id_agent'] = $agent_a;
-        // $style['shape'] = 'circle';
-        // $style['image'] = 'images/mod_snmp_proc.png';
-        // $style['width'] = 50;
-        // $style['height'] = 16;
-        // $style['label'] = modules_get_agentmodule_name($relation['module_b']);
-        // $id_int2 = db_process_sql_insert(
-        // 'titem',
-        // [
-        // 'id_map'      => $id_networkmap,
-        // 'x'           => 666,
-        // 'y'           => 666,
-        // 'z'           => 0,
-        // 'deleted'     => 0,
-        // 'type'        => 1,
-        // 'refresh'     => 0,
-        // 'source'      => 0,
-        // 'source_data' => $relation['module_b'],
-        // 'style'       => json_encode($style),
-        // ]
-        // );
-        // $node_interface2 = db_get_row_filter(
-        // 'titem',
-        // [
-        // 'id_map' => $id_networkmap,
-        // 'type'   => 1,
-        // 'id'     => $id_int1,
-        // ]
-        // );
-        // $node_agent1 = db_get_value(
-        // 'id',
-        // 'titem',
-        // 'source_data',
-        // $agent_a
-        // );
-        // db_process_sql_insert(
-        // 'trel_item',
-        // [
-        // 'id_map'                => $id_networkmap,
-        // 'id_parent'             => $node_agent1,
-        // 'id_child'              => $node_interface1,
-        // 'id_parent-source_data' => $agent_a,
-        // 'id_child-source_data'  => $relation['module_b'],
-        // 'parent_type'           => 0,
-        // 'child_type'            => 1,
-        // ]
-        // );
-        // } else {
-        // $node_interface2 = $exist_node_interface2;
-        // }
-        // if (empty($node_interface1) === false && empty($node_interface2) === false) {
-        // if (is_array($node_interface1) === true) {
-        // $node_interface1 = $node_interface1['id'];
-        // }
-        // if (is_array($node_interface2) === true) {
-        // $node_interface2 = $node_interface2['id'];
-        // }
-        // db_process_sql_insert(
-        // 'trel_item',
-        // [
-        // 'id_map'                => $id_networkmap,
-        // 'id_parent'             => $node_interface2,
-        // 'id_child'              => $node_interface1,
-        // 'id_parent_source_data' => $relation['module_b'],
-        // 'id_child_source_data'  => $relation['module_a'],
-        // 'parent_type'           => 1,
-        // 'child_type'            => 1,
-        // ]
-        // );
-        // }
-        // }
-        // }
-        // }
         $relations = modules_get_relations(
             [
                 'id_agent'   => $node['source_data'],
@@ -4726,18 +4594,6 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
         if (empty($interfaces) === true) {
             $interfaces = [];
         }
-
-        // hd('interfaces', true);
-        // foreach ($interfaces as $interface) {
-        // $relations = modules_get_relations(
-        // ['id_module' => $interface['id_agente_modulo']]
-        // );
-        // if (empty($relations) === true) {
-        // $relations = [];
-        // }
-        // foreach ($relations as $relation) {
-        // }
-        // }
     }
 }
 

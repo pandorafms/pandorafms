@@ -1401,8 +1401,8 @@ $agent_interfaces = agents_get_network_interfaces(
 
 if (isset($agent_interfaces) !== true
     || isset($agent_interfaces[$id_agente]) !== true
-    || is_array($agent_interfaces[$id_agente]['interfaces']) !== true
-    || is_object($agent_interfaces[$id_agente]['interfaces']) !== true
+    || (is_array($agent_interfaces[$id_agente]['interfaces']) !== true
+    && is_object($agent_interfaces[$id_agente]['interfaces']) !== true)
 ) {
     $agent_interfaces_count = 0;
 } else {
@@ -1441,6 +1441,21 @@ $alerttab['active'] = ($tab === 'alert');
 
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
+$inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
+    'images/page_white_text.png',
+    true,
+    [
+        'class' => 'invert_filter',
+        'title' => __('Inventory'),
+    ]
+).'</a>';
+
+if ($tab == 'inventory') {
+    $inventorytab['active'] = true;
+} else {
+    $inventorytab['active'] = false;
+}
+
 $inventorytab = enterprise_hook('inventory_tab');
 if ($inventorytab === ENTERPRISE_NOT_HOOK || $inventoryCount === 0) {
     $inventorytab = '';
@@ -1956,7 +1971,7 @@ switch ($tab) {
     break;
 
     case 'inventory':
-        enterprise_include('operation/agentes/agent_inventory.php');
+        include 'operation/agentes/agent_inventory.php';
     break;
 
     case 'collection':

@@ -3112,7 +3112,7 @@ function modules_get_relations($params=[])
     }
 
     $distinct = '';
-    if (empty($params)) {
+    if (empty($params) || isset($params['distinct'])) {
         $distinct = 'DISTINCT';
     }
 
@@ -3136,6 +3136,11 @@ function modules_get_relations($params=[])
         );
     }
 
+    $id_rt_filter = '';
+    if (isset($params['id_rt'])) {
+        $id_rt_filter = sprintf('AND tmr.id_rt = %d', $params['id_rt']);
+    }
+
     $sql = sprintf(
         'SELECT %s tmr.id, tmr.module_a, tmr.module_b,
         tmr.disable_update, tmr.type 
@@ -3153,7 +3158,8 @@ function modules_get_relations($params=[])
         $module_type,
         $agent_filter,
         $disabled_update_filter,
-        $modules_type_filter
+        $modules_type_filter,
+        $id_rt_filter
     );
 
     return db_get_all_rows_sql($sql);
@@ -3986,15 +3992,27 @@ function recursive_get_dt_from_modules_tree(&$f_modules, $modules, $deep)
  * Get the module data from a children
  *
  * @param  integer $id_module Id module
+ * @param  boolean $recursive Recursive children search.
  * @return array Children module data
  */
-function get_children_module($id_module)
+function get_children_module($id_module, $fields=false, $recursion=false)
 {
-    $children_module_data = db_get_all_rows_sql(
-        'SELECT *
-		FROM tagente_modulo
-		WHERE parent_module_id = '.$id_module
+    $children_module_data = db_get_all_rows_filter(
+        'tagente_modulo',
+        ['parent_module_id' => $id_module],
+        $fields
     );
+
+    if ($children_module_data !== false && $recursion === true) {
+        foreach ($children_module_data as $child) {
+            $niece = get_children_module($child['id_agente_modulo'], $fields, false);
+            if ((bool) $niece === false) {
+                continue;
+            } else {
+                $children_module_data = array_merge($children_module_data, $niece);
+            }
+        }
+    }
 
     return $children_module_data;
 }

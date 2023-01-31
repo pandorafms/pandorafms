@@ -1687,3 +1687,17 @@ function changePlugin() {
 
   $("#selected_plugin_description_" + moduleProtocol).html(pluginDescription);
 }
+
+// Add observer to clear value when type attribute changes.
+function observerInputPassword() {
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === "attributes" && mutation.attributeName === "type") {
+        mutation.target.value = "";
+      }
+    });
+  });
+  Array.from($("input[type=password]")).forEach(function(input) {
+    observer.observe(input, { attributes: true });
+  });
+}

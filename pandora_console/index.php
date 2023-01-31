@@ -1445,6 +1445,16 @@ if ($searchPage) {
     }
 }
 
+if (__PAN_XHPROF__ === 1) {
+    echo "<span style='font-size: 0.8em;'>";
+    echo __('Page generated at').' ';
+    echo date('D F d, Y H:i:s', $time).'</span>';
+    echo ' - ( ';
+    pandora_xhprof_display_result('node_index');
+    echo ' )';
+    echo '</center>';
+}
+
 if ($config['pure'] == 0) {
     echo '<div id="both"></div>';
     echo '</div>';
@@ -1691,7 +1701,3 @@ require 'include/php_to_js_values.php';
         );
     });
 </script>
-<?php
-if (__PAN_XHPROF__ === 1) {
-    pandora_xhprof_display_result('node_index');
-}

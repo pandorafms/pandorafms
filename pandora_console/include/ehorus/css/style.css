@@ -1,10 +1,17 @@
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../fonts/glyphicons-halflings-regular.woff') format('woff');
+  src: 
+}
+
 .terminal-main {
   font-family: monospace;
   font-size: 10pt;
 }
 
 #ehorus-client-container {
-  font-family: 'lato';
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
 }
 
 .glyphicon {

@@ -137,6 +137,7 @@ $(document).ready(function() {
     if (sec === 'estado' && agent_id > 0) {
         load_agent_interfaces_selector([agent_id]);
     }
+    $("#selected_agents").filterByText($("#text-filter_agents"));
 });
 
 

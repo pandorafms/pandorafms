@@ -1515,9 +1515,37 @@ if ($change_status === true) {
 }
 
 if ($get_Acknowledged === true) {
-    $event_id = get_parameter('event_id');
-    echo events_page_general_acknowledged($event_id);
-    return;
+    $event_id = (int) get_parameter('event_id', 0);
+    $server_id = (int) get_parameter('server_id', 0);
+
+    $return = '';
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
+
+        echo events_page_general_acknowledged($event_id);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $return = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    return $return;
 }
 
 if ($change_owner === true) {

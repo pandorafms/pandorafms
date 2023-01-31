@@ -1061,7 +1061,7 @@ if (is_ajax() === true) {
 
             if (preg_match('/(.+)_ifOperStatus$/', (string) $source_text, $matches)) {
                 if ($matches[1]) {
-                        $source_text = $matches[1];
+                    $source_text = $matches[1];
                 }
             }
         } else {

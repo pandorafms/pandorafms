@@ -620,11 +620,11 @@ sub get_agent_status ($$$) {
 				elsif ($module_status != 2) {
 					if ($m_status == 3) {
 						$module_status = 3;
-					} 
+					}
 					elsif ($module_status != 3) {
-							if ($m_status == 0) {
-								$module_status = 0;
-						} 
+						if ($m_status == 0) {
+							$module_status = 0;
+						}
 					}
 				}
 			}

@@ -323,8 +323,8 @@ if ($is_management_allowed === true && $create_profile === true) {
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
+$table->styleTable = 'margin: 10px';
 $table->class = 'info_table profile_list';
-$table->width = '100%';
 
 $table->head = [];
 $table->data = [];
@@ -362,7 +362,7 @@ if ($is_management_allowed === true) {
 
 $table->align = array_fill(1, 11, 'center');
 
-$table->size['profiles'] = '200px';
+$table->size['profiles'] = '150px';
 $table->size['AR'] = '10px';
 $table->size['AW'] = '10px';
 $table->size['AD'] = '10px';
@@ -387,7 +387,7 @@ $table->size['NW'] = '10px';
 $table->size['NM'] = '10px';
 $table->size['PM'] = '10px';
 if ($is_management_allowed === true) {
-    $table->size['operations'] = '5%';
+    $table->size['operations'] = '6%';
 }
 
 $profiles = db_get_all_rows_in_table('tperfil');
@@ -396,11 +396,11 @@ if ($profiles === false) {
 }
 
 $img = html_print_image(
-    'images/ok.png',
+    'images/validate.svg',
     true,
     [
         'border' => 0,
-        'class'  => 'invert_filter',
+        'class'  => 'main_menu_icon',
     ]
 );
 
@@ -439,22 +439,29 @@ foreach ($profiles as $profile) {
     $table->cellclass[]['operations'] = 'table_action_buttons';
     if ($is_management_allowed === true) {
         $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
-            'images/config.png',
+            'images/edit.svg',
             true,
             [
                 'title' => __('Edit'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon',
             ]
         ).'</a>';
-        if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
-            $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                'images/cross.png',
-                true,
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) users_is_admin() === true) {
+            $data['operations'] .= html_print_anchor(
                 [
-                    'title' => __('Delete'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>';
+                    'href'    => 'index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure,
+                    'onClick' => 'if (!confirm(\' '.__('Are you sure?').'\')) return false;',
+                    'content' => html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'title' => __('Delete'),
+                            'class' => 'main_menu_icon',
+                        ]
+                    ),
+                ],
+                true
+            );
         }
     }
 
@@ -469,10 +476,20 @@ if (isset($data) === true) {
 
 if ($is_management_allowed === true) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     html_print_input_hidden('new_profile', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-    echo '</div>';
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create profile'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'  => 'data_table',
+            'class' => 'fixed_action_buttons',
+        ]
+    );
     echo '</form>';
 }
 

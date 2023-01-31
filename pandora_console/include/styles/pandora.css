@@ -6223,7 +6223,7 @@ div.text_message_dialog p {
 }
 
 form#form-filter-interfaces {
-  margin-left: -30px;
+  margin-left: 20px;
 }
 
 form#form-filter-interfaces ul {
@@ -6240,7 +6240,7 @@ form#form-filter-interfaces ul li {
   align-items: center;
   flex-direction: row;
   justify-content: flex-start;
-  max-width: 35%;
+  max-width: 45%;
 }
 
 form#form-filter-interfaces ul li.select-interfaces {

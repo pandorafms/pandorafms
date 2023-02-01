@@ -622,7 +622,6 @@ var TreeController = {
               data: postData,
               success: function(data, textStatus, xhr) {
                 callback(null, data);
-                console.log(data);
                 $("#fixed-bottom-box-head-title").html(
                   $("#fixedBottomHeadTitle").html()
                 );
@@ -1281,8 +1280,6 @@ var TreeController = {
                         if (error) {
                           // console.error(error);
                         } else {
-                          console.log(element.name);
-                          console.log("1");
                           controller.detailRecipient
                             .render(element.name, data)
                             .open();
@@ -1312,14 +1309,15 @@ var TreeController = {
             // Add children
             var $children = _processGroup($node, element.children);
             $node.data("children", $children);
-
+            /*
             if (
               typeof element.searchChildren == "undefined" ||
               !element.searchChildren
             ) {
               $leafIcon.click(function(e) {
+                console.log(e);
                 e.preventDefault();
-
+                return;
                 if ($node.hasClass("leaf-open")) {
                   $node
                     .removeClass("leaf-open")
@@ -1335,6 +1333,7 @@ var TreeController = {
                 }
               });
             }
+            */
           }
 
           if (

@@ -87,8 +87,6 @@ $create_text_file = (bool) get_parameter('create_text_file');
 
 $default_real_directory = realpath($config['homedir'].'/');
 
-$_FILES['file']['name'] = '../test3.jpeg';
-
 // Remove double dot in filename path.
 $file_name = $_FILES['file']['name'];
 $path_parts = explode('/', $file_name);

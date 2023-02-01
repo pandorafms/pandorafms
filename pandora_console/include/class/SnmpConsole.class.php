@@ -926,7 +926,10 @@ class SnmpConsole extends HTML
                                 'class' => 'invert_filter',
                             ]
                         ).'</a>';
-                        $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">'.html_print_image('images/edit.png', true, ['alt' => __('SNMP trap editor'), 'title' => __('SNMP trap editor')]).'</a>';
+
+                        if ($config['enterprise_installed']) {
+                            $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">'.html_print_image('images/edit.png', true, ['alt' => __('SNMP trap editor'), 'title' => __('SNMP trap editor')]).'</a>';
+                        }
 
                         $tmp->m = html_print_checkbox_extended('snmptrapid[]', $tmp->id_trap, false, false, '', 'class="chk"', true);
 

@@ -357,7 +357,7 @@ final class Container extends Model
             $config['dbpass'].$row['id'].$config['id_user']
         );
 
-        return \io_safe_output($row);
+        return $row;
     }
 
 
@@ -538,7 +538,7 @@ final class Container extends Model
             'OR'
         );
 
-        if ($rows === false) {
+        if ($row === false) {
             return '';
         }
 

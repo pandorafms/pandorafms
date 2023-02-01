@@ -1569,7 +1569,7 @@ if (!empty($result)) {
                     'agent_small',
                     false,
                     true,
-                    false,
+                    true,
                     '[&hellip;]',
                     'font-size:7.5pt;'
                 );

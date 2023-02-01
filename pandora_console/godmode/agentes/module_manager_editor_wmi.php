@@ -34,7 +34,7 @@ $extra_title = __('WMI server module');
 
 define('ID_NETWORK_COMPONENT_TYPE', 6);
 
-if (empty($update_module_id)) {
+if (empty($edit_module)) {
     // Function in module_manager_editor_common.php
     add_component_selection(ID_NETWORK_COMPONENT_TYPE);
 } else {
@@ -116,7 +116,7 @@ $data[1] = html_print_input_text(
 $data[2] = __('Password');
 $data[3] = html_print_input_password(
     'plugin_pass',
-    $plugin_pass,
+    '',
     '',
     15,
     60,
@@ -191,6 +191,11 @@ $(document).ready (function () {
             $("#text-custom_ip_target").hide();
         }
     });
+
+    // Add input password values with js to hide it in browser inspector.
+    $('#password-plugin_pass').val('<?php echo $plugin_pass; ?>');
+
+    observerInputPassword();
 });
 
 </script>

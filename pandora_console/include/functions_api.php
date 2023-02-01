@@ -7509,7 +7509,7 @@ function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
     $bad_agents = [];
     $i = 0;
     foreach ($total_agents as $agent_id) {
-        $result_agent = agents_check_access_agent($agent_id, 'AD');
+        $result_agent = agents_check_access_agent($agent_id, 'AR');
         if (!$result_agent) {
             $bad_agents[] = $agent_id;
             unset($agents[$i]);
@@ -9601,6 +9601,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['default_event_filter'] = $other['data'][10];
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
+    $values['metaconsole_access_node'] = $other['data'][13];
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');
@@ -10157,6 +10158,8 @@ function api_set_delete_module($id, $id2, $other, $trash1)
             }
 
             if (!$simulate) {
+                // Before delete the main module, check and delete the childrens from the original module.
+                module_check_childrens_and_delete($idAgentModule);
                 $return = modules_delete_agent_module($idAgentModule);
             } else {
                 $return = true;
@@ -10182,6 +10185,8 @@ function api_set_delete_module($id, $id2, $other, $trash1)
         }
 
         if (!$simulate) {
+            // Before delete the main module, check and delete the childrens from the original module.
+            module_check_childrens_and_delete($idAgentModule);
             $return = modules_delete_agent_module($idAgentModule);
         } else {
             $return = true;
@@ -12466,9 +12471,26 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
         return;
     }
 
-    $partial = tactical_status_modules_agents($config['id_user'], false, 'AR');
+    if ($id_group) {
+        $groups_clause = '1 = 1';
+        if (!users_is_admin($config['id_user'])) {
+            $user_groups = implode(',', array_keys(users_get_groups()));
+            $groups_clause = "(ta.id_grupo IN ($user_groups) OR tasg.id_group IN ($user_groups))";
+        }
 
-    $total = (int) $partial['_monitor_total_'];
+        $sql = "SELECT COUNT(DISTINCT(id_agente_modulo))
+        FROM tagente_modulo tam, tagente ta
+        LEFT JOIN tagent_secondary_group tasg
+            ON ta.id_agente = tasg.id_agent
+        WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
+            AND delete_pending = 0 AND $groups_clause";
+
+        $total = db_get_value_sql($sql);
+    } else {
+        $partial = tactical_status_modules_agents($config['id_user'], false, 'AR');
+
+        $total = (int) $partial['_monitor_total_'];
+    }
 
     $data = [
         'type' => 'string',
@@ -14425,7 +14447,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
 
         // Graph width (optional).
-        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
+        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : 600;
 
         // If recive value its from mail call.
         $graph_font_size = $other['data'][5];
@@ -17641,5 +17663,22 @@ function api_set_send_report($thrash1, $thrash2, $other, $returnType)
         ];
 
         returnData($returnType, $data, ';');
+    }
+}
+
+
+/**
+ * Check if token is correct.
+ *
+ * @param string $token Token for check.
+ *
+ * @return mixed Id of user. If returns 0 there is not valid token.
+ */
+function api_token_check(string $token)
+{
+    if (empty($token) === true) {
+        return 0;
+    } else {
+        return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
 }

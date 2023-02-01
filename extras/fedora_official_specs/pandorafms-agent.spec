@@ -4,9 +4,9 @@ Release: 140223.sp3%{?dist}
 Summary: Host/service/network agent for Pandora FMS monitoring system
 License: GPLv2
 Vendor: Artica <http://www.artica.es>
-Source: http://code.pandorafms.com/static_download/pandorafms_agent_unix-5.0SP3.tar.gz
+Source: http://code.pandorafms.com/static_download/pandorafms_agent_linux-5.0SP3.tar.gz
 #Source: %{name}-%{version}.tar.gz
-#Source0: http://code.pandorafms.com/static_download/pandorafms_agent_unix-5.0SP3.tar.gz
+#Source0: http://code.pandorafms.com/static_download/pandorafms_agent_linux-5.0SP3.tar.gz
 URL: http://pandorafms.com
 Group: Applications/System
 #Prefix: /usr/share

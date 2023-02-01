@@ -693,13 +693,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             $cluster = PandoraFMS\Cluster::loadFromAgentId(
                 $agent['id_agente']
             );
-            $url = 'index.php?sec=reporting&sec2=';
-            $url .= 'operation/cluster/cluster';
-            $url = ui_get_full_url(
-                $url.'&op=update&id='.$cluster->id()
-            );
-            $go_to_agent .= '<a target="_blank" href="'.$url.'">';
-            $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
+            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id='.$cluster->id().'">';
+            $go_to_agent .= html_print_submit_button(__('Go to cluster edition'), 'upd_button', false, 'class="sub config"', true);
         } else {
             $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
             $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
@@ -852,30 +847,38 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                 $permission = check_acl($config['id_user'], $agent['id_grupo'], 'RR');
 
                 if ($permission) {
-                    $params = [
-                        'interface_name'     => $interface_name,
-                        'agent_id'           => $id_agente,
-                        'traffic_module_in'  => $interface['traffic']['in'],
-                        'traffic_module_out' => $interface['traffic']['out'],
-                    ];
+                    if ($interface['traffic']['in'] > 0 && $interface['traffic']['out'] > 0) {
+                        $params = [
+                            'interface_name'     => $interface_name,
+                            'agent_id'           => $id_agente,
+                            'traffic_module_in'  => $interface['traffic']['in'],
+                            'traffic_module_out' => $interface['traffic']['out'],
+                        ];
 
-                    if (defined('METACONSOLE') && !empty($server_id)) {
-                        $params['server'] = $server_id;
+                        if (defined('METACONSOLE') && !empty($server_id)) {
+                            $params['server'] = $server_id;
+                        }
+
+                        $params_json = json_encode($params);
+                        $params_encoded = base64_encode($params_json);
+                        $url = ui_get_full_url('operation/agentes/interface_traffic_graph_win.php', false, false, false);
+                        $graph_url = "$url?params=$params_encoded";
+                        $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+
+                        $graph_link = "<a href=\"javascript:winopeng_var('".$graph_url."','".$win_handle."', 800, 480)\">";
+                        $graph_link .= html_print_image(
+                            'images/chart_curve.png',
+                            true,
+                            ['title' => __('Interface traffic')]
+                        );
+                        $graph_link .= '</a>';
+                    } else {
+                        $graph_link = html_print_image(
+                            'images/chart_curve.disabled.png',
+                            true,
+                            ['title' => __('inOctets and outOctets must be enabled.')]
+                        );
                     }
-
-                    $params_json = json_encode($params);
-                    $params_encoded = base64_encode($params_json);
-                    $url = ui_get_full_url('operation/agentes/interface_traffic_graph_win.php', false, false, false);
-                    $graph_url = "$url?params=$params_encoded";
-                    $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-
-                    $graph_link = "<a href=\"javascript:winopeng_var('".$graph_url."','".$win_handle."', 800, 480)\">";
-                    $graph_link .= html_print_image(
-                        'images/chart_curve.png',
-                        true,
-                        ['title' => __('Interface traffic')]
-                    );
-                    $graph_link .= '</a>';
                 } else {
                     $graph_link = '';
                 }

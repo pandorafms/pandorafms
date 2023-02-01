@@ -117,13 +117,12 @@ function createVisualConsole(
                   visualConsole.updateElements(items);
                 }
 
-                if (
-                  visualConsole.props.maintenanceMode != null &&
-                  visualConsole.props.maintenanceMode.user !== id_user
-                ) {
-                  visualConsole.enableMaintenanceMode();
-                } else {
-                  visualConsole.disableMaintenanceMode();
+                if (window.location.pathname.indexOf("index.php") <= 0) {
+                  if (visualConsole.props.maintenanceMode != null) {
+                    visualConsole.enableMaintenanceMode();
+                  } else {
+                    visualConsole.disableMaintenanceMode();
+                  }
                 }
 
                 // Emit the VC update event.

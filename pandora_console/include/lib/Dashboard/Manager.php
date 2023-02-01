@@ -675,7 +675,8 @@ class Manager implements PublicLogin
         int $offset=-1,
         int $limit=-1,
         bool $favourite=false,
-        bool $slideshow=false
+        bool $slideshow=false,
+        string $id_user=''
     ):array {
         global $config;
 
@@ -693,11 +694,15 @@ class Manager implements PublicLogin
             $sql_where .= 'AND td.cells_slideshow = 1';
         }
 
+        if (empty($id_user) === true) {
+            $id_user = $config['id_user'];
+        }
+
         // Check ACl.
-        if (\is_user_admin($config['id_user']) !== true) {
-            // User no admin see dashboards of him groups and profile 'AR'.
+        if (\is_user_admin($id_user) !== true) {
+            // Non-admin user can see dashboards of his groups and 'AR' profile.
             $group_list = \users_get_groups(
-                $config['id_user'],
+                $id_user,
                 'RR',
                 true
             );
@@ -727,7 +732,7 @@ class Manager implements PublicLogin
                 GROUP BY td.id
 				ORDER BY name%s",
                     $string_groups,
-                    $config['id_user'],
+                    $id_user,
                     $sql_where,
                     $sql_limit
                 );
@@ -746,7 +751,7 @@ class Manager implements PublicLogin
 				    WHERE td.id_group = 0 AND td.id_user = '%s' %s
                     GROUP BY td.id
 				    ORDER BY name%s",
-                    $config['id_user'],
+                    $id_user,
                     $sql_where,
                     $sql_limit
                 );
@@ -802,7 +807,7 @@ class Manager implements PublicLogin
         global $config;
 
         if (is_user_admin($config['id_user']) !== false) {
-            // User no admin see dashboards of him groups and profile 'AR'.
+            // Non-admin user can see dashboards of his groups and 'AR' profile.
             $group_list = \users_get_groups(
                 $config['id_user'],
                 'RR',
@@ -818,20 +823,13 @@ class Manager implements PublicLogin
                 $string_groups = io_safe_output($string_groups);
 
                 $sql_dashboard = sprintf(
-                    "SELECT COUNT(*)
+                    'SELECT COUNT(*)
                     FROM tdashboard
-                    WHERE (id_group IN (%s) AND id_user = '') OR
-                        id_user = '%s'",
-                    $string_groups,
-                    $config['id_user']
+                    WHERE (id_group IN (%s))',
+                    $string_groups
                 );
             } else {
-                $sql_dashboard = sprintf(
-                    "SELECT COUNT(*)
-                    FROM tdashboard
-                    WHERE id_group = 0 AND id_user = '%s'",
-                    $config['id_user']
-                );
+                $sql_dashboard = 'SELECT COUNT(*) FROM tdashboard WHERE id_group = 0';
             }
         } else {
             $sql_dashboard = 'SELECT COUNT(*) FROM tdashboard';

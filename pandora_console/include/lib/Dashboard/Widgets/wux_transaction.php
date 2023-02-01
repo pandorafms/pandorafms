@@ -175,7 +175,7 @@ class WuxWidget extends Widget
 
         // Must be configured before using.
         $this->configurationRequired = false;
-        if (empty($this->options) === true) {
+        if (empty($this->values['agentId']) === true) {
             $this->configurationRequired = true;
         }
 

@@ -52,13 +52,13 @@ if (!isset($policy_page)) {
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 
 echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos bolder w20p'>";
-echo __('Search').' '.html_print_input_text(
+echo "<tr><td class='datos bolder w12p'><span class='mrgn_right_7px'>";
+echo __('Search').'</span>'.html_print_input_text(
     'search_string',
     $search_string,
     '',
-    15,
-    255,
+    5,
+    5,
     true
 );
 html_print_input_hidden('search', 1);
@@ -73,7 +73,6 @@ echo '</td>';
 echo "<td class='datos w10p'>";
 html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"');
 echo '</td>';
-echo "<td class='datos w10p'></td>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo.
@@ -179,7 +178,7 @@ if (($policy_page) || (isset($agent))) {
         // Create module/type combo.
         echo '<form id="create_module_type" method="post" action="'.$url.'">';
         if (!$policy_page) {
-            echo '<td class="datos w20p bolder">';
+            echo '<td class="datos w15p bolder">';
             echo __('Show in hierachy mode');
             if ($checked == 'true') {
                 $checked = true;
@@ -198,8 +197,8 @@ if (($policy_page) || (isset($agent))) {
             echo '</td>';
         }
 
-        echo '<td class="datos w20p bolder">';
-        echo __('<p>Type</p>');
+        echo '<td class="datos w20p bolder lign_right"><span class="mrgn_right_7px">';
+        echo __('Type').'</span>';
         html_print_select(
             $modules,
             'moduletype',
@@ -216,7 +215,7 @@ if (($policy_page) || (isset($agent))) {
         );
         html_print_input_hidden('edit_module', 1);
         echo '</td>';
-        echo '<td class="datos w10p">';
+        echo '<td class="datos w5p">';
         echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
         echo '</td>';
         echo '</tr>';
@@ -247,6 +246,8 @@ if ($module_action === 'delete') {
     $print_result_msg = true;
     $count_correct_delete_modules = 0;
     foreach ($id_agent_modules_delete as $id_agent_module_del) {
+        // Before delete the main module, check and delete the childrens from the original module.
+        module_check_childrens_and_delete($id_agent_module_del);
         $id_grupo = (int) agents_get_agent_group($id_agente);
         $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
@@ -1176,7 +1177,11 @@ foreach ($modules as $module) {
     $data[6] = ui_print_status_image(
         $status,
         htmlspecialchars($title),
-        true
+        true,
+        false,
+        false,
+        false,
+        ($module['ip_target']) ? 'IP: '.$module['ip_target'] : false
     );
 
     // MAX / MIN values.
@@ -1278,9 +1283,13 @@ foreach ($modules as $module) {
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+        // Check module relatonships to show warning message.
+        $url = htmlentities('index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo']);
+
         // Delete module.
-        $data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+        $data[9] = '<a href="#"
+			onClick="get_children_modules(false, \''.$module['id_agente_modulo'].'\', \''.$url.'\')">';
+
         $data[9] .= html_print_image(
             'images/cross.png',
             true,
@@ -1304,8 +1313,7 @@ foreach ($modules as $module) {
 }
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
-		onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+    echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module" id="form_multiple_delete">';
 }
 
 html_print_table($table);
@@ -1339,6 +1347,8 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         false,
         'class="sub next"'
     );
+
+
     echo '</div>';
     echo '</form>';
 }
@@ -1347,7 +1357,18 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
 <script type="text/javascript">
 
     $(document).ready (function () {
-        
+
+        $("input[name=submit_modules_action]").click(function (event) {
+            event.preventDefault();
+            var module_action = $('#module_action').val();
+                if(module_action !== 'delete') {
+                    $("#form_multiple_delete").submit();
+                } else {
+                    get_children_modules(true);
+                }
+        });
+
+
         $('[id^=checkbox-id_delete]').change(function(){
             if($(this).parent().parent().hasClass('checkselected')){
                 $(this).parent().parent().removeClass('checkselected');
@@ -1388,5 +1409,61 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         else {
             window.location = window.location + "&checked=true";
         }
+    }
+
+    function get_children_modules(multiple, id_module, url) {
+        var selected_modules = [];
+       
+        if(typeof(id_module) === 'undefined' && multiple === true) {
+            $("input[id^='checkbox-id_delete']:checked").each(function () {
+                selected_modules.push(this.value);
+            });
+        } else {
+            selected_modules = [id_module];
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            dataType: "json",
+            data: {
+                page: 'include/ajax/module',
+                get_children_modules: true,
+                parent_modulues: JSON.parse(JSON.stringify(selected_modules)),
+            },
+            success: function (data) {
+                delete_module_warning(data, multiple, id_module, url);
+            }
+        });
+    }
+
+    function delete_module_warning(children, multiple, id_module, url) {
+        var message = '<?php echo __('Are you sure?'); ?>';
+        var ret = false;
+
+        if(children != false) {
+            message += '<br><strong>' + '<?php echo __('This module has children modules.The following modules will also be deleted: '); ?>' + '</strong><ul>';
+            $.each(children, function (key, value) {
+                message += '<li>' + value['nombre'] + '</li>';
+            });
+            message += '</ul>';
+        }   
+
+        confirmDialog({
+                title: "<?php echo __('Delete module'); ?>",
+                message: message,
+                onAccept: function() {
+                    if(multiple === true) {
+                        $("#form_multiple_delete").submit();
+                        return true;
+                    } else {
+                        window.location.href = url;
+                    }
+                }
+            });
+
+        return true;
+        
+        
     }
 </script>

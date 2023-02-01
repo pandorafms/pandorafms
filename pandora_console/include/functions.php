@@ -16,7 +16,11 @@
  * @subpackage Generic_Functions
  */
 
-/**
+use HeadlessChromium\BrowserFactory;
+use HeadlessChromium\Clip;
+use HeadlessChromium\Page;
+
+/*
  * Include the html and ui functions.
  */
 require_once 'functions_html.php';
@@ -222,7 +226,7 @@ function format_numeric($number, $decimals=1)
     global $config;
 
     // Translate to float in case there are characters in the string so
-    // fmod doesn't throw a notice
+    // fmod doesn't throw a notice.
     $number = (float) $number;
 
     if ($number == 0) {
@@ -230,10 +234,20 @@ function format_numeric($number, $decimals=1)
     }
 
     if (fmod($number, 1) > 0) {
-        return number_format($number, $decimals, $config['decimal_separator'], $config['thousand_separator']);
+        return number_format(
+            $number,
+            $decimals,
+            $config['decimal_separator'],
+            ($config['thousand_separator'] ?? ',')
+        );
     }
 
-    return number_format($number, 0, $config['decimal_separator'], $config['thousand_separator']);
+    return number_format(
+        $number,
+        0,
+        $config['decimal_separator'],
+        ($config['thousand_separator'] ?? ',')
+    );
 }
 
 
@@ -963,6 +977,10 @@ function get_parameter($name, $default='')
         return get_parameter_get($name, $default);
     }
 
+    if (isset($_FILES[$name])) {
+        return get_parameter_file($name, $default);
+    }
+
     return $default;
 }
 
@@ -997,6 +1015,24 @@ function get_parameter_post($name, $default='')
 {
     if ((isset($_POST[$name])) && ($_POST[$name] != '')) {
         return io_safe_input($_POST[$name]);
+    }
+
+    return $default;
+}
+
+
+/**
+ * Get a parameter from a post file request.
+ *
+ * @param string $name    key of the parameter in the $_FILES array
+ * @param mixed  $default default value if the key wasn't found
+ *
+ * @return mixed Whatever was in that parameter, cleaned however
+ */
+function get_parameter_file($name, $default='')
+{
+    if ((isset($_FILES[$name])) && !empty($_FILES[$name])) {
+        return io_safe_input($_FILES[$name]);
     }
 
     return $default;
@@ -2100,7 +2136,7 @@ function get_snmpwalk(
     }
 
     if (enterprise_installed()) {
-        if ($server_to_exec != 0) {
+        if (empty($server_to_exec) === false) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
 
             if (empty($server_data['port'])) {
@@ -4212,8 +4248,7 @@ function generator_chart_to_pdf(
         $hack_metaconsole = '';
     }
 
-    $file_js  = $config['homedir'].'/include/web2image.js';
-    $url      = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
+    $url = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
     if (!$params['return_img_base_64']) {
         $img_file = 'img_'.uniqid().'.png';
@@ -4221,64 +4256,88 @@ function generator_chart_to_pdf(
         $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
     }
 
-    if ($type_graph_pdf === 'vbar') {
-        $width_img  = $params['generals']['pdf']['width'];
-        $height_img = $params['generals']['pdf']['height'];
-    } else if ($type_graph_pdf === 'combined'
-        && $params_combined['stacked'] == CUSTOM_GRAPH_VBARS
-    ) {
-        $width_img = 650;
-        $height_img = ($params['height'] + 50);
-    } else if ($type_graph_pdf === 'hbar' || $type_graph_pdf === 'pie_chart') {
-        $width_img  = ($params['width'] ?? 550);
-        $height_img = $params['height'];
-    } else {
-        $width_img  = 550;
-        $height_img = $params['height'];
-
-        if ((int) $params['landscape'] === 1) {
-            $height_img = 150;
-            $params['height'] = 150;
-        }
-    }
-
-    $params_encode_json = urlencode(json_encode($params));
-
-    if ($params_combined) {
-        $params_combined = urlencode(json_encode($params_combined));
-    }
-
-    if ($module_list) {
-        $module_list = urlencode(json_encode($module_list));
-    }
-
     $session_id = session_id();
-    $cache_dir = $config['homedir'].'/attachment/cache';
-
-    $cmd = '"'.io_safe_output($config['phantomjs_bin']);
-    $cmd .= DIRECTORY_SEPARATOR.'phantomjs" ';
-    $cmd .= ' --disk-cache=true --disk-cache-path="'.$cache_dir.'"';
-    $cmd .= ' --max-disk-cache-size=10000 ';
-    $cmd .= ' --ssl-protocol=any --ignore-ssl-errors=true ';
-    $cmd .= '"'.$file_js.'" "'.$url.'" "'.$type_graph_pdf.'"';
-    $cmd .= ' "'.$params_encode_json.'" "'.$params_combined.'"';
-    $cmd .= ' "'.$module_list.'" "'.$img_path.'"';
-    $cmd .= ' "'.$width_img.'" "'.$height_img.'"';
-    $cmd .= ' "'.$session_id.'" "'.$params['return_img_base_64'].'"';
-
-    $result = null;
-    $retcode = null;
-    exec($cmd, $result, $retcode);
-
-    $img_content = join("\n", $result);
-
-    if ($params['return_img_base_64']) {
-        // To be used in alerts.
-        return $img_content;
+    if ($type_graph_pdf === 'combined') {
+        $data = [
+            'data'             => $params,
+            'session_id'       => $session_id,
+            'type_graph_pdf'   => $type_graph_pdf,
+            'data_module_list' => $module_list,
+            'data_combined'    => $params_combined,
+        ];
     } else {
-        // To be used in PDF files.
-        $config['temp_images'][] = $img_path;
-        return '<img src="'.$img_url.'" />';
+        $data = [
+            'data'           => $params,
+            'session_id'     => $session_id,
+            'type_graph_pdf' => $type_graph_pdf,
+        ];
+    }
+
+    // If not install chromium avoid 500 convert tu images no data to show.
+    $chromium_dir = io_safe_output($config['chromium_path']);
+    $result_ejecution = exec($chromium_dir.' --version');
+    if (empty($result_ejecution) === true) {
+        if ($params['return_img_base_64']) {
+            $params['base64'] = true;
+        }
+
+        return graph_nodata_image($params);
+    }
+
+    try {
+        $browserFactory = new BrowserFactory($chromium_dir);
+
+        // Starts headless chrome.
+        $browser = $browserFactory->createBrowser(['noSandbox' => true]);
+
+        // Creates a new page.
+        $page = $browser->createPage();
+
+        // Navigate to an URL.
+        $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
+        $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+
+        // Dynamic.
+        $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();
+        if (empty($dynamic_height) === true) {
+            $dynamic_height = 200;
+        }
+
+        if (isset($params['options']['viewport']) === true
+            && isset($params['options']['viewport']['height']) === true
+            && empty($params['options']['viewport']['height']) === false
+        ) {
+            $dynamic_height = $params['options']['viewport']['height'];
+        }
+
+        $dynamic_width = $page->evaluate('document.getElementById("container-chart-generator-item").clientWidth')->getReturnValue();
+        if (empty($dynamic_width) === true) {
+            $dynamic_width = 794;
+        }
+
+        if (isset($params['options']['viewport']) === true
+            && isset($params['options']['viewport']['width']) === true
+            && empty($params['options']['viewport']['width']) === false
+        ) {
+            $dynamic_width = $params['options']['viewport']['width'];
+        }
+
+        $clip = new Clip(0, 0, $dynamic_width, $dynamic_height);
+
+        if ($params['return_img_base_64']) {
+            $b64 = $page->screenshot(['clip' => $clip])->getBase64();
+            // To be used in alerts.
+            return $b64;
+        } else {
+            // To be used in PDF files.
+            $b64 = $page->screenshot(['clip' => $clip])->saveToFile($img_path);
+            $config['temp_images'][] = $img_path;
+            return '<img src="'.$img_url.'" />';
+        }
+    } catch (\Throwable $th) {
+        error_log($th);
+    } finally {
+        $browser->close();
     }
 }
 
@@ -6277,7 +6336,7 @@ function arrayOutputSorting($sort, $sortField)
 /**
  * Get dowload started cookie from js and set ready cokkie for download ready comntrol.
  *
- * @return
+ * @return void
  */
 function setDownloadCookieToken()
 {
@@ -6292,4 +6351,49 @@ function setDownloadCookieToken()
             '/'
         );
     }
+}
+
+
+/**
+ * Get header Authorization
+ * */
+function getAuthorizationHeader()
+{
+    $headers = null;
+    if (isset($_SERVER['Authorization'])) {
+        $headers = trim($_SERVER['Authorization']);
+    } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // Nginx or fast CGI
+        $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
+    } else if (function_exists('apache_request_headers')) {
+        $requestHeaders = apache_request_headers();
+        // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
+        $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+        // print_r($requestHeaders);
+        if (isset($requestHeaders['Authorization'])) {
+            $headers = trim($requestHeaders['Authorization']);
+        }
+    }
+
+    return $headers;
+}
+
+
+/**
+ * Get access token from header
+ *
+ * @return array/false Token received, false in case thre is no token.
+ * */
+function getBearerToken()
+{
+    $headers = getAuthorizationHeader();
+
+    // HEADER: Get the access token from the header
+    if (!empty($headers)) {
+        if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+            return $matches[1];
+        }
+    }
+
+    return false;
 }

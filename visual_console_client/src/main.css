@@ -74,6 +74,10 @@
   }
 }
 
+.visual-console-item.is-alert-triggered {
+  border: 3px solid #f36201;
+}
+
 .visual-console-spinner {
   background-color: transparent;
   margin: 0px auto;

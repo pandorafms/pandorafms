@@ -427,6 +427,7 @@ class TopNEventByModuleWidget extends Widget
                 $output .= '</div>';
                 return $output;
             } else {
+                $labels = [];
                 $data_pie = [];
                 foreach ($result as $row) {
                     if ($row['id_agentmodule'] == 0) {
@@ -479,7 +480,8 @@ class TopNEventByModuleWidget extends Widget
                         );
                     }
 
-                    $data_pie[$event_name.' [ '.$name.' ] ('.$row['count'].')'] = $row['count'];
+                    $labels[] = $event_name.' [ '.$name.' ] ('.$row['count'].')';
+                    $data_pie[] = $row['count'];
                 }
             }
 
@@ -509,17 +511,14 @@ class TopNEventByModuleWidget extends Widget
 
             $output = pie_graph(
                 $data_pie,
-                $width,
-                $height,
-                __('other'),
-                '',
-                false,
-                $config['fontpath'],
-                $config['font_size'],
-                1,
-                $this->values['legendPosition'],
-                '',
-                false
+                [
+                    'legend' => [
+                        'display'  => true,
+                        'position' => 'right',
+                        'align'    => 'center',
+                    ],
+                    'labels' => $labels,
+                ]
             );
         }
 

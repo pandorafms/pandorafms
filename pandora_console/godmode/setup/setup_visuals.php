@@ -1314,7 +1314,7 @@ $row++;
 
 $decimal_separators = [
     ',' => ',',
-    '.' => '.'
+    '.' => '.',
 ];
 
 $table_other->data[$row][0] = __('Decimal separator');

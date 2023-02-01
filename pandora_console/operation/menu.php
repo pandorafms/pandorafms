@@ -73,7 +73,11 @@ if ($access_console_node === true) {
 
         $sub['view']['sub2'] = $sub2;
 
-        enterprise_hook('inventory_menu');
+        if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AW')) {
+            $sub['operation/inventory/inventory']['text'] = __('Inventory');
+            $sub['operation/inventory/inventory']['id'] = 'Inventory';
+            $sub['operation/inventory/inventory']['refr'] = 0;
+        }
 
         if ($config['activate_netflow']) {
             $sub['network_traffic'] = [
@@ -453,26 +457,6 @@ if ($access_console_node === true) {
 
         ui_require_javascript_file('pandora_events');
 
-        ?>
-    <script type="text/javascript">
-    function openSoundEventWindow() {
-        url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
-        // devicePixelRatio knows how much zoom browser applied.
-        var windowScale = parseFloat(window.devicePixelRatio);
-        var defaultWidth = 630;
-        var defaultHeight = 630;
-        // If the scale is 1, no zoom has been applied.
-        var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
-        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
-
-        window.open(
-            url,
-            '<?php __('Sound Alerts'); ?>',
-            'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
-        );
-    }
-    </script>
-        <?php
         $menu_operation['eventos']['sub'] = $sub;
     }
 }

@@ -37,7 +37,6 @@ $ajaxPage = 'operation/cluster/cluster';
 
 // Control call flow.
 try {
-
     // User access and validation is being processed on class constructor.
     $obj = new ClusterManager($ajaxPage);
 } catch (Exception $e) {

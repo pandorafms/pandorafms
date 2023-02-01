@@ -3112,7 +3112,7 @@ function modules_get_relations($params=[])
     }
 
     $distinct = '';
-    if (empty($params)) {
+    if (empty($params) || isset($params['distinct'])) {
         $distinct = 'DISTINCT';
     }
 
@@ -3136,6 +3136,11 @@ function modules_get_relations($params=[])
         );
     }
 
+    $id_rt_filter = '';
+    if (isset($params['id_rt'])) {
+        $id_rt_filter = sprintf('AND tmr.id_rt = %d', $params['id_rt']);
+    }
+
     $sql = sprintf(
         'SELECT %s tmr.id, tmr.module_a, tmr.module_b,
         tmr.disable_update, tmr.type 
@@ -3153,7 +3158,8 @@ function modules_get_relations($params=[])
         $module_type,
         $agent_filter,
         $disabled_update_filter,
-        $modules_type_filter
+        $modules_type_filter,
+        $id_rt_filter
     );
 
     return db_get_all_rows_sql($sql);
@@ -3977,6 +3983,93 @@ function recursive_get_dt_from_modules_tree(&$f_modules, $modules, $deep)
         $f_modules[$module['id_agente_modulo']]['deep'] = ($deep + 1);
         if (isset($modules[$i]['child'])) {
             recursive_get_dt_from_modules_tree($f_modules, $modules[$i]['child'], $f_modules[$module['id_agente_modulo']]['deep']);
+        }
+    }
+}
+
+
+/**
+ * Get the module data from a children
+ *
+ * @param  integer $id_module Id module
+ * @param  boolean $recursive Recursive children search.
+ * @return array Children module data
+ */
+function get_children_module($id_module, $fields=false, $recursion=false)
+{
+    $children_module_data = db_get_all_rows_filter(
+        'tagente_modulo',
+        ['parent_module_id' => $id_module],
+        $fields
+    );
+
+    if ($children_module_data !== false && $recursion === true) {
+        foreach ($children_module_data as $child) {
+            $niece = get_children_module($child['id_agente_modulo'], $fields, false);
+            if ((bool) $niece === false) {
+                continue;
+            } else {
+                $children_module_data = array_merge($children_module_data, $niece);
+            }
+        }
+    }
+
+    return $children_module_data;
+}
+
+
+/**
+ * Find and delete the childers modules from the $id_module
+ *
+ * @param  mixed $id_module
+ * @return void
+ */
+function module_check_childrens_and_delete($id_module)
+{
+    $children_data = get_children_module($id_module);
+    // Check if exist have a childer
+    if ($children_data) {
+        // If have more than 1 children
+        if (is_array($children_data)) {
+            foreach ($children_data as $children_module_data) {
+                if ($children_module_data['parent_module_id']) {
+                    // Search children and delete this module
+                    // Before delete, lets check if exist (Just for cases it's already deleted)
+                    if (modules_check_agentmodule_exists($children_module_data['parent_module_id'])) {
+                        modules_delete_agent_module($children_module_data['parent_module_id']);
+                    }
+
+                    module_check_childrens_and_delete($children_module_data['id_agente_modulo']);
+                } else {
+                    // If haven't children just delete
+                    // Before delete, lets check if exist (Just for cases it's already deleted)
+                    if (modules_check_agentmodule_exists($children_module_data['id_agente_modulo'])) {
+                        modules_delete_agent_module($children_module_data['id_agente_modulo']);
+                    }
+                }
+            }
+        } else {
+            // If just have 1 children
+            if ($children_data['parent_module_id']) {
+                // Before delete, lets check if exist (Just for cases it's already deleted)
+                if (modules_check_agentmodule_exists($children_data['parent_module_id'])) {
+                    modules_delete_agent_module($children_data['parent_module_id']);
+                }
+
+                module_check_childrens_and_delete($children_data['id_agente_modulo']);
+            } else {
+                // If haven't children just delete
+                // Before delete, lets check if exist (Just for cases it's already deleted)
+                if (modules_check_agentmodule_exists($children_data['id_agente_modulo'])) {
+                    modules_delete_agent_module($children_data['id_agente_modulo']);
+                }
+            }
+        }
+    } else {
+        // Haven't childrens, so delete
+        // Before delete, lets check if exist (Just for cases it's already deleted)
+        if (modules_check_agentmodule_exists($id_module)) {
+            modules_delete_agent_module($id_module);
         }
     }
 }

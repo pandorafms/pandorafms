@@ -524,7 +524,7 @@ if (is_ajax() === true) {
                         $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
-                            (int) $tmp->ack_utimestamp,
+                            (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,
                             true
                         );
                         $tmp->timestamp = ui_print_timestamp(

@@ -56,7 +56,7 @@ ui_require_css_file('maintenance');
             'Please navigate to %s to unify system',
             '<a href="'.ui_get_meta_url(
                 'index.php?sec=advanced&sec2=advanced/command_center'
-            ).'" target="_new">'.__('merging tool').'</a>'
+            ).'" target="_new">'.__('command center').'</a>'
         );
         ?>
     </p>

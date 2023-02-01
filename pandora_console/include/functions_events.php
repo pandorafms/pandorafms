@@ -4235,12 +4235,53 @@ function events_page_details($event, $server_id=0)
 
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Last contact').'</div>';
-        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
+
+        $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+        if (!$user_timezone) {
+            $timezone = timezone_open(date_default_timezone_get());
+            $datetime_eur = date_create('now', timezone_open($config['timezone']));
+            $dif = timezone_offset_get($timezone, $datetime_eur);
+            date($config['date_format'], $dif);
+            if (!date('I')) {
+                // For summer -3600sec.
+                $dif -= 3600;
+            }
+
+            $total_sec = strtotime($agent['ultimo_contacto']);
+            $total_sec += $dif;
+            $last_contact = date($config['date_format'], $total_sec);
+            $last_contact_value = ui_print_timestamp($last_contact, true);
+        } else {
+            $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+            date_default_timezone_set($user_timezone);
+
+            $last_contact_value = human_time_comparation(strtotime($agent['ultimo_contacto']), 'large');
+        }
+
+        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : $last_contact_value;
         $table_details->data[] = $data;
+
+        $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+        if (!$user_timezone) {
+            $timezone = timezone_open(date_default_timezone_get());
+            $datetime_eur = date_create('now', timezone_open($config['timezone']));
+            $dif = timezone_offset_get($timezone, $datetime_eur);
+            date($config['date_format'], $dif);
+            if (!date('I')) {
+                // For summer -3600sec.
+                $dif -= 3600;
+            }
+
+            $total_sec = strtotime($agent['ultimo_contacto_remoto']);
+            $total_sec += $dif;
+            $lr_contact = date($config['date_format'], $total_sec);
+        } else {
+            $lr_contact = date($config['date_format'], strtotime($agent['ultimo_contacto_remoto']));
+        }
 
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Last remote contact').'</div>';
-        $data[1] = ($agent['ultimo_contacto_remoto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto_remoto']);
+        $data[1] = ($agent['ultimo_contacto_remoto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : $lr_contact;
         $table_details->data[] = $data;
 
         $data = [];
@@ -4729,6 +4770,13 @@ function events_page_general($event)
         $data[1] .= __('Last event').': ';
         $data[1] .= date($config['date_format'], $event['timestamp_last']);
     } else {
+        $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+        if ($user_timezone) {
+            date_default_timezone_set($user_timezone);
+        } else {
+            date_default_timezone_set($config['timezone']);
+        }
+
         $data[1] = date($config['date_format'], $event['utimestamp']);
     }
 

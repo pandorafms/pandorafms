@@ -527,10 +527,31 @@ if (is_ajax() === true) {
                             (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,
                             true
                         );
-                        $tmp->timestamp = ui_print_timestamp(
-                            $tmp->timestamp,
-                            true
-                        );
+
+                        $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                        if (!$user_timezone) {
+                            $timezone = timezone_open(date_default_timezone_get());
+                            $datetime_eur = date_create('now', timezone_open($config['timezone']));
+                            $dif = timezone_offset_get($timezone, $datetime_eur);
+                            date($config['date_format'], $dif);
+                            if (!date('I')) {
+                                // For summer -3600sec.
+                                $dif -= 3600;
+                            }
+
+                            $total_sec = strtotime($tmp->timestamp);
+                            $total_sec += $dif;
+                            $last_contact = date($config['date_format'], $total_sec);
+                            $last_contact_value = ui_print_timestamp($last_contact, true);
+                        } else {
+                            $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                            date_default_timezone_set($user_timezone);
+                            $title = date($config['date_format'], strtotime($tmp->timestamp));
+                            $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                            $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                        }
+
+                        $tmp->timestamp = $last_contact_value;
 
                         if (is_numeric($tmp->data) === true) {
                             $tmp->data = format_numeric(

@@ -276,7 +276,7 @@ foreach ($timezones as $timezone) {
     }
 }
 
-$table->data[$i][0] = __('Timezone setup');
+$table->data[$i][0] = __('Server Timezone setup');
 $table->data[$i][1] = html_print_input_text_extended(
     'timezone_text',
     $config['timezone'],

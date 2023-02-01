@@ -561,6 +561,10 @@ function config_update_config()
                         $error_update[] = __('Automatically assigned no hierarchy');
                     }
 
+                    if (config_update_value('timezonevisual', (string) get_parameter('timezonevisual'), true) === false) {
+                        $error_update[] = __('Automatically timezone visual');
+                    }
+
                     if (config_update_value('autocreate_blacklist', get_parameter('autocreate_blacklist'), true) === false) {
                         $error_update[] = __('Autocreate blacklist');
                     }

@@ -462,9 +462,9 @@ $data = [];
 $data[0] = __('Next contact');
 $data[1] = ui_progress(
     $progress,
-    '97%',
-    2.1,
-    '#BBB',
+    '80%',
+    '1.2',
+    '#ececec',
     true,
     $progressCaption,
     [
@@ -475,7 +475,8 @@ $data[1] = ui_progress(
             'refresh_contact' => 1,
         ],
 
-    ]
+    ],
+    'line-height: 13px;'
 );
 $table_contact->data[] = $data;
 

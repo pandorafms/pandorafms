@@ -8,10 +8,12 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
+  /*
   width: calc(100% - 24px);
   border: 1px solid #eaeaea;
   border-radius: 4px;
   background-color: #fff;
+  */
   margin-bottom: 8px;
 }
 

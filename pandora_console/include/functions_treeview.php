@@ -67,23 +67,16 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     $row = [];
     $row['title'] = __('Name');
-    $row['data'] = $cellName;
-    $table->data['name'] = $row;
-
-    // Edit module button.
-    $row = [];
-    $row['title'] = html_print_button(
-        __('Edit module'),
-        'edit_module_link',
-        false,
-        'window.location.assign(\''.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'\')',
+    $row['data'] = html_print_anchor(
         [
-            'mode'  => 'link',
-            'style' => 'float: right;justify-content: end;padding: 0;',
+            'href'    => $console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash,
+            'title'   => __('Click here for view this module'),
+            'class'   => 'font_11',
+            'content' => $cellName,
         ],
         true
     );
-    $table->data['edit_button'] = $row;
+    $table->data['name'] = $row;
 
     // Interval.
     $row = [];
@@ -601,26 +594,20 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $cellName .= ui_print_help_tip(__('Disabled'), true).'</em>';
     }
 
+    // Agent name.
     $row = [];
     $row['title'] = __('Agent name');
-    $row['data'] = $cellName;
-    $table->data['name'] = $row;
-
-    // Edit agent button.
-    $row = [];
-    $row['title'] = html_print_button(
-        __('Edit agent'),
-        'edit_agent_link',
-        false,
-        $urlAgent,
+    $row['data'] = html_print_anchor(
         [
-            'mode'  => 'link',
-            'style' => 'float: right;justify-content: end;padding: 0;',
+            'href'    => $urlAgent,
+            'title'   => __('Click here for view this agent'),
+            'class'   => 'font_11',
+            'content' => $cellName,
         ],
         true
     );
-    $row['data'] = '';
-    $table->data['edit_button'] = $row;
+
+    $table->data['name'] = $row;
 
     // Addresses.
     $ips = [];
@@ -699,134 +686,41 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     );
     $table->data['next_contact'] = $row;
 
-    // End of table.
-    $agent_table = html_print_table($table, true);
-    /*
-        if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
-        $go_to_agent = '<div style="text-align: right">';
-
-        if ($agent['id_os'] == CLUSTER_OS_ID) {
-            $cluster = PandoraFMS\Cluster::loadFromAgentId(
-                $agent['id_agente']
-            );
-            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id='.$cluster->id().'">';
-            $go_to_agent .= html_print_submit_button(__('Go to cluster edition'), 'upd_button', false, 'class="sub config"', true);
-        } else {
-            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
-            $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
-        }
-
-        $go_to_agent .= '</a>';
-        $go_to_agent .= '</div>';
-
-        $agent_table .= $go_to_agent;
-        }
-    */
     // Title.
     echo '<span id="fixedBottomHeadTitle" style="display:none">'.__('Agent information').'</span>';
     // Print agent data toggle.
-    echo $agent_table;
+    html_print_table($table);
 
-    // Advanced data.
-    $table = new StdClass();
-    $table->width = '100%';
-    $table->class = 'floating_form';
-    $table->id = 'tree_view_agent_advanced';
-    $table->style = [];
-    $table->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
-    $table->head = [];
-    $table->data = [];
+    // Events graph toggle.
+    $eventsGraph = html_print_div(
+        [
+            'class'   => 'graphic_agents',
+            'content' => graph_graphic_agentevents(
+                $id_agente,
+                '500px;',
+                '100px',
+                SECONDS_1DAY,
+                '',
+                true,
+                false,
+                550,
+                1,
+                $server_id
+            ),
+        ],
+        true
+    );
 
-    // Agent version.
-    $row = [];
-    $row['title'] = __('Agent Version');
-    $row['data'] = $agent['agent_version'];
-    $table->data['agent_version'] = $row;
-
-    // Position Information.
-    if ($config['activate_gis']) {
-        $dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
-
-        if ($dataPositionAgent !== false) {
-            if (empty($dataPositionAgent['description']) === false) {
-                $positionContent .= $dataPositionAgent['description'];
-            } else {
-                $positionContent .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-            }
-
-            $position = html_print_anchor(
-                [
-                    'href'    => $console_url.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,
-                    'content' => $positionContent,
-                ],
-                true
-            );
-
-            $row = [];
-            $row['title'] = __('Position (Long, Lat)');
-            $row['data'] = $position;
-            $table->data['agent_position'] = $row;
-        }
-    }
-
-    // If the url description is setted.
-    if (empty($agent['url_address']) === false) {
-        $row = [];
-        $row['title'] = __('Url address');
-        $row['data'] = html_print_anchor(
-            [
-                'href'    => $agent['url_address'],
-                'content' => $agent['url_address'],
-            ],
-            true
-        );
-        $table->data['agent_address'] = $row;
-    }
-
-    // Timezone Offset.
-    if ($agent['timezone_offset'] != 0) {
-        $row = [];
-        $row['title'] = __('Timezone Offset');
-        $row['data'] = $agent['timezone_offset'];
-        $table->data['agent_timezone_offset'] = $row;
-    }
-
-    // Custom fields
-    $fields = db_get_all_rows_filter('tagent_custom_fields', ['display_on_front' => 1]);
-    if ($fields === false) {
-        $fields = [];
-    }
-
-    if ($fields) {
-        foreach ($fields as $field) {
-            $custom_value = db_get_value_filter('description', 'tagent_custom_data', ['id_field' => $field['id_field'], 'id_agent' => $id_agente]);
-            if (!empty($custom_value)) {
-                $row = [];
-                $row['title'] = $field['name'].ui_print_help_tip(__('Custom field'), true);
-                if ($field['is_password_type']) {
-                        $row['data'] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
-                } else {
-                        $row['data'] = ui_bbcode_to_html($custom_value);
-                }
-
-                $table->data['custom_field_'.$field['id_field']] = $row;
-            }
-        }
-    }
-
-    // End of table advanced.
-    $table_advanced = html_print_table($table, true);
     ui_toggle(
-        $table_advanced,
-        '<span class="subsection_header_title">'.__('Advanced information').'</span>',
+        $eventsGraph,
+        '<span class="subsection_header_title">'.__('Events (24h)').'</span>',
         '',
         '',
-        true,
+        false,
         false,
         '',
-        'white-box-content border-bottom-gray',
-        'white_table_graph margin-top-10 margin-bottom-10'
+        'white-box-content',
+        'white_table_graph margin-bottom-10 border-bottom-gray'
     );
 
     if ($config['agentaccess']) {
@@ -849,32 +743,6 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             'white_table_graph margin-top-10 margin-bottom-10'
         );
     }
-
-    $events_graph = '<div class="graphic_agents">';
-    $events_graph .= graph_graphic_agentevents(
-        $id_agente,
-        '340px;margin:0',
-        '60px',
-        SECONDS_1DAY,
-        '',
-        true,
-        false,
-        550,
-        1,
-        $server_id
-    );
-    $events_graph .= '</div><br>';
-    ui_toggle(
-        $events_graph,
-        '<span class="subsection_header_title">'.__('Events (24h)').'</span>',
-        '',
-        '',
-        true,
-        false,
-        '',
-        'white-box-content',
-        'white_table_graph margin-bottom-10 border-bottom-gray'
-    );
 
     // Table network interfaces.
     $network_interfaces_by_agents = agents_get_network_interfaces([$agent]);
@@ -947,7 +815,108 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         ui_toggle($table_interfaces, __('Interface information').' (SNMP)');
     }
 
-    if (!empty($server_data) && is_metaconsole()) {
+        // Advanced data.
+        $table_advanced = new StdClass();
+        $table_advanced->width = '100%';
+        $table_advanced->class = 'floating_form';
+        $table_advanced->id = 'tree_view_agent_advanced';
+        $table_advanced->style = [];
+        $table_advanced->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
+        $table_advanced->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+        $table_advanced->head = [];
+        $table_advanced->data = [];
+
+        // Agent version.
+        $row = [];
+        $row['title'] = __('Agent Version');
+        $row['data'] = $agent['agent_version'];
+        $table_advanced->data['agent_version'] = $row;
+
+        // Position Information.
+    if ($config['activate_gis']) {
+        $dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
+
+        if ($dataPositionAgent !== false) {
+            if (empty($dataPositionAgent['description']) === false) {
+                $positionContent .= $dataPositionAgent['description'];
+            } else {
+                $positionContent .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+            }
+
+            $position = html_print_anchor(
+                [
+                    'href'    => $console_url.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,
+                    'content' => $positionContent,
+                ],
+                true
+            );
+
+            $row = [];
+            $row['title'] = __('Position (Long, Lat)');
+            $row['data'] = $position;
+            $table_advanced->data['agent_position'] = $row;
+        }
+    }
+
+        // If the url description is setted.
+    if (empty($agent['url_address']) === false) {
+        $row = [];
+        $row['title'] = __('Url address');
+        $row['data'] = html_print_anchor(
+            [
+                'href'    => $agent['url_address'],
+                'content' => $agent['url_address'],
+            ],
+            true
+        );
+        $table_advanced->data['agent_address'] = $row;
+    }
+
+        // Timezone Offset.
+    if ($agent['timezone_offset'] != 0) {
+        $row = [];
+        $row['title'] = __('Timezone Offset');
+        $row['data'] = $agent['timezone_offset'];
+        $table_advanced->data['agent_timezone_offset'] = $row;
+    }
+
+    // Custom fields.
+    $fields = db_get_all_rows_filter('tagent_custom_fields', ['display_on_front' => 1]);
+    if ($fields === false) {
+        $fields = [];
+    }
+
+    if ($fields) {
+        foreach ($fields as $field) {
+            $custom_value = db_get_value_filter('description', 'tagent_custom_data', ['id_field' => $field['id_field'], 'id_agent' => $id_agente]);
+            if (empty($custom_value) === false) {
+                $row = [];
+                $row['title'] = $field['name'].ui_print_help_tip(__('Custom field'), true);
+                if ($field['is_password_type']) {
+                    $row['data'] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+                } else {
+                    $row['data'] = ui_bbcode_to_html($custom_value);
+                }
+
+                $table_advanced->data['custom_field_'.$field['id_field']] = $row;
+            }
+        }
+    }
+
+    // End of table advanced.
+    ui_toggle(
+        html_print_table($table_advanced, true),
+        '<span class="subsection_header_title">'.__('Advanced information').'</span>',
+        '',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content border-bottom-gray',
+        'white_table_graph margin-top-10 margin-bottom-10'
+    );
+
+    if (empty($server_data) === false && is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 

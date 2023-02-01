@@ -29,7 +29,7 @@ BuildArch:          noarch
 AutoReq:            0
 Requires:           apache2
 Requires:           apache2-mod_php7
-Requires:           php >= 7.0
+Requires:           php >= 8.0
 Requires:           php-gd, php-snmp, php-json, php-gettext
 Requires:           php-mysqlnd, php-ldap, php-mbstring, php 
 Requires:           graphviz, xorg-x11-fonts-core, graphviz-gd

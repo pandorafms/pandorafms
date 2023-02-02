@@ -341,7 +341,9 @@ a.pandora_pagination.current:hover {
 .filter_input_datatable .select2.select2-container {
   flex: 1;
 }
-
+.datatable_filter.content li.filter_input_datatable {
+  margin: 1em 0;
+}
 /* Default datatable filter style */
 .datatable_filter.content {
   display: flex;
@@ -355,7 +357,7 @@ a.pandora_pagination.current:hover {
 }
 .datatable_filter.content li {
   flex: 1 1 auto;
-  margin: 1em 0;
+  margin: 1em auto;
   padding: 0px 10px;
 }
 .sorting_desc {

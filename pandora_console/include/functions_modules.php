@@ -3992,15 +3992,27 @@ function recursive_get_dt_from_modules_tree(&$f_modules, $modules, $deep)
  * Get the module data from a children
  *
  * @param  integer $id_module Id module
+ * @param  boolean $recursive Recursive children search.
  * @return array Children module data
  */
-function get_children_module($id_module)
+function get_children_module($id_module, $fields=false, $recursion=false)
 {
-    $children_module_data = db_get_all_rows_sql(
-        'SELECT *
-		FROM tagente_modulo
-		WHERE parent_module_id = '.$id_module
+    $children_module_data = db_get_all_rows_filter(
+        'tagente_modulo',
+        ['parent_module_id' => $id_module],
+        $fields
     );
+
+    if ($children_module_data !== false && $recursion === true) {
+        foreach ($children_module_data as $child) {
+            $niece = get_children_module($child['id_agente_modulo'], $fields, false);
+            if ((bool) $niece === false) {
+                continue;
+            } else {
+                $children_module_data = array_merge($children_module_data, $niece);
+            }
+        }
+    }
 
     return $children_module_data;
 }

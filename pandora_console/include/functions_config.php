@@ -67,7 +67,7 @@ function config_create_value($token, $value)
  *
  * @return boolean True if success. False on failure.
  */
-function config_update_value($token, $value, $noticed=false)
+function config_update_value($token, $value, $noticed=false, $password=false)
 {
     global $config;
     // Include functions_io to can call __() function.
@@ -91,7 +91,11 @@ function config_update_value($token, $value, $noticed=false)
 
     if (isset($config[$token]) === false) {
         $config[$token] = $value;
-        return (bool) config_create_value($token, io_safe_input($value));
+        if (($password === false)) {
+            return (bool) config_create_value($token, io_safe_input($value));
+        } else {
+            return (bool) config_create_value($token, io_input_password($value));
+        }
     }
 
     // If it has not changed.
@@ -104,7 +108,7 @@ function config_update_value($token, $value, $noticed=false)
 
     $result = db_process_sql_update(
         'tconfig',
-        ['value' => io_safe_input($value)],
+        ['value' => ($password === false) ? io_safe_input($value) : io_input_password($value)],
         ['token' => $token]
     );
 

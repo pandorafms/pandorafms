@@ -659,15 +659,6 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        // Size BBDD.
-        $dbSizeSql = db_get_value_sql(
-            'SELECT ROUND(SUM(data_length+index_length)/1024/1024,3)
-            FROM information_schema.TABLES'
-        );
-
-        // Add unit size.
-        $dbSize = $dbSizeSql.' M';
-
         $result = [
             'error' => false,
             'data'  => [
@@ -682,10 +673,6 @@ class Diagnostics extends Wizard
                 'dbSchemeBuild'        => [
                     'name'  => __('DB Schema Build'),
                     'value' => $config['db_scheme_build'],
-                ],
-                'dbSize'               => [
-                    'name'  => __('DB Size'),
-                    'value' => $dbSize,
                 ],
             ],
         ];

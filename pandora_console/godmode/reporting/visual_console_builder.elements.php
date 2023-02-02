@@ -865,6 +865,11 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
                     var id_layout_data = $("#active_id_layout_data").val();
                     var label = tinyMCE.activeEditor.getContent();
                     $("#hidden-label_" + id_layout_data).val(label);
+                },
+                buttons: {
+                    Save: function() {
+                        $(this).dialog("close");
+                    }
                 }
             });
 

@@ -77,7 +77,7 @@ echo '</ul><div class="div_border_line"><div id="tab_line_1" class="border_line"
 echo '<div id="div_display">';
 require 'operation/menu.php';
 echo '</div>';
-echo '<div id="div_management" style="display: none;">';
+echo '<div id="div_management">';
 require 'godmode/menu.php';
 echo '</div>';
 
@@ -108,34 +108,45 @@ echo '</div>';
             $('#div_management').css('display', 'block');
         })
 
+        const id_selected = '<?php echo $menu1_selected; ?>';
+        if (id_selected != '') {
+            $(`ul#subicon_${id_selected}`).show();
+            // Arrow.
+            $(`#icon_${id_selected}`).children().first().children().last().removeClass('arrow_menu_down');
+            $(`#icon_${id_selected}`).children().first().children().last().addClass('arrow_menu_up');
+            // Span.
+            $(`#icon_${id_selected}`).children().first().children().eq(1).addClass('span_selected');
+        }
+
         var click_display = "<?php echo $config['click_display']; ?>";
 
         $('.title_menu_classic').click(function() {
-            if (typeof(table_hover) != 'undefined') {
-                $("ul#sub" + table_hover[0].id).hide();
+            const table_hover = $(this).parent();
+            const id = table_hover[0].id;
+            const classes = $(`#${id}`).attr('class');
+
+            if (classes.includes('selected') === true) {
+                $(`#${id}`).removeClass('selected');
+                $(`ul#sub${id}`).hide();
                 // Arrow.
                 table_hover.children().first().children().last().removeClass('arrow_menu_up');
                 table_hover.children().first().children().last().addClass('arrow_menu_down');
                 // Span.
                 table_hover.children().first().children().eq(1).removeClass('span_selected');
-                if (table_hover[0].id == $(this).parent()[0].id) {
-                    table_hover = undefined;
-                    return;
-                }
+            } else {
+                $(`#${id}`).addClass('selected');
+                $(`ul#sub${id}`).show();
+                // Arrow.
+                $(this).children().last().removeClass('arrow_menu_down');
+                $(this).children().last().addClass('arrow_menu_up');
+                // Span.
+                $(this).children().eq(1).addClass('span_selected');
             }
-
-            table_hover = $(this).parent();
-            handsIn = 1;
-            $("ul#sub" + table_hover[0].id).show();
-            // Arrow.
-            $(this).children().last().removeClass('arrow_menu_down');
-            $(this).children().last().addClass('arrow_menu_up');
-            // Span.
-            $(this).children().eq(1).addClass('span_selected');
         });
 
         $('.has_submenu').click(function() {
             if (typeof(table_hover2) != 'undefined') {
+                $(`#${table_hover2[0].id}`).css("background-color", "");
                 $("#sub" + table_hover2[0].id).hide();
                 // Arrow.
                 table_hover2.children().first().children().last().removeClass('arrow_menu_up');
@@ -150,6 +161,8 @@ echo '</div>';
 
             table_hover2 = $(this);
             handsIn2 = 1;
+
+            $(`#${table_hover2[0].id}`).css("background-color", "#eff2f2");
             $("#sub" + table_hover2[0].id).show();
             // Arrow.
             table_hover2.children().first().children().last().removeClass('arrow_menu_down');

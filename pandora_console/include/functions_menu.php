@@ -48,6 +48,8 @@ function menu_print_menu(&$menu)
     global $config;
     global $menuTypeClass;
     global $tab_active;
+    global $menu1_selected;
+    global $menu2_selected;
     static $idcounter = 0;
 
     echo '<div class="menu">';
@@ -406,6 +408,7 @@ function menu_print_menu(&$menu)
 
         if ($menu_selected) {
             $seleccionado = 'selected';
+            $menu1_selected = $id;
             if ($menu['class'] === 'operation') {
                 $tab_active = 'display';
             } else {

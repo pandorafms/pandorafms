@@ -1551,6 +1551,57 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
 
     $table1->head = [];
 
+    // Sort array columns.
+    $tmp_sort_array = [];
+    foreach ($item['data'] as $data_key => $data_value) {
+        if (array_key_exists('alias', $data_value) === true) {
+            $tmp_sort_array['alias'] = $data_value['alias'];
+        }
+
+        if (array_key_exists('direccion', $data_value) === true) {
+            $tmp_sort_array['direccion'] = $data_value['direccion'];
+        }
+
+        if (array_key_exists('id_os', $data_value) === true) {
+            $tmp_sort_array['id_os'] = $data_value['id_os'];
+        }
+
+        if (array_key_exists('agent_version', $data_value) === true) {
+            $tmp_sort_array['agent_version'] = $data_value['agent_version'];
+        }
+
+        if (array_key_exists('id_grupo', $data_value) === true) {
+            $tmp_sort_array['id_grupo'] = $data_value['id_grupo'];
+        }
+
+        if (array_key_exists('comentarios', $data_value) === true) {
+            $tmp_sort_array['comentarios'] = $data_value['comentarios'];
+        }
+
+        if (array_key_exists('url_address', $data_value) === true) {
+            $tmp_sort_array['url_address'] = $data_value['url_address'];
+        }
+
+        if (array_key_exists('remote', $data_value) === true) {
+            $tmp_sort_array['remote'] = $data_value['remote'];
+        }
+
+        if (array_key_exists('secondary_groups', $data_value) === true) {
+            $tmp_sort_array['secondary_groups'] = $data_value['secondary_groups'];
+        }
+
+        if (array_key_exists('custom_fields', $data_value) === true) {
+            $tmp_sort_array['custom_fields'] = $data_value['custom_fields'];
+        }
+
+        if (array_key_exists('estado', $data_value) === true) {
+            $tmp_sort_array['estado'] = $data_value['estado'];
+        }
+
+        unset($item['data'][$data_key]);
+        $item['data'][$data_key] = $tmp_sort_array;
+    }
+
     foreach ($item['data'][0] as $field_key => $field_value) {
         switch ($field_key) {
             case 'alias':
@@ -1632,7 +1683,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
             } else if ($data_field_key === 'estado') {
                 $column_value = ($pdf === 0) ? ui_print_module_status((int) $data_field_value, true) : modules_get_modules_status((int) $data_field_value);
             } else if ($data_field_key === 'id_grupo') {
-                $column_value = ui_print_group_icon((int) $data_field_value, true, 'groups_small', '', $show_link);
+                $column_value = groups_get_name((int) $data_field_value);
             } else if ($data_field_key === 'custom_fields') {
                 $custom_fields_value = [];
 
@@ -1648,7 +1699,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
 
                 if (is_array($data_field_value)) {
                     foreach ($data_field_value as $value) {
-                        $custom_fields_value[] = ui_print_group_icon((int) $value['id_group'], true, 'groups_small', '', $show_link);
+                        $custom_fields_value[] = groups_get_name((int) $value['id_group']);
                     }
                 }
 
@@ -1705,19 +1756,50 @@ function reporting_html_modules_inventory($table, $item, $pdf=0)
 
     $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
     $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 100px;';
-    $table1->style[2] = 'text-align: left;vertical-align: top; min-width: 100px';
+    $table1->style[2] = 'text-align: left;vertical-align: top;min-width: 100px;';
     $table1->style[3] = 'text-align: left;vertical-align: top;min-width: 100px;';
     $table1->style[4] = 'text-align: left;vertical-align: top;min-width: 100px;';
-    $table1->style[5] = 'text-align: left;vertical-align: top; min-width: 100px';
+    $table1->style[5] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[6] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[7] = 'text-align: left;vertical-align: top;min-width: 100px;';
 
     $table1->head = [];
+    $first_index = array_key_first($item['data']);
 
-    $table1->head[] = __('Name');
-    $table1->head[] = __('Description');
-    $table1->head[] = __('Module group');
-    $table1->head[] = __('Tags');
-    $table1->head[] = __('Agent group');
-    $table1->head[] = __('Agent secondary groups');
+    foreach ($item['data'][$first_index] as $field_key => $field_value) {
+        switch ($field_key) {
+            case 'alias':
+                $table1->head[] = __('Alias');
+            break;
+
+            case 'nombre':
+                $table1->head[] = __('Name');
+            break;
+
+            case 'descripcion':
+                $table1->head[] = __('Description');
+            break;
+
+            case 'id_module_group':
+                $table1->head[] = __('Module group');
+            break;
+
+            case 'id_tag':
+                $table1->head[] = __('Tags');
+            break;
+
+            case 'group_id':
+                $table1->head[] = __('Agent group');
+            break;
+
+            case 'sec_group_id':
+                $table1->head[] = __('Agent secondary groups');
+            break;
+
+            case 'last_status_change':
+                $table1->head[] = __('Last status change');
+        }
+    }
 
     $table1->headstyle[0] = 'text-align: left';
     $table1->headstyle[1] = 'text-align: left';
@@ -1725,15 +1807,20 @@ function reporting_html_modules_inventory($table, $item, $pdf=0)
     $table1->headstyle[3] = 'text-align: left';
     $table1->headstyle[4] = 'text-align: left';
     $table1->headstyle[5] = 'text-align: left';
+    $table1->headstyle[6] = 'text-align: left';
+    $table1->headstyle[7] = 'text-align: left';
 
     $table1->data = [];
 
     foreach ($item['data'] as $module_id => $module_data) {
+        unset($module_data['server_id']);
         $row = [];
         $first_item = array_pop(array_reverse($module_data));
 
         foreach ($module_data as $data_field_key => $data_field_value) {
-            if ($data_field_key === 'nombre') {
+            if ($data_field_key === 'alias') {
+                $column_value = $data_field_value;
+            } else if ($data_field_key === 'nombre') {
                 $column_value = $data_field_value;
             } else if ($data_field_key === 'descripcion') {
                 $column_value = $data_field_value;
@@ -1746,13 +1833,27 @@ function reporting_html_modules_inventory($table, $item, $pdf=0)
 
                 $column_value = $module_group_name;
             } else if ($data_field_key === 'id_tag') {
-                $tags_names = array_map(
-                    function ($tag_id) {
-                        return db_get_value('name', 'ttag', 'id_tag', $tag_id);
-                    },
-                    $data_field_value
-                );
-                $column_value = implode('<br>', $tags_names);
+                if (empty($data_field_value[0]) === false) {
+                    $sql = 'SELECT name
+                                FROM ttag
+                                WHERE id_tag IN ('.$data_field_value[0].')';
+
+                    $tags_rows = db_get_all_rows_sql($sql);
+                    $tags_names = [];
+                    foreach ($tags_rows as $tag_row) {
+                        array_push($tags_names, $tag_row['name']);
+                    }
+
+                    $column_value = implode('<br>', $tags_names);
+                } else {
+                    $tags_names = array_map(
+                        function ($tag_id) {
+                            return db_get_value('name', 'ttag', 'id_tag', $tag_id);
+                        },
+                        $data_field_value
+                    );
+                    $column_value = implode('<br>', $tags_names);
+                }
             } else if ($data_field_key === 'group_id') {
                 $column_value = groups_get_name($data_field_value[0]);
             } else if ($data_field_key === 'sec_group_id') {
@@ -1764,6 +1865,8 @@ function reporting_html_modules_inventory($table, $item, $pdf=0)
                 );
 
                 $column_value = implode('<br>', $sec_groups_names);
+            } else if ($data_field_key === 'last_status_change') {
+                $column_value = $data_field_value;
             }
 
             $row[] = $column_value;

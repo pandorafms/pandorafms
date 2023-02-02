@@ -892,7 +892,7 @@ if (($create != '') || ($view != '')) {
         echo '<div id="deploy_messages" class="invisible">';
     }
 
-    // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
+    // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'.
     echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' class='invisible left'>";
     echo '</div>';
 
@@ -903,50 +903,49 @@ ui_require_javascript_file('pandora_modules');
 ?>
 
 <script type="text/javascript">
-    
+
     var locked = <?php echo (int) json_encode((int) $locked); ?>;
-    
+
     function update_preview() {
         var command = $('#form_execute').val();
         var parameters = $('#form_parameters').val();
-        
+
         var i = 1;
-        
+
         while (1) {
             if ($('#text-field' + i + '_value').val() == undefined) {
                 break;
             }
-            
+
             if ($('#text-field'+i+'_value').val() != '') {
                 parameters = parameters
                     .replace('_field' + i + '_',
                         $('#text-field' + i + '_value').val());
             }
-            
+
             i++;
         }
-        
+
         $('#command_preview').html(_.escape(command) + ' ' + _.escape(parameters));
     }
-    
+
     function show_locked_dialog(id_plugin, plugin_name) {
         var parameters = {};
         parameters['page'] = "godmode/servers/plugin";
         parameters["get_list_modules_and_component_locked_plugin"] = 1;
         parameters["id_plugin"] = id_plugin;
-        
+
         $.ajax({
             type: "POST",
             url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
             data: parameters,
             dataType: "html",
             success: function(data) {
-                var title = $("#dialog_locked").prop('title').replace(/%s/, plugin_name);
-                
+                var title = 'List of modules and components created by "'+ plugin_name +'"';
                 $("#dialog_locked")
-                    .prop('title', title)
                     .html(data)
                     .dialog ({
+                        title: title,
                         resizable: true,
                         draggable: true,
                         modal: true,
@@ -961,8 +960,7 @@ ui_require_javascript_file('pandora_modules');
             }
         });
     }
-    
-    
+
     $(document).ready(function() {
         // Add macro
         var add_macro_click_event = function (event) {
@@ -992,34 +990,34 @@ ui_require_javascript_file('pandora_modules');
             update_preview();
         }
         $('div#delete_macro_button>a').click(delete_macro_click_event);
-        
+
         update_preview();
-        
+
         $('.command_component').keyup(function() {
             update_preview();
         });
     });
-    
-    
+
+
     var add_macro_click_locked_event = function (event) {
         var message = '<?php echo __('Some modules or components are using the plugin'); ?>.'
                     + '\n' + '<?php echo __('The modules or components should be updated manually or using the bulk operations for plugins after this change'); ?>.'
                     + '\n'
                     + '\n' + '<?php echo __('Are you sure you want to perform this action?'); ?>';
-        
+
         if (!confirm(message)) {
             event.stopImmediatePropagation();
             event.preventDefault();
         }
     }
-    
+
     var macros_click_locked_event = function (event) {
         alert("<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>");
     }
-    
+
     if (locked) {
         $('a#add_macro_btn').click(add_macro_click_locked_event);
     }
-    
-    
+
+
 </script>

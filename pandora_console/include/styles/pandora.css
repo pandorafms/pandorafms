@@ -10417,7 +10417,8 @@ button.ui-button.ui-widget.submit-cancel:active {
 
 table#simple tr td,
 table#advanced tr td,
-.white_table_graph > table tr td {
+.white_table_flex > table tr td,
+.table_section table tr td {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -10427,7 +10428,8 @@ table#advanced tr td,
 
 table#simple > tbody > tr,
 table#advanced > tbody > tr,
-.white_table_graph tr {
+.white_table_flex tr,
+.table_section table tr {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;

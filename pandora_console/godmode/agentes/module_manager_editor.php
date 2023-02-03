@@ -735,38 +735,38 @@ echo '<h3 id="message" class="error invisible"></h3>';
 $outputForm = '<form method="post" id="module_form">';
 $outputForm .= ui_toggle(
     html_print_table($table_simple, true),
-    __('Base options'),
+    '<span class="subsection_header_title">'.__('Base options').'</span>',
     '',
     '',
     false,
     true,
     '',
     '',
-    'box-shadow white_table_graph white_table_graph_fixed'
+    'box-shadow white_table_flex white_table_graph_fixed'
 );
 
 $outputForm .= ui_toggle(
     html_print_table($table_advanced, true),
-    __('Advanced options'),
+    '<span class="subsection_header_title">'.__('Advanced options').'</span>',
     '',
     '',
     true,
     true,
     '',
     '',
-    'box-shadow white_table_graph white_table_graph_fixed'
+    'box-shadow white_table_flex white_table_graph_fixed'
 );
 
 $outputForm .= ui_toggle(
     html_print_table($table_macros, true),
-    __('Custom macros'),
+    '<span class="subsection_header_title">'.__('Custom macros').'</span>',
     '',
     '',
     true,
     true,
     '',
     '',
-    'box-shadow white_table_graph white_table_graph_fixed'
+    'box-shadow white_table_flex white_table_graph_fixed'
 );
 
 if ((int) $moduletype !== 13) {
@@ -778,14 +778,14 @@ if ((int) $moduletype !== 13) {
             $table_relations,
             true
         ),
-        __('Module relations'),
+        '<span class="subsection_header_title">'.__('Module relations').'<span>',
         '',
         '',
         true,
         true,
         '',
         '',
-        'box-shadow white_table_graph white_table_graph_fixed'
+        'box-shadow white_table_flex white_table_graph_fixed'
     );
 }
 

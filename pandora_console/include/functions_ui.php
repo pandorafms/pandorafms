@@ -634,19 +634,20 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
  * Prints a username with real name, link to the user_edit page etc.
  *
  * @param string  $username The username to render.
+ * @param boolean $fullname If true, returns the user fullname.
  * @param boolean $return   Whether to return or print.
  *
- * @return string HTML code if return parameter is true.
+ * @return void|string HTML code if return parameter is true.
  */
-function ui_print_username($username, $return=false)
+function ui_print_username($username, $fullname=false, $return=false)
 {
-    $string = '<a href="index.php?sec=usuario&amp;sec2=operation/users/user_edit&amp;id='.$username.'">'.get_user_fullname($username).'</a>';
-
-    if ($return) {
-        return $string;
-    }
-
-    echo $string;
+    return html_print_anchor(
+        [
+            'href'    => sprintf('index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user=%s', $username),
+            'content' => ($fullname === true) ? get_user_fullname($username) : $username,
+        ],
+        $return
+    );
 }
 
 

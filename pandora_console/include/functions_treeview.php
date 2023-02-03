@@ -720,7 +720,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         '',
         'white-box-content',
-        'white_table_graph margin-bottom-10 border-bottom-gray'
+        'white_table_flex margin-bottom-10 border-bottom-gray'
     );
 
     if ($config['agentaccess']) {
@@ -740,7 +740,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             false,
             '',
             'white-box-content border-bottom-gray',
-            'white_table_graph margin-top-10 margin-bottom-10'
+            'white_table_flex margin-top-10 margin-bottom-10'
         );
     }
 
@@ -913,7 +913,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         '',
         'white-box-content border-bottom-gray',
-        'white_table_graph margin-top-10 margin-bottom-10'
+        'white_table_flex margin-top-10 margin-bottom-10'
     );
 
     if (empty($server_data) === false && is_metaconsole() === true) {

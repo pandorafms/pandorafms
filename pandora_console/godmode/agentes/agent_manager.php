@@ -580,7 +580,7 @@ $tableAgent->data['description'][0] = html_print_textarea(
 
 html_print_div(
     [
-        'class'   => 'box-shadow white_table_graph white_box agent_details_col',
+        'class'   => 'box-shadow white_table_flex white_box agent_details_col',
         'style'   => 'display: flex; justify-content: space-between; align-items: flex-start;',
         'content' => html_print_table($tableAgent, true).$CodeQRTable,
     ]

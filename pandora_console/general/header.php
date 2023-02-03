@@ -399,29 +399,34 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
 
         // User.
-        if (is_user_admin($config['id_user']) == 1) {
-            $header_user = html_print_image(
-                'images/header_user_admin_green.png',
-                true,
-                [
-                    'title' => __('Edit my user'),
-                    'class' => 'bot',
-                    'alt'   => 'user',
-                ]
-            );
-        } else {
-            $header_user = html_print_image(
-                'images/header_user_green.png',
-                true,
-                [
-                    'title' => __('Edit my user'),
-                    'class' => 'bot',
-                    'alt'   => 'user',
-                ]
-            );
-        }
+        $headerUserImage = (is_user_admin($config['id_user']) === true) ? 'images/header_user_admin_green.png' : 'images/header_user_green.png';
 
-        $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span id="user_name_header"> ('.$config['id_user'].')</span></a></div>';
+        $headerUser = [];
+        $headerUser[] = html_print_image(
+            $headerUserImage,
+            true,
+            [
+                'title' => __('Edit my user'),
+                'class' => 'bot',
+                'alt'   => 'user',
+            ]
+        );
+
+        $headerUser[] = sprintf('<span id="user_name_header">[ %s ]</span>', $config['id_user']);
+
+        $header_user = html_print_div(
+            [
+                'id'      => 'header_user',
+                'content' => html_print_anchor(
+                    [
+                        'href'    => sprintf('index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user=%s', $config['id_user']),
+                        'content' => implode('', $headerUser),
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
 
         // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';

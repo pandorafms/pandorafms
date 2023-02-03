@@ -391,17 +391,17 @@ if ($tag_filter !== 0) {
 $sql_conditions_tags = '';
 
 if (!users_is_admin()) {
-        $sql_conditions_tags = tags_get_acl_tags(
-            $config['id_user'],
-            ($recursion) ? $all_groups : $ag_group,
-            'AR',
-            'module_condition',
-            'AND',
-            'tagente_modulo',
-            true,
-            [],
-            false
-        );
+    $sql_conditions_tags = tags_get_acl_tags(
+        $config['id_user'],
+        ($recursion) ? array_flip($all_groups) : $ag_group,
+        'AR',
+        'module_condition',
+        'AND',
+        'tagente_modulo',
+        true,
+        [],
+        false
+    );
 
     if (is_numeric($sql_conditions_tags)) {
         $sql_conditions_tags = ' AND 1 = 0';

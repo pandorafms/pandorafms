@@ -16,7 +16,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='2022052501'
+S_VERSION='202301251'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -34,6 +34,8 @@ rm -f $LOGFILE &> /dev/null # remove last log before start
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
+[ "$PANDORA_LTS" ]  || PANDORA_LTS=1
+
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -134,7 +136,10 @@ check_root_permissions
 [ "$SKIP_PRECHECK" == 1 ] || check_pre_pandora
 
 #advicing BETA PROGRAM
-[ "$PANDORA_BETA" -ne '0' ] && echo -e "${red}BETA version enable using nightly PandoraFMS packages${reset}"
+INSTALLING_VER="${green}RRR version enable using RRR PandoraFMS packages${reset}"
+[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
+[ "$PANDORA_LTS" -ne '0' ] && INSTALLING_VER="${green}LTS version enable using LTS PandoraFMS packages${reset}"
+echo -e $INSTALLING_VER
 
 # Connectivity
 check_repo_connection
@@ -272,14 +277,19 @@ echo -en "${cyan}Installing phantomjs...${reset}"
     /usr/bin/phantomjs --version &>> "$LOGFILE" 
 check_cmd_status "Error Installing phanromjs"
 
+# create symlink for fping
+rm -f /usr/sbin/fping &>> "$LOGFILE"
+ln -s /usr/bin/fping /usr/sbin/fping &>> "$LOGFILE"
+
 # Chrome
+rm -f /usr/bin/chromium-browser &>> "$LOGFILE"
 execute_cmd "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" "Downloading google chrome"
 execute_cmd "apt install -y ./google-chrome-stable_current_amd64.deb" "Intalling google chrome"
 execute_cmd "ln -s /usr/bin/google-chrome /usr/bin/chromium-browser" "Creating /usr/bin/chromium-browser Symlink"
 
 # SDK VMware perl dependencies
-vmware_dependencies=" \
-	lib32z1  \
+vmware_dependencies="\
+    lib32z1  \
     lib32z1 \
     build-essential \
     uuid uuid-dev \
@@ -350,16 +360,22 @@ systemctl stop apparmor &>> "$LOGFILE"
 systemctl disable apparmor &>> "$LOGFILE"
 
 #install mysql
-debconf-set-selections <<< $(echo -n "mysql-server mysql-server/root_password password $DBROOTPASS") &>> "$LOGFILE"
-debconf-set-selections <<< $(echo -n "mysql-server mysql-server/root_password_again password $DBROOTPASS") &>> "$LOGFILE"
-echo -en "${cyan}Installing MySql Server...${reset}"
-    env DEBIAN_FRONTEND=noninteractive apt install -y mysql-server &>> "$LOGFILE"
+execute_cmd "curl -O https://repo.percona.com/apt/percona-release_latest.generic_all.deb" "Downloading Percona repository for MySQL8"
+execute_cmd "apt install -y gnupg2 lsb-release ./percona-release_latest.generic_all.deb" "Installing Percona repository for MySQL8"
+execute_cmd "percona-release setup ps80" "Configuring Percona repository for MySQL8"
+
+echo -en "${cyan}Installing Percona Server for MySQL8...${reset}"
+    env DEBIAN_FRONTEND=noninteractive apt install -y percona-server-server &>> "$LOGFILE"
 check_cmd_status "Error Installing MySql Server"
 
 
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     execute_cmd "systemctl start mysql" "Starting database engine"
+    
+    echo """
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DBROOTPASS';
+    """ | mysql -uroot &>> "$LOGFILE"
 
     export MYSQL_PWD=$DBROOTPASS
     echo -en "${cyan}Creating Pandora FMS database...${reset}"
@@ -399,10 +415,11 @@ max_connections = 100
 
 key_buffer_size=4M
 read_buffer_size=128K
-
 read_rnd_buffer_size=128K
 sort_buffer_size=128K
 join_buffer_size=4M
+
+skip-log-bin
 
 sql_mode=""
 
@@ -417,11 +434,17 @@ execute_cmd "systemctl restart mysql" "Configuring and restarting database engin
 
 
 #Define packages
-if [ "$PANDORA_BETA" -eq '0' ] ; then
+if [ "$PANDORA_LTS" -eq '1' ] ; then
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_server-7.0NG.tar.gz"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_console-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_agent_linux-7.0NG.tar.gz"
+elif [ "$PANDORA_LTS" -ne '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
     [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
-elif [ "$PANDORA_BETA" -ne '0' ] ; then
+fi
+
+if [ "$PANDORA_BETA" -eq '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
     [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"

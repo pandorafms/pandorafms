@@ -843,6 +843,7 @@ class AgentWizard extends HTML
         html_print_div(
             [
                 'class'   => 'white_box',
+                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,
@@ -2723,7 +2724,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-filter-interfaces',
             'method' => 'POST',
-            'class'  => 'modal flex flex-row searchbox',
+            'class'  => 'modal searchbox',
             'extra'  => '',
         ];
 
@@ -5476,6 +5477,19 @@ class AgentWizard extends HTML
      */
     private function getInterfacesModulesx64(array $data=[])
     {
+        $equivalencies_x86 = [
+            'ifHCInOctets'      => 'ifInOctets',
+            'ifHCOutOctets'     => 'ifOutOctets',
+            'ifHCInUcastPkts'   => 'ifInUcastPkts',
+            'ifHCOutUcastPkts'  => 'ifOutUcastPkts',
+            'ifHCInNUcastPkts'  => 'ifInNUcastPkts',
+            'ifHCOutNUcastPkts' => 'ifOutNUcastPkts',
+        ];
+
+        foreach ($equivalencies_x86 as $key => $equivalencie) {
+            $this->defaultSNMPValues[$key] = $this->defaultSNMPValues[$equivalencie];
+        }
+
         $moduleDescription  = '';
         $name               = '';
         $value              = '1';

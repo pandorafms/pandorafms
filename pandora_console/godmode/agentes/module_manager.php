@@ -1283,9 +1283,13 @@ foreach ($modules as $module) {
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+        // Check module relatonships to show warning message.
+        $url = htmlentities('index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo']);
+
         // Delete module.
-        $data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+        $data[9] = '<a href="#"
+			onClick="get_children_modules(false, \''.$module['id_agente_modulo'].'\', \''.$url.'\')">';
+
         $data[9] .= html_print_image(
             'images/cross.png',
             true,
@@ -1309,8 +1313,7 @@ foreach ($modules as $module) {
 }
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
-		onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+    echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module" id="form_multiple_delete">';
 }
 
 html_print_table($table);
@@ -1344,6 +1347,8 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         false,
         'class="sub next"'
     );
+
+
     echo '</div>';
     echo '</form>';
 }
@@ -1352,7 +1357,18 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
 <script type="text/javascript">
 
     $(document).ready (function () {
-        
+
+        $("input[name=submit_modules_action]").click(function (event) {
+            event.preventDefault();
+            var module_action = $('#module_action').val();
+                if(module_action !== 'delete') {
+                    $("#form_multiple_delete").submit();
+                } else {
+                    get_children_modules(true);
+                }
+        });
+
+
         $('[id^=checkbox-id_delete]').change(function(){
             if($(this).parent().parent().hasClass('checkselected')){
                 $(this).parent().parent().removeClass('checkselected');
@@ -1393,5 +1409,61 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         else {
             window.location = window.location + "&checked=true";
         }
+    }
+
+    function get_children_modules(multiple, id_module, url) {
+        var selected_modules = [];
+       
+        if(typeof(id_module) === 'undefined' && multiple === true) {
+            $("input[id^='checkbox-id_delete']:checked").each(function () {
+                selected_modules.push(this.value);
+            });
+        } else {
+            selected_modules = [id_module];
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            dataType: "json",
+            data: {
+                page: 'include/ajax/module',
+                get_children_modules: true,
+                parent_modulues: JSON.parse(JSON.stringify(selected_modules)),
+            },
+            success: function (data) {
+                delete_module_warning(data, multiple, id_module, url);
+            }
+        });
+    }
+
+    function delete_module_warning(children, multiple, id_module, url) {
+        var message = '<?php echo __('Are you sure?'); ?>';
+        var ret = false;
+
+        if(children != false) {
+            message += '<br><strong>' + '<?php echo __('This module has children modules.The following modules will also be deleted: '); ?>' + '</strong><ul>';
+            $.each(children, function (key, value) {
+                message += '<li>' + value['nombre'] + '</li>';
+            });
+            message += '</ul>';
+        }   
+
+        confirmDialog({
+                title: "<?php echo __('Delete module'); ?>",
+                message: message,
+                onAccept: function() {
+                    if(multiple === true) {
+                        $("#form_multiple_delete").submit();
+                        return true;
+                    } else {
+                        window.location.href = url;
+                    }
+                }
+            });
+
+        return true;
+        
+        
     }
 </script>

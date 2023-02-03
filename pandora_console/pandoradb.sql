@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS `taddress_agent` (
   `id_ag` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_a` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `id_agent` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY  (`id_ag`)
+  PRIMARY KEY  (`id_ag`),
+  INDEX `taddress_agent_agent` (`id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
@@ -1157,6 +1158,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `stat_utimestamp` BIGINT NOT NULL DEFAULT 0,
   `exec_proxy` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `port` INT UNSIGNED NOT NULL DEFAULT 0,
+  `server_keepalive_utimestamp` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_server`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1333,7 +1335,10 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
   `assigned_by` VARCHAR(100) NOT NULL DEFAULT '',
   `id_policy` INT UNSIGNED NOT NULL DEFAULT 0,
   `tags` TEXT,
-  PRIMARY KEY  (`id_up`)
+  PRIMARY KEY  (`id_up`),
+  INDEX `tusuario_perfil_user` (`id_usuario`),
+  INDEX `tusuario_perfil_group` (`id_grupo`),
+  INDEX `tusuario_perfil_profile` (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
@@ -1731,7 +1736,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `show_last_value` TINYINT UNSIGNED NULL DEFAULT 0,
   `cache_expiration` INT UNSIGNED NOT NULL DEFAULT 0,
   `title` TEXT ,
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  INDEX `tlayout_data_layout` (`id_layout`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
@@ -2136,7 +2142,8 @@ CREATE TABLE IF NOT EXISTS `ttag` (
   `email` TEXT NULL,
   `phone` TEXT NULL,
   `previous_name` TEXT NULL,
-  PRIMARY KEY  (`id_tag`)
+  PRIMARY KEY  (`id_tag`),
+  INDEX `ttag_name` (name(15))
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4; 
 
 -- -----------------------------------------------------
@@ -2867,7 +2874,10 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
   `id_server_meta` INT  unsigned NOT NULL DEFAULT 0,
   `rules` TEXT,
   PRIMARY KEY  (`id`),
-  INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`)
+  INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`),
+  INDEX `tservice_element_service` (`id_service`),
+  INDEX `tservice_element_agent` (`id_agent`),
+  INDEX `tservice_element_am` (`id_agente_modulo`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 
 DEFAULT CHARSET=UTF8MB4;
@@ -3345,7 +3355,8 @@ CREATE TABLE IF NOT EXISTS `tagent_module_log` (
   `source` TEXT,
   `timestamp` DATETIME DEFAULT '1970-01-01 00:00:00',
   `utimestamp` BIGINT DEFAULT 0,
-  PRIMARY KEY (`id_agent_module_log`)
+  PRIMARY KEY (`id_agent_module_log`),
+  INDEX `tagent_module_log_agent` (`id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------

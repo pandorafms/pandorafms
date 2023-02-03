@@ -118,7 +118,7 @@ use Tie::File;
 use Time::Local;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
-use POSIX qw(strftime);
+use POSIX qw(strftime mktime);
 use threads;
 use threads::shared;
 use JSON qw(decode_json encode_json);
@@ -1547,11 +1547,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C1%7C0%7C225%7C""%7C14';
+				$params->{"other"} = $period . '%7C1%7C0%7C225%7C%7C14';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C1%7C1%7C225%7C""%7C14';
+				$params->{"other"} = $period . '%7C1%7C1%7C225%7C%7C14';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -3173,16 +3173,20 @@ sub pandora_update_server ($$$$$$;$$$$) {
 	$version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'} unless defined($version);
 	
 	my $master = ($server_type == SATELLITESERVER) ? 0 : $pa_config->{'pandora_master'};
-	
+
+	my ($year, $month, $day, $hour, $minute, $second) = split /[- :]/, $timestamp;
+
+	my $keepalive_utimestamp = mktime($second, $minute, $hour, $day, $month-1, $year-1900);
+
 	# First run
 	if ($server_id == 0) { 
 		
 		# Create an entry in tserver if needed
 		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE BINARY name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
-			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive)
-						VALUES (?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
-						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive);
+			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive, server_keepalive_utimestamp)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
+						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp);
 		
 			$server = get_db_single_row ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $server_id);
 			if (! defined ($server)) {
@@ -3193,14 +3197,14 @@ sub pandora_update_server ($$$$$$;$$$$) {
 			$server_id = $server->{'id_server'};
 		}
 
-		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?
+		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?, server_keepalive_utimestamp = ?
 				WHERE id_server = ?',
-				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $keepalive, $server_id);
+				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp, $server_id);
 		return;
 	}
-	
-	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?
-			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $keepalive, $server_id);
+
+	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?, server_keepalive_utimestamp = ?
+			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp, $server_id);
 }
 
 ##########################################################################
@@ -3886,7 +3890,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	$agent_mode = 1 unless defined($agent_mode);
 	$alias = $agent_name unless defined($alias);
 
-	$description = "Created by $server_name" unless (defined($description) && $description ne '');	
+	$description = '' unless (defined($description));
 	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),
 	                                                 'direccion' => $address,
 	                                                 'comentarios' => $description,

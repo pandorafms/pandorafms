@@ -230,9 +230,64 @@ if ($filemanager) {
             $directory = filemanager_safe_directory($directory, $fallback_directory);
         }
 
+        $base_url = 'index.php?sec=gservers&sec2=godmode/servers/plugin';
+        $setup_url = $base_url.'&filemanager=1&tab=Attachments';
+        $tab = get_parameter('tab', null);
+        $tabs = [
+            'list'    => [
+                'text'   => '<a href="'.$base_url.'">'.html_print_image(
+                    'images/eye_show.png',
+                    true,
+                    [
+                        'title' => __('Plugins'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab != 'Attachments'),
+            ],
+            'options' => [
+                'text'   => '<a href="'.$setup_url.'">'.html_print_image(
+                    'images/collection.png',
+                    true,
+                    [
+                        'title' => __('Attachments'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab == 'Attachments'),
+            ],
+        ];
+
+        if ($tab === 'Attachments') {
+            $helpHeader  = '';
+            $titleHeader = __('Index of attachment/plugin');
+        } else {
+            $helpHeader  = 'servers_ha_clusters_tab';
+            $titleHeader = __('Plug-ins registered on %s', get_product_name());
+        }
+
+        // Header.
+        ui_print_standard_header(
+            $titleHeader,
+            'images/gm_servers.png',
+            false,
+            $helpHeader,
+            false,
+            $tabs,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Plugins'),
+                ],
+            ]
+        );
+
         $real_directory = realpath($config['homedir'].'/'.$directory);
 
-        echo '<h4>'.__('Index of %s', $directory).'</h4>';
 
         $chunck_url = '&view='.$id_plugin;
         if ($id_plugin == 0) {
@@ -255,7 +310,7 @@ if ($filemanager) {
         filemanager_file_explorer(
             $real_directory,
             $directory,
-            'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$id_plugin,
+            'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$id_plugin.'&tab=Attachments',
             $fallback_directory,
             true,
             false,
@@ -401,7 +456,7 @@ if (($create != '') || ($view != '')) {
     $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
     $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf text_input" size=100 value="'.$form_execute.'" >';
 
-    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" class="bot">';
+    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&tab=Attachments&id_plugin='.$form_id.'" class="bot">';
     $data[1] .= html_print_image('images/file.png', true, ['class' => 'invert_filter'], false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
@@ -597,15 +652,60 @@ if (($create != '') || ($view != '')) {
             );
         }
     } else {
-        ui_print_page_header(
-            __(
-                'Plug-ins registered on %s',
-                get_product_name()
-            ),
+        $base_url = 'index.php?sec=gservers&sec2=godmode/servers/plugin';
+        $setup_url = $base_url.'&filemanager=1&tab=Attachments';
+        $tab = get_parameter('tab', null);
+        $tabs = [
+            'list'    => [
+                'text'   => '<a href="'.$base_url.'">'.html_print_image(
+                    'images/eye_show.png',
+                    true,
+                    [
+                        'title' => __('Plugins'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab != 'Attachments'),
+            ],
+            'options' => [
+                'text'   => '<a href="'.$setup_url.'">'.html_print_image(
+                    'images/collection.png',
+                    true,
+                    [
+                        'title' => __('Attachments'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab == 'Attachments'),
+            ],
+        ];
+
+        if ($tab === 'Attachments') {
+            $helpHeader  = '';
+            $titleHeader = __('Index of attachment/plugin');
+        } else {
+            $helpHeader  = 'servers_ha_clusters_tab';
+            $titleHeader = __('Plug-ins registered on %s', get_product_name());
+        }
+
+        // Header.
+        ui_print_standard_header(
+            $titleHeader,
             'images/gm_servers.png',
             false,
-            '',
-            true
+            $helpHeader,
+            false,
+            $tabs,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Plugins'),
+                ],
+            ]
         );
 
         $management_allowed = is_management_allowed();

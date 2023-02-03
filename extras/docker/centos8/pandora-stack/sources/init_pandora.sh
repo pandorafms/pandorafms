@@ -243,7 +243,7 @@ if [[ $OPEN != 1 ]]; then
 	PANDORA_BIN="pandora_ha"
 	PANDORA_EXEC="/usr/bin/pandora_ha /etc/pandora/pandora_server.conf"
 else
-	install only open
+	# install only open
 	dnf install -y /opt/pandora/pandorafms_console-*.rpm /opt/pandora/pandorafms_server-*.rpm
 	dnf reinstall -y /opt/pandora/pandorafms_server-*.rpm
 	[[ -e /var/www/html/pandora_console/include/config.php ]] || dnf reinstall -y /opt/pandora/pandorafms_console-*.rpm

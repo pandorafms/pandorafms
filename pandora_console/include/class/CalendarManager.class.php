@@ -900,7 +900,7 @@ class CalendarManager
                 $id_group = get_parameter('id_group', null);
                 $day_code = get_parameter('day_code', null);
                 $id_calendar = get_parameter('id_calendar', null);
-                $description = get_parameter('description', null);
+                $description = io_safe_input(get_parameter('description', null));
                 $change = true;
                 if ($new === false
                     && ($date === $specialDay->date()

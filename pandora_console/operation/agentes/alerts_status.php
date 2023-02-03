@@ -53,7 +53,7 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$filter = get_parameter('filter', 'all_enabled');
+$disabled = get_parameter('disabled', 'all_enabled');
 $filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)
@@ -113,7 +113,7 @@ $tab = get_parameter_get('tab', null);
 $refr = (int) get_parameter('refr', 0);
 $pure = get_parameter('pure', 0);
 
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$refr.'&filter='.$filter.'&filter_standby='.$filter_standby.'&ag_group='.$id_group.'&tag_filter='.$tag_filter.'&action_filter='.$action_filter;
+$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$refr.'&disabled='.$disabled.'&filter_standby='.$filter_standby.'&ag_group='.$id_group.'&tag_filter='.$tag_filter.'&action_filter='.$action_filter;
 
 if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, 'AW')) {
     forceExecution($id_group);
@@ -460,7 +460,7 @@ if ($agent_view_page === true) {
             'form'                => [
                 'html' => printFormFilterAlert(
                     $id_group,
-                    $filter,
+                    $disabled,
                     $free_search,
                     $url,
                     $filter_standby,

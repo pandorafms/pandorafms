@@ -103,6 +103,15 @@ function api_execute(
         }
     }
 
+    $url_protocol = parse_url($url)['scheme'];
+
+    if ($url_protocol !== 'http' && $url_protocol !== 'https') {
+        return [
+            'url'    => $url,
+            'result' => '',
+        ];
+    }
+
     $curlObj = curl_init($url);
     if (empty($data) === false) {
         $url .= http_build_query($data);

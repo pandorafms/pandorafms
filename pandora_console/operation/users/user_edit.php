@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -84,9 +84,21 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
+
+
+
+
+
+
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
     $upd_info['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($config['id_user']);
+
+
+
+
+
+
 
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size > 0) {
@@ -98,6 +110,11 @@ if (isset($_GET['modified']) && !$view_mode) {
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
+
+
+
+
+
     // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
     if (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) {
@@ -105,6 +122,11 @@ if (isset($_GET['modified']) && !$view_mode) {
     } else {
         $upd_info['autorefresh_white_list'] = json_encode($autorefresh_list);
     }
+
+
+
+
+
 
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $upd_info['ehorus_user_level_user'] = get_parameter('ehorus_user_level_user');
@@ -269,6 +291,11 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
 $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
 $user_id .= '<span>'.$id.'</span></div>';
 
+
+
+
+
+
 $user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').'</p>';
 if (is_management_allowed()) {
     $user_id .= html_print_anchor(
@@ -334,6 +361,13 @@ if ($http_authorization === false) {
         true
     );
 }
+
+
+
+
+
+
+
 
 $user_id .= '</div>';
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
@@ -551,6 +585,18 @@ if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
@@ -694,6 +740,17 @@ $time_autorefresh .= html_print_select(
     false,
     false
 ).'</div>';
+
+
+
+
+
+
+
+
+
+
+
 
 
 $comments = '<p class="edit_user_labels">'.__('Comments').': </p>';

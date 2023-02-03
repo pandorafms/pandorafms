@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@
 
 // Load global vars.
 global $config;
-
+hd($_REQUEST);
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -41,8 +41,6 @@ require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
 require_once $config['homedir'].'/include/functions_custom_fields.php';
 enterprise_include_once('include/functions_profile.php');
-
-$meta = is_metaconsole();
 
 $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
 
@@ -82,7 +80,6 @@ if (is_metaconsole() === false) {
         'include/javascript/timezonepicker/tz_world.txt',
         'include/javascript/timezonepicker/tz_islands.txt'
     );
-
 
     foreach ($timezones as $timezone_name => $tz) {
         if ($timezone_name == 'America/Montreal') {
@@ -272,6 +269,10 @@ enterprise_hook('open_meta_frame');
 
 $tab = get_parameter('tab', 'user');
 
+// Save autorefresh list.
+$autorefresh_list = get_parameter_post('autorefresh_list');
+$autorefresh_white_list = (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) ? '' : json_encode($autorefresh_list);
+
 // Header.
 if (is_metaconsole() === true) {
     user_meta_print_header();
@@ -442,13 +443,13 @@ if ($create_user === true) {
     $values['block_size'] = (int) get_parameter('block_size', $config['block_size']);
 
     $values['section'] = get_parameter('section');
-    if (($values['section'] === 'Event list') || ($values['section'] === 'Group view') || ($values['section'] === 'Alert detail') || ($values['section'] === 'Tactical view') || ($values['section'] === 'Default')) {
+    if (($values['section'] === HOME_SCREEN_EVENT_LIST) || ($values['section'] === HOME_SCREEN_GROUP_VIEW) || ($values['section'] === HOME_SCREEN_ALERT_DETAIL) || ($values['section'] === HOME_SCREEN_TACTICAL_VIEW) || ($values['section'] === HOME_SCREEN_DEFAULT)) {
         $values['data_section'] = '';
-    } else if ($values['section'] === 'Dashboard') {
+    } else if ($values['section'] === HOME_SCREEN_DASHBOARD) {
         $values['data_section'] = $dashboard;
-    } else if (io_safe_output($values['section']) === 'Visual console') {
+    } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === 'Other' || io_safe_output($values['section']) === 'External link') {
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
         $values['data_section'] = get_parameter('data_section');
     }
 
@@ -723,13 +724,13 @@ if ($update_user) {
     $values['block_size'] = get_parameter('block_size', $config['block_size']);
 
     $values['section'] = get_parameter('section');
-    if (($values['section'] === 'Event list') || ($values['section'] === 'Group view') || ($values['section'] === 'Alert detail') || ($values['section'] === 'Tactical view') || ($values['section'] === 'Default')) {
+    if (($values['section'] === HOME_SCREEN_EVENT_LIST) || ($values['section'] === HOME_SCREEN_GROUP_VIEW) || ($values['section'] === HOME_SCREEN_ALERT_DETAIL) || ($values['section'] === HOME_SCREEN_TACTICAL_VIEW) || ($values['section'] === HOME_SCREEN_DEFAULT)) {
         $values['data_section'] = '';
-    } else if ($values['section'] === 'Dashboard') {
+    } else if ($values['section'] === HOME_SCREEN_DASHBOARD) {
         $values['data_section'] = $dashboard;
-    } else if (io_safe_output($values['section']) === 'Visual console') {
+    } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === 'Other' || io_safe_output($values['section']) === 'External link') {
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
         $values['data_section'] = get_parameter('data_section');
     }
 
@@ -743,7 +744,8 @@ if ($update_user) {
     $values['local_user'] = (bool) get_parameter('local_user', false);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
-
+    // Previously defined.
+    $values['autorefresh_white_list'] = $autorefresh_white_list;
 
     $res1 = update_user($id, $values);
 
@@ -1304,7 +1306,7 @@ if ($new_user) {
     $id_usr = $id;
 }
 
-if ((bool) $meta === false) {
+if (is_metaconsole() === false) {
     // User only can change skins if has more than one group.
     if (count($usr_groups) > 1) {
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -1314,7 +1316,7 @@ if ((bool) $meta === false) {
     }
 }
 
-if ((bool) $meta === true) {
+if (is_metaconsole() === true) {
     $array_filters = get_filters_custom_fields_view(0, true);
 
     $search_custom_fields_view = '<div class="label_select"><p class="edit_user_labels">'.__('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true).'</p>';
@@ -1343,20 +1345,9 @@ $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home
     __('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'),
     true
 ).'</p>';
-;
-$values = [
-    'Default'        => __('Default'),
-    'Visual console' => __('Visual console'),
-    'Event list'     => __('Event list'),
-    'Group view'     => __('Group view'),
-    'Tactical view'  => __('Tactical view'),
-    'Alert detail'   => __('Alert detail'),
-    'External link'  => __('External link'),
-    'Other'          => __('Other'),
-    'Dashboard'      => __('Dashboard'),
-];
 
-$home_screen .= html_print_select(
+/*
+    $home_screen .= html_print_select(
     $values,
     'section',
     io_safe_output($user_info['section']),
@@ -1366,8 +1357,8 @@ $home_screen .= html_print_select(
     true,
     false,
     false
-).'</div>';
-
+    ).'</div>';
+*/
 
 $dashboards = Manager::getDashboards(
     -1,
@@ -1602,7 +1593,69 @@ if (isset($double_authentication)) {
     $double_authentication .= '</div>';
 }
 
-if ($meta) {
+
+
+$autorefresh_list_out = [];
+if (is_metaconsole() === false || is_centralized() === true) {
+    $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+    $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
+    $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
+    $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
+    $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+    $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
+
+    if (enterprise_installed()) {
+        $autorefresh_list_out['general/sap_view'] = 'SAP view';
+    }
+}
+
+$autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
+$autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
+$autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
+$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
+$autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
+
+$autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
+$autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
+$autorefresh_list_out['operation/events/events'] = 'Events';
+
+
+if (isset($autorefresh_list) === false) {
+    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
+    $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+    if ($autorefresh_list === null) {
+        $autorefresh_list[0] = __('None');
+    } else {
+        $aux = [];
+        $count_autorefresh_list = count($autorefresh_list);
+        for ($i = 0; $i < $count_autorefresh_list; $i++) {
+            $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
+            unset($autorefresh_list_out[$autorefresh_list[$i]]);
+            $autorefresh_list[$i] = $aux;
+        }
+
+        $autorefresh_list = $aux;
+    }
+} else {
+    if (is_array($autorefresh_list) === false || empty($autorefresh_list[0]) === true || $autorefresh_list[0] === '0') {
+        $autorefresh_list = [];
+        $autorefresh_list[0] = __('None');
+    } else {
+        $aux = [];
+        $count_autorefresh_list = count($autorefresh_list);
+        for ($i = 0; $i < $count_autorefresh_list; $i++) {
+            $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
+            unset($autorefresh_list_out[$autorefresh_list[$i]]);
+            $autorefresh_list[$i] = $aux;
+        }
+
+        $autorefresh_list = $aux;
+    }
+}
+
+
+
+if (is_metaconsole() === true) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $access_node = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
@@ -1625,6 +1678,11 @@ if ($meta) {
 }
 
 echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
+
+
+require_once 'user_management.php';
+
+
 
 
 if (!$id) {
@@ -1655,7 +1713,7 @@ echo '<div id="user_form">
     <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
 </div>
 <div class="user_edit_second_row white_box">
-    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$double_authentication.'</div>
+    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$default_event_filter.$double_authentication.'</div>
 
     <div class="edit_user_timezone">'.$timezone;
 if (is_metaconsole() === false) {
@@ -1668,9 +1726,96 @@ if (is_metaconsole() === false) {
     echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
 }
 
+$autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
+    __('This will activate autorefresh in selected pages'),
+    true
+).'</p>';
+$select_out = html_print_select(
+    $autorefresh_list_out,
+    'autorefresh_list_out[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:100%'
+);
+$arrows = ' ';
+$select_in = html_print_select(
+    $autorefresh_list,
+    'autorefresh_list[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:100%'
+);
+
+$table_ichanges = '<div class="autorefresh_select">
+                        <div class="autorefresh_select_list_out">
+                            <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
+                            <div>'.$select_out.'</div>
+                        </div>
+                        <div class="autorefresh_select_arrows" style="display:grid">
+                            <a href="javascript:">'.html_print_image(
+                                'images/darrowright_green.png',
+                                true,
+                                [
+                                    'id'    => 'right_autorefreshlist',
+                                    'alt'   => __('Push selected pages into autorefresh list'),
+                                    'title' => __('Push selected pages into autorefresh list'),
+                                ]
+).'</a>
+                            <a href="javascript:">'.html_print_image(
+    'images/darrowleft_green.png',
+    true,
+    [
+        'id'    => 'left_autorefreshlist',
+        'alt'   => __('Pop selected pages out of autorefresh list'),
+        'title' => __('Pop selected pages out of autorefresh list'),
+    ]
+).'</a>
+                        </div>    
+                        <div class="autorefresh_select_list">    
+                            <p class="autorefresh_select_text">'.__('List of pages with autorefresh').': </p>   
+                            <div>'.$select_in.'</div>
+                        </div>
+                    </div>';
+
+$autorefresh_show .= $table_ichanges;
+
+// Time autorefresh.
+$times = get_refresh_time_array();
+$time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
+$time_autorefresh .= ui_print_help_tip(
+    __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
+    true
+).'</p>';
+$time_autorefresh .= html_print_select(
+    $times,
+    'time_autorefresh',
+    $user_info['time_autorefresh'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    false
+).'</div>';
+
+
 echo '</div>
 </div>
-
+<div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
 <div class="user_edit_third_row white_box">
     <div class="edit_user_comments">'.$comments.'</div>
 </div>';
@@ -1840,7 +1985,7 @@ $(document).ready (function () {
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
     var img_delete = '<?php echo $delete_image; ?>';
     var id_user = '<?php echo io_safe_output($id); ?>';
-    var is_metaconsole = '<?php echo $meta; ?>';
+    var is_metaconsole = '<?php echo is_metaconsole(); ?>';
     var user_is_global_admin = '<?php echo users_is_admin($id); ?>';
     var is_err = '<?php echo $is_err; ?>';
     var data = [];
@@ -2023,73 +2168,17 @@ function delete_profile(event, btn) {
 }
 
 function show_data_section () {
-    section = $("#section").val();
-    
-    switch (section) {
-        case <?php echo "'".'Dashboard'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "inline-grid");
-            break;
-        case <?php echo "'".'Visual console'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "");
-            $("#show_vc").css("display", "inline-grid");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'Event list'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'Group view'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'Tactical view'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'Alert detail'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'External link'."'"; ?>:
-            $("#text-data_section").css("display", "");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'Other'."'"; ?>:
-            $("#text-data_section").css("display", "");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-        case <?php echo "'".'Default'."'"; ?>:
-            $("#text-data_section").css("display", "none");
-            $("#dashboard").css("display", "none");
-            $("#visual_console").css("display", "none");
-            $("#show_vc").css("display", "none");
-            $("#show_db").css("display", "none");
-            break;
-    }
+    var $section = $("#section").val();
+    var $allElements = $('div[id^="custom_home_screen_"]');
+    var $elementSelected = $('div[id="custom_home_screen_'+$section+'"]');
+    // Hide all elements.
+    $allElements.each(function(){
+        $(this).addClass('invisible');
+        $(this).children().addClass('invisible');
+    })
+    // Show only the selected.
+    $elementSelected.removeClass('invisible');
+    $elementSelected.children().removeClass('invisible');
 }
 
 function switch_ehorus_conf()

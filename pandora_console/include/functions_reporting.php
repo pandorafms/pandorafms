@@ -257,6 +257,10 @@ function reporting_make_reporting_data(
 
         $content['style'] = json_decode(io_safe_output($content['style']), true);
 
+        if (!empty($content['style']['event_filter_search'])) {
+            $content['style']['event_filter_search'] = io_safe_input($content['style']['event_filter_search']);
+        }
+
         $graphs_to_macro = db_get_all_rows_field_filter(
             'tgraph_source',
             'id_graph',
@@ -8802,24 +8806,27 @@ function reporting_availability($report, $content, $date=false, $time=false)
         $data = [];
 
         $style = io_safe_output($content['style']);
-        if ($style['hide_notinit_agents']) {
-            $aux_id_agents = $agents;
-            $i = 0;
-            foreach ($items as $item) {
-                $utimestamp = db_get_value(
-                    'utimestamp',
-                    'tagente_datos',
-                    'id_agente_modulo',
-                    $item['id_agent_module'],
-                    true
-                );
-                if (($utimestamp === false)
-                    || (intval($utimestamp) > intval($datetime_to))
-                ) {
-                    unset($items[$i]);
-                }
 
-                $i++;
+        if (is_array($style)) {
+            if ($style['hide_notinit_agents']) {
+                $aux_id_agents = $agents;
+                $i = 0;
+                foreach ($items as $item) {
+                    $utimestamp = db_get_value(
+                        'utimestamp',
+                        'tagente_datos',
+                        'id_agente_modulo',
+                        $item['id_agent_module'],
+                        true
+                    );
+                    if (($utimestamp === false)
+                        || (intval($utimestamp) > intval($datetime_to))
+                    ) {
+                        unset($items[$i]);
+                    }
+
+                    $i++;
+                }
             }
         }
 

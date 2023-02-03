@@ -415,7 +415,7 @@ class AuditLog extends HTML
                     var row = table.row(tr);
 
                     if (row.child.isShown()) {
-                        // This row is already open - close it
+                    // This row is already open - close it
                         row.child.hide();
                         tr.removeClass('shown');
                     } else {
@@ -423,6 +423,8 @@ class AuditLog extends HTML
                         row.child(format(row.data())).show();
                         tr.addClass('shown');
                     }
+                    $('#audit_logs').css('table-layout','fixed');
+                    $('#audit_logs').css('width','95% !important');
                 });
 
                 $('#save-filter').click(function() {

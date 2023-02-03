@@ -336,19 +336,17 @@ function event_change_status(event_ids, server_id) {
       }
 
       if (data.status == "status_ok") {
-        // if (typeof dt_events !== "undefined") {
-        //   dt_events.draw(false);
-        // }
         $.ajax({
           type: "POST",
           url: "ajax.php",
           data: {
             page: "include/ajax/events",
             get_Acknowledged: 1,
-            event_id: event_ids
+            event_id: event_ids,
+            server_id: server_id
           },
           success: function(response) {
-            $("#table4-9-1").html(response);
+            $(".general_acknowleded").html(response);
           }
         });
 
@@ -356,15 +354,6 @@ function event_change_status(event_ids, server_id) {
           .DataTable()
           .draw(false);
         $("#notification_status_success").show();
-        if (new_status == 1) {
-          $("#extended_event_general_page table td.general_acknowleded").text(
-            data.user
-          );
-        } else {
-          $("#extended_event_general_page table td.general_acknowleded").text(
-            "N/A"
-          );
-        }
 
         $("#general_status")
           .find(".general_status")

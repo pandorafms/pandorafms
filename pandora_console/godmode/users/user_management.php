@@ -585,6 +585,10 @@ $userManagementTable->data['title_additionalSettings'][1] = html_print_subtitle_
 $userManagementTable->rowclass['captions_addSettings'] = 'field_half_width pdd_t_10px';
 $userManagementTable->rowclass['fields_addSettings'] = 'field_half_width';
 $userManagementTable->cellstyle['fields_addSettings'][1] = 'flex-wrap: wrap';
+$userManagementTable->cellstyle['captions_addSettings'][1] = 'width: 35%';
+$userManagementTable->cellstyle['captions_addSettings'][2] = 'width: 15%';
+$userManagementTable->cellstyle['fields_addSettings'][1] = 'width: 35%';
+$userManagementTable->cellstyle['fields_addSettings'][2] = 'width: 15%';
 $userManagementTable->data['captions_addSettings'][0] = __('Comments');
 $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     'comments',
@@ -600,16 +604,23 @@ $userManagementTable->data['captions_addSettings'][1] .= ui_print_help_tip(
     __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
     true
 );
-$userManagementTable->data['fields_addSettings'][1] = html_print_textarea(
-    'allowed_ip_list',
-    2,
-    65,
-    $user_info['allowed_ip_list'],
-    (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
+$userManagementTable->data['fields_addSettings'][1] = html_print_div(
+    [
+        'class'   => 'edit_user_allowed_ip',
+        'content' => html_print_textarea(
+            'allowed_ip_list',
+            2,
+            65,
+            $user_info['allowed_ip_list'],
+            (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
+            true
+        ),
+    ],
     true
 );
 
-$userManagementTable->data['fields_addSettings'][1] .= html_print_div(
+$userManagementTable->data['captions_addSettings'][2] = __('Allow all IPs');
+$userManagementTable->data['fields_addSettings'][2] = html_print_div(
     [
         'class'   => 'margin-top-10',
         'content' => html_print_checkbox_switch(
@@ -617,9 +628,60 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
             0,
             $user_info['allowed_ip_active'],
             true
-        ).'<span class="margin-top-10">'.__('Allow all IPs').'</span>',
+        ),
     ],
     true
 );
 
+
+$userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['fields_loginErrorUser'] = 'field_half_width';
+$userManagementTable->cellstyle['captions_loginErrorUser'][0] = 'width: 25%';
+$userManagementTable->cellstyle['captions_loginErrorUser'][1] = 'width: 25%';
+$userManagementTable->cellstyle['fields_loginErrorUser'][0] = 'width: 25%';
+$userManagementTable->cellstyle['fields_loginErrorUser'][1] = 'width: 25%';
+$userManagementTable->data['captions_loginErrorUser'][0] = __('Not Login');
+$userManagementTable->data['captions_loginErrorUser'][0] .= ui_print_help_tip(
+    __('The user with not login set only can access to API.'),
+    true
+);
+$userManagementTable->data['fields_loginErrorUser'][0] = html_print_checkbox_switch(
+    'not_login',
+    1,
+    $user_info['not_login'],
+    true
+);
+
+$userManagementTable->data['captions_loginErrorUser'][1] = __('Local user');
+$userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_help_tip(
+    __('The user with local authentication enabled will always use local authentication.'),
+    true
+);
+$userManagementTable->data['fields_loginErrorUser'][1] = html_print_checkbox_switch(
+    'local_user',
+    1,
+    $user_info['local_user'],
+    true
+);
+
+$userManagementTable->data['captions_loginErrorUser'][2] = __('Session time');
+$userManagementTable->data['captions_loginErrorUser'][2] .= ui_print_help_tip(
+    __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
+    true
+);
+$userManagementTable->data['fields_loginErrorUser'][2] = html_print_input_text(
+    'session_time',
+    $user_info['session_time'],
+    '',
+    5,
+    5,
+    true.false,
+    false,
+    '',
+    'class="input_line_small"'
+);
+
 html_print_table($userManagementTable);
+
+// User Profile definition table.
+profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true && $new_user === true));

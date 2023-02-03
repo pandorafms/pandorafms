@@ -28,7 +28,7 @@
 
 // Load global vars.
 global $config;
-hd($_REQUEST);
+// hd($_REQUEST); //TODO. For testing purposes.
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -1424,7 +1424,7 @@ $size_pagination .= html_print_input_text(
     true
 ).'</div>';
 
-if ($id == $config['id_user']) {
+if ($id === $config['id_user']) {
     $language .= html_print_input_hidden(
         'quick_language_change',
         1,
@@ -1432,7 +1432,7 @@ if ($id == $config['id_user']) {
     );
 }
 
-if (enterprise_installed() && defined('METACONSOLE')) {
+if (enterprise_installed() && is_metaconsole() === true) {
     $user_info_metaconsole_access = 'only_console';
     if (isset($user_info['metaconsole_access'])) {
         $user_info_metaconsole_access = $user_info['metaconsole_access'];
@@ -1457,36 +1457,37 @@ if (enterprise_installed() && defined('METACONSOLE')) {
     ).'</div>';
 }
 
-$not_login = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Not Login').'</p>';
-$not_login .= ui_print_help_tip(
+/*
+    $not_login = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Not Login').'</p>';
+    $not_login .= ui_print_help_tip(
     __('The user with not login set only can access to API.'),
     true
-);
-$not_login .= html_print_checkbox_switch(
+    );
+    $not_login .= html_print_checkbox_switch(
     'not_login',
     1,
     $user_info['not_login'],
     true
-).'</div>';
+    ).'</div>';
 
-$local_user = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Local user').'</p>';
-$local_user .= ui_print_help_tip(
+    $local_user = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Local user').'</p>';
+    $local_user .= ui_print_help_tip(
     __('The user with local authentication enabled will always use local authentication.'),
     true
-);
-$local_user .= html_print_checkbox_switch(
+    );
+    $local_user .= html_print_checkbox_switch(
     'local_user',
     1,
     $user_info['local_user'],
     true
-).'</div>';
+    ).'</div>';
 
-$session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
-$session_time .= ui_print_help_tip(
+    $session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
+    $session_time .= ui_print_help_tip(
     __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
     true
-).'</p>';
-$session_time .= html_print_input_text(
+    ).'</p>';
+    $session_time .= html_print_input_text(
     'session_time',
     $user_info['session_time'],
     '',
@@ -1496,8 +1497,8 @@ $session_time .= html_print_input_text(
     false,
     '',
     'class="input_line_small"'
-).'</div>';
-
+    ).'</div>';
+*/
 $user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
 
 if (empty($user_groups) === false) {
@@ -1820,33 +1821,15 @@ echo '</div>
     <div class="edit_user_comments">'.$comments.'</div>
 </div>';
 
-html_print_div(
-    [
-        'class'   => 'user_edit_third_row white_box',
-        'content' => html_print_div(
-            [
-                'class'   => 'edit_user_allowed_ip',
-                'content' => $allowedIP,
-            ],
-            true
-        ),
-    ]
-);
-
 if (!empty($ehorus)) {
     echo '<div class="user_edit_third_row white_box">'.$ehorus.'</div>';
 }
 
 echo '</div>';
 
-echo '<div class="action-buttons w100p">';
 if ($config['admin_can_add_user']) {
     html_print_csrf_hidden();
-    if ($new_user) {
-        html_print_input_hidden('create_user', 1);
-    } else {
-        html_print_input_hidden('update_user', 1);
-    }
+    html_print_input_hidden((($new_user === true) ? 'create_user' : 'update_user'), 1);
 }
 
 echo '</div>';
@@ -1857,40 +1840,38 @@ if ($new_user === true) {
 
 echo '</form>';
 
-if ($is_err === true && $new_user === true) {
-    profile_print_profile_table($id, io_safe_output($json_profile), false, true);
-} else {
-    profile_print_profile_table($id, io_safe_output($json_profile));
-}
+$actionButtons = [];
 
-echo '<br />';
-
-echo '<div class="action-buttons w100p">';
-if ($config['admin_can_add_user']) {
-    if ($new_user) {
-        html_print_submit_button(
-            __('Create'),
-            'crtbutton',
-            false,
-            [
-                'icon' => 'wand',
-                'form' => 'user_profile_form',
-            ]
-        );
+if ((bool) $config['admin_can_add_user'] === true) {
+    if ($new_user === true) {
+        $submitButtonCaption = __('Create');
+        $submitButtonName = 'crtbutton';
+        $submitButtonIcon = 'wand';
     } else {
-        html_print_submit_button(
-            __('Update'),
-            'uptbutton',
-            false,
-            [
-                'icon' => 'update',
-                'form' => 'user_profile_form',
-            ]
-        );
+        $submitButtonCaption = __('Update');
+        $submitButtonName = 'uptbutton';
+        $submitButtonIcon = 'update';
     }
+
+    $actionButtons[] = html_print_submit_button(
+        $submitButtonCaption,
+        $submitButtonName,
+        false,
+        [
+            'icon' => $submitButtonIcon,
+            'form' => 'user_profile_form',
+        ],
+        true
+    );
 }
 
-echo '</div>';
+$actionButtons[] = html_print_go_back_button(
+    ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0'),
+    ['button_class' => ''],
+    true
+);
+
+html_print_action_buttons(implode('', $actionButtons), ['type' => 'form_action']);
 
 
 echo '</div>';

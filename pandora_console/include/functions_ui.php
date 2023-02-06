@@ -7084,3 +7084,21 @@ function ui_get_inventory_module_add_form(
 }
 
 
+function ui_print_status_div($status)
+{
+    switch ((int) $status) {
+        case 0:
+            $return = '<div class="status_rounded_rectangles forced_title" style="display: inline-block; background: #82b92e;" title="OK" data-title="OK" data-use_title_for_force_title="1">&nbsp;</div>';
+        break;
+
+        case 1:
+            $return = '<div class="status_rounded_rectangles forced_title" style="display: inline-block; background: #e63c52;" title="FAILED" data-title="FAILED" data-use_title_for_force_title="1">&nbsp;</div>';
+        break;
+
+        default:
+            $return = '<div class="status_rounded_rectangles forced_title" style="display: inline-block; background: #fff;" title="UNDEFINED" data-title="UNDEFINED" data-use_title_for_force_title="1">&nbsp;</div>';
+        break;
+    }
+
+    return $return;
+}

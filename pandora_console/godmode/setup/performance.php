@@ -151,6 +151,9 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
     }
 }
 
+$total_agents = db_get_value('count(*)', 'tagente');
+$disable_agentaccess = ($total_agents >= 200) ? true : false;
+
 $table_status = new StdClass();
 $table_status->width = '100%';
 $table_status->class = 'databox filters';
@@ -577,7 +580,7 @@ $table_other->data[$i++][1] = html_print_input_text(
 );
 
 $table_other->data[$i][0] = __('Use agent access graph');
-$table_other->data[$i++][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true);
+$table_other->data[$i++][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true, $disable_agentaccess);
 
 $table_other->data[$i][0] = __('Max. recommended number of files in attachment directory');
 $table_other->data[$i++][1] = html_print_input_text(

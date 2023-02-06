@@ -276,6 +276,7 @@ if ($loaded_filter['id_filter'] > 0) {
         if (is_array($tag_filter) === false) {
             $tag_filter = json_decode($tag_filter, true);
         }
+
         if ($tag_filter === '') {
             $tag_filter = [0 => 0];
         }
@@ -1468,6 +1469,12 @@ if (!empty($result)) {
         $table->align[11] = 'left';
     }
 
+    if (check_acl($config['id_user'], 0, 'AR')) {
+        $actions_list = true;
+        $table->head[12] = __('Actions');
+        $table->align[12] = 'left';
+    }
+
     $id_type_web_content_string = db_get_value(
         'id_tipo',
         'ttipo_modulo',
@@ -1588,31 +1595,6 @@ if (!empty($result)) {
         if (in_array('data_type', $show_fields) || is_metaconsole()) {
             $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true, ['class' => 'invert_filter']);
             $agent_groups = is_metaconsole() ? $row['groups_in_server'] : agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
-            if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
-                $show_edit_icon = true;
-                if (defined('METACONSOLE')) {
-                    if (!can_user_access_node()) {
-                        $show_edit_icon = false;
-                    }
-
-                    $url_edit_module = $row['server_url'].'index.php?'.'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1'.'&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
-                } else {
-                    $url_edit_module = 'index.php?'.'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1';
-                }
-
-                if ($show_edit_icon) {
-                    $table->cellclass[][2] = 'action_buttons';
-                    $data[2] .= '<a href="'.$url_edit_module.'">'.html_print_image(
-                        'images/config.png',
-                        true,
-                        [
-                            'alt'    => '0',
-                            'border' => '',
-                            'title'  => __('Edit'),
-                        ]
-                    ).'</a>';
-                }
-            }
         }
 
         if (in_array('module_name', $show_fields) || is_metaconsole()) {
@@ -2086,6 +2068,39 @@ if (!empty($result)) {
             }
 
             $data[11] = ui_print_timestamp($row['utimestamp'], true, $option);
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
+            if (defined('METACONSOLE')) {
+                $url_edit_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
+                $url_edit_module .= 'loginhash=auto&id_agente='.$row['id_agent'];
+                $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1&';
+                $url_edit_module .= 'loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
+
+                $url_delete_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente';
+                $url_delete_module .= '&id_agente='.$row['id_agent'].'&delete_module='.$row['id_agente_modulo'];
+
+                $table->cellclass[][2] = 'action_buttons';
+                $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Edit'),
+                    ]
+                ).'</a>';
+                $onclick = 'onclick="javascript: if (!confirm(\''.__('Are you sure to delete?').'\')) return false;';
+                $data[12] .= '<a href="'.$url_delete_module.'" '.$onclick.'" target="_blank">'.html_print_image(
+                    'images/delete.png',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Delete'),
+                    ]
+                ).'</a>';
+            }
         }
 
         array_push($table->data, $data);

@@ -152,7 +152,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
 }
 
 $total_agents = db_get_value('count(*)', 'tagente');
-$disable_agentaccess = ($total_agents >= 200) ? true : false;
+$disable_agentaccess = ($total_agents >= 200 && $config['agentaccess'] == 0) ? true : false;
 
 $table_status = new StdClass();
 $table_status->width = '100%';

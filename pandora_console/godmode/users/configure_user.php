@@ -1101,7 +1101,7 @@ if (!$new_user) {
         !$new_user || $view_mode,
         '',
         [
-            'class'       => 'input_line user_icon_input',
+            'class'       => 'input_line',
             'placeholder' => __('User ID'),
         ],
         true
@@ -1238,7 +1238,7 @@ $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line email_icon_input',
+        'class'       => 'input input_line',
         'placeholder' => __('E-mail'),
     ],
     true

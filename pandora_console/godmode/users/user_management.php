@@ -150,7 +150,7 @@ $userManagementTable->data['title_profile_information'][1] = html_print_subtitle
 
 // Id user.
 if ($new_user === true) {
-    $userManagementTable->rowclass['captions_iduser'] = 'field_half_width pdd_t_10px';
+    $userManagementTable->rowclass['captions_iduser'] = 'field_half_width';
     $userManagementTable->rowclass['fields_iduser'] = 'field_half_width';
     $userManagementTable->data['captions_iduser'][0] = __('User ID');
     $userManagementTable->data['fields_iduser'][0] = html_print_input_text_extended(
@@ -163,7 +163,7 @@ if ($new_user === true) {
         !$new_user || $view_mode,
         '',
         [
-            'class'       => 'input_line user_icon_input',
+            'class'       => 'input',
             'placeholder' => __('User ID'),
         ],
         true
@@ -173,7 +173,7 @@ if ($new_user === true) {
 }
 
 // User Full name.
-$userManagementTable->rowclass['captions_fullname'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_fullname'] = 'field_half_width';
 $userManagementTable->rowclass['fields_fullname'] = 'field_half_width';
 $userManagementTable->data['captions_fullname'][0] = __('Full name');
 $userManagementTable->data['fields_fullname'][0] = html_print_input_text_extended(
@@ -193,7 +193,7 @@ $userManagementTable->data['fields_fullname'][0] = html_print_input_text_extende
 );
 
 // User Email.
-$userManagementTable->rowclass['captions_email'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_email'] = 'field_half_width';
 $userManagementTable->rowclass['fields_email'] = 'field_half_width';
 $userManagementTable->data['captions_email'][0] = __('Email');
 $userManagementTable->data['fields_email'][0] = html_print_input_text_extended(
@@ -206,14 +206,14 @@ $userManagementTable->data['fields_email'][0] = html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line email_icon_input',
+        'class'       => 'input',
         'placeholder' => __('E-mail'),
     ],
     true
 );
 
 // User phone number.
-$userManagementTable->rowclass['captions_phone'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_phone'] = 'field_half_width';
 $userManagementTable->rowclass['fields_phone'] = 'field_half_width';
 $userManagementTable->data['captions_phone'][0] = __('Phone number');
 $userManagementTable->data['fields_phone'][0] = html_print_input_text_extended(
@@ -226,7 +226,7 @@ $userManagementTable->data['fields_phone'][0] = html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line phone_icon_input',
+        'class'       => 'input',
         'placeholder' => __('Phone number'),
     ],
     true
@@ -377,7 +377,7 @@ $autorefreshControlsContent[] = html_print_anchor(
         'id'      => 'addAutorefreshPage',
         'href'    => 'javascript:',
         'content' => html_print_image(
-            'images/darrowright_green.png',
+            'images/plus.svg',
             true,
             [
                 'id'    => 'right_autorefreshlist',
@@ -393,7 +393,7 @@ $autorefreshControlsContent[] = html_print_anchor(
         'id'      => 'removeAutorefreshPage',
         'href'    => 'javascript:',
         'content' => html_print_image(
-            'images/darrowleft_green.png',
+            'images/minus.svg',
             true,
             [
                 'id'    => 'left_autorefreshlist',
@@ -441,12 +441,13 @@ $autorefreshTable = html_print_div(
     true
 );
 
-// $userManagementTable->rowclass['captions_autorefreshList'] = 'field_half_width pdd_t_10px';
-// $userManagementTable->rowclass['fields_autorefreshList'] = 'field_half_width';
+$userManagementTable->rowclass['captions_autorefreshList'] = 'field_half_width';
+$userManagementTable->rowclass['fields_autorefreshList'] = 'field_half_width';
+// $userManagementTable->cellclass['fields_autorefreshList'][0] = 'field_half_width';
 $userManagementTable->data['captions_autorefreshList'] = __('Autorefresh pages');
 $userManagementTable->data['fields_autorefreshList'] = $autorefreshTable;
 
-$userManagementTable->rowclass['captions_autorefreshTime'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_autorefreshTime'] = 'field_half_width';
 $userManagementTable->rowclass['fields_autorefreshTime'] = 'field_half_width';
 $userManagementTable->data['captions_autorefreshTime'][0] = __('Time for autorefresh');
 $userManagementTable->data['captions_autorefreshTime'][0] .= ui_print_help_tip(
@@ -478,7 +479,7 @@ $userManagementTable->data['title_lookAndFeel'][0] = html_print_div(
 );
 $userManagementTable->data['title_lookAndFeel'][1] = html_print_subtitle_table(__('Language and Appearance'), [], true);
 
-$userManagementTable->rowclass['captions_lang_colorscheme'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_lang_colorscheme'] = 'field_half_width';
 $userManagementTable->rowclass['fields_lang_colorscheme'] = 'field_half_width';
 $userManagementTable->data['captions_lang_colorscheme'][0] = __('Language');
 $userManagementTable->data['fields_lang_colorscheme'][0] = html_print_select_from_sql(
@@ -494,7 +495,7 @@ $userManagementTable->data['fields_lang_colorscheme'][0] = html_print_select_fro
 $userManagementTable->data['captions_lang_colorscheme'][1] = __('User color scheme');
 $userManagementTable->data['fields_lang_colorscheme'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
 
-$userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width';
 $userManagementTable->rowclass['fields_blocksize_eventfilter'] = 'field_half_width';
 $userManagementTable->data['captions_blocksize_eventfilter'][0] = __('Block size for pagination');
 $userManagementTable->data['fields_blocksize_eventfilter'][0] = html_print_input_text(
@@ -530,9 +531,9 @@ $homeScreenTable->data = [];
 // Home screen.
 $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
 $homeScreenTable->colspan['captions_homescreen'] = 2;
-$homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width pdd_t_10px';
+$homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
 $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width';
-// $homeScreenTable->rowclass['fields_homescreen'] = 'w540px';
+$homeScreenTable->rowclass['fields_homescreen'] = 'w540px';
 $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     $homeScreenValues,
     'section',
@@ -550,9 +551,10 @@ $userManagementTable->rowclass['homescreen_table'] = 'table_section';
 $userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
 
 // Timezone.
-$userManagementTable->rowclass['captions_timezone'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_timezone'] = 'field_half_width';
 $userManagementTable->rowclass['fields_timezone'] = 'field_half_width';
 $userManagementTable->colspan['captions_timezone'][0] = 2;
+$userManagementTable->cellstyle['fields_timezone'][0] = 'align-self: baseline;';
 $userManagementTable->data['captions_timezone'][0] = __('Time zone');
 $userManagementTable->data['fields_timezone'][0] = html_print_timezone_select('timezone', $user_info['timezone']);
 $userManagementTable->data['fields_timezone'][0] .= ui_print_help_tip(
@@ -568,7 +570,6 @@ $userManagementTable->data['fields_timezone'][1] = html_print_div(
     true
 );
 
-
 // Title for Language and Appearance.
 $userManagementTable->rowclass['title_additionalSettings'] = 'w100p';
 $userManagementTable->cellstyle['title_additionalSettings'][0] = 'width: 40px;';
@@ -582,7 +583,7 @@ $userManagementTable->data['title_additionalSettings'][0] = html_print_div(
 );
 $userManagementTable->data['title_additionalSettings'][1] = html_print_subtitle_table(__('Additional settings'), [], true);
 
-$userManagementTable->rowclass['captions_addSettings'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_addSettings'] = 'field_half_width';
 $userManagementTable->rowclass['fields_addSettings'] = 'field_half_width';
 $userManagementTable->cellstyle['fields_addSettings'][1] = 'flex-wrap: wrap';
 $userManagementTable->cellstyle['captions_addSettings'][1] = 'width: 35%';
@@ -592,7 +593,7 @@ $userManagementTable->cellstyle['fields_addSettings'][2] = 'width: 15%';
 $userManagementTable->data['captions_addSettings'][0] = __('Comments');
 $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     'comments',
-    2,
+    5,
     65,
     $user_info['comments'],
     ($view_mode ? 'readonly="readonly"' : ''),
@@ -609,7 +610,7 @@ $userManagementTable->data['fields_addSettings'][1] = html_print_div(
         'class'   => 'edit_user_allowed_ip',
         'content' => html_print_textarea(
             'allowed_ip_list',
-            2,
+            5,
             65,
             $user_info['allowed_ip_list'],
             (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
@@ -634,7 +635,7 @@ $userManagementTable->data['fields_addSettings'][2] = html_print_div(
 );
 
 
-$userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width pdd_t_10px';
+$userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width';
 $userManagementTable->rowclass['fields_loginErrorUser'] = 'field_half_width';
 $userManagementTable->cellstyle['captions_loginErrorUser'][0] = 'width: 25%';
 $userManagementTable->cellstyle['captions_loginErrorUser'][1] = 'width: 25%';
@@ -675,10 +676,7 @@ $userManagementTable->data['fields_loginErrorUser'][2] = html_print_input_text(
     '',
     5,
     5,
-    true.false,
-    false,
-    '',
-    'class="input_line_small"'
+    true
 );
 
 html_print_table($userManagementTable);

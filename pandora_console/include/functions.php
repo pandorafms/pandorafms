@@ -6406,8 +6406,11 @@ function getBearerToken()
  */
 function is_pandora_db_running()
 {
+    // Get current DB name: useful for metaconsole connection to node.
+    $db_name = db_get_sql('SELECT DATABASE()');
+
     $is_free_lock = mysql_db_process_sql(
-        'SELECT IS_FREE_LOCK("pandora_pandora_db") AS "value"',
+        'SELECT IS_FREE_LOCK("'.$db_name.'_pandora_db") AS "value"',
         'affected_rows',
         '',
         false

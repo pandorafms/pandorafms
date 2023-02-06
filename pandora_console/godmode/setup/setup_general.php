@@ -512,13 +512,17 @@ $table->data[$i++][1] = html_print_checkbox_switch(
 );
 
 $table->data[$i][0] = __('Limit for bulk operations');
-$table->data[$i++][1] = html_print_input_text(
-    'limit_parameters_massive',
-    $config['limit_parameters_massive'],
-    '',
-    10,
-    10,
-    true
+$table->data[$i++][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => 2000,
+        'name'   => 'limit_parameters_massive',
+        'value'  => $config['limit_parameters_massive'],
+        'return' => true,
+        'min'    => 100,
+        'style'  => 'width:50px',
+    ]
 );
 
 $table->data[$i][0] = __('Include agents manually disabled');

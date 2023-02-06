@@ -3741,6 +3741,7 @@ sub module_plugin ($) {
 	
 	# Do not save the output if there was an error
 	if ($? != 0) {
+		log_message ('error', "plugin execution '". $command ."' exited with error code " . $?);
 		return ();
 	}
 

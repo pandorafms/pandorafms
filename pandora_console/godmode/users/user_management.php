@@ -49,12 +49,12 @@ $homeScreenValues = [
 // Custom Home Screen controls.
 $customHomeScreenAddition = [];
 // Home screen. Dashboard.
-$customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+$customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
 // Home screen. Visual consoles.
-$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
 // Home screen. External link and Other.
-$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
-$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
 
 $customHomeScreenDataField = '';
 foreach ($customHomeScreenAddition as $key => $customField) {
@@ -96,6 +96,10 @@ if (is_metaconsole() === false) {
         'include/javascript/timezonepicker/tz_islands.txt'
     );
 
+    // Initial definition of vars.
+    $area_data_timezone_polys = '';
+    $area_data_timezone_rects = '';
+
     foreach ($timezones as $timezone_name => $tz) {
         if ($timezone_name === 'America/Montreal') {
             $timezone_name = 'America/Toronto';
@@ -103,12 +107,10 @@ if (is_metaconsole() === false) {
             $timezone_name = 'Asia/Shanghai';
         }
 
-        $area_data_timezone_polys .= '';
         foreach ($tz['polys'] as $coords) {
             $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
         }
 
-        $area_data_timezone_rects .= '';
         foreach ($tz['rects'] as $coords) {
             $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
         }
@@ -234,7 +236,7 @@ $userManagementTable->data['fields_phone'][0] = html_print_input_text_extended(
 
 // Password management.
 $passwordManageTable = new stdClass();
-$passwordManageTable->class = 'w100p';
+$passwordManageTable->class = 'table_section full_section';
 $passwordManageTable->id = 'password_manage';
 $passwordManageTable->style = [];
 $passwordManageTable->rowclass = [];
@@ -252,7 +254,7 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     $view_mode,
     '',
     [
-        'class'       => 'input',
+        'class'       => 'input w100p',
         'placeholder' => __('Password'),
     ],
     true,
@@ -271,7 +273,7 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     $view_mode,
     '',
     [
-        'class'       => 'input',
+        'class'       => 'input w100p',
         'placeholder' => __('Password confirmation'),
     ],
     true,
@@ -291,7 +293,7 @@ if ($new_user === false) {
         $view_mode,
         '',
         [
-            'class'       => 'input',
+            'class'       => 'input w100p',
             'placeholder' => __('Own password confirmation'),
         ],
         true,
@@ -300,7 +302,7 @@ if ($new_user === false) {
 }
 
 // $userManagementTable->rowclass['captions_passwordManage'] = 'full_section pdd_t_10px';
-$userManagementTable->rowclass['passwordManage_table'] = 'table_section full_section';
+// $userManagementTable->rowclass['passwordManage_table'] = 'table_section full_section';
 // $userManagementTable->data['captions_passwordManage'][0] = __('Password management');
 $userManagementTable->data['passwordManage_table'] = html_print_table($passwordManageTable, true);
 
@@ -381,6 +383,7 @@ $autorefreshControlsContent[] = html_print_anchor(
             true,
             [
                 'id'    => 'right_autorefreshlist',
+                'style' => 'width: 24px; margin: 10px 10px 0;',
                 'alt'   => __('Push selected pages into autorefresh list'),
                 'title' => __('Push selected pages into autorefresh list'),
             ]
@@ -397,6 +400,7 @@ $autorefreshControlsContent[] = html_print_anchor(
             true,
             [
                 'id'    => 'left_autorefreshlist',
+                'style' => 'width: 24px; margin: 10px 10px 0;',
                 'alt'   => __('Pop selected pages out of autorefresh list'),
                 'title' => __('Pop selected pages out of autorefresh list'),
             ]
@@ -443,7 +447,7 @@ $autorefreshTable = html_print_div(
 
 $userManagementTable->rowclass['captions_autorefreshList'] = 'field_half_width';
 $userManagementTable->rowclass['fields_autorefreshList'] = 'field_half_width';
-// $userManagementTable->cellclass['fields_autorefreshList'][0] = 'field_half_width';
+$userManagementTable->cellstyle['fields_autorefreshList'][0] = 'width: 100%';
 $userManagementTable->data['captions_autorefreshList'] = __('Autorefresh pages');
 $userManagementTable->data['fields_autorefreshList'] = $autorefreshTable;
 
@@ -530,10 +534,9 @@ $homeScreenTable->data = [];
 
 // Home screen.
 $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
-$homeScreenTable->colspan['captions_homescreen'] = 2;
+$homeScreenTable->colspan['captions_homescreen'][0] = 2;
 $homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
-$homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width';
-$homeScreenTable->rowclass['fields_homescreen'] = 'w540px';
+$homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
 $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     $homeScreenValues,
     'section',
@@ -545,9 +548,15 @@ $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     false,
     false
 );
-$homeScreenTable->data['fields_homescreen'][1] = $customHomeScreenDataField;
+$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => $customHomeScreenDataField,
+    ],
+    true
+);
 
-$userManagementTable->rowclass['homescreen_table'] = 'table_section';
+$userManagementTable->rowclass['homescreen_table'] = 'w100p';
 $userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
 
 // Timezone.
@@ -585,11 +594,8 @@ $userManagementTable->data['title_additionalSettings'][1] = html_print_subtitle_
 
 $userManagementTable->rowclass['captions_addSettings'] = 'field_half_width';
 $userManagementTable->rowclass['fields_addSettings'] = 'field_half_width';
-$userManagementTable->cellstyle['fields_addSettings'][1] = 'flex-wrap: wrap';
-$userManagementTable->cellstyle['captions_addSettings'][1] = 'width: 35%';
-$userManagementTable->cellstyle['captions_addSettings'][2] = 'width: 15%';
-$userManagementTable->cellstyle['fields_addSettings'][1] = 'width: 35%';
-$userManagementTable->cellstyle['fields_addSettings'][2] = 'width: 15%';
+$userManagementTable->cellstyle['fields_addSettings'][0] = 'align-self: baseline';
+$userManagementTable->cellstyle['fields_addSettings'][1] = 'width: 50%;flex-direction: column;align-items: flex-start;';
 $userManagementTable->data['captions_addSettings'][0] = __('Comments');
 $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     'comments',
@@ -597,7 +603,8 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     65,
     $user_info['comments'],
     ($view_mode ? 'readonly="readonly"' : ''),
-    true
+    true,
+    ''
 );
 
 $userManagementTable->data['captions_addSettings'][1] = __('Login allowed IP list');
@@ -620,10 +627,10 @@ $userManagementTable->data['fields_addSettings'][1] = html_print_div(
     true
 );
 
-$userManagementTable->data['captions_addSettings'][2] = __('Allow all IPs');
-$userManagementTable->data['fields_addSettings'][2] = html_print_div(
+$allowAllIpsContent = [];
+$allowAllIpsContent[] = '<span>'.__('Allow all IPs').'</span>';
+$allowAllIpsContent[] = html_print_div(
     [
-        'class'   => 'margin-top-10',
         'content' => html_print_checkbox_switch(
             'allowed_ip_active',
             0,
@@ -634,6 +641,14 @@ $userManagementTable->data['fields_addSettings'][2] = html_print_div(
     true
 );
 
+$userManagementTable->data['fields_addSettings'][1] .= html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $allowAllIpsContent),
+    ],
+    true
+);
 
 $userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width';
 $userManagementTable->rowclass['fields_loginErrorUser'] = 'field_half_width';

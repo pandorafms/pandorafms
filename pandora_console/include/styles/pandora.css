@@ -866,6 +866,9 @@ select:-internal-list-box {
   justify-content: flex-start;
 }
 
+.flex-baseline {
+  align-self: baseline;
+}
 .flex {
   display: flex;
 }
@@ -1367,7 +1370,7 @@ div#head {
   min-width: 882px;
   background-color: #fff;
   color: #000;
-  z-index: 11;
+  z-index: 1111;
 }
 
 .fixed_header {
@@ -1720,7 +1723,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 59px;
-  z-index: 10;
+  z-index: 10000;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -2517,7 +2520,7 @@ div#pandora_logo_header {
 #header_table_inner {
   height: 60px;
   min-width: 790px;
-  /*width: 100%;*/
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -9989,7 +9992,7 @@ button.submitButton {
   border-radius: 8px;
   padding: 0 10px;
   cursor: pointer;
-  z-index: 1;
+  z-index: 10001;
 }
 
 button.buttonButton.mini,
@@ -10751,7 +10754,7 @@ tr.bring_next_field {
   top: -8px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
-  z-index: 0;
+  z-index: 10000;
 }
 
 .fixed_action_buttons_size > .action_buttons_background_mask {

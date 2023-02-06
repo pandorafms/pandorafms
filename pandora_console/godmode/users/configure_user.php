@@ -54,70 +54,26 @@ if ($enterprise_include === true) {
     enterprise_include_once('meta/include/functions_users_meta.php');
 }
 
-if (is_metaconsole() === false) {
-    date_default_timezone_set('UTC');
-    include 'include/javascript/timezonepicker/includes/parser.inc';
-
-    // Read in options for map builder.
-    $bases = [
-        'gray'           => 'Gray',
-        'blue-marble'    => 'Blue marble',
-        'night-electric' => 'Night Electric',
-        'living'         => 'Living Earth',
-    ];
-
-    $local_file = 'include/javascript/timezonepicker/images/gray-400.png';
-
-    // Dimensions must always be exact since the imagemap does not scale.
-    $array_size = getimagesize($local_file);
-
-    $map_width = $array_size[0];
-    $map_height = $array_size[1];
-
-    $timezones = timezone_picker_parse_files(
-        $map_width,
-        $map_height,
-        'include/javascript/timezonepicker/tz_world.txt',
-        'include/javascript/timezonepicker/tz_islands.txt'
-    );
-
-    foreach ($timezones as $timezone_name => $tz) {
-        if ($timezone_name == 'America/Montreal') {
-            $timezone_name = 'America/Toronto';
-        } else if ($timezone_name == 'Asia/Chongqing') {
-            $timezone_name = 'Asia/Shanghai';
-        }
-
-        $area_data_timezone_polys .= '';
-        foreach ($tz['polys'] as $coords) {
-            $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
-        }
-
-        $area_data_timezone_rects .= '';
-        foreach ($tz['rects'] as $coords) {
-            $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
-        }
-    }
-}
-
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 $id = get_parameter('id', get_parameter('id_user', ''));
+// Check if we are the same user for edit or we have a proper profile for edit users.
+if ($id !== $config['id_user']) {
+    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
+        db_pandora_audit(
+            AUDIT_LOG_ACL_VIOLATION,
+            'Trying to access User Management'
+        );
+        include 'general/noaccess.php';
+
+        return;
+    }
+}
+
 // ID given as parameter.
 $pure = get_parameter('pure', 0);
-
 $user_info = get_user_info($id);
 $is_err = false;
-
-if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
-    db_pandora_audit(
-        AUDIT_LOG_ACL_VIOLATION,
-        'Trying to access User Management'
-    );
-    include 'general/noaccess.php';
-
-    return;
-}
 
 if (is_ajax() === true) {
     $delete_profile = (bool) get_parameter('delete_profile');
@@ -270,7 +226,7 @@ enterprise_hook('open_meta_frame');
 $tab = get_parameter('tab', 'user');
 
 // Save autorefresh list.
-$autorefresh_list = get_parameter_post('autorefresh_list');
+$autorefresh_list = (array) get_parameter_post('autorefresh_list');
 $autorefresh_white_list = (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) ? '' : json_encode($autorefresh_list);
 
 // Header.
@@ -338,6 +294,7 @@ if ((bool) $config['user_can_update_info'] === true) {
     $view_mode = true;
 }
 
+$delete_profile = (is_ajax() === true) ? (bool) get_parameter('delete_profile') : false;
 $new_user = (bool) get_parameter('new_user');
 $create_user = (bool) get_parameter('create_user');
 $add_profile = (bool) get_parameter('add_profile');
@@ -564,6 +521,7 @@ if ($create_user === true) {
             $info
         );
 
+        HD('patatas', true);
         ui_print_result_message(
             $result,
             __('Successfully created'),
@@ -1002,7 +960,7 @@ if ($add_profile && empty($json_profile)) {
     );
 }
 
-if ($values) {
+if (isset($values) === true && empty($values) === false) {
     $user_info = $values;
 }
 
@@ -1530,7 +1488,7 @@ $default_event_filter .= html_print_select(
     false
 ).'</div>';
 
-if ($config['ehorus_user_level_conf']) {
+if (isset($config['ehorus_user_level_conf']) === true && (bool) $config['ehorus_user_level_conf'] === true) {
     $ehorus = '<div class="label_select_simple"><p class="edit_user_labels">'.__('eHorus user access enabled').'</p>';
     $ehorus .= html_print_checkbox_switch(
         'ehorus_user_level_enabled',
@@ -1562,7 +1520,7 @@ if ($config['ehorus_user_level_conf']) {
 
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $id);
 
-if ($config['double_auth_enabled'] && check_acl($config['id_user'], 0, 'PM')) {
+if (isset($config['double_auth_enabled']) === true && (bool) ($config['double_auth_enabled']) === true && check_acl($config['id_user'], 0, 'PM')) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
     if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
         || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
@@ -1678,13 +1636,9 @@ if (is_metaconsole() === true) {
     ).'</div>';
 }
 
+
+echo '<div class="max_floating_element_size mrgn_20px">';
 echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
-
-
-require_once 'user_management.php';
-
-
-
 
 if (!$id) {
     $user_id_update_view = $user_id;
@@ -1696,138 +1650,138 @@ if (!$id) {
 
 if (is_metaconsole() === true) {
     $access_or_pagination = $meta_access;
+    if ($id != '' && !$is_err) {
+        $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
+        <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$own_pass_confirm.$global_profile.'</div>';
+    } else {
+        $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
+        <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+    }
+
+    echo '<div id="user_form">
+    <div class="user_edit_first_row">
+        <div class="edit_user_info white_box">'.$div_user_info.'</div>
+        <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
+    </div>
+    <div class="user_edit_second_row white_box">
+        <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$default_event_filter.$double_authentication.'</div>
+    
+        <div class="edit_user_timezone">'.$timezone;
+
+    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
+
+    $autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
+        __('This will activate autorefresh in selected pages'),
+        true
+    ).'</p>';
+    $select_out = html_print_select(
+        $autorefresh_list_out,
+        'autorefresh_list_out[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width:100%'
+    );
+    $arrows = ' ';
+    $select_in = html_print_select(
+        $autorefresh_list,
+        'autorefresh_list[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width:100%'
+    );
+
+    $table_ichanges = '<div class="autorefresh_select">
+                            <div class="autorefresh_select_list_out">
+                                <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
+                                <div>'.$select_out.'</div>
+                            </div>
+                            <div class="autorefresh_select_arrows" style="display:grid">
+                                <a href="javascript:">'.html_print_image(
+                                    'images/darrowright_green.png',
+                                    true,
+                                    [
+                                        'id'    => 'right_autorefreshlist',
+                                        'alt'   => __('Push selected pages into autorefresh list'),
+                                        'title' => __('Push selected pages into autorefresh list'),
+                                    ]
+                                ).'</a>
+                                <a href="javascript:">'.html_print_image(
+                                    'images/darrowleft_green.png',
+                                    true,
+                                    [
+                                        'id'    => 'left_autorefreshlist',
+                                        'alt'   => __('Pop selected pages out of autorefresh list'),
+                                        'title' => __('Pop selected pages out of autorefresh list'),
+                                    ]
+                                ).'</a>
+                            </div>    
+                            <div class="autorefresh_select_list">    
+                                <p class="autorefresh_select_text">'.__('List of pages with autorefresh').': </p>   
+                                <div>'.$select_in.'</div>
+                            </div>
+                        </div>';
+
+    $autorefresh_show .= $table_ichanges;
+
+    // Time autorefresh.
+    $times = get_refresh_time_array();
+    $time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
+    $time_autorefresh .= ui_print_help_tip(
+        __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
+        true
+    ).'</p>';
+    $time_autorefresh .= html_print_select(
+        $times,
+        'time_autorefresh',
+        $user_info['time_autorefresh'],
+        '',
+        '',
+        '',
+        true,
+        false,
+        false
+    ).'</div>';
+
+
+    echo '</div>
+    </div>
+    <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
+    <div class="user_edit_third_row white_box">
+        <div class="edit_user_comments">'.$comments.'</div>
+    </div>';
+
+    if (empty($ehorus) === false) {
+        html_print_div(
+            [
+                'class'   => 'user_edit_third_row white_box',
+                'content' => $ehorus,
+            ],
+            true
+        );
+    }
 } else {
     $access_or_pagination = $size_pagination;
-}
-
-if ($id != '' && !$is_err) {
-    $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$own_pass_confirm.$global_profile.'</div>';
-} else {
-    $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
-    <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
-}
-
-echo '<div id="user_form">
-<div class="user_edit_first_row">
-    <div class="edit_user_info white_box">'.$div_user_info.'</div>
-    <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
-</div>
-<div class="user_edit_second_row white_box">
-    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$default_event_filter.$double_authentication.'</div>
-
-    <div class="edit_user_timezone">'.$timezone;
-if (is_metaconsole() === false) {
-    echo '<div id="timezone-picker">
-                        <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
-                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" class="pdd_t_4px" />
-                        <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
-                    </div>';
-} else {
-    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
-}
-
-$autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
-    __('This will activate autorefresh in selected pages'),
-    true
-).'</p>';
-$select_out = html_print_select(
-    $autorefresh_list_out,
-    'autorefresh_list_out[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width:100%'
-);
-$arrows = ' ';
-$select_in = html_print_select(
-    $autorefresh_list,
-    'autorefresh_list[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width:100%'
-);
-
-$table_ichanges = '<div class="autorefresh_select">
-                        <div class="autorefresh_select_list_out">
-                            <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
-                            <div>'.$select_out.'</div>
-                        </div>
-                        <div class="autorefresh_select_arrows" style="display:grid">
-                            <a href="javascript:">'.html_print_image(
-                                'images/darrowright_green.png',
-                                true,
-                                [
-                                    'id'    => 'right_autorefreshlist',
-                                    'alt'   => __('Push selected pages into autorefresh list'),
-                                    'title' => __('Push selected pages into autorefresh list'),
-                                ]
-).'</a>
-                            <a href="javascript:">'.html_print_image(
-    'images/darrowleft_green.png',
-    true,
-    [
-        'id'    => 'left_autorefreshlist',
-        'alt'   => __('Pop selected pages out of autorefresh list'),
-        'title' => __('Pop selected pages out of autorefresh list'),
-    ]
-).'</a>
-                        </div>    
-                        <div class="autorefresh_select_list">    
-                            <p class="autorefresh_select_text">'.__('List of pages with autorefresh').': </p>   
-                            <div>'.$select_in.'</div>
-                        </div>
-                    </div>';
-
-$autorefresh_show .= $table_ichanges;
-
-// Time autorefresh.
-$times = get_refresh_time_array();
-$time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
-$time_autorefresh .= ui_print_help_tip(
-    __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
-    true
-).'</p>';
-$time_autorefresh .= html_print_select(
-    $times,
-    'time_autorefresh',
-    $user_info['time_autorefresh'],
-    '',
-    '',
-    '',
-    true,
-    false,
-    false
-).'</div>';
-
-
-echo '</div>
-</div>
-<div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
-<div class="user_edit_third_row white_box">
-    <div class="edit_user_comments">'.$comments.'</div>
-</div>';
-
-if (!empty($ehorus)) {
-    echo '<div class="user_edit_third_row white_box">'.$ehorus.'</div>';
+    // WIP: Only for node.
+    include_once 'user_management.php';
 }
 
 echo '</div>';
 
-if ($config['admin_can_add_user']) {
+if ((bool) $config['admin_can_add_user'] === true) {
     html_print_csrf_hidden();
     html_print_input_hidden((($new_user === true) ? 'create_user' : 'update_user'), 1);
 }
@@ -1837,8 +1791,8 @@ if ($new_user === true) {
     html_print_input_hidden('json_profile', $json_profile);
 }
 
-
 echo '</form>';
+echo '</div>';
 
 $actionButtons = [];
 
@@ -1873,10 +1827,11 @@ $actionButtons[] = html_print_go_back_button(
 
 html_print_action_buttons(implode('', $actionButtons), ['type' => 'form_action']);
 
-
 echo '</div>';
 
 enterprise_hook('close_meta_frame');
+
+// This is an image generated for JS.
 $delete_image = html_print_input_image(
     'del',
     'images/cross.png',
@@ -1889,7 +1844,7 @@ $delete_image = html_print_input_image(
     ]
 );
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     ?>
 
     <style>
@@ -1925,6 +1880,49 @@ if (!is_metaconsole()) {
 var json_profile = $('#hidden-json_profile');
 /* <![CDATA[ */
 $(document).ready (function () {
+
+    // Set up the picker to update target timezone and country select lists.
+    $('#timezone-image').timezonePicker({
+        target: '#timezone1',
+    });
+
+    // Optionally an auto-detect button to trigger JavaScript geolocation.
+    $('#timezone-detect').click(function() {
+        $('#timezone-image').timezonePicker('detectLocation');
+    });
+
+    $("#right_autorefreshlist").click (function () {
+        jQuery.each($("select[name='autorefresh_list_out[]'] option:selected"), function (key, value) {
+            imodule_name = $(value).html();
+            if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                id_imodule = $(value).attr('value');
+                $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+                $("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
+                $("#autorefresh_list").find("option[value='']").remove();
+                $("#autorefresh_list").find("option[value='0']").remove();
+                if($("#autorefresh_list_out option").length == 0) {
+                    $("select[name='autorefresh_list_out[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+                }
+            }
+        });
+    });
+
+    $("#left_autorefreshlist").click (function () {
+        jQuery.each($("select[name='autorefresh_list[]'] option:selected"), function (key, value) {
+                imodule_name = $(value).html();
+                if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+                    id_imodule = $(value).attr('value');
+                    $("#autorefresh_list").find("option[value='" + id_imodule + "']").remove();
+                    $("#autorefresh_list_out").find("option[value='']").remove();
+                    $("select[name='autorefresh_list_out[]']").append($("<option><option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+                    $("#autorefresh_list_out option").last().remove();
+                    if($("#autorefresh_list option").length == 0) {
+                        $("select[name='autorefresh_list[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+                    }
+                }
+        });
+    });
+
     $("input#checkbox-double_auth").change(function (e) {
         e.preventDefault();
             if (this.checked) {

@@ -3584,7 +3584,6 @@ function ui_print_datatable(array $parameters)
     }
 
     foreach ($names as $column) {
-        hd($column, true);
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
             if (isset($column['title']) === true) {
@@ -3594,7 +3593,6 @@ function ui_print_datatable(array $parameters)
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
             $table .= $column['extra'];
             $table .= '</th>';
-            hd($table, true);
         } else {
             $table .= '<th>'.__($column).'</th>';
         }

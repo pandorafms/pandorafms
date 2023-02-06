@@ -39,12 +39,13 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
 }
 
 enterprise_include_once('meta/include/functions_users_meta.php');
-
-$tab = get_parameter('tab', 'profile');
-$pure = get_parameter('pure', 0);
-
+// Get parameters.
+$tab         = get_parameter('tab', 'profile');
+$pure        = get_parameter('pure', 0);
+$new_profile = (bool) get_parameter('new_profile');
+$id_profile  = (int) get_parameter('id');
 // Header.
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     $buttons = [
         'user'    => [
             'active' => false,
@@ -72,23 +73,35 @@ if (!is_metaconsole()) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(
-        __('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()),
+    $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
+
+    ui_print_standard_header(
+        __('Edit profile %s', $profile['name']),
         'images/gm_users.png',
         false,
         'configure_profiles_tab',
         true,
-        $buttons
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage users'),
+            ],
+            [
+                'link'  => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile'),
+                'label' => __('User Profile management'),
+            ],
+        ]
     );
     $sec2 = 'gusuarios';
 } else {
     user_meta_print_header();
     $sec2 = 'advanced';
 }
-
-
-$new_profile = (bool) get_parameter('new_profile');
-$id_profile = (int) get_parameter('id');
 
 // Edit profile.
 if ($id_profile || $new_profile) {

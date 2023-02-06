@@ -4955,7 +4955,7 @@ function events_page_general_acknowledged($event_id)
     global $config;
     $Acknowledged = '';
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    hd($event['ack_utimestamp'], true);
+
     if ($event !== false && $event['estado'] == 1) {
         $user_ack = db_get_value(
             'fullname',

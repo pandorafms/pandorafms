@@ -11921,7 +11921,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
             'graph' => progress_bar($data['monitor_health'], $width, $height, $data['monitor_health'].'% '.__('of monitors up'), 0),
         ];
         $return['module_sanity'] = [
-            'title' => __('Module sanityY'),
+            'title' => __('Module sanity'),
             'graph' => progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0),
         ];
         $return['alert_level'] = [

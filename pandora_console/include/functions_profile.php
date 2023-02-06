@@ -191,24 +191,20 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     $table->id = 'table_profiles';
     $table->width = '100%';
     $table->class = 'info_table';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $table->head_colspan[0] = 0;
         $table->width = '100%';
         $table->class = 'databox_tactical data';
         $table->title = $title;
     } else {
         echo '<div id="edit_user_profiles" class="white_box">';
-        echo '<h4><p class="edit_user_labels">'.$title.'</p></h4>';
+        echo '<p class="subsection_header_title padding-lft-10">'.$title.'</p>';
     }
 
     $table->data = [];
     $table->head = [];
     $table->align = [];
     $table->style = [];
-    if (!defined('METACONSOLE')) {
-        $table->style['name'] = 'font-weight: bold';
-        $table->style['group'] = 'font-weight: bold';
-    }
 
     $table->head['name'] = __('Profile name');
     $table->head['group'] = __('Group');
@@ -216,6 +212,9 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     $table->head['hierarchy'] = __('No hierarchy');
     $table->head['actions'] = __('Action');
     $table->align['actions'] = 'center';
+
+    $table->headstyle['hierarchy'] = 'text-align: center';
+    $table->headstyle['actions'] = 'text-align: center';
 
     if (users_is_admin()) {
         $result = db_get_all_rows_filter(
@@ -262,7 +261,8 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
         }
     }
 
-    foreach ($result as $profile) {
+    $lastKey = 0;
+    foreach ($result as $key => $profile) {
         if ($profile['id_grupo'] == -1) {
             continue;
         }
@@ -272,16 +272,16 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
         $data['name'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.profile_get_name($profile['id_perfil']).'</a>';
         $data['group'] = ui_print_group_icon($profile['id_grupo'], true);
 
-        if (!defined('METACONSOLE')) {
+        if (is_metaconsole() === false) {
             $data['group'] .= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'&pure='.$pure.'">';
         }
 
         $data['group'] .= '&nbsp;'.ui_print_truncate_text(groups_get_name($profile['id_grupo'], true), GENERIC_SIZE_TEXT);
-        if (!defined('METACONSOLE')) {
+        if (is_metaconsole() === false) {
             $data['group'] .= '</a>';
         }
 
-        if (empty($profile['tags'])) {
+        if (empty($profile['tags']) === true) {
             $data['tags'] = '';
         } else {
             if (is_array($profile['tags']) === false) {
@@ -299,7 +299,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
         if ($create_user) {
             $data['actions'] .= html_print_input_image(
                 'del',
-                'images/cross.png',
+                'images/delete.svg',
                 1,
                 '',
                 true,
@@ -310,7 +310,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
             );
         } else {
             $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-            $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, ['class' => 'invert_filter'], true);
+            $data['actions'] .= html_print_input_image('del', 'images/delete.svg', 1, 'width:40px; height: 28px', true);
             $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
             $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
             $data['actions'] .= html_print_input_hidden('id_user', $id, true);
@@ -318,13 +318,23 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
         }
 
         array_push($table->data, $data);
+        $lastKey++;
+    }
+
+    if (is_metaconsole() === false) {
+        $table->style['last_name'] = 'vertical-align: top';
+        $table->style['last_group'] = 'vertical-align: top';
+        $table->style['hierarchy'] = 'text-align:center;';
+        $table->style['last_hierarchy'] = 'text-align:center;vertical-align: top';
+        $table->style['actions'] = 'text-align:center;vertical-align: top';
+        $table->style['last_actions'] = 'text-align:center;vertical-align: top';
     }
 
     $data = [];
 
-    $data['name'] = '<form method="post">';
+    $data['last_name'] = '<form method="post">';
     if (check_acl($config['id_user'], 0, 'PM')) {
-        $data['name'] .= html_print_select(
+        $data['last_name'] .= html_print_select(
             profile_get_profiles(),
             'assign_profile',
             0,
@@ -336,7 +346,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
             false
         );
     } else {
-        $data['name'] .= html_print_select(
+        $data['last_name'] .= html_print_select(
             profile_get_profiles(
                 [
                     'pandora_management' => '<> 1',
@@ -355,7 +365,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
         );
     }
 
-    $data['group'] = html_print_select_groups(
+    $data['last_group'] = html_print_select_groups(
         $config['id_user'],
         'UM',
         users_can_manage_group_all('UM'),
@@ -370,18 +380,19 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     );
 
     $tags = tags_get_all_tags();
-    $data['tags'] = html_print_select($tags, 'assign_tags[]', '', '', __('Any'), '', true, true);
+    $data['last_tags'] = html_print_select($tags, 'assign_tags[]', '', '', __('Any'), '', true, true, true, 'w100p');
 
-    $data['hierarchy'] = html_print_checkbox('no_hierarchy', 1, false, true);
+    $data['last_hierarchy'] = html_print_checkbox('no_hierarchy', 1, false, true);
 
-    $data['actions'] = html_print_input_image('add', 'images/add.png', 1, '', true);
-    $data['actions'] .= html_print_input_hidden('id', $id, true);
-    $data['actions'] .= html_print_input_hidden('add_profile', 1, true);
-    $data['actions'] .= '</form>';
+    $data['last_actions'] = html_print_input_image('add', 'images/validate.svg', 1, 'width: 40px; height: 28px', true);
+    $data['last_actions'] .= html_print_input_hidden('id', $id, true);
+    $data['last_actions'] .= html_print_input_hidden('add_profile', 1, true);
+    $data['last_actions'] .= '</form>';
 
     array_push($table->data, $data);
     html_print_table($table, $return);
-    if (!is_metaconsole()) {
+
+    if (is_metaconsole() === false) {
         echo '</div>';
     }
 

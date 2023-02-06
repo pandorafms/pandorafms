@@ -3130,19 +3130,19 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         }
     }
 
-    // If metaconsole is activated and image doesn't exists try to search on normal console
-    if (is_metaconsole()) {
+    // If metaconsole is activated and image doesn't exists try to search on normal console.
+    if (is_metaconsole() === true) {
         if (false === @file_get_contents($src, 0, null, 0, 1)) {
             $src = '../../'.$src;
         }
     }
 
-    // path to image
+    // Path to image.
     $src = ui_get_full_url($src);
 
     $output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image"';
 
-    // Valid attributes (invalid attributes get skipped)
+    // Valid attributes (invalid attributes get skipped).
     $attrs = [
         'alt',
         'accesskey',
@@ -3950,7 +3950,7 @@ function html_print_table(&$table, $return=false)
     }
 
     $output .= '</tbody></table>'."\n";
-    hd($output, true);
+
     if ($return) {
         return $output;
     }
@@ -6445,7 +6445,7 @@ function html_print_go_back_button(string $url, array $options=[], bool $return=
                 ],
                 true
             ),
-            'style'   => ($options['style'] ?? 'z-index: 100'),
+            'style'   => ($options['style'] ?? 'z-index: 10001'),
         ],
         $return
     );

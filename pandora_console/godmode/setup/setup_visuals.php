@@ -53,6 +53,8 @@ $row = 0;
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden('update_config', 1);
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 // ----------------------------------------------------------------------
 // BEHAVIOUR CONFIGURATION
 // ----------------------------------------------------------------------
@@ -68,11 +70,11 @@ $table_behaviour->data[$row][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 200,
+        'max'    => $performance_variables_control['block_size']->max,
         'name'   => 'block_size',
         'value'  => $config['global_block_size'],
         'return' => true,
-        'min'    => 10,
+        'min'    => $performance_variables_control['block_size']->min,
         'style'  => 'width:50px',
     ]
 );
@@ -838,11 +840,11 @@ $table_chars->data[$row][1] = html_print_input(
     [
         'type'                                        => 'number',
         'size'                                        => 5,
-        'max'                                         => 5,
+        'max'                                         => $performance_variables_control['graph_precision']->max,
         'name'                                        => 'graph_precision',
         'value'                                       => $config['graph_precision'],
         'return'                                      => true,
-        'min'                                         => 1,
+        'min'                                         => $performance_variables_control['graph_precision']->min,
         'style'                                       => 'width:50px',
         ($disabled_graph_precision) ? 'readonly' : '' => 'readonly',
         'onchange'                                    => 'change_precision()',
@@ -859,11 +861,11 @@ $table_chars->data[$row][1] = html_print_input(
     [
         'type'                                        => 'number',
         'size'                                        => 5,
-        'max'                                         => 20,
+        'max'                                         => $performance_variables_control['short_module_graph_data']->max,
         'name'                                        => 'short_module_graph_data',
         'value'                                       => $config['short_module_graph_data'],
         'return'                                      => true,
-        'min'                                         => 1,
+        'min'                                         => $performance_variables_control['short_module_graph_data']->min,
         'style'                                       => 'width:50px',
         ($disabled_graph_precision) ? 'readonly' : '' => 'readonly',
         'onchange'                                    => 'change_precision()',

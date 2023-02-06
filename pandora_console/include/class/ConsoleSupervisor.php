@@ -249,6 +249,11 @@ class ConsoleSupervisor
         $this->checkAuditLogOldLocation();
 
         /*
+         * Check if performance variables are corrects
+         */
+        $this->checkPerformanceVariables();
+
+        /*
          * Checks if sync queue is longer than limits.
          *  NOTIF.SYNCQUEUE.LENGTH
          */
@@ -510,6 +515,11 @@ class ConsoleSupervisor
         $this->checkAuditLogOldLocation();
 
         /*
+         * Check if performance variables are corrects
+         */
+        $this->checkPerformanceVariables();
+
+        /*
          * Checks if sync queue is longer than limits.
          *  NOTIF.SYNCQUEUE.LENGTH
          */
@@ -518,6 +528,76 @@ class ConsoleSupervisor
             $this->checkSyncQueueLength();
             $this->checkSyncQueueStatus();
         }
+    }
+
+
+    /**
+     * Check if performance variables are corrects
+     *
+     * @return void
+     */
+    public function checkPerformanceVariables()
+    {
+        global $config;
+
+        $names = [
+            'event_purge'                      => 'Max. days before events are deleted',
+            'trap_purge'                       => 'Max. days before traps are deleted',
+            'audit_purge'                      => 'Max. days before audited events are deleted',
+            'string_purge'                     => 'Max. days before string data is deleted',
+            'gis_purge'                        => 'Max. days before GIS data is deleted',
+            'days_purge'                       => 'Max. days before purge',
+            'days_compact'                     => 'Max. days before data is compacted',
+            'days_delete_unknown'              => 'Max. days before unknown modules are deleted',
+            'days_delete_not_initialized'      => 'Max. days before delete not initialized modules',
+            'days_autodisable_deletion'        => 'Max. days before autodisabled agents are deleted',
+            'delete_old_network_matrix'        => 'Max. days before delete old network matrix data',
+            'report_limit'                     => 'Item limit for real-time reports',
+            'event_view_hr'                    => 'Default hours for event view',
+            'big_operation_step_datos_purge'   => 'Big Operation Step to purge old data',
+            'small_operation_step_datos_purge' => 'Small Operation Step to purge old data',
+            'row_limit_csv'                    => 'Row limit in csv log',
+            'limit_parameters_massive'         => 'Limit for bulk operations',
+            'block_size'                       => 'Block size for pagination',
+            'short_module_graph_data'          => 'Data precision',
+            'graph_precision'                  => 'Data precision in graphs',
+        ];
+
+        $variables = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
+        foreach ($variables as $variable => $values) {
+            if (empty($config[$variable]) === true || $config[$variable] === '') {
+                continue;
+            }
+
+            $message = '';
+            $limit_value = '';
+            if ($config[$variable] > $values->max) {
+                $message = 'Check the setting of %s, a value greater than %s is not recommended';
+                $limit_value = $values->max;
+            }
+
+            if ($config[$variable] < $values->min) {
+                $message = 'Check the setting of %s, a value less than %s is not recommended';
+                $limit_value = $values->min;
+            }
+
+            if ($limit_value !== '' && $message !== '') {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                        'title'   => __('Incorrect config value'),
+                        'message' => __(
+                            $message,
+                            $names[$variable],
+                            $limit_value
+                        ),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
+                    ]
+                );
+            }
+        }
+
     }
 
 

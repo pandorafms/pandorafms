@@ -47,6 +47,8 @@ if (is_ajax()) {
     exit();
 }
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 $table = new StdClass();
 $table->class = 'databox filters';
 $table->id = 'setup_general';
@@ -516,11 +518,11 @@ $table->data[$i++][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 2000,
+        'max'    => $performance_variables_control['limit_parameters_massive']->max,
         'name'   => 'limit_parameters_massive',
         'value'  => $config['limit_parameters_massive'],
         'return' => true,
-        'min'    => 100,
+        'min'    => $performance_variables_control['limit_parameters_massive']->min,
         'style'  => 'width:50px',
     ]
 );

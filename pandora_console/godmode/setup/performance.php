@@ -151,6 +151,8 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
     }
 }
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 $table_status = new StdClass();
 $table_status->width = '100%';
 $table_status->class = 'databox filters';
@@ -261,11 +263,11 @@ $table->data[1][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 45,
+        'max'    => $performance_variables_control['event_purge']->max,
         'name'   => 'event_purge',
         'value'  => $config['event_purge'],
         'return' => true,
-        'min'    => 1,
+        'min'    => $performance_variables_control['event_purge']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -275,11 +277,11 @@ $table->data[2][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 45,
+        'max'    => $performance_variables_control['trap_purge']->max,
         'name'   => 'trap_purge',
         'value'  => $config['trap_purge'],
         'return' => true,
-        'min'    => 1,
+        'min'    => $performance_variables_control['trap_purge']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -289,11 +291,11 @@ $table->data[3][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 365,
+        'max'    => $performance_variables_control['audit_purge']->max,
         'name'   => 'audit_purge',
         'value'  => $config['audit_purge'],
         'return' => true,
-        'min'    => 7,
+        'min'    => $performance_variables_control['audit_purge']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -303,11 +305,11 @@ $table->data[4][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 365,
+        'max'    => $performance_variables_control['string_purge']->max,
         'name'   => 'string_purge',
         'value'  => $config['string_purge'],
         'return' => true,
-        'min'    => 7,
+        'min'    => $performance_variables_control['string_purge']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -317,11 +319,11 @@ $table->data[5][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 365,
+        'max'    => $performance_variables_control['gis_purge']->max,
         'name'   => 'gis_purge',
         'value'  => $config['gis_purge'],
         'return' => true,
-        'min'    => 7,
+        'min'    => $performance_variables_control['gis_purge']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -331,11 +333,11 @@ $table->data[6][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 365,
+        'max'    => $performance_variables_control['days_purge']->max,
         'name'   => 'days_purge',
         'value'  => $config['days_purge'],
         'return' => true,
-        'min'    => 7,
+        'min'    => $performance_variables_control['days_purge']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -345,11 +347,11 @@ $table->data[7][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 365,
+        'max'    => $performance_variables_control['days_compact']->max,
         'name'   => 'days_compact',
         'value'  => $config['days_compact'],
         'return' => true,
-        'min'    => 0,
+        'min'    => $performance_variables_control['days_compact']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -359,11 +361,11 @@ $table->data[8][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 90,
+        'max'    => $performance_variables_control['days_delete_unknown']->max,
         'name'   => 'days_delete_unknown',
         'value'  => $config['days_delete_unknown'],
         'return' => true,
-        'min'    => 0,
+        'min'    => $performance_variables_control['days_delete_unknown']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -374,11 +376,11 @@ $table->data[9][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 90,
+        'max'    => $performance_variables_control['days_delete_not_initialized']->max,
         'name'   => 'days_delete_not_initialized',
         'value'  => $config['days_delete_not_initialized'],
         'return' => true,
-        'min'    => 0,
+        'min'    => $performance_variables_control['days_delete_not_initialized']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -388,11 +390,11 @@ $table->data[10][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 90,
+        'max'    => $performance_variables_control['days_autodisable_deletion']->max,
         'name'   => 'days_autodisable_deletion',
         'value'  => $config['days_autodisable_deletion'],
         'return' => true,
-        'min'    => 0,
+        'min'    => $performance_variables_control['days_autodisable_deletion']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -539,11 +541,11 @@ $table->data[] = [
         [
             'type'   => 'number',
             'size'   => 5,
-            'max'    => 30,
+            'max'    => $performance_variables_control['delete_old_network_matrix']->max,
             'name'   => 'delete_old_network_matrix',
             'value'  => $config['delete_old_network_matrix'],
             'return' => true,
-            'min'    => 1,
+            'min'    => $performance_variables_control['delete_old_network_matrix']->min,
             'style'  => 'width:43px',
         ]
     ),
@@ -563,11 +565,11 @@ $table_other->data[$i++][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 500,
+        'max'    => $performance_variables_control['report_limit']->max,
         'name'   => 'report_limit',
         'value'  => $config['report_limit'],
         'return' => true,
-        'min'    => 1,
+        'min'    => $performance_variables_control['report_limit']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -597,11 +599,11 @@ $table_other->data[$i++][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 360,
+        'max'    => $performance_variables_control['event_view_hr']->max,
         'name'   => 'event_view_hr',
         'value'  => $config['event_view_hr'],
         'return' => true,
-        'min'    => 1,
+        'min'    => $performance_variables_control['event_view_hr']->min,
         'style'  => 'width:43px',
     ]
 );
@@ -645,11 +647,11 @@ $table_other->data[$i++][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 10000,
+        'max'    => $performance_variables_control['big_operation_step_datos_purge']->max,
         'name'   => 'big_operation_step_datos_purge',
         'value'  => $config['big_operation_step_datos_purge'],
         'return' => true,
-        'min'    => 100,
+        'min'    => $performance_variables_control['big_operation_step_datos_purge']->min,
         'style'  => 'width:50px',
     ]
 );
@@ -661,11 +663,11 @@ $table_other->data[$i++][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 10000,
+        'max'    => $performance_variables_control['small_operation_step_datos_purge']->max,
         'name'   => 'small_operation_step_datos_purge',
         'value'  => $config['small_operation_step_datos_purge'],
         'return' => true,
-        'min'    => 100,
+        'min'    => $performance_variables_control['small_operation_step_datos_purge']->min,
         'style'  => 'width:50px',
     ]
 );
@@ -695,11 +697,11 @@ $table_other->data[$i++][1] = html_print_input(
     [
         'type'   => 'number',
         'size'   => 5,
-        'max'    => 100000,
+        'max'    => $performance_variables_control['row_limit_csv']->max,
         'name'   => 'row_limit_csv',
         'value'  => $config['row_limit_csv'],
         'return' => true,
-        'min'    => 1,
+        'min'    => $performance_variables_control['row_limit_csv']->min,
         'style'  => 'width:63px',
     ]
 );

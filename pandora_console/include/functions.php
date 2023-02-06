@@ -6397,3 +6397,23 @@ function getBearerToken()
 
     return false;
 }
+
+
+/**
+ * Check whether an instance of pandora_db is running.
+ *
+ * @return boolean Result.
+ */
+function is_pandora_db_running()
+{
+    $is_free_lock = mysql_db_process_sql(
+        'SELECT IS_FREE_LOCK("pandora_pandora_db") AS "value"',
+        'affected_rows',
+        '',
+        false
+    );
+
+    $is_free_lock = (bool) $is_free_lock[0]['value'];
+
+    return !$is_free_lock;
+}

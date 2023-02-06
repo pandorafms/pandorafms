@@ -2143,6 +2143,12 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
                 }
             break;
 
+            case 'dynamic_interval':
+                if ($value !== '-2') {
+                    $values[$field] = $value;
+                }
+            break;
+
             case 'plugin_pass':
                 if ($value != '') {
                     $values['plugin_pass'] = io_input_password($value);

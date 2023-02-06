@@ -188,6 +188,16 @@ install () {
 		execute_cmd "ps --version" 'Checking dependencies: ps' "Error ps not found, please install procps"
 		execute_cmd "sudo --version" 'Checking dependencies: sudo' "Error sudo not found, please install sudo"
 		execute_cmd "perl -MIO::Compress::Zip -le 'pass'" 'Checking dependencies: perl IO::Compress' "Error perl IO::Compress not found, please install perl IO::Compress"
+
+		execute_cmd "perl -MGetopt::Std -le 'pass'" 'Checking dependencies: perl Getopt::Std' "Error perl IO::Compress not found, please install perl Getopt::Std"
+		execute_cmd "perl -MIO::Select -le 'pass'" 'Checking dependencies: perl IO::Select' "Error perl IO::Select not found, please install perl IO::Select"
+		execute_cmd "perl -MIO::Uncompress::Unzip -le 'pass'" 'Checking dependencies: perl IO::Uncompress::Unzip' "Error perl IO::Uncompress::Unzip not found, please install perl IO::Uncompress::Unzip"
+		execute_cmd "perl -Mthreads -le 'pass'" 'Checking dependencies: perl threads' "Error perl IO::Compress not found, please install perl threads"
+		execute_cmd "perl -MThread::Semaphore -le 'pass'" 'Checking dependencies: perl Thread::Semaphore' "Error perl Thread::Semaphore, please install perl Thread::Semaphore"
+
+		execute_cmd "perl -MPOSIX -le 'pass'" 'Checking dependencies: perl POSIX' "Error perl POSIX not found, please install perl POSIX"
+		execute_cmd "perl -MTime::HiRes -le 'pass'" 'Checking dependencies: perl Time::HiRes' "Error perl Time::HiRes not found, please install perl Time::HiRes"
+		execute_cmd "perl -MScalar::Util -le 'pass'" 'Checking dependencies: perl Scalar::Util' "Error perl Scalar::Util not found, please install perl Scalar::Util"
 	fi
 
 	# install tentacle
@@ -351,8 +361,8 @@ uninstall () {
 }
 
 help () {
-	echo "  --install	To install Pandora FMS Servers on this system (You have to be root)"
-	echo "  --uninstall	To uninstall and remove Pandora FMS Servers on this System"
+	echo "  --install	To install Tentacle Server on this system (You have to be root)"
+	echo "  --uninstall	To uninstall and remove Tentacle Server on this System"
 	echo " "
 	echo " Additional second parameter (after --install) "
 	echo " "
@@ -401,4 +411,3 @@ case "$MODE" in
 *)
 	help
 esac
-

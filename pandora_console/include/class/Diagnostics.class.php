@@ -104,6 +104,7 @@ class Diagnostics extends Wizard
         'getChartAjax',
         'formFeedback',
         'createdScheduleFeedbackTask',
+        'getSystemDate',
     ];
 
 
@@ -209,6 +210,7 @@ class Diagnostics extends Wizard
             'getAttachmentFolder',
             'getInfoTagenteDatos',
             'getServerThreads',
+            'getSystemDate',
         ];
 
         if ($this->pdf === true) {
@@ -276,6 +278,10 @@ class Diagnostics extends Wizard
 
                 case 'getShowEngine':
                     $title = __('SQL show engine innodb status');
+                break;
+
+                case 'getSystemDate':
+                    $title = __('Date system');
                 break;
 
                 default:

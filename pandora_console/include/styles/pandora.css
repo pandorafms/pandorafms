@@ -3519,6 +3519,7 @@ div.div_groups_status {
   width: 200px;
   text-align: left;
   width: 100%;
+  user-select: none;
 }
 
 .no_hidden_menu {

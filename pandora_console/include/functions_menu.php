@@ -66,6 +66,15 @@ function menu_print_menu(&$menu)
         if ($tab === 'credbox') {
             $sec2 = 'godmode/groups/group_list&tab='.$tab;
         }
+    } else if ($sec2 === 'godmode/setup/setup') {
+        $section = (string) get_parameter('section');
+        $sec2 = 'godmode/setup/setup&section='.$section;
+    } else if ($sec2 === 'godmode/massive/massive_operations') {
+        $tab = (string) get_parameter('tab');
+        $sec2 = 'godmode/massive/massive_operations&tab='.$tab;
+    } else if ($sec2 === 'godmode/events/events') {
+        $section = (string) get_parameter('section');
+        $sec2 = 'godmode/events/events&section='.$section;
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -233,12 +242,14 @@ function menu_print_menu(&$menu)
                 // If the subclass is selected and there are options and that options value is true.
                 $class .= 'submenu_selected selected';
                 $menu_selected = true;
+                $menu2_selected = $sub['id'];
                 $selected = true;
                 $visible = true;
             } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false) {
                 $class .= 'submenu_selected selected';
                 $selected = true;
                 $menu_selected = true;
+                $menu2_selected = $sub['id'];
                 $hasExtensions = (array_key_exists('hasExtensions', $main) === true) ? $main['hasExtensions'] : false;
                 if ((empty($extensionInMenuParameter) === false) && ((bool) $hasExtensions === true)) {
                     $visible = true;

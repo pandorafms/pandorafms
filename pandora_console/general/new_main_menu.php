@@ -116,6 +116,25 @@ echo '</div>';
             $(`#icon_${id_selected}`).children().first().children().last().addClass('arrow_menu_up');
             // Span.
             $(`#icon_${id_selected}`).children().first().children().eq(1).addClass('span_selected');
+
+            const id_selected2 = '<?php echo $menu2_selected; ?>';
+            if (id_selected2 != '') {
+                if ($(`#sub${id_selected2}`).length > 0) {
+                    $(`#sub${id_selected2}`).show();
+                    // Arrow.
+                    $(`#${id_selected2}`).children().first().children().last().removeClass('arrow_menu_down');
+                    $(`#${id_selected2}`).children().first().children().last().addClass('arrow_menu_up');
+                    // Span.
+                    $(`#${id_selected2}`).children().first().children().first().addClass('span_selected');
+                    // Vertical line.
+                    $(`.sub_subMenu.selected`).prepend(`<div class="element_submenu_selected left_3"></div>`);
+                } else {
+                    $(`#${id_selected2}`).addClass('submenu_selected_no_submenu');
+                    $(`#${id_selected2}`).children().first().children().first().css('color', '#fff');
+                    // Vertical line.
+                    $(`#${id_selected2}`).prepend(`<div class="element_submenu_selected"></div>`);
+                }
+            }
         }
 
         var click_display = "<?php echo $config['click_display']; ?>";
@@ -145,30 +164,33 @@ echo '</div>';
         });
 
         $('.has_submenu').click(function() {
-            if (typeof(table_hover2) != 'undefined') {
-                $(`#${table_hover2[0].id}`).css("background-color", "");
-                $("#sub" + table_hover2[0].id).hide();
+            const table_hover2 = $(this);
+            const id = table_hover2[0].id;
+            const classes = $(`#${id}`).attr('class');
+
+            if (classes.includes('submenu_selected') === true) {
+                $(`#${id}`).removeClass('submenu_selected');
+                $(`#${id}`).addClass('submenu_not_selected');
+                $(`#sub${id}`).hide();
                 // Arrow.
                 table_hover2.children().first().children().last().removeClass('arrow_menu_up');
                 table_hover2.children().first().children().last().addClass('arrow_menu_down');
                 // Span.
                 table_hover2.children().first().children().first().removeClass('span_selected');
-                if (table_hover2[0].id == $(this)[0].id) {
-                    table_hover2 = undefined;
-                    return;
-                }
+            } else {
+                $(`#${id}`).removeClass('submenu_not_selected');
+                $(`#${id}`).addClass('submenu_selected');
+                $(`#sub${id}`).show();
+                // Arrow.
+                table_hover2.children().first().children().last().removeClass('arrow_menu_down');
+                table_hover2.children().first().children().last().addClass('arrow_menu_up');
+                // Span.
+                table_hover2.children().first().children().first().addClass('span_selected');
             }
+        });
 
-            table_hover2 = $(this);
-            handsIn2 = 1;
-
-            $(`#${table_hover2[0].id}`).css("background-color", "#eff2f2");
-            $("#sub" + table_hover2[0].id).show();
-            // Arrow.
-            table_hover2.children().first().children().last().removeClass('arrow_menu_down');
-            table_hover2.children().first().children().last().addClass('arrow_menu_up');
-            // Span.
-            table_hover2.children().first().children().first().addClass('span_selected');
+        $('.sub_subMenu').click(function (event) {
+            event.stopPropagation();
         });
     });
 </script>

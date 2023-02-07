@@ -99,6 +99,7 @@
   margin-left: 0px;
   width: 100%;
   font-size: 9.4pt;
+  user-select: none;
 }
 
 .menu a:hover {
@@ -129,6 +130,9 @@
 .sub_subMenu.selected {
   font-weight: 600;
   background-color: #002f33 !important;
+}
+
+.sub_subMenu.selected a {
   color: #fff !important;
 }
 
@@ -161,19 +165,32 @@
 
 .submenu_selected {
   margin-bottom: 0px;
+  background-color: #eff2f2 !important;
+}
+
+.submenu_selected_no_submenu {
+  background-color: #eff2f2 !important;
   background-color: #002f33 !important;
   color: #ffffff !important;
-  box-shadow: inset 4px 0 #82b92e;
+}
+
+.element_submenu_selected {
+  min-height: 0px !important;
+  height: 20px;
+  border-left: 4px solid #82b92e;
+  position: absolute;
+  left: 4%;
+  border-radius: 5px;
+}
+
+.left_3 {
+  left: 3%;
 }
 
 .menu .menu_icon,
 .menu li.links {
   background-repeat: no-repeat;
   cursor: pointer;
-}
-
-.menu_icon.selected li {
-  color: #1d7874 !important;
 }
 
 .menu li.links {

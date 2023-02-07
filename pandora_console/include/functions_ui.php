@@ -2473,6 +2473,43 @@ function ui_print_help_tip(
 
 
 /**
+ * Generate a placeholder for inputs.
+ *
+ * @param string  $text    Text for show.
+ * @param boolean $return  Text for show.
+ * @param array   $options Text for show.
+ *
+ * @return string|void Formed element.
+ */
+function ui_print_input_placeholder(
+    string $text,
+    bool $return=false,
+    array $options=[]
+) {
+    $wrapper = (isset($options['wrapper']) === true) ? $options['wrapper'] : 'span';
+    $attibutes = [];
+    $attibutes[] = 'class="'.((isset($options['class']) === true) ? $options['class'] : 'input_sub_placeholder').'"';
+    $attibutes[] = (isset($options['rawattributes']) === true) ? $options['rawattributes'] : '';
+    $attibutes[] = (isset($options['style']) === true) ? 'style="'.$options['style'].'"' : '';
+    $attibutes[] = (isset($options['title']) === true) ? 'title="'.$options['title'].'"' : '';
+
+    $output = sprintf(
+        '<%s %s>%s</%s>',
+        $wrapper,
+        implode(' ', $attibutes),
+        $text,
+        $wrapper
+    );
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+/**
  * Prints link to show something.
  *
  * @param string  $text        Complete text to show in the tip.

@@ -2418,6 +2418,7 @@ if ($drawConsoleSound === true) {
                 true
             );
             $output .= '<div id="sound_event_details_window"></div>';
+            $output .= '<div id="sound_event_response_window"></div>';
         $output .= '</div>';
     $output .= '</div>';
 

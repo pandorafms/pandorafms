@@ -130,7 +130,7 @@ function execute_response(event_id, server_id) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(response) {
       // If cannot get response abort it
@@ -161,7 +161,7 @@ function execute_response_massive(events, response_id, response_parameters) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(data) {
       // If cannot get response abort it
@@ -211,7 +211,7 @@ function execute_response_massive(events, response_id, response_parameters) {
           jQuery.ajax({
             data: params,
             type: "POST",
-            url: $("#hidden-ajax_file").val(),
+            url: getUrlAjax(),
             dataType: "html",
             success: function(data) {
               $(".container-massive-events-response").append(data);
@@ -248,13 +248,21 @@ function show_response_dialog(response_id, response) {
   params.push({ name: "server_id", value: response.server_id });
   params.push({ name: "response", value: JSON.stringify(response) });
 
+  var view = ``;
+
+  if ($("#event_response_window").length) {
+    view = "#event_response_window";
+  } else if ($("#sound_event_response_window").length) {
+    view = "#sound_event_response_window";
+  }
+
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "html",
     success: function(data) {
-      $("#event_response_window")
+      $(view)
         .hide()
         .empty()
         .append(data)
@@ -300,7 +308,7 @@ function perform_response(response, response_id, index) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "html",
     success: function(data) {
       var out = data.replace(/[\n|\r]/g, "<br>");
@@ -320,8 +328,6 @@ function event_change_status(event_ids, server_id) {
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
 
-  var url = getUrlAjax();
-
   jQuery.ajax({
     data: {
       page: "include/ajax/events",
@@ -331,7 +337,7 @@ function event_change_status(event_ids, server_id) {
       server_id: server_id
     },
     type: "POST",
-    url: url,
+    url: getUrlAjax(),
     dataType: "json",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
@@ -384,8 +390,6 @@ function event_change_status(event_ids, server_id) {
 
 // Change te owner of an event to one user of empty
 function event_change_owner(event_id, server_id) {
-  var url = getUrlAjax();
-
   var new_owner = $("#id_owner").val();
 
   $("#button-owner_button").attr("disabled", "disabled");
@@ -400,7 +404,7 @@ function event_change_owner(event_id, server_id) {
       new_owner: new_owner
     },
     type: "POST",
-    url: url,
+    url: getUrlAjax(),
     async: true,
     dataType: "html",
     success: function(data) {
@@ -474,11 +478,11 @@ function event_comment(current_event) {
 
   $("#button-comment_button").attr("disabled", "disabled");
   $("#response_loading").show();
-  var url = getUrlAjax();
+
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: url,
+    url: getUrlAjax(),
     dataType: "html",
     success: function() {
       $("#button-comment_button").removeAttr("disabled");
@@ -499,11 +503,11 @@ function update_event(table, id_evento, type, event_rep, row, server_id) {
     values[this.name] = $(this).val();
   });
   var t1 = new Date();
-  var url = getUrlAjax();
+
   $.ajax({
     async: true,
     type: "POST",
-    url: url,
+    url: getUrlAjax(),
     data: {
       page: "include/ajax/events",
       validate_event: type.validate_event,
@@ -794,7 +798,7 @@ function show_response_dialog_massive(response_id, response_parameters) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(response) {
       // If cannot get response abort it
@@ -932,7 +936,7 @@ function process_buffers(buffers) {
     jQuery.ajax({
       data: params.join("&"),
       type: "POST",
-      url: $("#hidden-ajax_file").val(),
+      url: getUrlAjax(),
       async: true,
       dataType: "html",
       success: function(data) {
@@ -1204,10 +1208,12 @@ function table_info_response_event(response_id, event_id, server_id, massive) {
   params.push({ name: "server_id", value: server_id });
   params.push({ name: "event_id", value: event_id });
 
+  var url = getUrlAjax();
+
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: url,
     dataType: "json",
     success: function(response) {
       if (response) {
@@ -1220,7 +1226,7 @@ function table_info_response_event(response_id, event_id, server_id, massive) {
         jQuery.ajax({
           data: params,
           type: "POST",
-          url: $("#hidden-ajax_file").val(),
+          url: url,
           dataType: "html",
           success: function(output) {
             if (massive === true) {

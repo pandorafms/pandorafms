@@ -138,7 +138,7 @@ $userManagementTable->colspan = [];
 $userManagementTable->rowspan = [];
 
 // Title for Profile information.
-$userManagementTable->data['title_profile_information'] = html_print_full_subtitle_table(__('Profile information'));
+$userManagementTable->data['title_profile_information'] = html_print_subtitle_table(__('Profile information'));
 
 // Id user.
 if ($new_user === true) {
@@ -388,7 +388,7 @@ $userManagementTable->data['fields_userSessionTime'][0] .= ui_print_input_placeh
 );
 
 // Title for Autorefresh.
-$userManagementTable->data['title_autorefresh'] = html_print_full_subtitle_table(__('Autorefresh'));
+$userManagementTable->data['title_autorefresh'] = html_print_subtitle_table(__('Autorefresh'));
 
 // Autorefresh selects.
 $select_out = html_print_select(
@@ -543,7 +543,7 @@ $userManagementTable->data['fields_autorefreshTime'][0] .= ui_print_input_placeh
 );
 
 // Title for Language and Appearance.
-$userManagementTable->data['title_lookAndFeel'] = html_print_full_subtitle_table(__('Language and Appearance'));
+$userManagementTable->data['title_lookAndFeel'] = html_print_subtitle_table(__('Language and Appearance'));
 // Language and color scheme.
 $userManagementTable->rowclass['captions_lang_colorscheme'] = 'field_half_width';
 $userManagementTable->rowclass['fields_lang_colorscheme'] = 'field_half_width';
@@ -643,7 +643,7 @@ $userManagementTable->data['fields_timezone'][1] = html_print_div(
 );
 
 // Title for Language and Appearance.
-$userManagementTable->data['title_additionalSettings'] = html_print_full_subtitle_table(__('Additional settings'));
+$userManagementTable->data['title_additionalSettings'] = html_print_subtitle_table(__('Additional settings'));
 
 $userManagementTable->rowclass['captions_addSettings'] = 'field_half_width';
 $userManagementTable->rowclass['fields_addSettings'] = 'field_half_width';

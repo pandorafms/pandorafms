@@ -6564,41 +6564,7 @@ function html_print_extended_select_for_downtime_cron(
 
 
 /**
- * Prints a subtitle for a form or table.
- *
- * @param string  $caption Caption of title.
- * @param array   $options Available options.
- *      - `id`: string
- *      - `style`: string
- *      - `class`: string. `section_table_title` by default.
- *      - `wrapper`: string. Must be a valid tag.
- *      - `wrapper_attributes`: string. Valid attributes for a wrapper.
- * @param boolean $return  If true, returns a string with formed subtitle.
- *
- * @return string.
- */
-function html_print_subtitle_table(string $caption, array $options=[], bool $return=false)
-{
-    if (isset($options['wrapper']) === true) {
-        $startWrapper = '<'.$options['wrapper'].' '.($options['wrapper_attributes'] ?? '').'>';
-        $endWrapper = '</'.$options['wrapper'].'>';
-        $caption = $startWrapper.$caption.$endWrapper;
-    }
-
-    return html_print_div(
-        [
-            'id'      => ($options['id'] ?? ''),
-            'class'   => ($options['class'] ?? 'section_table_title'),
-            'style'   => ($options['style'] ?? ''),
-            'content' => $caption,
-        ],
-        $return
-    );
-}
-
-
-/**
- * Same behaviour like html_print_subtitle_table, in this case, return all formed subtitle with the new Pandora's style.
+ * Return formed subtitle with the new Pandora's style.
  *
  * @param string $caption Caption of title.
  * @param array  $options Available options.
@@ -6610,11 +6576,25 @@ function html_print_subtitle_table(string $caption, array $options=[], bool $ret
  *
  * @return array.
  */
-function html_print_full_subtitle_table(string $caption, array $options=[])
+function html_print_subtitle_table(string $caption, array $options=[])
 {
+    if (isset($options['wrapper']) === true) {
+        $startWrapper = '<'.$options['wrapper'].' '.($options['wrapper_attributes'] ?? '').'>';
+        $endWrapper = '</'.$options['wrapper'].'>';
+        $caption = $startWrapper.$caption.$endWrapper;
+    }
+
     $output = [];
     $output[0] = html_print_div([ 'class' => 'section_table_title_line' ], true);
-    $output[1] = html_print_subtitle_table($caption, $options, true);
+    $output[1] = html_print_div(
+        [
+            'id'      => ($options['id'] ?? ''),
+            'class'   => ($options['class'] ?? 'section_table_title'),
+            'style'   => ($options['style'] ?? ''),
+            'content' => $caption,
+        ],
+        true
+    );
 
     return $output;
 }

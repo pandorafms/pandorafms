@@ -719,7 +719,7 @@ $table_advanced->cellclass = [];
 $table_advanced->colspan = [];
 $table_advanced->rowspan = [];
 
-$table_advanced->data['title_1'] = html_print_full_subtitle_table(__('Identification and Categorization'));
+$table_advanced->data['title_1'] = html_print_subtitle_table(__('Identification and Categorization'));
 $table_advanced->rowclass['captions_custom_category'] = 'field_half_width pdd_t_10px';
 $table_advanced->rowclass['custom_id_category'] = 'field_half_width';
 $table_advanced->data['captions_custom_category'][0] = __('Custom ID');
@@ -1044,7 +1044,7 @@ $table_advanced->data['textarea_crit_warn_instructions'][1] = html_print_textare
     $largeClassDisabledBecauseInPolicy
 );
 
-$table_advanced->data['title_2'] = html_print_full_subtitle_table(__('Execution interval'));
+$table_advanced->data['title_2'] = html_print_subtitle_table(__('Execution interval'));
 
 $table_advanced->data['caption_execution_interval'][0] = __('Interval');
 $table_advanced->data['execution_interval'][0] = '<span class="result_info_text">'.$outputExecutionInterval.'</span>';
@@ -1080,7 +1080,7 @@ if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
 $table_advanced->rowclass['cron_section'] = 'table_section full_section';
 $table_advanced->data['cron_section'] = html_print_table($tableCron, true);
 
-$table_advanced->data['title_3'] = html_print_full_subtitle_table(__('Thresholds and state changes'));
+$table_advanced->data['title_3'] = html_print_subtitle_table(__('Thresholds and state changes'));
 
 $table_advanced->rowclass['caption_min_max_values'] = 'w50p pdd_t_10px';
 $table_advanced->rowclass['min_max_values'] = 'w50p';
@@ -1302,7 +1302,7 @@ $table_advanced->data['ff_keep_counters'][0] = html_print_checkbox_switch(
     $disabledBecauseInPolicy
 );
 
-$table_advanced->data['title_4'] = html_print_full_subtitle_table(__('Data and their processing'));
+$table_advanced->data['title_4'] = html_print_subtitle_table(__('Data and their processing'));
 
 $table_advanced->rowclass['caption_process_unit'] = 'w50p';
 $table_advanced->rowclass['process_unit'] = 'w50p';
@@ -1332,7 +1332,7 @@ $table_advanced->data['process_unit'][1] = html_print_extended_select_for_post_p
     $disabledBecauseInPolicy
 );
 
-$table_advanced->data['title_5'] = html_print_full_subtitle_table(__('Notifications and alerts'));
+$table_advanced->data['title_5'] = html_print_subtitle_table(__('Notifications and alerts'));
 
 $table_advanced->data['caption_export_target'][0] = __('Export target');
 if ($__code_from === 'policies') {

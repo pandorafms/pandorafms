@@ -324,8 +324,10 @@ if (is_ajax() === true) {
     $start = get_parameter('start', 0);
     $length = get_parameter(
         'length',
-        $config['block_size']
+        $config['events_per_query']
     );
+
+    $length = ($length === '-1') ? $config['events_per_query'] : $length;
 
     if ($get_events !== 0) {
         try {

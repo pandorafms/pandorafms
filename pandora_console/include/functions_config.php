@@ -848,6 +848,10 @@ function config_update_config()
                         $error_update[] = __('Item limit for realtime reports)');
                     }
 
+                    if (config_update_value('events_per_query', (int) get_parameter('events_per_query'), true) === false) {
+                        $error_update[] = __('Limit of events per query');
+                    }
+
                     if (config_update_value('step_compact', (int) get_parameter('step_compact'), true) === false) {
                         $error_update[] = __('Compact interpolation in hours (1 Fine-20 bad)');
                     }
@@ -1984,6 +1988,10 @@ function config_process_config()
 
     if (!isset($config['report_limit'])) {
         config_update_value('report_limit', 100);
+    }
+
+    if (!isset($config['events_per_query'])) {
+        config_update_value('events_per_query', 5000);
     }
 
     if (!isset($config['loginhash_pwd'])) {

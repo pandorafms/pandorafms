@@ -2,7 +2,15 @@
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page) {
-  var ajax_file = $("#hidden-ajax_file").val();
+  var ajax_file = getUrlAjax();
+
+  var view = ``;
+
+  if ($("#event_details_window").length) {
+    view = "#event_details_window";
+  } else if ($("#sound_event_details_window").length) {
+    view = "#sound_event_details_window";
+  }
 
   if (dialog_page == undefined) {
     dialog_page = "general";
@@ -39,7 +47,7 @@ function show_event_dialog(event, dialog_page) {
       filter: values
     },
     function(data) {
-      $("#event_details_window")
+      $(view)
         .hide()
         .empty()
         .append(data)
@@ -312,6 +320,8 @@ function event_change_status(event_ids, server_id) {
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
 
+  var url = getUrlAjax();
+
   jQuery.ajax({
     data: {
       page: "include/ajax/events",
@@ -321,7 +331,7 @@ function event_change_status(event_ids, server_id) {
       server_id: server_id
     },
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: url,
     dataType: "json",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
@@ -350,9 +360,12 @@ function event_change_status(event_ids, server_id) {
           }
         });
 
-        $("#table_events")
-          .DataTable()
-          .draw(false);
+        if ($("#table_events").length) {
+          $("#table_events")
+            .DataTable()
+            .draw(false);
+        }
+
         $("#notification_status_success").show();
 
         $("#general_status")
@@ -371,6 +384,8 @@ function event_change_status(event_ids, server_id) {
 
 // Change te owner of an event to one user of empty
 function event_change_owner(event_id, server_id) {
+  var url = getUrlAjax();
+
   var new_owner = $("#id_owner").val();
 
   $("#button-owner_button").attr("disabled", "disabled");
@@ -385,7 +400,7 @@ function event_change_owner(event_id, server_id) {
       new_owner: new_owner
     },
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: url,
     async: true,
     dataType: "html",
     success: function(data) {
@@ -404,9 +419,12 @@ function event_change_owner(event_id, server_id) {
         // if (typeof dt_events !== "undefined") {
         //   dt_events.draw(false);
         // }
-        $("#table_events")
-          .DataTable()
-          .draw(false);
+
+        if ($("#table_events").length) {
+          $("#table_events")
+            .DataTable()
+            .draw(false);
+        }
         $("#notification_owner_success").show();
         if (new_owner == -1) {
           $("#extended_event_general_page table td.general_owner").html(
@@ -456,11 +474,11 @@ function event_comment(current_event) {
 
   $("#button-comment_button").attr("disabled", "disabled");
   $("#response_loading").show();
-
+  var url = getUrlAjax();
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: url,
     dataType: "html",
     success: function() {
       $("#button-comment_button").removeAttr("disabled");
@@ -481,11 +499,11 @@ function update_event(table, id_evento, type, event_rep, row, server_id) {
     values[this.name] = $(this).val();
   });
   var t1 = new Date();
-
+  var url = getUrlAjax();
   $.ajax({
     async: true,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: url,
     data: {
       page: "include/ajax/events",
       validate_event: type.validate_event,
@@ -1147,6 +1165,7 @@ function check_event_sound(settings) {
         // Add elements.
         data.forEach(function(element) {
           var li = document.createElement("li");
+          var b64 = btoa(JSON.stringify(element));
           li.insertAdjacentHTML(
             "beforeend",
             '<div class="li-priority">' + element.priority + "</div>"
@@ -1157,7 +1176,7 @@ function check_event_sound(settings) {
           );
           li.insertAdjacentHTML(
             "beforeend",
-            '<div class="li-title">' + element.message + "</div>"
+            `<div class="li-title"><a href="javascript:" onclick="show_event_dialog('${b64}')">${element.message}</a></div>`
           );
           li.insertAdjacentHTML(
             "beforeend",
@@ -1215,4 +1234,12 @@ function table_info_response_event(response_id, event_id, server_id, massive) {
       }
     }
   });
+}
+
+function getUrlAjax() {
+  if ($("#hidden-ajax_file").length) {
+    return $("#hidden-ajax_file").val();
+  } else if ($("#hidden-ajax_file_sound_console").length) {
+    return $("#hidden-ajax_file_sound_console").val();
+  }
 }

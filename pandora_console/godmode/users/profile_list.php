@@ -57,11 +57,11 @@ if (is_metaconsole() === false) {
         'user'    => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/gm_users.png',
+                'images/user.svg',
                 true,
                 [
                     'title' => __('User management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_user',
                 ]
             ).'</a>',
         ],
@@ -72,7 +72,7 @@ if (is_metaconsole() === false) {
                 true,
                 [
                     'title' => __('Profile management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_user',
                 ]
             ).'</a>',
         ],
@@ -83,7 +83,7 @@ if (is_metaconsole() === false) {
     // Header.
     ui_print_standard_header(
         __('User Profile management'),
-        'images/gm_users.png',
+        'images/user.svg',
         false,
         'profile_tab',
         false,
@@ -333,29 +333,30 @@ $table->align = [];
 
 $table->head['profiles'] = __('Profiles');
 
-$table->head['AR'] = 'AR';
-$table->head['AW'] = 'AW';
-$table->head['AD'] = 'AD';
-$table->head['LW'] = 'LW';
-$table->head['LM'] = 'LM';
-$table->head['UM'] = 'UM';
-$table->head['DM'] = 'DM';
-$table->head['ER'] = 'ER';
-$table->head['EW'] = 'EW';
-$table->head['EM'] = 'EM';
-$table->head['RR'] = 'RR';
-$table->head['RW'] = 'RW';
-$table->head['RM'] = 'RM';
-$table->head['MR'] = 'MR';
-$table->head['MW'] = 'MW';
-$table->head['MM'] = 'MM';
-$table->head['VR'] = 'VR';
-$table->head['VW'] = 'VW';
-$table->head['VM'] = 'VM';
-$table->head['NR'] = 'NR';
-$table->head['NW'] = 'NW';
-$table->head['NM'] = 'NM';
-$table->head['PM'] = 'PM';
+$table->head['AR'] = '<span title="'.__('View Agents').'">'.'AR'.'</span>';
+$table->head['AW'] = '<span title="'.__('Edit Agents').'">'.'AW'.'</span>';
+$table->head['AD'] = '<span title="'.__('Disable Agents').'">'.'AD'.'</span>';
+$table->head['LW'] = '<span title="'.__('Edit Alerts').'">'.'LW'.'</span>';
+$table->head['LM'] = '<span title="'.__('Manage Alerts').'">'.'LM'.'</span>';
+$table->head['UM'] = '<span title="'.__('User Management').'">'.'UM'.'</span>';
+$table->head['DM'] = '<span title="'.__('Database Management').'">'.'DM'.'</span>';
+$table->head['ER'] = '<span title="'.__('View Events').'">'.'ER'.'</span>';
+$table->head['EW'] = '<span title="'.__('Edit Events').'">'.'EW'.'</span>';
+$table->head['EM'] = '<span title="'.__('Manage Events').'">'.'EM'.'</span>';
+$table->head['RR'] = '<span title="'.__('View Reports').'">'.'RR'.'</span>';
+$table->head['RW'] = '<span title="'.__('Edit Reports').'">'.'RW'.'</span>';
+$table->head['RM'] = '<span title="'.__('Manage Reports').'">'.'RM'.'</span>';
+$table->head['MR'] = '<span title="'.__('View Network Maps').'">'.'MR'.'</span>';
+$table->head['MW'] = '<span title="'.__('Edit Network Maps').'">'.'MW'.'</span>';
+$table->head['MM'] = '<span title="'.__('Manage Network Maps').'">'.'MM'.'</span>';
+$table->head['VR'] = '<span title="'.__('View Visual Consoles').'">'.'VR'.'</span>';
+$table->head['VW'] = '<span title="'.__('Edit Visual Consoles').'">'.'VW'.'</span>';
+$table->head['VM'] = '<span title="'.__('Manage Visual Consoles').'">'.'VM'.'</span>';
+$table->head['NR'] = '<span title="'.__('View NCM Data').'">'.'NR'.'</span>';
+$table->head['NW'] = '<span title="'.__('Operate NCM').'">'.'NW'.'</span>';
+$table->head['NM'] = '<span title="'.__('Manage NCM').'">'.'NM'.'</span>';
+$table->head['PM'] = '<span title="'.__('Pandora Administration').'">'.'PM'.'</span>';
+
 if ($is_management_allowed === true) {
     $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
 }

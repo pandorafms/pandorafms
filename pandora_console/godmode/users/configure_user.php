@@ -238,11 +238,11 @@ if (is_metaconsole() === true) {
         'user'    => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/user.png',
+                'images/user.svg',
                 true,
                 [
                     'title' => __('User management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             ).'</a>',
         ],

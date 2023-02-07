@@ -129,7 +129,7 @@ if (is_metaconsole() === false) {
 $userManagementTable = new stdClass();
 $userManagementTable->id = 'advanced';
 $userManagementTable->width = '100%';
-$userManagementTable->class = 'w100p floating_form';
+$userManagementTable->class = 'principal_table floating_form white_box';
 $userManagementTable->data = [];
 $userManagementTable->style = [];
 $userManagementTable->rowclass = [];
@@ -138,9 +138,6 @@ $userManagementTable->colspan = [];
 $userManagementTable->rowspan = [];
 
 // Title for Profile information.
-$userManagementTable->rowclass['title_profile_information'] = 'w100p';
-$userManagementTable->cellstyle['title_profile_information'][0] = 'width: 40px;';
-$userManagementTable->cellstyle['title_profile_information'][1] = 'width: 100%;';
 $userManagementTable->data['title_profile_information'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
@@ -234,6 +231,34 @@ $userManagementTable->data['fields_phone'][0] = html_print_input_text_extended(
     true
 );
 
+if (users_is_admin() === true) {
+    $globalProfileContent = [];
+    $globalProfileContent[] = '<span>'.__('Administrator user').'</span>';
+    $globalProfileContent[] = html_print_checkbox_switch(
+        'is_admin',
+        0,
+        $user_info['is_admin'],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_fields_admin_user'] = 'field_half_width';
+    $userManagementTable->data['captions_fields_admin_user'][0] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $globalProfileContent),
+        ],
+        true
+    );
+} else {
+    // Insert in the latest row this hidden input avoiding create empty rows.
+    $userManagementTable->data['fields_phone'][0] .= html_print_input_hidden(
+        'is_admin_sent',
+        0,
+        true
+    );
+}
+
 // Password management.
 $passwordManageTable = new stdClass();
 $passwordManageTable->class = 'table_section full_section';
@@ -301,15 +326,75 @@ if ($new_user === false) {
     );
 }
 
-// $userManagementTable->rowclass['captions_passwordManage'] = 'full_section pdd_t_10px';
-// $userManagementTable->rowclass['passwordManage_table'] = 'table_section full_section';
-// $userManagementTable->data['captions_passwordManage'][0] = __('Password management');
 $userManagementTable->data['passwordManage_table'] = html_print_table($passwordManageTable, true);
 
+
+$userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width w50p';
+$userManagementTable->cellclass['captions_loginErrorUser'][0] = 'wrap';
+$userManagementTable->cellclass['captions_loginErrorUser'][1] = 'wrap';
+$notLoginCheckContent = [];
+$notLoginCheckContent[] = '<span>'.__('Not Login').'</span>';
+$notLoginCheckContent[] = html_print_checkbox_switch(
+    'not_login',
+    1,
+    $user_info['not_login'],
+    true
+);
+
+$userManagementTable->data['captions_loginErrorUser'][0] = html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $notLoginCheckContent),
+    ],
+    true
+);
+$userManagementTable->data['captions_loginErrorUser'][0] .= ui_print_input_placeholder(
+    __('The user with not login set only can access to API.'),
+    true
+);
+
+$localUserCheckContent = [];
+$localUserCheckContent[] = '<span>'.__('Local User').'</span>';
+$localUserCheckContent[] = html_print_checkbox_switch(
+    'local_user',
+    1,
+    $user_info['local_user'],
+    true
+);
+
+$userManagementTable->data['captions_loginErrorUser'][1] = html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $localUserCheckContent),
+    ],
+    true
+);
+$userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_input_placeholder(
+    __('The user with local authentication enabled will always use local authentication.'),
+    true
+);
+
+// Session time input.
+$userManagementTable->rowclass['captions_userSessionTime'] = 'field_half_width';
+$userManagementTable->rowclass['fields_userSessionTime'] = 'field_half_width';
+$userManagementTable->cellclass['fields_userSessionTime'][0] = 'wrap';
+$userManagementTable->data['captions_userSessionTime'][0] = __('Session time');
+$userManagementTable->data['fields_userSessionTime'][0] = html_print_input_text(
+    'session_time',
+    $user_info['session_time'],
+    '',
+    5,
+    5,
+    true
+);
+$userManagementTable->data['fields_userSessionTime'][0] .= ui_print_input_placeholder(
+    __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
+    true
+);
+
 // Title for Autorefresh.
-$userManagementTable->rowclass['title_autorefresh'] = 'w100p';
-$userManagementTable->cellstyle['title_autorefresh'][0] = 'width: 40px;';
-$userManagementTable->cellstyle['title_autorefresh'][1] = 'width: 100%;';
 $userManagementTable->data['title_autorefresh'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
@@ -453,11 +538,8 @@ $userManagementTable->data['fields_autorefreshList'] = $autorefreshTable;
 
 $userManagementTable->rowclass['captions_autorefreshTime'] = 'field_half_width';
 $userManagementTable->rowclass['fields_autorefreshTime'] = 'field_half_width';
+$userManagementTable->cellclass['fields_autorefreshTime'][0] = 'wrap';
 $userManagementTable->data['captions_autorefreshTime'][0] = __('Time for autorefresh');
-$userManagementTable->data['captions_autorefreshTime'][0] .= ui_print_help_tip(
-    __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
-    true
-);
 $userManagementTable->data['fields_autorefreshTime'][0] = html_print_select(
     get_refresh_time_array(),
     'time_autorefresh',
@@ -469,11 +551,12 @@ $userManagementTable->data['fields_autorefreshTime'][0] = html_print_select(
     false,
     false
 );
+$userManagementTable->data['fields_autorefreshTime'][0] .= ui_print_input_placeholder(
+    __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
+    true
+);
 
 // Title for Language and Appearance.
-$userManagementTable->rowclass['title_lookAndFeel'] = 'w100p';
-$userManagementTable->cellstyle['title_lookAndFeel'][0] = 'width: 40px;';
-$userManagementTable->cellstyle['title_lookAndFeel'][1] = 'width: 100%;';
 $userManagementTable->data['title_lookAndFeel'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
@@ -526,7 +609,7 @@ $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_selec
 
 // Home screen table.
 $homeScreenTable = new stdClass();
-$homeScreenTable->class = 'w100p table_section';
+$homeScreenTable->class = 'w100p table_section full_section';
 $homeScreenTable->id = 'home_screen_table';
 $homeScreenTable->style = [];
 $homeScreenTable->rowclass = [];
@@ -564,9 +647,10 @@ $userManagementTable->rowclass['captions_timezone'] = 'field_half_width';
 $userManagementTable->rowclass['fields_timezone'] = 'field_half_width';
 $userManagementTable->colspan['captions_timezone'][0] = 2;
 $userManagementTable->cellstyle['fields_timezone'][0] = 'align-self: baseline;';
+$userManagementTable->cellclass['fields_timezone'][0] = 'wrap';
 $userManagementTable->data['captions_timezone'][0] = __('Time zone');
 $userManagementTable->data['fields_timezone'][0] = html_print_timezone_select('timezone', $user_info['timezone']);
-$userManagementTable->data['fields_timezone'][0] .= ui_print_help_tip(
+$userManagementTable->data['fields_timezone'][0] .= ui_print_input_placeholder(
     __('The timezone must be that of the associated server.'),
     true
 );
@@ -580,9 +664,6 @@ $userManagementTable->data['fields_timezone'][1] = html_print_div(
 );
 
 // Title for Language and Appearance.
-$userManagementTable->rowclass['title_additionalSettings'] = 'w100p';
-$userManagementTable->cellstyle['title_additionalSettings'][0] = 'width: 40px;';
-$userManagementTable->cellstyle['title_additionalSettings'][1] = 'width: 100%;';
 $userManagementTable->data['title_additionalSettings'][0] = html_print_div(
     [
         'class'   => 'section_table_title_line',
@@ -608,10 +689,6 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
 );
 
 $userManagementTable->data['captions_addSettings'][1] = __('Login allowed IP list');
-$userManagementTable->data['captions_addSettings'][1] .= ui_print_help_tip(
-    __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
-    true
-);
 $userManagementTable->data['fields_addSettings'][1] = html_print_div(
     [
         'class'   => 'edit_user_allowed_ip',
@@ -624,6 +701,11 @@ $userManagementTable->data['fields_addSettings'][1] = html_print_div(
             true
         ),
     ],
+    true
+);
+
+$userManagementTable->data['fields_addSettings'][1] .= ui_print_input_placeholder(
+    __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
     true
 );
 
@@ -647,50 +729,6 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
         'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
         'content' => implode('', $allowAllIpsContent),
     ],
-    true
-);
-
-$userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width';
-$userManagementTable->rowclass['fields_loginErrorUser'] = 'field_half_width';
-$userManagementTable->cellstyle['captions_loginErrorUser'][0] = 'width: 25%';
-$userManagementTable->cellstyle['captions_loginErrorUser'][1] = 'width: 25%';
-$userManagementTable->cellstyle['fields_loginErrorUser'][0] = 'width: 25%';
-$userManagementTable->cellstyle['fields_loginErrorUser'][1] = 'width: 25%';
-$userManagementTable->data['captions_loginErrorUser'][0] = __('Not Login');
-$userManagementTable->data['captions_loginErrorUser'][0] .= ui_print_help_tip(
-    __('The user with not login set only can access to API.'),
-    true
-);
-$userManagementTable->data['fields_loginErrorUser'][0] = html_print_checkbox_switch(
-    'not_login',
-    1,
-    $user_info['not_login'],
-    true
-);
-
-$userManagementTable->data['captions_loginErrorUser'][1] = __('Local user');
-$userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_help_tip(
-    __('The user with local authentication enabled will always use local authentication.'),
-    true
-);
-$userManagementTable->data['fields_loginErrorUser'][1] = html_print_checkbox_switch(
-    'local_user',
-    1,
-    $user_info['local_user'],
-    true
-);
-
-$userManagementTable->data['captions_loginErrorUser'][2] = __('Session time');
-$userManagementTable->data['captions_loginErrorUser'][2] .= ui_print_help_tip(
-    __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
-    true
-);
-$userManagementTable->data['fields_loginErrorUser'][2] = html_print_input_text(
-    'session_time',
-    $user_info['session_time'],
-    '',
-    5,
-    5,
     true
 );
 

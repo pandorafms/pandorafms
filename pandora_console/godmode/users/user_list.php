@@ -247,7 +247,7 @@ if (is_metaconsole() === true) {
             'user'    => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/gm_users.png',
+                    'images/user.svg',
                     true,
                     [
                         'title' => __('User management'),
@@ -272,7 +272,7 @@ if (is_metaconsole() === true) {
             'user' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/gm_users.png',
+                    'images/user.svg',
                     true,
                     [
                         'title' => __('User management'),
@@ -288,7 +288,7 @@ if (is_metaconsole() === true) {
     // Header.
     ui_print_standard_header(
         __('Users management'),
-        'images/gm_users.png',
+        'images/user.svg',
         false,
         '',
         false,

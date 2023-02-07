@@ -50,11 +50,11 @@ if (is_metaconsole() === false) {
         'user'    => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/gm_users.png',
+                'images/user.svg',
                 true,
                 [
                     'title' => __('User management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             ).'</a>',
         ],
@@ -77,7 +77,7 @@ if (is_metaconsole() === false) {
 
     ui_print_standard_header(
         __('Edit profile %s', $profile['name']),
-        'images/gm_users.png',
+        'images/user.svg',
         false,
         'configure_profiles_tab',
         true,
@@ -411,18 +411,30 @@ if ($id_profile || $new_profile) {
 
     html_print_table($table);
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    if ($new_profile) {
-        html_print_submit_button(__('Add'), 'crt', false, 'class="sub wand"');
+    $actionButtons = [];
+
+    if ($new_profile === true) {
+        $actionButtons[] = html_print_submit_button(__('Create profile'), 'crt', false, [ 'icon' => 'wand' ], true);
         html_print_input_hidden('create_profile', 1);
     } else {
+        $actionButtons[] = html_print_submit_button(__('Update'), 'upd', false, [ 'icon' => 'update' ], true);
         html_print_input_hidden('id', $id_profile);
         html_print_input_hidden('old_name_profile', $name);
         html_print_input_hidden('update_profile', 1);
-        html_print_submit_button(__('Update'), 'upd', false, 'class="sub upd"');
     }
 
-    echo '</div></form>';
+    $actionButtons[] = html_print_go_back_button(
+        ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure=0'),
+        ['button_class' => ''],
+        true
+    );
+
+    html_print_action_buttons(
+        implode('', $actionButtons),
+        ['type' => 'form_action']
+    );
+
+    echo '</form>';
 }
 
 enterprise_hook('close_meta_frame');

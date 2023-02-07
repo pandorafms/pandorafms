@@ -5102,7 +5102,7 @@ input:checked + .p-slider:before {
 .white_box {
   background-color: #fff;
   border: 1px solid #e1e1e1;
-  border-radius: 0px 0px 5px 5px;
+  border-radius: 8px;
 }
 
 .white_box > div {
@@ -5128,8 +5128,8 @@ input:checked + .p-slider:before {
 }
 
 #edit_user_profiles {
-  margin-top: 40px;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 #edit_user_profiles table {
@@ -10421,6 +10421,7 @@ button.ui-button.ui-widget.submit-cancel:active {
 
 table#simple tr td,
 table#advanced tr td,
+table.principal_table tr td,
 .white_table_flex > table tr td,
 .table_section table tr td {
   display: flex;
@@ -10432,6 +10433,7 @@ table#advanced tr td,
 
 table#simple > tbody > tr,
 table#advanced > tbody > tr,
+table.principal_table > tbody > tr,
 .white_table_flex tr,
 .table_section table tr {
   display: flex;
@@ -11104,4 +11106,10 @@ form#satellite_conf_edit > fieldset.full-column {
   width: 100%;
   flex: none;
   margin: 0 0 20px;
+}
+
+.input_sub_placeholder {
+  font-size: 8pt;
+  color: #8a96a6;
+  font-family: "Pandora-Regular";
 }

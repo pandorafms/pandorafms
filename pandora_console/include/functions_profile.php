@@ -197,7 +197,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
         $table->class = 'databox_tactical data';
         $table->title = $title;
     } else {
-        echo '<div id="edit_user_profiles" class="white_box">';
+        echo '<div id="edit_user_profiles" class="floating_form white_box">';
         echo '<p class="subsection_header_title padding-lft-10">'.$title.'</p>';
     }
 

@@ -481,9 +481,29 @@ if (isset($correct_reset_pass_process)) {
 }
 
 if (isset($login_failed)) {
-    $nick = get_parameter_post('nick');
+    $nick = io_safe_input(get_parameter_post('nick'));
     $fails = db_get_value('failed_attempt', 'tusuario', 'id_user', $nick);
+
+    // If user not exist, and attempts its enable, lets make array and fails attemps.
+    if ($fails == false && $config['enable_pass_policy']) {
+        $nick_array_error = json_decode(base64_decode($config['nicks_error']), true);
+
+        if (isset($nick_array_error[$nick]) !== false) {
+            $nick_array_error[$nick] += 1;
+        } else {
+            $nick_array_error[$nick] = 1;
+        }
+
+        $fails = $nick_array_error[$nick];
+        if ($config['nicks_error']) {
+            config_update_value('nicks_error', base64_encode(json_encode($nick_array_error)));
+        } else {
+            config_create_value('nicks_error', base64_encode(json_encode($nick_array_error)));
+        }
+    }
+
     $attemps = ($config['number_attempts'] - $fails);
+    $attemps = ($attemps < 0) ? 0 : $attemps;
     echo '<div id="login_failed" title="'.__('Login failed').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -787,8 +807,8 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
-                        width: 528,
+                        height: 230,
+                        width: 530,
                         overlay: {
                             opacity: 0.5,
                             background: "black"
@@ -801,7 +821,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     $("#login_correct_pass").dialog('close');
                 });
             });
-            
             $('#nick').focus();
         break;
     }

@@ -77,7 +77,7 @@ $tab = 'view';
 
 // Setup tab.
 $viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">'.html_print_image(
-    'images/eye_show.png',
+    'images/see-details@svg.svg',
     true,
     [
         'title' => __('View'),

@@ -158,21 +158,25 @@ $onheader = [];
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Prepare the tab system to the future.
     $tab = 'setup';
-
-    // Setup tab.
-    $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image(
-        'images/setup.png',
-        true,
-        [
-            'title' => __('Setup'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-
+    // Options.
     $setuptab['godmode'] = true;
-
     $setuptab['active'] = false;
-
+    // Setup tab.
+    $setuptab['text'] = html_print_anchor(
+        [
+            'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'),
+            'content' => html_print_image(
+                'images/configuration@svg.svg',
+                true,
+                [
+                    'title' => __('Setup'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
+    // Header button.
     $onheader = ['setup' => $setuptab];
 }
 
@@ -701,60 +705,67 @@ ui_pagination(
 );
 
 // Show data.
-$table = new stdClass();
-$table->cellpadding = 0;
-$table->cellspacing = 0;
-$table->width = '100%';
-$table->class = 'info_table';
+$tableAgents = new stdClass();
+$tableAgents->cellpadding = 0;
+$tableAgents->cellspacing = 0;
+$tableAgents->id = 'agent_list';
+$tableAgents->styleTable = 'margin: 0 10px';
+$tableAgents->class = 'info_table tactical_table';
 
-$table->head = [];
-$table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
-$table->size[0] = '12%';
+$tableAgents->head = [];
+$tableAgents->head[0] = '<span>'.__('Agent').'</span>';
+$tableAgents->head[0] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
+$tableAgents->size[0] = '12%';
 
-$table->head[1] = __('Description').ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
-$table->size[1] = '16%';
+$tableAgents->head[1] = '<span>'.__('Description').'</span>';
+$tableAgents->head[0] .= ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
+$tableAgents->size[1] = '16%';
 
-$table->head[10] = __('Remote').ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
-$table->size[10] = '9%';
+$tableAgents->head[10] = '<span>'.__('Remote').'</span>';
+$tableAgents->head[10] .= ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
+$tableAgents->size[10] = '9%';
 
-$table->head[2] = __('OS').ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
-$table->size[2] = '8%';
+$tableAgents->head[2] = '<span>'.__('OS').'</span>';
+$tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
+$tableAgents->size[2] = '8%';
 
-$table->head[3] = __('Interval').ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
-$table->size[3] = '10%';
+$tableAgents->head[3] = '<span>'.__('Interval').'</span>';
+$tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
+$tableAgents->size[3] = '10%';
 
-$table->head[4] = __('Group').ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
-$table->size[4] = '8%';
+$tableAgents->head[4] = '<span>'.__('Group').'</span>';
+$tableAgents->head[4] .= ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
+$tableAgents->size[4] = '8%';
 
-$table->head[5] = __('Type');
-$table->size[5] = '8%';
+$tableAgents->head[5] = '<span>'.__('Type').'</span>';
+$tableAgents->size[5] = '8%';
 
-$table->head[6] = __('Modules');
-$table->size[6] = '10%';
+$tableAgents->head[6] = '<span>'.__('Modules').'</span>';
+$tableAgents->size[6] = '10%';
 
-$table->head[7] = __('Status');
-$table->size[7] = '4%';
+$tableAgents->head[7] = '<span>'.__('Status').'</span>';
+$tableAgents->size[7] = '4%';
 
-$table->head[8] = __('Alerts');
-$table->size[8] = '4%';
+$tableAgents->head[8] = '<span>'.__('Alerts').'</span>';
+$tableAgents->size[8] = '4%';
 
-$table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-$table->size[9] = '15%';
+$tableAgents->head[9] = '<span>'.__('Last contact').'</span>';
+$tableAgents->head[9] .= ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
+$tableAgents->size[9] = '15%';
 
-$table->align = [];
+$tableAgents->align = [];
 
-$table->align[2] = 'left';
-$table->align[3] = 'left';
-$table->align[4] = 'left';
-$table->align[5] = 'left';
-$table->align[6] = 'left';
-$table->align[7] = 'left';
-$table->align[8] = 'left';
-$table->align[9] = 'left';
+$tableAgents->align[2] = 'left';
+$tableAgents->align[3] = 'left';
+$tableAgents->align[4] = 'left';
+$tableAgents->align[5] = 'left';
+$tableAgents->align[6] = 'left';
+$tableAgents->align[7] = 'left';
+$tableAgents->align[8] = 'left';
+$tableAgents->align[9] = 'left';
 
-$table->style = [];
-
-$table->data = [];
+$tableAgents->style = [];
+$tableAgents->data = [];
 
 $rowPair = true;
 $iterator = 0;
@@ -762,9 +773,9 @@ foreach ($agents as $agent) {
     $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
 
     if ($rowPair) {
-        $table->rowclass[$iterator] = 'rowPair';
+        $tableAgents->rowclass[$iterator] = 'rowPair';
     } else {
-        $table->rowclass[$iterator] = 'rowOdd';
+        $tableAgents->rowclass[$iterator] = 'rowOdd';
     }
 
     $rowPair = !$rowPair;
@@ -791,7 +802,13 @@ foreach ($agents as $agent) {
 
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true).'</span></b></a>';
+    $data[0] .= html_print_anchor(
+        [
+            'href'    => ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente']),
+            'content' => ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true),
+        ],
+        true
+    );
 
     if ($agent['quiet']) {
         $data[0] .= '&nbsp;';
@@ -859,18 +876,24 @@ foreach ($agents as $agent) {
         enterprise_include_once('include/functions_config_agents.php');
         if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
             $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
-                'images/application_edit.png',
+                'images/remote-configuration@svg.svg',
                 true,
                 [
                     'align' => 'middle',
                     'title' => __('Remote config'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             ).'</a>';
         }
     }
 
-    $data[2] = ui_print_os_icon($agent['id_os'], false, true);
+    $data[2] = html_print_div(
+        [
+            'class'   => 'main_menu_icon',
+            'content' => ui_print_os_icon($agent['id_os'], false, true),
+        ],
+        true
+    );
 
     $data[3] = '<span>'.human_time_description_raw(
         $agent['intervalo']
@@ -905,11 +928,11 @@ foreach ($agents as $agent) {
     // This old code was returning "never" on agents without modules, BAD !!
     // And does not print outdated agents in red. WRONG !!!!
     // $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
-    array_push($table->data, $data);
+    array_push($tableAgents->data, $data);
 }
 
-if (empty($table->data) === false) {
-    html_print_table($table);
+if (empty($tableAgents->data) === false) {
+    html_print_table($tableAgents);
 
     ui_pagination(
         $total_agents,

@@ -60,7 +60,7 @@ $tabs = [];
 if ($strict_acl === false) {
     $tabs['tag'] = [
         'text'   => "<a href='".sprintf($url, 'tag')."'>".html_print_image(
-            'images/tag.png',
+            'images/tag@svg.svg',
             true,
             [
                 'title' => __('Tags'),
@@ -72,7 +72,7 @@ if ($strict_acl === false) {
 
     $tabs['os'] = [
         'text'   => "<a href='".sprintf($url, 'os')."'>".html_print_image(
-            'images/operating_system.png',
+            'images/workstation@groups.svg',
             true,
             [
                 'title' => __('OS'),
@@ -84,7 +84,7 @@ if ($strict_acl === false) {
 
     $tabs['group'] = [
         'text'   => "<a href='".sprintf($url, 'group')."'>".html_print_image(
-            'images/group.png',
+            'images/groups@svg.svg',
             true,
             [
                 'title' => __('Groups'),
@@ -96,7 +96,7 @@ if ($strict_acl === false) {
 
     $tabs['module_group'] = [
         'text'   => "<a href='".sprintf($url, 'module_group')."'>".html_print_image(
-            'images/module_group.png',
+            'images/modules-group@svg.svg',
             true,
             [
                 'title' => __('Module groups'),
@@ -108,7 +108,7 @@ if ($strict_acl === false) {
 
     $tabs['module'] = [
         'text'   => "<a href='".sprintf($url, 'module')."'>".html_print_image(
-            'images/brick.png',
+            'images/modules@svg.svg',
             true,
             [
                 'title' => __('Modules'),
@@ -121,7 +121,7 @@ if ($strict_acl === false) {
     if ($enterpriseEnable) {
         $tabs['policies'] = [
             'text'   => "<a href='".sprintf($url, 'policies')."'>".html_print_image(
-                'images/policies_mc.png',
+                'images/policy@svg.svg',
                 true,
                 [
                     'title' => __('Policies'),

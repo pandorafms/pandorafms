@@ -1723,7 +1723,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 59px;
-  z-index: 10000;
+  z-index: 1000;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;

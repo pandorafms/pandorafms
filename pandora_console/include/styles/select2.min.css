@@ -71,7 +71,7 @@
   position: absolute;
   left: -100000px;
   width: 100%;
-  z-index: 1051;
+  z-index: 999;
 }
 .select2-results {
   display: block;

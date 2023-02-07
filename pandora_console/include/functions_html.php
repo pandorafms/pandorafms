@@ -6598,6 +6598,29 @@ function html_print_subtitle_table(string $caption, array $options=[], bool $ret
 
 
 /**
+ * Same behaviour like html_print_subtitle_table, in this case, return all formed subtitle with the new Pandora's style.
+ *
+ * @param string $caption Caption of title.
+ * @param array  $options Available options.
+ *     - `id`: string
+ *     - `style`: string
+ *     - `class`: string. `section_table_title` by default.
+ *     - `wrapper`: string. Must be a valid tag.
+ *     - `wrapper_attributes`: string. Valid attributes for a wrapper.
+ *
+ * @return array.
+ */
+function html_print_full_subtitle_table(string $caption, array $options=[])
+{
+    $output = [];
+    $output[0] = html_print_div([ 'class' => 'section_table_title_line' ], true);
+    $output[1] = html_print_subtitle_table($caption, $options, true);
+
+    return $output;
+}
+
+
+/**
  * Prints a menu button.
  *
  * @param array   $options Available options.

@@ -251,18 +251,18 @@ if (is_metaconsole() === true) {
                     true,
                     [
                         'title' => __('User management'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
             ],
             'profile' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                    'images/profiles.png',
+                    'images/suitcase@svg.svg',
                     true,
                     [
                         'title' => __('Profile management'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
             ],
@@ -276,7 +276,7 @@ if (is_metaconsole() === true) {
                     true,
                     [
                         'title' => __('User management'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
             ],

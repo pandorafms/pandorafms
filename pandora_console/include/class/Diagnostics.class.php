@@ -517,6 +517,27 @@ class Diagnostics extends Wizard
 
 
     /**
+     * Date system
+     *
+     * @return string
+     */
+    public function getSystemDate(): string
+    {
+        $result = [
+            'error' => false,
+            'data'  => [
+                'date' => [
+                    'name'  => __('System Date (Console)'),
+                    'value' => date('H:i:s Y-m-d'),
+                ],
+            ],
+        ];
+
+        return json_encode($result);
+    }
+
+
+    /**
      * Database size stats.
      *
      * @return string

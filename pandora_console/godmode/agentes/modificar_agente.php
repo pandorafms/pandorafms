@@ -956,6 +956,25 @@ if ($agents !== false) {
 
     html_print_table($tableAgents);
 
+    $tablePagination = ui_pagination(
+        $total_agents,
+        ui_get_url_refresh(
+            [
+                'group_id'   => $group_id,
+                'search'     => $search,
+                'sort_field' => $sortField,
+                'sort'       => $sort,
+                'status'     => $status,
+            ]
+        ),
+        0,
+        0,
+        true,
+        'offset',
+        false,
+        'dataTables_paginate paging_simple_numbers'
+    );
+
     /*
         ui_pagination(
         $total_agents,
@@ -964,6 +983,7 @@ if ($agents !== false) {
         );
     */
 } else {
+    $tablePagination = '';
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);
 }
 
@@ -980,8 +1000,9 @@ if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             true
         ),
         [
-            'type'  => 'data_table',
-            'class' => 'fixed_action_buttons',
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
         ]
     );
     echo '</form>';

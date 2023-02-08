@@ -533,25 +533,11 @@ $table_contact->data[] = $data;
 
 $data_opcional = new stdClass();
 $data_opcional->id = 'agent_data_main';
-// $data_opcional->styleTable = 'width: 100%; padding: 0; border: 0; margin: 0';
 $data_opcional->class = 'floating_form';
 $data_opcional->cellspacing = 0;
 $data_opcional->cellpadding = 0;
-// $table_data->class = 'box-shadow agent_details_col mrgn_lft_20px mrgn_right_20px white_table white_table_droppable align-top';
 $data_opcional->style[0] = 'height: 46px; width: 25%; padding-right: 5px; font-family: \'Pandora-Bold\'; text-align: end;';
 $data_opcional->style[1] = 'height: 46px; width: 75%; padding-left: 5px; font-family: \'Pandora-Regular\';';
-/*
-    $table_data->headstyle[0] = 'border-bottom: 0';
-    $table_data->headstyle[1] = 'border-bottom: 0';
-
-    $table_data->head[0] = html_print_image(
-    'images/arrow_down_green.png',
-    true,
-    [ 'class' => 'pdd_r_10px' ]
-    );
-    $table_data->head[0] .= '<span class="subsection_header_title">'.__('Agent info').'</span>';
-    $table_data->head_colspan[0] = 4;
-*/
 // Gis and url address.
 $agentAdditionalContent = '';
 // Position Information.
@@ -611,12 +597,6 @@ if ((int) $agent['timezone_offset'] !== 0) {
     $data_opcional->data['timezone_offset'][1] = $agent['timezone_offset'];
 }
 
-/*
-    $data_opcional = array_chunk($data_opcional, 2);
-    foreach ($data_opcional as $key => $value) {
-    $table_data->data[] = $data_opcional[$key];
-    }
-*/
 // Custom fields.
 $fields = db_get_all_rows_filter(
     'tagent_custom_fields',
@@ -672,14 +652,14 @@ for ($i = 0; $i < $custom_fields_count; $i++) {
         $columns = array_merge($first_column, $second_column);
     } else {
         $columns = $first_column;
-        if ($table_data->data !== null) {
-            $filas = count($table_data->data);
+        if ($data_opcional->data !== null) {
+            $filas = count($data_opcional->data);
         }
 
-        $table_data->colspan[$filas][1] = 3;
+        $data_opcional->colspan[$filas][1] = 3;
     }
 
-    $table_data->data[] = $columns;
+    $data_opcional->data[] = $columns;
 
     $i++;
 }

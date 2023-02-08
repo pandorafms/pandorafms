@@ -2187,7 +2187,7 @@ function ui_pagination(
     // Visualize only $block_limit blocks.
     if ($count <= $pagination) {
         if ($print_total_items) {
-            $output = "<div class='pagination ".$other_class."' ".$set_id.'>';
+            $output = "<div class='".$other_class."' ".$set_id.'>';
             // Show the count of items.
             $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
             // End div and layout.
@@ -2211,7 +2211,7 @@ function ui_pagination(
         $end_page = ($number_of_pages - 1);
     }
 
-    $output = "<div class='pagination ".$other_class."' ".$set_id.'>';
+    $output = "<div class='".$other_class."' ".$set_id.'>';
 
     // Show the count of items.
     if ($print_total_items) {
@@ -2222,7 +2222,7 @@ function ui_pagination(
 
     // Show GOTO FIRST PAGE button.
     if ($number_of_pages > $block_limit) {
-        if (!empty($script)) {
+        if (empty($script) === false) {
             $script_modified = $script;
             $script_modified = str_replace(
                 $parameter_script['count'],
@@ -2235,11 +2235,19 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows ".$other_class." offset_0'
-				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $firstHref = 'javascript: '.$script_modified.';';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".io_safe_output($url).'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $firstHref = io_safe_output($url).'&amp;'.$offset_name.'=0';
         }
+
+        $output .= html_print_anchor(
+            [
+                'href'    => $firstHref,
+                'class'   => 'pandora_pagination '.$other_class.' offset_0 previous',
+                'content' => __('First'),
+            ],
+            true
+        );
     }
 
     /*
@@ -2267,26 +2275,30 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."'
-				href='javacript: ".$script_modified.";'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $previousHref = 'javascript: '.$script_modified.';';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_previous_page."'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $previousHref = io_safe_output($url).'&amp;'.$offset_name.'='.$offset_previous_page;
         }
+
+        $output .= html_print_anchor(
+            [
+                'href'    => $previousHref,
+                'class'   => 'pandora_pagination '.$other_class.' offset_'.$offset_previous_page,
+                'content' => __('Previous'),
+            ],
+            true
+        );
     }
 
     // Show pages.
     for ($iterator = $ini_page; $iterator <= $end_page; $iterator++) {
         $actual_page = (int) ($offset / $pagination);
 
-        if ($iterator == $actual_page) {
-            $output .= "<div class='page_number page_number_active'>";
-        } else {
-            $output .= "<div class='page_number'>";
-        }
+        $activePageClass = ((int) $iterator === (int) $actual_page) ? 'current' : '';
 
         $offset_page = ($iterator * $pagination);
 
-        if (!empty($script)) {
+        if (empty($script) === false) {
             $script_modified = $script;
             $script_modified = str_replace(
                 $parameter_script['count'],
@@ -2299,15 +2311,24 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination ".$other_class.' offset_'.$offset_page."'
-				href='javascript: ".$script_modified.";'>";
+            $anchorHref = 'javascript: ".$script_modified.";';
         } else {
-            $output .= "<a class='pagination ".$other_class.' offset_'.$offset_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_page."'>";
+            $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
 
-        $output .= $iterator;
-
-        $output .= '</a></div>';
+        $output .= html_print_anchor(
+            [
+                'href'    => $anchorHref,
+                'class'   => sprintf(
+                    'pandora_pagination %s offset_%s %s',
+                    $other_class,
+                    $offset_page,
+                    $activePageClass
+                ),
+                'content' => $iterator,
+            ],
+            true
+        );
     }
 
     /*
@@ -2335,11 +2356,19 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."'
-				href='javascript: ".$script_modified.";'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $nextHref = 'javascript: ".$script_modified.";';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_next_page."'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
+
+        $output .= html_print_anchor(
+            [
+                'href'    => $nextHref,
+                'class'   => 'pandora_pagination '.$other_class.' offset_'.$offset_next_page,
+                'content' => __('Next'),
+            ],
+            true
+        );
     }
 
     // Show GOTO LAST PAGE button.
@@ -2359,11 +2388,19 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."'
-				href='javascript: ".$script_modified.";'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $lastHref = 'javascript: ".$script_modified.";';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."' href='".$url.'&amp;'.$offset_name.'='.$offset_lastpage."'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot invert_filter']).'</a>';
+            $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }
+
+        $output .= html_print_anchor(
+            [
+                'href'    => $lastHref,
+                'class'   => 'pandora_pagination '.$other_class.' offset_'.$offset_lastpage.' next',
+                'content' => __('Last'),
+            ],
+            true
+        );
     }
 
     $output .= '</div>';

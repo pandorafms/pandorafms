@@ -9992,7 +9992,7 @@ button.submitButton {
   border-radius: 8px;
   padding: 0 10px;
   cursor: pointer;
-  z-index: 10001;
+  z-index: 100;
 }
 
 button.buttonButton.mini,
@@ -10375,7 +10375,7 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 .moduleIdBox {
-  height: 40px;
+  height: 41px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   margin-left: -56px;
@@ -10732,7 +10732,7 @@ tr.bring_next_field {
 
 .action_buttons_right_content {
   position: fixed;
-  z-index: 1;
+  z-index: 10000;
   left: 250px;
   display: flex;
   align-items: center;
@@ -10756,7 +10756,7 @@ tr.bring_next_field {
   top: -8px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
-  z-index: 10000;
+  /*z-index: 10000;*/
 }
 
 .fixed_action_buttons_size > .action_buttons_background_mask {

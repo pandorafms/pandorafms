@@ -3504,7 +3504,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     }
 
     if ($imageButton === false) {
-        $content = $label;
+        $content = '<span style="margin-top: 4px;" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
         $content = $iconDiv;

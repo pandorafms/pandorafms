@@ -37,6 +37,8 @@ require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 enterprise_include_once('include/functions_config_agents.php');
 
+ui_require_css_file('tables');
+
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
@@ -697,13 +699,6 @@ $url_down_group = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&a
 $url_up_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=up';
 $url_down_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=down';
 
-
-// Prepare pagination.
-ui_pagination(
-    $total_agents,
-    ui_get_url_refresh(['group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status])
-);
-
 // Show data.
 $tableAgents = new stdClass();
 $tableAgents->cellpadding = 0;
@@ -934,7 +929,7 @@ foreach ($agents as $agent) {
 if (empty($tableAgents->data) === false) {
     html_print_table($tableAgents);
 
-    ui_pagination(
+    $tablePagination = ui_pagination(
         $total_agents,
         ui_get_url_refresh(
             [
@@ -947,15 +942,16 @@ if (empty($tableAgents->data) === false) {
         ),
         0,
         0,
-        false,
-        'offset',
         true,
-        'pagination-bottom'
+        'offset',
+        false,
+        'dataTables_paginate paging_simple_numbers'
     );
 
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
+    $tablePagination = '';
 }
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($config['id_user'], 0, 'AM') === true) {
@@ -969,8 +965,9 @@ if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($
             true
         ),
         [
-            'type'  => 'data_table',
-            'class' => 'fixed_action_buttons',
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
         ]
     );
     echo '</form>';

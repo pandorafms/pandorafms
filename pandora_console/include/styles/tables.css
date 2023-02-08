@@ -339,15 +339,17 @@ a.pandora_pagination {
 a.pandora_pagination.next {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
+  border-right: 1px solid #c0ccdc;
 }
 
 a.pandora_pagination.previous {
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
+  border-left: 1px solid #c0ccdc;
 }
 .dataTables_paginate > span > span.ellipsis + a.pandora_pagination:last-child,
 .dataTables_paginate {
-  border-left: 1px solid #c0ccdc;
+  /*/border-left: 1px solid #c0ccdc;*/
 }
 
 a.pandora_pagination.disabled {

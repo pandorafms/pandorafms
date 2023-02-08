@@ -298,6 +298,8 @@ $selectDescriptionUp = false;
 $selectDescriptionDown = false;
 $selectLastContactUp = false;
 $selectLastContactDown = false;
+$selectRemoteUp = false;
+$selectRemoteDown = false;
 $order = null;
 
 switch ($sortField) {
@@ -674,13 +676,15 @@ if (empty($agents)) {
     $agents = [];
 }
 
-if ($config['language'] == 'ja'
-    || $config['language'] == 'zh_CN'
-    || $own_info['language'] == 'ja'
-    || $own_info['language'] == 'zh_CN'
+if ($config['language'] === 'ja'
+    || $config['language'] === 'zh_CN'
+    || $own_info['language'] === 'ja'
+    || $own_info['language'] === 'zh_CN'
 ) {
     // Adds a custom font size for Japanese and Chinese language.
     $custom_font_size = 'custom_font_size';
+} else {
+    $custom_font_size = '';
 }
 
 // Urls to sort the table.

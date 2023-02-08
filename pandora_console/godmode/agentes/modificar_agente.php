@@ -398,6 +398,8 @@ $selectOsUp = false;
 $selectOsDown = false;
 $selectGroupUp = false;
 $selectGroupDown = false;
+$selectRemoteUp = false;
+$selectRemoteDown = false;
 switch ($sortField) {
     case 'remote':
         switch ($sort) {
@@ -627,7 +629,7 @@ $sql = sprintf(
 );
 
 $agents = db_get_all_rows_sql($sql);
-
+$custom_font_size = '';
 // Prepare pagination.
 // ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
 if ($agents !== false) {
@@ -895,7 +897,7 @@ if ($agents !== false) {
                         $ag_group,
                         $recursion,
                         $search,
-                        $offsetArg,
+                        '',
                         $sortField,
                         $sort,
                         $disabled
@@ -925,7 +927,7 @@ if ($agents !== false) {
                             $ag_group,
                             $recursion,
                             $search,
-                            $offsetArg,
+                            '',
                             $sortField,
                             $sort,
                             $disabled

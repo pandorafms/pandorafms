@@ -213,6 +213,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     $table->head['actions'] = __('Action');
     $table->align['actions'] = 'center';
 
+    $table->headstyle['tags'] = 'width: 33%';
     $table->headstyle['hierarchy'] = 'text-align: center';
     $table->headstyle['actions'] = 'text-align: center';
 
@@ -263,17 +264,30 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
 
     $lastKey = 0;
     foreach ($result as $key => $profile) {
-        if ($profile['id_grupo'] == -1) {
+        if ((int) $profile['id_grupo'] === -1) {
             continue;
         }
 
         $data = [];
 
-        $data['name'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.profile_get_name($profile['id_perfil']).'</a>';
+        $profileName = profile_get_name($profile['id_perfil']);
+
+        if (is_management_allowed() === false) {
+            $data['name'] = $profileName;
+        } else {
+            $data['name'] = html_print_anchor(
+                [
+                    'href'    => 'index.php?sec2=godmode/users/configure_profile&id='.$profile['id_perfil'],
+                    'content' => $profileName,
+                ],
+                true
+            );
+        }
+
         $data['group'] = ui_print_group_icon($profile['id_grupo'], true);
 
         if (is_metaconsole() === false) {
-            $data['group'] .= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'&pure='.$pure.'">';
+            $data['group'] .= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">';
         }
 
         $data['group'] .= '&nbsp;'.ui_print_truncate_text(groups_get_name($profile['id_grupo'], true), GENERIC_SIZE_TEXT);

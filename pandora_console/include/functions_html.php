@@ -3516,6 +3516,10 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $classes .= ' buttonButton';
     }
 
+    if ($disabled === true) {
+        $classes .= ' disabled_action_button';
+    }
+
     $output = sprintf(
         '<button type="%s" class="%s" %s %s %s %s %s %s>%s</button>',
         $buttonType,

@@ -31,7 +31,6 @@ global $config;
 
 check_login();
 
-
 // Bussiness Logic.
 // Data for homescreen section.
 $homeScreenValues = [
@@ -121,10 +120,6 @@ if (is_metaconsole() === false) {
     $timezoneContent[] = '<map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>';
 }
 
-
-
-
-
 // Create the view.
 $userManagementTable = new stdClass();
 $userManagementTable->id = 'advanced';
@@ -138,7 +133,8 @@ $userManagementTable->colspan = [];
 $userManagementTable->rowspan = [];
 
 // Title for Profile information.
-$userManagementTable->data['title_profile_information'] = html_print_subtitle_table(__('Profile information'));
+$sustitleTable = ($new_user === true) ? __('Profile information') : sprintf('%s [ %s ]', __('Profile information for'), $config['id_user']);
+$userManagementTable->data['title_profile_information'] = html_print_subtitle_table($sustitleTable);
 
 // Id user.
 if ($new_user === true) {

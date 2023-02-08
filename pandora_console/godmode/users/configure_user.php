@@ -262,7 +262,7 @@ if (is_metaconsole() === true) {
     $buttons[$tab]['active'] = true;
 
     ui_print_standard_header(
-        (empty($id) === false) ? __('Update user') : __('Create user'),
+        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $config['id_user']) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -996,7 +996,7 @@ if (is_metaconsole() === true) {
     html_print_div(
         [
             'class'   => 'user_form_title',
-            'content' => ((bool) $id === true) ? __('Update User') : __('Create User'),
+            'content' => ((bool) $id === true) ? sprintf('%s [ %s ]', __('Update User'), $config['id_user']) : __('Create User'),
         ]
     );
 }

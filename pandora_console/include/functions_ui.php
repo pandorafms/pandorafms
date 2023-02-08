@@ -2127,25 +2127,26 @@ function ui_pagination(
     $set_id=''
 ) {
     global $config;
+    ui_require_css_file('tables');
 
-    if (empty($pagination)) {
+    if (empty($pagination) === true) {
         $pagination = (int) $config['block_size'];
     }
 
-    if (is_string($offset)) {
+    if (is_string($offset) === true) {
         $offset_name = $offset;
         $offset = (int) get_parameter($offset_name);
     }
 
-    if (empty($offset)) {
+    if (empty($offset) === true) {
         $offset = (int) get_parameter($offset_name);
     }
 
-    if (empty($url)) {
+    if (empty($url) === true) {
         $url = ui_get_url_refresh([$offset_name => false]);
     }
 
-    if (!empty($set_id)) {
+    if (empty($set_id) === false) {
         $set_id = " id = '".$set_id."'";
     }
 

@@ -993,6 +993,7 @@ foreach ($info as $user_id => $user_info) {
 }
 
 html_print_table($table);
+$tablePagination = ui_pagination(count($info), false, 0, 0, true, 'offset', false, 'dataTables_paginate paging_simple_numbers');
 unset($table);
 if ($is_management_allowed === true) {
     if ($config['admin_can_add_user'] !== false) {
@@ -1005,13 +1006,30 @@ if ($is_management_allowed === true) {
                 [ 'icon' => 'wand' ],
                 true
             ),
-            ['type' => 'form_action'],
+            [
+                'type'          => 'form_action',
+                'right_content' => $tablePagination,
+            ],
         );
         html_print_input_hidden('new_user', 1);
         echo '</form>';
     } else {
         echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
     }
+} else {
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create user'),
+            'none',
+            true,
+            [ 'icon' => 'wand' ],
+            true
+        ),
+        [
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
+        ],
+    );
 }
 
 enterprise_hook('close_meta_frame');

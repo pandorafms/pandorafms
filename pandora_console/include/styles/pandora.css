@@ -10253,6 +10253,9 @@ button.submitButton.link:active > div {
   background-color: #0d312f !important;
 }
 
+button.disabled_action_button {
+  visibility: hidden;
+}
 button div.camera {
   mask: url(../../images/svg/picture.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/picture.svg) no-repeat center / contain;

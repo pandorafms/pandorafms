@@ -6203,7 +6203,7 @@ sub pandora_module_unknown ($$) {
 				')
 			)
 			AND tagente_estado.utimestamp != 0
-			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
+			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP() LIMIT ?', $pa_config->{'unknown_interval'}, $pa_config->{'unknown_block_size'});
 	
 	foreach my $module (@modules) {
 		

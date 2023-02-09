@@ -6361,3 +6361,29 @@ function html_print_extended_select_for_downtime_cron(
         echo $returnString;
     }
 }
+
+
+/**
+ * Ellipse string to x characters.
+ *
+ * @param  string  $string     String to ellipsis.
+ * @param  integer $characters Characters size to show.
+ * @return string String ellipsed.
+ */
+function html_ellipsis_characters(
+    string $string,
+    int $characters,
+    bool $return=false
+) {
+    $out = $string;
+
+    if (strlen($string) > $characters) {
+        $out = substr($string, 0, $characters).'...';
+    }
+
+    if ($return === true) {
+        return $out;
+    } else {
+        echo $out;
+    }
+}

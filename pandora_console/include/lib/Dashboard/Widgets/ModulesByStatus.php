@@ -258,7 +258,7 @@ class ModulesByStatus extends Widget
         $status_fields[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal');
         $status_selected = explode(',', $values['status']);
 
-        (isset($values['status']) === false) ? $status_selected = AGENT_MODULE_STATUS_WARNING : '';
+        (isset($values['status']) === false) ? $status_selected = AGENT_MODULE_STATUS_CRITICAL_BAD : '';
 
         $inputs[] = [
             'label'     => __('Status'),

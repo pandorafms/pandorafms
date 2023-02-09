@@ -1697,32 +1697,32 @@ if ($get_extended_event) {
     // Tabs.
     $tabs = "<ul class='event_detail_tab_menu'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image(
-        'images/lightning_go.png',
+        'images/event.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('General').'</span></a></li>';
     if (events_has_extended_info($event['id_evento']) === true) {
         $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
         ).'<span>'.__('Related').'</span></a></li>';
     }
 
     $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image(
-        'images/zoom.png',
+        'images/details.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('Details').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image(
-        'images/custom_field_col.png',
+        'images/agent-fields.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('Agent fields').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image(
-        'images/pencil.png',
+        'images/edit.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('Comments').'</span></a></li>';
 
     if (!$readonly
@@ -1747,17 +1747,17 @@ if ($get_extended_event) {
         )))
     ) {
         $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image(
-            'images/event_responses.png',
+            'images/responses.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
         ).'<span>'.__('Responses').'</span></a></li>';
     }
 
     if (empty($event['custom_data']) === false) {
         $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image(
-            'images/custom_field_col.png',
+            'images/custom-input@svg.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
         ).'<span>'.__('Custom data').'</span></a></li>';
     }
 
@@ -2385,7 +2385,7 @@ if ($drawConsoleSound === true) {
                             'type'       => 'button',
                             'name'       => 'melody_sound',
                             'label'      => __('Test sound'),
-                            'attributes' => 'class="sub upd"',
+                            'attributes' => ['icon' => 'sound'],
                             'return'     => true,
                         ],
                     ],
@@ -2436,7 +2436,7 @@ if ($drawConsoleSound === true) {
                     'label'      => __('Start'),
                     'type'       => 'button',
                     'name'       => 'start-search',
-                    'attributes' => 'class="sub play"',
+                    'attributes' => [ 'icon' => 'wand' ],
                     'return'     => true,
                 ],
                 'div',
@@ -2449,7 +2449,7 @@ if ($drawConsoleSound === true) {
                     'type'       => 'button',
                     'name'       => 'no-alerts',
                     'label'      => __('No alerts'),
-                    'attributes' => 'class="sub alerts"',
+                    'attributes' => [ 'icon' => 'fail' ],
                     'return'     => true,
                 ],
                 'div',

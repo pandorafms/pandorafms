@@ -554,11 +554,11 @@ if (is_ajax() === true) {
                                 $tmp->user_comment .= $tmp->b64;
                                 $tmp->user_comment .= '\',\'comments\')>;';
                                 $tmp->user_comment .= html_print_image(
-                                    'images/operation.png',
+                                    'images/details.svg',
                                     true,
                                     [
                                         'title' => __('Show more'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->user_comment .= '</a>';
@@ -743,11 +743,11 @@ if (is_ajax() === true) {
                         switch ($tmp->estado) {
                             case EVENT_STATUS_NEW:
                                 $img = html_print_image(
-                                    'images/star.png',
+                                    'images/star@svg.svg',
                                     true,
                                     [
                                         'title' => __('New event'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
@@ -756,11 +756,11 @@ if (is_ajax() === true) {
                             case EVENT_STATUS_VALIDATED:
                                 $state = 1;
                                 $img = html_print_image(
-                                    'images/tick.png',
+                                    'images/validate.svg',
                                     true,
                                     [
                                         'title' => __('Event validated'),
-                                        'class' => 'forced-title invert_filter',
+                                        'class' => 'forced-title invert_filter main_menu_icon',
                                     ]
                                 );
                             break;
@@ -768,7 +768,7 @@ if (is_ajax() === true) {
                             case EVENT_STATUS_INPROCESS:
                                 $state = 2;
                                 $img = html_print_image(
-                                    'images/hourglass.png',
+                                    'images/clock.svg',
                                     true,
                                     [
                                         'title' => __('Event in process'),
@@ -779,7 +779,7 @@ if (is_ajax() === true) {
 
                             default:
                                 $img = html_print_image(
-                                    'images/star.png',
+                                    'images/star@svg.svg',
                                     true,
                                     [
                                         'title' => __('Unknown'),
@@ -819,7 +819,7 @@ if (is_ajax() === true) {
                         // Show more.
                         $tmp->options = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         $tmp->options .= html_print_image(
-                            'images/operation.png',
+                            'images/details.svg',
                             true,
                             [
                                 'title' => __('Show more'),
@@ -848,11 +848,11 @@ if (is_ajax() === true) {
                                     $tmp->options .= $tmp->event_rep.', this, '.$tmp->server_id.')"';
                                     $tmp->options .= ' id="val-'.$id_val.'">';
                                     $tmp->options .= html_print_image(
-                                        'images/tick.png',
+                                        'images/validate.svg',
                                         true,
                                         [
                                             'title' => __('Validate events'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                     $tmp->options .= '</a>';
@@ -865,11 +865,11 @@ if (is_ajax() === true) {
                                     $tmp->options .= $tmp->id_evento.', 0, this, ';
                                     $tmp->options .= $tmp->server_id.')" id="val-'.$id_val.'">';
                                     $tmp->options .= html_print_image(
-                                        'images/tick.png',
+                                        'images/validate.svg',
                                         true,
                                         [
                                             'title' => __('Validate event'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                     $tmp->options .= '</a>';
@@ -900,11 +900,11 @@ if (is_ajax() === true) {
                                 }
 
                                 $tmp->options .= html_print_image(
-                                    'images/hourglass.png',
+                                    'images/clock.svg',
                                     true,
                                     [
                                         'title' => __('Change to in progress status'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -925,11 +925,11 @@ if (is_ajax() === true) {
                                 $tmp->options .= $tmp->max_id_evento.', '.$tmp->event_rep;
                                 $tmp->options .= ', this, '.$tmp->server_id.')" id="del-'.$id_del.'">';
                                 $tmp->options .= html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'title' => __('Delete events'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -942,11 +942,11 @@ if (is_ajax() === true) {
                                 $tmp->options .= $tmp->id_evento.', 0, this, ';
                                 $tmp->options .= $tmp->server_id.')" id="del-'.$id_del.'">';
                                 $tmp->options .= html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'title' => __('Delete event'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -1366,7 +1366,7 @@ if ($pure) {
     echo '<li class="nomn">';
     echo '<a target="_top" href="'.$url.'&amp;pure=0">';
     echo html_print_image(
-        'images/normal_screen.png',
+        'images/exit_fullscreen@svg.svg',
         true,
         [
             'title' => __('Back to normal mode'),
@@ -1421,22 +1421,22 @@ if ($pure) {
     // Fullscreen.
     $fullscreen['active'] = false;
     $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1&">'.html_print_image(
-        'images/full_screen.png',
+        'images/fullscreen@svg.svg',
         true,
         [
             'title' => __('Full screen'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
     // Event list.
     $list['active'] = false;
     $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&">'.html_print_image(
-        'images/events_list.png',
+        'images/event.svg',
         true,
         [
             'title' => __('Event list'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
@@ -1447,29 +1447,29 @@ if ($pure) {
         true,
         [
             'title' => __('History event list'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
     // RSS.
     $rss['active'] = false;
     $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image(
-        'images/rss.png',
+        'images/rrs@svg.svg',
         true,
         [
             'title' => __('RSS Events'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
     // CSV.
     $csv['active'] = false;
     $csv['text'] = '<a class="events_link" onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
-        'images/csv.png',
+        'images/file-csv.svg',
         true,
         [
             'title' => __('Export to CSV file'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
@@ -1493,11 +1493,11 @@ if ($pure) {
     );
 
     $sound_event['text'] = '<a href="javascript: openSoundEventModal(`'.$data_sound.'`);">'.html_print_image(
-        'images/sound.png',
+        'images/sound_console@svg.svg',
         true,
         [
             'title' => __('Sound events'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
@@ -1506,11 +1506,11 @@ if ($pure) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
-            'images/setup.png',
+            'images/configuration@svg.svg',
             true,
             [
                 'title' => __('Manage events'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>';
 
@@ -1564,7 +1564,7 @@ if ($pure) {
         unset($onheader['history']);
         ui_print_standard_header(
             __('Events list'),
-            'images/lightning_go.png',
+            'images/event.svg',
             false,
             'eventview',
             false,
@@ -2205,7 +2205,7 @@ $adv_filter = join('', $adv_inputs);
 $filter = join('', $inputs);
 $filter .= ui_toggle(
     $adv_filter,
-    __('Advanced options'),
+    '<span class="subsection_header_title">'.__('Advanced options').'</span>',
     '',
     '',
     true,
@@ -2386,61 +2386,69 @@ try {
     $form_id = 'events_form';
 
     // Print datatable.
-    ui_print_datatable(
+    html_print_div(
         [
-            'id'                             => $table_id,
-            'class'                          => 'info_table events',
-            'style'                          => 'width: 100%;',
-            'ajax_url'                       => 'operation/events/events',
-            'ajax_data'                      => [
-                'get_events' => 1,
-                'history'    => (int) $history,
-                'table_id'   => $table_id,
-            ],
-            'form'                           => [
-                'id'            => $form_id,
-                'class'         => 'flex-row',
-                'html'          => $filter,
-                'inputs'        => [],
-                'extra_buttons' => $buttons,
-            ],
-            'extra_html'                     => $active_filters_div,
-            'pagination_options'             => [
+            'class'   => 'events_table_wrapper',
+            'style'   => 'margin: 10px 10px 0;',
+            'content' => ui_print_datatable(
                 [
-                    $config['block_size'],
-                    10,
-                    25,
-                    100,
-                    200,
-                    500,
-                    1000,
-                    -1,
+                    'id'                             => $table_id,
+                    'class'                          => 'info_table events',
+                    'style'                          => 'width: 100%;',
+                    'ajax_url'                       => 'operation/events/events',
+                    'ajax_data'                      => [
+                        'get_events' => 1,
+                        'history'    => (int) $history,
+                        'table_id'   => $table_id,
+                    ],
+                    'form'                           => [
+                        'id'            => $form_id,
+                        'class'         => 'flex-row',
+                        'html'          => $filter,
+                        'inputs'        => [],
+                        'extra_buttons' => $buttons,
+                    ],
+                    'extra_html'                     => $active_filters_div,
+                    'pagination_options'             => [
+                        [
+                            $config['block_size'],
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                            1000,
+                            -1,
+                        ],
+                        [
+                            $config['block_size'],
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                            1000,
+                            'All',
+                        ],
+                    ],
+                    'order'                          => [
+                        'field'     => 'timestamp',
+                        'direction' => 'desc',
+                    ],
+                    'column_names'                   => $column_names,
+                    'columns'                        => $fields,
+                    'no_sortable_columns'            => [
+                        -1,
+                        -2,
+                        'column-instructions',
+                    ],
+                    'ajax_return_operation'          => 'buffers',
+                    'ajax_return_operation_function' => 'process_buffers',
+                    'drawCallback'                   => 'process_datatables_callback(this, settings)',
+                    'print'                          => false,
+                    'csv'                            => 0,
                 ],
-                [
-                    $config['block_size'],
-                    10,
-                    25,
-                    100,
-                    200,
-                    500,
-                    1000,
-                    'All',
-                ],
-            ],
-            'order'                          => [
-                'field'     => 'timestamp',
-                'direction' => 'desc',
-            ],
-            'column_names'                   => $column_names,
-            'columns'                        => $fields,
-            'no_sortable_columns'            => [
-                -1,
-                -2,
-                'column-instructions',
-            ],
-            'ajax_return_operation'          => 'buffers',
-            'ajax_return_operation_function' => 'process_buffers',
-            'drawCallback'                   => 'process_datatables_callback(this, settings)',
+            ),
         ]
     );
 } catch (Exception $e) {

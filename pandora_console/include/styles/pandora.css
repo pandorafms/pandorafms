@@ -10284,6 +10284,11 @@ button div.upd {
   -webkit-mask: url(../../images/validate.svg) no-repeat center / contain;
 }
 
+button div.sound {
+  mask: url(../../images/sound_console@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/sound_console@svg.svg) no-repeat center /
+    contain;
+}
 button div.add {
   mask: url(../../images/svg/plus.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/plus.svg) no-repeat center / contain;
@@ -10311,8 +10316,8 @@ button div.cog {
 }
 
 button div.fail {
-  mask: url(../../images/svg/fail.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/fail.svg) no-repeat center / contain;
+  mask: url(../../images/fail@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
 .ui-dialog-buttonset {
@@ -10852,16 +10857,26 @@ pre.external_tools_output {
 .fixed_filter_bar input,
 .filter_table input,
 .fixed_filter_bar .select2-container .select2-selection--single,
-.filter_table .select2-container .select2-selection--single {
+.filter_table .select2-container .select2-selection--single,
+.table_modal_alternate input,
+table.table_modal_alternate
+  span.select2
+  > span.selection
+  > span.select2-selection {
   height: 32px !important;
 }
 
 .fixed_filter_bar .select2-selection__arrow,
-.filter_table .select2-selection__arrow {
+.filter_table .select2-selection__arrow,
+table.table_modal_alternate .select2-selection__arrow {
   top: -4px !important;
 }
 
 .filter_table
+  .select2-container
+  .select2-selection--single
+  .select2-selection__rendered,
+table.table_modal_alternate
   .select2-container
   .select2-selection--single
   .select2-selection__rendered,
@@ -10954,6 +10969,7 @@ pre.external_tools_output {
 
 .main_menu_icon {
   width: 20px;
+  height: 20px;
 }
 
 .after_input_icon {
@@ -11115,4 +11131,9 @@ form#satellite_conf_edit > fieldset.full-column {
   font-size: 8pt;
   color: #8a96a6;
   font-family: "Pandora-Regular";
+}
+
+#principal_action_buttons input,
+#principal_action_buttons .select2-container {
+  z-index: 50;
 }

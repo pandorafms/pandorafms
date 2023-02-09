@@ -1,16 +1,32 @@
 <?php
+/**
+ * Event responses list view.
+ *
+ * @category   Events
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_event_responses.php';
@@ -35,8 +51,8 @@ if (empty($event_responses)) {
 }
 
 $table = new stdClass();
-$table->width = '100%';
 $table->class = 'info_table';
+$table->styleTable = 'margin: 10px 10px 0';
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 
@@ -64,35 +80,50 @@ foreach ($event_responses as $response) {
     $data[1] = $response['description'];
     $data[2] = ui_print_group_icon($response['id_group'], true);
     $table->cellclass[][3] = 'table_action_buttons';
-    $data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image(
-        'images/cross.png',
-        true,
+    $data[3] = html_print_anchor(
         [
-            'title' => __('Delete'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-    $data[3] .= '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image(
-        'images/pencil.png',
-        true,
+            'href'    => 'index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'],
+            'content' => html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'title' => __('Delete'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
+
+    $data[3] .= html_print_anchor(
         [
-            'title' => __('Edit'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+            'href'    => 'index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'],
+            'content' => html_print_image(
+                'images/edit.svg',
+                true,
+                [
+                    'title' => __('Edit'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
     $table->data[] = $data;
 }
 
 html_print_table($table);
 
 
-echo '<div class="w100p right_align">';
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
-html_print_submit_button(
-    __('Create response'),
-    'create_response_button',
-    false,
-    ['class' => 'sub next']
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Create response'),
+        'create_response_button',
+        false,
+        ['icon' => 'wand'],
+        true
+    ),
+    ['type' => 'form_action']
 );
 echo '</form>';
-echo '</div>';

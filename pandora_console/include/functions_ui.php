@@ -3209,7 +3209,10 @@ function ui_progress(
                         success: function(data) {
                             try {
                                 val = JSON.parse(data);
-                                $("#'.$id.'").attr("data-label", val["last_contact"]+" s");
+                                if (isNaN(val["last_contact"]) == false) {
+                                    $("#'.$id.'").attr("data-label", val["last_contact"]+" s");
+                                }
+
                                 $("#'.$id.'_progress").width(val["progress"]+"%");
                             } catch (e) {
                                 console.error(e);
@@ -3221,7 +3224,10 @@ function ui_progress(
                         }
                     });
                 } else {
-                    $("#'.$id.'").attr("data-label", (last -1) + " s");
+                    if (isNaN(last) === false) {
+                        $("#'.$id.'").attr("data-label", (last -1) + " s");
+                    }
+
                     if (width < 100) {
                         $("#'.$id.'_progress").width((width+width_interval) + "%");
                     }
@@ -3600,7 +3606,7 @@ function ui_print_datatable(array $parameters)
         if (isset($parameters['form']['no_toggle']) === false) {
             $filter = ui_toggle(
                 $filter,
-                __('Filter'),
+                '<span class="subsection_header_title">'.__('Filter').'</span>',
                 '',
                 '',
                 true,
@@ -3612,7 +3618,7 @@ function ui_print_datatable(array $parameters)
     } else if (isset($parameters['form_html'])) {
         $filter = ui_toggle(
             $parameters['form_html'],
-            __('Filter'),
+            '<span class="subsection_header_title">'.__('Filter').'</span>',
             '',
             '',
             true,

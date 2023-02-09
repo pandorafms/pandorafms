@@ -2660,84 +2660,85 @@ function events_print_type_img(
     $output = '';
 
     $urlImage = ui_get_full_url(false);
-
-    $style = '';
+    $icon = '';
+    $style = 'invert_filter main_menu_icon';
 
     switch ($type) {
         case 'alert_recovered':
-            $icon = 'images/bell.png';
-            $style = 'invert_filter';
+            $icon = 'images/alert@svg.svg';
         break;
 
         case 'alert_manual_validation':
-            $icon = 'images/ok.png';
-            $style = 'invert_filter';
+            $icon = 'images/validate.svg';
         break;
 
         case 'going_down_critical':
         case 'going_up_critical':
             // This is to be backwards compatible.
-            $icon = 'images/module_critical.png';
+            $style .= ' event_module_background_state icon_background_critical';
         break;
 
         case 'going_up_normal':
         case 'going_down_normal':
             // This is to be backwards compatible.
-            $icon = 'images/module_ok.png';
+            $style .= ' event_module_background_state icon_background_normal';
         break;
 
         case 'going_up_warning':
         case 'going_down_warning':
-            $icon = 'images/module_warning.png';
+            $style .= ' event_module_background_state icon_background_warning';
         break;
 
         case 'going_unknown':
-            $icon = 'images/module_unknown.png';
+            $style .= ' event_module_background_state icon_background_unknown';
         break;
 
         case 'alert_fired':
             $icon = 'images/bell_error.png';
-            $style = 'invert_filter';
         break;
 
         case 'system':
-            $icon = 'images/cog.png';
-            $style = 'invert_filter';
+            $icon = 'images/configuration@svg.svg';
         break;
 
         case 'recon_host_detected':
             $icon = 'images/recon.png';
-            $style = 'invert_filter';
         break;
 
         case 'new_agent':
-            $icon = 'images/agent.png';
-            $style = 'invert_filter';
+            $icon = 'images/agents@svg.svg';
         break;
 
         case 'configuration_change':
-            $icon = 'images/config.png';
-            $style = 'invert_filter';
+            $icon = 'images/configuration@svg.svg';
         break;
 
         case 'unknown':
         default:
-            $icon = 'images/lightning_go.png';
-            $style = 'invert_filter';
+            $icon = 'images/event.svg';
         break;
     }
 
     if ($only_url) {
         $output = $urlImage.'/'.$icon;
     } else {
-        $output .= html_print_image(
+        $output .= html_print_div(
+            [
+                'title' => events_print_type_description($type, true),
+                'class' => $style,
+                'style' => 'margin-left: 30px;'.((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
+            ],
+            true
+        );
+        /*
+            $output .= html_print_image(
             $icon,
             true,
             [
                 'title' => events_print_type_description($type, true),
                 'class' => $style,
             ]
-        );
+        );*/
     }
 
     if ($return) {
@@ -4185,7 +4186,7 @@ function events_page_details($event, $server_id=0)
         $agent = [];
     }
 
-    $data[0] = __('Agent details');
+    $data[0] = '<span class="subsection_header_title">'.__('Agent details').'</span>';
     $data[1] = empty($agent) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
@@ -4254,10 +4255,7 @@ function events_page_details($event, $server_id=0)
             'custom_button',
             false,
             '$(\'#link_custom_fields\').trigger(\'click\');',
-            [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
-            ],
+            [ 'mode' => 'link' ],
             true
         );
         $table_details->data[] = $data;
@@ -4276,8 +4274,8 @@ function events_page_details($event, $server_id=0)
     }
 
     $data = [];
-    $data[0] = __('Module details');
-    $data[1] = empty($module) ? '<i>'.__('N/A').'</i>' : '';
+    $data[0] = '<span class="subsection_header_title">'.__('Module details').'<span>';
+    $data[1] = (empty($module) === true) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
     if (empty($module) === false) {
@@ -4353,10 +4351,7 @@ function events_page_details($event, $server_id=0)
             $graph_params_str = http_build_query($graph_params);
 
             $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
-
-            $data[1] = '<a href="javascript:'.$link.'">';
-            $data[1] .= html_print_image('images/chart_curve.png', true, ['class' => 'invert_filter']);
-            $data[1] .= '</a>';
+            $data[1] = html_print_button(__('View graph'), 'view_graph_button', false, $link, ['mode' => 'link'], true);
             $table_details->data[] = $data;
         }
     }
@@ -4373,7 +4368,7 @@ function events_page_details($event, $server_id=0)
         $standby = db_get_value('standby', 'talert_template_modules', 'id', $event['id_alert_am']);
         if (!$standby) {
             $data[1] .= html_print_image(
-                'images/bell.png',
+                'images/alert@svg.svg',
                 true,
                 [
                     'title' => __('Go to data overview'),
@@ -4382,11 +4377,12 @@ function events_page_details($event, $server_id=0)
             );
         } else {
             $data[1] .= html_print_image(
-                'images/bell_pause.png',
+                'images/alert@svg.svg',
                 true,
                 [
                     'title' => __('Go to data overview'),
                     'class' => 'invert_filter',
+                    'style' => 'opacity: .5',
                 ]
             );
         }
@@ -4554,19 +4550,19 @@ function events_display_status($status)
     switch ($status) {
         case 0:
         return [
-            'img'   => 'images/star.png',
+            'img'   => 'images/star@svg.svg',
             'title' => __('New event'),
         ];
 
         case 1:
         return [
-            'img'   => 'images/tick.png',
+            'img'   => 'images/validate.svg',
             'title' => __('Event validated'),
         ];
 
         case 2:
         return [
-            'img'   => 'images/hourglass.png',
+            'img'   => 'images/clock.svg',
             'title' => __('Event in process'),
         ];
 
@@ -4812,7 +4808,7 @@ function events_page_general($event)
     $table_general->cellclass[count($table_general->data)][1] = 'general_status';
     $data[0] = __('Status');
     $data[1] = $event_st['title'];
-    $data[2] = html_print_image($event_st['img'], true);
+    $data[2] = html_print_image($event_st['img'], true, [ 'class' => 'invert_filter main_menu_icon']);
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.

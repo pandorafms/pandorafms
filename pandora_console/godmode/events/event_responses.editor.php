@@ -1,16 +1,32 @@
 <?php
+/**
+ * Event responses editor view.
+ *
+ * @category   Events
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Load global vars.
 global $config;
 
 check_login();
@@ -66,7 +82,7 @@ if ($event_response_id > 0) {
 }
 
 $table = new stdClass();
-$table->width = '100%';
+$table->styleTable = 'margin: 10px 10px 0';
 $table->class = 'databox filters';
 
 if (is_metaconsole()) {
@@ -211,23 +227,29 @@ $data[1] = html_print_checkbox_switch(
 
 $table->data[6] = $data;
 
-if ($event_response_id == 0) {
-    echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
-    html_print_table($table);
-        echo '<div class="w100p right_align">';
-
-    html_print_submit_button(__('Create'), 'create_response_button', false, ['class' => 'sub next']);
-    echo '</div>';
-    echo '</form>';
+if ((int) $event_response_id === 0) {
+    $actionUrl = 'index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'];
+    $buttonCaption = __('Create');
+    $buttonName = 'create_response_button';
 } else {
-    echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'].'">';
-    html_print_table($table);
-        echo '<div class="w100p right_align">';
-
-    html_print_submit_button(__('Update'), 'update_response_button', false, ['class' => 'sub next']);
-    echo '</div>';
-    echo '</form>';
+    $actionUrl = 'index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'];
+    $buttonCaption = __('Update');
+    $buttonName = 'update_response_button';
 }
+
+echo '<form method="POST" action="'.$actionUrl.'">';
+html_print_table($table);
+html_print_action_buttons(
+    html_print_submit_button(
+        $buttonCaption,
+        $buttonName,
+        false,
+        ['icon' => 'wand'],
+        true
+    ),
+    [ 'type' => 'form_action']
+);
+echo '</form>';
 ?>
 
 <script language="javascript" type="text/javascript">

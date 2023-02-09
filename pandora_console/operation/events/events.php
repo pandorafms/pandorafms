@@ -350,7 +350,7 @@ if (is_ajax() === true) {
                 'te.warning_instructions',
                 'te.unknown_instructions',
                 'te.owner_user',
-                'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
+                'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
                 'te.data',
                 'te.module_status',
@@ -380,7 +380,7 @@ if (is_ajax() === true) {
                             $order['field'] = 'agent_name';
                         break;
 
-                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                        case 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp':
                             $order['field'] = 'ack_utimestamp';
                         break;
 
@@ -528,7 +528,7 @@ if (is_ajax() === true) {
                             true
                         );
                         $tmp->timestamp = ui_print_timestamp(
-                            $tmp->timestamp,
+                            $tmp->utimestamp,
                             true
                         );
 

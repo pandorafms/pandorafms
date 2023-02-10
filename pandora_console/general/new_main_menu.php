@@ -40,7 +40,7 @@ $tab_active = '';
 
 
 // Start of full lateral menu.
-echo sprintf('<div id="menu_full" class="menu_full_%s">', 'classic');
+echo sprintf('<div id="menu_full" class="menu_full_%s">', $menuTypeClass);
 
 $url_logo = ui_get_full_url('index.php');
 if (is_reporting_console_node() === true) {
@@ -60,19 +60,34 @@ html_print_div(
                 ),
             ],
             true
-        ).html_print_image(
-            '/images/menu/contraer.svg',
-            true
-        ),
+        ).'<div id="button_collapse" class="button_'.$menuTypeClass.'" style="cursor: pointer"></div>',
     ]
 );
 
+$display_classic = '';
+$display_collapsed = 'display: none;';
+if ($menuTypeClass === 'collapsed') {
+    $display_classic = 'display: none;';
+    $display_collapsed = '';
+}
+
+
 // Tabs.
-echo '<div id="menu_tabs" class="tabs">';
-echo '<ul class="tabs_ul">';
+echo '<div id="menu_tabs">';
+// Tabs classic.
+echo '<ul class="tabs_ul" style="'.$display_classic.'">';
 echo '<li id="tab_display" class="tabs_li"><span>'.__('Display').'</span></a></li>';
 echo '<li id="tab_management" class="tabs_li"><span>'.__('Management').'</span></a></li>';
-echo '</ul><div class="div_border_line"><div id="tab_line_1" class="border_line"></div><div id="tab_line_2" class="border_line"></div></div></div>';
+echo '</ul>';
+echo '<div class="div_border_line" style="'.$display_classic.'"><div id="tab_line_1" class="border_line"></div><div id="tab_line_2" class="border_line"></div></div>';
+// Tabs collapse.
+echo '<div class="tabs_collapsed" style="'.$display_collapsed.'">';
+echo '<div class="tabs_collapsed_container">';
+echo '<div id="tab_collapsed_display" class="tabs_collapsed_display"></div>';
+echo '<div id="tab_collapsed_management" class="tabs_collapsed_management"></div>';
+echo '</div></div>';
+
+echo '</div>';
 
 echo '<div id="div_display">';
 require 'operation/menu.php';
@@ -80,37 +95,135 @@ echo '</div>';
 echo '<div id="div_management">';
 require 'godmode/menu.php';
 echo '</div>';
-
 echo '</div>';
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
         const tab = '<?php echo $tab_active; ?>';
+
         if (tab === 'management') {
             $('#tab_line_2').addClass('tabs_selected');
             $('#div_display').css('display', 'none');
             $('#div_management').css('display', 'block');
+            $('#tab_collapsed_display').removeClass('tabs_collapsed_display');
+            $('#tab_collapsed_display').addClass('tabs_collapsed_oval');
         } else {
             $('#tab_line_1').addClass('tabs_selected');
+            $('#tab_collapsed_management').removeClass('tabs_collapsed_management');
+            $('#tab_collapsed_management').addClass('tabs_collapsed_oval');
         }
 
-        $('#tab_display').click(function() {
+        $('#tab_display,#tab_collapsed_display').click(function() {
             $('#tab_line_1').addClass('tabs_selected');
             $('#tab_line_2').removeClass('tabs_selected');
             $('#div_management').css('display', 'none');
             $('#div_display').css('display', 'block');
+            $('#tab_collapsed_management').removeClass('tabs_collapsed_management');
+            $('#tab_collapsed_management').addClass('tabs_collapsed_oval');
+            $('#tab_collapsed_display').removeClass('tabs_collapsed_oval');
+            $('#tab_collapsed_display').addClass('tabs_collapsed_display');
         });
 
-        $('#tab_management').click(function() {
+        $('#tab_management,#tab_collapsed_management').click(function() {
             $('#tab_line_2').addClass('tabs_selected');
             $('#tab_line_1').removeClass('tabs_selected');
             $('#div_display').css('display', 'none');
             $('#div_management').css('display', 'block');
-        })
+            $('#tab_collapsed_display').removeClass('tabs_collapsed_display');
+            $('#tab_collapsed_display').addClass('tabs_collapsed_oval');
+            $('#tab_collapsed_management').removeClass('tabs_collapsed_oval');
+            $('#tab_collapsed_management').addClass('tabs_collapsed_management');
+        });
+
+        $('#button_collapse').click(function() {
+            if ($('#menu_full').hasClass('menu_full_classic')) {
+                localStorage.setItem("menuType", "collapsed");
+                $('ul.submenu').css('left', '80px');
+                var menuType_val = localStorage.getItem("menuType");
+                $.ajax({
+                    type: "POST",
+                    url: "ajax.php",
+                    data: {
+                        menuType: menuType_val,
+                        page: "include/functions_menu"
+                    },
+                    dataType: "json"
+                });
+                $('.tabs_ul').hide();
+                $('.div_border_line').hide();
+                $('.tabs_collapsed').show();
+
+                $(".title_menu_classic").children('div[class*=icon_]').each(function() {
+                    $(this).removeClass('w15p').addClass('w100p');
+                });
+
+                $(".title_menu_classic").children('div[class*=arrow_]').each(function() {
+                    $(this).hide();
+                });
+
+                $(".title_menu_classic").children('span').each(function() {
+                    $(this).hide();
+                });
+
+                $('ul.submenu').css('position', 'fixed');
+                $('ul.submenu').css('left', '60px');
+
+                $('li.selected').each(function() {
+                    $(`#sub${this.id}`).hide();
+                })
+            } else if ($('#menu_full').hasClass('menu_full_collapsed')) {
+                localStorage.setItem("menuType", "classic");
+                $('ul.submenu').css('left', '280px');
+                var menuType_val = localStorage.getItem("menuType");
+                $.ajax({
+                    type: "POST",
+                    url: "ajax.php",
+                    data: {
+                        menuType: menuType_val,
+                        page: "include/functions_menu"
+                    },
+                    dataType: "json"
+                });
+                $('.tabs_ul').show();
+                $('.div_border_line').show();
+                $('.tabs_collapsed').hide();
+
+                $(".title_menu_classic").children('div[class*=icon_]').each(function() {
+                    $(this).removeClass('w100p').addClass('w15p');
+                });
+
+                $(".title_menu_classic").children('div[class*=arrow_]').each(function() {
+                    $(this).show();
+                });
+
+                $(".title_menu_classic").children('span').each(function() {
+                    $(this).show();
+                });
+
+                $('ul.submenu').css('position', '');
+                $('ul.submenu').css('left', '80px');
+
+                $('li.selected').each(function() {
+                    $(`#sub${this.id}`).show();
+                })
+            }
+
+            $('.logo_full').toggle();
+            $('.logo_icon').toggle();
+            $('#menu_full').toggleClass('menu_full_classic menu_full_collapsed');
+            $('#button_collapse').toggleClass('button_classic button_collapsed');
+            $('div#page').toggleClass('page_classic page_collapsed');
+            $('#header_table').toggleClass('header_table_classic header_table_collapsed');
+            $('li.menu_icon').toggleClass("no_hidden_menu menu_icon_collapsed");
+        });
 
         const id_selected = '<?php echo $menu1_selected; ?>';
         if (id_selected != '') {
-            $(`ul#subicon_${id_selected}`).show();
+            var menuType_val = localStorage.getItem("menuType");
+            if (menuType_val === 'classic') {
+                $(`ul#subicon_${id_selected}`).show();
+            }
+
             // Arrow.
             $(`#icon_${id_selected}`).children().first().children().last().removeClass('arrow_menu_down');
             $(`#icon_${id_selected}`).children().first().children().last().addClass('arrow_menu_up');
@@ -138,11 +251,14 @@ echo '</div>';
         }
 
         var click_display = "<?php echo $config['click_display']; ?>";
+        console.log(click_display);
 
         $('.title_menu_classic').click(function() {
             const table_hover = $(this).parent();
             const id = table_hover[0].id;
             const classes = $(`#${id}`).attr('class');
+
+            var menuType_val = localStorage.getItem("menuType");
 
             if (classes.includes('selected') === true) {
                 $(`#${id}`).removeClass('selected');
@@ -153,13 +269,23 @@ echo '</div>';
                 // Span.
                 table_hover.children().first().children().eq(1).removeClass('span_selected');
             } else {
-                $(`#${id}`).addClass('selected');
-                $(`ul#sub${id}`).show();
-                // Arrow.
-                $(this).children().last().removeClass('arrow_menu_down');
-                $(this).children().last().addClass('arrow_menu_up');
-                // Span.
-                $(this).children().eq(1).addClass('span_selected');
+                if (menuType_val === 'collapsed') {
+                    // hide all submenus.
+                    $('ul[id^=sub]').hide();
+                    $(`ul#sub${id}`).show();
+                    // Unselect all.
+                    $(`li[id^=icon_]`).removeClass('selected');
+                    $(`#${id}`).addClass('selected');
+                    get_menu_items(table_hover);
+                } else {
+                    $(`ul#sub${id}`).show();
+                    $(`#${id}`).addClass('selected');
+                    // Arrow.
+                    $(this).children().last().removeClass('arrow_menu_down');
+                    $(this).children().last().addClass('arrow_menu_up');
+                    // Span.
+                    $(this).children().eq(1).addClass('span_selected');
+                }
             }
         });
 
@@ -192,5 +318,38 @@ echo '</div>';
         $('.sub_subMenu').click(function (event) {
             event.stopPropagation();
         });
+
+        /**
+         * Get the menu items to be positioned.
+         *
+         * @param string item It is the selector of the current element.
+         *
+         * @return Add the top position in a inline style.
+         */
+        function get_menu_items(item) {
+            var item_height = parseInt(item.css('min-height'));
+            var id_submenu = item.attr('id');
+            var index = item.index();
+
+            var top_submenu = menu_calculate_top(index, item_height);
+            top_submenu = top_submenu+'px';
+            $('#'+id_submenu+' ul.submenu').css('position', 'fixed');
+            $('#'+id_submenu+' ul.submenu').css('top', top_submenu);
+            $('#'+id_submenu+' ul.submenu').css('left', '60px');
+        }
+
+
+        /**
+         * Positionate the submenu elements. Add a negative top.
+         *
+         * @param int index It is the position of li.menu_icon in the ul.
+         * @param int item_height It is the height of a menu item (35).
+         *
+         * @return (int) The position (in px).
+         */
+        function menu_calculate_top(index, item_height) {
+            const result = index * item_height;
+            return 135 + result;
+        }
     });
 </script>

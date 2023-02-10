@@ -431,9 +431,13 @@ function menu_print_menu(&$menu)
 
         // Print out the first level.
         $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.' flex_li" id="icon_'.$id.'">';
+        if ($menuTypeClass === 'collapsed') {
+            $div = '<div class="icon_'.$id.' w100p"></div><span class="w55p" style="display: none">'.$main['text'].'</span><div class="arrow_menu_down w30p" style="display: none"></div>';
+        } else {
+            $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
+        }
 
-        $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
-        $output .= sprintf('<div id="title_menu" class="title_menu_%s">%s</div>', $menuTypeClass, $div);
+        $output .= sprintf('<div id="title_menu" class="title_menu_classic">%s</div>', $div);
 
         // Add the notification ball if defined.
         if (isset($main['notification']) === true) {

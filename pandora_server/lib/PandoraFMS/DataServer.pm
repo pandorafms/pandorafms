@@ -304,21 +304,22 @@ sub data_consumer ($$) {
 			agent_unlock($pa_config, $agent_name);
 			return;
 		}
-
 		unlink ($file_name);
-		if (defined($xml_data->{'server_name'})) {
-			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
-		} elsif (defined($xml_data->{'connection_source'})) {
-			enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
-		} elsif (defined($xml_data->{'ipam_source'})) {
-			enterprise_hook('process_xml_ipam', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
-		} elsif (defined($xml_data->{'network_matrix'})){
-			process_xml_matrix_network(
-				$self->getConfig(), $xml_data, $self->getDBH()
-			);
-		} else {
-			process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
-		}
+
+		eval {
+			if (defined($xml_data->{'server_name'})) {
+				process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
+			} elsif (defined($xml_data->{'connection_source'})) {
+				enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
+			} elsif (defined($xml_data->{'ipam_source'})) {
+				enterprise_hook('process_xml_ipam', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
+			} elsif (defined($xml_data->{'network_matrix'})){
+				process_xml_matrix_network( $self->getConfig(), $xml_data, $self->getDBH());
+			} else {
+				process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
+			}
+		};
+
 		agent_unlock($pa_config, $agent_name);
 		return;	
 	}
@@ -681,8 +682,7 @@ sub process_xml_data ($$$$$) {
 
 
 	# Process inventory modules
-	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
-							 $interval, $timestamp, $dbh]);
+	process_inventory_data($pa_config, $data, $server_id, $agent_name, $interval, $timestamp, $dbh);
 
 	# Process log modules
 	enterprise_hook('process_log_data', [$pa_config, $data, $server_id, $agent_name,
@@ -1174,15 +1174,6 @@ sub process_xml_matrix_network {
 ##########################################################################
 sub agent_lock {
 	my ($pa_config, $dbh, $agent_name) = @_;
-
-	# Do not lock on LIFO mode if the agent already exist.
-	# get_agent_id will be called again from process_xml_data,
-	# so the should be no race conditions if the agent does
-	# not exist.
-	if ($pa_config->{'dataserver_lifo'} == 1 &&
-		get_agent_id ($dbh, $agent_name) > 0) {
-		return 1;
-	}
 
 	$AgentSem->down ();
 	if (defined ($Agents{$agent_name})) {

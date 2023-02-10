@@ -147,7 +147,9 @@ sub data_producer ($) {
 	
 	# Reset storm protection counters
 	my $curr_time = time ();
-	if ($pa_config->{"__storm_ref__"} + $pa_config->{"snmp_storm_timeout"} < $curr_time) {
+	if ($pa_config->{"__storm_ref__"} + $pa_config->{"snmp_storm_timeout"} < $curr_time
+		|| $pa_config->{'snmpconsole_lock'} == 1
+	) {
 		$pa_config->{"__storm_ref__"} = $curr_time;
 		%AGENTS = ();
 	}

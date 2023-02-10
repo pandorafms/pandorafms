@@ -496,9 +496,13 @@ function events_update_status($id_evento, $status, $filter=null)
             // No groups option direct update.
             $update_sql = sprintf(
                 'UPDATE tevento
-                 SET estado = %d
+                 SET estado = %d,
+                    ack_utimestamp = %d,
+                    id_usuario = "%s"
                  WHERE id_evento = %d',
                 $status,
+                time(),
+                $config['id_user'],
                 $id_evento
             );
         break;
@@ -640,11 +644,13 @@ function events_update_status($id_evento, $status, $filter=null)
  *     'status'
  *     'agent_alias'
  *     'search'
+ *     'not_search'
  *     'id_extra'
  *     'id_source_event'
  *     'user_comment'
  *     'source'
  *     'id_user_ack'
+ *     'owner_user'
  *     'tag_with'
  *     'tag_without'
  *     'filter_only_alert'
@@ -1058,16 +1064,40 @@ function events_get_all(
             $custom_data_search = 'te.custom_data';
         }
 
-        $sql_filters[] = vsprintf(
-            ' AND (lower(ta.alias) like lower("%%%s%%")
-                OR te.id_evento like "%%%s%%"
-                OR lower(te.evento) like lower("%%%s%%")
-                OR lower(te.user_comment) like lower("%%%s%%")
-                OR lower(te.id_extra) like lower("%%%s%%")
-                OR lower(te.source) like lower("%%%s%%")
-                OR lower('.$custom_data_search.') like lower("%%%s%%") )',
-            array_fill(0, 7, $filter['search'])
-        );
+        $not_search = '';
+        $nexo = 'OR';
+        $array_search = [
+            'te.id_evento',
+            'lower(te.evento)',
+            'lower(te.user_comment)',
+            'lower(te.id_extra)',
+            'lower(te.source)',
+            'lower('.$custom_data_search.')',
+        ];
+        if (isset($filter['not_search']) === true
+            && empty($filter['not_search']) === false
+        ) {
+            $not_search = 'NOT';
+            $nexo = 'AND';
+        } else {
+            $array_search[] = 'lower(ta.alias)';
+        }
+
+        $sql_search = ' AND (';
+        foreach ($array_search as $key => $field) {
+            $sql_search .= sprintf(
+                '%s %s %s like lower("%%%s%%")',
+                ($key === 0) ? '' : $nexo,
+                $field,
+                $not_search,
+                $filter['search']
+            );
+            $sql_search .= ' ';
+        }
+
+        $sql_search .= ' )';
+
+        $sql_filters[] = $sql_search;
     }
 
     // Free search exclude.
@@ -1123,27 +1153,27 @@ function events_get_all(
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) ',
-                    io_safe_output($filter['custom_data'])
+                    io_safe_output_html($filter['custom_data'])
                 );
             } else {
                 $sql_filters[] = sprintf(
                     ' AND JSON_VALID(custom_data) = 1
                     AND (JSON_SEARCH(JSON_KEYS(custom_data), "all", lower("%%%s%%") COLLATE utf8mb4_0900_ai_ci) IS NOT NULL) ',
-                    io_safe_output($filter['custom_data'])
+                    io_safe_output_html($filter['custom_data'])
                 );
             }
         } else {
             if ($filter['custom_data_filter_type'] === '1') {
                 $sql_filters[] = sprintf(
-                    ' AND JSON_VALID(custom_data) = 1 AND JSON_EXTRACT(custom_data, "$.*") LIKE lower("%%%s%%") ',
-                    $filter['custom_data'],
-                    $filter['custom_data']
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND cast(JSON_EXTRACT(custom_data, "$.*") as CHAR) LIKE lower("%%%s%%") ',
+                    io_safe_output($filter['custom_data'])
                 );
             } else {
                 $sql_filters[] = sprintf(
-                    ' AND JSON_VALID(custom_data) = 1 AND JSON_KEYS(custom_data) REGEXP "%s" ',
-                    $filter['custom_data'],
-                    $filter['custom_data']
+                    ' AND JSON_VALID(custom_data) = 1
+                    AND cast(JSON_KEYS(custom_data) as CHAR) REGEXP "%s" ',
+                    io_safe_output($filter['custom_data'])
                 );
             }
         }
@@ -1152,8 +1182,16 @@ function events_get_all(
     // Validated or in process by.
     if (empty($filter['id_user_ack']) === false) {
         $sql_filters[] = sprintf(
-            ' AND te.owner_user like lower("%%%s%%") ',
+            ' AND te.id_usuario like lower("%%%s%%") ',
             $filter['id_user_ack']
+        );
+    }
+
+    // Owner by.
+    if (empty($filter['owner_user']) === false) {
+        $sql_filters[] = sprintf(
+            ' AND te.owner_user like lower("%%%s%%") ',
+            $filter['owner_user']
         );
     }
 
@@ -1840,11 +1878,14 @@ function events_get_all(
             );
 
             if (isset($limit, $offset) === true
-                && $limit !== 0
+                && (int) $limit !== 0
                 && isset($filter['csv_all']) === false
             ) {
                 $count = count($data);
-                $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
+                // -1 For pagination 'All'.
+                ((int) $limit === -1)
+                    ? $end = count($data)
+                    : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
                     'buffers' => $buffers,
@@ -2596,27 +2637,6 @@ function events_print_event_table(
 
         $events_table = html_print_table($table, true);
         $out = $events_table;
-
-        if (!$tactical_view) {
-            $out .= '<table width="100%"><tr><td class="w90p align-top pdd_t_0px">';
-            if ($agent_id != 0) {
-                $out .= '</td><td class="w200px align-top">';
-                $out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-                $out .= '<fieldset class="databox tactical_set">
-						<legend>'.__('Events -by module-').'</legend>'.graph_event_module(180, 100, $event['id_agente']).'</fieldset>';
-                $out .= '</td></tr></table>';
-            } else {
-                $out .= '</td><td class="w200px align-top">';
-                $out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-                $out .= '<fieldset class="databox tactical_set">
-						<legend>'.__('Event graph').'</legend>'.grafico_eventos_total('', 180, 60).'</fieldset>';
-                $out .= '<fieldset class="databox tactical_set">
-						<legend>'.__('Event graph by agent').'</legend>'.grafico_eventos_grupo(180, 60).'</fieldset>';
-                $out .= '</td></tr></table>';
-            }
-
-            $out .= '</td></tr></table>';
-        }
 
         unset($table);
 
@@ -3713,6 +3733,15 @@ function events_get_response_target(
         );
     }
 
+    if (strpos($target, '_group_contact_') !== false) {
+        $info_groups = groups_get_group_by_id($event['id_grupo']);
+        $target = str_replace(
+            '_group_contact_',
+            (isset($info_groups['contact']) === true) ? $info_groups['contact'] : 'N/A',
+            $target
+        );
+    }
+
     if (strpos($target, '_event_utimestamp_') !== false) {
         $target = str_replace(
             '_event_utimestamp_',
@@ -4707,7 +4736,7 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Owner');
-    if (empty($event['owner_user']) === true) {
+    if ($event['owner_user'] == -1) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $user_owner = db_get_value(
@@ -4772,14 +4801,15 @@ function events_page_general($event)
 
     $data = [];
 
-    $table_general->rowid[7] = 'general_status';
+    $table_general->rowid[count($table_general->data)] = 'general_status';
+    $table_general->cellclass[count($table_general->data)][1] = 'general_status';
     $data[0] = __('Status');
     $data[1] = $event_st['title'];
     $data[2] = html_print_image($event_st['img'], true);
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.
-    $table_general->cellclass[8][1] = 'general_acknowleded';
+    $table_general->cellclass[count($table_general->data)][1] = 'general_acknowleded';
 
     $data = [];
     $data[0] = __('Acknowledged by');
@@ -4800,7 +4830,17 @@ function events_page_general($event)
             }
         }
 
-        $data[1] = $user_ack.'&nbsp;(&nbsp;'.date($config['date_format'], $event['ack_utimestamp_raw']).'&nbsp;)&nbsp;';
+        $data[1] = $user_ack.'&nbsp;(&nbsp;';
+        if ($event['ack_utimestamp_raw'] !== false
+            && $event['ack_utimestamp_raw'] !== 'false'
+        ) {
+            $data[1] .= date(
+                $config['date_format'],
+                $event['ack_utimestamp_raw']
+            );
+        }
+
+        $data[1] .= '&nbsp;)&nbsp;';
     } else {
         $data[1] = '<i>'.__('N/A').'</i>';
     }
@@ -4897,11 +4937,54 @@ function events_page_general($event)
 
 
 /**
+ * Return Acknowledged by value
+ *
+ * @param integer $event_id Event_id to return Acknowledged.
+ *
+ * @return string String with user and date.
+ */
+function events_page_general_acknowledged($event_id)
+{
+    global $config;
+    $Acknowledged = '';
+    $event = db_get_row('tevento', 'id_evento', $event_id);
+    if ($event !== false && $event['estado'] == 1) {
+        $user_ack = db_get_value(
+            'fullname',
+            'tusuario',
+            'id_user',
+            $config['id_user']
+        );
+
+        if (empty($user_ack) === true) {
+            $user_ack = $config['id_user'];
+        }
+
+        $Acknowledged = $user_ack.'&nbsp;(&nbsp;';
+        if ($event['ack_utimestamp'] !== false
+            && $event['ack_utimestamp'] !== 'false'
+        ) {
+            $Acknowledged .= date(
+                $config['date_format'],
+                $event['ack_utimestamp']
+            );
+        }
+
+        $Acknowledged .= '&nbsp;)&nbsp;';
+    } else {
+        $Acknowledged = 'N/A';
+    }
+
+    return $Acknowledged;
+}
+
+
+/**
  * Generate 'comments' page for event viewer.
  *
- * @param array   $event   Event.
- * @param boolean $ajax    If the query come from AJAX.
- * @param boolean $grouped If the event must shown comments grouped.
+ * @param array   $event           Event.
+ * @param boolean $ajax            If the query come from AJAX.
+ * @param boolean $groupedComments If the event must shown comments grouped.
  *
  * @return string HTML.
  */
@@ -5166,7 +5249,7 @@ function events_get_count_events_validated_by_user($data)
             ) {
                 foreach ($fullnames as $value) {
                     if (isset($data_graph_by_user[$value['id_user']]) === true) {
-                        $data_graph_by_user[$value['fullname']] = $data_graph_by_user[$value['id_user']];
+                        $data_graph_by_user[io_safe_output($value['fullname'])] = $data_graph_by_user[$value['id_user']];
                         unset($data_graph_by_user[$value['id_user']]);
                     }
                 }

@@ -685,7 +685,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             $percentile_type = [
                 'percentile'                     => __('Percentile'),
                 'bubble'                         => __('Bubble'),
-                'circular_progress_bar'          => __('Circular porgress bar'),
+                'circular_progress_bar'          => __('Circular progress bar'),
                 'interior_circular_progress_bar' => __('Circular progress bar (interior)'),
             ];
             $percentile_value = [

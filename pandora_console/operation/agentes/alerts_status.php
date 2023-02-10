@@ -53,7 +53,7 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$filter = get_parameter('disabled', 'all_enabled');
+$disabled = get_parameter('disabled', 'all_enabled');
 $filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)
@@ -113,7 +113,7 @@ $tab = get_parameter_get('tab', null);
 $refr = (int) get_parameter('refr', 0);
 $pure = get_parameter('pure', 0);
 
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$refr.'&filter='.$filter.'&filter_standby='.$filter_standby.'&ag_group='.$id_group.'&tag_filter='.$tag_filter.'&action_filter='.$action_filter;
+$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$refr.'&disabled='.$disabled.'&filter_standby='.$filter_standby.'&ag_group='.$id_group.'&tag_filter='.$tag_filter.'&action_filter='.$action_filter;
 
 if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, 'AW')) {
     forceExecution($id_group);
@@ -227,245 +227,252 @@ if ($free_search != '') {
     $url .= '&free_search='.$free_search;
 }
 
+$columns = ['standby'];
+$column_names = [
+    [
+        'title' => 'Standby',
+        'text'  => 'S.',
+    ],
+];
 
 
-        $columns = ['standby'];
+if (enterprise_installed() === true) {
+    array_unshift(
+        $column_names,
+        [
+            'title' => 'Policy',
+            'text'  => 'P.',
+        ]
+    );
 
-        $column_names = [
+    $columns = array_merge(
+        ['policy'],
+        $columns
+    );
+}
+
+if (is_metaconsole() === false) {
+    if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+        array_unshift(
+            $column_names,
             [
-                'title' => 'Standby',
-                'text'  => 'S.',
-            ],
-        ];
+                'title' => 'Validate',
+                'text'  => html_print_checkbox('all_validate', 0, false, true, false),
+                'class' => 'dt-left',
+            ]
+        );
 
-        if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-            array_unshift(
-                $column_names,
-                [
-                    'title' => 'Policy',
-                    'text'  => 'P.',
-                ]
-            );
+        $columns = array_merge(
+            ['validate'],
+            $columns
+        );
+    }
 
-            $columns = array_merge(
-                ['policy'],
-                $columns
-            );
-        }
-
-        if (is_metaconsole() === false) {
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                array_unshift(
-                    $column_names,
-                    [
-                        'title' => 'Validate',
-                        'text'  => html_print_checkbox('all_validate', 0, false, true, false),
-                        'class' => 'dt-left',
-                    ]
-                );
-
-                $columns = array_merge(
-                    ['validate'],
-                    $columns
-                );
-            }
-
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                array_push(
-                    $column_names,
-                    [
-                        'title' => 'Force execution',
-                        'text'  => 'F.',
-                    ]
-                );
-
-                $columns = array_merge(
-                    $columns,
-                    ['force']
-                );
-            }
-        }
-
-        if ($print_agent === true) {
-            array_push(
-                $column_names,
-                ['text' => 'Agent']
-            );
-
-            $columns = array_merge(
-                $columns,
-                ['agent_name']
-            );
-        }
-
+    if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
         array_push(
             $column_names,
-            ['text' => 'Module'],
-            ['text' => 'Template'],
-            ['text' => 'Action'],
-            ['text' => 'Last fired'],
-            ['text' => 'Status']
+            [
+                'title' => 'Force execution',
+                'text'  => 'F.',
+            ]
         );
 
         $columns = array_merge(
             $columns,
-            ['agent_module_name'],
-            ['template_name'],
-            ['action'],
-            ['last_fired'],
-            ['status']
+            ['force']
         );
+    }
+}
+
+if ($print_agent === true) {
+    array_push(
+        $column_names,
+        ['text' => 'Agent']
+    );
+
+    $columns = array_merge(
+        $columns,
+        ['agent_name']
+    );
+}
+
+array_push(
+    $column_names,
+    ['text' => 'Module'],
+    ['text' => 'Template'],
+    ['text' => 'Action'],
+    ['text' => 'Last fired'],
+    ['text' => 'Status']
+);
+
+$columns = array_merge(
+    $columns,
+    ['agent_module_name'],
+    ['template_name'],
+    ['action'],
+    ['last_fired'],
+    ['status']
+);
 
 
 
-        if (is_metaconsole() === true) {
-            $no_sortable_columns = [
-                0,
-                1,
-                5,
-            ];
-        } else {
-            $no_sortable_columns = [
-                0,
-                1,
-                2,
-                3,
-                7,
-            ];
-        }
+if (is_metaconsole() === true) {
+    $no_sortable_columns = [
+        0,
+        1,
+        5,
+    ];
+} else {
+    if (enterprise_installed() === true) {
+        $no_sortable_columns = [
+            0,
+            1,
+            2,
+            3,
+            7,
+        ];
+    } else {
+        $no_sortable_columns = [
+            0,
+            1,
+            2,
+            6,
+        ];
+    }
+}
 
 
-        $alert_action = empty(alerts_get_alert_actions_filter()) === false
-            ? alerts_get_alert_actions_filter()
-            : ['' => __('No actions')];
+$alert_action = empty(alerts_get_alert_actions_filter()) === false
+    ? alerts_get_alert_actions_filter()
+    : ['' => __('No actions')];
 
 
-        ob_start();
+ob_start();
 
-        if ($agent_view_page === true) {
-            ui_print_datatable(
-                [
-                    'id'                  => 'alerts_status_datatable',
-                    'class'               => 'info_table',
-                    'style'               => 'width: 100%',
-                    'columns'             => $columns,
-                    'column_names'        => $column_names,
-                    'no_sortable_columns' => $no_sortable_columns,
-                    'ajax_url'            => 'include/ajax/alert_list.ajax',
-                    'ajax_data'           => [
-                        'get_agent_alerts_datatable' => 1,
-                        'id_agent'                   => $idAgent,
-                        'url'                        => $url,
-                        'agent_view_page'            => true,
-                        'all_groups'                 => $all_groups,
-                    ],
-                    'drawCallback'        => 'alerts_table_controls()',
-                    'order'               => [
-                        'field'     => 'agent_module_name',
-                        'direction' => 'asc',
-                    ],
-                    'zeroRecords'         => __('No alerts found'),
-                    'emptyTable'          => __('No alerts found'),
-                    'search_button_class' => 'sub filter float-right',
-                    'form'                => [
-                        'inputs'    => [
-                            [
-                                'label'     => __('Free text for search (*):').ui_print_help_tip(
-                                    __('Filter by module name, template name or action name'),
-                                    true
-                                ),
-                                'type'      => 'text',
-                                'name'      => 'free_search_alert',
-                                'value'     => $free_search,
-                                'size'      => 20,
-                                'maxlength' => 100,
-                            ],
-                        ],
-                        'no_toggle' => true,
-                    ],
-                ]
-            );
-        } else {
-            ui_print_datatable(
-                [
-                    'id'                  => 'alerts_status_datatable',
-                    'class'               => 'info_table',
-                    'style'               => 'width: 100%',
-                    'columns'             => $columns,
-                    'column_names'        => $column_names,
-                    'no_sortable_columns' => $no_sortable_columns,
-                    'ajax_url'            => 'include/ajax/alert_list.ajax',
-                    'ajax_data'           => [
-                        'get_agent_alerts_datatable' => 1,
-                        'id_agent'                   => $idAgent,
-                        'url'                        => $url,
-                    ],
-                    'drawCallback'        => 'alerts_table_controls()',
-                    'order'               => [
-                        'field'     => 'agent_module_name',
-                        'direction' => 'asc',
-                    ],
-                    'zeroRecords'         => __('No alerts found'),
-                    'emptyTable'          => __('No alerts found'),
-                    'search_button_class' => 'sub filter float-right',
-                    'form'                => [
-                        'html' => printFormFilterAlert(
-                            $id_group,
-                            $filter,
-                            $free_search,
-                            $url,
-                            $filter_standby,
-                            $tag_filter,
-                            true,
-                            true,
-                            $strict_user
+if ($agent_view_page === true) {
+    ui_print_datatable(
+        [
+            'id'                  => 'alerts_status_datatable',
+            'class'               => 'info_table',
+            'style'               => 'width: 100%',
+            'columns'             => $columns,
+            'column_names'        => $column_names,
+            'no_sortable_columns' => $no_sortable_columns,
+            'ajax_url'            => 'include/ajax/alert_list.ajax',
+            'ajax_data'           => [
+                'get_agent_alerts_datatable' => 1,
+                'id_agent'                   => $idAgent,
+                'url'                        => $url,
+                'agent_view_page'            => true,
+                'all_groups'                 => $all_groups,
+            ],
+            'drawCallback'        => 'alerts_table_controls()',
+            'order'               => [
+                'field'     => 'agent_module_name',
+                'direction' => 'asc',
+            ],
+            'zeroRecords'         => __('No alerts found'),
+            'emptyTable'          => __('No alerts found'),
+            'search_button_class' => 'sub filter float-right',
+            'form'                => [
+                'inputs'    => [
+                    [
+                        'label'     => __('Free text for search (*):').ui_print_help_tip(
+                            __('Filter by module name, template name or action name'),
+                            true
                         ),
+                        'type'      => 'text',
+                        'name'      => 'free_search_alert',
+                        'value'     => $free_search,
+                        'size'      => 20,
+                        'maxlength' => 100,
                     ],
-                ]
-            );
-        }
+                ],
+                'no_toggle' => true,
+            ],
+        ]
+    );
+} else {
+    ui_print_datatable(
+        [
+            'id'                  => 'alerts_status_datatable',
+            'class'               => 'info_table',
+            'style'               => 'width: 100%',
+            'columns'             => $columns,
+            'column_names'        => $column_names,
+            'no_sortable_columns' => $no_sortable_columns,
+            'ajax_url'            => 'include/ajax/alert_list.ajax',
+            'ajax_data'           => [
+                'get_agent_alerts_datatable' => 1,
+                'id_agent'                   => $idAgent,
+                'url'                        => $url,
+            ],
+            'drawCallback'        => 'alerts_table_controls()',
+            'order'               => [
+                'field'     => 'agent_module_name',
+                'direction' => 'asc',
+            ],
+            'zeroRecords'         => __('No alerts found'),
+            'emptyTable'          => __('No alerts found'),
+            'search_button_class' => 'sub filter float-right',
+            'form'                => [
+                'html' => printFormFilterAlert(
+                    $id_group,
+                    $disabled,
+                    $free_search,
+                    $url,
+                    $filter_standby,
+                    $tag_filter,
+                    true,
+                    true,
+                    $strict_user
+                ),
+            ],
+        ]
+    );
+}
 
-        if (!is_metaconsole()) {
-            if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                    echo '<div class="action-buttons" style="width: '.$table->width.';">';
-                    html_print_submit_button(__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
-                    echo '</div>';
-            }
-        }
-
-
-            $html_content = ob_get_clean();
-
-        if ($agent_view_page === true) {
-            // Create controlled toggle content.
-            ui_toggle(
-                $html_content,
-                __('Full list of alerts'),
-                'status_monitor_agent',
-                !$alerts_defined,
-                false,
-                '',
-                'white_table_graph_content no-padding-imp',
-                'white_table_graph_content'
-            );
-        } else {
-            // Dump entire content.
-            echo $html_content;
-        }
-
-            // Strict user hidden.
-            echo '<div id="strict_hidden" class="invisible">';
-            html_print_input_text('strict_user_hidden', $strict_user);
-
-            html_print_input_text('is_meta_hidden', (int) is_metaconsole());
+if (!is_metaconsole()) {
+    if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
+            echo '<div class="action-buttons" style="width: '.$table->width.';">';
+            html_print_submit_button(__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
             echo '</div>';
+    }
+}
 
-            enterprise_hook('close_meta_frame');
+
+    $html_content = ob_get_clean();
+
+if ($agent_view_page === true) {
+    // Create controlled toggle content.
+    ui_toggle(
+        $html_content,
+        __('Full list of alerts'),
+        'status_monitor_agent',
+        !$alerts_defined,
+        false,
+        '',
+        'white_table_graph_content no-padding-imp',
+        'white_table_graph_content'
+    );
+} else {
+    // Dump entire content.
+    echo $html_content;
+}
+
+    // Strict user hidden.
+    echo '<div id="strict_hidden" class="invisible">';
+    html_print_input_text('strict_user_hidden', $strict_user);
+
+    html_print_input_text('is_meta_hidden', (int) is_metaconsole());
+    echo '</div>';
+
+    enterprise_hook('close_meta_frame');
 
 
-            ui_require_css_file('cluetip', 'include/styles/js/');
-            ui_require_jquery_file('cluetip');
-        ?>
+    ui_require_css_file('cluetip', 'include/styles/js/');
+    ui_require_jquery_file('cluetip');
+?>
 
 <script type="text/javascript">
 

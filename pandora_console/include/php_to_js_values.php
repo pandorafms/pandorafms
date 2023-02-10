@@ -23,4 +23,8 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 set_js_value('homeurl', $config['homeurl']);
 set_js_value('homedir', $config['homedir'].'/');
+// Prevent double request message.
+set_js_value('prepareDownloadTitle', __('Generating content'));
+set_js_value('prepareDownloadMsg', __('Generating content, please wait'));
+
 // ======================================================================

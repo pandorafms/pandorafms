@@ -450,7 +450,8 @@ class View extends \HTML
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['legendBackgroundColor'] = \get_parameter(
-                    'legendBackgroundColor'
+                    'legendBackgroundColor',
+                    '#ffffff'
                 );
             break;
 

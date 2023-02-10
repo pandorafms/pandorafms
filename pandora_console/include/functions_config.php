@@ -67,7 +67,7 @@ function config_create_value($token, $value)
  *
  * @return boolean True if success. False on failure.
  */
-function config_update_value($token, $value, $noticed=false)
+function config_update_value($token, $value, $noticed=false, $password=false)
 {
     global $config;
     // Include functions_io to can call __() function.
@@ -91,7 +91,11 @@ function config_update_value($token, $value, $noticed=false)
 
     if (isset($config[$token]) === false) {
         $config[$token] = $value;
-        return (bool) config_create_value($token, io_safe_input($value));
+        if (($password === false)) {
+            return (bool) config_create_value($token, io_safe_input($value));
+        } else {
+            return (bool) config_create_value($token, io_input_password($value));
+        }
     }
 
     // If it has not changed.
@@ -104,7 +108,7 @@ function config_update_value($token, $value, $noticed=false)
 
     $result = db_process_sql_update(
         'tconfig',
-        ['value' => io_safe_input($value)],
+        ['value' => ($password === false) ? io_safe_input($value) : io_input_password($value)],
         ['token' => $token]
     );
 
@@ -184,8 +188,8 @@ function config_update_config()
                         $error_update[] = __('Remote config directory');
                     }
 
-                    if (config_update_value('phantomjs_bin', (string) get_parameter('phantomjs_bin'), true) === false) {
-                        $error_update[] = __('phantomjs config directory');
+                    if (config_update_value('chromium_path', (string) get_parameter('chromium_path'), true) === false) {
+                        $error_update[] = __('Chromium config directory');
                     }
 
                     if (config_update_value('loginhash_pwd', io_input_password((string) get_parameter('loginhash_pwd')), true) === false) {
@@ -395,6 +399,11 @@ function config_update_config()
                     if (config_update_value('email_password', io_input_password(get_parameter('email_password')), true) === false) {
                         $error_update[] = __('Email password');
                     }
+
+                    $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
+                    if (config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist), true) === false) {
+                        $error_update[] = __('Inventory changes blacklist');
+                    }
                 break;
 
                 case 'enterprise':
@@ -458,11 +467,6 @@ function config_update_config()
                         if (config_update_value('sap_license', get_parameter('sap_license'), true) === false) {
                             $error_update[] = __('SAP/R3 Plugin Licence');
                         }
-
-                        $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
-                        if (config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist), true) === false) {
-                            $error_update[] = __('Inventory changes blacklist');
-                        }
                     }
                 break;
 
@@ -523,6 +527,15 @@ function config_update_config()
                 break;
 
                 case 'auth':
+                    $validatedCSRF = validate_csrf_code();
+
+                    // CSRF Validation.
+                    if ($validatedCSRF === false) {
+                        include_once 'general/login_page.php';
+                        // Finish the execution.
+                        exit('</html>');
+                    }
+
                     // AUTHENTICATION SETUP.
                     if (config_update_value('auth', get_parameter('auth'), true) === false) {
                         $error_update[] = __('Authentication method');
@@ -925,25 +938,6 @@ function config_update_config()
 
                     if (config_update_value('agent_wizard_defaults', json_encode($selectedAgentWizardOptions), true) === false) {
                         $error_update[] = __('SNMP Interface Agent Wizard');
-                    }
-
-                    $pjs = get_parameter('phantomjs_cache_interval');
-                    switch ($pjs) {
-                        case $config['phantomjs_cache_interval']:
-                        default;
-                            // No changes.
-                        break;
-
-                        case PHANTOM_CACHE_CLEANUP_ONCE:
-                        case PHANTOM_CACHE_CLEANUP_DAILY:
-                        case PHANTOM_CACHE_CLEANUP_WEEKLY:
-                            enterprise_hook('phantomjs_cache_interval_schedule', [$pjs]);
-                        break;
-                    }
-
-                    if (config_update_value('phantomjs_cache_interval', get_parameter('phantomjs_cache_interval'), true) === false
-                    ) {
-                        $error_update[] = __('PhantomJS cache interval');
                     }
                 break;
 
@@ -1475,6 +1469,15 @@ function config_update_config()
                     if (config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'), true) === false) {
                         $error_update[] = __('Use data multiplier');
                     }
+
+                    if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {
+                        $error_update[] = __('Decimal separator');
+                    } else {
+                        $thousand_separator = ((string) get_parameter('decimal_separator', '.') === '.') ? ',' : '.';
+                        if (config_update_value('thousand_separator', $thousand_separator, true) === false) {
+                            $error_update[] = __('Thousand separator');
+                        }
+                    }
                 break;
 
                 case 'net':
@@ -1966,14 +1969,9 @@ function config_process_config()
         config_update_value('remote_config', $default);
     }
 
-    if (!isset($config['phantomjs_bin'])) {
-        if ($is_windows) {
-            $default = 'C:\PandoraFMS\Pandora_Server\bin';
-        } else {
-            $default = '/usr/bin';
-        }
-
-        config_update_value('phantomjs_bin', $default);
+    if (isset($config['chromium_path']) === false) {
+        $default = '/usr/bin/chromium-browser';
+        config_update_value('chromium_path', $default);
     }
 
     if (!isset($config['date_format'])) {
@@ -3446,7 +3444,7 @@ function config_process_config()
     }
 
     if (!isset($config['ehorus_port'])) {
-        config_update_value('ehorus_port', 18080);
+        config_update_value('ehorus_port', 443);
     }
 
     if (!isset($config['ehorus_req_timeout'])) {
@@ -3477,6 +3475,10 @@ function config_process_config()
 
     if (!isset($config['module_library_password'])) {
         config_update_value('module_library_password', '');
+    }
+
+    if (!isset($config['decimal_separator'])) {
+        config_update_value('decimal_separator', '.');
     }
 
     // Finally, check if any value was overwritten in a form.

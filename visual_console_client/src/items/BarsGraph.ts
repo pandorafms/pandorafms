@@ -72,10 +72,32 @@ export function barsGraphPropsDecoder(data: AnyObject): BarsGraphProps | never {
 export default class BarsGraph extends Item<BarsGraphProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
+    element.innerHTML = this.props.html;
     element.className = "bars-graph";
-    element.style.backgroundImage = `url(${this.props.html})`;
-    element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundSize = `${this.props.width}px ${this.props.height}px`;
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
+
+    // Hack to execute the JS after the HTML is added to the DOM.
+    const scripts = element.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.length === 0) {
+        setTimeout(() => {
+          try {
+            eval(scripts[i].innerHTML.trim());
+          } catch (ignored) {} // eslint-disable-line no-empty
+        }, 0);
+      }
+    }
+
+    return element;
+  }
+
+  protected updateDomElement(element: HTMLElement): void {
+    element.innerHTML = this.props.html;
 
     if (
       this.props.agentDisabled === true ||
@@ -84,19 +106,12 @@ export default class BarsGraph extends Item<BarsGraphProps> {
       element.style.opacity = "0.2";
     }
 
-    return element;
-  }
-
-  protected updateDomElement(element: HTMLElement): void {
-    element.style.backgroundImage = `url(${this.props.html})`;
-    element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundSize = `${this.props.width}px ${this.props.height}px`;
-
-    if (
-      this.props.agentDisabled === true ||
-      this.props.moduleDisabled === true
-    ) {
-      element.style.opacity = "0.2";
+    // Hack to execute the JS after the HTML is added to the DOM.
+    const scripts = element.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.length === 0) {
+        eval(scripts[i].innerHTML.trim());
+      }
     }
   }
 }

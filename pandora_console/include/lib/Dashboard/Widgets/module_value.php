@@ -439,7 +439,9 @@ class ModuleValueWidget extends Widget
             $dataDatos = remove_right_zeros(
                 number_format(
                     $data_module,
-                    $config['graph_precision']
+                    $config['graph_precision'],
+                    $config['decimal_separator'],
+                    $config['thousand_separator']
                 )
             );
         } else {

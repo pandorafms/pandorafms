@@ -167,7 +167,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.UPLOAD_MAX_FILESIZE
          *  NOTIF.PHP.MEMORY_LIMIT
          *  NOTIF.PHP.DISABLE_FUNCTIONS
-         *  NOTIF.PHP.PHANTOMJS
+         *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
          */
 
@@ -349,7 +349,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.UPLOAD_MAX_FILESIZE
          *  NOTIF.PHP.MEMORY_LIMIT
          *  NOTIF.PHP.DISABLE_FUNCTIONS
-         *  NOTIF.PHP.PHANTOMJS
+         *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
          */
 
@@ -528,11 +528,7 @@ class ConsoleSupervisor
      */
     public function maintenanceOperations()
     {
-        /*
-         * Process cache clean if needed.
-         */
 
-        $this->checkCleanPhantomCache();
     }
 
 
@@ -688,7 +684,7 @@ class ConsoleSupervisor
             case 'NOTIF.PHP.UPLOAD_MAX_FILESIZE':
             case 'NOTIF.PHP.MEMORY_LIMIT':
             case 'NOTIF.PHP.DISABLE_FUNCTIONS':
-            case 'NOTIF.PHP.PHANTOMJS':
+            case 'NOTIF.PHP.CHROMIUM':
             case 'NOTIF.PHP.VERSION':
             case 'NOTIF.HISTORYDB':
             case 'NOTIF.PANDORADB':
@@ -1431,9 +1427,9 @@ class ConsoleSupervisor
             $PHPmemory_limit_min = config_return_in_bytes('-1');
         }
 
-        // PhantomJS status.
-        $phantomjs_dir = io_safe_output($config['phantomjs_bin']);
-        $result_ejecution = exec($phantomjs_dir.'/phantomjs --version');
+        // Chromium status.
+        $chromium_dir = io_safe_output($config['chromium_path']);
+        $result_ejecution = exec($chromium_dir.' --version');
 
         // PHP version checks.
         $php_version = phpversion();
@@ -1577,21 +1573,20 @@ class ConsoleSupervisor
         }
 
         if (!isset($result_ejecution) || $result_ejecution == '') {
-            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#Phantomjs';
-            if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
-            }
-
+            $url = 'https://www.chromium.org/getting-involved/download-chromium/';
+            // if ($config['language'] == 'es') {
+            // $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
+            // }
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.PHANTOMJS',
-                    'title'   => __('PhantomJS is not installed'),
-                    'message' => __('To be able to create images of the graphs for PDFs, please install the PhantomJS extension. For that, it is necessary to follow these steps:'),
+                    'type'    => 'NOTIF.PHP.CHROMIUM',
+                    'title'   => __('chromium is not installed'),
+                    'message' => __('To be able to create images of the graphs for PDFs, please install the chromium extension. For that, it is necessary to follow these steps:'),
                     'url'     => $url,
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PHP.PHANTOMJS');
+            $this->cleanNotifications('NOTIF.PHP.CHROMIUM');
         }
 
         if ($php_version_array[0] < 8) {
@@ -2695,34 +2690,6 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.AUDIT.LOG.OLD');
         }
-    }
-
-
-    /**
-     * Clean Phantom cache if needed.
-     *
-     * @return void
-     */
-    public function checkCleanPhantomCache()
-    {
-        global $config;
-
-        if (isset($config['clean_phantomjs_cache']) !== true
-            || (int) $config['clean_phantomjs_cache'] !== 1
-        ) {
-            return;
-        }
-
-        $cache_dir = $config['homedir'].'/attachment/cache';
-        if (is_dir($cache_dir) === true) {
-            Files::rmrf($cache_dir);
-        }
-
-        // Clean process has ended.
-        config_update_value(
-            'clean_phantomjs_cache',
-            0
-        );
     }
 
 

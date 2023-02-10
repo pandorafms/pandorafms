@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS `taddress_agent` (
   `id_ag` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_a` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `id_agent` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY  (`id_ag`)
+  PRIMARY KEY  (`id_ag`),
+  INDEX `taddress_agent_agent` (`id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
@@ -1157,6 +1158,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `stat_utimestamp` BIGINT NOT NULL DEFAULT 0,
   `exec_proxy` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `port` INT UNSIGNED NOT NULL DEFAULT 0,
+  `server_keepalive_utimestamp` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_server`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1238,6 +1240,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `severity` TEXT,
   `status` INT NOT NULL DEFAULT -1,
   `search` TEXT,
+  `not_search` INT NOT NULL DEFAULT 0,
   `text_agent` TEXT,
   `id_agent` INT DEFAULT 0,
   `id_agent_module` INT DEFAULT 0,
@@ -1256,11 +1259,12 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_extra` TINYTEXT,
   `user_comment` TEXT,
   `id_source_event` INT  NULL DEFAULT 0,
-  `server_id` INT NOT NULL DEFAULT 0,
+  `server_id` TEXT,
   `time_from` TIME NULL,
   `time_to` TIME NULL,
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
+  `owner_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1273,7 +1277,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `firstname` VARCHAR(255) NOT NULL,
   `lastname` VARCHAR(255) NOT NULL,
   `middlename` VARCHAR(255) NOT NULL,
-  `password` VARCHAR(45) DEFAULT NULL,
+  `password` VARCHAR(60) DEFAULT NULL,
   `comments` VARCHAR(200) DEFAULT NULL,
   `last_connect` BIGINT NOT NULL DEFAULT 0,
   `registered` BIGINT NOT NULL DEFAULT 0,
@@ -1311,6 +1315,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `ehorus_user_level_enabled` TINYINT,
   `integria_user_level_user` VARCHAR(60),
   `integria_user_level_pass` VARCHAR(45),
+  `api_token` VARCHAR(255) NOT NULL DEFAULT '',
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,
   `auth_token_secret` VARCHAR(45) DEFAULT NULL,
@@ -1330,7 +1335,10 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
   `assigned_by` VARCHAR(100) NOT NULL DEFAULT '',
   `id_policy` INT UNSIGNED NOT NULL DEFAULT 0,
   `tags` TEXT,
-  PRIMARY KEY  (`id_up`)
+  PRIMARY KEY  (`id_up`),
+  INDEX `tusuario_perfil_user` (`id_usuario`),
+  INDEX `tusuario_perfil_group` (`id_grupo`),
+  INDEX `tusuario_perfil_profile` (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
@@ -1622,6 +1630,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `ipam_ip_not_assigned_to_agent` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `macros_definition` TEXT,
   `render_definition` TEXT,
+  `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE
@@ -1727,7 +1736,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `show_last_value` TINYINT UNSIGNED NULL DEFAULT 0,
   `cache_expiration` INT UNSIGNED NOT NULL DEFAULT 0,
   `title` TEXT ,
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  INDEX `tlayout_data_layout` (`id_layout`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
@@ -2103,6 +2113,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
   `display_on_front` TINYINT NOT NULL DEFAULT 0,
   `is_password_type` TINYINT NOT NULL DEFAULT 0,
   `combo_values` TEXT ,
+  `is_link_enabled` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2131,7 +2142,8 @@ CREATE TABLE IF NOT EXISTS `ttag` (
   `email` TEXT NULL,
   `phone` TEXT NULL,
   `previous_name` TEXT NULL,
-  PRIMARY KEY  (`id_tag`)
+  PRIMARY KEY  (`id_tag`),
+  INDEX `ttag_name` (name(15))
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4; 
 
 -- -----------------------------------------------------
@@ -2862,7 +2874,10 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
   `id_server_meta` INT  unsigned NOT NULL DEFAULT 0,
   `rules` TEXT,
   PRIMARY KEY  (`id`),
-  INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`)
+  INDEX `IDX_tservice_element` (`id_service`,`id_agente_modulo`),
+  INDEX `tservice_element_service` (`id_service`),
+  INDEX `tservice_element_agent` (`id_agent`),
+  INDEX `tservice_element_am` (`id_agente_modulo`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 
 DEFAULT CHARSET=UTF8MB4;
@@ -3252,6 +3267,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
   `ipam_ip_not_assigned_to_agent` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `macros_definition` TEXT,
   `render_definition` TEXT,
+  `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   PRIMARY KEY(`id_rc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3339,7 +3355,8 @@ CREATE TABLE IF NOT EXISTS `tagent_module_log` (
   `source` TEXT,
   `timestamp` DATETIME DEFAULT '1970-01-01 00:00:00',
   `utimestamp` BIGINT DEFAULT 0,
-  PRIMARY KEY (`id_agent_module_log`)
+  PRIMARY KEY (`id_agent_module_log`),
+  INDEX `tagent_module_log_agent` (`id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
@@ -3410,37 +3427,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
--- Table `ttransaction`
+-- Table `treset_pass`
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ttransaction` (
-  `transaction_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `agent_id` INT UNSIGNED NOT NULL,
-  `group_id` INT UNSIGNED NOT NULL DEFAULT 0,
-  `description` TEXT,
-  `name` VARCHAR(250) NOT NULL,
-  `loop_interval` INT UNSIGNED NOT NULL DEFAULT 40,
-  `ready` INT UNSIGNED NOT NULL DEFAULT 0,
-  `running` INT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`transaction_id`)
-) engine=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- ---------------------------------------------------------------------
--- Table `tphase`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tphase`(
-  `phase_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `transaction_id` INT UNSIGNED NOT NULL,
-  `agent_id` INT UNSIGNED NOT NULL,
-  `name` VARCHAR(250) NOT NULL,
-  `idx` INT UNSIGNED NOT NULL,
-  `dependencies` TEXT,
-  `enables` TEXT,
-  `launch` TEXT,
-  `retries` INT UNSIGNED DEFAULT null,
-  `timeout` INT UNSIGNED DEFAULT null,
-  PRIMARY KEY (`phase_id`,`transaction_id`)
-) engine=InnoDB DEFAULT CHARSET=UTF8MB4;
-
 CREATE TABLE IF NOT EXISTS `treset_pass` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` VARCHAR(255) NOT NULL DEFAULT '',
@@ -3654,6 +3642,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
   `background_color` VARCHAR(50) NOT NULL DEFAULT '#FFF',
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
+  `maintenance_mode` TEXT,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4164,4 +4153,27 @@ CREATE TABLE IF NOT EXISTS `tbackup` (
   `pid` INT UNSIGNED DEFAULT 0,
   `filepath` VARCHAR(512) DEFAULT '',
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tmonitor_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
+  `id_filter`  INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_name` VARCHAR(600) NOT NULL,
+  `id_group_filter` INT NOT NULL DEFAULT 0,
+  `ag_group` INT NOT NULL DEFAULT 0,
+  `recursion` TEXT,
+  `status` INT NOT NULL DEFAULT -1,
+  `ag_modulename` TEXT,
+  `ag_freestring` TEXT,
+  `tag_filter` TEXT,
+  `moduletype` TEXT,
+  `module_option` INT DEFAULT 1,
+  `modulegroup` INT NOT NULL DEFAULT -1,
+  `min_hours_status` TEXT,
+  `datatype` TEXT,
+  `not_condition` TEXT,
+  `ag_custom_fields` TEXT,
+  PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

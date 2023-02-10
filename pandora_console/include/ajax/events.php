@@ -59,6 +59,7 @@ $drawConsoleSound = (bool) get_parameter('drawConsoleSound', false);
 $process_buffers = (bool) get_parameter('process_buffers', false);
 $get_extended_event = (bool) get_parameter('get_extended_event');
 $change_status = (bool) get_parameter('change_status');
+$get_Acknowledged = (bool) get_parameter('get_Acknowledged');
 $change_owner = (bool) get_parameter('change_owner');
 $add_comment = (bool) get_parameter('add_comment');
 $dialogue_event_response = (bool) get_parameter('dialogue_event_response');
@@ -351,12 +352,14 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
     $values['id_agent_module'] = get_parameter('id_agent_module');
     $values['pagination'] = get_parameter('pagination');
     $values['event_view_hr'] = get_parameter('event_view_hr');
     $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['owner_user'] = get_parameter('owner_user');
     $values['group_rep'] = get_parameter('group_rep');
     $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
     $values['tag_without'] = get_parameter(
@@ -409,12 +412,14 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
     $values['id_agent_module'] = get_parameter('id_agent_module');
     $values['pagination'] = get_parameter('pagination');
     $values['event_view_hr'] = get_parameter('event_view_hr');
     $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['owner_user'] = get_parameter('owner_user');
     $values['group_rep'] = get_parameter('group_rep');
     $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
     $values['tag_without'] = get_parameter(
@@ -481,6 +486,7 @@ if ($get_filter_values) {
             'user_comment'            => '',
             'id_extra'                => '',
             'id_user_ack'             => '',
+            'owner_user'              => '',
             'date_from'               => '',
             'time_from'               => '',
             'date_to'                 => '',
@@ -553,7 +559,7 @@ if ($load_filter_modal) {
     );
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
-    echo '<form method="post" id="form_load_filter">';
+    echo '<form method="post" id="form_load_filter" action="index.php?sec=eventos&sec2=operation/events/events&pure=">';
 
     $table = new StdClass;
     $table->id = 'load_filter_form';
@@ -642,6 +648,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'not_search')
+                    $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
                     $('input[name=text_agent]').val(val);
                 if (i == 'id_agent')
@@ -654,6 +662,8 @@ function load_form_filter() {
                     $("#text-event_view_hr").val(val);
                 if (i == 'id_user_ack')
                     $("#id_user_ack").val(val);
+                if (i == 'owner_user')
+                    $("#owner_user").val(val);
                 if (i == 'group_rep')
                     $("#group_rep").val(val);
                 if (i == 'tag_with')
@@ -898,12 +908,14 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
             "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
             "pagination" : $("#pagination").val(),
             "event_view_hr" : $("#text-event_view_hr").val(),
             "id_user_ack" : $("#id_user_ack").val(),
+            "owner_user" : $("#owner_user").val(),
             "group_rep" : $("#group_rep").val(),
             "tag_with": Base64.decode($("#hidden-tag_with").val()),
             "tag_without": Base64.decode($("#hidden-tag_without").val()),
@@ -975,12 +987,14 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
         "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
         "pagination" : $("#pagination").val(),
         "event_view_hr" : $("#text-event_view_hr").val(),
         "id_user_ack" : $("#id_user_ack").val(),
+        "owner_user" : $("#owner_user").val(),
         "group_rep" : $("#group_rep").val(),
         "tag_with" : Base64.decode($("#hidden-tag_with").val()),
         "tag_without" : Base64.decode($("#hidden-tag_without").val()),
@@ -1500,6 +1514,40 @@ if ($change_status === true) {
     return;
 }
 
+if ($get_Acknowledged === true) {
+    $event_id = (int) get_parameter('event_id', 0);
+    $server_id = (int) get_parameter('server_id', 0);
+
+    $return = '';
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
+
+        echo events_page_general_acknowledged($event_id);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $return = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    return $return;
+}
+
 if ($change_owner === true) {
     $new_owner = get_parameter('new_owner', '');
     $event_id = (int) get_parameter('event_id', 0);
@@ -1580,7 +1628,7 @@ if ($get_extended_event) {
     $filter = get_parameter('filter', []);
     $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
-    $event_rep = $group_rep;
+    $event_rep = (empty($group_rep) === true) ? EVENT_GROUP_REP_EVENTS : $group_rep;
     $timestamp_first = $event['timestamp_first'];
     $timestamp_last = $event['timestamp_last'];
     $server_id = $event['server_id'];
@@ -2018,8 +2066,10 @@ if ($total_event_graph) {
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    $prueba = grafico_eventos_total('', 280, 150, false, true);
-    echo $prueba;
+    $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+    $out .= grafico_eventos_total('', 0, 0, false, true);
+    $out .= '<div>';
+    echo $out;
     return;
 }
 
@@ -2028,8 +2078,10 @@ if ($graphic_event_group) {
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    $prueba = grafico_eventos_grupo(280, 150, '', false, true);
-    echo $prueba;
+    $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+    $out .= grafico_eventos_grupo(0, 0, '', false, true);
+    $out .= '<div>';
+    echo $out;
     return;
 }
 
@@ -2270,7 +2322,7 @@ if ($drawConsoleSound === true) {
                         ],
                     ],
                     [
-                        'label'     => __('Time Sound'),
+                        'label'     => __('Sound duration'),
                         'arguments' => [
                             'type'     => 'select',
                             'fields'   => $times_sound,
@@ -2355,6 +2407,18 @@ if ($drawConsoleSound === true) {
             $output .= '</span>';
             $output .= '</div>';
             $output .= '<div class="elements-discovered-alerts"><ul></ul></div>';
+            $output .= html_print_input_hidden(
+                'ajax_file_sound_console',
+                ui_get_full_url('ajax.php', false, false, false),
+                true
+            );
+            $output .= html_print_input_hidden(
+                'meta',
+                is_metaconsole(),
+                true
+            );
+            $output .= '<div id="sound_event_details_window"></div>';
+            $output .= '<div id="sound_event_response_window"></div>';
         $output .= '</div>';
     $output .= '</div>';
 
@@ -2417,6 +2481,7 @@ if ($get_events_fired) {
             'severity'                => -1,
             'status'                  => -1,
             'search'                  => '',
+            'not_search'              => 0,
             'text_agent'              => '',
             'id_agent'                => 0,
             'id_agent_module'         => 0,
@@ -2440,6 +2505,37 @@ if ($get_events_fired) {
         $filter = events_get_event_filter($filter_id);
     }
 
+    if (is_metaconsole() === true) {
+        $servers = metaconsole_get_servers();
+        if (is_array($servers) === true) {
+            $servers = array_reduce(
+                $servers,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['server_name'];
+                    return $carry;
+                }
+            );
+        } else {
+            $servers = [];
+        }
+
+        if ($filter['server_id'] === '') {
+            $filter['server_id'] = array_keys($servers);
+        } else {
+            if (is_array($filter['server_id']) === false) {
+                if (is_numeric($filter['server_id']) === true) {
+                    if ($filter['server_id'] !== 0) {
+                        $filter['server_id'] = [$filter['server_id']];
+                    } else {
+                        $filter['server_id'] = array_keys($servers);
+                    }
+                } else {
+                    $filter['server_id'] = explode(',', $filter['server_id']);
+                }
+            }
+        }
+    }
+
     // Set time.
     $filter['event_view_hr'] = 0;
 
@@ -2458,29 +2554,32 @@ if ($get_events_fired) {
     $return = [];
     if (empty($data) === false) {
         foreach ($data as $event) {
-            $return[] = [
-                'fired'     => $event['id_evento'],
-                'message'   => ui_print_string_substr(
-                    strip_tags(io_safe_output($event['evento'])),
-                    75,
-                    true,
-                    '9'
-                ),
-                'priority'  => ui_print_event_priority($event['criticity'], true, true),
-                'type'      => events_print_type_img(
-                    $event['event_type'],
-                    true
-                ),
-                'timestamp' => ui_print_timestamp(
-                    $event['timestamp'],
-                    true,
-                    ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
-                ),
-            ];
+            $return[] = array_merge(
+                $event,
+                [
+                    'fired'     => $event['id_evento'],
+                    'message'   => ui_print_string_substr(
+                        strip_tags(io_safe_output($event['evento'])),
+                        75,
+                        true,
+                        '9'
+                    ),
+                    'priority'  => ui_print_event_priority($event['criticity'], true, true),
+                    'type'      => events_print_type_img(
+                        $event['event_type'],
+                        true
+                    ),
+                    'timestamp' => ui_print_timestamp(
+                        $event['timestamp'],
+                        true,
+                        ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
+                    ),
+                ]
+            );
         }
     }
 
-    echo io_json_mb_encode($return);
+    echo io_safe_output(io_json_mb_encode($return));
     return;
 }
 

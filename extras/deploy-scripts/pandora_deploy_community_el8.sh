@@ -4,7 +4,7 @@
 #######################################################
 ## Tested versions ##
 # Centos 8.4, 8.5
-# Rocky 8.4, 8.5
+# Rocky 8.4, 8.5, 8.6, 8.7
 # Almalinuz 8.4, 8.5
 # RedHat 8.5
 
@@ -14,24 +14,25 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='202209231'
+S_VERSION='202301251'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
-[ "$TZ" ] || TZ="Europe/Madrid"
-[ "$MYVER" ] || MYVER=57
-[ "$PHPVER" ] || PHPVER=8
-[ "$DBHOST" ] || DBHOST=127.0.0.1
-[ "$DBNAME" ] || DBNAME=pandora
-[ "$DBUSER" ] || DBUSER=pandora
-[ "$DBPASS" ] || DBPASS=pandora
-[ "$DBPORT" ] || DBPORT=3306
+[ "$TZ" ]       || TZ="Europe/Madrid"
+[ "$MYVER" ]    || MYVER=57
+[ "$PHPVER" ]   || PHPVER=8
+[ "$DBHOST" ]   || DBHOST=127.0.0.1
+[ "$DBNAME" ]   || DBNAME=pandora
+[ "$DBUSER" ]   || DBUSER=pandora
+[ "$DBPASS" ]   || DBPASS=pandora
+[ "$DBPORT" ]   || DBPORT=3306
 [ "$DBROOTUSER" ] || DBROOTUSER=root
 [ "$DBROOTPASS" ] || DBROOTPASS=pandora
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
-[ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
+[ "$SKIP_DATABASE_INSTALL" ]     || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
-[ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
+[ "$POOL_SIZE" ]    || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
+[ "$PANDORA_LTS" ]  || PANDORA_LTS=1
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
 
 # Ansi color code variables
@@ -41,7 +42,6 @@ cyan="\e[0;36m"
 reset="\e[0m"
 
 # Functions
-
 execute_cmd () {
     local cmd="$1"
     local msg="$2"
@@ -76,7 +76,7 @@ check_cmd_status () {
 check_pre_pandora () {
 
     echo -en "${cyan}Checking environment ... ${reset}"
-    rpm -qa | grep 'pandorafms_' &>> /dev/null && local fail=true
+    rpm -qa | grep -v "pandorawmic" | grep 'pandorafms_'  &>> /dev/null && local fail=true
     [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
 
@@ -137,7 +137,10 @@ check_root_permissions
 [ "$SKIP_PRECHECK" == 1 ] || check_pre_pandora
 
 #advicing BETA PROGRAM
-[ "$PANDORA_BETA" -ne '0' ] && echo -e "${red}BETA version enable using nightly PandoraFMS packages${reset}"
+INSTALLING_VER="${green}RRR version enable using RRR PandoraFMS packages${reset}"
+[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
+[ "$PANDORA_LTS" -ne '0' ] && INSTALLING_VER="${green}LTS version enable using LTS PandoraFMS packages${reset}"
+echo -e $INSTALLING_VER
 
 # Connectivity
 check_repo_connection
@@ -312,6 +315,7 @@ console_dependencies=" \
     mod_ssl \
     libzstd \
     openldap-clients \
+    chromium \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
@@ -466,6 +470,8 @@ query_cache_size = 64M
 query_cache_min_res_unit = 2k
 query_cache_limit = 256K
 
+#skip-log-bin
+
 sql_mode=""
 
 [mysqld_safe]
@@ -476,6 +482,7 @@ EO_CONFIG_F
 
     if [ "$MYVER" -eq '80' ] ; then
         sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+        sed -i -e "s/#skip-log-bin/skip-log-bin/g" /etc/my.cnf
     fi
 
     execute_cmd "systemctl restart mysqld" "Configuring database engine"
@@ -484,20 +491,27 @@ fi
 export MYSQL_PWD=$DBPASS
 
 #Define packages
-if [ "$PANDORA_BETA" -eq '0' ] ; then
+if [ "$PANDORA_LTS" -eq '1' ] ; then
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+elif [ "$PANDORA_LTS" -ne '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm"
-elif [ "$PANDORA_BETA" -ne '0' ] ; then
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+fi
+
+# if beta is enable
+if [ "$PANDORA_BETA" -eq '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://pandorafms.com/community/community-console-rpm-beta/"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_unix-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # Downloading Pandora Packages
 execute_cmd "curl -LSs --output pandorafms_server-7.0NG.noarch.rpm ${PANDORA_SERVER_PACKAGE}" "Downloading Pandora FMS Server community"
 execute_cmd "curl -LSs --output pandorafms_console-7.0NG.noarch.rpm ${PANDORA_CONSOLE_PACKAGE}" "Downloading Pandora FMS Console community"
-execute_cmd "curl -LSs --output pandorafms_agent_unix-7.0NG.noarch.rpm ${PANDORA_AGENT_PACKAGE}" "Downloading Pandora FMS Agent community"
+execute_cmd "curl -LSs --output pandorafms_agent_linux-7.0NG.noarch.rpm ${PANDORA_AGENT_PACKAGE}" "Downloading Pandora FMS Agent community"
 
 # Install Pandora
 execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "Installing Pandora FMS packages"

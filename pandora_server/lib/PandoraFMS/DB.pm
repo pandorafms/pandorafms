@@ -618,8 +618,13 @@ sub get_agent_status ($$$) {
 					$module_status = 2;
 				}
 				elsif ($module_status != 2) {
-					if ($m_status == 0) {
-						$module_status = 0;
+					if ($m_status == 3) {
+						$module_status = 3;
+					}
+					elsif ($module_status != 3) {
+						if ($m_status == 0) {
+							$module_status = 0;
+						}
 					}
 				}
 			}
@@ -647,7 +652,7 @@ sub get_agent_status ($$$) {
 			return 3;
 		}
 	}
-	
+
 	return $module_status;
 }
 
@@ -1041,6 +1046,7 @@ sub get_db_rows_parallel ($$;@) {
 		no warnings 'redefine';
 		local *PandoraFMS::ProducerConsumerServer::DESTROY = sub {};
 		local *PandoraFMS::BlockProducerConsumerServer::DESTROY = sub {};
+		local *PandoraFMS::SNMPServer::DESTROY = sub {};
 
 		# Query the nodes.
 		foreach my $node (@{$nodes}) {

@@ -73,7 +73,11 @@ if ($access_console_node === true) {
 
         $sub['view']['sub2'] = $sub2;
 
-        enterprise_hook('inventory_menu');
+        if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AW')) {
+            $sub['operation/inventory/inventory']['text'] = __('Inventory');
+            $sub['operation/inventory/inventory']['id'] = 'Inventory';
+            $sub['operation/inventory/inventory']['refr'] = 0;
+        }
 
         if ($config['activate_netflow']) {
             $sub['network_traffic'] = [
@@ -147,7 +151,12 @@ if ($access_console_node === true) {
         $sub['snmpconsole']['subtype'] = 'nolink';
     }
 
-    enterprise_hook('cluster_menu');
+    if (check_acl($config['id_user'], 0, 'AR')) {
+        $sub['operation/cluster/cluster']['text'] = __('Cluster View');
+        $sub['operation/cluster/cluster']['id'] = 'cluster';
+        $sub['operation/cluster/cluster']['refr'] = 0;
+    }
+
     enterprise_hook('aws_menu');
     enterprise_hook('SAP_view');
 
@@ -166,8 +175,6 @@ if ($access_console_node === true) {
         $sub['operation/agentes/pandora_networkmap']['text'] = __('Network map');
         $sub['operation/agentes/pandora_networkmap']['id'] = 'Network_map';
         $sub['operation/agentes/pandora_networkmap']['refr'] = 0;
-
-        enterprise_hook('transmap_console');
     }
 
     enterprise_hook('services_menu');
@@ -426,10 +433,6 @@ if ($access_console_node === true) {
         }
 
         // Sound Events.
-        // $javascript = 'javascript: openSoundEventWindow();';
-        // $sub[$javascript]['text'] = __('Sound Events');
-        // $sub[$javascript]['id'] = 'Sound Events';
-        // $sub[$javascript]['type'] = 'direct';
         $data_sound = base64_encode(
             json_encode(
                 [
@@ -440,6 +443,7 @@ if ($access_console_node === true) {
                     'silenceAlarm' => __('Silence alarm'),
                     'url'          => ui_get_full_url('ajax.php'),
                     'page'         => 'include/ajax/events',
+                    'urlSound'     => 'include/sounds/',
                 ]
             )
         );
@@ -453,26 +457,6 @@ if ($access_console_node === true) {
 
         ui_require_javascript_file('pandora_events');
 
-        ?>
-    <script type="text/javascript">
-    function openSoundEventWindow() {
-        url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
-        // devicePixelRatio knows how much zoom browser applied.
-        var windowScale = parseFloat(window.devicePixelRatio);
-        var defaultWidth = 630;
-        var defaultHeight = 630;
-        // If the scale is 1, no zoom has been applied.
-        var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
-        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
-
-        window.open(
-            url,
-            '<?php __('Sound Alerts'); ?>',
-            'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
-        );
-    }
-    </script>
-        <?php
         $menu_operation['eventos']['sub'] = $sub;
     }
 }

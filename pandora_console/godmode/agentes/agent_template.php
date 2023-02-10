@@ -224,6 +224,7 @@ if ($result === false) {
     $result = [];
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->cellpadding = 0;
 $table->cellspacing = 0;

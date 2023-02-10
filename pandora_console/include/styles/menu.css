@@ -212,6 +212,9 @@ li.sub_subMenu.selected {
 #icon_god-module_library {
   background-image: url(../../images/menu/gm_library.menu_gray.png);
 }
+#icon_about {
+  background-image: url(../../images/menu/about.menu_gray.png);
+}
 
 #menu_container {
   z-index: 3;
@@ -374,6 +377,9 @@ ul li {
 }
 .selected#icon_god-module_library {
   background-image: url(../../images/menu/gm_library.menu_white.png);
+}
+.selected#icon_about {
+  background-image: url(../../images/menu/about.menu_white.png);
 }
 
 #menu_full {

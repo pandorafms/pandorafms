@@ -246,7 +246,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       serialized: serialized,
       id_server: id_server,
       status_module: module_status,
-      id_group: id_group
+      id_group: id_group,
+      pendingdelete: event.target.dataset.pendingdelete // Get pendingdelete attribute from target
     },
     function(data) {
       $("#module").empty();
@@ -583,8 +584,7 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
       status_module: status_module,
       "module_name[]": idModules,
       selection_mode: selection_mode,
-      tags: tags_selected,
-      id_group: id_group
+      tags: tags_selected
     },
     function(data) {
       $("#agents").append(
@@ -2185,6 +2185,38 @@ $.fn.filterByText = function(textbox) {
   });
 };
 
+/**
+ * Confirm Dialog for API token renewal request.
+ *
+ * @param {string} title Title for show.
+ * @param {string} message Message for show.
+ * @param {string} form Form to attach renewAPIToken element.
+ */
+function renewAPIToken(title, message, form) {
+  confirmDialog({
+    title: title,
+    message: message,
+    onAccept: function() {
+      $("#" + form)
+        .append("<input type='hidden' name='renewAPIToken' value='1'>")
+        .submit();
+    }
+  });
+}
+
+/**
+ * Show Dialog for view the API token.
+ *
+ * @param {string} title Title for show.
+ * @param {string} message Base64 encoded message for show.
+ */
+function showAPIToken(title, message) {
+  confirmDialog({
+    title: title,
+    message: atob(message),
+    hideCancelButton: true
+  });
+}
 function loadPasswordConfig(id, value) {
   $.ajax({
     url: "ajax.php",
@@ -2200,3 +2232,99 @@ function loadPasswordConfig(id, value) {
     }
   });
 }
+
+var formatterDataLabelPie = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+    let percentage = ((value * 100) / sum).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+var formatterDataHorizontalBar = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce(
+      (a, b) => {
+        if (a != undefined && b != undefined) {
+          return { x: parseInt(a.x) + parseInt(b.x) };
+        }
+      },
+      { x: 0 }
+    );
+    let percentage = ((value.x * 100) / sum.x).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+var formatterDataVerticalBar = function(value, ctx) {
+  let datasets = ctx.chart.data.datasets;
+  if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+    let sum = datasets[0].data.reduce(
+      (a, b) => {
+        if (a != undefined && b != undefined) {
+          return { y: parseInt(a.y) + parseInt(b.y) };
+        }
+      },
+      { y: 0 }
+    );
+    let percentage = ((value.y * 100) / sum.y).toFixed(1) + "%";
+    return percentage;
+  }
+};
+
+// Show about section
+$(document).ready(function() {
+  $("#icon_about").click(function() {
+    $("#icon_about").addClass("selected");
+
+    jQuery.post(
+      "ajax.php",
+      {
+        page: "include/functions_menu",
+        about: "true"
+      },
+      function(data) {
+        $("div.ui-dialog").remove();
+        $("#about-div").html("");
+        if (data) {
+          $("#about-div").html(data);
+          openAbout();
+        }
+      },
+      "html"
+    );
+  });
+
+  function openAbout() {
+    $("#about-tabs").dialog({
+      // title: "About",
+      resizable: false,
+      draggable: false,
+      modal: true,
+      show: {
+        effect: "fade",
+        duration: 200
+      },
+      hide: {
+        effect: "fade",
+        duration: 200
+      },
+      closeOnEscape: true,
+      width: 700,
+      height: 450,
+
+      create: function() {
+        $("#about-tabs").tabs({});
+        $(".ui-dialog-titlebar").remove();
+
+        $("#about-close").click(function() {
+          $("#about-tabs").dialog("close");
+          $("div.ui-dialog").remove();
+          $("#icon_about").removeClass("selected");
+        });
+      }
+    });
+  }
+});

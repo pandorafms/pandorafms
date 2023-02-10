@@ -94,7 +94,7 @@ $config['admin_can_make_admin'] = true;
  * @return mixed False in case of error or invalid credentials, the username in
  * case it's correct.
  */
-function process_user_login($login, $pass, $api=false)
+function process_user_login($login, $pass, $api=false, $passAlreadyEncrypted=false)
 {
     global $config;
 
@@ -130,10 +130,10 @@ function process_user_login($login, $pass, $api=false)
         if ($config['fallback_local_auth']
             || is_user_admin($login)
             || $local_user === true
-            || strtolower($config['auth']) == 'mysql'
+            || strtolower($config['auth']) === 'mysql'
             || (bool) $user_not_login === true
         ) {
-            return process_user_login_local($login, $pass, $api);
+            return process_user_login_local($login, $pass, $api, $passAlreadyEncrypted);
         } else {
             return false;
         }
@@ -144,96 +144,66 @@ function process_user_login($login, $pass, $api=false)
 }
 
 
-function process_user_login_local($login, $pass, $api=false)
+function process_user_login_local($login, $pass, $api=false, $passAlreadyEncrypted=false)
 {
     global $config, $mysql_cache;
 
-    // Connect to Database
-    switch ($config['dbtype']) {
-        case 'mysql':
-            if (!$api) {
-                $sql = sprintf(
-                    "SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s' AND `not_login` = 0
-						AND `disabled` = 0",
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    "SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s'
-						AND `disabled` = 0",
-                    $login
-                );
-            }
-        break;
-
-        case 'postgresql':
-            if (!$api) {
-                $sql = sprintf(
-                    'SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\' AND "not_login" = 0
-						AND "disabled" = 0',
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\'
-						AND "disabled" = 0',
-                    $login
-                );
-            }
-        break;
-
-        case 'oracle':
-            if (!$api) {
-                $sql = sprintf(
-                    'SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\' AND not_login = 0
-						AND disabled = 0',
-                    $login
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\'
-						AND disabled = 0',
-                    $login
-                );
-            }
-        break;
+    if ((bool) $api === false) {
+        $sql = sprintf(
+            "SELECT `id_user`, `password`
+            FROM `tusuario`
+            WHERE `id_user` = '%s' AND `not_login` = 0
+                AND `disabled` = 0",
+            $login
+        );
+    } else {
+        $sql = sprintf(
+            "SELECT `id_user`, `password`
+            FROM `tusuario`
+            WHERE `id_user` = '%s'
+                AND `disabled` = 0",
+            $login
+        );
     }
 
     $row = db_get_row_sql($sql);
 
-    // Check that row exists, that password is not empty and that password is the same hash
-    if ($row !== false && $row['password'] !== md5('')
-        && $row['password'] == md5($pass)
-    ) {
+    if ($passAlreadyEncrypted) {
+        $credentials_check = $pass === $row['password'];
+    } else {
+         // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
+        if (strlen($row['password']) === 32) {
+            // MD5.
+            $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
+        } else {
+            // Bcrypt.
+            $credentials_check = password_verify($pass, $row['password']);
+        }
+    }
+
+    if ($credentials_check === true) {
         // Login OK
         // Nick could be uppercase or lowercase (select in MySQL
         // is not case sensitive)
         // We get DB nick to put in PHP Session variable,
         // to avoid problems with case-sensitive usernames.
-        // Thanks to David Muñiz for Bug discovery :)
+        // Thanks to David Muñiz for Bug discovery :).
         $filter = ['id_usuario' => $login];
         $user_profile = db_get_row_filter('tusuario_perfil', $filter);
-        if (!users_is_admin($login) && !$user_profile) {
+        if ((bool) users_is_admin($login) === false && (bool) $user_profile === false) {
             $mysql_cache['auth_error'] = 'User does not have any profile';
             $config['auth_error'] = 'User does not have any profile';
             return false;
         }
 
+        // Override password to use Bcrypt encryption.
+        if (strlen($row['password']) === 32) {
+            update_user_password($login, $pass);
+        }
+
         return $row['id_user'];
     } else {
-        if (!user_can_login($login)) {
+        if (user_can_login($login) === false) {
             $mysql_cache['auth_error'] = 'User only can use the API.';
             $config['auth_error'] = 'User only can use the API.';
         } else {
@@ -250,9 +220,9 @@ function process_user_login_remote($login, $pass, $api=false)
 {
     global $config, $mysql_cache;
 
-    // Remote authentication
+    // Remote authentication.
     switch ($config['auth']) {
-        // LDAP
+        // LDAP.
         case 'ldap':
             $sr = ldap_process_user_login($login, $pass);
             // Try with secondary server if not login.
@@ -265,7 +235,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Active Directory
+        // Active Directory.
         case 'ad':
             if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
@@ -273,7 +243,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Remote Pandora FMS
+        // Remote Pandora FMS.
         case 'pandora':
             if (enterprise_hook('remote_pandora_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
@@ -281,7 +251,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Remote Integria
+        // Remote Integria.
         case 'integria':
             if (enterprise_hook('remote_integria_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
@@ -289,7 +259,7 @@ function process_user_login_remote($login, $pass, $api=false)
             }
         break;
 
-        // Unknown authentication method
+        // Unknown authentication method.
         default:
             $config['auth_error'] = 'User not found in database or incorrect password';
         return false;
@@ -303,7 +273,7 @@ function process_user_login_remote($login, $pass, $api=false)
         }
     }
 
-    // Authentication ok, check if the user exists in the local database
+    // Authentication ok, check if the user exists in the local database.
     if (is_user($login)) {
         if (!user_can_login($login) && $api === false) {
             return false;
@@ -370,10 +340,10 @@ function process_user_login_remote($login, $pass, $api=false)
         return $login;
     }
 
-    // The user does not exist and can not be created
+    // The user does not exist and can not be created.
     if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted($login)) {
         $config['auth_error'] = __(
-            'Ooops User not found in 
+            'Ooops User not found in
 				database or incorrect password'
         );
 
@@ -390,7 +360,7 @@ function process_user_login_remote($login, $pass, $api=false)
         }
 
         $user_info = [
-            'fullname' => $login,
+            'fullname' => db_escape_string_sql($login),
             'comments' => 'Imported from '.$config['auth'],
         ];
 
@@ -428,7 +398,7 @@ function process_user_login_remote($login, $pass, $api=false)
             $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
         } else {
-            $user_info['fullname'] = $sr['cn'][0];
+            $user_info['fullname'] = db_escape_string_sql($sr['cn'][0]);
             $user_info['email'] = $sr['mail'][0];
 
             // Create the user.
@@ -655,8 +625,16 @@ function process_user_contact(string $id_user)
 function create_user($id_user, $password, $user_info)
 {
     $values = $user_info;
+
+    $column_type = db_get_column_type('tusuario', 'password');
+    if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+    } else {
+        $column_type = false;
+    }
+
     $values['id_user'] = $id_user;
-    $values['password'] = md5($password);
+    $values['password'] = ($column_type === false) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
     $values['last_connect'] = 0;
     $values['registered'] = get_system_time();
 
@@ -747,7 +725,7 @@ function delete_user(string $id_user)
 
 
 /**
- * Update the password in MD5 for user pass as id_user with
+ * Update the password using BCRYPT algorithm for specific id_user passing
  * password in plain text.
  *
  * @param string $user         User ID.
@@ -764,9 +742,19 @@ function update_user_password(string $user, string $password_new)
         return false;
     }
 
+    $column_type = db_get_column_type('tusuario', 'password');
+    if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+    } else {
+        $column_type = false;
+    }
+
     if (isset($config['auth']) === true && $config['auth'] === 'pandora') {
         $sql = sprintf(
-            "UPDATE tusuario SET password = '".md5($password_new)."', last_pass_change = '".date('Y-m-d H:i:s', get_system_time())."' WHERE id_user = '".$user."'"
+            "UPDATE tusuario SET password = '%s', last_pass_change = '%s' WHERE id_user = '%s'",
+            ($column_type === false) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
+            date('Y-m-d H:i:s', get_system_time()),
+            $user
         );
 
         $connection = mysql_connect_db(
@@ -786,7 +774,7 @@ function update_user_password(string $user, string $password_new)
     return db_process_sql_update(
         'tusuario',
         [
-            'password'         => md5($password_new),
+            'password'         => ($column_type === false) ? md5($password_new) : password_hash($password_new, PASSWORD_BCRYPT),
             'last_pass_change' => date('Y/m/d H:i:s', get_system_time()),
         ],
         ['id_user' => $user]
@@ -967,6 +955,12 @@ function ldap_process_user_login($login, $password, $secondary_server=false)
 
         $sr = ldap_search($ds, io_safe_output($ldap['ldap_base_dn']), $filter);
 
+        if (empty($sr) === true) {
+            $config['auth_error'] = 'ldap search failed';
+            @ldap_close($ds);
+            return false;
+        }
+
         $memberof = ldap_get_entries($ds, $sr);
 
         if ($memberof['count'] == 0 && !isset($memberof[0]['memberof'])) {
@@ -1044,7 +1038,14 @@ function create_user_and_permisions_ldap(
     $values['id_user'] = $id_user;
 
     if ($config['ldap_save_password'] || $config['ad_save_password']) {
-        $values['password'] = md5($password);
+        $column_type = db_get_column_type('tusuario', 'password');
+        if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+            $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+        } else {
+            $column_type = false;
+        }
+
+        $values['password'] = ($column_type === false) ? md5($password) : password_hash($password, PASSWORD_BCRYPT);
     }
 
     $values['last_connect'] = 0;
@@ -1476,11 +1477,26 @@ function change_local_user_pass_ldap($id_user, $password)
     $local_user_pass = db_get_value_filter('password', 'tusuario', ['id_user' => $id_user]);
 
     $return = false;
-    if (md5($password) !== $local_user_pass) {
-        $values_update = [];
-        $values_update['password'] = md5($password);
 
-        $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
+    $column_type = db_get_column_type('tusuario', 'password');
+    if (empty($column_type) === false && isset($column_type[0]['COLUMN_TYPE'])) {
+        $column_type = ($column_type[0]['COLUMN_TYPE'] === 'varchar(60)');
+    } else {
+        $column_type = false;
+    }
+
+    $values_update = [];
+
+    if ($column_type === false) {
+        if (md5($password) !== $local_user_pass) {
+            $values_update['password'] = md5($password);
+            $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
+        }
+    } else {
+        if (password_hash($password, PASSWORD_BCRYPT) !== $local_user_pass) {
+            $values_update['password'] = password_hash($password, PASSWORD_BCRYPT);
+            $return = db_process_sql_update('tusuario', $values_update, ['id_user' => $id_user]);
+        }
     }
 
     return $return;
@@ -1549,7 +1565,7 @@ function local_ldap_search(
 
     $filter = '';
     if (!empty($access_attr) && !empty($user)) {
-        $filter = " -s sub '(".$access_attr.'='.$user.")' ";
+        $filter = ' -s sub '.escapeshellarg('('.$access_attr.'='.$user.')');
     }
 
     $tls = '';
@@ -1575,7 +1591,7 @@ function local_ldap_search(
         $ldap_admin_pass = ' -w '.escapeshellarg($ldap_admin_pass);
     }
 
-    $dn = " -b '".$dn."'";
+    $dn = ' -b '.escapeshellarg($dn);
     $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
     $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {

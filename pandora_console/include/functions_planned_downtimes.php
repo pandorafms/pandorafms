@@ -24,7 +24,8 @@ global $config;
  * Include the usual functions
  */
 require_once $config['homedir'].'/include/functions_ui.php';
-// enterprise_include_once('include/functions_inventory.php');
+
+
 function planned_downtimes_check_dates($type_execution='once', $type_periodicity='', $datetime_from=false, $datetime_to=false, $periodically_time_from=false, $periodically_time_to=false, $periodically_day_from=false, $periodically_day_to=false)
 {
     global $config;

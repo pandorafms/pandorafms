@@ -82,7 +82,7 @@ if ($plugin_pass == '' && !$id_agent_module) {
     $plugin_pass = 1;
 }
 
-if (empty($update_module_id)) {
+if (empty($edit_module)) {
     // Function in module_manager_editor_common.php
     add_component_selection(ID_NETWORK_COMPONENT_TYPE);
 } else {

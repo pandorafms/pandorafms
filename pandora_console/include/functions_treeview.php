@@ -193,7 +193,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
                         if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                             $data = "<span title='".$last_data['datos']."' class='nowrap'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                         } else if (is_numeric($last_data['datos'])) {
-                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -209,7 +209,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
                     default:
                         if (is_numeric($last_data['datos'])) {
-                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -232,7 +232,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                     $data = "<span title='".human_milliseconds_to_string($last_data['datos'])."' class='nowrap'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                 } else if (is_numeric($last_data['datos'])) {
-                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -248,7 +248,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
             default:
                 if (is_numeric($last_data['datos'])) {
-                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -271,7 +271,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
             $data_macro = modules_get_unit_macro($last_data['datos'], $module['unit']);
             if ($data_macro) {
                 if (is_numeric($data_macro)) {
-                    $last_data_str = "<span class='span_treeview'>".remove_right_zeros(number_format($data_macro, $config['graph_precision'])).'</span>';
+                    $last_data_str = "<span class='span_treeview'>".remove_right_zeros(number_format($data_macro, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])).'</span>';
                 } else {
                     $last_data_str = ui_print_truncate_text(
                         io_safe_output($data_macro),
@@ -594,10 +594,10 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $hashdata = $user.$pwd_deserialiced['auth_token'];
 
         $hashdata = md5($hashdata);
-        $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
+        $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'];
 
         if ($grants_on_node && (bool) $user_access_node !== false) {
-            $cellName .= '<a href="'.$url.'">'.'<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+            $cellName .= '<a onclick="sendHash(\''.$url.'\')" href="#"><b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
         } else {
             $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
         }
@@ -690,20 +690,13 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $go_to_agent = '<div style="text-align: right">';
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
-            if (enterprise_installed()) {
-                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
-                    $agent['id_agente']
-                );
-                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
-                $url .= '/operation/cluster/cluster';
-                $url = ui_get_full_url(
-                    $url.'&op=update&id='.$cluster->id()
-                );
-                $go_to_agent .= '<a target="_blank" href="'.$url.'">';
-                $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
-            }
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id='.$cluster->id().'">';
+            $go_to_agent .= html_print_submit_button(__('Go to cluster edition'), 'upd_button', false, 'class="sub config"', true);
         } else {
-            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
             $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
         }
 
@@ -854,30 +847,38 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                 $permission = check_acl($config['id_user'], $agent['id_grupo'], 'RR');
 
                 if ($permission) {
-                    $params = [
-                        'interface_name'     => $interface_name,
-                        'agent_id'           => $id_agente,
-                        'traffic_module_in'  => $interface['traffic']['in'],
-                        'traffic_module_out' => $interface['traffic']['out'],
-                    ];
+                    if ($interface['traffic']['in'] > 0 && $interface['traffic']['out'] > 0) {
+                        $params = [
+                            'interface_name'     => $interface_name,
+                            'agent_id'           => $id_agente,
+                            'traffic_module_in'  => $interface['traffic']['in'],
+                            'traffic_module_out' => $interface['traffic']['out'],
+                        ];
 
-                    if (defined('METACONSOLE') && !empty($server_id)) {
-                        $params['server'] = $server_id;
+                        if (defined('METACONSOLE') && !empty($server_id)) {
+                            $params['server'] = $server_id;
+                        }
+
+                        $params_json = json_encode($params);
+                        $params_encoded = base64_encode($params_json);
+                        $url = ui_get_full_url('operation/agentes/interface_traffic_graph_win.php', false, false, false);
+                        $graph_url = "$url?params=$params_encoded";
+                        $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+
+                        $graph_link = "<a href=\"javascript:winopeng_var('".$graph_url."','".$win_handle."', 800, 480)\">";
+                        $graph_link .= html_print_image(
+                            'images/chart_curve.png',
+                            true,
+                            ['title' => __('Interface traffic')]
+                        );
+                        $graph_link .= '</a>';
+                    } else {
+                        $graph_link = html_print_image(
+                            'images/chart_curve.disabled.png',
+                            true,
+                            ['title' => __('inOctets and outOctets must be enabled.')]
+                        );
                     }
-
-                    $params_json = json_encode($params);
-                    $params_encoded = base64_encode($params_json);
-                    $url = ui_get_full_url('operation/agentes/interface_traffic_graph_win.php', false, false, false);
-                    $graph_url = "$url?params=$params_encoded";
-                    $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-
-                    $graph_link = "<a href=\"javascript:winopeng_var('".$graph_url."','".$win_handle."', 800, 480)\">";
-                    $graph_link .= html_print_image(
-                        'images/chart_curve.png',
-                        true,
-                        ['title' => __('Interface traffic')]
-                    );
-                    $graph_link .= '</a>';
                 } else {
                     $graph_link = '';
                 }
@@ -905,5 +906,12 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         metaconsole_restore_db();
     }
 
-    return;
+    echo "
+        <script>
+            function sendHash(url) {
+                window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
+ 
+            }
+
+        </script>";
 }

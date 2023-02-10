@@ -843,6 +843,7 @@ class AgentWizard extends HTML
         html_print_div(
             [
                 'class'   => 'white_box',
+                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,
@@ -2636,6 +2637,8 @@ class AgentWizard extends HTML
      */
     private function resultsInterfaceWizard()
     {
+        global $config;
+
         $generalInterfaceModules = $this->getInterfacesModules();
         $generalInterfaceTables = [];
         $generalInterfaceModulesUpdated = [];
@@ -2721,7 +2724,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-filter-interfaces',
             'method' => 'POST',
-            'class'  => 'modal flex flex-row searchbox',
+            'class'  => 'modal searchbox',
             'extra'  => '',
         ];
 
@@ -2849,7 +2852,12 @@ class AgentWizard extends HTML
                 // Format current value with thousands and decimals.
                 if (is_numeric($currentValue) === true) {
                     $decimals = (is_float($currentValue) === true) ? 2 : 0;
-                    $currentValue = number_format($currentValue, $decimals);
+                    $currentValue = number_format(
+                        $currentValue,
+                        $decimals,
+                        $config['decimal_separator'],
+                        $config['thousand_separator']
+                    );
                 }
 
                 // It unit of measure have data, attach to current value.
@@ -5469,6 +5477,19 @@ class AgentWizard extends HTML
      */
     private function getInterfacesModulesx64(array $data=[])
     {
+        $equivalencies_x86 = [
+            'ifHCInOctets'      => 'ifInOctets',
+            'ifHCOutOctets'     => 'ifOutOctets',
+            'ifHCInUcastPkts'   => 'ifInUcastPkts',
+            'ifHCOutUcastPkts'  => 'ifOutUcastPkts',
+            'ifHCInNUcastPkts'  => 'ifInNUcastPkts',
+            'ifHCOutNUcastPkts' => 'ifOutNUcastPkts',
+        ];
+
+        foreach ($equivalencies_x86 as $key => $equivalencie) {
+            $this->defaultSNMPValues[$key] = $this->defaultSNMPValues[$equivalencie];
+        }
+
         $moduleDescription  = '';
         $name               = '';
         $value              = '1';

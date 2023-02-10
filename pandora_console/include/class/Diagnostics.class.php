@@ -141,8 +141,9 @@ class Diagnostics extends Wizard
             'images/pdf.png',
             true,
             [
-                'title' => __('Export to PDF'),
-                'class' => 'invert_filter',
+                'title'   => __('Export to PDF'),
+                'class'   => 'invert_filter',
+                'onclick' => 'blockResubmit($(this))',
             ]
         );
         $header_buttons = [
@@ -658,15 +659,6 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        // Size BBDD.
-        $dbSizeSql = db_get_value_sql(
-            'SELECT ROUND(SUM(data_length+index_length)/1024/1024,3)
-            FROM information_schema.TABLES'
-        );
-
-        // Add unit size.
-        $dbSize = $dbSizeSql.' M';
-
         $result = [
             'error' => false,
             'data'  => [
@@ -681,10 +673,6 @@ class Diagnostics extends Wizard
                 'dbSchemeBuild'        => [
                     'name'  => __('DB Schema Build'),
                     'value' => $config['db_scheme_build'],
-                ],
-                'dbSize'               => [
-                    'name'  => __('DB Size'),
-                    'value' => $dbSize,
                 ],
             ],
         ];
@@ -986,7 +974,7 @@ class Diagnostics extends Wizard
                 ],
                 'tablesFragmentationValue'  => [
                     'name'  => __('Tables fragmentation (current value)'),
-                    'value' => number_format($tFragmentationValue, 2).'%',
+                    'value' => number_format($tFragmentationValue, 2, $config['decimal_separator'], $config['thousand_separator']).'%',
                 ],
                 'tablesFragmentationStatus' => [
                     'name'   => __('Table fragmentation status'),
@@ -1121,7 +1109,9 @@ class Diagnostics extends Wizard
         if ($totalModuleIntervalTime !== false) {
             $averageTime = number_format(
                 ((int) $totalNetworkModules / (int) $totalModuleIntervalTime),
-                3
+                3,
+                $config['decimal_separator'],
+                $config['thousand_separator']
             );
         }
 
@@ -1273,11 +1263,16 @@ class Diagnostics extends Wizard
             FROM tagente_datos'
         );
 
+        $modulesDataCount = db_get_value_sql(
+            'SELECT count(*) * 300 FROM (SELECT * FROM tagente_datos GROUP BY id_agente_modulo) AS totalmodules'
+        );
+        $modulesDataCount = ($modulesDataCount >= 500000) ? $modulesDataCount : 500000;
+
         $taMsg = __(
             'The tagente_datos table contains too much data. A historical database is recommended.'
         );
         $taStatus = 0;
-        if ($agentDataCount <= 3000000) {
+        if ($agentDataCount <= $modulesDataCount) {
             $taMsg = __(
                 'The tagente_datos table contains an acceptable amount of data.'
             );
@@ -1748,7 +1743,7 @@ class Diagnostics extends Wizard
             $sizeServerLog = number_format($fileSize);
             $sizeServerLog = (0 + str_replace(',', '', $sizeServerLog));
 
-            $value = number_format(($fileSize / $mega), 3);
+            $value = number_format(($fileSize / $mega), 3, $config['decimal_separator'], $config['thousand_separator']);
             $message = __('You have more than 10 MB of logs');
             $status = 0;
             if ($sizeServerLog <= $tenMega) {

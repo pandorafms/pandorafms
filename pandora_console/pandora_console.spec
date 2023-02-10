@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.766
-%define release     221122
+%define version     7.0NG.768
+%define release     230210
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2
@@ -29,7 +29,7 @@ BuildArch:          noarch
 AutoReq:            0
 Requires:           apache2
 Requires:           apache2-mod_php7
-Requires:           php >= 7.0
+Requires:           php >= 8.0
 Requires:           php-gd, php-snmp, php-json, php-gettext
 Requires:           php-mysqlnd, php-ldap, php-mbstring, php 
 Requires:           graphviz, xorg-x11-fonts-core, graphviz-gd
@@ -58,11 +58,6 @@ fi
 rm -rf $RPM_BUILD_ROOT
 
 %post
-# Upgrading.
-if [ "$1" -eq "1" ]; then
-	echo "Updating the database schema."
-	/usr/bin/php %{prefix}/pandora_console/godmode/um_client/updateMR.php 2>/dev/null
-fi
 
 # Install pandora_websocket_engine service.
 cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
@@ -77,6 +72,11 @@ echo "   /etc/init.d/pandora_websocket_engine start"
 #
 if [ -f %{prefix}/pandora_console/include/config.php ] ; then
    mv %{prefix}/pandora_console/install.php %{prefix}/pandora_console/install.done
+   
+   # Upgrading MR.
+	echo "Updating the database schema."
+	/usr/bin/php %{prefix}/pandora_console/godmode/um_client/updateMR.php 2>/dev/null
+
 else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi

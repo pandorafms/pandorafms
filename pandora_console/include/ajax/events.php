@@ -2505,6 +2505,37 @@ if ($get_events_fired) {
         $filter = events_get_event_filter($filter_id);
     }
 
+    if (is_metaconsole() === true) {
+        $servers = metaconsole_get_servers();
+        if (is_array($servers) === true) {
+            $servers = array_reduce(
+                $servers,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['server_name'];
+                    return $carry;
+                }
+            );
+        } else {
+            $servers = [];
+        }
+
+        if ($filter['server_id'] === '') {
+            $filter['server_id'] = array_keys($servers);
+        } else {
+            if (is_array($filter['server_id']) === false) {
+                if (is_numeric($filter['server_id']) === true) {
+                    if ($filter['server_id'] !== 0) {
+                        $filter['server_id'] = [$filter['server_id']];
+                    } else {
+                        $filter['server_id'] = array_keys($servers);
+                    }
+                } else {
+                    $filter['server_id'] = explode(',', $filter['server_id']);
+                }
+            }
+        }
+    }
+
     // Set time.
     $filter['event_view_hr'] = 0;
 

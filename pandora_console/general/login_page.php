@@ -248,7 +248,7 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div id="log_button" class="login_button invisible">';
-                html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="next_login"');
+                html_print_submit_button(__('Login as admin'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
             echo '</div>';
 
             echo '<div class="login_button" id="remove_button">';
@@ -288,7 +288,8 @@ switch ($login_screen) {
                 );
             echo '</div>';
             echo '<div class="login_button">';
-                html_print_submit_button(__('Login'), 'login_button', false, 'class="next_login"');
+                // html_print_submit_button(__('Login'), 'login_button', false, 'class="next_login"');
+                html_print_submit_button(__('Login'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
             echo '</div>';
         }
     break;
@@ -307,7 +308,8 @@ switch ($login_screen) {
         html_print_input_text_extended('auth_code', '', 'auth_code', '', '', '', false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
         echo '</div>';
         echo '<div class="login_button">';
-        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
+        // html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
+        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
         echo '</div>';
     break;
 

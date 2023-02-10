@@ -206,7 +206,7 @@ if (enterprise_installed() || defined('DESTDIR')) {
     html_print_input_hidden('update_settings', 1);
     html_print_submit_button(__('Validate'), 'update_button', false, 'class="sub upd"');
     echo '&nbsp;&nbsp;';
-    html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="sub next"');
+    html_print_button(__('Request new license'), 'license', false, 'generate_request_code()', [ 'fixed_id' => 'button-', 'icon' => 'next']);
     echo '</div>';
 }
 

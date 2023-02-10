@@ -3451,6 +3451,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 {
     $output = '';
     $classes = '';
+    $fixedId = '';
 
     if (empty($name) === true) {
         $name = 'unnamed';
@@ -3477,6 +3478,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $classes .= ' '.$value.'Button';
             } else if ($attribute === 'class') {
                 $classes .= ' '.$value;
+            } else if ($attribute === 'fixed_id') {
+                $fixedId = $value;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
@@ -3520,16 +3523,19 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $classes .= ' disabled_action_button';
     }
 
+    $parameters = [];
+    $parameters[] = 'class="'.$classes.'"';
+    $parameters[] = (empty($name) === false) ? ' name="'.$name.'"' : '';
+    $parameters[] = 'id="'.((empty($fixedId) === false) ? $fixedId : 'button-'.$name ).'"';
+    $parameters[] = (empty($label) === false) ? ' value="'.$label.'"' : '';
+    $parameters[] = (empty($script) === false) ? ' onClick="'.$script.'"' : '';
+    $parameters[] = ($disabled === true) ? ' disabled' : '';
+    $parameters[] = (empty($attributes) === false) ? $attributes : '';
+
     $output = sprintf(
-        '<button type="%s" class="%s" %s %s %s %s %s %s>%s</button>',
+        '<button type="%s" %s>%s</button>',
         $buttonType,
-        $classes,
-        (empty($name) === false) ? ' name="'.$name.'"' : '',
-        (empty($name) === false) ? ' id="button-'.$name.'"' : '',
-        (empty($label) === false) ? ' value="'.$label.'"' : '',
-        ($disabled === true) ? ' disabled' : '',
-        (empty($script) === false) ? ' onClick="'.$script.'"' : '',
-        (empty($attributes) === false) ? $attributes : '',
+        implode(' ', $parameters),
         $content
     );
 

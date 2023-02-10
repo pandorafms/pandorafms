@@ -2,7 +2,15 @@
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page) {
-  var ajax_file = $("#hidden-ajax_file").val();
+  var ajax_file = getUrlAjax();
+
+  var view = ``;
+
+  if ($("#event_details_window").length) {
+    view = "#event_details_window";
+  } else if ($("#sound_event_details_window").length) {
+    view = "#sound_event_details_window";
+  }
 
   if (dialog_page == undefined) {
     dialog_page = "general";
@@ -39,7 +47,7 @@ function show_event_dialog(event, dialog_page) {
       filter: values
     },
     function(data) {
-      $("#event_details_window")
+      $(view)
         .hide()
         .empty()
         .append(data)
@@ -122,7 +130,7 @@ function execute_response(event_id, server_id) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(response) {
       // If cannot get response abort it
@@ -153,7 +161,7 @@ function execute_response_massive(events, response_id, response_parameters) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(data) {
       // If cannot get response abort it
@@ -203,7 +211,7 @@ function execute_response_massive(events, response_id, response_parameters) {
           jQuery.ajax({
             data: params,
             type: "POST",
-            url: $("#hidden-ajax_file").val(),
+            url: getUrlAjax(),
             dataType: "html",
             success: function(data) {
               $(".container-massive-events-response").append(data);
@@ -240,13 +248,21 @@ function show_response_dialog(response_id, response) {
   params.push({ name: "server_id", value: response.server_id });
   params.push({ name: "response", value: JSON.stringify(response) });
 
+  var view = ``;
+
+  if ($("#event_response_window").length) {
+    view = "#event_response_window";
+  } else if ($("#sound_event_response_window").length) {
+    view = "#sound_event_response_window";
+  }
+
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "html",
     success: function(data) {
-      $("#event_response_window")
+      $(view)
         .hide()
         .empty()
         .append(data)
@@ -292,7 +308,7 @@ function perform_response(response, response_id, index) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "html",
     success: function(data) {
       var out = data.replace(/[\n|\r]/g, "<br>");
@@ -321,7 +337,7 @@ function event_change_status(event_ids, server_id) {
       server_id: server_id
     },
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
@@ -350,9 +366,12 @@ function event_change_status(event_ids, server_id) {
           }
         });
 
-        $("#table_events")
-          .DataTable()
-          .draw(false);
+        if ($("#table_events").length) {
+          $("#table_events")
+            .DataTable()
+            .draw(false);
+        }
+
         $("#notification_status_success").show();
 
         $("#general_status")
@@ -385,7 +404,7 @@ function event_change_owner(event_id, server_id) {
       new_owner: new_owner
     },
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     async: true,
     dataType: "html",
     success: function(data) {
@@ -404,9 +423,12 @@ function event_change_owner(event_id, server_id) {
         // if (typeof dt_events !== "undefined") {
         //   dt_events.draw(false);
         // }
-        $("#table_events")
-          .DataTable()
-          .draw(false);
+
+        if ($("#table_events").length) {
+          $("#table_events")
+            .DataTable()
+            .draw(false);
+        }
         $("#notification_owner_success").show();
         if (new_owner == -1) {
           $("#extended_event_general_page table td.general_owner").html(
@@ -460,7 +482,7 @@ function event_comment(current_event) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "html",
     success: function() {
       $("#button-comment_button").removeAttr("disabled");
@@ -485,7 +507,7 @@ function update_event(table, id_evento, type, event_rep, row, server_id) {
   $.ajax({
     async: true,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     data: {
       page: "include/ajax/events",
       validate_event: type.validate_event,
@@ -776,7 +798,7 @@ function show_response_dialog_massive(response_id, response_parameters) {
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: getUrlAjax(),
     dataType: "json",
     success: function(response) {
       // If cannot get response abort it
@@ -914,7 +936,7 @@ function process_buffers(buffers) {
     jQuery.ajax({
       data: params.join("&"),
       type: "POST",
-      url: $("#hidden-ajax_file").val(),
+      url: getUrlAjax(),
       async: true,
       dataType: "html",
       success: function(data) {
@@ -1147,6 +1169,7 @@ function check_event_sound(settings) {
         // Add elements.
         data.forEach(function(element) {
           var li = document.createElement("li");
+          var b64 = btoa(JSON.stringify(element));
           li.insertAdjacentHTML(
             "beforeend",
             '<div class="li-priority">' + element.priority + "</div>"
@@ -1157,7 +1180,7 @@ function check_event_sound(settings) {
           );
           li.insertAdjacentHTML(
             "beforeend",
-            '<div class="li-title">' + element.message + "</div>"
+            `<div class="li-title"><a href="javascript:" onclick="show_event_dialog('${b64}')">${element.message}</a></div>`
           );
           li.insertAdjacentHTML(
             "beforeend",
@@ -1185,10 +1208,12 @@ function table_info_response_event(response_id, event_id, server_id, massive) {
   params.push({ name: "server_id", value: server_id });
   params.push({ name: "event_id", value: event_id });
 
+  var url = getUrlAjax();
+
   jQuery.ajax({
     data: params,
     type: "POST",
-    url: $("#hidden-ajax_file").val(),
+    url: url,
     dataType: "json",
     success: function(response) {
       if (response) {
@@ -1201,7 +1226,7 @@ function table_info_response_event(response_id, event_id, server_id, massive) {
         jQuery.ajax({
           data: params,
           type: "POST",
-          url: $("#hidden-ajax_file").val(),
+          url: url,
           dataType: "html",
           success: function(output) {
             if (massive === true) {
@@ -1215,4 +1240,12 @@ function table_info_response_event(response_id, event_id, server_id, massive) {
       }
     }
   });
+}
+
+function getUrlAjax() {
+  if ($("#hidden-ajax_file").length) {
+    return $("#hidden-ajax_file").val();
+  } else if ($("#hidden-ajax_file_sound_console").length) {
+    return $("#hidden-ajax_file_sound_console").val();
+  }
 }

@@ -184,14 +184,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `tgrupo` WRITE;
 INSERT INTO `tgrupo` (`id_grupo`, `nombre`, `icon`, `parent`, `propagate`, `disabled`, `custom_id`, `id_skin`, `other`) VALUES 
-(2,'Servers','server_database',0,0,0,'',1,''),
-(4,'Firewalls','firewall',0,0,0,'',1,''),
-(8,'Databases','database_gear',0,0,0,'',1,''),
-(9,'Network','transmit',0,0,0,'',1,''),
-(10,'Unknown','world',0,0,0,'',1,''),
-(11,'Workstations','computer',0,0,0,'',1,''),
-(12,'Applications','applications',0,0,0,'',1,''),
-(13,'Web','world',0,0,0,'',1,'');
+(2,'Servers','servers@groups.svg',0,0,0,'',1,''),
+(4,'Firewalls','firewall@groups.svg',0,0,0,'',1,''),
+(8,'Databases','database@groups.svg',0,0,0,'',1,''),
+(9,'Network','network@groups.svg',0,0,0,'',1,''),
+(10,'Unknown','unknown@groups.svg',0,0,0,'',1,''),
+(11,'Workstations','workstation@groups.svg',0,0,0,'',1,''),
+(12,'Applications','applications@groups.svg',0,0,0,'',1,''),
+(13,'Web','web@groups.svg',0,0,0,'',1,'');
 UNLOCK TABLES;
 
 

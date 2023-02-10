@@ -475,3 +475,11 @@ div.multi-response-buttons {
 .icon_background_unknown {
   background-color: gray;
 }
+
+.events-refr {
+  width: 350px;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}

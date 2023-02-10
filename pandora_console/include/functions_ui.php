@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use Mpdf\Tag\Tr;
+
 // Begin.
 global $config;
 
@@ -7377,4 +7379,97 @@ function ui_get_inventory_module_add_form(
     return ob_get_clean();
 }
 
+
+/**
+ * Print Fullscreen Bar.
+ *
+ * @param array   $options Fullsreen options.
+ * @param boolean $return  If true, return the formed element.
+ *
+ * @return void|string
+ */
+function ui_print_fullscreen_bar(array $options, bool $return=false)
+{
+    // Always requery file.
+    ui_require_jquery_file('countdown');
+    // Vars.
+    $url = ($options['url'] ?? '');
+    $normalScreenTitle = ($options['normal_screen_title'] ?? 'Back to normal mode');
+    $mainTitle = ($options['title'] ?? 'Full screen mode');
+    $title = '<span class="">'.__('Refresh').'</span>';
+    $select = html_print_select(
+        get_refresh_time_array(),
+        'refresh',
+        (int) get_parameter('refresh'),
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'margin-top: 3px;'
+    );
+
+    $vcRefrDivContent = [];
+    $vcRefrDivContent[] = html_print_div(['class' => 'vc-countdown inline_line'], true);
+    $vcRefrDivContent[] = html_print_div(
+        [
+            'id'      => 'vc-refr-form',
+            'content' => $title.$select,
+        ],
+        true
+    );
+    // Floating menu - Start.
+    $menuTabContent[] = '<ul class="mn">';
+    // Quit fullscreen.
+    $menuTabContent[] = '<li class="nomn">';
+    $menuTabContent[] = html_print_anchor(
+        [
+            'href'    => $url,
+            'content' => html_print_image(
+                'images/exit_fullscreen@svg.svg',
+                true,
+                [
+                    'title' => __($normalScreenTitle),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
+    $menuTabContent[] = '</li>';
+    // Countdown.
+    $menuTabContent[] = '<li class="nomn">';
+    $menuTabContent[] = html_print_div(
+        [
+            'class'   => 'vc-refr',
+            'content' => implode('', $vcRefrDivContent),
+        ],
+        true
+    );
+    $menuTabContent[] = '</li>';
+
+    // Console name.
+    $menuTabContent[] = '<li class="nomn">';
+    $menuTabContent[] = html_print_div(
+        [
+            'class'   => 'vc-title',
+            'content' => __($mainTitle),
+        ],
+        true
+    );
+    $menuTabContent[] = '</li>';
+    $menuTabContent[] = '</ul>';
+
+    return html_print_div(
+        [
+            'id'      => 'menu_tab',
+            'class'   => 'full_screen_control_bar',
+            'content' => implode('', $menuTabContent),
+        ],
+        $return
+    );
+}
 

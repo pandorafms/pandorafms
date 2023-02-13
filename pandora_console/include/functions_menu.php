@@ -273,7 +273,7 @@ function menu_print_menu(&$menu)
                 $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
-                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p">'.$sub['text'].'</span><div class="w29p arrow_menu_down"></div></div>';
+                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w29p arrow_menu_down"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
                         $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {
@@ -434,7 +434,11 @@ function menu_print_menu(&$menu)
         if ($menuTypeClass === 'collapsed') {
             $div = '<div class="icon_'.$id.' w100p"></div><span class="w55p" style="display: none">'.$main['text'].'</span><div class="arrow_menu_down w30p" style="display: none"></div>';
         } else {
-            $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
+            if ($id === 'about') {
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="w30p"></div>';
+            } else {
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
+            }
         }
 
         $output .= sprintf('<div id="title_menu" class="title_menu_classic">%s</div>', $div);

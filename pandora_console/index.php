@@ -1169,8 +1169,7 @@ if ($config['pure'] == 0) {
     echo sprintf('<div id="page" class="page_%s">', $menuTypeClass);
     echo '<div id="menu">';
 
-    // include 'general/main_menu.php';
-    include 'general/new_main_menu.php';
+    include 'general/main_menu.php';
     echo '</div>';
     echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
 } else {

@@ -594,10 +594,12 @@ $menu_operation['workspace']['id'] = 'oper-users';
 
 // ANY user can view him/herself !
 // Users.
+$query_paramameters_user = '&edit_user=1&pure=0&id_user='.$config['id_user'];
+
 $sub = [];
-$sub['operation/users/user_edit']['text'] = __('Edit my user');
-$sub['operation/users/user_edit']['id'] = 'Edit_my_user';
-$sub['operation/users/user_edit']['refr'] = 0;
+$sub['godmode/users/configure_user'.$query_paramameters_user]['text'] = __('Edit my user');
+$sub['godmode/users/configure_user'.$query_paramameters_user]['id'] = 'Edit_my_user';
+$sub['godmode/users/configure_user'.$query_paramameters_user]['refr'] = 0;
 
 // Users.
 $sub['operation/users/user_edit_notifications']['text'] = __('Configure user notifications');

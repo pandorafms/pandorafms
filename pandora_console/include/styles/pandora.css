@@ -1735,12 +1735,12 @@ div.title_line {
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
   position: sticky;
-  top: 59px;
+  top: 60px;
   z-index: 1000;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 4px solid #14524f;
+  border-bottom: 1px solid #14524f;
   /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
   width: -moz-fill-available;

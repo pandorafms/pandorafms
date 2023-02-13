@@ -75,15 +75,15 @@ if ($menuTypeClass === 'collapsed') {
 echo '<div id="menu_tabs">';
 // Tabs classic.
 echo '<ul class="tabs_ul" style="'.$display_classic.'">';
-echo '<li id="tab_display" class="tabs_li"><span>'.__('Display').'</span></a></li>';
+echo '<li id="tab_display" class="tabs_li"><span>'.__('Operation').'</span></a></li>';
 echo '<li id="tab_management" class="tabs_li"><span>'.__('Management').'</span></a></li>';
 echo '</ul>';
 echo '<div class="div_border_line" style="'.$display_classic.'"><div id="tab_line_1" class="border_line"></div><div id="tab_line_2" class="border_line"></div></div>';
 // Tabs collapse.
 echo '<div class="tabs_collapsed" style="'.$display_collapsed.'">';
 echo '<div class="tabs_collapsed_container">';
-echo '<div id="tab_collapsed_display" class="tabs_collapsed_div"><div class="tabs_collapsed_display"></div></div>';
-echo '<div id="tab_collapsed_management" class="tabs_collapsed_div"><div class="tabs_collapsed_management"></div></div>';
+echo '<div id="tab_collapsed_display" class="tabs_collapsed_div" title="'.__('Operation').'"><div class="tabs_collapsed_display"></div></div>';
+echo '<div id="tab_collapsed_management" class="tabs_collapsed_div" title="'.__('Management').'"><div class="tabs_collapsed_management"></div></div>';
 echo '</div></div>';
 
 echo '</div>';

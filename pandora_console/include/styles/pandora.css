@@ -1379,7 +1379,7 @@ div#head {
   height: 60px;
   padding-top: 0px;
   margin: 0 auto;
-  border-bottom: 1px solid #9ca4a6;
+  border-bottom: 1px solid #c1ccdc;
   min-width: 882px;
   background-color: #fff;
   color: #000;
@@ -1735,7 +1735,7 @@ div.title_line {
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
   position: sticky;
-  top: 60px;
+  top: 59px;
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -1746,7 +1746,7 @@ div.title_line {
   width: -moz-fill-available;
   padding-right: 0px;
   /* margin-bottom: 20px; */
-  height: 56px;
+  height: 53px;
   box-sizing: border-box;
   background-color: #fff;
   /* margin-left: -3em;*/

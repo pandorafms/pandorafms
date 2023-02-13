@@ -792,17 +792,22 @@ class NetworkMap
                 || $this->mapOptions['map_filter']['dont_show_subgroups'] == 1
             ) {
                 // Show only current selected group.
-                $filter['id_grupo'] = $this->idGroup;
+                $filter['id_grupo'] = explode(',', $this->idGroup);
             } else {
                 // Show current group and children.
-                $childrens = groups_get_children($this->idGroup, null, true);
-                if (!empty($childrens)) {
-                    $childrens = array_keys($childrens);
+                foreach (explode(',', $this->idGroup) as $key => $group) {
+                    $childrens = groups_get_children($group, null, true);
+                    if (!empty($childrens)) {
+                        $childrens = array_keys($childrens);
 
-                    $filter['id_grupo'] = $childrens;
-                    $filter['id_grupo'][] = $this->idGroup;
-                } else {
-                    $filter['id_grupo'] = $this->idGroup;
+                        if (empty($filter['id_grupo']) === false) {
+                            $filter['id_grupo'] = array_merge($filter['id_grupo'], $childrens);
+                        } else {
+                            $filter['id_grupo'] = $childrens;
+                        }
+                    } else {
+                        $filter['id_grupo'][] = $group;
+                    }
                 }
             }
 

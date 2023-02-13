@@ -237,7 +237,7 @@ if ($new_networkmap || $save_networkmap) {
     }
 
     if ($save_networkmap) {
-        $id_group = (int) get_parameter('id_group', 0);
+        $id_group = get_parameter('id_group', 0);
         $id_group_map = (int) get_parameter('id_group_map', 0);
 
 
@@ -292,7 +292,7 @@ if ($new_networkmap || $save_networkmap) {
 
         $values = [];
         $values['name'] = $name;
-        $values['id_group'] = $id_group;
+        $values['id_group'] = implode(',', $id_group);
         $values['source_period'] = 60;
         $values['width'] = $width;
         $values['height'] = $height;
@@ -333,7 +333,7 @@ if ($new_networkmap || $save_networkmap) {
 
         if ($source == 'group') {
             $values['source'] = 0;
-            $values['source_data'] = $id_group;
+            $values['source_data'] = implode(',', $id_group);
         } else if ($source == 'recon_task') {
             $values['source'] = 1;
             $values['source_data'] = $recon_task_id;

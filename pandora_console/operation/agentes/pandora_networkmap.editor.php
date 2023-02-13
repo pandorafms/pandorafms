@@ -337,7 +337,14 @@ if ($not_found) {
     );
 
     $table->data[3][0] = __('Description');
-    $table->data[3][1] = html_print_textarea('description', 7, 25, $description, '', true);
+    $table->data[3][1] = html_print_input_text(
+        'description',
+        $description,
+        '',
+        100,
+        100,
+        true
+    );
 
     $table->data[4][0] = __('Position X');
     $table->data[4][1] = html_print_input_text('pos_x', $offset_x, '', 2, 10, true);
@@ -401,11 +408,12 @@ if ($not_found) {
         $config['id_user'],
         'AR',
         true,
-        'id_group',
-        $id_group,
+        'id_group[]',
+        explode(',', $id_group),
         '',
         '',
         '',
+        true,
         true
     ).'</div>';
     $table->data['source_data_group'][1] .= html_print_image(

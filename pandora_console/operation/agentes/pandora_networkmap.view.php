@@ -315,8 +315,6 @@ if (is_ajax() === true) {
                         $("#source").change(function() {
 							const source = $(this).val();
 
-                            console.log("aaaaaaaaaaaaaaaa");
-
 							if (source == \'recon_task\') {
 								$("#form_editor-source_data_ip_mask")
 									.css(\'display\', \'none\');

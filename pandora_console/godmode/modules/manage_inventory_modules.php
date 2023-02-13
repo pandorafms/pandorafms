@@ -41,12 +41,24 @@ if (is_metaconsole() === true) {
     }
 } else {
     $sec = 'gmodules';
-    ui_print_page_header(
-        __('Module management').' &raquo; '.__('Inventory modules'),
+
+    ui_print_standard_header(
+        __('Inventory modules'),
         'images/page_white_text.png',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Inventory modules'),
+            ],
+        ]
     );
 
     if ($management_allowed === false) {
@@ -266,7 +278,7 @@ if ($create_module_inventory === true) {
 $total_modules = db_get_sql('SELECT COUNT(*) FROM tmodule_inventory');
 
 $table = new stdClass();
-$table->width = '100%';
+$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available';
 $table->class = 'info_table';
 $table->size = [];
 $table->size[0] = '140px';
@@ -302,9 +314,15 @@ if ($result === false) {
 
         $data[1] = $row['description'];
         if ($row['os_name'] == null) {
-            $data[2] = html_print_image('images/agent.png', true, ['border' => '0', 'alt' => __('Agent'), 'title' => __('Agent'), 'height' => '18', 'class' => 'invert_filter']);
+            $data[2] = html_print_image('images/agents@svg.svg', true, ['border' => '0', 'alt' => __('Agent'), 'title' => __('Agent'), 'height' => '18', 'class' => 'invert_filter main_menu_icon']);
         } else {
-            $data[2] = ui_print_os_icon($row['id_os'], false, true);
+            $data[2] = html_print_div(
+                [
+                    'class'   => 'invert_filter main_menu_icon',
+                    'content' => ui_print_os_icon($row['id_os'], false, true),
+                ],
+                true
+            );
         }
 
         if ($row['interpreter'] == '') {
@@ -328,29 +346,33 @@ if ($result === false) {
         array_push($table->data, $data);
     }
 
-    echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_inventory_modules'>";
+    echo '<form id="form_delete" method="POST" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules">';
     html_print_input_hidden('multiple_delete', 1);
-    ui_pagination($total_modules, 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules', $offset);
     html_print_table($table);
-    ui_pagination($total_modules, 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules', $offset, 0, false, 'offset', true, 'pagination-bottom');
-    echo "<div class='pdd_l_5px float-right'>";
+    echo '</form>';
+    $tablePagination = ui_pagination($total_modules, 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules', $offset, 0, true, 'offset', false);
+
+    $actionButtons = [];
+
     if ($management_allowed === true) {
-        html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+        $actionButtons[] = html_print_submit_button(__('Delete'), 'delete_btn', false, ['icon' => 'delete', 'mode' => 'secondary', 'form' => 'form_delete'], true);
+        $actionButtons[] = html_print_submit_button(__('Create'), 'crt', false, ['icon' => 'wand', 'form' => 'form_create'], true);
+
+        $actionButtons[] = '<form id="form_create" method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form">';
+        $actionButtons[] = html_print_input_hidden('create_module_inventory', 1, true);
+        $actionButtons[] = '<form>';
     }
 
-    echo '</div>';
-    echo '</form>';
-}
 
-if ($management_allowed === true) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form">';
-    echo '<div class="float-right mrgn_btn_15px">';
-    html_print_input_hidden('create_module_inventory', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-    echo '</div>';
-    echo '</form>';
+    html_print_action_buttons(
+        implode('', $actionButtons),
+        [
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
+        ],
+        false
+    );
 }
-
 
 if (is_metaconsole() === true) {
     enterprise_hook('close_meta_frame');

@@ -138,3 +138,22 @@
 #url_tip .arrow_tips {
   font-size: 20px;
 }
+span.count-round-tip {
+  width: 6px !important;
+  height: 6px !important;
+  background: #dbdfe6;
+  border-radius: 10px;
+  margin: 0px 2px;
+}
+span.count-round-tip.active {
+  background-color: #1d7874;
+}
+.counter-tips {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+.arrow-counter {
+  width: 7px;
+  margin: 0px 5px;
+}

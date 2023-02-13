@@ -131,33 +131,36 @@ class TipsWindow
         ui_require_javascript_file('tipsWindow');
         ui_require_javascript_file('jquery.bxslider.min');
         echo '<div id="tips_window_modal"></div>';
-        ?>
+        $this->totalTips = $this->getTotalTips();
+        if ($this->totalTips > 0) {
+            ?>
 
-            <script>
-                var totalTips = <?php echo $this->getTotalTips(); ?>;
-                var idTips = [<?php echo $initialTip['id']; ?>];
-                var url = '<?php echo ui_get_full_url('ajax.php'); ?>';
-                var page = '<?php echo $this->ajaxController; ?>';
-            </script>
-            <script>
-            if(totalTips > 0){
-                load_tips_modal({
-                    target: $('#tips_window_modal'),
-                    url: '<?php echo ui_get_full_url('ajax.php'); ?>',
-                    modal: {
-                        title: '<?php echo __('Hola! estos son los tips del día'); ?>',
-                        next: '<?php echo __('De acuerdo'); ?>',
-                        close: '<?php echo __('Quizás luego'); ?>'
-                    },
-                    onshow: {
-                        page: '<?php echo $this->ajaxController; ?>',
-                        method: 'renderView',
-                    }
-                });
-            }
-            </script>
+                <script>
+                    var totalTips = <?php echo $this->totalTips; ?>;
+                    var idTips = [<?php echo $initialTip['id']; ?>];
+                    var url = '<?php echo ui_get_full_url('ajax.php'); ?>';
+                    var page = '<?php echo $this->ajaxController; ?>';
+                </script>
+                <script>
+                if(totalTips > 0){
+                    load_tips_modal({
+                        target: $('#tips_window_modal'),
+                        url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                        modal: {
+                            title: '<?php echo __('Hola! estos son los tips del día'); ?>',
+                            next: '<?php echo __('De acuerdo'); ?>',
+                            close: '<?php echo __('Quizás luego'); ?>'
+                        },
+                        onshow: {
+                            page: '<?php echo $this->ajaxController; ?>',
+                            method: 'renderView',
+                        }
+                    });
+                }
+                </script>
 
-        <?php
+            <?php
+        }
     }
 
 

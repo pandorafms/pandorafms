@@ -7,16 +7,54 @@ $(".carousel .images").ready(function() {
 function render({ title, text, url, files }) {
   $("#title_tip").html(title);
   $("#text_tip").html(text);
-  $("#url_tip").attr("href", url);
+  if (url) {
+    $("#url_tip").removeClass("invisible");
+    $("#url_tip").attr("href", url);
+  } else {
+    $("#url_tip").addClass("invisible");
+  }
+
   $(".carousel .images").empty();
 
   if (files) {
     files.forEach(file => {
-      $(".carousel .images").append(`<img src="${file.filename}" />`);
+      $(".carousel .images").append(
+        `<img src="${file.path + file.filename}" />`
+      );
     });
     $(".carousel").removeClass("invisible");
   } else {
     $(".carousel").addClass("invisible");
+  }
+  var limitRound = totalTips > 28 ? 28 : totalTips;
+  $(".count-round-tip").each(function(index) {
+    if ($(this).hasClass("active")) {
+      $(this).removeClass("active");
+      if (index >= limitRound - 1) {
+        $($(".count-round-tip")[0]).addClass("active");
+      } else {
+        $($(".count-round-tip")[index + 1]).addClass("active");
+      }
+      return false;
+    }
+  });
+}
+
+function close_dialog() {
+  $("#tips_window_modal").dialog("close");
+  $("#tips_window_modal").remove();
+}
+
+function render_counter() {
+  $(".counter-tips img:eq(0)").after(
+    "<span class='count-round-tip active'></span>"
+  );
+  if (totalTips > 1) {
+    for (let i = 1; i <= totalTips - 1; i++) {
+      $(".count-round-tip:eq(0)").after(
+        "<span class='count-round-tip'></span>"
+      );
+    }
   }
 }
 
@@ -134,7 +172,7 @@ function load_tips_modal(settings) {
         settings.onload(data);
       }
       settings.target.dialog({
-        resizable: true,
+        resizable: false,
         draggable: true,
         modal: true,
         header: false,
@@ -175,6 +213,7 @@ function load_tips_modal(settings) {
       $(".tips_header").remove();
       $(".dialog_tips .ui-dialog-titlebar").addClass("tips_header");
       $(".dialog_tips .ui-dialog-titlebar").removeClass("ui-helper-clearfix");
+      render_counter();
     },
     error: function(data) {
       console.error(data);

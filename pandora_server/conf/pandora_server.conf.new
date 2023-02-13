@@ -598,6 +598,9 @@ unknown_events 1
 # Time interval (as a multiple of the module interval) before a module becomes unknown. Twice the module's interval by default.
 #unknown_interval 2
 
+# Number of unknown modules that will be processed per iteration.
+unknown_block_size 1000
+
 # Maximum executing time of an alert (in  seconds)
 global_alert_timeout 15
 

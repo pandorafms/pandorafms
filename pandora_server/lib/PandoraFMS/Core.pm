@@ -6009,10 +6009,6 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $start_performance = time;
-	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
-	my $read_speed = int((time - $start_performance) * 1e6);
-
 	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 
 	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
@@ -6058,13 +6054,6 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
-
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Execution_Time</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <unit>us</unit>";
-	$xml_output .=" <data>$read_speed</data>";
-	$xml_output .=" </module>";
 
 	$xml_output .= "</agent_data>";
 
@@ -6214,7 +6203,7 @@ sub pandora_module_unknown ($$) {
 				')
 			)
 			AND tagente_estado.utimestamp != 0
-			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
+			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP() LIMIT ?', $pa_config->{'unknown_interval'}, $pa_config->{'unknown_block_size'});
 	
 	foreach my $module (@modules) {
 		

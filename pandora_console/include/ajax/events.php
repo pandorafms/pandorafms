@@ -2424,6 +2424,18 @@ if ($drawConsoleSound === true) {
             $output .= '</span>';
             $output .= '</div>';
             $output .= '<div class="elements-discovered-alerts"><ul></ul></div>';
+            $output .= html_print_input_hidden(
+                'ajax_file_sound_console',
+                ui_get_full_url('ajax.php', false, false, false),
+                true
+            );
+            $output .= html_print_input_hidden(
+                'meta',
+                is_metaconsole(),
+                true
+            );
+            $output .= '<div id="sound_event_details_window"></div>';
+            $output .= '<div id="sound_event_response_window"></div>';
         $output .= '</div>';
     $output .= '</div>';
 
@@ -2510,6 +2522,37 @@ if ($get_events_fired) {
         $filter = events_get_event_filter($filter_id);
     }
 
+    if (is_metaconsole() === true) {
+        $servers = metaconsole_get_servers();
+        if (is_array($servers) === true) {
+            $servers = array_reduce(
+                $servers,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['server_name'];
+                    return $carry;
+                }
+            );
+        } else {
+            $servers = [];
+        }
+
+        if ($filter['server_id'] === '') {
+            $filter['server_id'] = array_keys($servers);
+        } else {
+            if (is_array($filter['server_id']) === false) {
+                if (is_numeric($filter['server_id']) === true) {
+                    if ($filter['server_id'] !== 0) {
+                        $filter['server_id'] = [$filter['server_id']];
+                    } else {
+                        $filter['server_id'] = array_keys($servers);
+                    }
+                } else {
+                    $filter['server_id'] = explode(',', $filter['server_id']);
+                }
+            }
+        }
+    }
+
     // Set time.
     $filter['event_view_hr'] = 0;
 
@@ -2528,29 +2571,32 @@ if ($get_events_fired) {
     $return = [];
     if (empty($data) === false) {
         foreach ($data as $event) {
-            $return[] = [
-                'fired'     => $event['id_evento'],
-                'message'   => ui_print_string_substr(
-                    strip_tags(io_safe_output($event['evento'])),
-                    75,
-                    true,
-                    '9'
-                ),
-                'priority'  => ui_print_event_priority($event['criticity'], true, true),
-                'type'      => events_print_type_img(
-                    $event['event_type'],
-                    true
-                ),
-                'timestamp' => ui_print_timestamp(
-                    $event['timestamp'],
-                    true,
-                    ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
-                ),
-            ];
+            $return[] = array_merge(
+                $event,
+                [
+                    'fired'     => $event['id_evento'],
+                    'message'   => ui_print_string_substr(
+                        strip_tags(io_safe_output($event['evento'])),
+                        75,
+                        true,
+                        '9'
+                    ),
+                    'priority'  => ui_print_event_priority($event['criticity'], true, true),
+                    'type'      => events_print_type_img(
+                        $event['event_type'],
+                        true
+                    ),
+                    'timestamp' => ui_print_timestamp(
+                        $event['timestamp'],
+                        true,
+                        ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
+                    ),
+                ]
+            );
         }
     }
 
-    echo io_json_mb_encode($return);
+    echo io_safe_output(io_json_mb_encode($return));
     return;
 }
 

@@ -33,10 +33,11 @@ require_once 'include/functions_menu.php';
 
 check_login();
 
-$access_console_node = !is_reporting_console_node();
+$access_console_node = is_reporting_console_node() === false;
 $menu_godmode = [];
 $menu_godmode['class'] = 'godmode';
 
+$menuGodmode = [];
 if ($access_console_node === true) {
     enterprise_include('godmode/menu.php');
 }

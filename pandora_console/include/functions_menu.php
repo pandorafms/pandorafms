@@ -53,12 +53,12 @@ function menu_print_menu(&$menu)
 
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
-    if ($sec2 == 'operation/agentes/ver_agente') {
+    if ($sec2 === 'operation/agentes/ver_agente') {
         $sec2 = 'godmode/agentes/configurar_agente';
-    } else if ($sec2 == 'godmode/servers/discovery') {
+    } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
-    } else if ($sec2 == 'godmode/groups/group_list') {
+    } else if ($sec2 === 'godmode/groups/group_list') {
         $tab = (string) get_parameter('tab');
         if ($tab === 'credbox') {
             $sec2 = 'godmode/groups/group_list&tab='.$tab;
@@ -70,58 +70,39 @@ function menu_print_menu(&$menu)
     $menu_selected = false;
 
     $allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
-    if (isset($allsec2[1])) {
+    if (isset($allsec2[1]) === true) {
         $allsec2 = $allsec2[1];
     } else {
         $allsec2 = $sec2;
     }
 
     // Open list of menu.
-    echo '<ul'.(isset($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
+    echo '<ul'.((isset($menu['class']) === true) ? ' class="'.$menu['class'].'"' : '').'>';
 
     // Use $config because a global var is required because normal
     // and godmode menu are painted separately.
-    if (!isset($config['count_main_menu'])) {
+    if (isset($config['count_main_menu']) === false) {
         $config['count_main_menu'] = 0;
     }
 
     foreach ($menu as $mainsec => $main) {
-        $extensionInMenuParameter = (string) get_parameter('extension_in_menu', '');
+        $extensionInMenuParameter = (string) get_parameter('extension_in_menu');
 
         $showSubsection = true;
-        if ($extensionInMenuParameter != '') {
-            if ($extensionInMenuParameter == $mainsec) {
-                $showSubsection = true;
-            } else {
-                $showSubsection = false;
-            }
+        if (empty($extensionInMenuParameter) === false) {
+            $showSubsection = ($extensionInMenuParameter === $mainsec);
         }
 
-        if ($mainsec == 'class') {
+        if ($mainsec === 'class') {
             continue;
         }
 
-        // ~ if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
-            // ~ continue;
-        if (! isset($main['id'])) {
-            $id = 'menu_'.(++$idcounter);
-        } else {
-            $id = $main['id'];
-        }
-
+        $id = (isset($main['id']) === false) ? 'menu_'.(++$idcounter) : $main['id'];
         $submenu = false;
-
-        if ($menuTypeClass === 'classic') {
-            $classes = [
-                'menu_icon',
-                'no_hidden_menu',
-            ];
-        } else {
-            $classes = [
-                'menu_icon',
-                'menu_icon_collapsed',
-            ];
-        }
+        $classes = [
+            'menu_icon',
+            ($menuTypeClass === 'classic') ? 'no_hidden_menu' : 'menu_icon_collapsed',
+        ];
 
         if (isset($main['sub']) === true) {
             $classes[] = '';
@@ -132,11 +113,11 @@ function menu_print_menu(&$menu)
             $main['refr'] = 0;
         }
 
-        if (($sec == $mainsec) && ($showSubsection)) {
+        if (($sec === $mainsec) && ((bool) $showSubsection === true)) {
             $classes[] = '';
         } else {
             $classes[] = '';
-            if ($extensionInMenuParameter == $mainsec) {
+            if ($extensionInMenuParameter === $mainsec) {
                 $classes[] = '';
             }
         }

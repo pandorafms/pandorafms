@@ -956,6 +956,11 @@ function processTreeSearch(settings) {
               agents: settings.translate.ok.agents,
               modules: settings.translate.ok.modules,
               none: settings.translate.ok.none
+            },
+            not_normal: {
+              agents: settings.translate.not_normal.agents,
+              modules: settings.translate.not_normal.modules,
+              none: settings.translate.not_normal.none
             }
           }
         });

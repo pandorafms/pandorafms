@@ -61,6 +61,10 @@ function menu_print_menu(&$menu)
     } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
+        $mode = (string) get_parameter('mode', '');
+        if (empty($mode) === false) {
+            $sec2 .= '&mode='.$mode;
+        }
     } else if ($sec2 === 'godmode/groups/group_list') {
         $tab = (string) get_parameter('tab');
         if ($tab === 'credbox') {
@@ -256,7 +260,7 @@ function menu_print_menu(&$menu)
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w29p arrow_menu_down"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
-                        $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
+                    $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {
                     $submenu_output .= '<a href="'.$subsec2.'"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 }

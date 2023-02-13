@@ -352,7 +352,23 @@ if ($not_found) {
     $table->data[6][1] = html_print_input_text('scale_z', $scale_z, '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
     $table->data['source'][0] = __('Source');
-    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
+    $table->data['source'][1] = html_print_select(
+        [
+            'group'      => __('Group'),
+            'recon_task' => __('Discovery task'),
+            'ip_mask'    => __('CIDR IP mask'),
+        ],
+        'source',
+        $source,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        '',
+        $disabled_source
+    );
 
     $table->data['source_data_recon_task'][0] = __('Source from recon task');
     $table->data['source_data_recon_task'][0] .= ui_print_help_tip(
@@ -498,9 +514,9 @@ if ($not_found) {
 <script type="text/javascript">
 
 $(document).ready(function() {
-    $("input[name='source']").on('change', function() {
-        var source = $("input[name='source']:checked").val();
-        
+    $("#source").change(function() {
+        const source = $(this).val();
+
         if (source == 'recon_task') {
             $("#form_editor-source_data_ip_mask")
                 .css('display', 'none');
@@ -510,7 +526,6 @@ $(document).ready(function() {
                 .css('display', 'none');
             $("#form_editor-source_data_recon_task")
                 .css('display', '');
-            
         }
         else if (source == 'ip_mask') {
             $("#form_editor-source_data_ip_mask")
@@ -598,17 +613,15 @@ $(document).ready(function() {
                 .css('display', '');
         }
     });
-    
-    $("input[name='source']").trigger("change");
+
+    $("#source").trigger("change");
     $("#method").trigger("change");
 
-    
     // Control if id_group has changed.
     var id_group_old = $("#id_group").val();
     var id_group_changed = false;
 
     $("#id_group").on('change',{id_group_old: id_group_old}, function () {
-        
         var id_group_new = $("#id_group").val();
         if((id_group_old != id_group_new) && (update_networkmap == 1 )) {
             id_group_changed = true;
@@ -625,7 +638,6 @@ $(document).ready(function() {
     update_networkmap = $("input[name='update_networkmap']").val();
 
     $( "#submit-crt" ).click(function( event ) {
-
         if(update_networkmap == 1 && id_group_changed === true) {
             confirmDialog({
                         title: '<?php echo __('Are you sure?'); ?>',
@@ -643,7 +655,6 @@ $(document).ready(function() {
                     })
             event.preventDefault();
         }
- 
     });
 
     $("#refresh_time_units").trigger("change");

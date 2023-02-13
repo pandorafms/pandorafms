@@ -518,6 +518,14 @@ class ConsoleSupervisor
             $this->checkSyncQueueLength();
             $this->checkSyncQueueStatus();
         }
+
+        /*
+         * Checkc agent missing libraries.
+         * NOTIF.AGENT.LIBRARY
+         */
+        if ((bool) enterprise_installed() === true) {
+            $this->checkLibaryError();
+        }
     }
 
 
@@ -2803,6 +2811,31 @@ class ConsoleSupervisor
             }
         }
 
+    }
+
+
+    /**
+     * Chechs if an agent has a dependency eror on omnishell
+     *
+     * @return void
+     */
+    public function checkLibaryError()
+    {
+        $sql = 'SELECT COUNT(errorlevel) from tremote_command_target WHERE errorlevel = 2';
+
+        $error_dependecies = db_get_sql($sql);
+        if ($error_dependecies > 0) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.AGENT.LIBRARY',
+                    'title'   => __('Agent dependency error'),
+                    'message' => __(
+                        'There are omnishell agents with dependency errors',
+                    ),
+                    'url'     => $url,
+                ]
+            );
+        }
     }
 
 

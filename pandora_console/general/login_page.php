@@ -734,7 +734,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-logout").click (function () {
+                $("#button-hide-login-logout").click (function () {
                     document.location = "<?php echo ui_get_full_url('index.php'); ?>";
                 });        
             });
@@ -757,7 +757,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-logout").click (function () {
+                $("#button-hide-login-logout").click (function () {
                     document.location = "<?php echo ui_get_full_url('index.php'); ?>";
                 });        
             });

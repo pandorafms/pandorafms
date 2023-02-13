@@ -117,7 +117,9 @@ function profile_create_user_profile(
         'assigned_by'  => $assign,
         'no_hierarchy' => $no_hierarchy ? 1 : 0,
     ];
-
+    hd('inicio insert', true);
+    hd($insert, true);
+    hd('final insert', true);
     return db_process_sql_insert('tusuario_perfil', $insert);
 }
 
@@ -225,7 +227,8 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     } else {
         // Only profiles that can be viewed by the user.
         $group_um = users_get_groups_UM($config['id_user']);
-        if (isset($group_um[0])) {
+        hd($group_um, true);
+        if (isset($group_um[0]) === true) {
             $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
         } else {
             $group_um_string = implode(',', array_keys($group_um));
@@ -238,7 +241,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
             $id,
             $group_um_string
         );
-
+        hd($sql, true);
         $result = db_get_all_rows_sql($sql);
     }
 

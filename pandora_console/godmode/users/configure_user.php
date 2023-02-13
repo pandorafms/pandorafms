@@ -28,7 +28,7 @@
 
 // Load global vars.
 global $config;
-// hd($_REQUEST); //TODO. For testing purposes.
+// hd($_REQUEST, true); //TODO. For testing purposes.
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -234,35 +234,39 @@ if (is_metaconsole() === true) {
     user_meta_print_header();
     $sec = 'advanced';
 } else {
-    $buttons = [
-        'user'    => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/user.svg',
-                true,
-                [
-                    'title' => __('User management'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            ).'</a>',
-        ],
-        'profile' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                'images/suitcase@svg.svg',
-                true,
-                [
-                    'title' => __('Profile management'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            ).'</a>',
-        ],
-    ];
+    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
+        $buttons = [];
+    } else {
+        $buttons = [
+            'user'    => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                    'images/user.svg',
+                    true,
+                    [
+                        'title' => __('User management'),
+                        'class' => 'invert_filter main_menu_icon',
+                    ]
+                ).'</a>',
+            ],
+            'profile' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                    'images/suitcase@svg.svg',
+                    true,
+                    [
+                        'title' => __('Profile management'),
+                        'class' => 'invert_filter main_menu_icon',
+                    ]
+                ).'</a>',
+            ],
+        ];
 
-    $buttons[$tab]['active'] = true;
+        $buttons[$tab]['active'] = true;
+    }
 
     ui_print_standard_header(
-        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $config['id_user']) : __('Create User'),
+        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -521,7 +525,6 @@ if ($create_user === true) {
             $info
         );
 
-        HD('patatas', true);
         ui_print_result_message(
             $result,
             __('Successfully created'),
@@ -541,7 +544,7 @@ if ($create_user === true) {
             $user_info = get_user_info($id);
             $new_user = false;
 
-            if (!empty($json_profile)) {
+            if (empty($json_profile) === false) {
                 $json_profile = json_decode(io_safe_output($json_profile), true);
                 foreach ($json_profile as $key => $profile) {
                     if (is_array($profile) === false) {
@@ -769,6 +772,7 @@ if ($update_user) {
                             );
                         }
 
+                        hd('res1-res2', true);
                         ui_print_result_message(
                             $res1 || $res2,
                             __('User info successfully updated'),
@@ -842,7 +846,7 @@ if ($update_user) {
                 false,
                 $info
             );
-
+            hd('apitoken', true);
             ui_print_result_message(
                 $res1,
                 ($apiTokenRenewed === true) ? __('You have generated a new API Token.') : __('User info successfully updated'),
@@ -890,7 +894,7 @@ if ((int) $status !== -1) {
 }
 
 if ($add_profile && empty($json_profile)) {
-    $id2 = (string) get_parameter('id');
+    $id2 = (string) get_parameter('id', get_parameter('id_user'));
     $group2 = (int) get_parameter('assign_group');
     $profile2 = (int) get_parameter('assign_profile');
     $tags = (array) get_parameter('assign_tags');
@@ -911,6 +915,15 @@ if ($add_profile && empty($json_profile)) {
         false,
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
     );
+    /*
+        hd('>>>>>', true);
+        hd($id2, true);
+        hd($profile2, true);
+        hd($group2, true);
+        hd($tags, true);
+        hd($no_hierarchy, true);
+        hd('<<<<<<', true);
+    */
     $return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
     if ($return === false) {
         $is_err = true;
@@ -964,9 +977,9 @@ if (isset($values) === true && empty($values) === false) {
     $user_info = $values;
 }
 
-if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
+if (!users_is_admin() && $config['id_user'] !== $id && $new_user === false) {
     $group_um = users_get_groups_UM($config['id_user']);
-    if (isset($group_um[0])) {
+    if (isset($group_um[0]) === true) {
         $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
     } else {
         $group_um_string = implode(',', array_keys($group_um));
@@ -996,7 +1009,7 @@ if (is_metaconsole() === true) {
     html_print_div(
         [
             'class'   => 'user_form_title',
-            'content' => ((bool) $id === true) ? sprintf('%s [ %s ]', __('Update User'), $config['id_user']) : __('Create User'),
+            'content' => ((bool) $id === true) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         ]
     );
 }
@@ -1819,11 +1832,13 @@ if ((bool) $config['admin_can_add_user'] === true) {
     );
 }
 
-$actionButtons[] = html_print_go_back_button(
-    ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0'),
-    ['button_class' => ''],
-    true
-);
+if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
+    $actionButtons[] = html_print_go_back_button(
+        ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0'),
+        ['button_class' => ''],
+        true
+    );
+}
 
 html_print_action_buttons(implode('', $actionButtons), ['type' => 'form_action']);
 

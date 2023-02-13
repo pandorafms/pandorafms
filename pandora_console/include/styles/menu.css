@@ -331,6 +331,10 @@
   background: url(../../images/menu/gm_library.menu_gray.png) no-repeat 50% 50%;
 }
 
+.icon_about {
+  background: url(../../images/menu/about.menu_gray.png) no-repeat 50% 50%;
+}
+
 #menu_container {
   z-index: 3;
   position: absolute;
@@ -430,86 +434,6 @@ ul li {
 
 .godmode {
   padding-top: 2em !important;
-}
-
-/* Menu icons active */
-.selected.icon_oper-networkconsole {
-  background: url(../../images/menu/op_network.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_oper-agents {
-  background: url(../../images/menu/op_monitoring.menu_white.png) no-repeat 50%
-    50%;
-}
-
-.selected.icon_oper-events {
-  background: url(../../images/menu/op_events.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_oper-users {
-  background: url(../../images/menu/op_workspace.menu_white.png) no-repeat 50%
-    50%;
-}
-
-.selected.icon_oper-reporting {
-  background: url(../../images/menu/op_reporting.menu_white.png) no-repeat 50%
-    50%;
-}
-
-.selected.icon_oper-extensions {
-  background: url(../../images/menu/extensions.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-discovery {
-  background: url(../../images/menu/gm_discovery.menu_white.png) no-repeat 50%
-    50%;
-}
-
-.selected.icon_god-resources {
-  background: url(../../images/menu/gm_resources.menu_white.png) no-repeat 50%
-    50%;
-}
-
-.selected.icon_god-configuration {
-  background: url(../../images/menu/gm_configuration.menu_white.png) no-repeat
-    50% 50%;
-}
-
-.selected.icon_god-alerts {
-  background: url(../../images/menu/gm_alerts.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-users {
-  background: url(../../images/menu/gm_users.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-servers {
-  background: url(../../images/menu/gm_servers.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-setup {
-  background: url(../../images/menu/gm_setup.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-events {
-  background: url(../../images/menu/gm_events.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-extensions {
-  background: url(../../images/menu/builder.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-links {
-  background: url(../../images/menu/links.menu_white.png) no-repeat 50% 50%;
-}
-
-.selected.icon_god-um_messages {
-  background: url(../../images/menu/um_messages.menu_white.png) no-repeat 50%
-    50%;
-}
-
-.selected.icon_god-module_library {
-  background: url(../../images/menu/gm_library.menu_white.png) no-repeat 50% 50%;
 }
 
 #menu_full {
@@ -690,7 +614,7 @@ ul li {
 }
 
 .tabs_collapsed {
-  height: 48px;
+  height: 53px;
   display: flex;
   justify-content: center;
   align-items: center;

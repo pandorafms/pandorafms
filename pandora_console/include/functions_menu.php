@@ -416,7 +416,7 @@ function menu_print_menu(&$menu)
             $div = '<div class="icon_'.$id.' w100p"></div><span class="w55p" style="display: none">'.$main['text'].'</span><div class="arrow_menu_down w30p" style="display: none"></div>';
         } else {
             if ($id === 'about') {
-                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="w30p"></div>';
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span>';
             } else {
                 $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
             }

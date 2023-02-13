@@ -127,31 +127,36 @@ class TipsWindow
     public function run()
     {
         ui_require_css_file('tips_window');
+        ui_require_css_file('jquery.bxslider');
         ui_require_javascript_file('tipsWindow');
-        echo '<div id="tips_window_modal" class="invisible"></div>';
+        ui_require_javascript_file('jquery.bxslider.min');
+        echo '<div id="tips_window_modal"></div>';
         ?>
 
-
-            <script>
-                load_modal({
-                target: $('#tips_window_modal'),
-                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
-                modal: {
-                    title: '<?php echo __('Hola! estos son los tips del día'); ?>',
-                    ok: '<?php echo __('De acuerdo'); ?>'
-                },
-                onshow: {
-                    page: '<?php echo $this->ajaxController; ?>',
-                    method: 'renderView',
-                }
-            });
-            </script>
             <script>
                 var totalTips = <?php echo $this->getTotalTips(); ?>;
                 var idTips = [<?php echo $initialTip['id']; ?>];
                 var url = '<?php echo ui_get_full_url('ajax.php'); ?>';
                 var page = '<?php echo $this->ajaxController; ?>';
             </script>
+            <script>
+            if(totalTips > 0){
+                load_tips_modal({
+                    target: $('#tips_window_modal'),
+                    url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                    modal: {
+                        title: '<?php echo __('Hola! estos son los tips del día'); ?>',
+                        next: '<?php echo __('De acuerdo'); ?>',
+                        close: '<?php echo __('Quizás luego'); ?>'
+                    },
+                    onshow: {
+                        page: '<?php echo $this->ajaxController; ?>',
+                        method: 'renderView',
+                    }
+                });
+            }
+            </script>
+
         <?php
     }
 

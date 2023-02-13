@@ -1740,7 +1740,7 @@ div.title_line {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 4px solid #c1ccdc;
+  border-bottom: 1px solid #c1ccdc;
   /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
   width: -moz-fill-available;

@@ -231,7 +231,7 @@ if (strlen(trim($agentName)) > 0) {
 }
 
 if ($actionID != -1 && $actionID != '') {
-    $where .= ' AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.'))';
+    $where .= ' AND (talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.')))';
 }
 
 if ($status_alert === 'disabled') {
@@ -570,7 +570,7 @@ foreach ($simple_alerts as $alert) {
 
     if ($alert['times_fired'] > 0) {
         $status = STATUS_ALERT_FIRED;
-        $title = __('Alert fired').' '.$alert['internal_counter'].' '.__('time(s)');
+        $title = __('Alert fired').' '.$alert['times_fired'].' '.__('time(s)');
     } else if ($alert['disabled'] > 0) {
         $status = STATUS_ALERT_DISABLED;
         $title = __('Alert disabled');

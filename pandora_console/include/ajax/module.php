@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 if (check_login()) {
     global $config;
@@ -58,6 +60,19 @@ if (check_login()) {
         'get_graph_module_interfaces',
         0
     );
+
+    $get_children_modules = (bool) get_parameter('get_children_modules', false);
+
+    $get_data_dataMatrix = (bool) get_parameter(
+        'get_data_dataMatrix',
+        0
+    );
+
+    $load_filter_modal = get_parameter('load_filter_modal', 0);
+    $save_filter_modal = get_parameter('save_filter_modal', 0);
+    $get_monitor_filters = get_parameter('get_monitor_filters', 0);
+    $save_monitor_filter = get_parameter('save_monitor_filter', 0);
+    $update_monitor_filter = get_parameter('update_monitor_filter', 0);
 
     if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
@@ -499,7 +514,9 @@ if (check_login()) {
                                         $data[] = remove_right_zeros(
                                             number_format(
                                                 $row[$attr[0]],
-                                                $config['graph_precision']
+                                                $config['graph_precision'],
+                                                $config['decimal_separator'],
+                                                $config['thousand_separator']
                                             )
                                         );
                                     }
@@ -507,7 +524,9 @@ if (check_login()) {
                                     $data[] = remove_right_zeros(
                                         number_format(
                                             $row[$attr[0]],
-                                            $config['graph_precision']
+                                            $config['graph_precision'],
+                                            $config['decimal_separator'],
+                                            $config['thousand_separator']
                                         )
                                     );
                                 }
@@ -524,7 +543,9 @@ if (check_login()) {
                                     $data[] = remove_right_zeros(
                                         number_format(
                                             $row[$attr[0]],
-                                            $config['graph_precision']
+                                            $config['graph_precision'],
+                                            $config['decimal_separator'],
+                                            $config['thousand_separator']
                                         )
                                     );
                                 }
@@ -1163,8 +1184,8 @@ if (check_login()) {
                 $status,
                 $title
             );
-
-            $last_status_change_text = 'Time elapsed since last status change: ';
+            $last_status_change_text = ($module['ip_target']) ? 'IP: '.$module['ip_target'].'<br />' : '';
+            $last_status_change_text .= 'Time elapsed since last status change: ';
             $last_status_change_text .= !empty($module['last_status_change']) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
             $data[5] = ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $last_status_change_text);
@@ -1428,6 +1449,752 @@ if (check_login()) {
         );
         echo $output;
 
+        return;
+    }
+
+    if ($get_data_dataMatrix === true) {
+        global $config;
+
+        $table_id = get_parameter('table_id', '');
+        $modules = json_decode(
+            io_safe_output(
+                get_parameter('modules', '')
+            ),
+            true
+        );
+        $period = get_parameter('period', 0);
+        $slice = get_parameter('slice', 0);
+
+        // Datatables offset, limit.
+        $start = get_parameter('start', 0);
+        $formatData = (bool) get_parameter('formatData', 0);
+        $length = get_parameter(
+            'length',
+            $config['block_size']
+        );
+
+        $order = get_datatable_order(true);
+
+        // Total time per page.
+        $time_all_box = ($length * $slice);
+
+        // Total number of boxes.
+        $total_box = ceil($period / $slice);
+
+        if ($start > 0) {
+            $start = ($start / $length);
+        }
+
+        // Uncompress.
+        try {
+            ob_start();
+            $dateNow = get_system_time();
+            $final = ($dateNow - $period);
+            $date = ($dateNow - ($time_all_box * $start));
+
+            if (($date - $time_all_box) > $final) {
+                $datelimit = ($date - $time_all_box);
+            } else {
+                $datelimit = $final;
+            }
+
+            foreach ($modules as $key => $value) {
+                if (is_metaconsole() === true) {
+                    try {
+                        $node = new Node((int) $value['id_node']);
+                        $node->connect();
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        $node->disconnect();
+                    }
+                }
+
+                $value['thresholds'] = [
+                    'min_critical' => (empty($value['c_min']) === true) ? null : $value['c_min'],
+                    'max_critical' => (empty($value['c_max']) === true) ? null : $value['c_max'],
+                    'min_warning'  => (empty($value['w_min']) === true) ? null : $value['w_min'],
+                    'max_warning'  => (empty($value['w_max']) === true) ? null : $value['w_max'],
+                ];
+
+                $module_data = db_uncompress_module_data(
+                    $value['id'],
+                    $datelimit,
+                    $date,
+                    $slice,
+                    true
+                );
+
+                $uncompressData[] = array_reduce(
+                    $module_data,
+                    function ($carry, $item) use ($value, $config, $formatData) {
+                        // Last value.
+                        $vdata = null;
+                        if (is_array($item['data']) === true) {
+                            foreach ($item['data'] as $v) {
+                                $vdata = $v['datos'];
+                            }
+                        }
+
+                        $status = get_status_data_modules(
+                            $value['id'],
+                            $vdata,
+                            $value['thresholds']
+                        );
+
+                        $resultData = '<span style="color:'.$status['color'].'">';
+                        if ($vdata !== null && $vdata !== '' && $vdata !== false) {
+                            if (isset($formatData) === true
+                                && (bool) $formatData === true
+                            ) {
+                                $resultData .= format_for_graph(
+                                    $vdata,
+                                    $config['graph_precision']
+                                );
+                            } else {
+                                $resultData .= sla_truncate(
+                                    $vdata,
+                                    $config['graph_precision']
+                                );
+                            }
+
+                            $resultData .= ' '.$value['unit'];
+                        } else {
+                            $resultData .= '--';
+                        }
+
+                        $resultData .= '</span>';
+                        $carry[] = [
+                            'utimestamp'           => $item['utimestamp'],
+                            'Column-'.$value['id'] => $resultData,
+                        ];
+
+                        return $carry;
+                    },
+                    []
+                );
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
+            }
+
+            if (empty($uncompressData) === false) {
+                $data = array_reduce(
+                    $uncompressData,
+                    function ($carry, $item) {
+                        foreach ($item as $data_module) {
+                            foreach ($data_module as $key => $value) {
+                                if ($key === 'utimestamp') {
+                                    $carry[$data_module['utimestamp']]['date'] = date('Y-m-d H:i', (int) $value);
+                                } else {
+                                    $carry[$data_module['utimestamp']][$key] = $value;
+                                }
+                            }
+                        }
+
+                        return $carry;
+                    }
+                );
+            }
+
+            if (empty($data) === false) {
+                $data = array_reverse(array_values($data));
+            } else {
+                $data = [];
+            }
+
+            // RecordsTotal && recordsfiltered resultados totales.
+            echo json_encode(
+                [
+                    'data'            => $data,
+                    'recordsTotal'    => $total_box,
+                    'recordsFiltered' => $total_box,
+                ]
+            );
+
+            $response = ob_get_clean();
+
+            // Clean output buffer.
+            while (ob_get_level() !== 0) {
+                ob_end_clean();
+            }
+        } catch (Exception $e) {
+            echo json_encode(
+                ['error' => $e->getMessage()]
+            );
+        }
+
+        // If not valid it will throw an exception.
+        json_decode($response);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            // If valid dump.
+            echo $response;
+        } else {
+            echo json_encode(
+                ['error' => $response]
+            );
+        }
+
+        return;
+    }
+
+    if ($get_children_modules === true) {
+        $parent_modules = get_parameter('parent_modulues', false);
+        $children_selected = [];
+
+        if ($parent_modules === false) {
+            $children_selected = false;
+        } else {
+            foreach ($parent_modules as $parent) {
+                $child_modules = get_children_module($parent_modules, ['nombre', 'id_agente_modulo'], true);
+                if ((bool) $child_modules === false) {
+                    continue;
+                }
+
+                foreach ($child_modules as $child) {
+                    $module_exist = in_array($child['id_agente_modulo'], $parent_modules);
+                    $child_exist = in_array($child, $children_selected);
+
+                    if ($module_exist === false && $child_exist === false) {
+                        array_push($children_selected, $child);
+                    }
+                }
+            }
+        }
+
+        if (empty($children_selected) === true) {
+            $children_selected = false;
+        }
+
+        echo json_encode($children_selected);
+
+        return;
+    }
+
+    // Saves an event filter.
+    if ($save_monitor_filter) {
+        $values = [];
+        $values['id_name'] = get_parameter('id_name');
+        $values['id_group_filter'] = get_parameter('id_group_filter');
+        $values['ag_group'] = get_parameter('ag_group');
+        $values['modulegroup'] = get_parameter('modulegroup');
+        $values['recursion'] = get_parameter('recursion');
+        $values['status'] = get_parameter('status');
+        $values['ag_modulename'] = get_parameter('ag_modulename');
+        $values['ag_freestring'] = get_parameter('ag_freestring');
+        $values['tag_filter'] = json_encode(get_parameter('tag_filter'));
+        $values['moduletype'] = get_parameter('moduletype');
+        $values['module_option'] = get_parameter('module_option');
+        $values['min_hours_status'] = get_parameter('min_hours_status');
+        $values['datatype'] = get_parameter('datatype');
+        $values['not_condition'] = get_parameter('not_condition');
+        $values['ag_custom_fields'] = get_parameter('ag_custom_fields');
+
+        $exists = (bool) db_get_value_filter(
+            'id_filter',
+            'tmonitor_filter',
+            $values
+        );
+
+        if ($exists === true) {
+            echo 'duplicate';
+        } else {
+            $result = db_process_sql_insert('tmonitor_filter', $values);
+
+            if ($result === false) {
+                echo 'error';
+            } else {
+                echo $result;
+            }
+        }
+    }
+
+    if ($update_monitor_filter) {
+        $values = [];
+        $id = get_parameter('id');
+
+        $values['ag_group'] = get_parameter('ag_group');
+        $values['modulegroup'] = get_parameter('modulegroup');
+        $values['recursion'] = get_parameter('recursion');
+        $values['status'] = get_parameter('status');
+        $values['ag_modulename'] = get_parameter('ag_modulename');
+        $values['ag_freestring'] = get_parameter('ag_freestring');
+        $values['tag_filter'] = json_encode(get_parameter('tag_filter'));
+        $values['moduletype'] = get_parameter('moduletype');
+        $values['module_option'] = get_parameter('module_option');
+        $values['min_hours_status'] = get_parameter('min_hours_status');
+        $values['datatype'] = get_parameter('datatype');
+        $values['not_condition'] = get_parameter('not_condition');
+        $values['ag_custom_fields'] = get_parameter('ag_custom_fields');
+
+        $result = db_process_sql_update(
+            'tmonitor_filter',
+            $values,
+            ['id_filter' => $id]
+        );
+
+        if ($result === false) {
+            echo 'error';
+        } else {
+            echo 'ok';
+        }
+    }
+
+    if ($get_monitor_filters) {
+        $sql = 'SELECT id_filter, id_name FROM tmonitor_filter';
+
+        $monitor_filters = db_get_all_rows_sql($sql);
+
+        $result = [];
+
+        if ($monitor_filters !== false) {
+            foreach ($monitor_filters as $monitor_filter) {
+                $result[$monitor_filter['id_filter']] = $monitor_filter['id_name'];
+            }
+        }
+
+        echo io_json_mb_encode($result);
+    }
+
+    if ((int) $load_filter_modal === 1) {
+        $user_groups = users_get_groups(
+            $config['id_user'],
+            'AR',
+            users_can_manage_group_all(),
+            true
+        );
+
+        $sql = 'SELECT id_filter, id_name
+		    FROM tmonitor_filter
+		    WHERE id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
+
+        $event_filters = db_get_all_rows_sql($sql);
+
+        $filters = [];
+        foreach ($event_filters as $event_filter) {
+            $filters[$event_filter['id_filter']] = $event_filter['id_name'];
+        }
+
+        echo '<div id="load-filter-select" class="load-filter-modal">';
+        echo '<form method="post" id="form_load_filter" action="index.php?sec=view&sec2=operation/agentes/status_monitor&pure=">';
+
+        $table = new StdClass;
+        $table->id = 'load_filter_form';
+        $table->width = '100%';
+        $table->cellspacing = 4;
+        $table->cellpadding = 4;
+        $table->class = 'databox';
+        if (is_metaconsole()) {
+            $table->cellspacing = 0;
+            $table->cellpadding = 0;
+            $table->class = 'databox filters';
+        }
+
+        $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+        $filter_id_width = '200px';
+        if (is_metaconsole()) {
+            $filter_id_width = '150px';
+        }
+
+        $data = [];
+        $table->rowid[3] = 'update_filter_row1';
+        $data[0] = __('Load filter').$jump;
+        $data[0] .= html_print_select(
+            $filters,
+            'filter_id',
+            $current,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'margin-left:5px; width:'.$filter_id_width.';'
+        );
+        $data[1] = html_print_submit_button(
+            __('Load filter'),
+            'load_filter',
+            false,
+            'class="sub upd"',
+            true
+        );
+        $data[1] .= html_print_input_hidden('load_filter', 1, true);
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        html_print_table($table);
+        echo '</form>';
+        echo '</div>';
+        ?>
+
+        <script type="text/javascript">
+        function show_filter() {
+            $("#load-filter-select").dialog({
+                resizable: true,
+                draggable: true,
+                modal: false,
+                closeOnEscape: true,
+                width: 450
+            });
+        }
+
+        $(document).ready(function() {
+            show_filter();
+        });
+
+        </script>
+        <?php
+        return;
+    }
+
+    if ($save_filter_modal) {
+        echo '<div id="save-filter-select">';
+        if (check_acl($config['id_user'], 0, 'AW')) {
+            echo '<div id="#info_box"></div>';
+            $table = new StdClass;
+            $table->id = 'save_filter_form';
+            $table->width = '100%';
+            $table->cellspacing = 4;
+            $table->cellpadding = 4;
+            $table->class = 'databox';
+            if (is_metaconsole()) {
+                $table->class = 'databox filters';
+                $table->cellspacing = 0;
+                $table->cellpadding = 0;
+            }
+
+            $table->styleTable = 'font-weight: bold; text-align:left;';
+            if (!is_metaconsole()) {
+                $table->style[0] = 'width: 50%; width:50%;';
+            }
+
+            $data = [];
+            $table->rowid[0] = 'update_save_selector';
+            $data[0] = html_print_radio_button(
+                'filter_mode',
+                'new',
+                '',
+                true,
+                true
+            ).__('New filter').'';
+
+            $data[1] = html_print_radio_button(
+                'filter_mode',
+                'update',
+                '',
+                false,
+                true
+            ).__('Update filter').'';
+
+            $table->data[] = $data;
+            $table->rowclass[] = '';
+
+            $data = [];
+            $table->rowid[1] = 'save_filter_row1';
+            $data[0] = __('Filter name').$jump;
+            $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
+            if (is_metaconsole()) {
+                $data[1] = __('Save in Group').$jump;
+            } else {
+                $data[1] = __('Filter group').$jump;
+            }
+
+            $user_groups_array = users_get_groups_for_select(
+                $config['id_user'],
+                'AW',
+                users_can_manage_group_all(),
+                true
+            );
+
+            $data[1] .= html_print_select(
+                $user_groups_array,
+                'id_group_filter_dialog',
+                $id_group_filter,
+                '',
+                '',
+                0,
+                true,
+                false,
+                false,
+                'w130'
+            );
+
+            $table->data[] = $data;
+            $table->rowclass[] = '';
+
+            $data = [];
+            $table->rowid[2] = 'save_filter_row2';
+
+            $table->data[] = $data;
+            $table->rowclass[] = '';
+
+            $data = [];
+            $table->rowid[3] = 'update_filter_row1';
+            $data[0] = __('Overwrite filter').$jump;
+
+            $sql = 'SELECT id_filter, id_name FROM tmonitor_filter';
+            $monitor_filters = db_get_all_rows_sql($sql);
+
+            $_filters_update = [];
+
+            if ($monitor_filters !== false) {
+                foreach ($monitor_filters as $monitor_filter) {
+                    $_filters_update[$monitor_filter['id_filter']] = $monitor_filter['id_name'];
+                }
+            }
+
+            $data[0] .= html_print_select(
+                $_filters_update,
+                'overwrite_filter',
+                '',
+                '',
+                '',
+                0,
+                true
+            );
+            $data[1] = html_print_submit_button(
+                __('Update filter'),
+                'update_filter',
+                false,
+                'class="sub upd" onclick="save_update_filter();"',
+                true
+            );
+
+            $table->data[] = $data;
+            $table->rowclass[] = '';
+
+            html_print_table($table);
+            echo '<div>';
+                echo html_print_submit_button(
+                    __('Save filter'),
+                    'save_filter',
+                    false,
+                    'class="sub upd float-right" onclick="save_new_filter();"',
+                    true
+                );
+            echo '</div>';
+        } else {
+            include 'general/noaccess.php';
+        }
+
+        echo '</div>';
+        ?>
+    <script type="text/javascript">
+    function show_save_filter() {
+        $('#save_filter_row1').show();
+        $('#save_filter_row2').show();
+        $('#update_filter_row1').hide();
+        // Filter save mode selector
+        $("[name='filter_mode']").click(function() {
+            if ($(this).val() == 'new') {
+                $('#save_filter_row1').show();
+                $('#save_filter_row2').show();
+                $('#submit-save_filter').show();
+                $('#update_filter_row1').hide();
+            }
+            else {
+                $('#save_filter_row1').hide();
+                $('#save_filter_row2').hide();
+                $('#update_filter_row1').show();
+                $('#submit-save_filter').hide();
+            }
+        });
+        $("#save-filter-select").dialog({
+            resizable: true,
+            draggable: true,
+            modal: false,
+            closeOnEscape: true
+        });
+    }
+    
+    function save_new_filter() {
+        // If the filter name is blank show error
+        if ($('#text-id_name').val() == '') {
+            $('#show_filter_error').html("<h3 class='error'><?php echo __('Filter name cannot be left blank'); ?></h3>");
+            
+            // Close dialog
+            $('.ui-dialog-titlebar-close').trigger('click');
+            return false;
+        }
+
+        var custom_fields_values = $('input[name^="ag_custom_fields"]').map(function() {
+            return this.value;
+        }).get();
+
+        var custom_fields_ids = $("input[name^='ag_custom_fields']").map(function() {
+            var name = $(this).attr("name");
+            var number = name.match(/\[(.*?)\]/)[1];
+
+            return number;
+        }).get();
+
+        var ag_custom_fields = custom_fields_ids.reduce(function(result, custom_fields_id, index) {
+            result[custom_fields_id] = custom_fields_values[index];
+            return result;
+        }, {});
+
+        var id_filter_save;
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "include/ajax/module",
+                "save_monitor_filter" : 1,
+                "id_name": $("#text-id_name").val(),
+                "id_group_filter": $("#id_group_filter_dialog").val(),
+                "ag_group" : $("#ag_group").val(),
+                "modulegroup" : $("#modulegroup").val(),
+                "recursion" : $("#checkbox-recursion").is(':checked'),
+                "status" : $("#status").val(),
+                "severity" : $("#severity").val(),
+                "ag_modulename" : $("#text-ag_modulename").val(),
+                "ag_freestring" : $("#text-ag_freestring").val(),
+                "tag_filter" : $("#tag_filter").val(),
+                "moduletype" : $("#moduletype").val(),
+                "module_option" : $('#module_option').val(),
+                "min_hours_status" : $('#text-min_hours_status').val(),
+                "datatype" : $("#datatype").val(),
+                "not_condition" : $("#not_condition_switch").is(':checked'),
+                "ag_custom_fields": JSON.stringify(ag_custom_fields),
+            },
+            function (data) {
+                $("#info_box").hide();
+                if (data == 'error') {
+                    $("#info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "error_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else  if (data == 'duplicate') {
+                    $("#info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "duplicate_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else {
+                    id_filter_save = data;
+                    
+                    $("#info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "success_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+    
+                // Close dialog.
+                $("#save-filter-select").dialog('close');
+            }
+        );
+    }
+    
+    function save_update_filter() {
+        var id_filter_update =  $("#overwrite_filter").val();
+        var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
+
+        var custom_fields_values = $('input[name^="ag_custom_fields"]').map(function() {
+            return this.value;
+        }).get();
+
+        var custom_fields_ids = $("input[name^='ag_custom_fields']").map(function() {
+            var name = $(this).attr("name");
+            var number = name.match(/\[(.*?)\]/)[1];
+
+            return number;
+        }).get();
+
+        var ag_custom_fields = custom_fields_ids.reduce(function(result, custom_fields_id, index) {
+            result[custom_fields_id] = custom_fields_values[index];
+            return result;
+        }, {});
+
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "include/ajax/module",
+                "update_monitor_filter" : 1,
+                "id" : $("#overwrite_filter").val(),
+                "ag_group" : $("#ag_group").val(),
+                "modulegroup" : $("#modulegroup").val(),
+                "recursion" : $("#checkbox-recursion").is(':checked'),
+                "status" : $("#status").val(),
+                "severity" : $("#severity").val(),
+                "ag_modulename" : $("#text-ag_modulename").val(),
+                "ag_freestring" : $("#text-ag_freestring").val(),
+                "tag_filter" : $("#tag_filter").val(),
+                "moduletype" : $("#moduletype").val(),
+                "module_option" : $('#module_option').val(),
+                "min_hours_status" : $('#text-min_hours_status').val(),
+                "datatype" : $("#datatype").val(),
+                "not_condition" : $("#not_condition_switch").is(':checked'),
+                "ag_custom_fields": JSON.stringify(ag_custom_fields),
+            },
+            function (data) {
+                $(".info_box").hide();
+                if (data == 'ok') {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "success_update_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "error_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+            });
+            
+            // First remove all options of filters select
+            $('#filter_id').find('option').remove().end();
+            // Add 'none' option the first
+            $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
+            // Reload filters select
+            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                {
+                    "page" : "include/ajax/module",
+                    "get_monitor_filters" : 1
+                },
+                function (data) {
+                    jQuery.each (data, function (i, val) {
+                        s = js_html_entity_decode(val);
+                        if (i == id_filter_update) {
+                            $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+                        }
+                        else {
+                            $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
+                        }
+                    });
+                },
+                "json"
+                );
+                
+            // Close dialog
+            $('.ui-dialog-titlebar-close').trigger('click');
+            
+            // Update the info with the loaded filter
+            $("#hidden-id_name").val($('#text-id_name').val());
+            $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
+            return false;
+    }
+    
+    $(document).ready(function() {
+        show_save_filter();
+    });
+    </script>
+        <?php
         return;
     }
 }

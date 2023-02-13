@@ -319,9 +319,21 @@ if ($delete_user === true) {
         if ($id_user != $config['id_user']) {
             $user_row = users_get_user_by_id($id_user);
 
+            $private_dashboards = db_get_all_rows_filter(
+                'tdashboard',
+                ['id_user' => $id_user],
+                'id'
+            );
+
+            if (isset($private_dashboards) === true) {
+                db_process_sql_delete('tdashboard', ['id_user' => $id_user]);
+                header('Refresh:1');
+            }
+
             $result = delete_user($id_user);
 
             if ($result) {
+                delete_session_user($id_user);
                 db_pandora_audit(
                     AUDIT_LOG_USER_MANAGEMENT,
                     __('Deleted user %s', io_safe_output($id_user))
@@ -335,12 +347,16 @@ if ($delete_user === true) {
             );
 
             // Delete the user in all the consoles.
-            if (is_metaconsole() === true && isset($_GET['delete_all'])) {
+            if (is_metaconsole() === true) {
                 $servers = metaconsole_get_servers();
                 foreach ($servers as $server) {
                     // Connect to the remote console.
                     if (metaconsole_connect($server) === NOERR) {
                         // Delete the user.
+                        if (isset($private_dashboards) === true) {
+                            db_process_sql_delete('tdashboard', ['id_user' => $id_user]);
+                        }
+
                         $result = delete_user($id_user);
                         if ($result) {
                             db_pandora_audit(
@@ -367,6 +383,8 @@ if ($delete_user === true) {
                         __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
                     );
                 }
+
+                header('Refresh:1');
             }
         } else {
             ui_print_error_message(__('There was a problem deleting the user'));

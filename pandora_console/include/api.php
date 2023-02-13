@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,9 +69,6 @@ $id2 = get_parameter('id2');
 $otherSerialize = get_parameter('other');
 $otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
-$api_password = get_parameter('apipass', '');
-$password = get_parameter('pass', '');
-$user = get_parameter('user', '');
 $info = get_parameter('info', '');
 $raw_decode = (bool) get_parameter('raw_decode', false);
 
@@ -84,6 +81,21 @@ $apiPassword = io_output_password(
     )
 );
 
+$apiTokenValid = false;
+// Try getting bearer token from header.
+// TODO. Getting token from url will be removed.
+$apiToken = (string) getBearerToken();
+if (empty($apiToken) === true) {
+    // Legacy user/pass token.
+    // TODO. Revome in future.
+    $api_password = get_parameter('apipass', '');
+    $user = get_parameter('user', '');
+    $password = get_parameter('pass', '');
+} else {
+    $apiTokenValid = (bool) api_token_check($apiToken);
+}
+
+
 $correctLogin = false;
 $no_login_msg = '';
 
@@ -94,8 +106,8 @@ ob_clean();
 // Special call without checks to retrieve version and build of the Pandora FMS
 // This info is avalable from the web console without login
 // Don't change the format, it is parsed by applications.
-if ($info == 'version') {
-    if (!$config['MR']) {
+if ($info === 'version') {
+    if ((bool) $config['MR'] === false) {
         $config['MR'] = 0;
     }
 
@@ -105,6 +117,7 @@ if ($info == 'version') {
 
 if (empty($apiPassword) === true
     || (empty($apiPassword) === false && $api_password === $apiPassword)
+    || $apiTokenValid === true
 ) {
     if (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
         || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true
@@ -118,7 +131,14 @@ if (empty($apiPassword) === true
         $correctLogin = true;
     } else if ((bool) isInACL($ipOrigin) === true) {
         // External access.
-        $user_in_db = process_user_login($user, $password, true);
+        // Token is valid. Bypass the credentials.
+        if ($apiTokenValid === true) {
+            $credentials = db_get_row('tusuario', 'api_token', $apiToken);
+            $user = $credentials['id_user'];
+            $password = $credentials['password'];
+        }
+
+        $user_in_db = process_user_login($user, $password, true, $apiTokenValid);
         if ($user_in_db !== false) {
             $config['id_usuario'] = $user_in_db;
             // Compat.
@@ -144,19 +164,19 @@ if (empty($apiPassword) === true
     $no_login_msg = 'Incorrect given API password';
 }
 
-if ($correctLogin) {
+if ($correctLogin === true) {
     if (($op !== 'get') && ($op !== 'set') && ($op !== 'help')) {
         returnError('no_set_no_get_no_help', $returnType);
     } else {
         $function_name = '';
 
         // Check if is an extension function and get the function name.
-        if ($op2 == 'extension') {
+        if ($op2 === 'extension') {
             $extension_api_url = $config['homedir'].'/'.EXTENSIONS_DIR.'/'.$ext_name.'/'.$ext_name.'.api.php';
             // The extension API file must exist and the extension must be
             // enabled.
-            if (file_exists($extension_api_url)
-                && !in_array($ext_name, extensions_get_disabled_extensions())
+            if (file_exists($extension_api_url) === true
+                && in_array($ext_name, extensions_get_disabled_extensions()) === false
             ) {
                 include_once $extension_api_url;
                 $function_name = 'apiextension_'.$op.'_'.$ext_function;
@@ -164,7 +184,7 @@ if ($correctLogin) {
         } else {
             $function_name = 'api_'.$op.'_'.$op2;
 
-            if ($op == 'set' && $id) {
+            if ($op === 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
                     case 'add_module_in_conf':
@@ -173,7 +193,7 @@ if ($correctLogin) {
                         $agent = agents_locate_agent($id);
                         if ($agent !== false) {
                             $id_os = $agent['id_os'];
-                            if ($id_os == 100) {
+                            if ((int) $id_os === 100) {
                                 returnError(
                                     'not_allowed_operation_cluster',
                                     $returnType

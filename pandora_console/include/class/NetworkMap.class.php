@@ -776,7 +776,7 @@ class NetworkMap
         // Search.
         if ($this->idTask) {
             // Network map, based on discovery task.
-            return get_discovery_agents($this->idTask);
+            enterprise_hook('get_discovery_agents', [$this->idTask]);
         }
 
         if ($this->network) {
@@ -1672,7 +1672,7 @@ class NetworkMap
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
-                        if (empty($node['status']) && empty($node['id_module']) && !empty($node['style']['id_networkmap'])) {
+                        if (empty($node['style']['id_networkmap']) === false) {
                             $status_aux = get_status_color_networkmap_fictional_point($node['style']['id_networkmap']);
                             $item['color'] = $status_aux;
                         } else {
@@ -2215,7 +2215,9 @@ class NetworkMap
                 // Store relationships.
                 $this->relations = array_merge($edges, $orphans);
             } else {
-                $this->relations = $edges;
+                if (empty($this->relations) === true && empty($this->$edges) === false) {
+                    $this->relations = $edges;
+                }
             }
 
             // Close dot file.
@@ -2407,6 +2409,13 @@ class NetworkMap
             $graph = $this->parseGraphvizMapFile(
                 $filename_plain
             );
+        }
+
+        if (isset($this->mapOptions['map_filter']['node_separation']) === true) {
+            foreach ($graph['nodes'] as $key => $value) {
+                $graph['nodes'][$key]['x'] *= $this->mapOptions['map_filter']['node_separation'];
+                $graph['nodes'][$key]['y'] *= $this->mapOptions['map_filter']['node_separation'];
+            }
         }
 
         unlink($filename_plain);

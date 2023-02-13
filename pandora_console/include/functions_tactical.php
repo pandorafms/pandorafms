@@ -478,8 +478,13 @@ function tactical_get_data(
         $list['_monitors_alerts_fired_'] = tactical_monitor_fired_alerts(explode(',', $user_groups_ids), $user_strict, explode(',', $user_groups_ids));
         $list['_monitors_alerts_'] = tactical_monitor_alerts($user_strict);
 
+        $filter_agents = [];
+        if (users_is_admin() === false) {
+            $filter_agents = ['id_grupo' => explode(',', $user_groups_ids)];
+        }
+
         $total_agentes = agents_get_agents(
-            ['id_grupo' => explode(',', $user_groups_ids)],
+            $filter_agents,
             ['count(DISTINCT id_agente) as total_agents'],
             'AR',
             false,

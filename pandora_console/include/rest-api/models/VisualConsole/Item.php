@@ -209,6 +209,7 @@ class Item extends CachedModel
             'x'               => static::extractX($data),
             'y'               => static::extractY($data),
             'cacheExpiration' => static::extractCacheExpiration($data),
+            'alertOutline'    => static::checkLayoutAlertsRecursive($data),
         ];
 
         if (static::$useLinkedModule === true) {
@@ -1770,8 +1771,8 @@ class Item extends CachedModel
         $imageSrc = static::issetInArray(
             $data,
             [
-                'image',
                 'imageSrc',
+                'image',
                 'backgroundColor',
                 'backgroundType',
                 'valueType',
@@ -2296,6 +2297,7 @@ class Item extends CachedModel
                 false
             );
 
+            $aux_images = $all_images;
             foreach ($all_images as $image_file) {
                 $image_file = substr($image_file, 0, (strlen($image_file) - 4));
 
@@ -2311,7 +2313,11 @@ class Item extends CachedModel
                     continue;
                 }
 
-                $result[$image_file] = $image_file;
+                // Check the 4 images.
+                $array_images = preg_grep('/'.$image_file.'(_ok|_bad|_warning)*\./', $aux_images);
+                if (count($array_images) >= 4) {
+                    $result[$image_file] = $image_file;
+                }
             }
         }
 
@@ -2611,6 +2617,112 @@ class Item extends CachedModel
         }
 
         return $result;
+    }
+
+
+    /**
+     * Recursively check for alerts in a Visual Console item and its linked layout.
+     *
+     * @param array $item           The Visual Console item to check for alerts.
+     * @param array $visitedLayouts A list of layouts that have already been visited to avoid circular references.
+     *
+     * @return boolean True if an alert has been found, false otherwise.
+     */
+    public static function checkLayoutAlertsRecursive(array $item, array $visitedLayouts=[])
+    {
+        if (isset($item['type']) === true) {
+            $excludedItemTypes = [
+                22,
+                17,
+                18,
+                1,
+                23,
+                15,
+                14,
+                10,
+                4,
+            ];
+
+            if (in_array($item['type'], $excludedItemTypes) === true) {
+                return false;
+            }
+        }
+
+        $agentID = (int) $item['id_agent'];
+        $agentModuleID = (int) $item['id_agente_modulo'];
+        $linkedLayoutID = (int) $item['id_layout_linked'];
+        $metaconsoleID = (int) $item['id_metaconsole'];
+
+        $visitedLayouts[] = $item['id_layout'];
+
+        if ($agentModuleID !== 0 && $agentID !== 0) {
+            $alerts_sql = sprintf(
+                'SELECT talert_template_modules.id
+                FROM talert_template_modules
+                INNER JOIN tagente_modulo t2
+                    ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+                INNER JOIN tagente t3
+                    ON t2.id_agente = t3.id_agente AND t3.id_agente = %d
+                INNER JOIN talert_templates t4
+                    ON talert_template_modules.id_alert_template = t4.id
+                WHERE `id_agent_module` = %d AND talert_template_modules.times_fired > 0',
+                $agentID,
+                $agentModuleID
+            );
+
+            // Connect to node.
+            if (\is_metaconsole() === true
+                && \metaconsole_connect(null, $metaconsoleID) !== NOERR
+            ) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+
+            $firedAlert = db_get_sql($alerts_sql);
+
+            // Restore connection.
+            if (\is_metaconsole() === true) {
+                \metaconsole_restore_db();
+            }
+
+            // Item has a triggered alert.
+            if ($firedAlert !== false) {
+                return true;
+            }
+        }
+
+        if ($linkedLayoutID === 0 || in_array($linkedLayoutID, $visitedLayouts) === true) {
+            // Item has no linked layout or it has already been visited (avoid infinite loop caused by circular references).
+            return false;
+        }
+
+        $filter = ['id_layout' => $linkedLayoutID];
+
+        $linkedLayoutItems = \db_get_all_rows_filter(
+            'tlayout_data',
+            $filter,
+            [
+                'id_layout',
+                'id_agent',
+                'id_agente_modulo',
+                'id_layout_linked',
+                'id_metaconsole',
+            ]
+        );
+
+        if ($linkedLayoutItems === false) {
+            // There are no items in the linked visual console. Nothing to check.
+            return false;
+        }
+
+        foreach ($linkedLayoutItems as $linkedLayoutItem) {
+            if (self::checkLayoutAlertsRecursive($linkedLayoutItem, $visitedLayouts)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

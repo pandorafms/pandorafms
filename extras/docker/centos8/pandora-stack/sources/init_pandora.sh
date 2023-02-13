@@ -277,8 +277,8 @@ export ORACLE_HOME=/usr/lib/oracle/$VERSION/client64
 EOF_ENV
 
 echo  ">> Enable discovery cron: "
-#while true ; do wget -q -O - --no-check-certificate http://localhost/pandora_console/enterprise/cron.php >> /var/www/html/pandora_console/pandora_console.log && sleep 60 ; done &
-echo "*/5 * * * * wget -q -O - --no-check-certificate http://localhost/pandora_console/enterprise/cron.php >> /var/www/html/pandora_console/log/cron.log" >> /opt/pandora/crontasks
+#while true ; do wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://localhost/pandora_console/enterprise/cron.php >> /var/www/html/pandora_console/pandora_console.log && sleep 60 ; done &
+echo "*/5 * * * * wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://localhost/pandora_console/enterprise/cron.php >> /var/www/html/pandora_console/log/cron.log" >> /opt/pandora/crontasks
 
 echo  ">> Enable pandora_db cron: "
 /usr/bin/perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf

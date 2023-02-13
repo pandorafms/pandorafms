@@ -66,6 +66,7 @@ if ($id) {
     $severity = explode(',', $filter['severity']);
     $status = $filter['status'];
     $search = $filter['search'];
+    $not_search = $filter['not_search'];
     $text_agent = $filter['text_agent'];
     $id_agent = $filter['id_agent'];
     $text_module = $filter['text_module'];
@@ -73,6 +74,7 @@ if ($id) {
     $pagination = $filter['pagination'];
     $event_view_hr = $filter['event_view_hr'];
     $id_user_ack = $filter['id_user_ack'];
+    $owner_user = $filter['owner_user'];
     $group_rep = $filter['group_rep'];
     $date_from = str_replace('-', '/', $filter['date_from']);
     $date_to = str_replace('-', '/', $filter['date_to']);
@@ -107,6 +109,8 @@ if ($id) {
             $text_agent = '';
         }
     }
+
+    $server_id = ($filter['server_id'] ?? '');
 } else {
     $id_group = '';
     $id_group_filter = '';
@@ -115,10 +119,12 @@ if ($id) {
     $severity = '';
     $status = '';
     $search = '';
+    $not_search = 0;
     $text_agent = '';
     $pagination = '';
     $event_view_hr = '';
     $id_user_ack = '';
+    $owner_user = '';
     $group_rep = '';
     $date_from = '';
     $date_to = '';
@@ -130,6 +136,7 @@ if ($id) {
     $filter_only_alert = '';
     $search_secondary_groups = 0;
     $search_recursive_groups = 0;
+    $server_id = '';
 }
 
 if ($update || $create) {
@@ -140,6 +147,7 @@ if ($update || $create) {
     $severity = implode(',', get_parameter('severity', -1));
     $status = get_parameter('status', '');
     $search = get_parameter('search', '');
+    $not_search = get_parameter_switch('not_search', 0);
     $text_agent = get_parameter('text_agent', '');
     $id_agent = (int) get_parameter('id_agent');
     $text_module = get_parameter('text_module', '');
@@ -157,6 +165,7 @@ if ($update || $create) {
     $pagination = get_parameter('pagination', '');
     $event_view_hr = get_parameter('event_view_hr', '');
     $id_user_ack = get_parameter('id_user_ack', '');
+    $owner_user = get_parameter('owner_user', '');
     $group_rep = get_parameter('group_rep', '');
     $date_from = get_parameter('date_from', '');
     $date_to = get_parameter('date_to', '');
@@ -177,6 +186,12 @@ if ($update || $create) {
     $custom_data = get_parameter('custom_data', '');
     $custom_data_filter_type = get_parameter('custom_data_filter_type', '');
 
+    $server_id = '';
+    if (is_metaconsole() === true) {
+        $servers_array = get_parameter('server_id', []);
+        $server_id = implode(',', $servers_array);
+    }
+
     $values = [
         'id_name'                 => $id_name,
         'id_group_filter'         => $id_group_filter,
@@ -185,12 +200,14 @@ if ($update || $create) {
         'severity'                => $severity,
         'status'                  => $status,
         'search'                  => $search,
+        'not_search'              => $not_search,
         'text_agent'              => $text_agent,
         'id_agent_module'         => $id_agent_module,
         'id_agent'                => $id_agent,
         'pagination'              => $pagination,
         'event_view_hr'           => $event_view_hr,
         'id_user_ack'             => $id_user_ack,
+        'owner_user'              => $owner_user,
         'group_rep'               => $group_rep,
         'tag_with'                => $tag_with_json,
         'tag_without'             => $tag_without_json,
@@ -204,6 +221,7 @@ if ($update || $create) {
         'search_recursive_groups' => $search_recursive_groups,
         'custom_data'             => $custom_data,
         'custom_data_filter_type' => $custom_data_filter_type,
+        'server_id'               => $server_id,
     ];
 
     $severity = explode(',', $severity);
@@ -376,6 +394,15 @@ $table->data[6][1] = html_print_input_text(
     255,
     true
 );
+$table->data[6][1] .= ' '.html_print_checkbox_switch(
+    'not_search',
+    $not_search,
+    $not_search,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
 
 $table->data[7][0] = '<b>'.__('Agent search').'</b>';
 $params = [];
@@ -420,7 +447,12 @@ $table->data[9][1] = html_print_input_text(
     true
 );
 
-$table->data[10][0] = '<b>'.__('User ack.').'</b>'.' '.ui_print_help_tip(__('Choose between the users who have validated an event. '), true);
+$table->data[10][0] = '<b>'.__('User ack.').'</b>';
+$table->data[10][0] .= ' ';
+$table->data[10][0] .= ui_print_help_tip(
+    __('Choose between the users who have validated an event. '),
+    true
+);
 
 if ($strict_user) {
     $users = [$config['id_user'] => $config['id_user']];
@@ -442,14 +474,25 @@ $table->data[10][1] = html_print_select(
     true
 );
 
+$table->data[11][0] = '<b>'.__('Owner.').'</b>';
+$table->data[11][1] = html_print_select(
+    $users,
+    'owner_user',
+    $owner_user,
+    '',
+    __('Any'),
+    0,
+    true
+);
+
 $repeated_sel = [
     EVENT_GROUP_REP_ALL      => __('All events'),
     EVENT_GROUP_REP_EVENTS   => __('Group events'),
     EVENT_GROUP_REP_AGENTS   => __('Group agents'),
     EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
 ];
-$table->data[11][0] = '<b>'.__('Repeated').'</b>';
-$table->data[11][1] = html_print_select(
+$table->data[12][0] = '<b>'.__('Repeated').'</b>';
+$table->data[12][1] = html_print_select(
     $repeated_sel,
     'group_rep',
     $group_rep,
@@ -459,11 +502,11 @@ $table->data[11][1] = html_print_select(
     true
 );
 
-$table->data[12][0] = '<b>'.__('Date from').'</b>';
-$table->data[12][1] = html_print_input_text('date_from', $date_from, '', 15, 10, true);
+$table->data[13][0] = '<b>'.__('Date from').'</b>';
+$table->data[13][1] = html_print_input_text('date_from', $date_from, '', 15, 10, true);
 
-$table->data[13][0] = '<b>'.__('Date to').'</b>';
-$table->data[13][1] = html_print_input_text('date_to', $date_to, '', 15, 10, true);
+$table->data[14][0] = '<b>'.__('Date to').'</b>';
+$table->data[14][1] = html_print_input_text('date_to', $date_to, '', 15, 10, true);
 
 $tag_with = json_decode($tag_with_json_clean, true);
 if (empty($tag_with)) {
@@ -502,9 +545,9 @@ $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
-$table->colspan[14][0] = '2';
-$table->data[14][0] = '<b>'.__('Events with following tags').'</b>';
-$table->data[15][0] = html_print_select(
+$table->colspan[15][0] = '2';
+$table->data[15][0] = '<b>'.__('Events with following tags').'</b>';
+$table->data[16][0] = html_print_select(
     $tags_select_with,
     'select_with',
     '',
@@ -518,7 +561,7 @@ $table->data[15][0] = html_print_select(
     false,
     'width: 220px;'
 );
-$table->data[15][1] = html_print_button(
+$table->data[16][1] = html_print_button(
     __('Add'),
     'add_whith',
     $add_with_tag_disabled,
@@ -527,7 +570,7 @@ $table->data[15][1] = html_print_button(
     true
 );
 
-$table->data[16][0] = html_print_select(
+$table->data[17][0] = html_print_select(
     $tag_with_temp,
     'tag_with_temp',
     [],
@@ -541,12 +584,12 @@ $table->data[16][0] = html_print_select(
     false,
     'width: 220px; height: 50px;'
 );
-$table->data[16][0] .= html_print_input_hidden(
+$table->data[17][0] .= html_print_input_hidden(
     'tag_with',
     $tag_with_base64,
     true
 );
-$table->data[16][1] = html_print_button(
+$table->data[17][1] = html_print_button(
     __('Remove'),
     'remove_whith',
     $remove_with_tag_disabled,
@@ -555,9 +598,9 @@ $table->data[16][1] = html_print_button(
     true
 );
 
-$table->colspan[17][0] = '2';
-$table->data[17][0] = '<b>'.__('Events without following tags').'</b>';
-$table->data[18][0] = html_print_select(
+$table->colspan[18][0] = '2';
+$table->data[18][0] = '<b>'.__('Events without following tags').'</b>';
+$table->data[19][0] = html_print_select(
     $tags_select_without,
     'select_without',
     '',
@@ -571,7 +614,7 @@ $table->data[18][0] = html_print_select(
     false,
     'width: 220px;'
 );
-$table->data[18][1] = html_print_button(
+$table->data[19][1] = html_print_button(
     __('Add'),
     'add_whithout',
     $add_without_tag_disabled,
@@ -580,7 +623,7 @@ $table->data[18][1] = html_print_button(
     true
 );
 
-$table->data[19][0] = html_print_select(
+$table->data[20][0] = html_print_select(
     $tag_without_temp,
     'tag_without_temp',
     [],
@@ -594,12 +637,12 @@ $table->data[19][0] = html_print_select(
     false,
     'width: 220px; height: 50px;'
 );
-$table->data[19][0] .= html_print_input_hidden(
+$table->data[20][0] .= html_print_input_hidden(
     'tag_without',
     $tag_without_base64,
     true
 );
-$table->data[19][1] = html_print_button(
+$table->data[20][1] = html_print_button(
     __('Remove'),
     'remove_whithout',
     $remove_without_tag_disabled,
@@ -608,8 +651,8 @@ $table->data[19][1] = html_print_button(
     true
 );
 
-$table->data[20][0] = '<b>'.__('Alert events').'</b>';
-$table->data[20][1] = html_print_select(
+$table->data[21][0] = '<b>'.__('Alert events').'</b>';
+$table->data[21][1] = html_print_select(
     [
         '-1' => __('All'),
         '0'  => __('Filter alert events'),
@@ -624,8 +667,8 @@ $table->data[20][1] = html_print_select(
 );
 
 if (!is_metaconsole()) {
-    $table->data[21][0] = '<b>'.__('Module search').'</b>';
-    $table->data[21][1] .= html_print_autocomplete_modules(
+    $table->data[22][0] = '<b>'.__('Module search').'</b>';
+    $table->data[22][1] .= html_print_autocomplete_modules(
         'module_search',
         $text_module,
         false,
@@ -637,17 +680,17 @@ if (!is_metaconsole()) {
     );
 }
 
-$table->data[22][0] = '<b>'.__('Source').'</b>';
-$table->data[22][1] = html_print_input_text('source', $source, '', 35, 255, true);
+$table->data[23][0] = '<b>'.__('Source').'</b>';
+$table->data[23][1] = html_print_input_text('source', $source, '', 35, 255, true);
 
-$table->data[23][0] = '<b>'.__('Extra ID').'</b>';
-$table->data[23][1] = html_print_input_text('id_extra', $id_extra, '', 11, 255, true);
+$table->data[24][0] = '<b>'.__('Extra ID').'</b>';
+$table->data[24][1] = html_print_input_text('id_extra', $id_extra, '', 11, 255, true);
 
-$table->data[24][0] = '<b>'.__('Comment').'</b>';
-$table->data[24][1] = html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
+$table->data[25][0] = '<b>'.__('Comment').'</b>';
+$table->data[25][1] = html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
 
-$table->data[25][0] = '<b>'.__('Custom data filter type').'</b>';
-$table->data[25][1] = html_print_select(
+$table->data[26][0] = '<b>'.__('Custom data filter type').'</b>';
+$table->data[26][1] = html_print_select(
     [
         '0' => __('Filter custom data by name field'),
         '1' => __('Filter custom data by value field'),
@@ -660,18 +703,67 @@ $table->data[25][1] = html_print_select(
     true
 );
 
-$table->data[26][0] = '<b>'.__('Custom data').'</b>';
-$table->data[26][1] = html_print_input_text('custom_data', $custom_data, '', 35, 255, true);
+$table->data[27][0] = '<b>'.__('Custom data').'</b>';
+$table->data[27][1] = html_print_input_text('custom_data', $custom_data, '', 35, 255, true);
 
 if (is_metaconsole()) {
-    $table->data[27][0] = '<b>'.__('Id souce event').'</b>';
-    $table->data[27][1] = html_print_input_text(
+    $table->data[28][0] = '<b>'.__('Id souce event').'</b>';
+    $table->data[28][1] = html_print_input_text(
         'id_source_event',
         $id_source_event,
         '',
         35,
         255,
         true
+    );
+}
+
+if (is_metaconsole() === true) {
+    $servers = metaconsole_get_servers();
+    if (is_array($servers) === true) {
+        $servers = array_reduce(
+            $servers,
+            function ($carry, $item) {
+                $carry[$item['id']] = $item['server_name'];
+                return $carry;
+            }
+        );
+    } else {
+        $servers = [];
+    }
+
+    $servers[0] = __('Metaconsola');
+
+    if ($server_id === '') {
+        $server_id = array_keys($servers);
+    } else {
+        if (is_array($server_id) === false) {
+            if (is_numeric($server_id) === true) {
+                if ($server_id !== 0) {
+                    $server_id = [$server_id];
+                } else {
+                    $server_id = array_keys($servers);
+                }
+            } else {
+                $server_id = explode(',', $server_id);
+            }
+        }
+    }
+
+    $table->data[29][0] = '<b>'.__('Server').'</b>';
+    $table->data[29][1] = html_print_select(
+        $servers,
+        'server_id[]',
+        $server_id,
+        '',
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'height: 60px;'
     );
 }
 
@@ -727,6 +819,14 @@ $(document).ready( function() {
     
 });
 
+function checked_slide_events(element) {
+    var value = $("#checkbox-"+element.name).val();
+    if (value == 0) {
+        $("#checkbox-"+element.name).val(1);
+    } else {
+        $("#checkbox-"+element.name).val(0);
+    }
+}
 
 function click_button_remove_tag(what_button) {
     if (what_button == "with") {

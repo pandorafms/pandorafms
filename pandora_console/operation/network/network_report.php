@@ -140,7 +140,7 @@ $table->data['1']['2'] .= html_print_submit_button(
     __('Export to CSV'),
     'export_csv',
     false,
-    'class="sub next"',
+    'class="sub next" onclick="blockResumit($(this))"',
     true
 );
 
@@ -221,6 +221,8 @@ if (get_parameter('export_csv')) {
         ob_end_clean();
     }
 
+    // Set cookie for download control.
+    setDownloadCookieToken();
     // Write metadata.
     header('Content-type: text/csv;');
     header('Content-Disposition: attachment; filename="network_data.csv"');
@@ -267,6 +269,7 @@ if (!empty($main_value)) {
 // Print the data and build the chart.
 $table->data = [];
 $chart_data = [];
+$labels = [];
 $hide_filter = !empty($main_value) && ($action === 'udp' || $action === 'tcp');
 foreach ($data as $item) {
     $row = [];
@@ -292,19 +295,20 @@ foreach ($data as $item) {
 
     $table->data[] = $row;
 
+    $labels[] = io_safe_output($item['host']);
     // Build the pie graph data structure.
     switch ($order_by) {
         case 'pkts':
-            $chart_data[$item['host']] = $item['sum_bytes'];
+            $chart_data[] = $item['sum_bytes'];
         break;
 
         case 'flows':
-            $chart_data[$item['host']] = $item['sum_flows'];
+            $chart_data[] = $item['sum_flows'];
         break;
 
         case 'bytes':
         default:
-            $chart_data[$item['host']] = $item['sum_bytes'];
+            $chart_data[] = $item['sum_bytes'];
         break;
     }
 }
@@ -315,13 +319,21 @@ if (empty($data)) {
     echo '<div class="flex mrgn_top_10px">';
     html_print_table($table);
 
+    $options = [
+        'height' => 230,
+        'legend' => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+        'labels' => $labels,
+    ];
+
     // Print the graph.
     echo '<div class="mrgn_top_50px w40p">';
     echo pie_graph(
         $chart_data,
-        320,
-        200,
-        __('Others')
+        $options
     );
     echo '</div>';
     echo '</div>';

@@ -375,10 +375,18 @@ class TopNWidget extends Widget
             );
         }
 
+        // Prevent double safe input in agents_get_group_agents function.
+        $agentRegex = io_safe_output($agentRegex);
+
         // This function check ACL.
         $agents = @agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);
         $agentsId = \array_keys($agents);
         $agentsIdString = \implode(',', $agentsId);
+
+        // Prevent from error when performing IN clause with an empty string.
+        if ($agentsIdString === '') {
+            $agentsIdString = 'NULL';
+        }
 
         // Initialize variables.
         $date = \get_system_time();
@@ -436,7 +444,7 @@ class TopNWidget extends Widget
                 metaconsole_restore_db();
             }
         } else {
-            $modules = @db_get_all_rows_sql(
+            $modules = db_get_all_rows_sql(
                 $sql,
                 $search_in_history_db
             );
@@ -454,6 +462,7 @@ class TopNWidget extends Widget
         }
 
         $data_hbar = [];
+        $labels = [];
         $valueMax = 0;
         $valueMin = 0;
         $booleanModulesCount = 0;
@@ -468,7 +477,12 @@ class TopNWidget extends Widget
         foreach ($modules as $module) {
             $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20, false, true, false);
             $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
-            $data_hbar[$item_name]['g'] = $module[$display];
+            $labels[] = io_safe_output($item_name);
+
+            $data_hbar[] = [
+                'x' => $module[$display],
+                'y' => io_safe_output($item_name),
+            ];
             // Calculation of max-min values for show in graph.
             $calc = (ceil((5 * (float) $module[$display]) / 100) + $module[$display]);
             // Set of max-min values for graph.
@@ -490,26 +504,24 @@ class TopNWidget extends Widget
 
         $height = (count($data_hbar) * 25 + 35);
         $output .= '<div class="container-center">';
-        $output .= hbar_graph(
-            array_reverse($data_hbar),
-            $size['width'],
-            $height,
-            [],
-            [],
-            '',
-            '',
-            '',
-            '',
-            $config['homedir'].'/images/logo_vertical_water.png',
-            $config['fontpath'],
-            $config['font_size'],
-            true,
-            1,
-            $config['homeurl'],
-            'white',
-            '#DFDFDF',
-            $valueMin,
-            $valueMax
+        $options = [
+            'height' => $height,
+            'axis'   => 'y',
+            'legend' => ['display' => false],
+            'scales' => [
+                'x' => [
+                    'grid' => ['display' => false],
+                ],
+                'y' => [
+                    'grid' => ['display' => false],
+                ],
+            ],
+            'labels' => $labels,
+        ];
+
+        $output .= vbar_graph(
+            $data_hbar,
+            $options
         );
         $output .= '</div>';
 

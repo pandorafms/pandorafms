@@ -164,6 +164,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
     $return_all_group = true;
 }
 
+$table = new stdClass();
 $table->id = 'delete_table';
 $table->class = 'databox filters';
 $table->width = '100%';

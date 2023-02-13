@@ -77,7 +77,7 @@ final class EventsHistory extends Item
      *
      * @return mixed String representing the grid color (not empty) or null.
      */
-    private function extractLegendColor(array $data): string
+    private static function extractLegendColor(array $data): string
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['legendColor', 'border_color']),
@@ -186,6 +186,11 @@ final class EventsHistory extends Item
      */
     protected static function buildLink(array $data)
     {
+        $link = parent::buildLink($data);
+        if ($link !== null) {
+            return $link;
+        }
+
         // Get the linked agent and module Ids.
         $linkedModule = static::extractLinkedModule($data);
         $agentId = static::parseIntOr($linkedModule['agentId'], null);

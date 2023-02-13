@@ -92,6 +92,7 @@ RUN dnf install -y vim wget bzip2 curl && \
     libstdc++ \
     gettext \
 	wmic \
+    chromium \
     cpanminus && \
     cpanm Geo::IP && \
     mkdir -p /opt/phantomjs/bin && cd /opt/phantomjs/bin && \

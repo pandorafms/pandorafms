@@ -59,6 +59,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 18px;
+  position: relative;
 }
 
 #tabs-sound-modal ul.wizard li.interval-sounds label,
@@ -225,6 +226,7 @@
   background-position: 70px 17px;
   color: #ffffff;
   padding-left: 20px;
+  border: 0;
 }
 
 .actions-sound-modal .buttons-sound-modal button.stop,
@@ -234,6 +236,7 @@
   background-position: 70px 17px;
   color: #ffffff;
   padding-left: 20px;
+  border: 0;
 }
 
 .actions-sound-modal .buttons-sound-modal button.alerts,
@@ -297,4 +300,60 @@
     width: 0%;
     background: #e63c52;
   }
+}
+
+/* Firefox old*/
+@-moz-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+/* IE */
+@-ms-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+/* Opera and prob css3 final iteration */
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.blink-image {
+  -moz-animation: blink normal 2s infinite ease-in-out; /* Firefox */
+  -webkit-animation: blink normal 2s infinite ease-in-out; /* Webkit */
+  -ms-animation: blink normal 2s infinite ease-in-out; /* IE */
+  animation: blink normal 2s infinite ease-in-out; /* Opera and prob css3 final iteration */
+  filter: hue-rotate(120deg);
 }

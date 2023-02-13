@@ -456,8 +456,7 @@ function load_modal(settings) {
 // Function that shows a dialog box to confirm closures of generic manners.
 // The modal id is random.
 // eslint-disable-next-line no-unused-vars
-function confirmDialog(settings) {
-  var randomStr = uniqId();
+function confirmDialog(settings, idDialog = uniqId()) {
   var hideOkButton = "";
   var hideCancelButton = "";
 
@@ -487,11 +486,11 @@ function confirmDialog(settings) {
 
   if (typeof settings.message == "function") {
     $("body").append(
-      '<div id="confirm_' + randomStr + '">' + settings.message() + "</div>"
+      '<div id="confirm_' + idDialog + '">' + settings.message() + "</div>"
     );
   } else {
     $("body").append(
-      '<div id="confirm_' + randomStr + '">' + settings.message + "</div>"
+      '<div id="confirm_' + idDialog + '">' + settings.message + "</div>"
     );
   }
 
@@ -542,8 +541,8 @@ function confirmDialog(settings) {
     buttons.unshift(newButton);
   }
 
-  $("#confirm_" + randomStr);
-  $("#confirm_" + randomStr)
+  $("#confirm_" + idDialog);
+  $("#confirm_" + idDialog)
     .dialog({
       open: settings.open,
       title: settings.title,
@@ -762,4 +761,76 @@ function getGroupIcon(id_group, img_container) {
       img_container.attr("src", "");
     }
   });
+}
+
+/* Prepare download control */
+function getCookie(name) {
+  var parts = document.cookie.split(name + "=");
+  if (parts.length == 2)
+    return parts
+      .pop()
+      .split(";")
+      .shift();
+}
+
+function expireCookie(cName) {
+  document.cookie =
+    encodeURIComponent(cName) +
+    "=deleted; expires=" +
+    new Date(0).toUTCString();
+}
+
+function setCursor(buttonStyle, button) {
+  button.css("cursor", buttonStyle);
+}
+
+function setToken(tokenName, token) {
+  token = typeof token !== "undefined" ? token : new Date().getTime();
+  document.cookie = tokenName + "=" + token + ";" + "-1" + ";path=/";
+
+  return token;
+}
+
+var downloadTimer;
+var attempts = 30;
+
+// Prevents double-submits by waiting for a cookie from the server.
+function blockResubmit(button) {
+  var downloadToken = setToken("downloadToken");
+  setCursor("wait", button);
+
+  // Disable butoon to prevent clicking until download is ready.
+  button.disable();
+  button.click(false);
+
+  //Show dialog.
+  confirmDialog(
+    {
+      title: get_php_value("prepareDownloadTitle"),
+      message: get_php_value("prepareDownloadMsg"),
+      hideCancelButton: true
+    },
+    "downloadDialog"
+  );
+
+  downloadTimer = setInterval(function() {
+    var downloadReady = getCookie("downloadReady");
+
+    if (downloadToken == downloadReady || attempts == 0) {
+      unblockSubmit(button);
+    }
+
+    attempts--;
+  }, 1000);
+}
+
+function unblockSubmit(button) {
+  setCursor("pointer", button);
+  button.enable();
+  button.on("click");
+  clearInterval(downloadTimer);
+  $("#confirm_downloadDialog").dialog("close");
+  expireCookie("downloadToken");
+  expireCookie("downloadReady");
+  attempts = 30;
 }

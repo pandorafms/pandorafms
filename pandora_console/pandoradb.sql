@@ -4177,3 +4177,26 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
   `ag_custom_fields` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+CREATE TABLE IF NOT EXISTS `twelcome_tip` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_lang` INT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `text` TEXT NOT NULL,
+  `url` VARCHAR(255) NULL,
+  `enable` TINYINT NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+
+CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `twelcome_tip_file` INT NOT NULL,
+  `filename` VARCHAR(255) NOT NULL,
+  `path` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `twelcome_tip_file`
+    FOREIGN KEY (`twelcome_tip_file`)
+    REFERENCES `twelcome_tip` (`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

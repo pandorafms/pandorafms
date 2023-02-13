@@ -255,6 +255,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $no_close_bool = false;
     $force_style = '';
     $force_class = '';
+    $classes = [];
     $autoclose = ($class === 'suc');
     if (is_array($message) === true) {
         if (empty($message['title']) === false) {
@@ -270,7 +271,9 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         }
 
         if (empty($message['no_close']) === false) {
-            $no_close_bool = (bool) $message['no_close'];
+            // Workaround.
+            $no_close_bool = false;
+            // $no_close_bool = (bool) $message['no_close'];
         }
 
         if (empty($message['force_style']) === false) {
@@ -288,6 +291,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         switch ($class) {
             default:
             case 'info':
+                $classes[] = 'info_box_information';
                 $text_title = __('Information');
             break;
             case 'error':
@@ -381,8 +385,8 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageCreated = html_print_table($messageTable, true);
     $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
 
-    $classes = 'info_box_container';
-    $classes .= (($autoclose === true) && ($autocloseTime > 0)) ? ' info_box_autoclose' : '';
+    $classes[] = 'info_box_container';
+    $classes[] = (($autoclose === true) && ($autocloseTime > 0)) ? ' info_box_autoclose' : '';
 
     // This session var is defined in index.
     if (isset($_SESSION['info_box_count']) === false) {
@@ -397,7 +401,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         [
             'id'      => $id,
             'style'   => 'top: '.$position.'px;',
-            'class'   => $classes,
+            'class'   => implode(' ', $classes),
             'content' => $messageCreated,
         ],
         true

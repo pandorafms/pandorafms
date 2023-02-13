@@ -72,6 +72,8 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
 
             $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
             $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
+            $sub['godmode/servers/discovery&wiz=hd']['type'] = 'direct';
+            $sub['godmode/servers/discovery&wiz=hd']['subtype'] = 'nolink';
             $sub['godmode/servers/discovery&wiz=hd']['sub2'] = $sub2;
         }
 

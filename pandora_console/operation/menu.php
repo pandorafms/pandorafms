@@ -299,7 +299,7 @@ if ($access_console_node === true) {
     if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, 'MW') || check_acl($config['id_user'], 0, 'MM')) {
         // Network enterprise.
         $sub['operation/agentes/pandora_networkmap']['text'] = __('Network map');
-        $sub['operation/agentes/pandora_networkmap']['id'] = 'Network map';
+        $sub['operation/agentes/pandora_networkmap']['id'] = 'Network_map';
         $sub['operation/agentes/pandora_networkmap']['refr'] = 0;
     }
 
@@ -310,11 +310,11 @@ if ($access_console_node === true) {
         if (!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0) {
             // Visual console.
             $sub['godmode/reporting/map_builder']['text'] = __('Visual console');
-            $sub['godmode/reporting/map_builder']['id'] = 'Visual console';
+            $sub['godmode/reporting/map_builder']['id'] = 'Visual_console';
         } else {
             // Visual console favorite.
             $sub['godmode/reporting/visual_console_favorite']['text'] = __('Visual console');
-            $sub['godmode/reporting/visual_console_favorite']['id'] = 'Visual console';
+            $sub['godmode/reporting/visual_console_favorite']['id'] = 'Visual_console';
         }
 
         if ($config['vc_menu_items'] != 0) {
@@ -456,7 +456,7 @@ if ($access_console_node === true) {
         $sub = [];
 
         $sub['godmode/reporting/reporting_builder']['text'] = __('Custom reporting');
-        $sub['godmode/reporting/reporting_builder']['id'] = 'Custom reporting';
+        $sub['godmode/reporting/reporting_builder']['id'] = 'Custom_reporting';
         // Set godomode path.
         $sub['godmode/reporting/reporting_builder']['subsecs'] = [
             'godmode/reporting/reporting_builder',
@@ -465,7 +465,7 @@ if ($access_console_node === true) {
 
 
         $sub['godmode/reporting/graphs']['text'] = __('Custom graphs');
-        $sub['godmode/reporting/graphs']['id'] = 'Custom graphs';
+        $sub['godmode/reporting/graphs']['id'] = 'Custom_graphs';
         // Set godomode path.
         $sub['godmode/reporting/graphs']['subsecs'] = [
             'operation/reporting/graph_viewer',
@@ -517,7 +517,7 @@ if ($access_console_node === true) {
 
         $sub = [];
         $sub['operation/events/events']['text'] = __('View events');
-        $sub['operation/events/events']['id'] = 'View events';
+        $sub['operation/events/events']['id'] = 'View_events';
         $sub['operation/events/events']['pages'] = ['godmode/events/events'];
 
         // If ip doesn't is in list of allowed IP, isn't show this options.
@@ -596,12 +596,12 @@ $menu_operation['workspace']['id'] = 'oper-users';
 // Users.
 $sub = [];
 $sub['operation/users/user_edit']['text'] = __('Edit my user');
-$sub['operation/users/user_edit']['id'] = 'Edit my user';
+$sub['operation/users/user_edit']['id'] = 'Edit_my_user';
 $sub['operation/users/user_edit']['refr'] = 0;
 
 // Users.
 $sub['operation/users/user_edit_notifications']['text'] = __('Configure user notifications');
-$sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
+$sub['operation/users/user_edit_notifications']['id'] = 'Configure_user_notifications';
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
 if ($access_console_node === true) {
@@ -652,13 +652,13 @@ if ($access_console_node === true) {
 
         if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
             $sub['operation/agentes/exportdata']['text'] = __('Export data');
-            $sub['operation/agentes/exportdata']['id'] = 'Export data';
+            $sub['operation/agentes/exportdata']['id'] = 'Export_data';
             $sub['operation/agentes/exportdata']['subsecs'] = ['operation/agentes/exportdata'];
         }
 
         if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AD') || check_acl($config['id_user'], 0, 'AW')) {
             $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
-            $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled downtime';
+            $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled_downtime';
         }
 
         foreach ($config['extensions'] as $extension) {
@@ -688,7 +688,7 @@ if ($access_console_node === true) {
                 }
 
                 $sub[$extension_menu['sec2']]['text'] = $extension_menu['name'];
-                $sub[$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                $sub[$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                 $sub[$extension_menu['sec2']]['refr'] = 0;
             } else {
                 if (array_key_exists('fatherId', $extension_menu)) {
@@ -697,7 +697,7 @@ if ($access_console_node === true) {
                         if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
                             if ((strlen($extension_menu['subfatherId']) > 0)) {
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['refr'] = 0;
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['sec'] = 'extensions';
@@ -706,7 +706,7 @@ if ($access_console_node === true) {
                                 $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
                             } else {
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['refr'] = 0;
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['sec'] = 'extensions';
@@ -716,7 +716,7 @@ if ($access_console_node === true) {
                             }
                         } else {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['refr'] = 0;
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['sec'] = 'extensions';

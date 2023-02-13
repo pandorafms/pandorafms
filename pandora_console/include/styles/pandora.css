@@ -639,6 +639,10 @@ select:-internal-list-box {
   width: 25%;
 }
 
+.w29p {
+  width: 29%;
+}
+
 .w30p {
   width: 30%;
 }
@@ -663,12 +667,20 @@ select:-internal-list-box {
   width: 54%;
 }
 
+.w55p {
+  width: 55%;
+}
+
 .w60p {
   width: 60%;
 }
 
 .w70p {
   width: 70%;
+}
+
+.w71p {
+  width: 71%;
 }
 
 .w75p {
@@ -869,6 +881,7 @@ select:-internal-list-box {
 .flex-baseline {
   align-self: baseline;
 }
+
 .flex {
   display: flex;
 }
@@ -3765,13 +3778,13 @@ div.div_groups_status {
 }
 
 #title_menu {
-  color: #b9b9b9;
-  float: right;
-  width: 72%;
-  letter-spacing: 0pt;
-  font-size: 10pt;
-  white-space: pre-wrap;
-  padding-top: 0;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  line-height: 24px;
+  width: 200px;
+  text-align: left;
+  width: 100%;
+  user-select: none;
 }
 
 .no_hidden_menu {
@@ -10256,6 +10269,7 @@ button.submitButton.link:active > div {
 button.disabled_action_button {
   visibility: hidden;
 }
+
 button div.camera {
   mask: url(../../images/svg/picture.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/picture.svg) no-repeat center / contain;
@@ -10289,6 +10303,7 @@ button div.sound {
   -webkit-mask: url(../../images/sound_console@svg.svg) no-repeat center /
     contain;
 }
+
 button div.add {
   mask: url(../../images/svg/plus.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/svg/plus.svg) no-repeat center / contain;

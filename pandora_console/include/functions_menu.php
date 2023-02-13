@@ -47,6 +47,9 @@ function menu_print_menu(&$menu)
 {
     global $config;
     global $menuTypeClass;
+    global $tab_active;
+    global $menu1_selected;
+    global $menu2_selected;
     static $idcounter = 0;
 
     echo '<div class="menu">';
@@ -63,6 +66,15 @@ function menu_print_menu(&$menu)
         if ($tab === 'credbox') {
             $sec2 = 'godmode/groups/group_list&tab='.$tab;
         }
+    } else if ($sec2 === 'godmode/setup/setup') {
+        $section = (string) get_parameter('section');
+        $sec2 = 'godmode/setup/setup&section='.$section;
+    } else if ($sec2 === 'godmode/massive/massive_operations') {
+        $tab = (string) get_parameter('tab');
+        $sec2 = 'godmode/massive/massive_operations&tab='.$tab;
+    } else if ($sec2 === 'godmode/events/events') {
+        $section = (string) get_parameter('section');
+        $sec2 = 'godmode/events/events&section='.$section;
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -206,17 +218,19 @@ function menu_print_menu(&$menu)
             // Set class.
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
-                && (                    get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
+                && (get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
             ) {
                 // If the subclass is selected and there are options and that options value is true.
                 $class .= 'submenu_selected selected';
                 $menu_selected = true;
+                $menu2_selected = $sub['id'];
                 $selected = true;
                 $visible = true;
             } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false) {
                 $class .= 'submenu_selected selected';
                 $selected = true;
                 $menu_selected = true;
+                $menu2_selected = $sub['id'];
                 $hasExtensions = (array_key_exists('hasExtensions', $main) === true) ? $main['hasExtensions'] : false;
                 if ((empty($extensionInMenuParameter) === false) && ((bool) $hasExtensions === true)) {
                     $visible = true;
@@ -233,18 +247,14 @@ function menu_print_menu(&$menu)
             }
 
             // Define submenu class to draw tree image.
-            if ($count_sub >= count($main['sub'])) {
-                $sub_tree_class = 'submenu_text submenu_text_last';
-            } else {
-                $sub_tree_class = 'submenu_text submenu_text_middle';
-            }
+            $sub_tree_class = 'submenu_text';
 
             if (isset($sub['type']) && $sub['type'] == 'direct') {
                 // This is an external link.
                 $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
-                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'">'.$sub['text'].'</div>';
+                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w29p arrow_menu_down"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
                         $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {
@@ -390,14 +400,29 @@ function menu_print_menu(&$menu)
 
         if ($menu_selected) {
             $seleccionado = 'selected';
+            $menu1_selected = $id;
+            if ($menu['class'] === 'operation') {
+                $tab_active = 'display';
+            } else {
+                $tab_active = 'management';
+            }
         } else {
             $seleccionado = '';
         }
 
         // Print out the first level.
-        $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.'" id="icon_'.$id.'">';
+        $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.' flex_li" id="icon_'.$id.'">';
+        if ($menuTypeClass === 'collapsed') {
+            $div = '<div class="icon_'.$id.' w100p"></div><span class="w55p" style="display: none">'.$main['text'].'</span><div class="arrow_menu_down w30p" style="display: none"></div>';
+        } else {
+            if ($id === 'about') {
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="w30p"></div>';
+            } else {
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
+            }
+        }
 
-        $output .= sprintf('<div id="title_menu" class="title_menu_%s">%s</div>', $menuTypeClass, $main['text']);
+        $output .= sprintf('<div id="title_menu" class="title_menu_classic">%s</div>', $div);
 
         // Add the notification ball if defined.
         if (isset($main['notification']) === true) {

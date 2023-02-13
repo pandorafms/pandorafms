@@ -4583,7 +4583,7 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
             true,
             [
                 'border' => '0',
-                'width'  => '60',
+                'width'  => '35',
                 'alt'    => $logo_title,
                 'class'  => 'logo_icon',
                 'style'  => ($menuCollapsed === true) ? 'display:block' : 'display:none',

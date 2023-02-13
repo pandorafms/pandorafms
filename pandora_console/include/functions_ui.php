@@ -501,11 +501,11 @@ function ui_print_empty_data($message, $attributes='', $return=false, $tag='h3')
  */
 function ui_print_result_message($result, $good='', $bad='', $attributes='', $return=false, $tag='h3')
 {
-    if (empty($good) === false || $good === false) {
+    if (empty($good) === true || $good === false) {
         $good = __('Request successfully processed');
     }
 
-    if (empty($bad) === false || $bad === false) {
+    if (empty($bad) === true || $bad === false) {
         $bad = __('Error processing request');
     }
 

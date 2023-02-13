@@ -1735,12 +1735,12 @@ div.title_line {
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
   position: sticky;
-  top: 59px;
+  top: 60px;
   z-index: 1000;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 4px solid #14524f;
+  border-bottom: 4px solid #c1ccdc;
   /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
   width: -moz-fill-available;
@@ -1749,7 +1749,6 @@ div.title_line {
   height: 56px;
   box-sizing: border-box;
   background-color: #fff;
-  box-shadow: 1px 1px 4px rgb(0 0 0 / 10%);
   /* margin-left: -3em;*/
 }
 
@@ -9920,7 +9919,7 @@ select:disabled,
   color: #8a96a6;
 }
 
-input:focus,
+input:not([type="image"]):focus,
 textarea:focus,
 select:focus {
   border: 1px solid #8a96a6;

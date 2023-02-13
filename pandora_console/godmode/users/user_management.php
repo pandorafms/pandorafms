@@ -133,7 +133,7 @@ $userManagementTable->colspan = [];
 $userManagementTable->rowspan = [];
 
 // Title for Profile information.
-$sustitleTable = ($new_user === true) ? __('Profile information') : sprintf('%s [ %s ]', __('Profile information for'), $config['id_user']);
+$sustitleTable = ($new_user === true) ? __('Profile information') : sprintf('%s [ %s ]', __('Profile information for'), $id);
 $userManagementTable->data['title_profile_information'] = html_print_subtitle_table($sustitleTable);
 
 // Id user.
@@ -701,6 +701,7 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
 );
 
 html_print_table($userManagementTable);
-
-// User Profile definition table.
-profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true && $new_user === true));
+// User Profile definition table. (Only where user is not creating).
+if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+}

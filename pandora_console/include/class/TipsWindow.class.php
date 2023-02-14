@@ -134,6 +134,7 @@ class TipsWindow
             return;
         }
 
+        $_SESSION['showed_tips_window'] = true;
         ui_require_css_file('tips_window');
         ui_require_css_file('jquery.bxslider');
         ui_require_javascript_file('tipsWindow');

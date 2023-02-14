@@ -96,7 +96,9 @@ $filterTable->data[1][2] = html_print_submit_button(
 );
 
 // Print filter table.
+echo '<form id="create_module_type" method="post" action="'.$url.'">';
 html_print_table($filterTable);
+echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo.
 $network_available = db_get_sql(

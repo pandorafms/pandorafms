@@ -274,6 +274,10 @@ if ($not_found) {
     ui_print_error_message(__('Not found networkmap.'));
 } else {
     if ($disabled_source === false) {
+        echo '<div id="map_loading" style="width: 98%;height: 1000px; background-color: rgba(245, 245, 245, .3);position: absolute;display: flex;justify-content: center;align-items: center;flex-direction: column-reverse;">';
+        echo html_print_image('images/spinner.gif', true, 'width: 50px;height: 50px;');
+        echo '<div>'.__('Creating map...').'</div>';
+        echo '</div>';
         $info1 = __('To create a network map that visually recreates link-level (L2) relationships, you must first discover these relationships with Discovery Server.  Network maps only reflect relationships that have already been discovered.');
         $separator = '<br>';
         $info2 = __('Discovery Server discovers relationships between interfaces (L2) through SNMP and relationships between hosts (L3) through route discovery.');
@@ -546,6 +550,7 @@ if ($not_found) {
 <script type="text/javascript">
 
 $(document).ready(function() {
+    $("#map_loading").hide();
     $("#source").change(function() {
         const source = $(this).val();
 
@@ -670,6 +675,7 @@ $(document).ready(function() {
     update_networkmap = $("input[name='update_networkmap']").val();
 
     $( "#submit-crt" ).click(function( event ) {
+        $("#map_loading").show();
         if(update_networkmap == 1 && id_group_changed === true) {
             confirmDialog({
                         title: '<?php echo __('Are you sure?'); ?>',

@@ -258,6 +258,14 @@ class ConsoleSupervisor
             $this->checkSyncQueueStatus();
         }
 
+                /*
+                 * Checkc agent missing libraries.
+                 * NOTIF.AGENT.LIBRARY
+                 */
+        if ((bool) enterprise_installed() === true) {
+            $this->checkLibaryError();
+        }
+
     }
 
 
@@ -2832,7 +2840,8 @@ class ConsoleSupervisor
                     'message' => __(
                         'There are omnishell agents with dependency errors',
                     ),
-                    'url'     => $url,
+
+                    'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
                 ]
             );
         }

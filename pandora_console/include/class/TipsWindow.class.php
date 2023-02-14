@@ -44,6 +44,7 @@ class TipsWindow
     public $AJAXMethods = [
         'getRandomTip',
         'renderView',
+        'setShowTipsAtStartup',
     ];
 
     /**
@@ -126,6 +127,13 @@ class TipsWindow
      */
     public function run()
     {
+        global $config;
+        $user_info = users_get_user_by_id($config['id_user']);
+
+        if ((bool) $user_info['show_tips_startup'] === false) {
+            return;
+        }
+
         ui_require_css_file('tips_window');
         ui_require_css_file('jquery.bxslider');
         ui_require_javascript_file('tipsWindow');
@@ -146,11 +154,6 @@ class TipsWindow
                     load_tips_modal({
                         target: $('#tips_window_modal'),
                         url: '<?php echo ui_get_full_url('ajax.php'); ?>',
-                        modal: {
-                            title: '<?php echo __('Hola! estos son los tips del día'); ?>',
-                            next: '<?php echo __('De acuerdo'); ?>',
-                            close: '<?php echo __('Quizás luego'); ?>'
-                        },
                         onshow: {
                             page: '<?php echo $this->ajaxController; ?>',
                             method: 'renderView',
@@ -183,7 +186,7 @@ class TipsWindow
     {
         $exclude = get_parameter('exclude', '');
 
-        $sql = 'SELECT id, title, text, url 
+        $sql = 'SELECT id, title, text, url
                 FROM twelcome_tip';
 
         if (empty($exclude) === false && $exclude !== null) {
@@ -231,6 +234,32 @@ class TipsWindow
         $sql = sprintf('SELECT filename, path FROM twelcome_tip_file WHERE twelcome_tip_file = %s', $idTip);
 
         return db_get_all_rows_sql($sql);
+
+    }
+
+
+    public function setShowTipsAtStartup()
+    {
+        global $config;
+        $show_tips_startup = get_parameter('show_tips_startup', '');
+        if ($show_tips_startup !== '' && $show_tips_startup !== null) {
+            $result = db_process_sql_update(
+                'tusuario',
+                ['show_tips_startup' => $show_tips_startup],
+                ['id_user' => $config['id_user']]
+            );
+
+            if ($result !== false) {
+                echo json_encode(['success' => true]);
+                return;
+            } else {
+                echo json_encode(['success' => false]);
+                return;
+            }
+        } else {
+            echo json_encode(['success' => false]);
+            return;
+        }
 
     }
 }

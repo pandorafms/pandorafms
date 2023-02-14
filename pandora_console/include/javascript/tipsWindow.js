@@ -4,6 +4,26 @@ $(".carousel .images").ready(function() {
     $(".carousel .images").bxSlider({ controls: true });
   }
 });
+
+$("#checkbox_tips_startup").ready(function() {
+  $("#checkbox_tips_startup").on("click", function() {
+    $.ajax({
+      method: "POST",
+      url: url,
+      dataType: "json",
+      data: {
+        page: page,
+        method: "setShowTipsAtStartup",
+        show_tips_startup: this.checked ? "1" : "0"
+      },
+      success: function({ success }) {
+        if (!success) {
+          $("#checkbox_tips_startup").prop("checked", true);
+        }
+      }
+    });
+  });
+});
 function render({ title, text, url, files }) {
   $("#title_tip").html(title);
   $("#text_tip").html(text);
@@ -124,13 +144,6 @@ function load_tips_modal(settings) {
     width = settings.onshow.width;
   }
 
-  if (settings.modal.overlay == undefined) {
-    settings.modal.overlay = {
-      opacity: 0.5,
-      background: "black"
-    };
-  }
-
   if (settings.beforeClose == undefined) {
     settings.beforeClose = function() {};
   }
@@ -177,7 +190,7 @@ function load_tips_modal(settings) {
         modal: true,
         header: false,
         dialogClass: "dialog_tips",
-        title: settings.modal.title,
+        title: "",
         width: width,
         minHeight:
           settings.onshow.minHeight != undefined
@@ -187,7 +200,6 @@ function load_tips_modal(settings) {
           settings.onshow.maxHeight != undefined
             ? settings.onshow.maxHeight
             : "auto",
-        overlay: settings.modal.overlay,
         position: {
           my: "top+20%",
           at: "top",

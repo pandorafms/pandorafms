@@ -29,8 +29,18 @@ $output = '';
 
 $output .= '<div class="window">';
 $output .= '<div class="tips_header">';
-$output .= '<p class="title">'.__('¡Hola! estos son los tips del día.').'</p>';
-$output .= '<p>'.html_print_checkbox('tips_in_start', true, true, true).__('Ver típs al iniciar').'</p>';
+$output .= '<p class="title">'.__('Hello! These are the tips of the day.').'</p>';
+$output .= '<p>'.html_print_checkbox(
+    'show_tips_startup',
+    true,
+    true,
+    true,
+    false,
+    '',
+    false,
+    '',
+    'checkbox_tips_startup'
+).__('Show usage tips at startup').'</p>';
 $output .= '</div>';
 $output .= '<div class="carousel'.(($files === false) ? 'invisible' : '').'">';
 $output .= '<div class="images">';
@@ -51,19 +61,19 @@ $output .= $text;
 $output .= '</p>';
 
 if (empty($url) === false && $url !== '') {
-    $output .= '<a href="'.$url.'" id="url_tip">'.__('Ver más info').'<span class="arrow_tips">→</span></a>';
+    $output .= '<a href="'.$url.'" id="url_tip">'.__('See more info').'<span class="arrow_tips">→</span></a>';
 }
 
 $output .= '</div>';
 
 $output .= '<div class="ui-dialog-buttonset">';
 // TODO Delete this buttons and use html_print_button when merge new design
-$output .= '<button type="button" class="submit-cancel-tips ui-button ui-corner-all ui-widget" onclick="close_dialog()">Quizás luego</button>';
+$output .= '<button type="button" class="submit-cancel-tips ui-button ui-corner-all ui-widget" onclick="close_dialog()">Maybe later</button>';
 $output .= '<div class="counter-tips">';
 $output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow-counter']);
 $output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow-counter']);
 $output .= '</div>';
-$output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="next_tip()">De acuerdo</button>';
+$output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="next_tip()">Ok</button>';
 $output .= '</div>';
 $output .= '</div>';
 echo $output;

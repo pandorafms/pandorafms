@@ -83,6 +83,7 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['timezone'] = get_parameter_post('timezone', '');
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
+    $upd_info['show_tips_startup'] = get_parameter_switch('show_tips_startup');
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
@@ -539,6 +540,10 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ).'</div>';
 }
 
+$show_tips = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Show usage tips at startup').'</p>';
+$show_tips .= html_print_checkbox_switch('show_tips_startup', 1, $user_info['show_tips_startup'], true).'</div>';
+
+
 
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
@@ -752,7 +757,7 @@ if (is_metaconsole() === true) {
                 <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
             </div> 
             <div class="user_edit_second_row white_box">
-                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$double_authentication.'</div>
+                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$show_tips.$double_authentication.'</div>
                 <div class="edit_user_timezone">'.$timezone;
 
 

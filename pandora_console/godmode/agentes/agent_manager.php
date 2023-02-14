@@ -356,7 +356,8 @@ $tableAgent->rowspan = [];
 if ($new_agent === false) {
     $tableAgent->data['caption_name'][0] = __('Agent name');
     $tableAgent->rowclass['name'] = 'w540px';
-    $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true, false, false, '', 'w540px');
+    $tableAgent->cellstyle['name'][0] = 'width: 100%;';
+    $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true, false, false, '', 'w100p');
     $tableAgent->data['name'][0] .= html_print_div(
         [
             'class'   => 'moduleIdBox',
@@ -841,7 +842,7 @@ if (enterprise_installed() === true) {
         '',
         true,
         false,
-        'white_box white_box_opened',
+        'white_box white_box_opened white_table_graph_fixed',
         'no-border flex'
     );
 }
@@ -970,7 +971,7 @@ if (empty($fields) === false) {
         '',
         true,
         false,
-        'white_box white_box_opened',
+        'white_box white_box_opened white_table_graph_fixed',
         'no-border custom_fields_elements'
     );
 }

@@ -79,8 +79,6 @@ function render_counter() {
 }
 
 function next_tip() {
-  console.log(JSON.stringify(idTips));
-  console.log(totalTips);
   if (idTips.length >= totalTips) {
     idTips = [];
   }

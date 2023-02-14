@@ -337,8 +337,11 @@ if ($delete_user === true) {
             );
 
             if (isset($private_dashboards) === true) {
-                db_process_sql_delete('tdashboard', ['id_user' => $id_user]);
-                header('Refresh:1');
+                $dashboardRemoveResult = db_process_sql_delete('tdashboard', ['id_user' => $id_user]);
+                // Refresh the view when delete private dashboards. For review.
+                if ($dashboardRemoveResult === false || (int) $dashboardRemoveResult > 0) {
+                    header('Refresh:1');
+                }
             }
 
             $result = delete_user($id_user);
@@ -720,7 +723,13 @@ foreach ($info as $user_id => $user_info) {
         || isset($group_um[0]) || (isset($user_info['edit'])
         && $user_info['edit']))))
     ) {
-        $data[0] = '<a href="#" onclick="document.forms[\'edit_user_form_'.$user_info['id_user'].'\'].submit();">'.$user_id.'</a>';
+        $data[0] = html_print_anchor(
+            [
+                'href'    => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$user_id),
+                'content' => $user_id,
+            ],
+            true
+        );
     } else {
         $data[0] = $user_id;
     }

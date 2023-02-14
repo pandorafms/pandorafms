@@ -4213,8 +4213,8 @@ function ui_toggle(
     $toggle_class='',
     $container_class='white-box-content',
     $main_class='box-flat white_table_graph',
-    $img_a='images/arrow_down_green.png',
-    $img_b='images/arrow_right_green.png',
+    $img_a='images/arrow@svg.svg',
+    $img_b='images/arrow@svg.svg',
     $clean=false,
     $reverseImg=false,
     $switch=false,
@@ -4231,18 +4231,25 @@ function ui_toggle(
         $image_a = html_print_image(
             $img_a,
             true,
-            [ 'style' => 'object-fit: contain;' ],
+            [
+                'style' => 'rotate: 45deg;',
+                'class' => 'main_menu_icon',
+            ],
             true
         );
     } else {
         $image_a = '';
     }
 
+    hd($image_a, true);
     if (empty($img_b) === false) {
         $image_b = html_print_image(
             $img_b,
             true,
-            [ 'style' => 'object-fit: contain;' ],
+            [
+                'style' => 'rotate: 90deg;',
+                'class' => 'main_menu_icon',
+            ],
             true
         );
     } else {
@@ -4252,10 +4259,12 @@ function ui_toggle(
     // Options.
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-fill-available;';
     $style = 'overflow:hidden;';
-    if ($hidden_default) {
+    if ($hidden_default === true) {
+        $imageRotate = '90deg';
         $style .= 'height:0;position:absolute;';
         $original = $img_b;
     } else {
+        $imageRotate = '180deg';
         $style .= 'height:auto;position:relative;';
         $original = $img_a;
     }
@@ -4303,15 +4312,15 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'float-left',
-                    'style' => 'object-fit: contain; margin-right:10px;',
+                    'class' => 'float-left main_menu_icon',
+                    'style' => 'object-fit: contain; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
                 ]
             );
         }
 
-        $output .= '<b>'.$name.'</b>';
+        $output .= $name;
     } else {
         $output .= $name;
         if ($switch === true) {
@@ -4335,7 +4344,8 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'class' => 'main_menu_icon',
+                    'style' => 'object-fit: contain; float:right; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
                 ]
@@ -4359,6 +4369,7 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
+        $output .= "        $('#image_".$uniqid."').addClass('main_menu_icon');\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
         $output .= '            if (is_metaconsole == 0) {';
         $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
@@ -4379,6 +4390,8 @@ function ui_toggle(
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
+        $output .= "				$('#image_".$uniqid."').addClass('main_menu_icon');\n";
+        $output .= "				$('#image_".$uniqid."').css('rotate','180deg');\n";
         $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
         $output .= "			}\n";
         $output .= "			else {\n";
@@ -4386,6 +4399,8 @@ function ui_toggle(
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
+        $output .= "				$('#image_".$uniqid."').addClass('main_menu_icon');\n";
+        $output .= "				$('#image_".$uniqid."').css('rotate','90deg');\n";
         $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
         $output .= "			}\n";
         $output .= "		});\n";

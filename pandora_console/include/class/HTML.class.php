@@ -311,7 +311,7 @@ class HTML
     public function printBreadcrum()
     {
         return implode(
-            '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
+            '<span class="breadcrumb_link_separator">&nbsp/&nbsp</span>',
             $this->breadcrum
         );
     }

@@ -59,7 +59,7 @@ if ($enterprise_include === true) {
 $id = get_parameter('id', get_parameter('id_user', ''));
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
-    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
+    if ((is_centralized() === true) || (bool) check_acl($config['id_user'], 0, 'UM') === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'

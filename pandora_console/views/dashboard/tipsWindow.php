@@ -61,7 +61,7 @@ $output .= $text;
 $output .= '</p>';
 
 if (empty($url) === false && $url !== '') {
-    $output .= '<a href="'.$url.'" id="url_tip">'.__('See more info').'<span class="arrow_tips">→</span></a>';
+    $output .= '<a href="'.$url.'" target="_blank" id="url_tip">'.__('See more info').'<span class="arrow_tips">→</span></a>';
 }
 
 $output .= '</div>';

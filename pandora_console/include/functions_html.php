@@ -3409,26 +3409,23 @@ function html_print_action_buttons(string $content, array $parameters=[], bool $
 function html_print_submit_button($label='OK', $name='', $disabled=false, $attributes='', $return=false)
 {
     if (is_string($attributes) === true) {
-        $attributes = [];
+        // Convert Attributes in array for handle in the principal function.
+        $tmp = [];
+        $tmp['rawAttributes'] = $attributes;
+        $attributes = $tmp;
     }
 
     // Set the button type from here.
     $attributes['type'] = 'submit';
 
-    $output = html_print_button(
+    return html_print_button(
         $label,
         $name,
         $disabled,
         (isset($attributes['onclick']) === true) ? $attributes['onclick'] : '',
         $attributes,
-        true
+        $return
     );
-
-    if ($return === false) {
-        echo $output;
-    } else {
-        return $output;
-    }
 }
 
 
@@ -3480,14 +3477,16 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $classes .= ' '.$value;
             } else if ($attribute === 'fixed_id') {
                 $fixedId = $value;
+            } else if ($attribute === 'rawAttributes') {
+                $buttonType = ($attr_array['type'] ?? 'button');
+                $buttonAttributes = $value;
+                break;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
         }
     } else if (empty($attributes) === false && is_string($attributes) === true) {
-        $tmpData = explode(' ', $attributes);
-        $iconToUse = $tmpData[(array_search('sub', $tmpData) + 1)];
-        $iconToUse = preg_replace('([^A-Za-z])', '', $iconToUse);
+        $buttonAttrutes = explode(' ', $attributes);
     }
 
     if (empty($iconToUse) === false || (isset($buttonMode) === true && $buttonMode !== 'onlyIcon')) {
@@ -3523,19 +3522,23 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $classes .= ' disabled_action_button';
     }
 
-    $parameters = [];
-    $parameters[] = 'class="'.$classes.'"';
-    $parameters[] = (empty($name) === false) ? ' name="'.$name.'"' : '';
-    $parameters[] = 'id="'.((empty($fixedId) === false) ? $fixedId : 'button-'.$name ).'"';
-    $parameters[] = (empty($label) === false) ? ' value="'.$label.'"' : '';
-    $parameters[] = (empty($script) === false) ? ' onClick="'.$script.'"' : '';
-    $parameters[] = ($disabled === true) ? ' disabled' : '';
-    $parameters[] = (empty($attributes) === false) ? $attributes : '';
+    if (empty($buttonAttributes) === true) {
+        $parameters = [];
+        $parameters[] = 'class="'.$classes.'"';
+        $parameters[] = (empty($name) === false) ? ' name="'.$name.'"' : '';
+        $parameters[] = 'id="'.((empty($fixedId) === false) ? $fixedId : 'button-'.$name ).'"';
+        $parameters[] = (empty($label) === false) ? ' value="'.$label.'"' : '';
+        $parameters[] = (empty($script) === false) ? ' onClick="'.$script.'"' : '';
+        $parameters[] = ($disabled === true) ? ' disabled' : '';
+        $parameters[] = (empty($attributes) === false) ? $attributes : '';
+
+        $buttonAttributes = implode(' ', $parameters);
+    }
 
     $output = sprintf(
         '<button type="%s" %s>%s</button>',
         $buttonType,
-        implode(' ', $parameters),
+        $buttonAttributes,
         $content
     );
 

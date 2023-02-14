@@ -375,9 +375,9 @@ $dates_box .= '</div>';
 
 // Show details, people and dates.
 echo '<div class="integria_details">';
-    ui_toggle($details_box, __('Details'), '', 'details_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-shadow white_table_graph');
-    ui_toggle($people_box, __('People'), '', 'people_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-shadow white_table_graph');
-    ui_toggle($dates_box, __('Dates'), '', 'dates_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-shadow white_table_graph');
+    ui_toggle($details_box, __('Details'), '', 'details_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-flat white_table_graph');
+    ui_toggle($people_box, __('People'), '', 'people_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-flat white_table_graph');
+    ui_toggle($dates_box, __('Dates'), '', 'dates_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-flat white_table_graph');
 echo '</div>';
 
  // Show description.

@@ -384,7 +384,7 @@ $table_events .= '</div>';
 
 ?>
 <div id="agent_details_first_row" class="w100p cluster-agent-data">
-    <div class="box-shadow agent_details_col agent_details_col_left">
+    <div class="box-flat agent_details_col agent_details_col_left">
         <div class="agent_details_header">
             <?php echo $table_agent_header; ?>
         </div>
@@ -407,7 +407,7 @@ $table_events .= '</div>';
         </div>
     </div>
 
-    <div class="box-shadow agent_details_col agent_details_col_right">
+    <div class="box-flat agent_details_col agent_details_col_right">
         <div class="cluster-map">
             <?php $map_manager->printMap(); ?>
         </div>

@@ -581,8 +581,8 @@ $tableAgent->data['description'][0] = html_print_textarea(
 
 html_print_div(
     [
-        'class'   => 'box-shadow white_table_flex white_box agent_details_col',
-        'style'   => 'display: flex; justify-content: space-between; align-items: flex-start;',
+        'class'   => 'box-flat white_table_flex white_box agent_details_col',
+        'style'   => 'display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px',
         'content' => html_print_table($tableAgent, true).$CodeQRTable,
     ]
 );
@@ -908,7 +908,7 @@ foreach ($fields as $field) {
             2,
             65,
             $link_text,
-            'class="min-height-30px',
+            'class="min-height-30px w100p"',
             true
         );
         $data_field[1] .= '<br>';
@@ -919,7 +919,7 @@ foreach ($fields as $field) {
             2,
             65,
             $link_url,
-            'class="min-height-30px',
+            'class="min-height-30px w100p"',
             true
         );
     } else {
@@ -928,7 +928,7 @@ foreach ($fields as $field) {
             2,
             65,
             $custom_value,
-            'class="min-height-30px',
+            'class="min-height-30px w100p"',
             true
         );
     }

@@ -296,7 +296,7 @@ if (is_metaconsole() === true) {
         false,
         true,
         false,
-        'box-shadow agent_details_col',
+        'box-flat agent_details_col',
         'white-box-content',
         'mrgn_lft_20px mrgn_right_20px width_available'
     );

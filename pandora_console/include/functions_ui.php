@@ -4212,7 +4212,7 @@ function ui_toggle(
     $return=false,
     $toggle_class='',
     $container_class='white-box-content',
-    $main_class='box-shadow white_table_graph',
+    $main_class='box-flat white_table_graph',
     $img_a='images/arrow_down_green.png',
     $img_b='images/arrow_right_green.png',
     $clean=false,
@@ -4251,6 +4251,7 @@ function ui_toggle(
 
     // Options.
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-fill-available;';
+    $style = 'overflow:hidden;';
     if ($hidden_default) {
         $style .= 'height:0;position:absolute;';
         $original = $img_b;
@@ -4263,7 +4264,7 @@ function ui_toggle(
     if ($clean === false) {
         $header_class = 'white_table_graph_header';
     } else {
-        if ($main_class == 'box-shadow white_table_graph') {
+        if ($main_class == 'box-flat white_table_graph') {
             // Default value, clean class.
             $main_class = '';
         }
@@ -4439,7 +4440,7 @@ function ui_print_toggle($data)
         (isset($data['return']) === true) ? $data['return'] : false,
         (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
         (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
-        (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
+        (isset($data['main_class']) === true) ? $data['main_class'] : 'box-flat white_table_graph',
         (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
         (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
         (isset($data['clean']) === true) ? $data['clean'] : false,

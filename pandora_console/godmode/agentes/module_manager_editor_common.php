@@ -223,6 +223,7 @@ if ((isset($id_agent_module) === true && $id_agent_module > 0) || (int) $id_poli
 
 $table_simple = new stdClass();
 $table_simple->id = 'simple';
+$table_simple->styleTable = 'border-radius: 8px;';
 $table_simple->class = 'w100p floating_form';
 $table_simple->data = [];
 $table_simple->style = [];
@@ -482,13 +483,24 @@ if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeM
 }
 
 if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === true)) {
-    $tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = __('Inverse interval');
-    $tableBasicThresholds->data['switch_warning_inverse_string'][0] = html_print_checkbox_switch(
+    $basicThresholdsIntervalWarning = [];
+    $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
+    $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
         'warning_inverse_string',
         1,
         $warning_inverse,
         true,
         $disabledBecauseInPolicy
+    );
+
+    $tableBasicThresholds->rowclass['caption_switch_warning_inverse_string'] = 'field_half_width';
+    $tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $basicThresholdsIntervalWarning),
+        ],
+        true
     );
 
     $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
@@ -558,13 +570,24 @@ if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeM
 }
 
 if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === true)) {
-    $tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = __('Inverse interval');
-    $tableBasicThresholds->data['switch_critical_inverse_string'][0] = html_print_checkbox_switch(
+    $basicThresholdsIntervalCritical = [];
+    $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
+    $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
         'critical_inverse_string',
         1,
         $critical_inverse,
         true,
         $disabledBecauseInPolicy
+    );
+
+    $tableBasicThresholds->rowclass['caption_switch_critical_inverse_string'] = 'field_half_width';
+    $tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $basicThresholdsIntervalCritical),
+        ],
+        true
     );
 
     $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
@@ -710,6 +733,7 @@ $ffThresholdsScript = ob_get_clean();
 // Advanced form part.
 $table_advanced = new stdClass();
 $table_advanced->id = 'advanced';
+$table_advanced->styleTable = 'border-radius: 8px';
 $table_advanced->width = '100%';
 $table_advanced->class = 'w100p floating_form';
 $table_advanced->data = [];

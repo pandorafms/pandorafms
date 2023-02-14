@@ -742,7 +742,7 @@ $outputForm .= ui_toggle(
     true,
     '',
     '',
-    'box-shadow white_table_flex white_table_graph_fixed'
+    'box-flat white_table_flex white_table_graph_fixed mrgn_top_20px'
 );
 
 $outputForm .= ui_toggle(
@@ -754,7 +754,7 @@ $outputForm .= ui_toggle(
     true,
     '',
     '',
-    'box-shadow white_table_flex white_table_graph_fixed'
+    'box-flat white_table_flex white_table_graph_fixed'
 );
 
 $outputForm .= ui_toggle(
@@ -766,7 +766,7 @@ $outputForm .= ui_toggle(
     true,
     '',
     '',
-    'box-shadow white_table_flex white_table_graph_fixed'
+    'box-flat white_table_flex white_table_graph_fixed'
 );
 
 if ((int) $moduletype !== 13) {
@@ -785,7 +785,7 @@ if ((int) $moduletype !== 13) {
         true,
         '',
         '',
-        'box-shadow white_table_flex white_table_graph_fixed'
+        'box-flat white_table_flex white_table_graph_fixed'
     );
 }
 

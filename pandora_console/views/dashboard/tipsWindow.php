@@ -26,7 +26,7 @@
  * ============================================================================
  */
 $output = '';
-
+$output .= '<script>var idTips = ['.$id.'];</script>';
 $output .= '<div class="window">';
 $output .= '<div class="tips_header">';
 $output .= '<p class="title">'.__('Hello! These are the tips of the day.').'</p>';

@@ -1,4 +1,4 @@
-/* globals $, idTips, totalTips, idTips, url, page */
+/* globals $, idTips, totalTips, url, page */
 $(".carousel .images").ready(function() {
   if ($(".carousel .images img").length > 1) {
     $(".carousel .images").bxSlider({ controls: true });
@@ -79,6 +79,8 @@ function render_counter() {
 }
 
 function next_tip() {
+  console.log(JSON.stringify(idTips));
+  console.log(totalTips);
   if (idTips.length >= totalTips) {
     idTips = [];
   }

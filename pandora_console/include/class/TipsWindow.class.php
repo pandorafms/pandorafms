@@ -145,7 +145,6 @@ class TipsWindow
 
                 <script>
                     var totalTips = <?php echo $this->totalTips; ?>;
-                    var idTips = [<?php echo $initialTip['id']; ?>];
                     var url = '<?php echo ui_get_full_url('ajax.php'); ?>';
                     var page = '<?php echo $this->ajaxController; ?>';
                 </script>
@@ -177,6 +176,7 @@ class TipsWindow
                 'text'  => $initialTip['text'],
                 'url'   => $initialTip['url'],
                 'files' => $initialTip['files'],
+                'id'    => $initialTip['id'],
             ]
         );
     }

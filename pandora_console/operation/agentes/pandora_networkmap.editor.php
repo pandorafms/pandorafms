@@ -273,6 +273,21 @@ if (!empty($result)) {
 if ($not_found) {
     ui_print_error_message(__('Not found networkmap.'));
 } else {
+    if ($disabled_source === false) {
+        $info1 = __('To create a network map that visually recreates link-level (L2) relationships, you must first discover these relationships with Discovery Server.  Network maps only reflect relationships that have already been discovered.');
+        $separator = '<br>';
+        $info2 = __('Discovery Server discovers relationships between interfaces (L2) through SNMP and relationships between hosts (L3) through route discovery.');
+        $info3 = __('You can also create these relationships manually by editing nodes or re-passing a discovery task after adding new information (for example by adding new SNMP communities).');
+        $info4 = __('See our documentation for more information.');
+        ui_print_info_message(
+            [
+                'no_close' => false,
+                'message'  => $info1.$separator.$info2.$separator.$info3.$separator.$info4,
+            ],
+            'style="width: 98%;"'
+        );
+    }
+
     $table = new stdClass();
     $table->id = 'form_editor';
 
@@ -401,7 +416,16 @@ if ($not_found) {
     );
 
     $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
-    $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
+    $table->data['source_data_ip_mask'][1] = html_print_textarea(
+        'ip_mask',
+        3,
+        5,
+        $ip_mask,
+        'style="width: 238px"',
+        true,
+        '',
+        $disabled_source
+    );
 
     $table->data['source_data_group'][0] = __('Source group');
     $table->data['source_data_group'][1] = '<div class="w250px">'.html_print_select_groups(

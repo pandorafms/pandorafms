@@ -237,7 +237,16 @@ if (is_ajax() === true) {
         );
 
         $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
-        $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $map_info['source_data'], '', 20, 255, true);
+        $table->data['source_data_ip_mask'][1] = html_print_textarea(
+            'ip_mask',
+            3,
+            5,
+            $map_info['source_data'],
+            '',
+            true,
+            '',
+            $disabled_source
+        );
 
         $dont_show_subgroups = 0;
         if (isset($map_filter['dont_show_subgroups'])) {

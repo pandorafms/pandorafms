@@ -782,7 +782,9 @@ class NetworkMap
         if ($this->network) {
             // Network map, based on direct network.
             $nodes = networkmap_get_nodes_from_ip_mask(
-                $this->network
+                $this->network,
+                false,
+                '&#x0d;&#x0a;'
             );
         } else if ($this->mapOptions['map_filter']['empty_map']) {
             // Empty map returns no data.

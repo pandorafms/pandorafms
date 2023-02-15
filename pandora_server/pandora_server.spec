@@ -100,7 +100,11 @@ if [ "`id pandora | grep uid | wc -l`" = 0 ]
 then
 	/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
-exit 0
+current_ver=$(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null | cut -d '.' -f 2)
+if [ $((current_ver)) -lt 13 ] ; then
+        echo "perl Thread::Semaphore version >= 2.13 should be installed. Current version installed ver:  $(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null)"
+        exit 1
+fi
 
 %post
 if [ `command -v systemctl` ];
@@ -170,6 +174,12 @@ exit 0
 # Upgrading
 if [ "$1" = "1" ]; then
         exit 0
+fi
+
+current_ver=$(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null | cut -d '.' -f 2)
+if [ $((current_ver)) -lt 13 ] ; then
+        echo "perl Thread::Semaphore version >= 2.13 should be installed. Current version installed ver:  $(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null)"
+        exit 1
 fi
 
 /etc/init.d/pandora_server stop &>/dev/null

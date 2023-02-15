@@ -744,6 +744,7 @@ class TipsWindow
         $imagesOk = [];
         foreach ($files as $key => $file) {
             $name = str_replace(' ', '_', $file['name']);
+            $name = str_replace('.', uniqid().'.', $file['name']);
             $r = move_uploaded_file($file['tmp_name'], $dir.'/'.$name);
             $imagesOk[] = $name;
         }

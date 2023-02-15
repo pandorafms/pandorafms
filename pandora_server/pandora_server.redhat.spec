@@ -109,6 +109,12 @@ rm -fr $RPM_BUILD_ROOT
 getent passwd pandora >/dev/null || \
     /usr/sbin/useradd -d %{prefix}/pandora_server -s /sbin/nologin -M -g 0 pandora
 
+current_ver=$(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null | cut -d '.' -f 2)
+if [ $((current_ver)) -lt 13 ] ; then
+        echo 'perl Thread::Semaphore should be installed on the system and shold be ver >= 2.13 '
+        exit 1
+fi
+
 exit 0
 
 %post
@@ -174,6 +180,12 @@ fi
 # Upgrading
 if [ "$1" = "1" ]; then
         exit 0
+fi
+
+current_ver=$(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null | cut -d '.' -f 2)
+if [ $((current_ver)) -lt 13 ] ; then
+        echo 'perl Thread::Semaphore should be installed on the system and shold be ver >= 2.13 '
+        exit 1
 fi
 
 /sbin/service pandora_server stop >/dev/null 2>&1 || :

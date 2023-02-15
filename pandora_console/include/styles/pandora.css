@@ -2080,7 +2080,7 @@ table.rounded_cells td {
   align-items: center;
 }
 
-.action-buttons > * {
+.action-buttons > *:not(#backgroundMaskId) {
   z-index: 5;
 }
 

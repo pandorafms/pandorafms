@@ -102,7 +102,7 @@ then
 fi
 current_ver=$(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null | cut -d '.' -f 2)
 if [ $((current_ver)) -lt 13 ] ; then
-        echo 'perl Thread::Semaphore should be installed on the system and shold be ver >= 2.13 '
+        echo "perl Thread::Semaphore version >= 2.13 should be installed. Current version installed ver:  $(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null)"
         exit 1
 fi
 
@@ -178,7 +178,7 @@ fi
 
 current_ver=$(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null | cut -d '.' -f 2)
 if [ $((current_ver)) -lt 13 ] ; then
-        echo 'perl Thread::Semaphore should be installed on the system and shold be ver >= 2.13 '
+        echo "perl Thread::Semaphore version >= 2.13 should be installed. Current version installed ver:  $(perl -le 'eval "require $ARGV[0]" and print $ARGV[0]->VERSION' Thread::Semaphore 2> /dev/null)"
         exit 1
 fi
 

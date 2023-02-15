@@ -422,11 +422,6 @@ ul li {
   align-items: center;
 }
 
-.menu li div {
-  background-clip: text;
-  /* Very important to fix a bug in Firefox */
-}
-
 .godmode {
   padding-top: 2em !important;
 }

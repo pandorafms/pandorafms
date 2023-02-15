@@ -4647,7 +4647,10 @@ function html_print_input_file($name, $return=false, $options=false)
 
     // Close input.
     $output .= '/>';
-    $output .= ($options['caption'] ?? __('Select a file'));
+    if (is_metaconsole() === false) {
+        $output .= ($options['caption'] ?? __('Select a file'));
+    }
+
     $output .= '</label>';
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
     // Add script.

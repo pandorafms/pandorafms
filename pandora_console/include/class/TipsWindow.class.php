@@ -27,6 +27,7 @@
  */
 
 // Begin.
+use LDAP\Result;
 use PandoraFMS\View;
 global $config;
 
@@ -129,9 +130,9 @@ class TipsWindow
     public function run()
     {
         global $config;
-        $user_info = users_get_user_by_id($config['id_user']);
+        $userInfo = users_get_user_by_id($config['id_user']);
 
-        if ((bool) $user_info['show_tips_startup'] === false) {
+        if ((bool) $userInfo['show_tips_startup'] === false) {
             return;
         }
 
@@ -243,11 +244,11 @@ class TipsWindow
     public function setShowTipsAtStartup()
     {
         global $config;
-        $show_tips_startup = get_parameter('show_tips_startup', '');
-        if ($show_tips_startup !== '' && $show_tips_startup !== null) {
+        $showTipsStartup = get_parameter('show_tips_startup', '');
+        if ($showTipsStartup !== '' && $showTipsStartup !== null) {
             $result = db_process_sql_update(
                 'tusuario',
-                ['show_tips_startup' => $show_tips_startup],
+                ['show_tips_startup' => $showTipsStartup],
                 ['id_user' => $config['id_user']]
             );
 
@@ -274,7 +275,7 @@ class TipsWindow
                 'text',
             ];
 
-            $column_names = [
+            $columnNames = [
                 __('Title'),
                 __('Text'),
             ];
@@ -286,7 +287,7 @@ class TipsWindow
                     'class'               => 'info_table',
                     'style'               => 'width: 100%',
                     'columns'             => $columns,
-                    'column_names'        => $column_names,
+                    'column_names'        => $columnNames,
                     'ajax_url'            => $this->ajaxController,
                     'ajax_data'           => ['method' => 'getTips'],
                     'no_sortable_columns' => [-1],
@@ -334,7 +335,7 @@ class TipsWindow
         // Catch post parameters.
         $start  = get_parameter('start', 0);
         $length = get_parameter('length', $config['block_size']);
-        $order_datatable = get_datatable_order(true);
+        $orderDatatable = get_datatable_order(true);
         $filters = get_parameter('filter', []);
         $pagination = '';
         $filter = '';
@@ -349,11 +350,11 @@ class TipsWindow
                 }
             }
 
-            if (isset($order_datatable)) {
+            if (isset($orderDatatable)) {
                 $order = sprintf(
                     ' ORDER BY %s %s',
-                    $order_datatable['field'],
-                    $order_datatable['direction']
+                    $orderDatatable['field'],
+                    $orderDatatable['direction']
                 );
             }
 
@@ -416,6 +417,9 @@ class TipsWindow
 
     public function viewCreate($errors=null)
     {
+        ui_require_javascript_file('tipsWindow');
+        ui_require_css_file('tips_window');
+
         if ($errors !== null) {
             if (count($errors) > 0) {
                 foreach ($errors as $key => $value) {
@@ -433,8 +437,12 @@ class TipsWindow
         $table->style[0] = 'font-weight: bold';
 
         $table->data = [];
-        $table->data[0][0] = __('Language');
-        $table->data[0][1] = html_print_select_from_sql(
+        $table->data[0][0] = __('Images');
+        $table->data[0][1] = html_print_input_hidden('number_images', 0, true);
+        $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
+        $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
+        $table->data[1][0] = __('Language');
+        $table->data[1][1] = html_print_select_from_sql(
             'SELECT id_language, name FROM tlanguage',
             'id_lang',
             '',
@@ -443,16 +451,16 @@ class TipsWindow
             '0',
             true
         );
-        $table->data[1][0] = __('Title');
-        $table->data[1][1] = html_print_input_text('title', '', '', 35, 100, true);
-        $table->data[2][0] = __('Text');
-        $table->data[2][1] = html_print_textarea('text', 5, 1, '', '', true);
-        $table->data[3][0] = __('Url');
-        $table->data[3][1] = html_print_input_text('url', '', '', 35, 100, true);
-        $table->data[4][0] = __('Enable');
-        $table->data[4][1] = html_print_checkbox_switch('enable', true, true, true);
+        $table->data[2][0] = __('Title');
+        $table->data[2][1] = html_print_input_text('title', '', '', 35, 100, true);
+        $table->data[3][0] = __('Text');
+        $table->data[3][1] = html_print_textarea('text', 5, 1, '', '', true);
+        $table->data[4][0] = __('Url');
+        $table->data[4][1] = html_print_input_text('url', '', '', 35, 100, true);
+        $table->data[5][0] = __('Enable');
+        $table->data[5][1] = html_print_checkbox_switch('enable', true, true, true);
 
-        echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create&action=create" >';
+        echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create&action=create" enctype="multipart/form-data">';
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
         html_print_submit_button(__('Send'), 'submit_button', false, ['class' => 'sub next']);
@@ -462,9 +470,10 @@ class TipsWindow
     }
 
 
-    public function createTip($id_lang, $title, $text, $url, $enable)
+    public function createTip($id_lang, $title, $text, $url, $enable, $images=null)
     {
-        return db_process_sql_insert(
+        db_process_sql_begin();
+        $idTip = db_process_sql_insert(
             'twelcome_tip',
             [
                 'id_lang' => $id_lang,
@@ -474,6 +483,78 @@ class TipsWindow
                 'enable'  => $enable,
             ]
         );
+        if ($idTip === false) {
+            db_process_sql_rollback();
+            return false;
+        }
+
+        if ($images !== null) {
+            foreach ($images as $key => $image) {
+                $res = db_process_sql_insert(
+                    'twelcome_tip_file',
+                    [
+                        'twelcome_tip_file' => $idTip,
+                        'filename'          => $image,
+                        'path'              => 'images/tips/',
+                    ]
+                );
+                if ($res === false) {
+                    db_process_sql_rollback();
+                    return false;
+                }
+            }
+        }
+
+        db_process_sql_commit();
+
+        return true;
+    }
+
+
+    public function validateImages($files)
+    {
+        $formats = [
+            'image/png',
+            'image/jpg',
+            'image/jpeg',
+            'image/gif',
+        ];
+        $errors = [];
+        $maxsize = 6097152;
+
+        foreach ($files as $key => $file) {
+            if ($file['error'] !== 0) {
+                $errors[] = __('Incorrect file');
+            }
+
+            if (in_array($file['type'], $formats) === false) {
+                $errors[] = __('Format image invalid');
+            }
+
+            if ($file['size'] > $maxsize) {
+                $errors[] = __('Image size too large');
+            }
+        }
+
+        if (count($errors) > 0) {
+            return $errors;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function uploadImages($files)
+    {
+        $dir = 'images/tips/';
+        $imagesOk = [];
+        foreach ($files as $key => $file) {
+            $name = str_replace(' ', '_', $file['name']);
+            $r = move_uploaded_file($file['tmp_name'], $dir.'/'.$name);
+            $imagesOk[] = $name;
+        }
+
+        return $imagesOk;
     }
 
 

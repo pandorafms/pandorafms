@@ -1,8 +1,22 @@
 /* globals $, idTips, totalTips, url, page */
+$(document).ready(function() {
+  $("#button-button_add_image").on("click", function() {
+    var numberImages = $("#inputs_images").children().length;
+    var div_image = document.createElement("div");
+    $(div_image).attr("class", "action_image");
+    $(div_image).append(
+      `<input type="file" accept="image/png,image/jpeg,image/gif" name="file_${numberImages +
+        1}" />`
+    );
+    $(div_image).append(
+      `<input type="image" src="images/delete.png" onclick="removeImage('file_${numberImages +
+        1}');" class="remove-image" value="-"/>`
+    );
+    $("#inputs_images").append(div_image);
+  });
+});
 $(".carousel .images").ready(function() {
-  if ($(".carousel .images img").length > 1) {
-    $(".carousel .images").bxSlider({ controls: true });
-  }
+  activeCarousel();
 });
 
 $("#checkbox_tips_startup").ready(function() {
@@ -24,6 +38,16 @@ $("#checkbox_tips_startup").ready(function() {
     });
   });
 });
+function activeCarousel() {
+  if ($(".carousel .images img").length > 1) {
+    $(".carousel .images").bxSlider({ controls: true });
+  }
+}
+function removeImage(name) {
+  $(`input[name=${name}]`)
+    .parent()
+    .remove();
+}
 function render({ title, text, url, files }) {
   $("#title_tip").html(title);
   $("#text_tip").html(text);
@@ -34,8 +58,8 @@ function render({ title, text, url, files }) {
     $("#url_tip").addClass("invisible");
   }
 
-  $(".carousel .images").empty();
-
+  $(".carousel").empty();
+  $(".carousel").append("<div class='images'></div>");
   if (files) {
     files.forEach(file => {
       $(".carousel .images").append(
@@ -58,6 +82,7 @@ function render({ title, text, url, files }) {
       return false;
     }
   });
+  activeCarousel();
 }
 
 function close_dialog() {

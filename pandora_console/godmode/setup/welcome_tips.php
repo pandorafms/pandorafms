@@ -41,6 +41,7 @@ try {
 
 if ($view === 'create') {
     if ($action === 'create') {
+        $files = $_FILES;
         $secure_input = get_parameter('secure_input', '');
         $id_lang = get_parameter('id_lang', '');
         $title = get_parameter('title', '');
@@ -48,6 +49,13 @@ if ($view === 'create') {
         $url = get_parameter('url', '');
         $enable = get_parameter_switch('enable', '');
         $errors = [];
+
+        if (count($files) > 0) {
+            $e = $tipsWindow->validateImages($files);
+            if ($e !== false) {
+                $errors = $e;
+            }
+        }
 
         if (empty($id_lang) === true) {
             $errors[] = __('Language is empty');
@@ -62,7 +70,12 @@ if ($view === 'create') {
         }
 
         if (count($errors) === 0) {
-            $response = $tipsWindow->createTip($id_lang, $title, $text, $url, $enable);
+            if (count($files) > 0) {
+                $uploadImages = $tipsWindow->uploadImages($files);
+            }
+
+            $response = $tipsWindow->createTip($id_lang, $title, $text, $url, $enable, $uploadImages);
+
             if ($response === false) {
                 $errors[] = __('Error in insert data');
             }

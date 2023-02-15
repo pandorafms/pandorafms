@@ -157,3 +157,9 @@ span.count-round-tip.active {
   width: 7px;
   margin: 0px 5px;
 }
+.bx-viewport {
+  height: fit-content !important;
+}
+.action_image {
+  margin: 10px 0px;
+}

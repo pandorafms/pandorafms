@@ -251,10 +251,25 @@ class TipsWindow
             return false;
         }
 
-        $sql = sprintf('SELECT filename, path FROM twelcome_tip_file WHERE twelcome_tip_file = %s', $idTip);
+        $sql = sprintf('SELECT id, filename, path FROM twelcome_tip_file WHERE twelcome_tip_file = %s', $idTip);
 
         return db_get_all_rows_sql($sql);
 
+    }
+
+
+    public function deleteImagesFromTip($idTip, $imagesToRemove)
+    {
+        foreach ($imagesToRemove as $id => $image) {
+            unlink($image);
+            db_process_sql_delete(
+                'twelcome_tip_file',
+                [
+                    'id'                => $id,
+                    'twelcome_tip_file' => $idTip,
+                ]
+            );
+        }
     }
 
 
@@ -527,7 +542,6 @@ class TipsWindow
 
         $table->data = [];
         $table->data[0][0] = __('Images');
-        $table->data[0][1] = html_print_input_hidden('number_images', 0, true);
         $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
         $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
         $table->data[1][0] = __('Language');
@@ -581,6 +595,29 @@ class TipsWindow
             }
         }
 
+        $outputImagesTip = '';
+        if (empty($files) === false) {
+            foreach ($files as $key => $value) {
+                $namePath = $value['path'].$value['filename'];
+                $imageTip = html_print_image($namePath, true);
+                $imageTip .= html_print_input_image(
+                    'delete_image_tip',
+                    'images/delete.png',
+                    '',
+                    '',
+                    true,
+                    ['onclick' => 'deleteImage(this, \''.$value['id'].'\', \''.$namePath.'\')']
+                );
+                $outputImagesTip .= html_print_div(
+                    [
+                        'class'   => 'image-tip',
+                        'content' => $imageTip,
+                    ],
+                    true
+                );
+            }
+        }
+
         $table = new stdClass();
         $table->width = '100%';
         $table->class = 'databox filters';
@@ -589,8 +626,9 @@ class TipsWindow
 
         $table->data = [];
         $table->data[0][0] = __('Images');
-        $table->data[0][1] = html_print_input_hidden('number_images', 0, true);
+        $table->data[0][1] .= $outputImagesTip;
         $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
+        $table->data[0][1] .= html_print_input_hidden('images_to_delete', '{}', true);
         $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
         $table->data[1][0] = __('Language');
         $table->data[1][1] = html_print_select_from_sql(
@@ -744,8 +782,8 @@ class TipsWindow
         $imagesOk = [];
         foreach ($files as $key => $file) {
             $name = str_replace(' ', '_', $file['name']);
-            $name = str_replace('.', uniqid().'.', $file['name']);
-            $r = move_uploaded_file($file['tmp_name'], $dir.'/'.$name);
+            $name = str_replace('.', uniqid().'.', $name);
+            move_uploaded_file($file['tmp_name'], $dir.'/'.$name);
             $imagesOk[] = $name;
         }
 

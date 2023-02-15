@@ -183,3 +183,10 @@ span.disable {
   text-align: center;
   display: flex;
 }
+.image-tip {
+  display: flex;
+  align-items: center;
+}
+.image-tip img {
+  max-width: 350px;
+}

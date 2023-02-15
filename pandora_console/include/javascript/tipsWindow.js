@@ -14,6 +14,9 @@ $(document).ready(function() {
     );
     $("#inputs_images").append(div_image);
   });
+  $("#image-delete_image_tip1").on("click", function(e) {
+    e.preventDefault();
+  });
 });
 $(".carousel .images").ready(function() {
   activeCarousel();
@@ -38,6 +41,15 @@ $("#checkbox_tips_startup").ready(function() {
     });
   });
 });
+
+function deleteImage(e, id, path) {
+  var imagesToDelete = JSON.parse($("#hidden-images_to_delete").val());
+  imagesToDelete[id] = path;
+  $("#hidden-images_to_delete").val(JSON.stringify(imagesToDelete));
+  $(e)
+    .parent()
+    .remove();
+}
 function activeCarousel() {
   if ($(".carousel .images img").length > 1) {
     $(".carousel .images").bxSlider({ controls: true });

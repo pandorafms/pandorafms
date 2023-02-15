@@ -88,8 +88,14 @@ if ($view === 'create' || $view === 'edit') {
 
             case 'edit':
                 $idTip = get_parameter('idTip', '');
+                $imagesToDelete = get_parameter('images_to_delete', '');
                 if (empty($idTip) === false) {
                     if (count($errors) === 0) {
+                        if (empty($imagesToDelete) === false) {
+                            $imagesToDelete = json_decode(io_safe_output($imagesToDelete), true);
+                            $tipsWindow->deleteImagesFromTip($idTip, $imagesToDelete);
+                        }
+
                         if (count($files) > 0) {
                             $uploadImages = $tipsWindow->uploadImages($files);
                         }

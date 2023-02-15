@@ -160,6 +160,8 @@ body {
   min-height: 100%;
   font-weight: 400;
   font-family: "Pandora-Regular";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body.body-report {
@@ -10073,8 +10075,8 @@ button.submitButton.onlyIcon {
 
 button.buttonButton.onlyIcon.pending,
 button.submitButton.onlyIcon.pending {
-  mask: url(../../images/arrow.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/arrow.svg) no-repeat right / contain;
+  mask: url(../../images/validate.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/validate.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.completed,
@@ -10292,8 +10294,8 @@ button div.ok {
 
 button div.pending,
 button div.next {
-  mask: url(../../images/arrow.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/arrow.svg) no-repeat center / contain;
+  mask: url(../../images/validate.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/validate.svg) no-repeat center / contain;
 }
 
 button div.search {
@@ -10602,12 +10604,12 @@ tr.bring_next_field {
   top: 0 !important;
   left: 0 !important;
   border: 0 !important;
-  height: 17px !important;
-  margin-left: -4px !important;
-  margin-top: 12px !important;
+  height: 20px !important;
+  margin-left: -8px !important;
+  margin-top: 10px !important;
   position: absolute !important;
-  width: 17px !important;
-  background: url(../../images/down.svg) no-repeat content-box !important;
+  width: 20px !important;
+  background: url(../../images/dropdown-down.svg) no-repeat content-box !important;
 }
 
 .select2-container--default
@@ -10762,6 +10764,8 @@ tr.bring_next_field {
   padding: 0px;
   bottom: 8px;
   z-index: 1;
+  width: -webkit-fill-available;
+  padding-right: 10px;
 }
 
 .action_buttons_right_content {
@@ -10779,13 +10783,13 @@ tr.bring_next_field {
 .fixed_action_buttons_size {
   width: -webkit-fill-available;
   width: -moz-fill-available;
-  margin-right: 20px;
+  /*margin-right: 20px;*/
 }
 
 .action_buttons_background_mask {
-  width: 3000px;
+  width: -webkit-fill-available;
   position: absolute;
-  right: -45px;
+  left: 0;
   height: 58px;
   top: -8px;
   border: 1px solid #e5e9ed;

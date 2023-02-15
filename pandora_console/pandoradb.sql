@@ -2323,7 +2323,7 @@ CREATE TABLE IF NOT EXISTS `tsessions_php` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmap` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_group` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_group` TEXT NOT NULL DEFAULT '',
   `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `type` INT UNSIGNED NOT NULL DEFAULT 0,
   `subtype` INT UNSIGNED NOT NULL DEFAULT 0,

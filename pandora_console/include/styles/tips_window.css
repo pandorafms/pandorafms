@@ -163,3 +163,19 @@ span.count-round-tip.active {
 .action_image {
   margin: 10px 0px;
 }
+span.enable {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+  background-color: #82b92e;
+  margin: 0 auto;
+}
+span.disable {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+  background-color: #e63c52;
+  margin: 0 auto;
+}

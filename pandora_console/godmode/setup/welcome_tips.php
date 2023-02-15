@@ -42,11 +42,10 @@ try {
 if ($view === 'create') {
     if ($action === 'create') {
         $files = $_FILES;
-        $secure_input = get_parameter('secure_input', '');
         $id_lang = get_parameter('id_lang', '');
-        $title = get_parameter('title', '');
-        $text = get_parameter('text', '');
-        $url = get_parameter('url', '');
+        $title = io_safe_input(get_parameter('title', ''));
+        $text = io_safe_input(get_parameter('text', ''));
+        $url = io_safe_input(get_parameter('url', ''));
         $enable = get_parameter_switch('enable', '');
         $errors = [];
 
@@ -76,8 +75,8 @@ if ($view === 'create') {
 
             $response = $tipsWindow->createTip($id_lang, $title, $text, $url, $enable, $uploadImages);
 
-            if ($response === false) {
-                $errors[] = __('Error in insert data');
+            if ($response === 0) {
+                $errors[] = __('Error in insert tip');
             }
         }
 
@@ -89,4 +88,22 @@ if ($view === 'create') {
     return;
 }
 
-$tipsWindow->draw();
+if ($action === 'delete') {
+    $idTip = get_parameter('idTip', '');
+    $errors = [];
+    if (empty($idTip) === true) {
+        $errors[] = __('Tip required');
+    }
+
+    if (count($errors) === 0) {
+        $response = $tipsWindow->deleteTip($idTip);
+        hd($response, true);
+        if ($response === 0) {
+            $errors[] = __('Error in delete tip');
+        }
+    }
+
+    $tipsWindow->draw($errors);
+} else {
+    $tipsWindow->draw();
+}

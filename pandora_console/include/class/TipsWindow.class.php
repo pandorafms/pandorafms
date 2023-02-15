@@ -57,13 +57,6 @@ class TipsWindow
     public $ajaxController;
 
     /**
-     * Total tips
-     *
-     * @var integer
-     */
-    public $totalTips;
-
-    /**
      * Array of tips
      *
      * @var array
@@ -142,12 +135,12 @@ class TipsWindow
         ui_require_javascript_file('tipsWindow');
         ui_require_javascript_file('jquery.bxslider.min');
         echo '<div id="tips_window_modal"></div>';
-        $this->totalTips = $this->getTotalTips();
-        if ($this->totalTips > 0) {
+        $totalTips = $this->getTotalTipsEnabled();
+        if ($totalTips > 0) {
             ?>
 
                 <script>
-                    var totalTips = <?php echo $this->totalTips; ?>;
+                    var totalTips = <?php echo $totalTips; ?>;
                     var url = '<?php echo ui_get_full_url('ajax.php'); ?>';
                     var page = '<?php echo $this->ajaxController; ?>';
                 </script>
@@ -190,12 +183,13 @@ class TipsWindow
         $exclude = get_parameter('exclude', '');
 
         $sql = 'SELECT id, title, text, url
-                FROM twelcome_tip';
+                FROM twelcome_tip
+                WHERE enable = "1" ';
 
         if (empty($exclude) === false && $exclude !== null) {
             $exclude = implode(',', json_decode($exclude, true));
             if ($exclude !== '') {
-                $sql .= sprintf(' WHERE id NOT IN (%s)', $exclude);
+                $sql .= sprintf(' AND id NOT IN (%s)', $exclude);
             }
         }
 
@@ -203,6 +197,10 @@ class TipsWindow
 
         $tip = db_get_row_sql($sql);
         $tip['files'] = $this->getFilesFromTip($tip['id']);
+
+        $tip['title'] = io_safe_output($tip['title']);
+        $tip['text'] = io_safe_output($tip['text']);
+        $tip['url'] = io_safe_output($tip['url']);
 
         if ($return) {
             if (empty($tip) === false) {
@@ -225,6 +223,12 @@ class TipsWindow
     public function getTotalTips()
     {
         return db_get_sql('SELECT count(*) FROM twelcome_tip');
+    }
+
+
+    public function getTotalTipsEnabled()
+    {
+        return db_get_sql('SELECT count(*) FROM twelcome_tip WHERE enable = "1"');
     }
 
 
@@ -267,17 +271,35 @@ class TipsWindow
     }
 
 
-    public function draw()
+    public function draw($errors=null)
     {
+        ui_require_css_file('tips_window');
+
+        if ($errors !== null) {
+            if (count($errors) > 0) {
+                foreach ($errors as $key => $value) {
+                    ui_print_error_message($value);
+                }
+            } else {
+                ui_print_success_message(__('Tip deleted'));
+            }
+        }
+
         try {
             $columns = [
+                'language',
                 'title',
                 'text',
+                'enable',
+                'actions',
             ];
 
             $columnNames = [
+                __('Language'),
                 __('Title'),
                 __('Text'),
+                __('Enable'),
+                __('Actions'),
             ];
 
             // Load datatables user interface.
@@ -321,6 +343,24 @@ class TipsWindow
         } catch (Exception $e) {
             echo $e->getMessage();
         }
+    }
+
+
+    public function deleteTip($idTip)
+    {
+        $files = $this->getFilesFromTip($idTip);
+        if ($files !== false) {
+            if (count($files) > 0) {
+                foreach ($files as $key => $file) {
+                    unlink($file['path'].'/'.$file['filename']);
+                }
+            }
+        }
+
+        return db_process_sql_delete(
+            'twelcome_tip',
+            ['id' => $idTip]
+        );
     }
 
 
@@ -369,14 +409,40 @@ class TipsWindow
             }
 
             $sql = sprintf(
-                'SELECT title, text, url
-                FROM twelcome_tip %s %s %s',
+                'SELECT id, name AS language, title, text, url, enable
+                FROM twelcome_tip t
+                LEFT JOIN tlanguage l ON t.id_lang = l.id_language
+                %s %s %s',
                 $filter,
                 $order,
                 $pagination
             );
 
             $data = db_get_all_rows_sql($sql);
+
+            foreach ($data as $key => $row) {
+                if ($row['enable'] === '1') {
+                    $data[$key]['enable'] = '<span class="enable"></span>';
+                } else {
+                    $data[$key]['enable'] = '<span class="disable"></span>';
+                }
+
+                $data[$key]['title'] = io_safe_output($row['title']);
+                $data[$key]['text'] = io_safe_output($row['text']);
+                $data[$key]['url'] = io_safe_output($row['url']);
+
+                $data[$key]['actions'] = '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
+                $data[$key]['actions'] .= html_print_input_image(
+                    'button_delete_tip',
+                    'images/delete.png',
+                    '',
+                    '',
+                    true,
+                    ['onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;']
+                );
+                $data[$key]['actions'] .= html_print_input_hidden('idTip', $row['id'], true);
+                $data[$key]['actions'] .= '</form>';
+            }
 
             if (empty($data) === true) {
                 $total = 0;

@@ -5647,7 +5647,7 @@ sub pandora_server_statistics ($$) {
 				) tam
 				ON tae.id_agente_modulo = tam.id_agente_modulo
 					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)
-					AND (tam.flag = 1 OR (UNIX_TIMESTAMP() - tae.last_execution_try) > tae.current_interval);", $server->{"id_server"});
+					AND (tam.flag = 1 OR (UNIX_TIMESTAMP() - tae.last_execution_try) > tae.current_interval)", $server->{"id_server"});
 			}
 			# Dataserver LAG calculation:
 			else {

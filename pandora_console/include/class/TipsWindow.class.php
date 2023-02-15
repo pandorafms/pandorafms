@@ -190,6 +190,7 @@ class TipsWindow
 
     public function getRandomTip($return=false)
     {
+        global $config;
         $exclude = get_parameter('exclude', '');
 
         $sql = 'SELECT id, title, text, url
@@ -203,7 +204,7 @@ class TipsWindow
             }
         }
 
-        $sql .= ' ORDER BY RAND()';
+        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
 
         $tip = db_get_row_sql($sql);
 
@@ -684,7 +685,7 @@ class TipsWindow
                 $res = db_process_sql_insert(
                     'twelcome_tip_file',
                     [
-                        'twelcome_tip_file' => $idTip,
+                        'twelcome_tip_file' => $id,
                         'filename'          => $image,
                         'path'              => 'images/tips/',
                     ]

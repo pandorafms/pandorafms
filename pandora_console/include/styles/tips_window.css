@@ -41,7 +41,6 @@
   position: relative;
   width: 100%;
   max-width: 464px;
-  max-height: 290px;
   text-align: center;
   margin: 0 auto;
   padding-top: 20px;
@@ -186,6 +185,7 @@ span.disable {
 .image-tip {
   display: flex;
   align-items: center;
+  margin: 10px 0px;
 }
 .image-tip img {
   max-width: 350px;

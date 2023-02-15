@@ -18,9 +18,6 @@ $(document).ready(function() {
     e.preventDefault();
   });
 });
-$(".carousel .images").ready(function() {
-  activeCarousel();
-});
 
 $("#checkbox_tips_startup").ready(function() {
   $("#checkbox_tips_startup").on("click", function() {
@@ -263,6 +260,7 @@ function load_tips_modal(settings) {
       $(".dialog_tips .ui-dialog-titlebar").addClass("tips_header");
       $(".dialog_tips .ui-dialog-titlebar").removeClass("ui-helper-clearfix");
       render_counter();
+      activeCarousel();
     },
     error: function(data) {
       console.error(data);

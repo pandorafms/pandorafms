@@ -4144,10 +4144,34 @@ function html_print_checkbox_extended(
         $idcounter[$name] = 0;
     }
 
+    $inputClass = 'custom_checkbox_input';
+    $labelClass = 'custom_checkbox';
+
+    if (is_array($attributes) === true) {
+        $tmpAttributes = [];
+        foreach ($attributes as $key => $value) {
+            switch ($key) {
+                case 'input_class':
+                    $inputClass .= ' '.$value;
+                break;
+
+                case 'label_class':
+                    $labelClass .= ' '.$value;
+                break;
+
+                default:
+                    $tmpAttributes[] = $key.'="'.$value.'"';
+                break;
+            }
+        }
+
+        $attributes = implode(' ', $tmpAttributes);
+    }
+
     $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
 
-    $output = '<label class="custom_checkbox">';
-    $output .= '<input class="custom_checkbox_input" name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
+    $output = '<label class="'.$labelClass.'">';
+    $output .= '<input class="'.$inputClass.'" name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     $output .= (empty($id) === true) ? ' id="checkbox-'.$id_aux.'"' : ' id="'.$id.'"';
     $output .= (empty($script) === false) ? ' onclick="'.$script.'"' : '';
     $output .= ((bool) $disabled === true) ? ' disabled="disabled"' : '';

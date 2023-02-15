@@ -39,13 +39,14 @@ try {
     return;
 }
 
-if ($view === 'create') {
-    if ($action === 'create') {
+if ($view === 'create' || $view === 'edit') {
+    // IF exists actions
+    if ($action === 'create' || $action === 'edit') {
         $files = $_FILES;
         $id_lang = get_parameter('id_lang', '');
-        $title = io_safe_input(get_parameter('title', ''));
-        $text = io_safe_input(get_parameter('text', ''));
-        $url = io_safe_input(get_parameter('url', ''));
+        $title = get_parameter('title', '');
+        $text = get_parameter('text', '');
+        $url = get_parameter('url', '');
         $enable = get_parameter_switch('enable', '');
         $errors = [];
 
@@ -68,24 +69,68 @@ if ($view === 'create') {
             $errors[] = __('Text is empty');
         }
 
-        if (count($errors) === 0) {
-            if (count($files) > 0) {
-                $uploadImages = $tipsWindow->uploadImages($files);
-            }
+        switch ($action) {
+            case 'create':
+                if (count($errors) === 0) {
+                    if (count($files) > 0) {
+                        $uploadImages = $tipsWindow->uploadImages($files);
+                    }
 
-            $response = $tipsWindow->createTip($id_lang, $title, $text, $url, $enable, $uploadImages);
+                    $response = $tipsWindow->createTip($id_lang, $title, $text, $url, $enable, $uploadImages);
 
-            if ($response === 0) {
-                $errors[] = __('Error in insert tip');
-            }
+                    if ($response === 0) {
+                        $errors[] = __('Error in insert tip');
+                    }
+                }
+
+                $tipsWindow->viewCreate($errors);
+            return;
+
+            case 'edit':
+                $idTip = get_parameter('idTip', '');
+                if (empty($idTip) === false) {
+                    if (count($errors) === 0) {
+                        if (count($files) > 0) {
+                            $uploadImages = $tipsWindow->uploadImages($files);
+                        }
+
+                        $response = $tipsWindow->updateTip($idTip, $id_lang, $title, $text, $url, $enable, $uploadImages);
+
+                        if ($response === 0) {
+                            $errors[] = __('Error in update tip');
+                        }
+                    }
+
+                    $tipsWindow->viewEdit($idTip, $errors);
+                }
+            return;
+
+            default:
+                $tipsWindow->draw();
+            return;
         }
 
-        $tipsWindow->viewCreate($errors);
-    } else {
-        $tipsWindow->viewCreate();
+
+        return;
     }
 
-    return;
+    // If not exists actions
+    switch ($view) {
+        case 'create':
+            $tipsWindow->viewCreate();
+        return;
+
+        case 'edit':
+            $idTip = get_parameter('idTip', '');
+            if (empty($idTip) === false) {
+                $tipsWindow->viewEdit($idTip);
+            }
+        return;
+
+        default:
+            $tipsWindow->draw();
+        return;
+    }
 }
 
 if ($action === 'delete') {
@@ -104,6 +149,7 @@ if ($action === 'delete') {
     }
 
     $tipsWindow->draw($errors);
-} else {
-    $tipsWindow->draw();
+    return;
 }
+
+$tipsWindow->draw();

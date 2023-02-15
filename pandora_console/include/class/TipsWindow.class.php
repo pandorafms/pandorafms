@@ -56,13 +56,6 @@ class TipsWindow
      */
     public $ajaxController;
 
-    /**
-     * Array of tips
-     *
-     * @var array
-     */
-    public $tips = [];
-
 
     /**
      * Generates a JSON error.
@@ -178,6 +171,23 @@ class TipsWindow
     }
 
 
+    public function getTipById($idTip)
+    {
+        $tip = db_get_row(
+            'twelcome_tip',
+            'id',
+            $idTip,
+        );
+        if ($tip !== false) {
+            $tip['title'] = io_safe_output($tip['title']);
+            $tip['text'] = io_safe_output($tip['text']);
+            $tip['url'] = io_safe_output($tip['url']);
+        }
+
+        return $tip;
+    }
+
+
     public function getRandomTip($return=false)
     {
         $exclude = get_parameter('exclude', '');
@@ -196,11 +206,14 @@ class TipsWindow
         $sql .= ' ORDER BY RAND()';
 
         $tip = db_get_row_sql($sql);
-        $tip['files'] = $this->getFilesFromTip($tip['id']);
 
-        $tip['title'] = io_safe_output($tip['title']);
-        $tip['text'] = io_safe_output($tip['text']);
-        $tip['url'] = io_safe_output($tip['url']);
+        if (empty($tip) === false) {
+            $tip['files'] = $this->getFilesFromTip($tip['id']);
+
+            $tip['title'] = io_safe_output($tip['title']);
+            $tip['text'] = io_safe_output($tip['text']);
+            $tip['url'] = io_safe_output($tip['url']);
+        }
 
         if ($return) {
             if (empty($tip) === false) {
@@ -430,8 +443,17 @@ class TipsWindow
                 $data[$key]['title'] = io_safe_output($row['title']);
                 $data[$key]['text'] = io_safe_output($row['text']);
                 $data[$key]['url'] = io_safe_output($row['url']);
-
-                $data[$key]['actions'] = '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
+                $data[$key]['actions'] = '<div class="buttons_actions">';
+                $data[$key]['actions'] .= '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&idTip='.$row['id'].'">';
+                $data[$key]['actions'] .= html_print_input_image(
+                    'button_edit_tip',
+                    'images/edit.png',
+                    '',
+                    '',
+                    true
+                );
+                $data[$key]['actions'] .= '</a>';
+                $data[$key]['actions'] .= '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
                 $data[$key]['actions'] .= html_print_input_image(
                     'button_delete_tip',
                     'images/delete.png',
@@ -442,6 +464,7 @@ class TipsWindow
                 );
                 $data[$key]['actions'] .= html_print_input_hidden('idTip', $row['id'], true);
                 $data[$key]['actions'] .= '</form>';
+                $data[$key]['actions'] .= '</div>';
             }
 
             if (empty($data) === true) {
@@ -536,6 +559,111 @@ class TipsWindow
     }
 
 
+    public function viewEdit($idTip, $errors=null)
+    {
+        $tip = $this->getTipById($idTip);
+        if ($tip === false) {
+            return;
+        }
+
+        $files = $this->getFilesFromTip($idTip);
+
+        ui_require_javascript_file('tipsWindow');
+        ui_require_css_file('tips_window');
+
+        if ($errors !== null) {
+            if (count($errors) > 0) {
+                foreach ($errors as $key => $value) {
+                    ui_print_error_message($value);
+                }
+            } else {
+                ui_print_success_message(__('Tip edited'));
+            }
+        }
+
+        $table = new stdClass();
+        $table->width = '100%';
+        $table->class = 'databox filters';
+
+        $table->style[0] = 'font-weight: bold';
+
+        $table->data = [];
+        $table->data[0][0] = __('Images');
+        $table->data[0][1] = html_print_input_hidden('number_images', 0, true);
+        $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
+        $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
+        $table->data[1][0] = __('Language');
+        $table->data[1][1] = html_print_select_from_sql(
+            'SELECT id_language, name FROM tlanguage',
+            'id_lang',
+            $tip['id_lang'],
+            '',
+            '',
+            '0',
+            true
+        );
+        $table->data[2][0] = __('Title');
+        $table->data[2][1] = html_print_input_text('title', $tip['title'], '', 35, 100, true);
+        $table->data[3][0] = __('Text');
+        $table->data[3][1] = html_print_textarea('text', 5, 1, $tip['text'], '', true);
+        $table->data[4][0] = __('Url');
+        $table->data[4][1] = html_print_input_text('url', $tip['url'], '', 35, 100, true);
+        $table->data[5][0] = __('Enable');
+        $table->data[5][1] = html_print_checkbox_switch('enable', 1, ($tip['enable'] === '1') ? true : false, true);
+
+        echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&action=edit&idTip='.$tip['id'].'" enctype="multipart/form-data">';
+        html_print_table($table);
+        echo '<div class="action-buttons" style="width: '.$table->width.'">';
+        html_print_submit_button(__('Send'), 'submit_button', false, ['class' => 'sub next']);
+
+        echo '</div>';
+        echo '</form>';
+    }
+
+
+    public function updateTip($id, $id_lang, $title, $text, $url, $enable, $images=null)
+    {
+        db_process_sql_begin();
+        hd($enable, true);
+        $idTip = db_process_sql_update(
+            'twelcome_tip',
+            [
+                'id_lang' => $id_lang,
+                'title'   => io_safe_input($title),
+                'text'    => io_safe_input($text),
+                'url'     => io_safe_input($url),
+                'enable'  => $enable,
+            ],
+            ['id' => $id]
+        );
+        if ($idTip === false) {
+            db_process_sql_rollback();
+            return false;
+        }
+
+        if ($images !== null) {
+            foreach ($images as $key => $image) {
+                $res = db_process_sql_insert(
+                    'twelcome_tip_file',
+                    [
+                        'twelcome_tip_file' => $idTip,
+                        'filename'          => $image,
+                        'path'              => 'images/tips/',
+                    ]
+                );
+                if ($res === false) {
+                    db_process_sql_rollback();
+                    return false;
+                }
+            }
+        }
+
+        db_process_sql_commit();
+
+        return true;
+    }
+
+
     public function createTip($id_lang, $title, $text, $url, $enable, $images=null)
     {
         db_process_sql_begin();
@@ -543,9 +671,9 @@ class TipsWindow
             'twelcome_tip',
             [
                 'id_lang' => $id_lang,
-                'title'   => $title,
-                'text'    => $text,
-                'url'     => $url,
+                'title'   => io_safe_input($title),
+                'text'    => io_safe_input($text),
+                'url'     => io_safe_input($url),
                 'enable'  => $enable,
             ]
         );

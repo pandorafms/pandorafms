@@ -179,3 +179,7 @@ span.disable {
   background-color: #e63c52;
   margin: 0 auto;
 }
+.buttons_actions {
+  text-align: center;
+  display: flex;
+}

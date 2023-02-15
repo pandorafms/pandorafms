@@ -10073,8 +10073,8 @@ button.submitButton.onlyIcon {
 
 button.buttonButton.onlyIcon.pending,
 button.submitButton.onlyIcon.pending {
-  mask: url(../../images/svg/arrow.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/arrow.svg) no-repeat right / contain;
+  mask: url(../../images/arrow.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/arrow.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.completed,
@@ -10086,105 +10086,104 @@ button.submitButton.onlyIcon.completed {
 /* Visual Consoles */
 button.buttonButton.onlyIcon.camera_min,
 button.submitButton.onlyIcon.camera_min {
-  mask: url(../../images/svg/static-graph.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/static-graph.svg) no-repeat right / contain;
+  mask: url(../../images/static-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/static-graph.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.percentile_item_min,
 button.submitButton.onlyIcon.percentile_item_min {
-  mask: url(../../images/svg/percentil.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/percentil.svg) no-repeat right / contain;
+  mask: url(../../images/percentil.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/percentil.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.graph_min,
 button.submitButton.onlyIcon.graph_min {
-  mask: url(../../images/svg/module-graph.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/module-graph.svg) no-repeat right / contain;
+  mask: url(../../images/module-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/module-graph.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.donut_graph_min,
 button.submitButton.onlyIcon.donut_graph_min {
-  mask: url(../../images/svg/donut-graph.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/donut-graph.svg) no-repeat right / contain;
+  mask: url(../../images/donut-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/donut-graph.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.bars_graph_min,
 button.submitButton.onlyIcon.bars_graph {
-  mask: url(../../images/svg/bars-graph.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/bars-graph.svg) no-repeat right / contain;
+  mask: url(../../images/bars-graph.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/bars-graph.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.auto_sla_graph_min,
 button.submitButton.onlyIcon.auto_sla_graph_min {
-  mask: url(../../images/svg/event-history.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/event-history.svg) no-repeat right /
-    contain;
+  mask: url(../../images/event-history.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/event-history.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.binary_min,
 button.submitButton.onlyIcon.binary_min {
-  mask: url(../../images/svg/simple-value.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/simple-value.svg) no-repeat right / contain;
+  mask: url(../../images/simple-value.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/simple-value.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.label_min,
 button.submitButton.onlyIcon.label_min {
-  mask: url(../../images/svg/item-label.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/item-label.svg) no-repeat right / contain;
+  mask: url(../../images/item-label.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/item-label.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.icon_min,
 button.submitButton.onlyIcon.icon_min {
-  mask: url(../../images/svg/item-icon.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/item-icon.svg) no-repeat right / contain;
+  mask: url(../../images/item-icon.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/item-icon.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.clock_min,
 button.submitButton.onlyIcon.clock_min {
-  mask: url(../../images/svg/clock.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/clock.svg) no-repeat right / contain;
+  mask: url(../../images/clock.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/clock.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.group_item_min,
 button.submitButton.onlyIcon.group_item_min {
-  mask: url(../../images/svg/item-group.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/item-group.svg) no-repeat right / contain;
+  mask: url(../../images/item-group.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/item-group.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.box_item,
 button.submitButton.onlyIcon.box_item {
-  mask: url(../../images/svg/item-box.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/item-box.svg) no-repeat right / contain;
+  mask: url(../../images/item-box.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/item-box.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.line_item,
 button.submitButton.onlyIcon.line_item {
-  mask: url(../../images/svg/item-line.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/item-line.svg) no-repeat right / contain;
+  mask: url(../../images/item-line.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/item-line.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.color_cloud_min,
 button.submitButton.onlyIcon.color_cloud_min {
-  mask: url(../../images/svg/color-cloud.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/color-cloud.svg) no-repeat right / contain;
+  mask: url(../../images/color-cloud.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/color-cloud.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.network_link_min,
 button.submitButton.onlyIcon.network_link_min {
-  mask: url(../../images/svg/network-line.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/network-line.svg) no-repeat right / contain;
+  mask: url(../../images/network-line.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/network-line.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.odometer_min,
 button.submitButton.onlyIcon.odometer_min {
-  mask: url(../../images/svg/odometro.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/odometro.svg) no-repeat right / contain;
+  mask: url(../../images/odometro.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/odometro.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.service_min,
 button.submitButton.onlyIcon.service_min {
-  mask: url(../../images/svg/item-service.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/svg/item-service.svg) no-repeat right / contain;
+  mask: url(../../images/item-service.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/item-service.svg) no-repeat right / contain;
 }
 
 button.buttonButton.onlyIcon.delete_item,
@@ -10282,19 +10281,19 @@ button.disabled_action_button {
 }
 
 button div.camera {
-  mask: url(../../images/svg/picture.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/picture.svg) no-repeat center / contain;
+  mask: url(../../images/picture.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/picture.svg) no-repeat center / contain;
 }
 
 button div.ok {
-  mask: url(../../images/svg/ok.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/ok.svg) no-repeat center / contain;
+  mask: url(../../images/ok.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/ok.svg) no-repeat center / contain;
 }
 
 button div.pending,
 button div.next {
-  mask: url(../../images/svg/arrow.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/arrow.svg) no-repeat center / contain;
+  mask: url(../../images/arrow.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/arrow.svg) no-repeat center / contain;
 }
 
 button div.search {
@@ -10316,8 +10315,8 @@ button div.sound {
 }
 
 button div.add {
-  mask: url(../../images/svg/plus.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/plus.svg) no-repeat center / contain;
+  mask: url(../../images/plus.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/plus.svg) no-repeat center / contain;
 }
 
 button div.delete {
@@ -10326,8 +10325,8 @@ button div.delete {
 }
 
 button div.cancel {
-  mask: url(../../images/svg/left.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/svg/left.svg) no-repeat center / contain;
+  mask: url(../../images/left.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/left.svg) no-repeat center / contain;
 }
 
 button div.back {
@@ -10440,15 +10439,15 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 .custom_checkbox > .custom_checkbox_image {
-  background-image: url(../../images/svg/radial-off.svg);
+  background-image: url(../../images/radial-off.svg);
 }
 
 .custom_checkbox > .custom_checkbox_input:checked + .custom_checkbox_image {
-  background-image: url(../../images/svg/radial-on.svg);
+  background-image: url(../../images/radial-on.svg);
 }
 
 .custom_checkbox > .custom_checkbox_input:disabled + .custom_checkbox_image {
-  background-image: url(../../images/svg/radial-disabled.svg);
+  background-image: url(../../images/radial-disabled.svg);
 }
 
 /* End custom checkbox style */
@@ -10608,7 +10607,7 @@ tr.bring_next_field {
   margin-top: 12px !important;
   position: absolute !important;
   width: 17px !important;
-  background: url(../../images/svg/down.svg) no-repeat content-box !important;
+  background: url(../../images/down.svg) no-repeat content-box !important;
 }
 
 .select2-container--default

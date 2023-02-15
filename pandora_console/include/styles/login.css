@@ -237,7 +237,8 @@ div.login_button_saml input {
   background-position: right 5% center;
 }
 
-div.login_button input:hover {
+div.login_button input:hover,
+#button-login_button:hover {
   background-color: #fff;
   color: #000;
   border: 1px solid #fff;

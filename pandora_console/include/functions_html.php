@@ -3505,8 +3505,12 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconDiv = '';
     }
 
+    // Defined id. Is usable for span and button.
+    // TODO. Check if will be proper use button or submit when where appropiate.
+    $mainId = ((empty($fixedId) === false) ? $fixedId : 'button-'.$name);
+
     if ($imageButton === false) {
-        $content = '<span style="margin-top: 4px;" class="font_11">'.$label.'</span>';
+        $content = '<span id="span-'.$mainId.'" style="margin-top: 4px;" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
         $content = $iconDiv;
@@ -3526,7 +3530,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $parameters = [];
         $parameters[] = 'class="'.$classes.'"';
         $parameters[] = (empty($name) === false) ? ' name="'.$name.'"' : '';
-        $parameters[] = 'id="'.((empty($fixedId) === false) ? $fixedId : 'button-'.$name ).'"';
+        $parameters[] = 'id="'.$mainId.'"';
         $parameters[] = (empty($label) === false) ? ' value="'.$label.'"' : '';
         $parameters[] = (empty($script) === false) ? ' onClick="'.$script.'"' : '';
         $parameters[] = ($disabled === true) ? ' disabled' : '';

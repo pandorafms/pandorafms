@@ -182,7 +182,7 @@ if ($save_empty_networkmap === true) {
 
     $values = [];
     $values['name'] = $name;
-    $values['id_group'] = $id_group;
+    $values['id_group'] = implode(',', $id_group);
 
     $values['generation_method'] = 4;
 
@@ -444,7 +444,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
     }
 
     if ($update_networkmap) {
-        $id_group = (int) get_parameter('id_group', 0);
+        $id_group = get_parameter('id_group', 0);
         // Get id of old group source to check changes.
         $id_group_old = db_get_value('id_group', 'tmap', 'id', $id);
 
@@ -480,7 +480,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         $values = [];
         $values['name'] = $name;
-        $values['id_group'] = $id_group;
+        $values['id_group'] = implode(',', $id_group);
         $values['id_group_map'] = $id_group_map;
 
         $description = get_parameter('description', '');

@@ -302,17 +302,23 @@ class ModulesByStatus extends Widget
             ],
         ];
 
+        // Nodes.
         if (is_metaconsole() === true) {
-            // Nodes fields.
             $nodes_fields = [];
-            $servers_ids = array_column(metaconsole_get_servers(), 'id');
-            foreach ($servers_ids as $server_id) {
-                $nodes_fields[$server_id] = $server_id;
+            $servers_ids = metaconsole_get_servers();
+
+            foreach ($servers_ids as $server) {
+                $nodes_fields[$server['id']] = $server['server_name'];
             }
 
             $nodes_selected = explode(',', $values['nodes']);
 
-            (isset($values['nodes']) === false) ? $nodes_selected = '' : '';
+            (isset($values['nodes']) === false) ? $nodes_selected = $servers_ids : '';
+
+            $nodes_height = count($nodes_fields);
+            if (count($nodes_fields) > 5) {
+                $nodes_height = 5;
+            }
 
             $inputs[] = [
                 'label'     => __('Nodes'),
@@ -324,7 +330,7 @@ class ModulesByStatus extends Widget
                     'return'     => true,
                     'multiple'   => true,
                     'class'      => 'overflow-hidden',
-                    'size'       => count($nodes_fields),
+                    'size'       => $nodes_height,
                     'select_all' => false,
                     'required'   => true,
                 ],
